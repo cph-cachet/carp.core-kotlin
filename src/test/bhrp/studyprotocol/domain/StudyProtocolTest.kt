@@ -4,7 +4,6 @@ import bhrp.studyprotocol.domain.deployment.*
 import bhrp.studyprotocol.domain.devices.*
 import bhrp.studyprotocol.domain.tasks.*
 import bhrp.studyprotocol.domain.triggers.*
-import com.sun.javaws.exceptions.InvalidArgumentException
 import org.junit.jupiter.api.*
 import kotlin.test.*
 
@@ -12,16 +11,22 @@ import kotlin.test.*
 /**
  * Tests for [StudyProtocol].
  */
-class StudyProtocolTest : DeviceConfigurationTest, TaskConfigurationTest
+class StudyProtocolTest
 {
-    override fun createDeviceConfiguration(): DeviceConfiguration
+    class Devices : DeviceConfigurationTest
     {
-        return createEmptyProtocol()
+        override fun createDeviceConfiguration(): DeviceConfiguration
+        {
+            return createEmptyProtocol()
+        }
     }
 
-    override fun createTaskConfiguration(): TaskConfiguration
+    class Tasks : TaskConfigurationTest
     {
-        return createEmptyProtocol()
+        override fun createTaskConfiguration(): TaskConfiguration
+        {
+            return createEmptyProtocol()
+        }
     }
 
 
