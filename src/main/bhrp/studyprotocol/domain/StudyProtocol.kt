@@ -35,13 +35,28 @@ class StudyProtocol(
         return isRemoved
     }
 
+    private val _triggers: MutableSet<Trigger> = mutableSetOf()
+
+    /**
+     * The set of triggers which can trigger tasks in this study protocol.
+     */
+    val triggers: Set<Trigger>
+        get() = _triggers
 
     /**
      * Add a trigger to this protocol.
+     *
+     * @param trigger The trigger to add to this study protocol.
+     * @return True if the [Trigger] has been added; false if the specified [Trigger] is already included in this study protocol.
      */
-    fun addTrigger( trigger: Trigger )
+    fun addTrigger( trigger: Trigger ): Boolean
     {
-        // TODO: Implement.
+        if ( !_deviceConfiguration.devices.contains( trigger.sourceDevice ) )
+        {
+            throw InvalidConfigurationError( "The passed trigger does not belong to any device specified in this study protocol." )
+        }
+
+        return _triggers.add( trigger )
     }
 
     /**

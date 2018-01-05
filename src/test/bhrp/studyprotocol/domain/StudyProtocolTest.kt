@@ -3,6 +3,7 @@ package bhrp.studyprotocol.domain
 import bhrp.studyprotocol.domain.deployment.*
 import bhrp.studyprotocol.domain.devices.*
 import bhrp.studyprotocol.domain.tasks.*
+import bhrp.studyprotocol.domain.triggers.*
 import org.junit.jupiter.api.*
 import kotlin.test.*
 
@@ -36,9 +37,42 @@ class StudyProtocolTest : DeviceConfigurationTest, TaskConfigurationTest
 
 
     @Test
-    fun `can't add trigger for device not included in the protocol`()
+    fun `addTrigger succeeds`()
     {
-        fail( "Triggers are not implemented yet." )
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        protocol.addMasterDevice( device )
+        val trigger = StubTrigger( device )
+
+        val isAdded: Boolean = protocol.addTrigger( trigger )
+        assertTrue( isAdded )
+        assertTrue( protocol.triggers.contains( trigger ) )
+    }
+
+    @Test
+    fun `addTrigger multiple times only adds first time`()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        protocol.addMasterDevice( device )
+        val trigger = StubTrigger( device )
+        protocol.addTrigger( trigger )
+
+        val isAdded: Boolean = protocol.addTrigger( trigger )
+        assertFalse( isAdded )
+        assertEquals( 1, protocol.triggers.count() )
+    }
+
+    @Test
+    fun `can't addTrigger for device not included in the protocol`()
+    {
+        val protocol = createEmptyProtocol()
+        val trigger = StubTrigger( StubDeviceDescriptor() )
+
+        assertFailsWith<InvalidConfigurationError>
+        {
+            protocol.addTrigger( trigger )
+        }
     }
 
     @Test
