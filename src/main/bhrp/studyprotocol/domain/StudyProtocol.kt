@@ -20,21 +20,6 @@ class StudyProtocol(
      */
     val name: String ) : StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration() )
 {
-    /**
-     * Remove a task currently present in the study protocol, including removing it from any [Trigger]'s which initiate it.
-     *
-     * @param task The task to remove.
-     * @return True if the task has been removed; false if the specified [TaskDescriptor] is not included in this protocol.
-     */
-    override fun removeTask( task: TaskDescriptor ): Boolean
-    {
-        val isRemoved = _taskConfiguration.removeTask( task )
-
-        // TODO: Remove task from triggers.
-
-        return isRemoved
-    }
-
     private val _triggers: MutableSet<Trigger> = mutableSetOf()
 
     /**
@@ -42,6 +27,8 @@ class StudyProtocol(
      */
     val triggers: Set<Trigger>
         get() = _triggers
+
+    private val _triggeredTasks: MutableMap<Trigger, MutableSet<TriggeredTask>> = mutableMapOf()
 
     /**
      * Add a trigger to this protocol.
@@ -56,19 +43,66 @@ class StudyProtocol(
             throw InvalidConfigurationError( "The passed trigger does not belong to any device specified in this study protocol." )
         }
 
-        return _triggers.add( trigger )
+        val isAdded: Boolean = _triggers.add( trigger )
+        if ( isAdded )
+        {
+            _triggeredTasks.put( trigger, mutableSetOf() )
+        }
+        return isAdded
     }
 
     /**
      * Add a task to be sent to a device once a trigger within this protocol is initiated.
+     * In case the task is not yet included in this study protocol, it will be added.
      *
      * @param trigger The trigger within this protocol which, once initiated, sends the [task] to the [device].
-     * @param task The task to send to the [device].
+     * @param task The task to send to the [device]. Either a new task, or one already included in the study protocol.
      * @param device The device the [task] will be sent to once the [trigger] is initiated.
+     * @return True if the task to be triggered has been added; false if the specified task is already triggered by the specified trigger to the specified device.
      */
-    fun addTriggeredTask( trigger: Trigger, task: TaskDescriptor, device: DeviceDescriptor )
+    fun addTriggeredTask( trigger: Trigger, task: TaskDescriptor, device: DeviceDescriptor ): Boolean
     {
-        // TODO: Implement.
+        if ( !triggers.contains( trigger ) )
+        {
+            throw InvalidConfigurationError( "The passed trigger is not included in this study protocol." )
+        }
+        if ( !devices.contains( device ) )
+        {
+            throw InvalidConfigurationError( "The passed device to which the task needs to be sent is not included in this study protocol." )
+        }
+
+        _taskConfiguration.addTask( task )
+        return _triggeredTasks[ trigger ]!!.add( TriggeredTask( task, device ) )
+    }
+
+    /**
+     * Gets all the tasks (and the devices they are triggered to) for the specified [Trigger].
+     *
+     * @param trigger The [Trigger] to get the [TriggeredTask]'s for.
+     */
+    fun getTriggeredTasks( trigger: Trigger ): Iterable<TriggeredTask>
+    {
+        if ( !triggers.contains( trigger ) )
+        {
+            throw InvalidConfigurationError( "The passed trigger is not part of this study protocol." )
+        }
+
+        return _triggeredTasks[ trigger ]!!
+    }
+
+    /**
+     * Remove a task currently present in the study protocol, including removing it from any [Trigger]'s which initiate it.
+     *
+     * @param task The task to remove.
+     * @return True if the task has been removed; false if the specified [TaskDescriptor] is not included in this protocol.
+     */
+    override fun removeTask( task: TaskDescriptor ): Boolean
+    {
+        val isRemoved = _taskConfiguration.removeTask( task )
+
+        // TODO: Remove task from triggers.
+
+        return isRemoved
     }
 
 

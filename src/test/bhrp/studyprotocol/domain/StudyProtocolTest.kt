@@ -4,6 +4,7 @@ import bhrp.studyprotocol.domain.deployment.*
 import bhrp.studyprotocol.domain.devices.*
 import bhrp.studyprotocol.domain.tasks.*
 import bhrp.studyprotocol.domain.triggers.*
+import com.sun.javaws.exceptions.InvalidArgumentException
 import org.junit.jupiter.api.*
 import kotlin.test.*
 
@@ -76,9 +77,119 @@ class StudyProtocolTest : DeviceConfigurationTest, TaskConfigurationTest
     }
 
     @Test
-    fun `can't add trigger for task not included in the protocol`()
+    fun `addTriggeredTask succeeds`()
     {
-        fail( "Triggers are not implemented yet." )
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        val trigger = StubTrigger( device )
+        val task = StubTaskDescriptor()
+        protocol.addMasterDevice( device )
+        protocol.addTrigger( trigger )
+
+        val isAdded: Boolean = protocol.addTriggeredTask( trigger, task, device )
+        assertTrue( isAdded )
+        assertTrue( protocol.getTriggeredTasks( trigger ).contains( TriggeredTask( task, device ) ) )
+    }
+
+    @Test
+    fun `addTriggeredTasks multiple times only adds first time`()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        val trigger = StubTrigger( device )
+        val task = StubTaskDescriptor()
+        with ( protocol )
+        {
+            addMasterDevice( device )
+            addTrigger( trigger )
+            addTriggeredTask( trigger, task, device )
+        }
+
+        val isAdded = protocol.addTriggeredTask( trigger, task, device )
+        assertFalse( isAdded )
+        assertEquals( 1, protocol.getTriggeredTasks( trigger ).count() )
+    }
+
+    @Test
+    fun `can't addTriggeredTask for trigger not included in the protocol`()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        val task = StubTaskDescriptor()
+        protocol.addMasterDevice( device )
+        protocol.addTask( task )
+
+        assertFailsWith<InvalidConfigurationError>
+        {
+            protocol.addTriggeredTask( StubTrigger( device ), task, device )
+        }
+    }
+
+    @Test
+    fun `addTriggeredTask adds tasks which are not yet included in the protocol`()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        val trigger = StubTrigger( device )
+        protocol.addMasterDevice( device )
+        protocol.addTrigger( trigger )
+
+        val task = StubTaskDescriptor()
+        protocol.addTriggeredTask( trigger, task, device )
+        assertTrue( protocol.tasks.contains( task ) )
+    }
+
+    @Test
+    fun `can't addTriggeredTask for device not included in the protocol`()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        val trigger = StubTrigger( device )
+        val task = StubTaskDescriptor()
+        with ( protocol )
+        {
+            addMasterDevice( device )
+            addTrigger( trigger )
+            addTask( task )
+        }
+
+        assertFailsWith<InvalidConfigurationError>
+        {
+            protocol.addTriggeredTask( trigger, task, StubDeviceDescriptor() )
+        }
+    }
+
+    @Test
+    fun `getTriggeredTasks succeeds`()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        val trigger = StubTrigger( device )
+        val otherTrigger = StubTrigger( device, "Different" )
+        val task = StubTaskDescriptor( "Task one" )
+        with ( protocol )
+        {
+            addMasterDevice( device )
+            addTrigger( trigger )
+            addTrigger( otherTrigger )
+            addTriggeredTask( trigger, task, device )
+            addTriggeredTask( otherTrigger, StubTaskDescriptor( "Task two" ), device )
+        }
+
+        val triggeredTasks: List<TriggeredTask> = protocol.getTriggeredTasks( trigger ).toList()
+        assertEquals( 1, triggeredTasks.count() )
+        assertTrue( triggeredTasks.contains( TriggeredTask( task, device ) ) )
+    }
+
+    @Test
+    fun `can't getTriggeredTasks for non-existing trigger`()
+    {
+        val protocol = createEmptyProtocol()
+
+        assertFailsWith<InvalidConfigurationError>
+        {
+            protocol.getTriggeredTasks( StubTrigger( StubDeviceDescriptor() ) )
+        }
     }
 
     @Test
@@ -94,7 +205,7 @@ class StudyProtocolTest : DeviceConfigurationTest, TaskConfigurationTest
     }
 
     @Test
-    fun `removing a task also removes it from triggers`()
+    fun `removeTask also removes it from triggers`()
     {
         // Create a study protocol with a task which is initiated by a trigger.
         val protocol = createEmptyProtocol()
