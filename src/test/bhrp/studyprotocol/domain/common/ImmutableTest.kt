@@ -60,4 +60,15 @@ class ImmutableTest
             ContainsRecursiveVar()
         }
     }
+
+
+    abstract class AbstractImmutable : Immutable()
+    private data class ImplementsImmutable( val oneMember: String ) : AbstractImmutable()
+    private data class ContainsImmutable( val abstractMember: AbstractImmutable ) : Immutable()
+
+    @Test
+    fun `implementations may contain properties which guarantee immutability by deriving from Immutable`()
+    {
+        ContainsImmutable( ImplementsImmutable( "" ) )
+    }
 }

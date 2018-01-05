@@ -11,12 +11,14 @@ import kotlin.reflect.full.*
  *
  * @param exception The exception to throw in case the implementation is not immutable. [NotImmutableError] by default.
  */
-abstract class Immutable( exception: Throwable = NotImmutableError())
+@Suppress("LeakingThis") // 'this' in init is only used to inspect the derived type, thus incomplete initialization is irrelevant.
+abstract class Immutable(exception: Throwable = NotImmutableError() )
 {
     /**
      * Exception which is thrown by default when an extending class of [Immutable] is not implemented as immutable.
      */
-    class NotImmutableError: Throwable( "Immutable types may not contain mutable properties and may only contain data classes and basic types." )
+    class NotImmutableError: Throwable(
+        "Immutable types should be data classes, may not contain mutable properties, and may only contain basic types and other Immutable properties." )
 
     companion object ImmutableCheck
     {
@@ -38,13 +40,12 @@ abstract class Immutable( exception: Throwable = NotImmutableError())
                 return true
             }
 
-            // Non-basic types need to be data classes to be considered immutable.
-            // TODO: Is this essential? Since all properties are checked to not be mutable, this might be unnecessary.
-            // TODO: However, at this point, I presume it would not make sense NOT to make them data classes.
-            if ( !type.isData )
+            // Containing properties which derive from Immutable are considered immutable.
+            if ( type is Immutable )
             {
-                return false
+                return true
             }
+
 
             val properties: Iterable<KProperty1<out Any, Any?>> = type.memberProperties
 
@@ -62,10 +63,15 @@ abstract class Immutable( exception: Throwable = NotImmutableError())
 
     init
     {
-        // Throw specified exception in case derived implementation is not immutable.
+        // Immutable types need to be data classes. It does not make sense NOT to make them data classes.
+        if ( !this::class.isData )
+        {
+            throw exception
+        }
+
+        // Implementation may not contain any mutable properties.
         // TODO: For performance reasons, it is probably best to only check for this during debug builds. Is this possible?
         // TODO: This could be optimized by only running it once per concrete type.
-        @Suppress( "LeakingThis" ) // 'this' is only used to inspect the derived type, thus incomplete initialization is irrelevant.
         if ( !isImmutable( this::class ) )
         {
             throw exception
