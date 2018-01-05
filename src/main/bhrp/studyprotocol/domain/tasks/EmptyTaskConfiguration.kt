@@ -16,8 +16,8 @@ class EmptyTaskConfiguration : AbstractMap<String, TaskDescriptor>(), TaskConfig
     override val entries: Set<Map.Entry<String, TaskDescriptor>>
         get() = _tasks.entries
 
-    override val tasks: Iterable<TaskDescriptor>
-        get() = _tasks.values
+    override val tasks: Set<TaskDescriptor>
+        get() = _tasks.values.toSet()
 
 
     override fun addTask( task: TaskDescriptor ): Boolean
