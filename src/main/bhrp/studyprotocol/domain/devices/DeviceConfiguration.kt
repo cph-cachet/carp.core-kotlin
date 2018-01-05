@@ -11,9 +11,14 @@ import bhrp.studyprotocol.domain.*
 interface DeviceConfiguration
 {
     /**
+     * The full list of devices part of this configuration.
+     */
+    val devices: Set<DeviceDescriptor>
+
+    /**
      * The set of devices which are responsible for aggregating and synchronizing incoming data.
      */
-    val masterDevices: Iterable<MasterDeviceDescriptor>
+    val masterDevices: Set<MasterDeviceDescriptor>
 
     /**
      * Add a master device which is responsible for aggregating and synchronizing incoming data.

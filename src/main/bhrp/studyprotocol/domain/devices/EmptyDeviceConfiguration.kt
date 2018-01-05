@@ -20,9 +20,11 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, DeviceDescriptor>(
 
     private val _connections: MutableMap<DeviceDescriptor, MutableSet<DeviceDescriptor>> = mutableMapOf()
 
+    override val devices: Set<DeviceDescriptor>
+        get() { return _devices.values.toSet() }
 
-    override val masterDevices: Iterable<MasterDeviceDescriptor>
-        get() { return _devices.values.filterIsInstance<MasterDeviceDescriptor>() }
+    override val masterDevices: Set<MasterDeviceDescriptor>
+        get() { return _devices.values.filterIsInstance<MasterDeviceDescriptor>().toSet() }
 
     override fun addMasterDevice( masterDevice: MasterDeviceDescriptor ): Boolean
     {

@@ -42,6 +42,27 @@ interface DeviceConfigurationTest
     }
 
     @Test
+    fun `devices lists the full list of devices without duplicates`()
+    {
+        val configuration = createDeviceConfiguration()
+        val masterDevice1 = StubMasterDeviceDescriptor( "Device 1" )
+        val masterDevice2 = StubMasterDeviceDescriptor( "Device 2" )
+        val connectedDevice = StubDeviceDescriptor( "Device 3" )
+        with ( configuration )
+        {
+            addMasterDevice( masterDevice1 )
+            addMasterDevice( masterDevice2 )
+            addConnectedDevice( connectedDevice, masterDevice1 )
+            addConnectedDevice( connectedDevice, masterDevice2 )
+        }
+
+        assertEquals( 3, configuration.devices.count() )
+        assertTrue( configuration.devices.contains( masterDevice1 ) )
+        assertTrue( configuration.devices.contains( masterDevice2 ) )
+        assertTrue( configuration.devices.contains( connectedDevice ) )
+    }
+
+    @Test
     fun `addMasterDevice multiple times only adds first time`()
     {
         val configuration = createDeviceConfiguration()
