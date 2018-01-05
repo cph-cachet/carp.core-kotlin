@@ -13,7 +13,7 @@ interface TaskConfiguration
     /**
      * The tasks which measure data and/or present output on a device.
      */
-    val tasks: Iterable<TaskDescriptor>
+    val tasks: Set<TaskDescriptor>
 
     /**
      * Add a task to this configuration.
