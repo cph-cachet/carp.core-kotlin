@@ -20,7 +20,7 @@ class UseCompositeTaskWarning internal constructor() : DeploymentWarning
     data class OverlappingTasks( val trigger: Trigger, val targetDevice: DeviceDescriptor, val tasks: List<TaskDescriptor> )
 
     override val description: String =
-        "The study protocol contains triggers which send multiple tasks to a single device." +
+        "The study protocol contains triggers which send multiple tasks to a single device. " +
         "It is recommended to model this as one composite task instead, for clarity and to circumvent potential concurrency issues."
 
 

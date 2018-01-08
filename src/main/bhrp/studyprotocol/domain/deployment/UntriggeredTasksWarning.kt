@@ -13,7 +13,7 @@ import bhrp.studyprotocol.domain.triggers.Trigger
 class UntriggeredTasksWarning internal constructor() : DeploymentWarning
 {
     override val description: String =
-        "The study protocol contains tasks which are never triggered." +
+        "The study protocol contains tasks which are never triggered. " +
         "Tasks which are never triggered are never initiated on a device, and are thus never used during the study."
 
 
