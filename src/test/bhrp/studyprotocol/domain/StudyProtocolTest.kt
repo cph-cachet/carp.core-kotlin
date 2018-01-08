@@ -214,13 +214,22 @@ class StudyProtocolTest
     {
         // Create a study protocol with a task which is initiated by a trigger.
         val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
         val task = StubTaskDescriptor()
-        protocol.addTask( task )
-        // TODO: Add task to trigger.
+        val trigger1 = StubTrigger( device, "Trigger one" )
+        val trigger2 = StubTrigger( device, "Trigger two" )
+        with ( protocol )
+        {
+            addMasterDevice( device )
+            addTrigger( trigger1 )
+            addTriggeredTask( trigger1, task, device )
+            addTrigger( trigger2 )
+            addTriggeredTask( trigger2, task, device )
+        }
 
-        // TODO: Remove task and check for removal from trigger.
-
-        fail( "Triggers are not implemented yet." )
+        protocol.removeTask( task )
+        assertEquals( 0, protocol.getTriggeredTasks( trigger1 ).count() )
+        assertEquals( 0, protocol.getTriggeredTasks( trigger2 ).count() )
     }
 
     @Test

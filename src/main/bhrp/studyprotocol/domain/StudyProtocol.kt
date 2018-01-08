@@ -100,7 +100,21 @@ class StudyProtocol(
     {
         val isRemoved = _taskConfiguration.removeTask( task )
 
-        // TODO: Remove task from triggers.
+        // Also remove task from triggers.
+        if ( isRemoved )
+        {
+            _triggeredTasks.map { it.value }.forEach {
+                val iterator: MutableIterator<TriggeredTask> = it.iterator()
+                while ( iterator.hasNext() )
+                {
+                    val triggeredTask = iterator.next()
+                    if ( triggeredTask.task == task )
+                    {
+                        iterator.remove()
+                    }
+                }
+            }
+        }
 
         return isRemoved
     }
