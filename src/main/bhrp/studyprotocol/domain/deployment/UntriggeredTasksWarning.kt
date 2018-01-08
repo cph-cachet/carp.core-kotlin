@@ -19,11 +19,15 @@ class UntriggeredTasksWarning internal constructor() : DeploymentWarning
 
     override fun isIssuePresent( protocol: StudyProtocol ): Boolean
     {
-        return getUntriggeredTasks().any()
+        return getUntriggeredTasks( protocol ).any()
     }
 
-    fun getUntriggeredTasks(): Sequence<TaskDescriptor>
+    fun getUntriggeredTasks( protocol: StudyProtocol ): Set<TaskDescriptor>
     {
-        return emptySequence()
+        val triggeredTasks: List<TaskDescriptor> = protocol.triggers.flatMap {
+            protocol.getTriggeredTasks( it ).map { it.task }
+        }
+
+        return protocol.tasks.minus( triggeredTasks )
     }
 }
