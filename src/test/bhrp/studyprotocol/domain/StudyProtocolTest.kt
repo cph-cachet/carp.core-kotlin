@@ -208,9 +208,21 @@ class StudyProtocolTest
     }
 
     @Test
-    fun `deployment warning when some devices never receive tasks`()
+    fun `deployment warning when a device is never used in a trigger or never relays data from connected devices`()
     {
-        fail( "To implement" )
+        // Create a study protocol with a device which is never used.
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        val unusedDevice = StubDeviceDescriptor()
+        with ( protocol )
+        {
+            addMasterDevice( device )
+            addConnectedDevice( unusedDevice, device )
+            addTriggeredTask( StubTrigger( device ), StubTaskDescriptor(), device )
+        }
+
+        // Therefore, a warning is issued.
+        assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<UnusedDeviceWarning>().count() )
     }
 
     @Test

@@ -127,7 +127,8 @@ class StudyProtocol(
     private val possibleDeploymentIssues: List<DeploymentIssue> = listOf(
         NoMasterDeviceError(),
         UntriggeredTasksWarning(),
-        UseCompositeTaskWarning()
+        UseCompositeTaskWarning(),
+        UnusedDeviceWarning()
     )
 
     /**
