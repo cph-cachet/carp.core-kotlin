@@ -191,9 +191,20 @@ class StudyProtocolTest
     }
 
     @Test
-    fun `triggers should not send more than one task to a single device`()
+    fun `deployment warning when a trigger sends more than one task to a single device`()
     {
-        fail( "Triggers are not implemented yet." )
+        // Create a study protocol with a trigger which triggers two tasks to a single device.
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        val trigger = StubTrigger( device )
+        with ( protocol ) {
+            addMasterDevice( device )
+            addTriggeredTask( trigger, StubTaskDescriptor( "Task 1" ), device )
+            addTriggeredTask( trigger, StubTaskDescriptor( "Task 2" ), device )
+        }
+
+        // Therefore, a warning is issued.
+        assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<UseCompositeTaskWarning>().count() )
     }
 
     @Test
@@ -231,6 +242,6 @@ class StudyProtocolTest
         protocol.addTask( StubTaskDescriptor() )
 
         // Therefore, a warning is issued.
-        assertEquals( 1, protocol.getDeploymentIssues().filter { it is UntriggeredTasksWarning }.count() )
+        assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<UntriggeredTasksWarning>().count() )
     }
 }
