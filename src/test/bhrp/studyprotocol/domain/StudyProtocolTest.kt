@@ -103,12 +103,8 @@ class StudyProtocolTest
         val device = StubMasterDeviceDescriptor()
         val trigger = StubTrigger( device )
         val task = StubTaskDescriptor()
-        with ( protocol )
-        {
-            addMasterDevice( device )
-            addTrigger( trigger )
-            addTriggeredTask( trigger, task, device )
-        }
+        protocol.addMasterDevice( device )
+        protocol.addTriggeredTask( trigger, task, device )
 
         val isAdded = protocol.addTriggeredTask( trigger, task, device )
         assertFalse( isAdded )
@@ -116,7 +112,7 @@ class StudyProtocolTest
     }
 
     @Test
-    fun `can't addTriggeredTask for trigger not included in the protocol`()
+    fun `addTriggeredTask adds triggers which are not yet included in the protocol`()
     {
         val protocol = createEmptyProtocol()
         val device = StubMasterDeviceDescriptor()
@@ -124,10 +120,9 @@ class StudyProtocolTest
         protocol.addMasterDevice( device )
         protocol.addTask( task )
 
-        assertFailsWith<InvalidConfigurationError>
-        {
-            protocol.addTriggeredTask( StubTrigger( device ), task, device )
-        }
+        val trigger = StubTrigger( device )
+        protocol.addTriggeredTask( trigger, task, device )
+        assertTrue( protocol.triggers.contains( trigger ) )
     }
 
     @Test
@@ -175,8 +170,6 @@ class StudyProtocolTest
         with ( protocol )
         {
             addMasterDevice( device )
-            addTrigger( trigger )
-            addTrigger( otherTrigger )
             addTriggeredTask( trigger, task, device )
             addTriggeredTask( otherTrigger, StubTaskDescriptor( "Task two" ), device )
         }
@@ -221,9 +214,7 @@ class StudyProtocolTest
         with ( protocol )
         {
             addMasterDevice( device )
-            addTrigger( trigger1 )
             addTriggeredTask( trigger1, task, device )
-            addTrigger( trigger2 )
             addTriggeredTask( trigger2, task, device )
         }
 

@@ -53,26 +53,27 @@ class StudyProtocol(
 
     /**
      * Add a task to be sent to a device once a trigger within this protocol is initiated.
-     * In case the task is not yet included in this study protocol, it will be added.
+     * In case the trigger or task is not yet included in this study protocol, it will be added.
+     * The [targetDevice] needs to be added prior to this call since it needs to be set up as either a master device or connected device.
      *
-     * @param trigger The trigger within this protocol which, once initiated, sends the [task] to the [device].
-     * @param task The task to send to the [device]. Either a new task, or one already included in the study protocol.
-     * @param device The device the [task] will be sent to once the [trigger] is initiated.
+     * @param trigger The trigger which, once initiated, sends the [task] to the [targetDevice]. Either a new trigger, or one already included in the study protocol.
+     * @param task The task to send to the [targetDevice]. Either a new task, or one already included in the study protocol.
+     * @param targetDevice The device the [task] will be sent to once the [trigger] is initiated. The device needs to be part of the study protocol.
      * @return True if the task to be triggered has been added; false if the specified task is already triggered by the specified trigger to the specified device.
      */
-    fun addTriggeredTask( trigger: Trigger, task: TaskDescriptor, device: DeviceDescriptor ): Boolean
+    fun addTriggeredTask( trigger: Trigger, task: TaskDescriptor, targetDevice: DeviceDescriptor ): Boolean
     {
-        if ( !triggers.contains( trigger ) )
-        {
-            throw InvalidConfigurationError( "The passed trigger is not included in this study protocol." )
-        }
-        if ( !devices.contains( device ) )
+        // The device needs to be included in the study protocol. We can not add it here since we do not know whether it should be a master or connected device.
+        if ( !devices.contains( targetDevice ) )
         {
             throw InvalidConfigurationError( "The passed device to which the task needs to be sent is not included in this study protocol." )
         }
 
+        // Add trigger and task to ensure they are included in the protocol.
+        addTrigger( trigger )
         _taskConfiguration.addTask( task )
-        return _triggeredTasks[ trigger ]!!.add( TriggeredTask( task, device ) )
+
+        return _triggeredTasks[ trigger ]!!.add( TriggeredTask( task, targetDevice ) )
     }
 
     /**
