@@ -10,7 +10,7 @@ import bhrp.studyprotocol.domain.devices.MasterDeviceDescriptor
  *
  * Devices which are never used as part of triggers or to relay data serve no purpose in the [StudyProtocol].
  */
-class UnusedDeviceWarning internal constructor() : DeploymentWarning
+class UnusedDevicesWarning internal constructor() : DeploymentWarning
 {
     override val description =
         "The study protocol contains devices which are never used as the source or target of triggers, or to relay data (master device). " +

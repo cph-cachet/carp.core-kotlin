@@ -222,7 +222,7 @@ class StudyProtocolTest
         }
 
         // Therefore, a warning is issued.
-        assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<UnusedDeviceWarning>().count() )
+        assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<UnusedDevicesWarning>().count() )
     }
 
     @Test

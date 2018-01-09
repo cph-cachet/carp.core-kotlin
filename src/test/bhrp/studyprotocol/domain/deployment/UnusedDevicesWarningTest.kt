@@ -8,7 +8,7 @@ import org.junit.jupiter.api.*
 import kotlin.test.*
 
 
-class UnusedDeviceWarningTest
+class UnusedDevicesWarningTest
 {
     @Test
     fun `isIssuePresent true with unused master device`()
@@ -17,7 +17,7 @@ class UnusedDeviceWarningTest
         val unusedDevice = StubMasterDeviceDescriptor()
         protocol.addMasterDevice( unusedDevice )
 
-        val warning = UnusedDeviceWarning()
+        val warning = UnusedDevicesWarning()
         assertTrue( warning.isIssuePresent( protocol ) )
         val expectedUnused = listOf( unusedDevice )
         val unused = warning.getUnusedDevices( protocol )
@@ -37,7 +37,7 @@ class UnusedDeviceWarningTest
             addTriggeredTask( StubTrigger( master ), StubTaskDescriptor(), master )
         }
 
-        val warning = UnusedDeviceWarning()
+        val warning = UnusedDevicesWarning()
         assertTrue( warning.isIssuePresent( protocol ) )
         val expectedUnused = listOf( unusedConnected )
         val unused = warning.getUnusedDevices( protocol )
@@ -57,7 +57,7 @@ class UnusedDeviceWarningTest
             addTriggeredTask( StubTrigger( connected ), StubTaskDescriptor(), connected )
         }
 
-        val warning = UnusedDeviceWarning()
+        val warning = UnusedDevicesWarning()
         assertFalse( warning.isIssuePresent( protocol ) )
         assertEquals( 0, warning.getUnusedDevices( protocol ).count() )
     }
@@ -77,7 +77,7 @@ class UnusedDeviceWarningTest
             addTriggeredTask( StubTrigger( connected ), StubTaskDescriptor(), connected )
         }
 
-        val warning = UnusedDeviceWarning()
+        val warning = UnusedDevicesWarning()
         assertFalse( warning.isIssuePresent( protocol ) )
         assertEquals( 0, warning.getUnusedDevices( protocol ).count() )
     }
@@ -95,7 +95,7 @@ class UnusedDeviceWarningTest
             addTriggeredTask( StubTrigger( device1 ), StubTaskDescriptor(), device2 )
         }
 
-        val warning = UnusedDeviceWarning()
+        val warning = UnusedDevicesWarning()
         assertFalse( warning.isIssuePresent( protocol ) )
         assertEquals( 0, warning.getUnusedDevices( protocol ).count() )
     }

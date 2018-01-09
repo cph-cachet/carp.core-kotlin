@@ -128,7 +128,7 @@ class StudyProtocol(
         NoMasterDeviceError(),
         UntriggeredTasksWarning(),
         UseCompositeTaskWarning(),
-        UnusedDeviceWarning()
+        UnusedDevicesWarning()
     )
 
     /**
