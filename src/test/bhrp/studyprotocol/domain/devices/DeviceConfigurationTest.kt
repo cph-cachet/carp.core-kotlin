@@ -124,4 +124,23 @@ interface DeviceConfigurationTest
             configuration.getConnectedDevices( StubMasterDeviceDescriptor() )
         }
     }
+
+    @Test
+    fun `getConnectedDevices with includeChainedDevices returns all underlying devices`()
+    {
+        val configuration = createDeviceConfiguration()
+        val master1 = StubMasterDeviceDescriptor( "Master 1" )
+        val master2 = StubMasterDeviceDescriptor( "Master 2" )
+        val connected = StubDeviceDescriptor( "Connected" )
+        with ( configuration )
+        {
+            addMasterDevice( master1 )
+            addConnectedDevice( master2, master1 )
+            addConnectedDevice( connected, master2 )
+        }
+
+        val underlyingDevices: Iterable<DeviceDescriptor> = configuration.getConnectedDevices( master1, true )
+        val expectedDevices = listOf( master2, connected )
+        assertEquals( expectedDevices.count(), underlyingDevices.intersect( expectedDevices ).count() )
+    }
 }

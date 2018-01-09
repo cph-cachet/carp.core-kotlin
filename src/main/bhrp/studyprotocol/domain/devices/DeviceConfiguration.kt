@@ -45,6 +45,7 @@ interface DeviceConfiguration
      * Gets all the devices configured to be connected to the specified [MasterDeviceDescriptor].
      *
      * @param masterDevice The master device for which to return the connected devices.
+     * @param includeChainedDevices Include all underlying devices, i.e., including devices connected through chained master devices.
      */
-    fun getConnectedDevices( masterDevice: MasterDeviceDescriptor ): Iterable<DeviceDescriptor>
+    fun getConnectedDevices( masterDevice: MasterDeviceDescriptor, includeChainedDevices: Boolean = false ): Iterable<DeviceDescriptor>
 }

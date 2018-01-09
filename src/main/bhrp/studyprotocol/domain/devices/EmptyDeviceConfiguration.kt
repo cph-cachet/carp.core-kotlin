@@ -28,15 +28,7 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, DeviceDescriptor>(
 
     override fun addMasterDevice( masterDevice: MasterDeviceDescriptor ): Boolean
     {
-        val isAdded: Boolean = _devices.tryAddIfKeyIsNew( masterDevice )
-
-        // Add empty 'connections' collection in case it is a new master device.
-        if ( isAdded )
-        {
-            _connections.put( masterDevice, mutableSetOf() )
-        }
-
-        return isAdded
+        return _devices.tryAddIfKeyIsNew( masterDevice )
     }
 
     override fun addConnectedDevice( device: DeviceDescriptor, masterDevice: MasterDeviceDescriptor ): Boolean
@@ -46,15 +38,36 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, DeviceDescriptor>(
         // Add device when not yet within this configuration.
         _devices.tryAddIfKeyIsNew( device )
 
-        // Add connection.
+        // Add empty 'connections' collection in case it is a master device without any previous connections.
+        if ( !_connections.contains( masterDevice ) )
+        {
+            _connections.put( masterDevice, mutableSetOf() )
+        }
+
         return _connections[ masterDevice ]!!.add( device )
     }
 
-    override fun getConnectedDevices( masterDevice: MasterDeviceDescriptor ): Iterable<DeviceDescriptor>
+    override fun getConnectedDevices( masterDevice: MasterDeviceDescriptor, includeChainedDevices: Boolean ): Iterable<DeviceDescriptor>
     {
         verifyMasterDevice( masterDevice )
 
-        return _connections[ masterDevice ] ?: emptyList()
+        val connectedDevices: MutableList<DeviceDescriptor> = mutableListOf()
+
+        // Add all connections of the master device.
+        if ( _connections.contains( masterDevice ) )
+        {
+            connectedDevices.addAll( _connections[ masterDevice ]!! )
+
+            // When requested, recursively get all connected devices through chained master devices.
+            if ( includeChainedDevices )
+            {
+                connectedDevices.filterIsInstance<MasterDeviceDescriptor>().forEach {
+                    connectedDevices.addAll( getConnectedDevices( it, true ) )
+                }
+            }
+        }
+
+        return connectedDevices
     }
 
     /**

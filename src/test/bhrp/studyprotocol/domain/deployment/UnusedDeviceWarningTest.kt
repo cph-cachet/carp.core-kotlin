@@ -72,8 +72,7 @@ class UnusedDeviceWarningTest
         with ( protocol )
         {
             addMasterDevice( master1 )
-            addMasterDevice( master2 )
-            addConnectedDevice( master1, master2 )
+            addConnectedDevice( master2, master1 )
             addConnectedDevice( connected, master2 )
             addTriggeredTask( StubTrigger( connected ), StubTaskDescriptor(), connected )
         }
