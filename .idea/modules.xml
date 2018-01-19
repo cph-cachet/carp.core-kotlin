@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/bhrp.studyprotocol.domain.iml" filepath="$PROJECT_DIR$/bhrp.studyprotocol.domain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bhrp.studyprotocols.core.iml" filepath="$PROJECT_DIR$/bhrp.studyprotocols.core.iml" />
     </modules>
   </component>
 </project>
