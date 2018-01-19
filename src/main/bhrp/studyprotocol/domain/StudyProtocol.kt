@@ -10,7 +10,7 @@ import bhrp.studyprotocol.domain.triggers.*
  * A description of how a study is to be executed, defining the type(s) of master device(s) ([MasterDeviceDescriptor]) responsible for aggregating data,
  * the optional devices ([DeviceDescriptor]) connected to them, and the [Trigger]'s which lead to data collection on said devices.
  */
-class StudyProtocol(
+data class StudyProtocol(
     /**
      * The person or group that created this [StudyProtocol].
      */
