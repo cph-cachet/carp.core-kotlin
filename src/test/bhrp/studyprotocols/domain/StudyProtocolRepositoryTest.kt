@@ -33,18 +33,19 @@ interface StudyProtocolRepositoryTest
     {
         val repo = createStudyProtocolRepository()
         val owner = ProtocolOwner()
-        val protocol = StudyProtocol( owner, "Study" )
+        val protocol1 = StudyProtocol( owner, "Study" )
+        repo.add( protocol1, "Initial" )
 
-        val protocolVersion2 = protocol.copy()
-        protocolVersion2.addMasterDevice( StubMasterDeviceDescriptor( "Device 1" ) )
-        repo.update( protocolVersion2, "Version 2" )
+        val protocol2 = StudyProtocol( owner, "Study" )
+        protocol2.addMasterDevice( StubMasterDeviceDescriptor( "Device" ) )
+        repo.update( protocol2, "Version 2" )
 
-        val protocolVersion3 = protocolVersion2.copy()
-        protocolVersion2.addMasterDevice( StubMasterDeviceDescriptor( "Device 3" ) )
-        repo.update( protocolVersion3, "Version 3" )
+        val protocol3 = StudyProtocol( owner, "Study" )
+        protocol3.addMasterDevice( StubMasterDeviceDescriptor( "Other device" ) )
+        repo.update( protocol3, "Version 3" )
 
         val retrievedProtocol = repo.getBy( owner, "Study", "Version 2" )
-        assertEquals( protocolVersion2, retrievedProtocol )
+        assertEquals( protocol2, retrievedProtocol )
     }
 
     @Test
