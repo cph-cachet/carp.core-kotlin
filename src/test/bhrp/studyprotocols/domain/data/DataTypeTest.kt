@@ -1,4 +1,4 @@
-package bhrp.studyprotocols.domain.tasks
+package bhrp.studyprotocols.domain.data
 
 import bhrp.studyprotocols.domain.InvalidConfigurationError
 import org.junit.jupiter.api.*
@@ -6,16 +6,14 @@ import kotlin.test.*
 
 
 /**
- * Tests for [TaskDescriptor].
+ * Tests for [DataType].
  */
-class TaskDescriptorTest
+class DataTypeTest
 {
     @Test
     fun `mutable implementation triggers exception`()
     {
-        class NoDataClass(
-            override val name: String = "Not a data class",
-            override val measures: Iterable<Measure> = listOf() ) : TaskDescriptor()
+        class NoDataClass : DataType()
 
         assertFailsWith<InvalidConfigurationError>
         {
