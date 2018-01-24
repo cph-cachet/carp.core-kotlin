@@ -43,7 +43,7 @@ class ImmutableTest
     /**
      * An incorrect implementation of [Immutable] because its member contains a mutable property.
      */
-    private data class ContainsRecursiveVar( val containsVar: TypeWithVar = TypeWithVar("Invalid")) : Immutable()
+    private data class ContainsRecursiveVar( val containsVar: TypeWithVar = TypeWithVar("Invalid" ) ) : Immutable()
 
     @Test
     fun `implementations should only contain immutable properties`()

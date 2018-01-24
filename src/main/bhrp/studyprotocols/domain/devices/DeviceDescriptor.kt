@@ -1,7 +1,7 @@
 package bhrp.studyprotocols.domain.devices
 
 import bhrp.studyprotocols.domain.common.Immutable
-import bhrp.studyprotocols.domain.InvalidConfigurationError
+import bhrp.studyprotocols.domain.notImmutableErrorFor
 
 
 /**
@@ -11,8 +11,7 @@ import bhrp.studyprotocols.domain.InvalidConfigurationError
  *
  * TODO: Does this also allow specifying dynamic devices? E.g., 'closest smartphone'. Perhaps a 'DeviceSelector'?
  */
-abstract class DeviceDescriptor
-    : Immutable( InvalidConfigurationError( "Implementations of DeviceDescriptor should be data classes and may not contain any mutable properties." ) )
+abstract class DeviceDescriptor : Immutable( notImmutableErrorFor( DeviceDescriptor::class ) )
 {
     /**
      * A name which describes how the device participates within the study protocol; it's 'role'.

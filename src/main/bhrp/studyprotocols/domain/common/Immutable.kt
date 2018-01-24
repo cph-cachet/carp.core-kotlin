@@ -12,7 +12,7 @@ import kotlin.reflect.full.*
  * @param exception The exception to throw in case the implementation is not immutable. [NotImmutableError] by default.
  */
 @Suppress("LeakingThis") // 'this' in init is only used to inspect the derived type, thus incomplete initialization is irrelevant.
-abstract class Immutable(exception: Throwable = NotImmutableError() )
+abstract class Immutable( exception: Throwable = NotImmutableError() )
 {
     /**
      * Exception which is thrown by default when an extending class of [Immutable] is not implemented as immutable.

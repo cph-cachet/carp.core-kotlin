@@ -1,6 +1,7 @@
 package bhrp.studyprotocols.domain
 
 import bhrp.studyprotocols.domain.deployment.*
+import kotlin.reflect.KClass
 
 
 /**
@@ -10,3 +11,9 @@ import bhrp.studyprotocols.domain.deployment.*
  * intermediate 'work-in-progress' configurations might not be deployable but be valid configurations.
  */
 class InvalidConfigurationError( message: String ) : Throwable( message )
+
+
+fun<T: Any> notImmutableErrorFor( type: KClass<T> ): InvalidConfigurationError
+{
+    return InvalidConfigurationError( "Implementations of '${type.simpleName}' should be data classes and may not contain any mutable properties." )
+}
