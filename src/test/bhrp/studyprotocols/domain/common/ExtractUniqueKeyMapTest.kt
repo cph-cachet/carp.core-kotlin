@@ -1,7 +1,8 @@
 package bhrp.studyprotocols.domain.common
 
-import org.junit.jupiter.api.*
-import kotlin.test.*
+import kotlin.test.assertFailsWith
+import org.junit.jupiter.api.Test
+import org.junit.Assert.*
 
 
 /**

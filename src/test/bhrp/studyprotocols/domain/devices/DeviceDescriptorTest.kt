@@ -1,8 +1,8 @@
 package bhrp.studyprotocols.domain.devices
 
 import bhrp.studyprotocols.domain.*
-import org.junit.jupiter.api.*
-import kotlin.test.*
+import kotlin.test.assertFailsWith
+import org.junit.jupiter.api.Test
 
 
 /**

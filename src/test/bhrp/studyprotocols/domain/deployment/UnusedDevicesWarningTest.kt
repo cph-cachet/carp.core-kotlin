@@ -4,8 +4,8 @@ import bhrp.studyprotocols.domain.createEmptyProtocol
 import bhrp.studyprotocols.domain.devices.*
 import bhrp.studyprotocols.domain.tasks.StubTaskDescriptor
 import bhrp.studyprotocols.domain.triggers.StubTrigger
-import org.junit.jupiter.api.*
-import kotlin.test.*
+import org.junit.jupiter.api.Test
+import org.junit.Assert.*
 
 
 class UnusedDevicesWarningTest

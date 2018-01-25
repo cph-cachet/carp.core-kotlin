@@ -4,8 +4,9 @@ import bhrp.studyprotocols.domain.deployment.*
 import bhrp.studyprotocols.domain.devices.*
 import bhrp.studyprotocols.domain.tasks.*
 import bhrp.studyprotocols.domain.triggers.*
+import kotlin.test.assertFailsWith
 import org.junit.jupiter.api.*
-import kotlin.test.*
+import org.junit.Assert.*
 
 
 /**
@@ -13,7 +14,7 @@ import kotlin.test.*
  */
 class StudyProtocolTest
 {
-    class Devices : DeviceConfigurationTest
+    class DevicesTest : DeviceConfigurationTest
     {
         override fun createDeviceConfiguration(): DeviceConfiguration
         {
@@ -21,7 +22,7 @@ class StudyProtocolTest
         }
     }
 
-    class Tasks : TaskConfigurationTest
+    class TasksTest : TaskConfigurationTest
     {
         override fun createTaskConfiguration(): TaskConfiguration
         {

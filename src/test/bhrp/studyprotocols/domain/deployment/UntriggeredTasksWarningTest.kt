@@ -4,8 +4,8 @@ import bhrp.studyprotocols.domain.createEmptyProtocol
 import bhrp.studyprotocols.domain.devices.*
 import bhrp.studyprotocols.domain.tasks.*
 import bhrp.studyprotocols.domain.triggers.*
-import org.junit.jupiter.api.*
-import kotlin.test.*
+import org.junit.jupiter.api.Test
+import org.junit.Assert.*
 
 
 /**

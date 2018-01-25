@@ -1,8 +1,8 @@
 package bhrp.studyprotocols.domain.tasks
 
 import bhrp.studyprotocols.domain.InvalidConfigurationError
-import org.junit.jupiter.api.*
-import kotlin.test.*
+import kotlin.test.assertFailsWith
+import org.junit.jupiter.api.Test
 
 
 /**

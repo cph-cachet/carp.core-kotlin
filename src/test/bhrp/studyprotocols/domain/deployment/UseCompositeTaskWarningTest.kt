@@ -5,8 +5,8 @@ import bhrp.studyprotocols.domain.devices.StubDeviceDescriptor
 import bhrp.studyprotocols.domain.devices.StubMasterDeviceDescriptor
 import bhrp.studyprotocols.domain.tasks.StubTaskDescriptor
 import bhrp.studyprotocols.domain.triggers.StubTrigger
-import org.junit.jupiter.api.*
-import kotlin.test.*
+import org.junit.jupiter.api.Test
+import org.junit.Assert.*
 
 
 /**

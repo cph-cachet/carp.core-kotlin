@@ -3,8 +3,8 @@ package bhrp.studyprotocols.domain.triggers
 import bhrp.studyprotocols.domain.InvalidConfigurationError
 import bhrp.studyprotocols.domain.devices.DeviceDescriptor
 import bhrp.studyprotocols.domain.devices.StubDeviceDescriptor
-import org.junit.jupiter.api.*
-import kotlin.test.*
+import kotlin.test.assertFailsWith
+import org.junit.jupiter.api.Test
 
 
 /**

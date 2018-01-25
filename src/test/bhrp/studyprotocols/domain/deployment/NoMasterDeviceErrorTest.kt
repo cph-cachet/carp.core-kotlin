@@ -2,8 +2,8 @@ package bhrp.studyprotocols.domain.deployment
 
 import bhrp.studyprotocols.domain.createEmptyProtocol
 import bhrp.studyprotocols.domain.devices.StubMasterDeviceDescriptor
-import org.junit.jupiter.api.*
-import kotlin.test.*
+import org.junit.jupiter.api.Test
+import org.junit.Assert.*
 
 
 /**
