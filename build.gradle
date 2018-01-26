@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.2.10'
+    ext.kotlin_version = '1.2.21'
 
     repositories {
         jcenter()
@@ -36,4 +36,10 @@ dependencies {
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.1.0-M1"
     testRuntime "org.junit.platform:junit-platform-launcher:1.1.0-M1"
     testRuntime "org.junit.platform:junit-platform-runner:1.1.0-M1"
+}
+
+junitPlatform {
+    filters {
+        includeClassNamePattern '.+' // Allow test classes to use any class name.
+    }
 }
