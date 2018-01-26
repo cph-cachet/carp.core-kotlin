@@ -4,6 +4,7 @@ import carp.protocols.domain.deployment.*
 import carp.protocols.domain.devices.*
 import carp.protocols.domain.tasks.*
 import carp.protocols.domain.triggers.*
+import java.util.*
 
 
 /**
@@ -24,7 +25,8 @@ class StudyProtocol(
     {
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
-            return StudyProtocol( snapshot.owner, snapshot.name )
+            val owner = ProtocolOwner( UUID.fromString( snapshot.ownerId ) )
+            return StudyProtocol( owner, snapshot.name )
         }
     }
 
