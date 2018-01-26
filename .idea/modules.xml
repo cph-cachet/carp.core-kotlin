@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/bhrp.studyprotocols.core.iml" filepath="$PROJECT_DIR$/bhrp.studyprotocols.core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bhrp.studyprotocols.core_main.iml" filepath="$PROJECT_DIR$/.idea/modules/bhrp.studyprotocols.core_main.iml" group="bhrp.studyprotocols.core" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bhrp.studyprotocols.core_test.iml" filepath="$PROJECT_DIR$/.idea/modules/bhrp.studyprotocols.core_test.iml" group="bhrp.studyprotocols.core" />
+      <module fileurl="file://$PROJECT_DIR$/carp.protocols.core.iml" filepath="$PROJECT_DIR$/carp.protocols.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.protocols.core_main.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.protocols.core_main.iml" group="carp.protocols.core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.protocols.core_test.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.protocols.core_test.iml" group="carp.protocols.core" />
     </modules>
   </component>
 </project>
