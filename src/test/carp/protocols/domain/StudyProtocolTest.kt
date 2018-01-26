@@ -257,4 +257,33 @@ class StudyProtocolTest
         // Therefore, a warning is issued.
         assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<UntriggeredTasksWarning>().count() )
     }
+
+    @Test
+    fun `creating protocol fromSnapshot obtained by getSnapshot is the same`()
+    {
+        val protocol = createEmptyProtocol()
+        val masterDevice = StubMasterDeviceDescriptor()
+        val connectedDevice = StubDeviceDescriptor()
+        val trigger = StubTrigger( connectedDevice )
+        with ( protocol )
+        {
+            addMasterDevice( masterDevice )
+            addConnectedDevice( connectedDevice, masterDevice )
+            addTriggeredTask( trigger, StubTaskDescriptor(), masterDevice )
+        }
+
+        val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
+        val fromSnapshot = StudyProtocol.fromSnapshot( snapshot )
+
+        assertEquals( protocol.owner, fromSnapshot.owner )
+        assertEquals( protocol.name, fromSnapshot.name )
+        assertEquals( protocol.devices.count(), protocol.devices.intersect( fromSnapshot.devices ).count() )
+        assertEquals( protocol.triggers.count(), protocol.triggers.intersect( fromSnapshot.triggers ).count() )
+        assertEquals( protocol.tasks.count(), protocol.tasks.intersect( fromSnapshot.tasks ).count() )
+        protocol.triggers.forEach {
+            val triggeredTasks = protocol.getTriggeredTasks( it )
+            val fromSnapshotTriggeredTasks = fromSnapshot.getTriggeredTasks( it )
+            assertEquals( triggeredTasks.count(), triggeredTasks.intersect( fromSnapshotTriggeredTasks ).count() )
+        }
+    }
 }

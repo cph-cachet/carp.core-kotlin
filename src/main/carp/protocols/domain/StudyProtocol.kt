@@ -20,6 +20,15 @@ class StudyProtocol(
      */
     val name: String ) : StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration() )
 {
+    companion object Factory
+    {
+        fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
+        {
+            return StudyProtocol( snapshot.owner, snapshot.name )
+        }
+    }
+
+
     private val _triggers: MutableSet<Trigger> = mutableSetOf()
 
     /**
@@ -148,5 +157,14 @@ class StudyProtocol(
     fun isDeployable(): Boolean
     {
         return !getDeploymentIssues().any { it is DeploymentError }
+    }
+
+
+    /**
+     * Get a serializable snapshot of the current state of this [StudyProtocol].
+     */
+    fun getSnapshot(): StudyProtocolSnapshot
+    {
+        return StudyProtocolSnapshot.fromProtocol( this )
     }
 }
