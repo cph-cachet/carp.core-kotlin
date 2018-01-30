@@ -71,4 +71,18 @@ class ImmutableTest
     {
         ContainsImmutable( ImplementsImmutable( "" ) )
     }
+
+
+    data class WithList<out T>(val list: List<T> = listOf() ) : Immutable()
+
+    @Test
+    fun `kotlin List for immutable elements should be allowed`()
+    {
+        WithList<ValidImmutable>()
+
+        assertFailsWith<Immutable.NotImmutableError>
+        {
+            WithList<ContainsVar>()
+        }
+    }
 }

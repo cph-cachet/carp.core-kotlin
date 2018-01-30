@@ -2,6 +2,7 @@ package carp.protocols.domain.common
 
 import kotlin.reflect.*
 import kotlin.reflect.full.*
+import kotlin.reflect.jvm.internal.KotlinReflectionInternalError
 
 
 /**
@@ -17,8 +18,8 @@ abstract class Immutable( exception: Throwable = NotImmutableError() )
     /**
      * Exception which is thrown by default when an extending class of [Immutable] is not implemented as immutable.
      */
-    class NotImmutableError: Throwable(
-        "Immutable types should be data classes, may not contain mutable properties, and may only contain basic types and other Immutable properties." )
+    class NotImmutableError(
+        error: String = "Immutable types should be data classes, may not contain mutable properties, and may only contain basic types and other Immutable properties." ) : Throwable( error )
 
     companion object ImmutableCheck
     {
@@ -40,14 +41,31 @@ abstract class Immutable( exception: Throwable = NotImmutableError() )
                 return true
             }
 
+            // Kotlin's immutable collections are immutable.
+            // TODO: Add other immutable collections.
+            // TODO: Check whether type parameters are immutable. This is not possible at runtime, except maybe when using inline functions:
+            // https://stackoverflow.com/questions/43184854/how-to-get-generic-param-class-in-kotlin
+            if ( type.qualifiedName == "kotlin.collections.List" )
+            {
+                return true
+            }
+
             // Containing properties which derive from Immutable are considered immutable.
             if ( type is Immutable )
             {
                 return true
             }
 
-
-            val properties: Iterable<KProperty1<out Any, Any?>> = type.memberProperties
+            // Get properties.
+            val properties: Iterable<KProperty1<out Any, Any?>>
+            try
+            {
+                properties = type.memberProperties
+            }
+            catch ( e: KotlinReflectionInternalError )
+            {
+                throw NotImmutableError( "'$type' can currently not be verified by '${Immutable::class.simpleName}'." )
+            }
 
             // None of the properties should be mutable.
             if  ( properties.filter { it is KMutableProperty<*> }.any() )
