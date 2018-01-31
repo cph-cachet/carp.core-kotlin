@@ -1,5 +1,6 @@
 package carp.protocols.domain.common
 
+import kotlinx.serialization.*
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.internal.KotlinReflectionInternalError
@@ -13,7 +14,12 @@ import kotlin.reflect.jvm.internal.KotlinReflectionInternalError
  * @param exception The exception to throw in case the implementation is not immutable. [NotImmutableError] by default.
  */
 @Suppress("LeakingThis") // 'this' in init is only used to inspect the derived type, thus incomplete initialization is irrelevant.
-abstract class Immutable( exception: Throwable = NotImmutableError() )
+@Serializable
+abstract class Immutable(
+    // To make serialization work, exception needs to be a member variable and can not just be passed as a constructor parameter.
+    // However, annotating it as @Transient excludes it from serialization.
+    @Transient
+    private val exception: Throwable = NotImmutableError() )
 {
     /**
      * Exception which is thrown by default when an extending class of [Immutable] is not implemented as immutable.
@@ -24,17 +30,18 @@ abstract class Immutable( exception: Throwable = NotImmutableError() )
     companion object ImmutableCheck
     {
         private val basicKotlinTypes = arrayOf(
-                Double::class,
-                Float::class,
-                Long::class,
-                Int::class,
-                Short::class,
-                Byte::class,
-                String::class )
+            Double::class,
+            Float::class,
+            Long::class,
+            Int::class,
+            Short::class,
+            Byte::class,
+            String::class,
+            Throwable::class )
 
         private fun isImmutable( type: KClass<out Any> ): Boolean
         {
-            // All basic types are immutable.
+            // The following basic types are immutable.
             // TODO: Verify this.
             if ( basicKotlinTypes.contains( type ) )
             {
