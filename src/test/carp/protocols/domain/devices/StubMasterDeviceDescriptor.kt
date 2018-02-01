@@ -1,4 +1,7 @@
 package carp.protocols.domain.devices
 
+import kotlinx.serialization.Serializable
 
-data class StubMasterDeviceDescriptor( override val roleName: String = "Mock master device" ) : MasterDeviceDescriptor()
+
+@Serializable
+data class StubMasterDeviceDescriptor( override val roleName: String = "Stub master device" ) : MasterDeviceDescriptor()

@@ -25,8 +25,36 @@ class StudyProtocol(
     {
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
+            // TODO: Unregistered types in the serializer should still be loaded as 'UnregisteredType'.
+
             val owner = ProtocolOwner( UUID.fromString( snapshot.ownerId ) )
-            return StudyProtocol( owner, snapshot.name )
+            val protocol = StudyProtocol( owner, snapshot.name )
+
+            // Add master devices.
+            snapshot.masterDevices.forEach { protocol.addMasterDevice( it ) }
+
+            // Add connected devices.
+            val allDevices: List<DeviceDescriptor> = snapshot.connectedDevices.plus( snapshot.masterDevices ).toList()
+            snapshot.connections.forEach { c ->
+                val master: MasterDeviceDescriptor = allDevices.filterIsInstance<MasterDeviceDescriptor>().first { it.roleName == c.connectedToRoleName }
+                val connected: DeviceDescriptor = allDevices.first { it.roleName == c.roleName }
+                protocol.addConnectedDevice( connected, master )
+            }
+
+            // Add tasks and triggers.
+            snapshot.tasks.forEach { protocol.addTask( it ) }
+            snapshot.triggers.forEach { protocol.addTrigger( it.trigger ) }
+
+            // Add triggered tasks.
+            snapshot.triggeredTasks.forEach { triggeredTask ->
+                protocol.addTriggeredTask(
+                    snapshot.triggers.single { it.id == triggeredTask.triggerId }.trigger,
+                    protocol.tasks.single { it.name == triggeredTask.taskName },
+                    protocol.devices.single { it.roleName == triggeredTask.targetDeviceRoleName }
+                )
+            }
+
+            return protocol
         }
     }
 
@@ -49,7 +77,7 @@ class StudyProtocol(
      */
     fun addTrigger( trigger: Trigger ): Boolean
     {
-        if ( !_deviceConfiguration.devices.contains( trigger.sourceDevice ) )
+        if ( !_deviceConfiguration.devices.map { it.roleName }.contains( trigger.sourceDeviceRoleName ) )
         {
             throw InvalidConfigurationError( "The passed trigger does not belong to any device specified in this study protocol." )
         }

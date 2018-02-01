@@ -2,6 +2,7 @@ package carp.protocols.domain.devices
 
 import carp.protocols.domain.common.Immutable
 import carp.protocols.domain.notImmutableErrorFor
+import kotlinx.serialization.*
 
 
 /**
@@ -11,11 +12,13 @@ import carp.protocols.domain.notImmutableErrorFor
  *
  * TODO: Does this also allow specifying dynamic devices? E.g., 'closest smartphone'. Perhaps a 'DeviceSelector'?
  */
+@Serializable
 abstract class DeviceDescriptor : Immutable( notImmutableErrorFor( DeviceDescriptor::class ) )
 {
     /**
      * A name which describes how the device participates within the study protocol; it's 'role'.
      * E.g., "Patient's phone"
      */
+    @Transient
     abstract val roleName: String
 }

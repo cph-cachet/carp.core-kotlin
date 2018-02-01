@@ -2,6 +2,7 @@ package carp.protocols.domain.tasks
 
 import carp.protocols.domain.common.Immutable
 import carp.protocols.domain.notImmutableErrorFor
+import kotlinx.serialization.*
 
 
 /**
@@ -9,15 +10,18 @@ import carp.protocols.domain.notImmutableErrorFor
  * TODO: Outputs are not yet specified.
  * TODO: Time intervals for output/measures are not yet specified.
  */
+@Serializable
 abstract class TaskDescriptor : Immutable( notImmutableErrorFor( TaskDescriptor::class ) )
 {
     /**
      * A name which uniquely identifies the task.
      */
+    @Transient
     abstract val name: String
 
     /**
      * The data which needs to be collected/measured as part of this task.
      */
+    @Transient
     abstract val measures: Iterable<Measure>
 }

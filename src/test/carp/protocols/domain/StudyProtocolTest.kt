@@ -261,16 +261,7 @@ class StudyProtocolTest
     @Test
     fun `creating protocol fromSnapshot obtained by getSnapshot is the same`()
     {
-        val protocol = createEmptyProtocol()
-        val masterDevice = StubMasterDeviceDescriptor()
-        val connectedDevice = StubDeviceDescriptor()
-        val trigger = StubTrigger( connectedDevice )
-        with ( protocol )
-        {
-            addMasterDevice( masterDevice )
-            addConnectedDevice( connectedDevice, masterDevice )
-            addTriggeredTask( trigger, StubTaskDescriptor(), masterDevice )
-        }
+        val protocol = createComplexProtocol()
 
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
         val fromSnapshot = StudyProtocol.fromSnapshot( snapshot )
