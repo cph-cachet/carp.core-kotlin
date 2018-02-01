@@ -269,6 +269,7 @@ class StudyProtocolTest
         assertEquals( protocol.owner, fromSnapshot.owner )
         assertEquals( protocol.name, fromSnapshot.name )
         assertEquals( protocol.devices.count(), protocol.devices.intersect( fromSnapshot.devices ).count() )
+        protocol.masterDevices.forEach { assertTrue( connectedDevicesAreSame( protocol, fromSnapshot, it ) ) }
         assertEquals( protocol.triggers.count(), protocol.triggers.intersect( fromSnapshot.triggers ).count() )
         assertEquals( protocol.tasks.count(), protocol.tasks.intersect( fromSnapshot.tasks ).count() )
         protocol.triggers.forEach {
@@ -276,5 +277,14 @@ class StudyProtocolTest
             val fromSnapshotTriggeredTasks = fromSnapshot.getTriggeredTasks( it )
             assertEquals( triggeredTasks.count(), triggeredTasks.intersect( fromSnapshotTriggeredTasks ).count() )
         }
+    }
+
+    private fun connectedDevicesAreSame( protocol: StudyProtocol, fromSnapshot: StudyProtocol, masterDevice: MasterDeviceDescriptor ): Boolean
+    {
+        val protocolConnected = protocol.getConnectedDevices( masterDevice ).sortedWith( compareBy { it.roleName } )
+        val snapshotConnected = fromSnapshot.getConnectedDevices( masterDevice ).sortedWith( compareBy { it.roleName } )
+
+        val areSameDevices = snapshotConnected.count() == protocolConnected.intersect( snapshotConnected ).count()
+        return areSameDevices && protocolConnected.filterIsInstance<MasterDeviceDescriptor>().all { connectedDevicesAreSame( protocol, fromSnapshot, it ) }
     }
 }
