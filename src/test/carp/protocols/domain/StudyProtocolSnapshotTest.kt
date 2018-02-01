@@ -3,7 +3,6 @@ package carp.protocols.domain
 import carp.protocols.domain.devices.*
 import carp.protocols.domain.tasks.*
 import carp.protocols.domain.triggers.*
-import kotlinx.serialization.SerialContext
 import kotlinx.serialization.json.JSON
 import org.junit.jupiter.api.*
 import org.junit.Assert.*
@@ -94,5 +93,35 @@ class StudyProtocolSnapshotTest
         {
             JSON.parse<StudyProtocolSnapshot>( serialized )
         }
+    }
+
+    @Test
+    fun `order of elements in snapshot does not matter for equality or hashcode`()
+    {
+        val masterDevices = arrayOf<MasterDeviceDescriptor>( StubMasterDeviceDescriptor( "M1" ), StubMasterDeviceDescriptor( "M2" ))
+        val connectedDevices = arrayOf<DeviceDescriptor>( StubDeviceDescriptor( "C1" ), StubDeviceDescriptor( "C2" ))
+        val connections = arrayOf(
+            StudyProtocolSnapshot.DeviceConnection("C1", "M1" ),
+            StudyProtocolSnapshot.DeviceConnection( "C2", "M2" ) )
+        val tasks = arrayOf<TaskDescriptor>( StubTaskDescriptor( "T1" ), StubTaskDescriptor( "T2" ) )
+        val triggers = arrayOf(
+            StudyProtocolSnapshot.TriggerWithId( 0, StubTrigger( masterDevices[ 0 ] ) ),
+            StudyProtocolSnapshot.TriggerWithId( 1, StubTrigger( masterDevices[ 1 ] ) ) )
+        val triggeredTasks = arrayOf(
+            StudyProtocolSnapshot.TriggeredTask( 0, "T1", "C1" ),
+            StudyProtocolSnapshot.TriggeredTask( 1, "T2", "C2" )
+        )
+
+        val snapshot = StudyProtocolSnapshot(
+            "Owner", "Study",
+            masterDevices, connectedDevices, connections,
+                tasks, triggers, triggeredTasks )
+        val reorganizedSnapshot = StudyProtocolSnapshot(
+            "Owner", "Study",
+            masterDevices.reversed().toTypedArray(), connectedDevices.reversed().toTypedArray(), connections.reversed().toTypedArray(),
+            tasks.reversed().toTypedArray(), triggers.reversed().toTypedArray(), triggeredTasks.reversed().toTypedArray() )
+
+        assertTrue( snapshot == reorganizedSnapshot )
+        assertTrue( snapshot.hashCode() == reorganizedSnapshot.hashCode() )
     }
 }

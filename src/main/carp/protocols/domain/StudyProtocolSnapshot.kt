@@ -83,27 +83,32 @@ data class StudyProtocolSnapshot(
         if ( ownerId != other.ownerId ) return false
         if ( name != other.name ) return false
 
-        // TODO: The order of the array should not matter here.
-        if ( !Arrays.equals( masterDevices, other.masterDevices ) ) return false
-        if ( !Arrays.equals( connectedDevices, other.connectedDevices ) ) return false
-        if ( !Arrays.equals( connections, other.connections ) ) return false
-        if ( !Arrays.equals( tasks, other.tasks ) ) return false
-        if ( !Arrays.equals( triggers, other.triggers ) ) return false
-        if ( !Arrays.equals( triggeredTasks, other.triggeredTasks ) ) return false
+        if ( !arrayEquals( masterDevices, other.masterDevices ) ) return false
+        if ( !arrayEquals( connectedDevices, other.connectedDevices ) ) return false
+        if ( !arrayEquals( connections, other.connections ) ) return false
+        if ( !arrayEquals( tasks, other.tasks ) ) return false
+        if ( !arrayEquals( triggers, other.triggers ) ) return false
+        if ( !arrayEquals( triggeredTasks, other.triggeredTasks ) ) return false
 
         return true
+    }
+
+    private fun <T> arrayEquals( a1: Array<T>, a2: Array<T> ): Boolean
+    {
+        val count = a1.count()
+        return count == a2.count() && a1.intersect( a2.toList() ).count() == count
     }
 
     override fun hashCode(): Int
     {
         var result = ownerId.hashCode()
         result = 31 * result + name.hashCode()
-        result = 31 * result + Arrays.hashCode( masterDevices )
-        result = 31 * result + Arrays.hashCode( connectedDevices )
-        result = 31 * result + Arrays.hashCode( connections )
-        result = 31 * result + Arrays.hashCode( tasks )
-        result = 31 * result + Arrays.hashCode( triggers )
-        result = 31 * result + Arrays.hashCode( triggeredTasks )
+        result = 31 * result + Arrays.hashCode( masterDevices.sortedWith( compareBy( { it.roleName } ) ).toTypedArray() )
+        result = 31 * result + Arrays.hashCode( connectedDevices.sortedWith( compareBy( { it.roleName } ) ).toTypedArray() )
+        result = 31 * result + Arrays.hashCode( connections.sortedWith( compareBy( { it.roleName }, { it.connectedToRoleName } ) ).toTypedArray() )
+        result = 31 * result + Arrays.hashCode( tasks.sortedWith( compareBy( { it.name } ) ).toTypedArray() )
+        result = 31 * result + Arrays.hashCode( triggers.sortedWith( compareBy( { it.id } ) ).toTypedArray() )
+        result = 31 * result + Arrays.hashCode( triggeredTasks.sortedWith( compareBy( { it.triggerId }, { it.taskName }, { it.targetDeviceRoleName } ) ).toTypedArray() )
 
         return result
     }
