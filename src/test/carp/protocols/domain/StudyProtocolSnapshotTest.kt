@@ -3,9 +3,11 @@ package carp.protocols.domain
 import carp.protocols.domain.devices.*
 import carp.protocols.domain.tasks.*
 import carp.protocols.domain.triggers.*
+import kotlinx.serialization.SerialContext
 import kotlinx.serialization.json.JSON
 import org.junit.jupiter.api.*
 import org.junit.Assert.*
+import kotlin.test.assertFailsWith
 
 
 /**
@@ -75,5 +77,22 @@ class StudyProtocolSnapshotTest
         val parsed: StudyProtocolSnapshot = JSON.parse( serialized )
 
         assertEquals( snapshot, parsed )
+    }
+
+    /**
+     * Currently, only types which are known at compile time are supported.
+     * TODO: Types not known at compile time should not prevent deserializing a protocol, but should be loaded through an 'UnknownType' wrapper which extracts the base class information.
+     */
+    @Test
+    fun `can't deserialize unknown types`()
+    {
+        val protocol: StudyProtocol = createComplexProtocol()
+        var serialized: String = JSON.stringify( protocol.getSnapshot() )
+        serialized = serialized.replace( StubTaskDescriptor::class.qualifiedName!!, "carp.protocols.domain.tasks.UnknownTask" )
+
+        assertFailsWith<ClassNotFoundException>
+        {
+            JSON.parse<StudyProtocolSnapshot>( serialized )
+        }
     }
 }

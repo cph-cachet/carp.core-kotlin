@@ -25,8 +25,6 @@ class StudyProtocol(
     {
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
-            // TODO: Unregistered types in the serializer should still be loaded as 'UnregisteredType'.
-
             val owner = ProtocolOwner( UUID.fromString( snapshot.ownerId ) )
             val protocol = StudyProtocol( owner, snapshot.name )
 
