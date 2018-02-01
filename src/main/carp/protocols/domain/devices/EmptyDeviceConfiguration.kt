@@ -23,12 +23,16 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, DeviceDescriptor>(
     override val devices: Set<DeviceDescriptor>
         get() { return _devices.values.toSet() }
 
+    private val _masterDevices: MutableSet<MasterDeviceDescriptor> = mutableSetOf()
     override val masterDevices: Set<MasterDeviceDescriptor>
-        get() { return _devices.values.filterIsInstance<MasterDeviceDescriptor>().toSet() }
+        get() { return _masterDevices }
 
     override fun addMasterDevice( masterDevice: MasterDeviceDescriptor ): Boolean
     {
-        return _devices.tryAddIfKeyIsNew( masterDevice )
+        val isNewDevice: Boolean = _devices.tryAddIfKeyIsNew( masterDevice )
+        _masterDevices.add( masterDevice )
+
+        return isNewDevice
     }
 
     override fun addConnectedDevice( device: DeviceDescriptor, masterDevice: MasterDeviceDescriptor ): Boolean
@@ -75,7 +79,7 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, DeviceDescriptor>(
      */
     private fun verifyMasterDevice( device: MasterDeviceDescriptor )
     {
-        if ( !masterDevices.contains( device ) )
+        if ( !devices.contains( device ) )
         {
             throw InvalidConfigurationError( "The passed master device is not part of this device configuration." )
         }

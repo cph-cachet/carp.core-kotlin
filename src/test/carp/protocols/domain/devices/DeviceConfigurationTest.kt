@@ -29,6 +29,18 @@ interface DeviceConfigurationTest
     }
 
     @Test
+    fun `only devices added as addMasterDevice show up in masterdevices`()
+    {
+        val configuration = createDeviceConfiguration()
+        val masterDevice = StubMasterDeviceDescriptor()
+        val chainedMasterDevice = StubMasterDeviceDescriptor( "Chained" )
+
+        configuration.addMasterDevice( masterDevice )
+        configuration.addConnectedDevice( chainedMasterDevice, masterDevice )
+        assertEquals( 1, configuration.masterDevices.count() )
+    }
+
+    @Test
     fun `addConnectedDevice succeeds`()
     {
         val configuration = createDeviceConfiguration()
