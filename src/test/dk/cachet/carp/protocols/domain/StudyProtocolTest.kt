@@ -14,7 +14,8 @@ import org.junit.Assert.*
  */
 class StudyProtocolTest
 {
-    class Devices : DeviceConfigurationTest
+    @Nested
+    inner class Devices : DeviceConfigurationTest
     {
         override fun createDeviceConfiguration(): DeviceConfiguration
         {
@@ -22,7 +23,8 @@ class StudyProtocolTest
         }
     }
 
-    class Tasks : TaskConfigurationTest
+    @Nested
+    inner class Tasks : TaskConfigurationTest
     {
         override fun createTaskConfiguration(): TaskConfiguration
         {
