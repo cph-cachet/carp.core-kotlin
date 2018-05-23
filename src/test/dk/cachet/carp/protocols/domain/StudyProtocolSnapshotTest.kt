@@ -71,9 +71,13 @@ class StudyProtocolSnapshotTest
     {
         val protocol: StudyProtocol = createComplexProtocol()
 
+        // TODO: Normally, the serializer does not need to be passed manually as it is inferred by the library.
+        //       This is a bug in kotlinx.serialization 0.5 which will be fixed in the next release.
+        val serializer = StudyProtocolSnapshot.serializer()
+
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
-        val serialized: String = JSON.stringify( snapshot )
-        val parsed: StudyProtocolSnapshot = JSON.parse( serialized )
+        val serialized: String = JSON.stringify( serializer, snapshot )
+        val parsed: StudyProtocolSnapshot = JSON.parse( serializer, serialized )
 
         assertEquals( snapshot, parsed )
     }
@@ -86,12 +90,17 @@ class StudyProtocolSnapshotTest
     fun `can't deserialize unknown types`()
     {
         val protocol: StudyProtocol = createComplexProtocol()
-        var serialized: String = JSON.stringify( protocol.getSnapshot() )
+
+        // TODO: Normally, the serializer does not need to be passed manually as it is inferred by the library.
+        //       This is a bug in kotlinx.serialization 0.5 which will be fixed in the next release.
+        val serializer = StudyProtocolSnapshot.serializer()
+
+        var serialized: String = JSON.stringify( serializer, protocol.getSnapshot() )
         serialized = serialized.replace( StubTaskDescriptor::class.qualifiedName!!, "dk.cachet.carp.protocols.domain.tasks.UnknownTask" )
 
         assertFailsWith<ClassNotFoundException>
         {
-            JSON.parse<StudyProtocolSnapshot>( serialized )
+            JSON.parse<StudyProtocolSnapshot>( serializer, serialized )
         }
     }
 
