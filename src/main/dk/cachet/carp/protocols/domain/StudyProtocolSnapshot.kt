@@ -4,6 +4,7 @@ import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JSON
 import java.util.*
 
 
@@ -57,6 +58,20 @@ data class StudyProtocolSnapshot(
             )
         }
 
+        /**
+         * Create a snapshot from JSON serialized using the built-in serializer.
+         *
+         * @param json The JSON which was serialized using the built-in serializer (`StudyProtocolSnapshot.toJson`).
+         */
+        fun fromJson( json: String ): StudyProtocolSnapshot
+        {
+            // TODO: Normally, the serializer does not need to be passed manually as it is inferred by the library.
+            //       This is a bug in kotlinx.serialization 0.5 which will be fixed in the next release.
+            val serializer = serializer()
+
+            return JSON.parse( serializer, json )
+        }
+
         private fun getConnections( protocol: StudyProtocol, masterDevice: MasterDeviceDescriptor ): Iterable<DeviceConnection>
         {
             val connections: MutableList<DeviceConnection> = mutableListOf()
@@ -71,6 +86,19 @@ data class StudyProtocolSnapshot(
 
             return connections
         }
+    }
+
+
+    /**
+     * Serialize to JSON using the built-in serializer.
+     */
+    fun toJson(): String
+    {
+        // TODO: Normally, the serializer does not need to be passed manually as it is inferred by the library.
+        //       This is a bug in kotlinx.serialization 0.5 which will be fixed in the next release.
+        val serializer = serializer()
+
+        return JSON.stringify( serializer, this )
     }
 
 
