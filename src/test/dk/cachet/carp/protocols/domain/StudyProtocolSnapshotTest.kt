@@ -3,10 +3,9 @@ package dk.cachet.carp.protocols.domain
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
-import kotlinx.serialization.json.JSON
+import kotlinx.serialization.Serializable
 import org.junit.jupiter.api.*
 import org.junit.Assert.*
-import kotlin.test.assertFailsWith
 
 
 /**
@@ -79,22 +78,31 @@ class StudyProtocolSnapshotTest
     }
 
     /**
-     * Currently, only types which are known at compile time are supported.
-     * TODO: Types not known at compile time should not prevent deserializing a protocol, but should be loaded through an 'UnknownType' wrapper which extracts the base class information.
+     * Types not known at compile time should not prevent deserializing a protocol, but should be loaded through a 'Custom' type wrapper.
      */
     @Test
-    fun `can't deserialize unknown types`()
+    fun `unknown types are wrapped when deserializing`()
     {
-        val protocol: StudyProtocol = createComplexProtocol()
-        val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
+        val serialized: String = serializeProtocolSnapshotIncludingUnknownTypes()
 
-        var serialized: String = snapshot.toJson()
-        serialized = serialized.replace( StubTaskDescriptor::class.qualifiedName!!, "dk.cachet.carp.protocols.domain.tasks.UnknownTask" )
+        val parsed = StudyProtocolSnapshot.fromJson( serialized )
+        assertEquals( 1, parsed.masterDevices.filter { m -> m is CustomMasterDeviceDescriptor }.count() )
+        TODO( "Test for custom connectedDevices." )
+        TODO( "Test for custom tasks." )
+        TODO( "Test for custom triggers." )
+    }
 
-        assertFailsWith<ClassNotFoundException>
-        {
-            StudyProtocolSnapshot.fromJson( serialized )
-        }
+    /**
+     * Types which were wrapped in a 'Custom' type wrapper upon deserialization should be serialized to their original form (returning the original type, not the wrapper).
+     */
+    @Test
+    fun `serializing unknown types removes the wrapper`()
+    {
+        val serialized: String = serializeProtocolSnapshotIncludingUnknownTypes()
+        val snapshot = StudyProtocolSnapshot.fromJson( serialized )
+
+        val customSerialized = snapshot.toJson()
+        assertEquals( serialized, customSerialized )
     }
 
     @Test

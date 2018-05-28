@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.domain
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import dk.cachet.carp.protocols.domain.tasks.*
+import kotlinx.serialization.Serializable
 import java.util.*
 
 
@@ -37,3 +38,27 @@ fun createComplexProtocol(): StudyProtocol
 
     return protocol
 }
+
+@Serializable
+internal data class UnknownMasterDeviceDescriptor( override val roleName: String = "Unknown" ) : MasterDeviceDescriptor()
+
+/**
+ * Creates a study protocol which includes an [UnknownMasterDeviceDescriptor].
+ * TODO: Include unknown connectedDevices, tasks, and triggers.
+ */
+fun serializeProtocolSnapshotIncludingUnknownTypes(): String
+{
+    val protocol = createComplexProtocol()
+    val master = UnknownMasterDeviceDescriptor()
+    protocol.addMasterDevice( master )
+
+    val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
+    var serialized: String = snapshot.toJson()
+
+    // Replace the strings which identify the types to load by the PolymorphSerializer.
+    // This will cause the types not to be found while deserializing, hence mimicking 'custom' types.
+    serialized = serialized.replace( UnknownMasterDeviceDescriptor::class.qualifiedName!!, "com.unknown.CustomMasterDevice" )
+
+    return serialized
+}
+

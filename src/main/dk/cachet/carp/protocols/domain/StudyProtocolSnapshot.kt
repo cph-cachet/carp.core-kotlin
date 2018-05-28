@@ -1,11 +1,16 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.serialization.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import java.util.*
+
+
+// Custom serializers for StudyProtocolSnapshot which enable deserializing types that are unknown at runtime, yet extend from a known base type.
+object MasterDevicesSerializer : CustomReferenceArraySerializer<MasterDeviceDescriptor>( MasterDeviceDescriptor::class, MasterDeviceDescriptorSerializer )
 
 
 /**
@@ -15,6 +20,7 @@ import java.util.*
 data class StudyProtocolSnapshot(
     val ownerId: String,
     val name: String,
+    @Serializable( with = MasterDevicesSerializer::class )
     val masterDevices: Array<MasterDeviceDescriptor>,
     val connectedDevices: Array<DeviceDescriptor>,
     val connections: Array<DeviceConnection>,
