@@ -7,13 +7,16 @@ import kotlin.reflect.KClass
 
 /**
  * A base [KSerializer] class to serialize instances of [Array] which allows specifying a custom [serializer] to be used to serialize the containing elements.
- *
- * @param kClass The class representation of the elements in the array.
- * @param serializer The serializer to use to serialize the elements in the array.
  */
 open class CustomReferenceArraySerializer<T: Any>(
-        private val _klass: KClass<T>,
-        private val _serializer: KSerializer<T> )
+    /**
+     * The class representation of the elements in the array.
+     */
+    private val _klass: KClass<T>,
+    /**
+     * The serializer to use to serialize the elements in the array.
+     */
+    private val _serializer: KSerializer<T> )
     : KSerializer<Array<T>>
 {
     override val serialClassDesc: KSerialClassDesc

@@ -8,7 +8,7 @@ import kotlin.reflect.full.createType
 import kotlin.reflect.jvm.isAccessible
 
 
-internal object UnknownPolymorphicClassDesc : SerialClassDescImpl( Any::class.qualifiedName!! )
+private object UnknownPolymorphicClassDesc : SerialClassDescImpl( Any::class.qualifiedName!! )
 {
     override val kind: KSerialClassKind = KSerialClassKind.POLYMORPHIC
 
@@ -132,4 +132,21 @@ abstract class UnknownPolymorphicSerializer<P: Any, W: P>( wrapperClass: KClass<
      * @param json The JSON which could not be deserialized.
      */
     abstract fun createWrapper( className: String, json: String ): W
+}
+
+
+/**
+ * Create a serializer for polymorph objects of type [P] which wraps extending types unknown at runtime as instances of type [W].
+ *
+ * @param createWrapper Create the wrapper based on the fully qualified name of the class and the JSON which could not be deserialized.
+ */
+inline fun <reified P: Any, reified W: P> createUnknownPolymorphicSerializer( crossinline createWrapper: (className: String, json: String) -> W ): UnknownPolymorphicSerializer<P, W>
+{
+    return object : UnknownPolymorphicSerializer<P, W>( W::class )
+    {
+        override fun createWrapper( className: String, json: String ): W
+        {
+            return createWrapper( className, json )
+        }
+    }
 }
