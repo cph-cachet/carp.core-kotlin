@@ -63,7 +63,6 @@ object MasterDeviceDescriptorSerializer : KSerializer<MasterDeviceDescriptor>
         {
             val loader = serializerBySerialDescClassname<Any>( klassName )
             obj = input.readSerializableElementValue( serialClassDesc, 1, loader ) as MasterDeviceDescriptor
-            input.readEnd( serialClassDesc )
         }
         else
         {
@@ -88,15 +87,14 @@ object MasterDeviceDescriptorSerializer : KSerializer<MasterDeviceDescriptor>
             val skipElementFunction = parserMembers.first { m -> m.name == "skipElement" }
             skipElementFunction.isAccessible = true
             skipElementFunction.call( parser )
-            input.readEnd( serialClassDesc )
             val end = curPosField.call( parser ) as Int
 
             // Initialize wrapper for unknown object based on source string.
-            val elementSource = jsonSource.subSequence( start, end - 1 ).toString()
+            val elementSource = jsonSource.subSequence( start, end ).toString()
             obj = CustomMasterDeviceDescriptor( elementSource )
         }
 
-
+        input.readEnd( serialClassDesc )
 
         return obj
     }
