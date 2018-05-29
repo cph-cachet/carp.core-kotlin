@@ -3,7 +3,6 @@ package dk.cachet.carp.protocols.domain
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
-import kotlinx.serialization.Serializable
 import org.junit.jupiter.api.*
 import org.junit.Assert.*
 
