@@ -12,8 +12,8 @@ import kotlin.reflect.KClass
  * @param serializer The serializer to use to serialize the elements in the array.
  */
 open class CustomReferenceArraySerializer<T: Any>(
-        private val kClass: KClass<T>,
-        private val serializer: KSerializer<T> )
+        private val _klass: KClass<T>,
+        private val _serializer: KSerializer<T> )
     : KSerializer<Array<T>>
 {
     override val serialClassDesc: KSerialClassDesc
@@ -21,13 +21,13 @@ open class CustomReferenceArraySerializer<T: Any>(
 
     override fun save( output: KOutput, obj: Array<T> )
     {
-        val saver = ReferenceArraySerializer( kClass, serializer )
+        val saver = ReferenceArraySerializer( _klass, _serializer )
         saver.save( output, obj )
     }
 
-    override fun load( input: KInput): Array<T>
+    override fun load( input: KInput ): Array<T>
     {
-        val loader = ReferenceArraySerializer( kClass, serializer )
+        val loader = ReferenceArraySerializer( _klass, _serializer )
         return loader.load( input )
     }
 }

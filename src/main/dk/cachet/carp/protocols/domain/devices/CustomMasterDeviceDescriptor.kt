@@ -1,13 +1,14 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
+import com.beust.klaxon.*
+import dk.cachet.carp.protocols.domain.serialization.UnknownPolymorphicWrapper
 
 
 /**
  * A wrapper used to load extending types from [MasterDeviceDescriptor]s serialized as JSON which are unknown at runtime.
  */
-internal data class CustomMasterDeviceDescriptor( val className: String, val jsonSource: String ) : MasterDeviceDescriptor()
+data class CustomMasterDeviceDescriptor( override val className: String, override val jsonSource: String )
+    : MasterDeviceDescriptor(), UnknownPolymorphicWrapper
 {
     override val roleName: String
 
