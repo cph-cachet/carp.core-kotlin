@@ -4,6 +4,7 @@ import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 import kotlinx.serialization.*
 import kotlinx.serialization.internal.SerialClassDescImpl
+import kotlinx.serialization.json.JSON
 import kotlin.reflect.jvm.isAccessible
 
 
@@ -28,14 +29,28 @@ object MasterDeviceDescriptorSerializer : KSerializer<MasterDeviceDescriptor>
     override val serialClassDesc: KSerialClassDesc
         get() = MasterDeviceDescriptorClassDesc
 
-    override fun save( output: KOutput, obj: MasterDeviceDescriptor )
-    {
-        @Suppress("NAME_SHADOWING" )
+    override fun save( output: KOutput, obj: MasterDeviceDescriptor ) {
+        @Suppress("NAME_SHADOWING")
         val output = output.writeBegin( serialClassDesc )
 
-        val saver = serializerByValue( obj )
-        output.writeStringElementValue( serialClassDesc, 0, saver.serialClassDesc.name )
-        output.writeSerializableElementValue( serialClassDesc, 1, saver, obj )
+        if ( obj is CustomMasterDeviceDescriptor )
+        {
+            output.writeStringElementValue( serialClassDesc, 0, obj.className )
+
+            // Output raw JSON as originally wrapped.
+            // TODO: This relies on reflection since no raw JSON can be output using KOutput.
+            output.writeElement( serialClassDesc, 1 )
+            val composerField = output::class.members.first { m -> m.name == "w" }
+            composerField.isAccessible = true
+            val composer = composerField.call( output ) as JSON.Composer
+            composer.print( obj.jsonSource )
+        }
+        else
+        {
+            val saver = serializerByValue( obj )
+            output.writeStringElementValue( serialClassDesc, 0, saver.serialClassDesc.name )
+            output.writeSerializableElementValue( serialClassDesc, 1, saver, obj )
+        }
 
         output.writeEnd( serialClassDesc )
     }
@@ -91,7 +106,7 @@ object MasterDeviceDescriptorSerializer : KSerializer<MasterDeviceDescriptor>
 
             // Initialize wrapper for unknown object based on source string.
             val elementSource = jsonSource.subSequence( start, end ).toString()
-            obj = CustomMasterDeviceDescriptor( elementSource )
+            obj = CustomMasterDeviceDescriptor( klassName, elementSource )
         }
 
         input.readEnd( serialClassDesc )

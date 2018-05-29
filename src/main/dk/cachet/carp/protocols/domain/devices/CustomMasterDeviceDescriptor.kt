@@ -2,14 +2,12 @@ package dk.cachet.carp.protocols.domain.devices
 
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
-import kotlinx.serialization.Serializable
 
 
 /**
  * A wrapper used to load extending types from [MasterDeviceDescriptor]s serialized as JSON which are unknown at runtime.
  */
-@Serializable
-data class CustomMasterDeviceDescriptor( private val jsonSource: String ) : MasterDeviceDescriptor()
+internal data class CustomMasterDeviceDescriptor( val className: String, val jsonSource: String ) : MasterDeviceDescriptor()
 {
     override val roleName: String
 
