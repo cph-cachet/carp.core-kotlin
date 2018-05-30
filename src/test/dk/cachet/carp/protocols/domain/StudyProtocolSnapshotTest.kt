@@ -86,8 +86,8 @@ class StudyProtocolSnapshotTest
 
         val parsed = StudyProtocolSnapshot.fromJson( serialized )
         assertEquals( 1, parsed.masterDevices.filter { m -> m is CustomMasterDeviceDescriptor }.count() )
-        TODO( "Test for custom connectedDevices." )
-        TODO( "Test for custom tasks." )
+        assertEquals( 1, parsed.connectedDevices.filter { m -> m is CustomDeviceDescriptor }.count() )
+        assertEquals( 1, parsed.tasks.filter { m -> m is CustomTaskDescriptor }.count() )
         TODO( "Test for custom triggers." )
     }
 

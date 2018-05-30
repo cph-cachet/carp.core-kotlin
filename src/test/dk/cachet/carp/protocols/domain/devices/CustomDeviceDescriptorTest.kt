@@ -9,31 +9,31 @@ import kotlin.test.assertFailsWith
 
 
 /**
- * Tests for [CustomMasterDeviceDescriptor].
+ * Tests for [CustomDeviceDescriptor].
  */
-class CustomMasterDeviceDescriptorTest
+class CustomDeviceDescriptorTest
 {
     @Test
-    fun `initialization from json extracts base MasterDeviceDescriptor properties`() {
-        val device = UnknownMasterDeviceDescriptor( "Unknown" )
+    fun `initialization from json extracts base DeviceDescriptor properties`() {
+        val device = UnknownDeviceDescriptor( "Unknown" )
         val serialized: String = JSON.stringify( device )
 
-        val custom = CustomMasterDeviceDescriptor( UnknownMasterDeviceDescriptor::class.qualifiedName!!, serialized )
+        val custom = CustomDeviceDescriptor( UnknownDeviceDescriptor::class.qualifiedName!!, serialized )
         assertEquals( device.roleName, custom.roleName )
     }
 
     @Serializable
-    private data class IncorrectMasterDevice( val incorrect: String = "Not a master device." )
+    private data class IncorrectDevice( val incorrect: String = "Not a device." )
 
     @Test
     fun `initialization from invalid json fails`()
     {
-        val incorrect = IncorrectMasterDevice()
+        val incorrect = IncorrectDevice()
         val serialized: String = JSON.stringify( incorrect )
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomMasterDeviceDescriptor( IncorrectMasterDevice::class.qualifiedName!!, serialized )
+            CustomDeviceDescriptor( IncorrectDevice::class.qualifiedName!!, serialized )
         }
     }
 }

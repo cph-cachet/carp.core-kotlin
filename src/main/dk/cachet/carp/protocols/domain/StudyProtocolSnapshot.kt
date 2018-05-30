@@ -14,6 +14,14 @@ private object MasterDevicesSerializer : CustomReferenceArraySerializer<MasterDe
     MasterDeviceDescriptor::class,
     createUnknownPolymorphicSerializer( { className, json -> CustomMasterDeviceDescriptor( className, json ) } )
 )
+private object DevicesSerializer : CustomReferenceArraySerializer<DeviceDescriptor>(
+    DeviceDescriptor::class,
+    createUnknownPolymorphicSerializer( { className, json -> CustomDeviceDescriptor( className, json ) } )
+)
+private object TasksSerializer : CustomReferenceArraySerializer<TaskDescriptor>(
+    TaskDescriptor::class,
+    createUnknownPolymorphicSerializer( { className, json -> CustomTaskDescriptor( className, json ) } )
+)
 
 
 /**
@@ -25,8 +33,10 @@ data class StudyProtocolSnapshot(
     val name: String,
     @Serializable( with = MasterDevicesSerializer::class )
     val masterDevices: Array<MasterDeviceDescriptor>,
+    @Serializable( with = DevicesSerializer::class )
     val connectedDevices: Array<DeviceDescriptor>,
     val connections: Array<DeviceConnection>,
+    @Serializable( with = TasksSerializer::class )
     val tasks: Array<TaskDescriptor>,
     val triggers: Array<TriggerWithId>,
     val triggeredTasks: Array<TriggeredTask> )

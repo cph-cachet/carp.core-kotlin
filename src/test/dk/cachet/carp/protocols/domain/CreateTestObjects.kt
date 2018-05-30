@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.protocols.domain.data.StubDataType
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import dk.cachet.carp.protocols.domain.tasks.*
@@ -40,24 +41,37 @@ fun createComplexProtocol(): StudyProtocol
 }
 
 @Serializable
-internal data class UnknownMasterDeviceDescriptor( override val roleName: String = "Unknown" ) : MasterDeviceDescriptor()
+internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) : MasterDeviceDescriptor()
+
+@Serializable
+internal data class UnknownDeviceDescriptor( override val roleName: String ) : DeviceDescriptor()
+
+@Serializable
+internal data class UnknownTaskDescriptor( override val name: String, override val measures: List<Measure> ) : TaskDescriptor()
 
 /**
- * Creates a study protocol which includes an [UnknownMasterDeviceDescriptor].
- * TODO: Include unknown connectedDevices, tasks, and triggers.
+ * Creates a study protocol which includes an unknown master device, connected device, and task.
+ * TODO: Include unknown trigger.
  */
 fun serializeProtocolSnapshotIncludingUnknownTypes(): String
 {
     val protocol = createComplexProtocol()
-    val master = UnknownMasterDeviceDescriptor()
+    val master = UnknownMasterDeviceDescriptor( "Unknown" )
     protocol.addMasterDevice( master )
+    val connected = UnknownDeviceDescriptor( "Unknown 2" )
+    protocol.addConnectedDevice( connected, master )
+    val measures: List<Measure> = listOf( Measure( StubDataType( "Test" ) ), Measure( StubDataType( "Test 2" ) ) )
+    val task = UnknownTaskDescriptor( "Unknown task", measures )
+    protocol.addTask( task )
 
     val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
     var serialized: String = snapshot.toJson()
 
-    // Replace the strings which identify the types to load by the PolymorphSerializer.
+    // Replace the strings which identify the types to load by the PolymorphicSerializer.
     // This will cause the types not to be found while deserializing, hence mimicking 'custom' types.
     serialized = serialized.replace( UnknownMasterDeviceDescriptor::class.qualifiedName!!, "com.unknown.CustomMasterDevice" )
+    serialized = serialized.replace( UnknownDeviceDescriptor::class.qualifiedName!!, "com.unknown.CustomDevice" )
+    serialized = serialized.replace( UnknownTaskDescriptor::class.qualifiedName!!, "com.unknown.CustomTask" )
 
     return serialized
 }
