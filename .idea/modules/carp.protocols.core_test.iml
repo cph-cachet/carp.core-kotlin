@@ -18,7 +18,7 @@
           </option>
           <option name="pluginClasspaths">
             <array>
-              <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-gradle-serialization-plugin/0.5.0/93876e5effebab7f4cc8b7bed7398021d3310837/kotlinx-gradle-serialization-plugin-0.5.0.jar" />
+              <option value="$APPLICATION_PLUGINS_DIR$/Serialization/lib/kotlinx-serialization-compiler-plugin.jar" />
             </array>
           </option>
         </compilerArguments>
@@ -34,6 +34,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="carp.protocols.core_main" />
+    <orderEntry type="library" name="Gradle: com.beust:klaxon:3.0.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:1.2.41" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.5.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test-junit:1.2.41" level="project" />

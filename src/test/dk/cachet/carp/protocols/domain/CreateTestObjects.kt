@@ -1,8 +1,10 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.protocols.domain.data.StubDataType
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import dk.cachet.carp.protocols.domain.tasks.*
+import kotlinx.serialization.Serializable
 import java.util.*
 
 
@@ -37,3 +39,44 @@ fun createComplexProtocol(): StudyProtocol
 
     return protocol
 }
+
+@Serializable
+internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) : MasterDeviceDescriptor()
+
+@Serializable
+internal data class UnknownDeviceDescriptor( override val roleName: String ) : DeviceDescriptor()
+
+@Serializable
+internal data class UnknownTaskDescriptor( override val name: String, override val measures: List<Measure> ) : TaskDescriptor()
+
+@Serializable
+internal data class UnknownTrigger( override val sourceDeviceRoleName: String ) : Trigger()
+
+/**
+ * Creates a study protocol which includes an unknown master device, unkown connected device, and unknown task triggered by an unknown trigger.
+ */
+fun serializeProtocolSnapshotIncludingUnknownTypes(): String
+{
+    val protocol = createComplexProtocol()
+    val master = UnknownMasterDeviceDescriptor( "Unknown" )
+    protocol.addMasterDevice( master )
+    val connected = UnknownDeviceDescriptor( "Unknown 2" )
+    protocol.addConnectedDevice( connected, master )
+    val measures: List<Measure> = listOf( Measure( StubDataType( "Test" ) ), Measure( StubDataType( "Test 2" ) ) )
+    val task = UnknownTaskDescriptor( "Unknown task", measures )
+    val trigger = UnknownTrigger( master.roleName )
+    protocol.addTriggeredTask( trigger, task, master )
+
+    val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
+    var serialized: String = snapshot.toJson()
+
+    // Replace the strings which identify the types to load by the PolymorphicSerializer.
+    // This will cause the types not to be found while deserializing, hence mimicking 'custom' types.
+    serialized = serialized.replace( UnknownMasterDeviceDescriptor::class.qualifiedName!!, "com.unknown.CustomMasterDevice" )
+    serialized = serialized.replace( UnknownDeviceDescriptor::class.qualifiedName!!, "com.unknown.CustomDevice" )
+    serialized = serialized.replace( UnknownTaskDescriptor::class.qualifiedName!!, "com.unknown.CustomTask" )
+    serialized = serialized.replace( UnknownTrigger::class.qualifiedName!!, "com.unknown.CustomTrigger" )
+
+    return serialized
+}
+

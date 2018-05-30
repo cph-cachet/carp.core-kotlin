@@ -1,11 +1,34 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.serialization.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlinx.serialization.json.JSON
 import java.util.*
+
+
+// Custom serializers for StudyProtocolSnapshot which enable deserializing types that are unknown at runtime, yet extend from a known base type.
+private object MasterDevicesSerializer : CustomReferenceArraySerializer<MasterDeviceDescriptor>(
+    MasterDeviceDescriptor::class,
+    createUnknownPolymorphicSerializer( { className, json -> CustomMasterDeviceDescriptor( className, json ) } )
+)
+private object DevicesSerializer : CustomReferenceArraySerializer<DeviceDescriptor>(
+    DeviceDescriptor::class,
+    createUnknownPolymorphicSerializer( { className, json -> CustomDeviceDescriptor( className, json ) } )
+)
+private object TasksSerializer : CustomReferenceArraySerializer<TaskDescriptor>(
+    TaskDescriptor::class,
+    createUnknownPolymorphicSerializer( { className, json -> CustomTaskDescriptor( className, json ) } )
+)
+private object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, CustomTrigger>( CustomTrigger::class )
+{
+    override fun createWrapper( className: String, json: String): CustomTrigger
+    {
+        return CustomTrigger( className, json )
+    }
+}
 
 
 /**
@@ -15,9 +38,12 @@ import java.util.*
 data class StudyProtocolSnapshot(
     val ownerId: String,
     val name: String,
+    @Serializable( with = MasterDevicesSerializer::class )
     val masterDevices: Array<MasterDeviceDescriptor>,
+    @Serializable( with = DevicesSerializer::class )
     val connectedDevices: Array<DeviceDescriptor>,
     val connections: Array<DeviceConnection>,
+    @Serializable( with = TasksSerializer::class )
     val tasks: Array<TaskDescriptor>,
     val triggers: Array<TriggerWithId>,
     val triggeredTasks: Array<TriggeredTask> )
@@ -26,7 +52,10 @@ data class StudyProtocolSnapshot(
     data class DeviceConnection( val roleName: String, val connectedToRoleName: String )
 
     @Serializable
-    data class TriggerWithId( val id: Int, val trigger: Trigger )
+    data class TriggerWithId(
+        val id: Int,
+        @Serializable( with = TriggerSerializer::class )
+        val trigger: Trigger )
 
     @Serializable
     data class TriggeredTask( val triggerId: Int, val taskName: String, val targetDeviceRoleName: String )
