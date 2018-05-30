@@ -5,6 +5,7 @@ import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import org.junit.jupiter.api.*
 import org.junit.Assert.*
+import kotlin.test.asserter
 
 
 /**
@@ -88,7 +89,7 @@ class StudyProtocolSnapshotTest
         assertEquals( 1, parsed.masterDevices.filter { m -> m is CustomMasterDeviceDescriptor }.count() )
         assertEquals( 1, parsed.connectedDevices.filter { m -> m is CustomDeviceDescriptor }.count() )
         assertEquals( 1, parsed.tasks.filter { m -> m is CustomTaskDescriptor }.count() )
-        TODO( "Test for custom triggers." )
+        assertEquals( 1, parsed.triggers.filter { t -> t.trigger is CustomTrigger }.count() )
     }
 
     /**

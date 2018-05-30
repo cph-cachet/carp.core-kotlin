@@ -49,9 +49,11 @@ internal data class UnknownDeviceDescriptor( override val roleName: String ) : D
 @Serializable
 internal data class UnknownTaskDescriptor( override val name: String, override val measures: List<Measure> ) : TaskDescriptor()
 
+@Serializable
+internal data class UnknownTrigger( override val sourceDeviceRoleName: String ) : Trigger()
+
 /**
- * Creates a study protocol which includes an unknown master device, connected device, and task.
- * TODO: Include unknown trigger.
+ * Creates a study protocol which includes an unknown master device, unkown connected device, and unknown task triggered by an unknown trigger.
  */
 fun serializeProtocolSnapshotIncludingUnknownTypes(): String
 {
@@ -62,7 +64,8 @@ fun serializeProtocolSnapshotIncludingUnknownTypes(): String
     protocol.addConnectedDevice( connected, master )
     val measures: List<Measure> = listOf( Measure( StubDataType( "Test" ) ), Measure( StubDataType( "Test 2" ) ) )
     val task = UnknownTaskDescriptor( "Unknown task", measures )
-    protocol.addTask( task )
+    val trigger = UnknownTrigger( master.roleName )
+    protocol.addTriggeredTask( trigger, task, master )
 
     val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
     var serialized: String = snapshot.toJson()
@@ -72,6 +75,7 @@ fun serializeProtocolSnapshotIncludingUnknownTypes(): String
     serialized = serialized.replace( UnknownMasterDeviceDescriptor::class.qualifiedName!!, "com.unknown.CustomMasterDevice" )
     serialized = serialized.replace( UnknownDeviceDescriptor::class.qualifiedName!!, "com.unknown.CustomDevice" )
     serialized = serialized.replace( UnknownTaskDescriptor::class.qualifiedName!!, "com.unknown.CustomTask" )
+    serialized = serialized.replace( UnknownTrigger::class.qualifiedName!!, "com.unknown.CustomTrigger" )
 
     return serialized
 }

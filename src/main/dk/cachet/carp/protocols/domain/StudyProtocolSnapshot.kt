@@ -22,6 +22,13 @@ private object TasksSerializer : CustomReferenceArraySerializer<TaskDescriptor>(
     TaskDescriptor::class,
     createUnknownPolymorphicSerializer( { className, json -> CustomTaskDescriptor( className, json ) } )
 )
+private object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, CustomTrigger>( CustomTrigger::class )
+{
+    override fun createWrapper( className: String, json: String): CustomTrigger
+    {
+        return CustomTrigger( className, json )
+    }
+}
 
 
 /**
@@ -45,7 +52,10 @@ data class StudyProtocolSnapshot(
     data class DeviceConnection( val roleName: String, val connectedToRoleName: String )
 
     @Serializable
-    data class TriggerWithId( val id: Int, val trigger: Trigger )
+    data class TriggerWithId(
+        val id: Int,
+        @Serializable( with = TriggerSerializer::class )
+        val trigger: Trigger )
 
     @Serializable
     data class TriggeredTask( val triggerId: Int, val taskName: String, val targetDeviceRoleName: String )
