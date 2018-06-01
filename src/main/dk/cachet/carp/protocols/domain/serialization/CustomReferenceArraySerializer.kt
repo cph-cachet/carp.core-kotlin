@@ -16,21 +16,5 @@ open class CustomReferenceArraySerializer<T: Any>(
     /**
      * The serializer to use to serialize the elements in the array.
      */
-    private val _serializer: KSerializer<T> )
-    : KSerializer<Array<T>>
-{
-    override val serialClassDesc: KSerialClassDesc
-        get() = ArrayClassDesc
-
-    override fun save( output: KOutput, obj: Array<T> )
-    {
-        val saver = ReferenceArraySerializer( _klass, _serializer )
-        saver.save( output, obj )
-    }
-
-    override fun load( input: KInput ): Array<T>
-    {
-        val loader = ReferenceArraySerializer( _klass, _serializer )
-        return loader.load( input )
-    }
-}
+    private val _serializer: KSerializer<T>
+): KSerializer<Array<T>> by ReferenceArraySerializer( _klass, _serializer )
