@@ -12,15 +12,15 @@ import java.util.*
 // Custom serializers for StudyProtocolSnapshot which enable deserializing types that are unknown at runtime, yet extend from a known base type.
 private object MasterDevicesSerializer : CustomReferenceArraySerializer<MasterDeviceDescriptor>(
     MasterDeviceDescriptor::class,
-    createUnknownPolymorphicSerializer( { className, json -> CustomMasterDeviceDescriptor( className, json ) } )
+    createUnknownPolymorphicSerializer { className, json -> CustomMasterDeviceDescriptor( className, json ) }
 )
 private object DevicesSerializer : CustomReferenceArraySerializer<DeviceDescriptor>(
     DeviceDescriptor::class,
-    createUnknownPolymorphicSerializer( { className, json -> CustomDeviceDescriptor( className, json ) } )
+    createUnknownPolymorphicSerializer { className, json -> CustomDeviceDescriptor( className, json ) }
 )
 private object TasksSerializer : CustomReferenceArraySerializer<TaskDescriptor>(
     TaskDescriptor::class,
-    createUnknownPolymorphicSerializer( { className, json -> CustomTaskDescriptor( className, json ) } )
+    createUnknownPolymorphicSerializer { className, json -> CustomTaskDescriptor( className, json ) }
 )
 private object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, CustomTrigger>( CustomTrigger::class )
 {
@@ -94,11 +94,7 @@ data class StudyProtocolSnapshot(
          */
         fun fromJson( json: String ): StudyProtocolSnapshot
         {
-            // TODO: Normally, the serializer does not need to be passed manually as it is inferred by the library.
-            //       This is a bug in kotlinx.serialization 0.5 which will be fixed in the next release.
-            val serializer = serializer()
-
-            return JSON.parse( serializer, json )
+            return JSON.parse( json )
         }
 
         private fun getConnections( protocol: StudyProtocol, masterDevice: MasterDeviceDescriptor ): Iterable<DeviceConnection>
@@ -123,11 +119,7 @@ data class StudyProtocolSnapshot(
      */
     fun toJson(): String
     {
-        // TODO: Normally, the serializer does not need to be passed manually as it is inferred by the library.
-        //       This is a bug in kotlinx.serialization 0.5 which will be fixed in the next release.
-        val serializer = serializer()
-
-        return JSON.stringify( serializer, this )
+        return JSON.stringify( this )
     }
 
 

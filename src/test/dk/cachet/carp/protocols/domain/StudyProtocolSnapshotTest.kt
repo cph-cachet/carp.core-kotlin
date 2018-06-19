@@ -5,7 +5,6 @@ import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import org.junit.jupiter.api.*
 import org.junit.Assert.*
-import kotlin.test.asserter
 
 
 /**

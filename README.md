@@ -5,4 +5,4 @@ Currently this project is under development. Once a minimum viable product is co
 
 ## Setting up using IntelliJ IDEA
 - Install Gradle 4.7, e.g., [using Chocolatey on Windows](https://chocolatey.org/packages/gradle)
-- Install the [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization#working-in-intellij-idea) IDE [plugin (for Kotlin 1.2.40 and higher)](https://teamcity.jetbrains.com/viewLog.html?buildId=lastPinned&buildTypeId=KotlinTools_KotlinxSerialization_KotlinCompilerWithSerializationPlugin&tab=artifacts&guest=1&buildBranch=1.2.40)
+- Install the [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization#working-in-intellij-idea) IDE [plugin (for Kotlin 1.2.50)](https://teamcity.jetbrains.com/viewLog.html?buildId=lastPinned&buildTypeId=KotlinTools_KotlinxSerialization_KotlinCompilerWithSerializationPlugin&tab=artifacts&guest=1)

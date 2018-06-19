@@ -2,6 +2,7 @@ package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.protocols.domain.data.StubDataType
 import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.serialization.MeasuresSerializer
 import dk.cachet.carp.protocols.domain.triggers.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import kotlinx.serialization.Serializable
@@ -28,13 +29,15 @@ fun createComplexProtocol(): StudyProtocol
     val chainedMasterDevice = StubMasterDeviceDescriptor( "Chained master" )
     val chainedConnectedDevice = StubDeviceDescriptor( "Chained connected" )
     val trigger = StubTrigger( connectedDevice )
+    val measures = listOf( Measure( StubDataType() ) )
+    val task = StubTaskDescriptor( "Task", measures )
     with ( protocol )
     {
         addMasterDevice( masterDevice )
         addConnectedDevice( connectedDevice, masterDevice )
         addConnectedDevice( chainedMasterDevice, masterDevice )
         addConnectedDevice( chainedConnectedDevice, chainedMasterDevice )
-        addTriggeredTask( trigger, StubTaskDescriptor(), masterDevice )
+        addTriggeredTask( trigger, task, masterDevice )
     }
 
     return protocol
@@ -47,13 +50,16 @@ internal data class UnknownMasterDeviceDescriptor( override val roleName: String
 internal data class UnknownDeviceDescriptor( override val roleName: String ) : DeviceDescriptor()
 
 @Serializable
-internal data class UnknownTaskDescriptor( override val name: String, override val measures: List<Measure> ) : TaskDescriptor()
+internal data class UnknownTaskDescriptor(
+    override val name: String,
+    @Serializable( with = MeasuresSerializer::class )
+    override val measures: List<Measure> ) : TaskDescriptor()
 
 @Serializable
 internal data class UnknownTrigger( override val sourceDeviceRoleName: String ) : Trigger()
 
 /**
- * Creates a study protocol which includes an unknown master device, unkown connected device, and unknown task triggered by an unknown trigger.
+ * Creates a study protocol which includes an unknown master device, unknown connected device, and unknown task triggered by an unknown trigger.
  */
 fun serializeProtocolSnapshotIncludingUnknownTypes(): String
 {

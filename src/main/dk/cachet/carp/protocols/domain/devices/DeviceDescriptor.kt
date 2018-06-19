@@ -19,6 +19,5 @@ abstract class DeviceDescriptor : Immutable( notImmutableErrorFor( DeviceDescrip
      * A name which describes how the device participates within the study protocol; it's 'role'.
      * E.g., "Patient's phone"
      */
-    @Transient
     abstract val roleName: String
 }
