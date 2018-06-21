@@ -5,20 +5,21 @@ import dk.cachet.carp.protocols.domain.serialization.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import kotlinx.serialization.*
+import kotlinx.serialization.internal.ReferenceArraySerializer
 import kotlinx.serialization.json.JSON
 import java.util.*
 
 
 // Custom serializers for StudyProtocolSnapshot which enable deserializing types that are unknown at runtime, yet extend from a known base type.
-private object MasterDevicesSerializer : CustomReferenceArraySerializer<MasterDeviceDescriptor>(
+private object MasterDevicesSerializer : KSerializer<Array<MasterDeviceDescriptor>> by ReferenceArraySerializer<MasterDeviceDescriptor, MasterDeviceDescriptor>(
     MasterDeviceDescriptor::class,
     createUnknownPolymorphicSerializer { className, json -> CustomMasterDeviceDescriptor( className, json ) }
 )
-private object DevicesSerializer : CustomReferenceArraySerializer<DeviceDescriptor>(
+private object DevicesSerializer : KSerializer<Array<DeviceDescriptor>> by ReferenceArraySerializer<DeviceDescriptor, DeviceDescriptor>(
     DeviceDescriptor::class,
     createUnknownPolymorphicSerializer { className, json -> CustomDeviceDescriptor( className, json ) }
 )
-private object TasksSerializer : CustomReferenceArraySerializer<TaskDescriptor>(
+private object TasksSerializer : KSerializer<Array<TaskDescriptor>> by ReferenceArraySerializer<TaskDescriptor, TaskDescriptor>(
     TaskDescriptor::class,
     createUnknownPolymorphicSerializer { className, json -> CustomTaskDescriptor( className, json ) }
 )

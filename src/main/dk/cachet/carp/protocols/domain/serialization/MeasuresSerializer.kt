@@ -1,6 +1,8 @@
 package dk.cachet.carp.protocols.domain.serialization
 
 import dk.cachet.carp.protocols.domain.tasks.Measure
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.internal.ArrayListSerializer
 import kotlinx.serialization.serializer
 
 
@@ -11,4 +13,4 @@ import kotlinx.serialization.serializer
  *       https://github.com/Kotlin/kotlinx.serialization/issues/153
  */
 object MeasuresSerializer
-    : CustomArrayListSerializer<Measure>( Measure::class.serializer() )
+    : KSerializer<List<Measure>> by ArrayListSerializer( Measure::class.serializer() )
