@@ -8,8 +8,12 @@ import kotlinx.serialization.Serializable
 
 /**
  * Defines data that needs to be measured/collected as part of a task defined by [TaskDescriptor].
- *
- * @param type The type of data this measure collects.
  */
 @Serializable
-data class Measure( val type: DataType ) : Immutable( notImmutableErrorFor( Measure::class ) )
+abstract class Measure : Immutable( notImmutableErrorFor( Measure::class ) )
+{
+    /**
+     * The type of data this measure collects.
+     */
+    abstract val type: DataType
+}

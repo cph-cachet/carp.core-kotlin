@@ -29,7 +29,7 @@ fun createComplexProtocol(): StudyProtocol
     val chainedMasterDevice = StubMasterDeviceDescriptor( "Chained master" )
     val chainedConnectedDevice = StubDeviceDescriptor( "Chained connected" )
     val trigger = StubTrigger( connectedDevice )
-    val measures = listOf( Measure( StubDataType() ) )
+    val measures = listOf( StubMeasure() )
     val task = StubTaskDescriptor( "Task", measures )
     with ( protocol )
     {
@@ -52,7 +52,6 @@ internal data class UnknownDeviceDescriptor( override val roleName: String ) : D
 @Serializable
 internal data class UnknownTaskDescriptor(
     override val name: String,
-    @Serializable( with = MeasuresSerializer::class )
     override val measures: List<Measure> ) : TaskDescriptor()
 
 @Serializable
@@ -68,7 +67,7 @@ fun serializeProtocolSnapshotIncludingUnknownTypes(): String
     protocol.addMasterDevice( master )
     val connected = UnknownDeviceDescriptor( "Unknown 2" )
     protocol.addConnectedDevice( connected, master )
-    val measures: List<Measure> = listOf( Measure( StubDataType( "Test" ) ), Measure( StubDataType( "Test 2" ) ) )
+    val measures: List<Measure> = listOf( StubMeasure( StubDataType( "Test" ) ), StubMeasure( StubDataType( "Test 2" ) ) )
     val task = UnknownTaskDescriptor( "Unknown task", measures )
     val trigger = UnknownTrigger( master.roleName )
     protocol.addTriggeredTask( trigger, task, master )
