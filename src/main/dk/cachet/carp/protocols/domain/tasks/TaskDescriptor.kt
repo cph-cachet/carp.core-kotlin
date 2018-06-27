@@ -6,9 +6,8 @@ import kotlinx.serialization.*
 
 
 /**
- * Describes requested measures and/or output to be presented on a device over the course of one or more specified time intervals.
+ * Describes requested measures and/or output to be presented on a device.
  * TODO: Outputs are not yet specified.
- * TODO: Time intervals for output/measures are not yet specified.
  */
 @Serializable
 abstract class TaskDescriptor : Immutable( notImmutableErrorFor( TaskDescriptor::class ) )

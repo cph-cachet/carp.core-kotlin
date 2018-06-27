@@ -7,7 +7,7 @@ import kotlinx.serialization.*
 
 
 /**
- * Any condition on a device ([DeviceDescriptor]) which is (or can be) initiated at a certain point in time when the condition applies.
+ * Any condition on a device ([DeviceDescriptor]) which starts or stops tasks at certain points in time when the condition applies.
  * The condition can either be time-bound, based on data streams, initiated by a user of the platform, or a combination of these.
  */
 @Serializable
