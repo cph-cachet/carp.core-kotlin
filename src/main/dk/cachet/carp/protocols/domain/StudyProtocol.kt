@@ -69,6 +69,7 @@ class StudyProtocol(
 
     /**
      * Add a trigger to this protocol.
+     * TODO: Throw error when adding a trigger which requires a master device to a non-master device.
      *
      * @param trigger The trigger to add to this study protocol.
      * @return True if the [Trigger] has been added; false if the specified [Trigger] is already included in this study protocol.
