@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.protocols.domain.data.DataType
 import dk.cachet.carp.protocols.domain.data.StubDataType
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.triggers.*
@@ -54,10 +55,19 @@ internal data class UnknownTaskDescriptor(
     override val measures: List<Measure> ) : TaskDescriptor()
 
 @Serializable
+internal data class UnknownMeasure(
+    @Serializable( with = DataTypeSerializer::class )
+    override val type: DataType ) : Measure()
+
+@Serializable
+internal data class UnknownDataType( val info: String ) : DataType()
+
+@Serializable
 internal data class UnknownTrigger( override val sourceDeviceRoleName: String ) : Trigger()
 
 /**
- * Creates a study protocol which includes an unknown master device, unknown connected device, and unknown task triggered by an unknown trigger.
+ * Creates a study protocol which includes: an unknown master device, unknown connected device, unknown task with an unknown measure and unknown data type, triggered by an unknown trigger.
+ * There is exactly one unknown object for each of these types.
  */
 fun serializeProtocolSnapshotIncludingUnknownTypes(): String
 {
@@ -66,7 +76,7 @@ fun serializeProtocolSnapshotIncludingUnknownTypes(): String
     protocol.addMasterDevice( master )
     val connected = UnknownDeviceDescriptor( "Unknown 2" )
     protocol.addConnectedDevice( connected, master )
-    val measures: List<Measure> = listOf( StubMeasure( StubDataType( "Test" ) ), StubMeasure( StubDataType( "Test 2" ) ) )
+    val measures: List<Measure> = listOf( UnknownMeasure( StubDataType( "Test" ) ), StubMeasure( UnknownDataType( "Test 2" ) ) )
     val task = UnknownTaskDescriptor( "Unknown task", measures )
     val trigger = UnknownTrigger( master.roleName )
     protocol.addTriggeredTask( trigger, task, master )
@@ -79,6 +89,8 @@ fun serializeProtocolSnapshotIncludingUnknownTypes(): String
     serialized = serialized.replace( UnknownMasterDeviceDescriptor::class.qualifiedName!!, "com.unknown.CustomMasterDevice" )
     serialized = serialized.replace( UnknownDeviceDescriptor::class.qualifiedName!!, "com.unknown.CustomDevice" )
     serialized = serialized.replace( UnknownTaskDescriptor::class.qualifiedName!!, "com.unknown.CustomTask" )
+    serialized = serialized.replace( UnknownMeasure::class.qualifiedName!!, "com.unknown.CustomMeasure" )
+    serialized = serialized.replace( UnknownDataType::class.qualifiedName!!, "com.unknown.CustomDataType" )
     serialized = serialized.replace( UnknownTrigger::class.qualifiedName!!, "com.unknown.CustomTrigger" )
 
     return serialized

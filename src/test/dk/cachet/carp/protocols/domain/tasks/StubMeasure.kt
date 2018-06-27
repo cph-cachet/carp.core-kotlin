@@ -6,4 +6,6 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class StubMeasure( override val type: DataType = StubDataType() ) : Measure()
+data class StubMeasure(
+    @Serializable( with = DataTypeSerializer::class )
+    override val type: DataType = StubDataType() ) : Measure()

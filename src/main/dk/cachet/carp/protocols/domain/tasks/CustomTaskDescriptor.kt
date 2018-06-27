@@ -2,11 +2,7 @@ package dk.cachet.carp.protocols.domain.tasks
 
 import com.beust.klaxon.*
 import dk.cachet.carp.protocols.domain.serialization.*
-import kotlinx.serialization.PolymorphicSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.internal.ArrayListSerializer
 import kotlinx.serialization.json.JSON
-import kotlinx.serialization.serializer
 
 
 /**
@@ -28,7 +24,6 @@ data class CustomTaskDescriptor( override val className: String, override val js
         // Get raw JSON string of measures (using klaxon) and use kotlinx serialization to deserialize.
         val measuresField = TaskDescriptor::measures.name
         val measuresJson = json.array<Measure>( measuresField )?.toJsonString() ?: throw IllegalArgumentException( "No '$measuresField' defined." )
-        val serializer = ArrayListSerializer( PolymorphicSerializer )
-        measures = JSON.parse( serializer, measuresJson ).map { a -> a as Measure }
+        measures = JSON.parse( MeasuresSerializer, measuresJson )
     }
 }

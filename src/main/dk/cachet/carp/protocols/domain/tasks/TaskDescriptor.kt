@@ -2,7 +2,14 @@ package dk.cachet.carp.protocols.domain.tasks
 
 import dk.cachet.carp.protocols.domain.common.Immutable
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
+import dk.cachet.carp.protocols.domain.serialization.createUnknownPolymorphicSerializer
 import kotlinx.serialization.*
+import kotlinx.serialization.internal.ArrayListSerializer
+
+
+internal object MeasuresSerializer : KSerializer<List<Measure>> by ArrayListSerializer<Measure>(
+    createUnknownPolymorphicSerializer { className, json -> CustomMeasure( className, json ) }
+)
 
 
 /**
@@ -20,5 +27,6 @@ abstract class TaskDescriptor : Immutable( notImmutableErrorFor( TaskDescriptor:
     /**
      * The data which needs to be collected/measured as part of this task.
      */
+    @Serializable( with = MeasuresSerializer::class )
     abstract val measures: List<Measure>
 }
