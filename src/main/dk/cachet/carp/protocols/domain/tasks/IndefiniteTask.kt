@@ -4,9 +4,9 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * A [TaskDescriptor] which specifies that all containing measures and/or outputs should start immediately once triggered.
+ * A [TaskDescriptor] which specifies that all containing measures and/or outputs should start immediately once triggered and run indefinitely.
  */
 @Serializable
-data class StartAllTask(
+data class IndefiniteTask(
     override val name: String,
     override val measures: List<Measure> ) : TaskDescriptor()
