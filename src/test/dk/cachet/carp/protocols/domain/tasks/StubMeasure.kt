@@ -1,7 +1,6 @@
 package dk.cachet.carp.protocols.domain.tasks
 
-import dk.cachet.carp.protocols.domain.data.DataType
-import dk.cachet.carp.protocols.domain.data.StubDataType
+import dk.cachet.carp.protocols.domain.data.*
 import kotlinx.serialization.Serializable
 
 
