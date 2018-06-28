@@ -5,7 +5,7 @@ import kotlin.reflect.KClass
 
 
 /**
- * Exception which is thrown when performing an operation on [StudyProtocol] would result in an invalid study configuration.
+ * Exception which is thrown when performing an operation on [StudyProtocol] which would result in an invalid study configuration.
  *
  * Note that this is different from [DeploymentIssue]:
  * intermediate 'work-in-progress' configurations might not be deployable but be valid configurations.

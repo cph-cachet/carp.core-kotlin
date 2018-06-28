@@ -69,16 +69,18 @@ class StudyProtocol(
 
     /**
      * Add a trigger to this protocol.
-     * TODO: Throw error when adding a trigger which requires a master device to a non-master device.
      *
      * @param trigger The trigger to add to this study protocol.
      * @return True if the [Trigger] has been added; false if the specified [Trigger] is already included in this study protocol.
      */
     fun addTrigger( trigger: Trigger ): Boolean
     {
-        if ( !_deviceConfiguration.devices.map { it.roleName }.contains( trigger.sourceDeviceRoleName ) )
+        val device: DeviceDescriptor = _deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
+            ?: throw InvalidConfigurationError( "The passed trigger does not belong to any device specified in this study protocol." )
+
+        if ( trigger.requiresMasterDevice && device !is MasterDeviceDescriptor )
         {
-            throw InvalidConfigurationError( "The passed trigger does not belong to any device specified in this study protocol." )
+            throw InvalidConfigurationError( "The passed trigger cannot be initiated by the specified device since it is not a master device." )
         }
 
         val isAdded: Boolean = _triggers.add( trigger )

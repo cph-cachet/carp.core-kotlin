@@ -19,7 +19,7 @@ class MeasureTest
 
         assertFailsWith<InvalidConfigurationError>
         {
-            NoDataClass( StubDataType() )
+            NoDataClass(StubDataType())
         }
     }
 }

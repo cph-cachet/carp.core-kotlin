@@ -85,6 +85,22 @@ class StudyProtocolTest
     }
 
     @Test
+    fun `can't addTrigger which requires a master device for a normal device`()
+    {
+        val protocol = createEmptyProtocol()
+        val masterDevice = StubMasterDeviceDescriptor()
+        val connectedDevice = StubDeviceDescriptor()
+        protocol.addMasterDevice( masterDevice )
+        protocol.addConnectedDevice( connectedDevice, masterDevice )
+        val trigger = StartOfStudyTrigger( connectedDevice.roleName )
+
+        assertFailsWith<InvalidConfigurationError>
+        {
+            protocol.addTrigger( trigger )
+        }
+    }
+
+    @Test
     fun `addTriggeredTask succeeds`()
     {
         val protocol = createEmptyProtocol()
