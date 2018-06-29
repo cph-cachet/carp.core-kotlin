@@ -22,17 +22,26 @@ private object UnknownPolymorphicClassDesc : SerialClassDescImpl( Any::class.qua
 
 /**
  * A serializer for polymorph objects of type [P] which wraps extending types unknown at runtime as instances of type [W].
+ *
+ * @param wrapperClass The definition of the class [W] which is used to wrap objects of type [P].
+ * @param verifyUnknownPolymorphicWrapper
+ *  For this serializer to work, all wrapper classes returned by this serializer need to implement [UnknownPolymorphicWrapper].
+ *  In case it is impossible for a base return type to implement this interface you can disable the runtime verification by setting this to false.
+ *  However, ensure that all deriving classes of this base type implement [UnknownPolymorphicWrapper], otherwise serialization will not output the original JSON found upon deserializing.
  */
-abstract class UnknownPolymorphicSerializer<P: Any, W: P>( wrapperClass: KClass<W> ) : KSerializer<P>
+abstract class UnknownPolymorphicSerializer<P: Any, W: P>( wrapperClass: KClass<W>, verifyUnknownPolymorphicWrapper: Boolean = true ) : KSerializer<P>
 {
     init
     {
         // Enforce that wrapper type (W) implements UnknownPolymorphicWrapper.
-        // Due to current limitations in Kotlin (stemming from the JVM) this can not be statically enforced: https://stackoverflow.com/q/43790137/590790
-        val implementsInterface: Boolean = wrapperClass.supertypes.contains( UnknownPolymorphicWrapper::class.createType() )
-        if ( !implementsInterface )
+        // Due to current limitations in Kotlin (stemming from the JVM) this cannot be statically enforced: https://stackoverflow.com/q/43790137/590790
+        if ( verifyUnknownPolymorphicWrapper )
         {
-            throw IllegalArgumentException( "'$wrapperClass' must implement '${UnknownPolymorphicWrapper::class}'." )
+            val implementsInterface: Boolean = wrapperClass.supertypes.contains( UnknownPolymorphicWrapper::class.createType() )
+            if ( !implementsInterface )
+            {
+                throw IllegalArgumentException( "'$wrapperClass' must implement '${UnknownPolymorphicWrapper::class}'." )
+            }
         }
     }
 

@@ -96,6 +96,22 @@ class StudyProtocolSnapshotTest
         assertEquals( 1, parsed.triggers.filter { t -> t.trigger is CustomTrigger }.count() )
     }
 
+    @Test
+    fun `unknown connected master device is deserialized as a master device`()
+    {
+        val protocol = createEmptyProtocol()
+        val master = StubMasterDeviceDescriptor( "Master" )
+        protocol.addMasterDevice( master )
+        val unknownMaster = UnknownMasterDeviceDescriptor( "Unknown master" )
+        protocol.addConnectedDevice( unknownMaster, master )
+
+        var serialized = protocol.getSnapshot().toJson()
+        serialized = serialized.replace( UnknownMasterDeviceDescriptor::class.qualifiedName!!, "com.unknown.CustomMasterDevice" )
+
+        val parsed = StudyProtocolSnapshot.fromJson( serialized )
+        assert( parsed.connectedDevices.single() is MasterDeviceDescriptor )
+    }
+
     /**
      * Types which were wrapped in a 'Custom' type wrapper upon deserialization should be serialized to their original form (returning the original type, not the wrapper).
      */

@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
+import com.beust.klaxon.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.serialization.*
 import dk.cachet.carp.protocols.domain.tasks.*
@@ -15,10 +16,21 @@ private object MasterDevicesSerializer : KSerializer<Array<MasterDeviceDescripto
     MasterDeviceDescriptor::class,
     createUnknownPolymorphicSerializer { className, json -> CustomMasterDeviceDescriptor( className, json ) }
 )
-private object DevicesSerializer : KSerializer<Array<DeviceDescriptor>> by ReferenceArraySerializer<DeviceDescriptor, DeviceDescriptor>(
+private object DevicesSerializer : KSerializer<Array<DeviceDescriptor>> by ReferenceArraySerializer(
     DeviceDescriptor::class,
-    createUnknownPolymorphicSerializer { className, json -> CustomDeviceDescriptor( className, json ) }
+    DeviceDescriptorSerializer
 )
+private object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescriptor, DeviceDescriptor>( DeviceDescriptor::class, false )
+{
+    override fun createWrapper( className: String, json: String ): DeviceDescriptor
+    {
+        val jsonObject = Parser().parse( StringBuilder( json ) ) as JsonObject
+        val isMasterDevice = jsonObject.keys.contains( MasterDeviceDescriptor::isMasterDevice.name )
+        return if (isMasterDevice)
+            CustomMasterDeviceDescriptor( className, json )
+            else CustomDeviceDescriptor( className, json )
+    }
+}
 private object TasksSerializer : KSerializer<Array<TaskDescriptor>> by ReferenceArraySerializer<TaskDescriptor, TaskDescriptor>(
     TaskDescriptor::class,
     createUnknownPolymorphicSerializer { className, json -> CustomTaskDescriptor( className, json ) }
