@@ -297,6 +297,15 @@ class StudyProtocolTest
         }
     }
 
+    @Test
+    fun `create protocol fromSnapshot with custom extending types succeeds`()
+    {
+        val serialized = serializeProtocolSnapshotIncludingUnknownTypes()
+        val snapshot = StudyProtocolSnapshot.fromJson( serialized )
+
+        StudyProtocol.fromSnapshot( snapshot )
+    }
+
     private fun connectedDevicesAreSame( protocol: StudyProtocol, fromSnapshot: StudyProtocol, masterDevice: MasterDeviceDescriptor ): Boolean
     {
         val protocolConnected = protocol.getConnectedDevices( masterDevice ).sortedWith( compareBy { it.roleName } )

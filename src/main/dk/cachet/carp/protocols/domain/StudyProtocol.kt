@@ -34,8 +34,10 @@ class StudyProtocol(
             // Add connected devices.
             val allDevices: List<DeviceDescriptor> = snapshot.connectedDevices.plus( snapshot.masterDevices ).toList()
             snapshot.connections.forEach { c ->
-                val master: MasterDeviceDescriptor = allDevices.filterIsInstance<MasterDeviceDescriptor>().first { it.roleName == c.connectedToRoleName }
-                val connected: DeviceDescriptor = allDevices.first { it.roleName == c.roleName }
+                val master: MasterDeviceDescriptor = allDevices.filterIsInstance<MasterDeviceDescriptor>().firstOrNull { it.roleName == c.connectedToRoleName }
+                    ?: throw InvalidConfigurationError( "Can't find master device with role name '${c.connectedToRoleName}' in snapshot." )
+                val connected: DeviceDescriptor = allDevices.firstOrNull { it.roleName == c.roleName }
+                    ?: throw InvalidConfigurationError( "Can't find connected device with role name '${c.roleName}' in snapshot." )
                 protocol.addConnectedDevice( connected, master )
             }
 
@@ -45,11 +47,13 @@ class StudyProtocol(
 
             // Add triggered tasks.
             snapshot.triggeredTasks.forEach { triggeredTask ->
-                protocol.addTriggeredTask(
-                    snapshot.triggers.single { it.id == triggeredTask.triggerId }.trigger,
-                    protocol.tasks.single { it.name == triggeredTask.taskName },
-                    protocol.devices.single { it.roleName == triggeredTask.targetDeviceRoleName }
-                )
+                val triggerMatch = snapshot.triggers.singleOrNull { it.id == triggeredTask.triggerId }
+                    ?: throw InvalidConfigurationError( "Can't find trigger with id '${triggeredTask.triggerId}' in snapshot." )
+                val task = protocol.tasks.singleOrNull { it.name == triggeredTask.taskName }
+                    ?: throw InvalidConfigurationError( "Can't find task with name '${triggeredTask.taskName}' in snapshot." )
+                val device = protocol.devices.singleOrNull { it.roleName == triggeredTask.targetDeviceRoleName }
+                    ?: throw InvalidConfigurationError( "Can't find device with role name '${triggeredTask.targetDeviceRoleName}' in snapshot." )
+                protocol.addTriggeredTask( triggerMatch.trigger, task, device )
             }
 
             return protocol
