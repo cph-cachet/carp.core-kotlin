@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.domain
 import dk.cachet.carp.protocols.domain.data.CustomDataType
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
+import dk.cachet.carp.protocols.domain.tasks.measures.CustomMeasure
 import dk.cachet.carp.protocols.domain.triggers.*
 import org.junit.jupiter.api.*
 import org.junit.Assert.*

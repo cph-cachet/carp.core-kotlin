@@ -1,4 +1,4 @@
-package dk.cachet.carp.protocols.domain.tasks
+package dk.cachet.carp.protocols.domain.tasks.measures
 
 import com.beust.klaxon.*
 import dk.cachet.carp.protocols.domain.data.*

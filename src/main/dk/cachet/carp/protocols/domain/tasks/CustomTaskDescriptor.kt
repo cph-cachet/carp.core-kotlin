@@ -2,6 +2,7 @@ package dk.cachet.carp.protocols.domain.tasks
 
 import com.beust.klaxon.*
 import dk.cachet.carp.protocols.domain.serialization.*
+import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import kotlinx.serialization.json.JSON
 
 

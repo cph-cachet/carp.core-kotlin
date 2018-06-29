@@ -1,4 +1,4 @@
-package dk.cachet.carp.protocols.domain.tasks
+package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.protocols.domain.UnknownMeasure
 import dk.cachet.carp.protocols.domain.data.StubDataType
@@ -20,7 +20,7 @@ class CustomMeasureTest
         val measure = UnknownMeasure( StubDataType() )
         val serialized: String = JSON.stringify( measure )
 
-        val custom = CustomMeasure( UnknownMeasure::class.qualifiedName!!, serialized )
+        val custom = CustomMeasure(UnknownMeasure::class.qualifiedName!!, serialized)
         assertEquals( measure.type, custom.type )
     }
 
@@ -35,7 +35,7 @@ class CustomMeasureTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomMeasure( IncorrectMeasure::class.qualifiedName!!, serialized )
+            CustomMeasure(IncorrectMeasure::class.qualifiedName!!, serialized)
         }
     }
 }

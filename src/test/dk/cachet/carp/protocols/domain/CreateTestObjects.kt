@@ -4,6 +4,7 @@ import dk.cachet.carp.protocols.domain.data.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import dk.cachet.carp.protocols.domain.tasks.*
+import dk.cachet.carp.protocols.domain.tasks.measures.*
 import kotlinx.serialization.Serializable
 import java.util.*
 

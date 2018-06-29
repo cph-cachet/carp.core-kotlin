@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain.tasks
 
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
+import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import kotlin.test.assertFailsWith
 import org.junit.jupiter.api.Test
 
