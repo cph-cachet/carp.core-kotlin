@@ -85,4 +85,19 @@ class ImmutableTest
             WithList<ContainsVar>()
         }
     }
+
+
+    enum class WithNoVar { One, Two }
+    enum class WithVar { One; var property: Int = 42 }
+
+    @Test
+    fun `enums which contain no vars should be allowed`()
+    {
+        WithNoVar.One
+
+        assertFailsWith<Immutable.NotImmutableError>
+        {
+            WithVar.One
+        }
+    }
 }
