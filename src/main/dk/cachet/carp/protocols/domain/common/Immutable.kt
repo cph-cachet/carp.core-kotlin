@@ -57,6 +57,15 @@ abstract class Immutable(
                 return true
             }
 
+            // For now, assume enum's are immutable.
+            // TODO: Check for vars in enums (currently not possible). This is extremely uncommon, so ignore for now.
+            //       Apparently, var's can be added to enums and modified through functions.
+            val isEnum = type.supertypes.any { t -> (t.classifier as KClass<out Any>).qualifiedName == "kotlin.Enum" }
+            if ( isEnum )
+            {
+                return true
+            }
+
             // Containing properties which derive from Immutable are considered immutable.
             if ( type is Immutable )
             {
