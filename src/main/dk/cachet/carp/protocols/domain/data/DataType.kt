@@ -3,7 +3,7 @@ package dk.cachet.carp.protocols.domain.data
 import dk.cachet.carp.protocols.domain.common.Immutable
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
 import dk.cachet.carp.protocols.domain.serialization.UnknownPolymorphicSerializer
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 object DataTypeSerializer : UnknownPolymorphicSerializer<DataType, CustomDataType>( CustomDataType::class )
@@ -18,5 +18,6 @@ object DataTypeSerializer : UnknownPolymorphicSerializer<DataType, CustomDataTyp
 @Serializable
 abstract class DataType : Immutable( notImmutableErrorFor( DataType::class ) )
 {
+    @Transient
     abstract val category: DataCategory
 }

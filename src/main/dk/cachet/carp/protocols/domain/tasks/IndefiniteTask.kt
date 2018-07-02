@@ -10,4 +10,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class IndefiniteTask(
     override val name: String,
+    @Serializable( with = MeasuresSerializer::class )
     override val measures: List<Measure> ) : TaskDescriptor()

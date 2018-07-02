@@ -3,7 +3,8 @@ package dk.cachet.carp.protocols.domain.tasks.measures
 import dk.cachet.carp.protocols.domain.common.Immutable
 import dk.cachet.carp.protocols.domain.data.*
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
-import kotlinx.serialization.Serializable
+import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
+import kotlinx.serialization.*
 
 
 /**
@@ -15,6 +16,6 @@ abstract class Measure : Immutable( notImmutableErrorFor( Measure::class ) )
     /**
      * The type of data this measure collects.
      */
-    @Serializable( with = DataTypeSerializer::class )
+    @Transient
     abstract val type: DataType
 }
