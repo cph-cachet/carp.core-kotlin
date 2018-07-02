@@ -4,4 +4,4 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class StubDataType( val descriptor: String = "Test" ) : DataType()
+data class StubDataType( override val category: DataCategory = DataCategory.Other ) : DataType()

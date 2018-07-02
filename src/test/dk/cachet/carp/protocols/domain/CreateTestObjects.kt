@@ -60,7 +60,7 @@ internal data class UnknownMeasure(
     override val type: DataType ) : Measure()
 
 @Serializable
-internal data class UnknownDataType( val info: String ) : DataType()
+internal data class UnknownDataType( override val category: DataCategory = DataCategory.Other ) : DataType()
 
 @Serializable
 internal data class UnknownTrigger( override val sourceDeviceRoleName: String ) : Trigger()
@@ -76,7 +76,7 @@ fun serializeProtocolSnapshotIncludingUnknownTypes(): String
     protocol.addMasterDevice( master )
     val connected = UnknownDeviceDescriptor( "Unknown 2" )
     protocol.addConnectedDevice( connected, master )
-    val measures: List<Measure> = listOf( UnknownMeasure( StubDataType( "Test" ) ), StubMeasure( UnknownDataType( "Test 2" ) ) )
+    val measures: List<Measure> = listOf( UnknownMeasure( StubDataType() ), StubMeasure( UnknownDataType() ) )
     val task = UnknownTaskDescriptor( "Unknown task", measures )
     val trigger = UnknownTrigger( master.roleName )
     protocol.addTriggeredTask( trigger, task, master )

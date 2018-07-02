@@ -13,7 +13,7 @@ class DataTypeTest
     @Test
     fun `mutable implementation triggers exception`()
     {
-        class NoDataClass : DataType()
+        class NoDataClass( override val category: DataCategory = DataCategory.Other ) : DataType()
 
         assertFailsWith<InvalidConfigurationError>
         {

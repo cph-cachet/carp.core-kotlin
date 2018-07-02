@@ -17,3 +17,6 @@ object DataTypeSerializer : UnknownPolymorphicSerializer<DataType, CustomDataTyp
  */
 @Serializable
 abstract class DataType : Immutable( notImmutableErrorFor( DataType::class ) )
+{
+    abstract val category: DataCategory
+}
