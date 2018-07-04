@@ -81,6 +81,15 @@ publishing {
                         url = 'https://github.com/cph-cachet/carp.protocols.core/blob/master/LICENSE.md'
                     }
                 }
+                developers {
+                    developer {
+                        id = 'whathecode'
+                        name = 'Steven Jeuris'
+                        email = 'steven.jeuris@gmail.com'
+                        organization = 'CACHET'
+                        organizationUrl = 'http://www.cachet.dk/'
+                    }
+                }
             }
 
             from components.java
