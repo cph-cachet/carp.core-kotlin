@@ -90,6 +90,11 @@ publishing {
                         organizationUrl = 'http://www.cachet.dk/'
                     }
                 }
+                scm {
+                    connection = 'scm:git:git://github.com/cph-cachet/carp.protocols.core.git'
+                    developerConnection = 'scm:git:ssh://github.com:cph-cachet/carp.protocols.core.git'
+                    url = 'https://github.com/cph-cachet/carp.protocols.core'
+                }
             }
 
             from components.java
