@@ -71,6 +71,18 @@ task javadocJar(type: Jar) {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            pom {
+                name = 'Study Protocol Domain Model and Application Services'
+                description = 'A domain model and application services to specify study protocols which can be deployed to one or more stationary or mobile devices.'
+                url = 'https://github.com/cph-cachet/carp.protocols.core'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/cph-cachet/carp.protocols.core/blob/master/LICENSE.md'
+                    }
+                }
+            }
+
             from components.java
             artifact javadocJar
         }
