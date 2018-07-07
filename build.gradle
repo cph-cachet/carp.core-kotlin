@@ -1,4 +1,4 @@
-group = 'dk.cachet.carp.protocols.core'
+group = 'dk.cachet.carp.protocols'
 version = '1.0.0-alpha.1'
 
 buildscript {
@@ -67,7 +67,14 @@ task javadocJar(type: Jar) {
 }
 
 
-// Publish main .jar and javadoc .jar as a maven package.
+// Create java sources .jar.
+task sourcesJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+
+// Publish main, javadoc, and javasources .jar as a maven package.
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -99,6 +106,7 @@ publishing {
 
             from components.java
             artifact javadocJar
+            artifact sourcesJar
         }
     }
     repositories {
