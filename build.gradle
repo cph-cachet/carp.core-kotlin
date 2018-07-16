@@ -2,8 +2,8 @@ group = 'dk.cachet.carp.protocols'
 version = '1.0.0-alpha.1'
 
 buildscript {
-    ext.kotlin_version = '1.2.50'
-    ext.serialization_version = '0.5.1'
+    ext.kotlin_version = '1.2.51'
+    ext.serialization_version = '0.6.0'
     ext.dokka_version = '0.9.17'
 
     repositories {

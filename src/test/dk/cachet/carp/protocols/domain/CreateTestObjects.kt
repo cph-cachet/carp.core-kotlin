@@ -56,7 +56,6 @@ internal data class UnknownTaskDescriptor(
 
 @Serializable
 internal data class UnknownMeasure(
-    @Serializable( with = DataTypeSerializer::class )
     override val type: DataType ) : Measure()
 
 @Serializable
@@ -66,20 +65,31 @@ internal data class UnknownDataType( override val category: DataCategory = DataC
 internal data class UnknownTrigger( override val sourceDeviceRoleName: String ) : Trigger()
 
 /**
- * Creates a study protocol which includes: an unknown master device, unknown connected device, unknown task with an unknown measure and unknown data type, triggered by an unknown trigger.
- * There is exactly one unknown object for each of these types.
+ * Creates a study protocol which includes:
+ * (1) an unknown master device and unknown connected device
+ * (2) unknown task with an unknown measure and unknown data type, triggered by an unknown trigger
+ * (3) known task with an unknown measure and known data type
+ * There is thus exactly one unknown object for each of these types, except for 'Measure' which as two.
  */
 fun serializeProtocolSnapshotIncludingUnknownTypes(): String
 {
     val protocol = createComplexProtocol()
+
+    // (1) Add unknown master with unknown connected device.
     val master = UnknownMasterDeviceDescriptor( "Unknown" )
     protocol.addMasterDevice( master )
     val connected = UnknownDeviceDescriptor( "Unknown 2" )
     protocol.addConnectedDevice( connected, master )
+
+    // (2) Add unknown task with unknown measure.
     val measures: List<Measure> = listOf( UnknownMeasure( StubDataType() ), StubMeasure( UnknownDataType() ) )
     val task = UnknownTaskDescriptor( "Unknown task", measures )
     val trigger = UnknownTrigger( master.roleName )
     protocol.addTriggeredTask( trigger, task, master )
+
+    // (3) Add known task with unknown measure.
+    val task2 = StubTaskDescriptor( "Known task", listOf( UnknownMeasure( StubDataType() ) ) )
+    protocol.addTriggeredTask( trigger, task2, master )
 
     val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
     var serialized: String = snapshot.toJson()

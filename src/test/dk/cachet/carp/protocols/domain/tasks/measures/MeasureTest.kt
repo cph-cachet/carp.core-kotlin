@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
-import dk.cachet.carp.protocols.domain.data.DataType
-import dk.cachet.carp.protocols.domain.data.StubDataType
+import dk.cachet.carp.protocols.domain.data.*
+import kotlinx.serialization.Serializable
 import org.junit.Test
 import kotlin.test.assertFailsWith
 
@@ -15,7 +15,9 @@ class MeasureTest
     @Test
     fun `mutable implementation triggers exception`()
     {
-        class NoDataClass( override val type: DataType ) : Measure()
+        class NoDataClass(
+            @Serializable( with = DataTypeSerializer::class )
+            override val type: DataType ) : Measure()
 
         assertFailsWith<InvalidConfigurationError>
         {

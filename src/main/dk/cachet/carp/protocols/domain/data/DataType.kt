@@ -6,7 +6,7 @@ import dk.cachet.carp.protocols.domain.serialization.UnknownPolymorphicSerialize
 import kotlinx.serialization.*
 
 
-object DataTypeSerializer : UnknownPolymorphicSerializer<DataType, CustomDataType>( CustomDataType::class )
+internal object DataTypeSerializer : UnknownPolymorphicSerializer<DataType, CustomDataType>( CustomDataType::class )
 {
     override fun createWrapper( className: String, json: String ): CustomDataType = CustomDataType( className, json )
 }

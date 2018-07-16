@@ -60,10 +60,15 @@ abstract class UnknownPolymorphicSerializer<P: Any, W: P>( wrapperClass: KClass<
             // Output raw JSON as originally wrapped.
             // TODO: This relies on reflection since no raw JSON can be output using KOutput.
             output.writeElement( serialClassDesc, 1 )
-            val composerField = output::class.members.first { m -> m.name == "w" }
+            val composerField = output::class.members.first { it.name == "w" }
             composerField.isAccessible = true
-            val composer = composerField.call( output ) as JSON.Composer
-            composer.print( obj.jsonSource )
+            val composer = composerField.call( output )!!
+            val printMethod = composer::class.members.first {
+                it.name == "print" &&
+                it.parameters.any { it.type.classifier == String::class }
+            }
+            printMethod.isAccessible = true
+            printMethod.call( composer, obj.jsonSource )
         }
         else
         {

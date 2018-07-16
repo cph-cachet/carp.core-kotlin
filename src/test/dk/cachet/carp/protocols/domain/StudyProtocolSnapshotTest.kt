@@ -91,7 +91,7 @@ class StudyProtocolSnapshotTest
         assertEquals( 1, parsed.connectedDevices.filter { m -> m is CustomDeviceDescriptor }.count() )
         assertEquals( 1, parsed.tasks.filter { m -> m is CustomTaskDescriptor }.count() )
         val allMeasures = parsed.tasks.flatMap{ t -> t.measures }
-        assertEquals( 1, allMeasures.filter { m -> m is CustomMeasure }.count() )
+        assertEquals( 2, allMeasures.filter { m -> m is CustomMeasure }.count() )
         assertEquals( 1, allMeasures.map { m -> m.type }.filter { t -> t is CustomDataType }.count() )
         assertEquals( 1, parsed.triggers.filter { t -> t.trigger is CustomTrigger }.count() )
     }
