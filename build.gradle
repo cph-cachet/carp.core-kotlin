@@ -1,0 +1,24 @@
+allprojects {
+    group = 'dk.cachet.carp.protocols'
+    version = '1.0.0-alpha.1'
+
+    ext.kotlinVersion = '1.2.61'
+    ext.serializationVersion = '0.6.1'
+
+    buildscript {
+        repositories {
+            jcenter()
+            maven { url 'https://kotlin.bintray.com/kotlinx' }
+        }
+
+        dependencies {
+            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+            classpath "org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:$serializationVersion"
+        }
+    }
+
+    repositories {
+        jcenter()
+        maven { url 'https://kotlin.bintray.com/kotlinx' }
+    }
+}
