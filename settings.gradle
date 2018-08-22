@@ -1,0 +1,3 @@
+rootProject.name = 'carp.protocols.core'
+
+include 'carp.protocols.core-common', 'carp.protocols.core-jvm', 'carp.protocols.core-js'
