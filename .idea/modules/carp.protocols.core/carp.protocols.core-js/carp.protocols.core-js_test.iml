@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="FacetManager">
+    <facet type="kotlin-language" name="Kotlin">
+      <configuration version="3" platform="JavaScript " useProjectSettings="false">
+        <implements>carp.protocols.core-common_test</implements>
+        <productionOutputPath>$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js/build/classes/kotlin/main/carp.protocols.core-js.js</productionOutputPath>
+        <testOutputPath>$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js/build/classes/kotlin/test/carp.protocols.core-js_test.js</testOutputPath>
+        <compilerSettings />
+        <compilerArguments>
+          <option name="outputFile" value="$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js/build/classes/kotlin/test/carp.protocols.core-js_test.js" />
+          <option name="noStdlib" value="true" />
+          <option name="sourceMap" value="true" />
+          <option name="sourceMapEmbedSources" value="always" />
+          <option name="metaInfo" value="true" />
+          <option name="target" value="v5" />
+          <option name="moduleKind" value="commonjs" />
+          <option name="main" value="call" />
+          <option name="languageVersion" value="1.2" />
+          <option name="apiVersion" value="1.2" />
+          <option name="pluginOptions">
+            <array />
+          </option>
+          <option name="pluginClasspaths">
+            <array>
+              <option value="$APPLICATION_PLUGINS_DIR$/Serialization/lib/kotlinx-serialization-compiler-plugin.jar" />
+            </array>
+          </option>
+          <option name="multiPlatform" value="true" />
+        </compilerArguments>
+      </configuration>
+    </facet>
+  </component>
+</module>

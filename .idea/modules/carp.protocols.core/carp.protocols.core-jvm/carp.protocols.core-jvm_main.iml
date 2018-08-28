@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="FacetManager">
+    <facet type="kotlin-language" name="Kotlin">
+      <configuration version="3" platform="JVM 1.8" useProjectSettings="false">
+        <implements>carp.protocols.core-common_main</implements>
+        <compilerSettings />
+        <compilerArguments>
+          <option name="destination" value="$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-jvm/build/classes/kotlin/main" />
+          <option name="noStdlib" value="true" />
+          <option name="noReflect" value="true" />
+          <option name="moduleName" value="carp.protocols.core-jvm" />
+          <option name="jvmTarget" value="1.8" />
+          <option name="addCompilerBuiltIns" value="true" />
+          <option name="loadBuiltInsFromDependencies" value="true" />
+          <option name="languageVersion" value="1.2" />
+          <option name="apiVersion" value="1.2" />
+          <option name="pluginOptions">
+            <array />
+          </option>
+          <option name="pluginClasspaths">
+            <array>
+              <option value="$APPLICATION_PLUGINS_DIR$/Serialization/lib/kotlinx-serialization-compiler-plugin.jar" />
+            </array>
+          </option>
+          <option name="multiPlatform" value="true" />
+        </compilerArguments>
+      </configuration>
+    </facet>
+  </component>
+</module>

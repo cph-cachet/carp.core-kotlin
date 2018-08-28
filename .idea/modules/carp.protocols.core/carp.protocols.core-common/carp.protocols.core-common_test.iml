@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="FacetManager">
+    <facet type="kotlin-language" name="Kotlin">
+      <configuration version="3" platform="Common (experimental) " useProjectSettings="false">
+        <compilerSettings />
+        <compilerArguments>
+          <option name="destination" value="$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-common/build/classes/kotlin/test" />
+          <option name="classpath" value="$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-common/build/classes/java/main;C:/src/carp.core-kotlin/carp.protocols.core/carp.protocols.core-common/build/classes/kotlin/main;C:/src/carp.core-kotlin/carp.protocols.core/carp.protocols.core-common/build/resources/main;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-serialization-runtime-common/0.6.1/c0be72b51766d946a8274d8add1ab0677845c666/kotlinx-serialization-runtime-common-0.6.1.jar;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-test-annotations-common/1.2.61/e0d1513c165e2a79411410c5814cbca7b1cb2b18/kotlin-test-annotations-common-1.2.61.jar;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-test-common/1.2.61/910be650486d0910f3d813927ff544c9414d2245/kotlin-test-common-1.2.61.jar;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-serialization-runtime-jsonparser/0.6.1/e56025f9408aafe454c1ba7953dae9dc76c70419/kotlinx-serialization-runtime-jsonparser-0.6.1.jar;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.2.61/772de03e12d932f489e41aef997d26c20a4ebee6/kotlin-stdlib-common-1.2.61.jar;C:/src/carp.core-kotlin/carp.protocols.core/carp.protocols.core-common/build/classes/kotlin/main" />
+          <option name="moduleName" value="carp.protocols.core-common" />
+          <option name="languageVersion" value="1.2" />
+          <option name="apiVersion" value="1.2" />
+          <option name="pluginOptions">
+            <array />
+          </option>
+          <option name="pluginClasspaths">
+            <array>
+              <option value="$APPLICATION_PLUGINS_DIR$/Serialization/lib/kotlinx-serialization-compiler-plugin.jar" />
+            </array>
+          </option>
+          <option name="multiPlatform" value="true" />
+        </compilerArguments>
+      </configuration>
+    </facet>
+  </component>
+</module>

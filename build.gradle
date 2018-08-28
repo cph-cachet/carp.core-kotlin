@@ -1,7 +1,4 @@
 allprojects {
-    group = 'dk.cachet.carp.protocols'
-    version = '1.0.0-alpha.1'
-
     ext.kotlinVersion = '1.2.61'
     ext.serializationVersion = '0.6.1'
 

@@ -1,3 +1,6 @@
+group = 'dk.cachet.carp.protocols'
+version = '1.0.0-alpha.1'
+
 buildscript {
     ext.dokka_version = '0.9.17'
 
@@ -19,7 +22,7 @@ sourceSets {
 }
 
 dependencies {
-    expectedBy project( ":carp.protocols.core-common" )
+    expectedBy project( ":carp.protocols.core:carp.protocols.core-common" )
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
@@ -72,13 +75,14 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             pom {
+                artifactId = 'carp.protocols.core'
                 name = 'Study Protocol Domain Model and Application Services'
                 description = 'A domain model and application services to specify study protocols which can be deployed to one or more stationary or mobile devices.'
-                url = 'https://github.com/cph-cachet/carp.protocols.core'
+                url = 'https://github.com/cph-cachet/carp.core-kotlin'
                 licenses {
                     license {
                         name = 'MIT License'
-                        url = 'https://github.com/cph-cachet/carp.protocols.core/blob/master/LICENSE.md'
+                        url = 'https://github.com/cph-cachet/carp.core-kotlin/blob/master/LICENSE.md'
                     }
                 }
                 developers {
@@ -91,9 +95,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection = 'scm:git:git://github.com/cph-cachet/carp.protocols.core.git'
-                    developerConnection = 'scm:git:ssh://github.com:cph-cachet/carp.protocols.core.git'
-                    url = 'https://github.com/cph-cachet/carp.protocols.core'
+                    connection = 'scm:git:git://github.com/cph-cachet/carp.core-kotlin.git'
+                    developerConnection = 'scm:git:ssh://github.com:cph-cachet/carp.core-kotlin.git'
+                    url = 'https://github.com/cph-cachet/carp.core-kotlin'
                 }
             }
 
