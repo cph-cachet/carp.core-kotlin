@@ -25,7 +25,7 @@ val json = protocol.getSnapshot().toJson()
 ```
 
 # Setting up using IntelliJ IDEA
-- Install Gradle 4.9 (e.g., [using Chocolatey on Windows](https://chocolatey.org/packages/gradle))
+- Install Gradle 4.10 (e.g., [using Chocolatey on Windows](https://chocolatey.org/packages/gradle))
 - Install the Kotlin plugin (1.2.61-release-IJ2018.2-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
 - Install the [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization#working-in-intellij-idea) IDE [plugin for the matching Kotlin version (0.6.1)](https://teamcity.jetbrains.com/viewLog.html?buildId=lastPinned&buildTypeId=KotlinTools_KotlinxSerialization_KotlinCompilerWithSerializationPlugin&tab=artifacts&guest=1)
 - Open project in IntelliJ (`File->Open`) by selecting the `build.gradle` file in the root directory and point to local gradle distribution in the wizard which appears (this can be changed after in `Settings->Build, Execution, Deployment->Build Tools->Gradle`)
@@ -45,7 +45,7 @@ For `carp.core-kotlin`:
 - **build**: Builds the full project, for both runtimes.
 
 For `:carp.protocols.core:carp.protocols.core-jvm`:
-- **test**: Test compiled Java classes using JUnit.
+- **cleanTest test**: Test compiled Java classes using JUnit. `cleanTest` is optional to ensure test results always show up in IntelliJ; when tasks haven't changed it otherwise lists "Test events were not received".
 - **publishSigned**: Prepare all jars to be published to Maven. This includes documentation, sources, and signing.
 
 For `:carp.protocols.core:carp.protocols.core-js`:

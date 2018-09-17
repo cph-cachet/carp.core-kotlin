@@ -2,10 +2,12 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="carp.core-kotlin.carp.protocols.core-carp.protocols.core-carp.protocols.core_main" target="1.8" />
-      <module name="carp.core-kotlin.carp.protocols.core-carp.protocols.core-carp.protocols.core_test" target="1.8" />
-      <module name="carp.protocols.core-carp.protocols.core_main" target="1.8" />
-      <module name="carp.protocols.core-carp.protocols.core_test" target="1.8" />
+      <module name="carp.protocols.core-common_main" target="1.8" />
+      <module name="carp.protocols.core-common_test" target="1.8" />
+      <module name="carp.protocols.core-js_main" target="1.8" />
+      <module name="carp.protocols.core-js_test" target="1.8" />
+      <module name="carp.protocols.core-jvm_main" target="1.8" />
+      <module name="carp.protocols.core-jvm_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

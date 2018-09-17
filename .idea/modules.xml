@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/carp.core-kotlin.iml" filepath="$PROJECT_DIR$/carp.core-kotlin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core.iml" group="carp.protocols.core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-common/carp.protocols.core-common.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-common/carp.protocols.core-common.iml" group="carp.protocols.core/carp.protocols.core-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-common/carp.protocols.core-common_main.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-common/carp.protocols.core-common_main.iml" group="carp.protocols.core/carp.protocols.core-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-common/carp.protocols.core-common_test.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-common/carp.protocols.core-common_test.iml" group="carp.protocols.core/carp.protocols.core-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-js/carp.protocols.core-js.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-js/carp.protocols.core-js.iml" group="carp.protocols.core/carp.protocols.core-js" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-js/carp.protocols.core-js_main.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-js/carp.protocols.core-js_main.iml" group="carp.protocols.core/carp.protocols.core-js" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-js/carp.protocols.core-js_test.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-js/carp.protocols.core-js_test.iml" group="carp.protocols.core/carp.protocols.core-js" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-jvm/carp.protocols.core-jvm.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-jvm/carp.protocols.core-jvm.iml" group="carp.protocols.core/carp.protocols.core-jvm" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-jvm/carp.protocols.core-jvm_main.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-jvm/carp.protocols.core-jvm_main.iml" group="carp.protocols.core/carp.protocols.core-jvm" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-jvm/carp.protocols.core-jvm_test.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.protocols.core/carp.protocols.core-jvm/carp.protocols.core-jvm_test.iml" group="carp.protocols.core/carp.protocols.core-jvm" />
+    </modules>
+  </component>
+</project>

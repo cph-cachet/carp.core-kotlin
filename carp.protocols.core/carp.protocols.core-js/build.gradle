@@ -1,6 +1,3 @@
-group = 'dk.cachet.carp.protocols'
-version = '1.0.0-alpha.1'
-
 buildscript {
     ext.nodeVersion = '8.9.4'
 

@@ -1,0 +1,4 @@
+subprojects {
+    group = 'dk.cachet.carp.protocols'
+    version = '1.0.0-alpha.1'
+}
