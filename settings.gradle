@@ -1,3 +1,7 @@
 rootProject.name = 'carp.core-kotlin'
 
 include 'carp.protocols.core:carp.protocols.core-common', 'carp.protocols.core:carp.protocols.core-jvm', 'carp.protocols.core:carp.protocols.core-js'
+
+// Required to remove 'deprecated feature' warning due to changes in Maven publishing:
+// https://docs.gradle.org/4.8/userguide/publishing_maven.html#publishing_maven:deferred_configuration
+enableFeaturePreview('STABLE_PUBLISHING')
