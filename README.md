@@ -26,8 +26,8 @@ val json = protocol.getSnapshot().toJson()
 
 # Setting up using IntelliJ IDEA
 - Install Gradle 4.10 (e.g., [using Chocolatey on Windows](https://chocolatey.org/packages/gradle))
-- Install the Kotlin plugin (1.2.61-release-IJ2018.2-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
-- Install the [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization#working-in-intellij-idea) IDE [plugin for the matching Kotlin version (0.6.1)](https://teamcity.jetbrains.com/viewLog.html?buildId=lastPinned&buildTypeId=KotlinTools_KotlinxSerialization_KotlinCompilerWithSerializationPlugin&tab=artifacts&guest=1)
+- Install the Kotlin plugin (1.2.70-release-IJ2018.2-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Install the [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization#working-in-intellij-idea) IDE [plugin for the matching Kotlin version (0.6.2)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=KotlinTools_KotlinxSerialization_KotlinCompilerWithSerializationPlugin&branch_KotlinTools_KotlinxSerialization=1.2.70&tab=buildTypeStatusDiv)
 - Open project in IntelliJ (`File->Open`) by selecting the `build.gradle` file in the root directory and point to local gradle distribution in the wizard which appears (this can be changed after in `Settings->Build, Execution, Deployment->Build Tools->Gradle`)
 
 # Multiplatform
