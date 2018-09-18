@@ -6,7 +6,7 @@
         <compilerSettings />
         <compilerArguments>
           <option name="destination" value="$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-common/build/classes/kotlin/test" />
-          <option name="classpath" value="$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-common/build/classes/java/main;C:/src/carp.core-kotlin/carp.protocols.core/carp.protocols.core-common/build/classes/kotlin/main;C:/src/carp.core-kotlin/carp.protocols.core/carp.protocols.core-common/build/resources/main;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-serialization-runtime-common/0.6.1/c0be72b51766d946a8274d8add1ab0677845c666/kotlinx-serialization-runtime-common-0.6.1.jar;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-test-annotations-common/1.2.61/e0d1513c165e2a79411410c5814cbca7b1cb2b18/kotlin-test-annotations-common-1.2.61.jar;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-test-common/1.2.61/910be650486d0910f3d813927ff544c9414d2245/kotlin-test-common-1.2.61.jar;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-serialization-runtime-jsonparser/0.6.1/e56025f9408aafe454c1ba7953dae9dc76c70419/kotlinx-serialization-runtime-jsonparser-0.6.1.jar;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.2.61/772de03e12d932f489e41aef997d26c20a4ebee6/kotlin-stdlib-common-1.2.61.jar;C:/src/carp.core-kotlin/carp.protocols.core/carp.protocols.core-common/build/classes/kotlin/main" />
+          <option name="classpath" value="$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-common/build/classes/java/main;C:/src/carp.core-kotlin/carp.protocols.core/carp.protocols.core-common/build/classes/kotlin/main;C:/src/carp.core-kotlin/carp.protocols.core/carp.protocols.core-common/build/resources/main;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-serialization-runtime-common/0.6.2/3248111c2e1fc8166d987623fd4eb8f313ae43a/kotlinx-serialization-runtime-common-0.6.2.jar;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-test-annotations-common/1.2.70/eaa059fc51e71baa429516219764831cad30e6cf/kotlin-test-annotations-common-1.2.70.jar;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-test-common/1.2.70/c0afa54c2265748dc48ed4699d70a01ce8fe0ef6/kotlin-test-common-1.2.70.jar;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-serialization-runtime-jsonparser/0.6.2/20dd81c4a4195cfa6b3d290496654cbd664cb092/kotlinx-serialization-runtime-jsonparser-0.6.2.jar;C:/Users/steve/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.2.70/6ea722d7d0b9451293e739076ddb6a4108d57b6b/kotlin-stdlib-common-1.2.70.jar;C:/src/carp.core-kotlin/carp.protocols.core/carp.protocols.core-common/build/classes/kotlin/main" />
           <option name="moduleName" value="carp.protocols.core-common" />
           <option name="languageVersion" value="1.2" />
           <option name="apiVersion" value="1.2" />
@@ -27,16 +27,16 @@
     <output-test url="file://$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-common/out/test/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-common/src/test">
-      <sourceFolder url="file://$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-common/src/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-common/src/test" type="kotlin-test" />
     </content>
     <orderEntry type="jdk" jdkName="Kotlin SDK" jdkType="KotlinSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="carp.protocols.core-common_main" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.6.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test-annotations-common:1.2.61" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test-common:1.2.61" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-jsonparser:0.6.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.2.61" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.6.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test-annotations-common:1.2.70" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test-common:1.2.70" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-jsonparser:0.6.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.2.70" level="project" />
   </component>
   <component name="TestModuleProperties" production-module="carp.protocols.core-common_main" />
 </module>
