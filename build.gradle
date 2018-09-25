@@ -1,3 +1,4 @@
+// Common configuration for all projects.
 allprojects {
     ext.kotlinVersion = '1.2.71'
     ext.serializationVersion = '0.6.2'
@@ -17,5 +18,34 @@ allprojects {
     repositories {
         jcenter()
         maven { url 'https://kotlin.bintray.com/kotlinx' }
+    }
+}
+
+
+// Common configuration for all JavaScript modules of the multiplatform projects.
+configure( subprojects.findAll { it.name.endsWith( '-js' ) } ) {
+    buildscript {
+        ext.nodeVersion = '8.9.4'
+
+        repositories {
+            maven { url "https://plugins.gradle.org/m2/" }
+        }
+
+        dependencies {
+            classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
+        }
+    }
+}
+
+
+// Common configuration for all JVM modules of the multiplatform projects.
+configure( subprojects.findAll { it.name.endsWith( '-jvm' ) } ) {
+    ext.jvmTarget = '1.8'
+    ext.junitVersion = '5.3.1'
+
+    buildscript {
+        dependencies {
+            classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
+        }
     }
 }

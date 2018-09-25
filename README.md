@@ -1,7 +1,7 @@
 # Domain Model and Application Service Definitions for all CARP Subsystems
 This project is part of the [CACHET Research Platform (CARP)](https://github.com/cph-cachet/carp.documentation). It contains all domain models and application services [for all CARP subsystems](https://github.com/cph-cachet/carp.documentation/wiki/Repository-design-overview). These represent an open standard and may not have any dependencies on concrete infrastructure.
 
-Currently this project is under development and only contains an initial unstable alpha version of the domain model and applications services of the `carp.protocols` subsystem. Many changes will happen as the rest of the infrastructure is implemented. Once a minimum viable product is completed, a first version will be released and more documentation will be added. 
+Currently this project is under development and only contains an initial unstable alpha version of the domain model and applications services of the `carp.protocols` subsystem, and placeholders for `carp.studies` and `carp.deployment`. Many changes will happen as the rest of the infrastructure is implemented. Once a minimum viable product is completed, a first version will be released and more documentation will be added. 
 
 ## carp.protocols
 
@@ -23,6 +23,14 @@ protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 // JSON output of the study protocol, compatible with the rest of the CARP infrastructure.
 val json = protocol.getSnapshot().toJson()
 ```
+
+## carp.studies
+
+Manage the recruitment for and lifetime of study deployments, instantiated using a study protocol from `carp.protocols`.
+
+## carp.deployment
+
+A deployment contains common concerns to 'running' a study, i.e., instantiating a study protocol with a specific set of devices and users as specified in the study protocol. A deployment is responsible for managing registration of participant consent, tracking device connection issues, assessing data quality, and negotiating the connection between separate devices.
 
 # Setting up using IntelliJ IDEA
 - Install Gradle 4.10 (e.g., [using Chocolatey on Windows](https://chocolatey.org/packages/gradle))

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id=":carp.protocols.core:carp.protocols.core-js:test" external.linked.project.path="$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js" external.root.project.path="$MODULE_DIR$/../../../.." external.system.id="GRADLE" external.system.module.group="dk.cachet.carp.protocols" external.system.module.type="sourceSet" external.system.module.version="1.0.0-alpha.1" type="JAVA_MODULE" version="4">
+<module external.linked.project.id=":carp.deployment.core:carp.deployment.core-js:test" external.linked.project.path="$MODULE_DIR$/../../../../carp.deployment.core/carp.deployment.core-js" external.root.project.path="$MODULE_DIR$/../../../.." external.system.id="GRADLE" external.system.module.group="carp.core-kotlin.carp.deployment.core" external.system.module.type="sourceSet" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
       <configuration version="3" platform="JavaScript " useProjectSettings="false">
-        <implements>carp.protocols.core-common_test</implements>
-        <productionOutputPath>$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js/build/classes/kotlin/main/carp.protocols.core-js.js</productionOutputPath>
-        <testOutputPath>$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js/build/classes/kotlin/test/carp.protocols.core-js_test.js</testOutputPath>
+        <implements>carp.deployment.core-common_test</implements>
+        <productionOutputPath>$MODULE_DIR$/../../../../carp.deployment.core/carp.deployment.core-js/build/classes/kotlin/main/carp.deployment.core-js.js</productionOutputPath>
+        <testOutputPath>$MODULE_DIR$/../../../../carp.deployment.core/carp.deployment.core-js/build/classes/kotlin/test/carp.deployment.core-js_test.js</testOutputPath>
         <compilerSettings />
         <compilerArguments>
-          <option name="outputFile" value="$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js/build/classes/kotlin/test/carp.protocols.core-js_test.js" />
+          <option name="outputFile" value="$MODULE_DIR$/../../../../carp.deployment.core/carp.deployment.core-js/build/classes/kotlin/test/carp.deployment.core-js_test.js" />
           <option name="noStdlib" value="true" />
           <option name="sourceMap" value="true" />
           <option name="sourceMapEmbedSources" value="always" />
@@ -32,17 +32,17 @@
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
-    <output-test url="file://$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js/out/test/classes" />
+    <output-test url="file://$MODULE_DIR$/../../../../carp.deployment.core/carp.deployment.core-js/out/test/classes" />
     <exclude-output />
-    <content url="file://$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js/src/test">
-      <sourceFolder url="file://$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js/src/test" type="kotlin-test" />
+    <content url="file://$MODULE_DIR$/../../../../carp.deployment.core/carp.deployment.core-js/src/test">
+      <sourceFolder url="file://$MODULE_DIR$/../../../../carp.deployment.core/carp.deployment.core-js/src/test" type="kotlin-test" />
     </content>
     <orderEntry type="jdk" jdkName="Kotlin SDK" jdkType="KotlinSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="carp.protocols.core-common_test" production-on-test="" />
-    <orderEntry type="module" module-name="carp.protocols.core-common_main" />
-    <orderEntry type="module" module-name="carp.protocols.core-js_main" />
-    <orderEntry type="module" module-name="carp.protocols.core-common_main" />
+    <orderEntry type="module" module-name="carp.deployment.core-common_test" production-on-test="" />
+    <orderEntry type="module" module-name="carp.deployment.core-common_main" />
+    <orderEntry type="module" module-name="carp.deployment.core-js_main" />
+    <orderEntry type="module" module-name="carp.deployment.core-common_main" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.6.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test-js:1.2.71" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-js:1.2.71" level="project" />
@@ -52,5 +52,5 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test-annotations-common:1.2.71" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.2.71" level="project" />
   </component>
-  <component name="TestModuleProperties" production-module="carp.protocols.core-js_main" />
+  <component name="TestModuleProperties" production-module="carp.deployment.core-js_main" />
 </module>
