@@ -12,19 +12,27 @@ internal abstract class BaseClass
 @KSerializable
 internal class A( val a: String = "a" ) : BaseClass()
 {
-    init { MultiplatformPolymorphicSerializer.registerSerializer( A::class, "dk.cachet.carp.protocols.domain.serialization.A" ) }
+    companion object {
+        init { PolymorphicSerializer.registerSerializer( A::class, "dk.cachet.carp.protocols.domain.serialization.A" ) }
+    }
 }
 @KSerializable
 internal class B( val b: String = "b" ) : BaseClass()
 {
-    init { MultiplatformPolymorphicSerializer.registerSerializer( B::class, "dk.cachet.carp.protocols.domain.serialization.B" ) }
+    companion object {
+        init { PolymorphicSerializer.registerSerializer( B::class, "dk.cachet.carp.protocols.domain.serialization   .B" ) }
+    }
 }
 @KSerializable
 internal class Composite(
+    @KSerializable( PolymorphicArrayListSerializer::class )
     val objects: List<BaseClass> )
 
 
-class MultiplatformPolymorphicSerializerTest
+/**
+ * Tests for [PolymorphicSerializer].
+ */
+class PolymorphicSerializerTest
 {
     @Test
     fun can_serialize_polymorph_object()
