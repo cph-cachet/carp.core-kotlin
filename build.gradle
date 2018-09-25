@@ -1,5 +1,5 @@
 allprojects {
-    ext.kotlinVersion = '1.2.70'
+    ext.kotlinVersion = '1.2.71'
     ext.serializationVersion = '0.6.2'
 
     buildscript {
