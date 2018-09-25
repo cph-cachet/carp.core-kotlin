@@ -40,7 +40,6 @@
     <orderEntry type="jdk" jdkName="Kotlin SDK" jdkType="KotlinSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="carp.studies.core-common_test" production-on-test="" />
-    <orderEntry type="module" module-name="carp.studies.core-common_main" />
     <orderEntry type="module" module-name="carp.studies.core-js_main" />
     <orderEntry type="module" module-name="carp.studies.core-common_main" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.6.2" level="project" />
