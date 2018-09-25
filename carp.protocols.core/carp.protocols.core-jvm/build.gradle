@@ -1,11 +1,3 @@
-buildscript {
-    ext.dokka_version = '0.9.17'
-
-    dependencies {
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
-    }
-}
-
 apply plugin: 'kotlin-platform-jvm'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'org.jetbrains.dokka'
@@ -28,8 +20,8 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 }
 
 test {
@@ -37,12 +29,12 @@ test {
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = jvmTarget
 }
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = jvmTarget
 }
-sourceCompatibility = "1.8"
+sourceCompatibility = jvmTarget
 
 
 // Create a javadoc .jar.

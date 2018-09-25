@@ -2,12 +2,24 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="carp.deployment.core-common_main" target="1.8" />
+      <module name="carp.deployment.core-common_test" target="1.8" />
+      <module name="carp.deployment.core-js_main" target="1.8" />
+      <module name="carp.deployment.core-js_test" target="1.8" />
+      <module name="carp.deployment.core-jvm_main" target="1.8" />
+      <module name="carp.deployment.core-jvm_test" target="1.8" />
       <module name="carp.protocols.core-common_main" target="1.8" />
       <module name="carp.protocols.core-common_test" target="1.8" />
       <module name="carp.protocols.core-js_main" target="1.8" />
       <module name="carp.protocols.core-js_test" target="1.8" />
       <module name="carp.protocols.core-jvm_main" target="1.8" />
       <module name="carp.protocols.core-jvm_test" target="1.8" />
+      <module name="carp.studies.core-common_main" target="1.8" />
+      <module name="carp.studies.core-common_test" target="1.8" />
+      <module name="carp.studies.core-js_main" target="1.8" />
+      <module name="carp.studies.core-js_test" target="1.8" />
+      <module name="carp.studies.core-jvm_main" target="1.8" />
+      <module name="carp.studies.core-jvm_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
