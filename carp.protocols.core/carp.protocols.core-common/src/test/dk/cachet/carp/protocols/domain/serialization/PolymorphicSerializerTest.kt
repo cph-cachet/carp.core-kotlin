@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain.serialization
 
+import kotlinx.serialization.Transient
 import kotlinx.serialization.Serializable as KSerializable
 import kotlinx.serialization.json.JSON
 import kotlin.test.*
@@ -10,6 +11,9 @@ import kotlin.test.*
 
 @KSerializable
 internal abstract class BaseClass
+{
+    val baseField: Boolean = true
+}
 @KSerializable
 internal class A( val a: String = "a" ) : BaseClass()
 {
@@ -34,18 +38,22 @@ internal class Unregistered : BaseClass()
 internal class PolymorphicList(
     @KSerializable( PolymorphicArrayListSerializer::class )
     val objects: List<BaseClass> )
+
+
+@KSerializable
 internal abstract class AbstractTopClass
 {
+    @Transient
     abstract val nested: List<AbstractNested>
 }
-
-
 @KSerializable
 internal class TopClass(
     @KSerializable( PolymorphicArrayListSerializer::class )
     override val nested: List<AbstractNested> ) : AbstractTopClass()
+@KSerializable
 internal abstract class AbstractNested
 {
+    @Transient
     abstract val field: BaseClass
 }
 @KSerializable
@@ -72,7 +80,7 @@ class PolymorphicSerializerTest
         val aJson = JSON.stringify( PolymorphicSerializer, a )
 
         assertEquals(
-            """["dk.cachet.carp.protocols.domain.serialization.A",{"a":"a"}]""",
+            """["dk.cachet.carp.protocols.domain.serialization.A",{"baseField":true,"a":"a"}]""",
             aJson )
     }
 
@@ -84,6 +92,7 @@ class PolymorphicSerializerTest
         val aParsed = JSON.parse( PolymorphicSerializer, aJson ) as BaseClass
 
         assertTrue { aParsed is A }
+        assertTrue { aParsed.baseField }
     }
 
     @Test
