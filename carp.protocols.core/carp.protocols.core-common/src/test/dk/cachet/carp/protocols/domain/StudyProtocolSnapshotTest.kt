@@ -131,16 +131,16 @@ class StudyProtocolSnapshotTest
     @Test
     fun order_of_elements_in_snapshot_does_not_matter_for_equality_or_hashcode()
     {
-        val masterDevices = arrayOf<MasterDeviceDescriptor>( StubMasterDeviceDescriptor( "M1" ), StubMasterDeviceDescriptor( "M2" ))
-        val connectedDevices = arrayOf<DeviceDescriptor>( StubDeviceDescriptor( "C1" ), StubDeviceDescriptor( "C2" ))
-        val connections = arrayOf(
+        val masterDevices = listOf<MasterDeviceDescriptor>( StubMasterDeviceDescriptor( "M1" ), StubMasterDeviceDescriptor( "M2" ))
+        val connectedDevices = listOf<DeviceDescriptor>( StubDeviceDescriptor( "C1" ), StubDeviceDescriptor( "C2" ))
+        val connections = listOf(
             StudyProtocolSnapshot.DeviceConnection("C1", "M1" ),
             StudyProtocolSnapshot.DeviceConnection( "C2", "M2" ) )
-        val tasks = arrayOf<TaskDescriptor>( StubTaskDescriptor( "T1" ), StubTaskDescriptor( "T2" ) )
-        val triggers = arrayOf(
+        val tasks = listOf<TaskDescriptor>( StubTaskDescriptor( "T1" ), StubTaskDescriptor( "T2" ) )
+        val triggers = listOf(
             StudyProtocolSnapshot.TriggerWithId( 0, StubTrigger( masterDevices[ 0 ] ) ),
             StudyProtocolSnapshot.TriggerWithId( 1, StubTrigger( masterDevices[ 1 ] ) ) )
-        val triggeredTasks = arrayOf(
+        val triggeredTasks = listOf(
             StudyProtocolSnapshot.TriggeredTask( 0, "T1", "C1" ),
             StudyProtocolSnapshot.TriggeredTask( 1, "T2", "C2" )
         )
@@ -151,8 +151,8 @@ class StudyProtocolSnapshotTest
             tasks, triggers, triggeredTasks )
         val reorganizedSnapshot = StudyProtocolSnapshot(
             "Owner", "Study",
-            masterDevices.reversed().toTypedArray(), connectedDevices.reversed().toTypedArray(), connections.reversed().toTypedArray(),
-            tasks.reversed().toTypedArray(), triggers.reversed().toTypedArray(), triggeredTasks.reversed().toTypedArray() )
+            masterDevices.reversed(), connectedDevices.reversed(), connections.reversed(),
+            tasks.reversed(), triggers.reversed(), triggeredTasks.reversed() )
 
         assertTrue( snapshot == reorganizedSnapshot )
         assertTrue( snapshot.hashCode() == reorganizedSnapshot.hashCode() )

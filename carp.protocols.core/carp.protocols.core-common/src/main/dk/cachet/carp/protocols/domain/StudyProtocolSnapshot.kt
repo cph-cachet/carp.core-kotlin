@@ -5,19 +5,16 @@ import dk.cachet.carp.protocols.domain.serialization.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.internal.ArrayListSerializer
 import kotlinx.serialization.internal.ReferenceArraySerializer
 import kotlinx.serialization.json.*
 
 
 // Custom serializers for StudyProtocolSnapshot which enable deserializing types that are unknown at runtime, yet extend from a known base type.
-private object MasterDevicesSerializer : KSerializer<Array<MasterDeviceDescriptor>> by ReferenceArraySerializer<MasterDeviceDescriptor, MasterDeviceDescriptor>(
-    MasterDeviceDescriptor::class,
+private object MasterDevicesSerializer : KSerializer<List<MasterDeviceDescriptor>> by ArrayListSerializer<MasterDeviceDescriptor>(
     createUnknownPolymorphicSerializer { className, json -> CustomMasterDeviceDescriptor( className, json ) }
 )
-private object DevicesSerializer : KSerializer<Array<DeviceDescriptor>> by ReferenceArraySerializer(
-    DeviceDescriptor::class,
-    DeviceDescriptorSerializer
-)
+private object DevicesSerializer : KSerializer<List<DeviceDescriptor>> by ArrayListSerializer( DeviceDescriptorSerializer )
 private object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescriptor, DeviceDescriptor>( DeviceDescriptor::class, false )
 {
     override fun createWrapper( className: String, json: String ): DeviceDescriptor
@@ -30,8 +27,7 @@ private object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceD
             else CustomDeviceDescriptor( className, json )
     }
 }
-private object TasksSerializer : KSerializer<Array<TaskDescriptor>> by ReferenceArraySerializer<TaskDescriptor, TaskDescriptor>(
-    TaskDescriptor::class,
+private object TasksSerializer : KSerializer<List<TaskDescriptor>> by ArrayListSerializer<TaskDescriptor>(
     createUnknownPolymorphicSerializer { className, json -> CustomTaskDescriptor( className, json ) }
 )
 private object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, CustomTrigger>( CustomTrigger::class )
@@ -51,14 +47,14 @@ data class StudyProtocolSnapshot(
     val ownerId: String,
     val name: String,
     @SerializableWith( MasterDevicesSerializer::class )
-    val masterDevices: Array<MasterDeviceDescriptor>,
+    val masterDevices: List<MasterDeviceDescriptor>,
     @SerializableWith( DevicesSerializer::class )
-    val connectedDevices: Array<DeviceDescriptor>,
-    val connections: Array<DeviceConnection>,
+    val connectedDevices: List<DeviceDescriptor>,
+    val connections: List<DeviceConnection>,
     @SerializableWith( TasksSerializer::class )
-    val tasks: Array<TaskDescriptor>,
-    val triggers: Array<TriggerWithId>,
-    val triggeredTasks: Array<TriggeredTask> )
+    val tasks: List<TaskDescriptor>,
+    val triggers: List<TriggerWithId>,
+    val triggeredTasks: List<TriggeredTask> )
 {
     @Serializable
     data class DeviceConnection( val roleName: String, val connectedToRoleName: String )
@@ -83,19 +79,19 @@ data class StudyProtocolSnapshot(
         {
             // Uniquely identify each trigger.
             var curTriggerId = 0
-            val triggers = protocol.triggers.map { TriggerWithId( curTriggerId++, it ) }.toTypedArray()
+            val triggers = protocol.triggers.map { TriggerWithId( curTriggerId++, it ) }.toList()
 
             return StudyProtocolSnapshot(
                 ownerId = protocol.owner.id.toString(),
                 name = protocol.name,
-                masterDevices = protocol.masterDevices.toTypedArray(),
-                connectedDevices = protocol.devices.minus( protocol.masterDevices ).toTypedArray(),
-                connections = protocol.masterDevices.flatMap { getConnections( protocol, it ) }.toTypedArray(),
-                tasks = protocol.tasks.toTypedArray(),
+                masterDevices = protocol.masterDevices.toList(),
+                connectedDevices = protocol.devices.minus( protocol.masterDevices ).toList(),
+                connections = protocol.masterDevices.flatMap { getConnections( protocol, it ) }.toList(),
+                tasks = protocol.tasks.toList(),
                 triggers = triggers,
                 triggeredTasks = triggers
                     .flatMap { idTrigger -> protocol.getTriggeredTasks( idTrigger.trigger ).map { Pair( idTrigger, it ) } }
-                    .map { (idTrigger, taskInfo) -> TriggeredTask( idTrigger.id, taskInfo.task.name, taskInfo.device.roleName ) }.toTypedArray()
+                    .map { (idTrigger, taskInfo) -> TriggeredTask( idTrigger.id, taskInfo.task.name, taskInfo.device.roleName ) }.toList()
             )
         }
 
@@ -143,17 +139,17 @@ data class StudyProtocolSnapshot(
         if ( ownerId != other.ownerId ) return false
         if ( name != other.name ) return false
 
-        if ( !arrayEquals( masterDevices, other.masterDevices ) ) return false
-        if ( !arrayEquals( connectedDevices, other.connectedDevices ) ) return false
-        if ( !arrayEquals( connections, other.connections ) ) return false
-        if ( !arrayEquals( tasks, other.tasks ) ) return false
-        if ( !arrayEquals( triggers, other.triggers ) ) return false
-        if ( !arrayEquals( triggeredTasks, other.triggeredTasks ) ) return false
+        if ( !listEquals( masterDevices, other.masterDevices ) ) return false
+        if ( !listEquals( connectedDevices, other.connectedDevices ) ) return false
+        if ( !listEquals( connections, other.connections ) ) return false
+        if ( !listEquals( tasks, other.tasks ) ) return false
+        if ( !listEquals( triggers, other.triggers ) ) return false
+        if ( !listEquals( triggeredTasks, other.triggeredTasks ) ) return false
 
         return true
     }
 
-    private fun <T> arrayEquals( a1: Array<T>, a2: Array<T> ): Boolean
+    private fun <T> listEquals( a1: List<T>, a2: List<T> ): Boolean
     {
         val count = a1.count()
         return count == a2.count() && a1.intersect( a2.toList() ).count() == count
