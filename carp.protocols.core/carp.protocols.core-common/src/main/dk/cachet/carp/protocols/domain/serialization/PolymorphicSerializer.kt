@@ -50,11 +50,21 @@ object PolymorphicSerializer : KSerializer<Any>
 
     private fun getSerializerBySimpleClassName( className: String ): KSerializer<Any>
     {
+        if ( !simpleNameSerializers.containsKey( className ) )
+        {
+            throw NoSuchElementException( "No polymorphic serializer is registered for the class '$className'." )
+        }
+
         return simpleNameSerializers[ className ]!!
     }
 
     private fun getSerializerByQualifiedName( qualifiedName: String ): KSerializer<Any>
     {
+        if ( !qualifiedSerializers.containsKey( qualifiedName ) )
+        {
+            throw NoSuchElementException( "No polymorphic serializer is registered with the qualified name '$qualifiedName'." )
+        }
+
         return qualifiedSerializers[ qualifiedName ]!!
     }
 
