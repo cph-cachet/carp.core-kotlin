@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
+import dk.cachet.carp.protocols.domain.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -8,3 +9,9 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Smartphone( override val roleName: String ) : MasterDeviceDescriptor()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( Smartphone::class, "dk.cachet.carp.protocols.domain.devices.Smartphone" ) }
+    }
+}

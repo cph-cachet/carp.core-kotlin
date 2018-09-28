@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain.data
 
+import dk.cachet.carp.protocols.domain.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -9,3 +10,9 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class StepCountDataType( override val category: DataCategory = DataCategory.Movement ) : DataType()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( StepCountDataType::class, "dk.cachet.carp.protocols.domain.data.StepCountDataType" ) }
+    }
+}

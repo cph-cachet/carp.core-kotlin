@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.domain
 import dk.cachet.carp.protocols.domain.common.UUID
 import dk.cachet.carp.protocols.domain.data.*
 import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.serialization.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.tasks.measures.*
@@ -52,11 +53,19 @@ internal data class UnknownDeviceDescriptor( override val roleName: String ) : D
 @Serializable
 internal data class UnknownTaskDescriptor(
     override val name: String,
+    @Serializable( PolymorphicArrayListSerializer::class )
     override val measures: List<Measure> ) : TaskDescriptor()
 
 @Serializable
 internal data class UnknownMeasure(
+    @Serializable( PolymorphicSerializer::class )
     override val type: DataType ) : Measure()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( UnknownMeasure::class, "dk.cachet.carp.protocols.domain.UnknownMeasure" ) }
+    }
+}
 
 @Serializable
 internal data class UnknownDataType( override val category: DataCategory = DataCategory.Other ) : DataType()

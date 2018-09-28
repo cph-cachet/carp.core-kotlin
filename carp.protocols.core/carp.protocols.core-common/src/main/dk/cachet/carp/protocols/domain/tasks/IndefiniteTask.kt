@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain.tasks
 
+import dk.cachet.carp.protocols.domain.serialization.PolymorphicSerializer
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import kotlinx.serialization.Serializable
 
@@ -12,3 +13,9 @@ data class IndefiniteTask(
     override val name: String,
     @Serializable( MeasuresSerializer::class )
     override val measures: List<Measure> ) : TaskDescriptor()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( IndefiniteTask::class, "dk.cachet.carp.protocols.domain.tasks.IndefiniteTask" ) }
+    }
+}

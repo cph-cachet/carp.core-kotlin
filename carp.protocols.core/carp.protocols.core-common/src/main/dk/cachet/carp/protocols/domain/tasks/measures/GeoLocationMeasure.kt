@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.protocols.domain.data.*
+import dk.cachet.carp.protocols.domain.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -8,4 +9,12 @@ import kotlinx.serialization.Serializable
  * Measure the geographic location (longitude and latitude) as determined by the device this measure is requested on.
  */
 @Serializable
-data class GeoLocationMeasure( override val type: DataType = GeoLocationDataType() ) : DataStreamMeasure()
+data class GeoLocationMeasure(
+    @Serializable( PolymorphicSerializer::class )
+    override val type: DataType = GeoLocationDataType() ) : DataStreamMeasure()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( GeoLocationMeasure::class, "dk.cachet.carp.protocols.domain.tasks.measures.GeoLocationMeasure" ) }
+    }
+}
