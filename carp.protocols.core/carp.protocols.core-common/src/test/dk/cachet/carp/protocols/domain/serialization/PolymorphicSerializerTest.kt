@@ -5,73 +5,35 @@ import kotlinx.serialization.json.JSON
 import kotlin.test.*
 
 
-// TODO: Currently, the following test classes can't be nested classes due to a limitation in PolymorphicSerializer:
-//       https://github.com/Kotlin/kotlinx.serialization/issues/127
-
-@Serializable
-internal abstract class BaseClass
-{
-    val baseField: Boolean = true
-}
-@Serializable
-internal class A( val a: String = "a" ) : BaseClass()
-{
-    companion object
-    {
-        init { PolymorphicSerializer.registerSerializer( A::class, "dk.cachet.carp.protocols.domain.serialization.A" ) }
-    }
-}
-@Serializable
-internal class B( val b: String = "b" ) : BaseClass()
-{
-    companion object
-    {
-        init { PolymorphicSerializer.registerSerializer( B::class, "dk.cachet.carp.protocols.domain.serialization.B" ) }
-    }
-}
-@Serializable
-internal class Unregistered : BaseClass()
-
-
-@Serializable
-internal class PolymorphicList(
-    @Serializable( PolymorphicArrayListSerializer::class )
-    val objects: List<BaseClass> )
-
-
-@Serializable
-internal abstract class AbstractTopClass
-{
-    @Transient
-    abstract val nested: List<AbstractNested>
-}
-@Serializable
-internal class TopClass(
-    @Serializable( PolymorphicArrayListSerializer::class )
-    override val nested: List<AbstractNested> ) : AbstractTopClass()
-@Serializable
-internal abstract class AbstractNested
-{
-    @Transient
-    abstract val field: BaseClass
-}
-@Serializable
-internal class Nested(
-    @Serializable( PolymorphicSerializer::class )
-    override val field: BaseClass ) : AbstractNested()
-{
-    companion object
-    {
-        init { PolymorphicSerializer.registerSerializer( Nested::class, "dk.cachet.carp.protocols.domain.serialization.Nested" ) }
-    }
-}
-
-
 /**
  * Tests for [PolymorphicSerializer].
  */
 class PolymorphicSerializerTest
 {
+    @Serializable
+    internal abstract class BaseClass
+    {
+        val baseField: Boolean = true
+    }
+    @Serializable
+    internal class A( val a: String = "a" ) : BaseClass()
+    {
+        companion object
+        {
+            init { PolymorphicSerializer.registerSerializer( A::class, "dk.cachet.carp.protocols.domain.serialization.PolymorphicSerializerTest.A" ) }
+        }
+    }
+    @Serializable
+    internal class B( val b: String = "b" ) : BaseClass()
+    {
+        companion object
+        {
+            init { PolymorphicSerializer.registerSerializer( B::class, "dk.cachet.carp.protocols.domain.serialization.PolymorphicSerializerTest.B" ) }
+        }
+    }
+    @Serializable
+    internal class Unregistered : BaseClass()
+
     @Test
     fun can_serialize_polymorph_object()
     {
@@ -79,7 +41,7 @@ class PolymorphicSerializerTest
         val aJson = JSON.stringify( PolymorphicSerializer, a )
 
         assertEquals(
-            """["dk.cachet.carp.protocols.domain.serialization.A",{"baseField":true,"a":"a"}]""",
+            """["dk.cachet.carp.protocols.domain.serialization.PolymorphicSerializerTest.A",{"baseField":true,"a":"a"}]""",
             aJson )
     }
 
@@ -105,6 +67,12 @@ class PolymorphicSerializerTest
         }
     }
 
+
+    @Serializable
+    internal class PolymorphicList(
+            @Serializable( PolymorphicArrayListSerializer::class )
+            val objects: List<BaseClass> )
+
     @Test
     fun can_serialize_and_deserialize_polymorph_list()
     {
@@ -115,6 +83,34 @@ class PolymorphicSerializerTest
         assertEquals( 2, parsed.objects.count() )
         assertTrue { parsed.objects[ 0 ] is A }
         assertTrue { parsed.objects[ 1 ] is B }
+    }
+
+
+    @Serializable
+    internal abstract class AbstractTopClass
+    {
+        @Transient
+        abstract val nested: List<AbstractNested>
+    }
+    @Serializable
+    internal class TopClass(
+            @Serializable( PolymorphicArrayListSerializer::class )
+            override val nested: List<AbstractNested> ) : AbstractTopClass()
+    @Serializable
+    internal abstract class AbstractNested
+    {
+        @Transient
+        abstract val field: BaseClass
+    }
+    @Serializable
+    internal class Nested(
+            @Serializable( PolymorphicSerializer::class )
+            override val field: BaseClass ) : AbstractNested()
+    {
+        companion object
+        {
+            init { PolymorphicSerializer.registerSerializer( Nested::class, "dk.cachet.carp.protocols.domain.serialization.PolymorphicSerializerTest.Nested" ) }
+        }
     }
 
     @Test
