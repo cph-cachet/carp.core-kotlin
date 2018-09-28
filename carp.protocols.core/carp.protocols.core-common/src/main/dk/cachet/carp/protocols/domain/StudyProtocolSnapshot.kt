@@ -4,10 +4,9 @@ import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.serialization.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.internal.ArrayListSerializer
-import kotlinx.serialization.internal.ReferenceArraySerializer
 import kotlinx.serialization.json.*
+import kotlinx.serialization.*
 
 
 // Custom serializers for StudyProtocolSnapshot which enable deserializing types that are unknown at runtime, yet extend from a known base type.
@@ -46,12 +45,12 @@ private object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, CustomT
 data class StudyProtocolSnapshot(
     val ownerId: String,
     val name: String,
-    @SerializableWith( MasterDevicesSerializer::class )
+    @Serializable( MasterDevicesSerializer::class )
     val masterDevices: List<MasterDeviceDescriptor>,
-    @SerializableWith( DevicesSerializer::class )
+    @Serializable( DevicesSerializer::class )
     val connectedDevices: List<DeviceDescriptor>,
     val connections: List<DeviceConnection>,
-    @SerializableWith( TasksSerializer::class )
+    @Serializable( TasksSerializer::class )
     val tasks: List<TaskDescriptor>,
     val triggers: List<TriggerWithId>,
     val triggeredTasks: List<TriggeredTask> )
@@ -62,7 +61,7 @@ data class StudyProtocolSnapshot(
     @Serializable
     data class TriggerWithId(
         val id: Int,
-        @SerializableWith( TriggerSerializer::class )
+        @Serializable( TriggerSerializer::class )
         val trigger: Trigger )
 
     @Serializable

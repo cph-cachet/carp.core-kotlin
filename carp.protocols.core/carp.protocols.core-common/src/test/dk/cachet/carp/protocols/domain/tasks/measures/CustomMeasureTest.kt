@@ -2,8 +2,8 @@ package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.data.StubDataType
-import dk.cachet.carp.protocols.domain.serialization.Serializable
 import kotlinx.serialization.json.JSON
+import kotlinx.serialization.Serializable
 import kotlin.test.*
 
 

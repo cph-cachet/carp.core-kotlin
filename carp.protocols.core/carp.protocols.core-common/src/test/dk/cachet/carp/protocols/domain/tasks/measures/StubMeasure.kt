@@ -1,10 +1,10 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.protocols.domain.data.*
-import dk.cachet.carp.protocols.domain.serialization.*
+import kotlinx.serialization.Serializable
 
 
 @Serializable
 data class StubMeasure(
-    @SerializableWith( DataTypeSerializer::class )
+    @Serializable( DataTypeSerializer::class )
     override val type: DataType = StubDataType() ) : Measure()

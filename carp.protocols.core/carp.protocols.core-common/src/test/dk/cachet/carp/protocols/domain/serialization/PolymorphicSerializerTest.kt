@@ -1,7 +1,6 @@
 package dk.cachet.carp.protocols.domain.serialization
 
-import kotlinx.serialization.Transient
-import kotlinx.serialization.Serializable as KSerializable
+import kotlinx.serialization.*
 import kotlinx.serialization.json.JSON
 import kotlin.test.*
 
@@ -9,12 +8,12 @@ import kotlin.test.*
 // TODO: Currently, the following test classes can't be nested classes due to a limitation in PolymorphicSerializer:
 //       https://github.com/Kotlin/kotlinx.serialization/issues/127
 
-@KSerializable
+@Serializable
 internal abstract class BaseClass
 {
     val baseField: Boolean = true
 }
-@KSerializable
+@Serializable
 internal class A( val a: String = "a" ) : BaseClass()
 {
     companion object
@@ -22,7 +21,7 @@ internal class A( val a: String = "a" ) : BaseClass()
         init { PolymorphicSerializer.registerSerializer( A::class, "dk.cachet.carp.protocols.domain.serialization.A" ) }
     }
 }
-@KSerializable
+@Serializable
 internal class B( val b: String = "b" ) : BaseClass()
 {
     companion object
@@ -30,35 +29,35 @@ internal class B( val b: String = "b" ) : BaseClass()
         init { PolymorphicSerializer.registerSerializer( B::class, "dk.cachet.carp.protocols.domain.serialization.B" ) }
     }
 }
-@KSerializable
+@Serializable
 internal class Unregistered : BaseClass()
 
 
-@KSerializable
+@Serializable
 internal class PolymorphicList(
-    @KSerializable( PolymorphicArrayListSerializer::class )
+    @Serializable( PolymorphicArrayListSerializer::class )
     val objects: List<BaseClass> )
 
 
-@KSerializable
+@Serializable
 internal abstract class AbstractTopClass
 {
     @Transient
     abstract val nested: List<AbstractNested>
 }
-@KSerializable
+@Serializable
 internal class TopClass(
-    @KSerializable( PolymorphicArrayListSerializer::class )
+    @Serializable( PolymorphicArrayListSerializer::class )
     override val nested: List<AbstractNested> ) : AbstractTopClass()
-@KSerializable
+@Serializable
 internal abstract class AbstractNested
 {
     @Transient
     abstract val field: BaseClass
 }
-@KSerializable
+@Serializable
 internal class Nested(
-    @KSerializable( PolymorphicSerializer::class )
+    @Serializable( PolymorphicSerializer::class )
     override val field: BaseClass ) : AbstractNested()
 {
     companion object

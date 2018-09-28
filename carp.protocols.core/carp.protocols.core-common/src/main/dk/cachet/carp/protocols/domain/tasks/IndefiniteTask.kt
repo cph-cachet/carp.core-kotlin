@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.tasks
 
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
-import dk.cachet.carp.protocols.domain.serialization.*
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -10,5 +10,5 @@ import dk.cachet.carp.protocols.domain.serialization.*
 @Serializable
 data class IndefiniteTask(
     override val name: String,
-    @SerializableWith( MeasuresSerializer::class )
+    @Serializable( MeasuresSerializer::class )
     override val measures: List<Measure> ) : TaskDescriptor()

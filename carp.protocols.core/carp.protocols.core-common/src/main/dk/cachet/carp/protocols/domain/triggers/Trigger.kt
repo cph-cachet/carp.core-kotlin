@@ -3,8 +3,7 @@ package dk.cachet.carp.protocols.domain.triggers
 import dk.cachet.carp.protocols.domain.common.Immutable
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
-import dk.cachet.carp.protocols.domain.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.serialization.*
 
 
 /**

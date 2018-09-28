@@ -1,8 +1,7 @@
 package dk.cachet.carp.protocols.domain.triggers
 
 import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.serialization.*
 
 
 /**
