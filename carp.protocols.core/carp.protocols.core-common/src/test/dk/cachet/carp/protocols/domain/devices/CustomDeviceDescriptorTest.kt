@@ -9,7 +9,6 @@ import kotlin.test.*
 /**
  * Tests for [CustomDeviceDescriptor].
  */
-@JsIgnore
 class CustomDeviceDescriptorTest
 {
     @Test
@@ -22,7 +21,7 @@ class CustomDeviceDescriptorTest
     }
 
     @Serializable
-    private data class IncorrectDevice( val incorrect: String = "Not a device." )
+    internal data class IncorrectDevice( val incorrect: String = "Not a device." )
 
     @Test
     fun initialization_from_invalid_json_fails()

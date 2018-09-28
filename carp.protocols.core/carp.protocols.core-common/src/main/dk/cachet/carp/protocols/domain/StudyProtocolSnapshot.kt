@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.serialization.PolymorphicSerializer
 import dk.cachet.carp.protocols.domain.serialization.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
@@ -10,11 +11,11 @@ import kotlinx.serialization.*
 
 
 // Custom serializers for StudyProtocolSnapshot which enable deserializing types that are unknown at runtime, yet extend from a known base type.
-private object MasterDevicesSerializer : KSerializer<List<MasterDeviceDescriptor>> by ArrayListSerializer<MasterDeviceDescriptor>(
+internal object MasterDevicesSerializer : KSerializer<List<MasterDeviceDescriptor>> by ArrayListSerializer<MasterDeviceDescriptor>(
     createUnknownPolymorphicSerializer { className, json -> CustomMasterDeviceDescriptor( className, json ) }
 )
-private object DevicesSerializer : KSerializer<List<DeviceDescriptor>> by ArrayListSerializer( DeviceDescriptorSerializer )
-private object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescriptor, DeviceDescriptor>( DeviceDescriptor::class, false )
+internal object DevicesSerializer : KSerializer<List<DeviceDescriptor>> by ArrayListSerializer( DeviceDescriptorSerializer )
+internal object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescriptor, DeviceDescriptor>( DeviceDescriptor::class, false )
 {
     override fun createWrapper( className: String, json: String ): DeviceDescriptor
     {
@@ -26,10 +27,10 @@ private object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceD
             else CustomDeviceDescriptor( className, json )
     }
 }
-private object TasksSerializer : KSerializer<List<TaskDescriptor>> by ArrayListSerializer<TaskDescriptor>(
+internal object TasksSerializer : KSerializer<List<TaskDescriptor>> by ArrayListSerializer<TaskDescriptor>(
     createUnknownPolymorphicSerializer { className, json -> CustomTaskDescriptor( className, json ) }
 )
-private object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, CustomTrigger>( CustomTrigger::class )
+internal object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, CustomTrigger>( CustomTrigger::class )
 {
     override fun createWrapper( className: String, json: String): CustomTrigger
     {
@@ -45,12 +46,18 @@ private object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, CustomT
 data class StudyProtocolSnapshot(
     val ownerId: String,
     val name: String,
-    @Serializable( MasterDevicesSerializer::class )
+    // TODO: Use the following serializer in JVM.
+    //@Serializable( MasterDevicesSerializer::class )
+    @Serializable( PolymorphicArrayListSerializer::class )
     val masterDevices: List<MasterDeviceDescriptor>,
-    @Serializable( DevicesSerializer::class )
+    // TODO: Use the following serializer in JVM.
+    //@Serializable( DevicesSerializer::class )
+    @Serializable( PolymorphicArrayListSerializer::class )
     val connectedDevices: List<DeviceDescriptor>,
     val connections: List<DeviceConnection>,
-    @Serializable( TasksSerializer::class )
+    // TODO: Use the following serializer in JVM.
+    //@Serializable( TasksSerializer::class )
+    @Serializable( PolymorphicArrayListSerializer::class )
     val tasks: List<TaskDescriptor>,
     val triggers: List<TriggerWithId>,
     val triggeredTasks: List<TriggeredTask> )
@@ -61,13 +68,15 @@ data class StudyProtocolSnapshot(
     @Serializable
     data class TriggerWithId(
         val id: Int,
-        @Serializable( TriggerSerializer::class )
+        // TODO: Use the following serializer in JVM.
+        //@Serializable( TriggerSerializer::class )
+        @Serializable( PolymorphicSerializer::class )
         val trigger: Trigger )
 
     @Serializable
     data class TriggeredTask( val triggerId: Int, val taskName: String, val targetDeviceRoleName: String )
 
-    companion object Factory
+    companion object
     {
         /**
          * Create a snapshot of the specified [StudyProtocol].

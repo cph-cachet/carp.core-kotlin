@@ -9,7 +9,6 @@ import kotlin.test.*
 /**
  * Tests for [CustomTrigger].
  */
-@JsIgnore
 class CustomTriggerTest
 {
     @Test
@@ -22,7 +21,7 @@ class CustomTriggerTest
     }
 
     @Serializable
-    private data class IncorrectTrigger( val incorrect: String = "Not a trigger." )
+    internal data class IncorrectTrigger( val incorrect: String = "Not a trigger." )
 
     @Test
     fun initialization_from_invalid_json_fails()

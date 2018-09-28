@@ -7,7 +7,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StubMeasure(
-    @Serializable( DataTypeSerializer::class )
+    // TODO: Use the following serializer in JVM.
+    //@Serializable( DataTypeSerializer::class )
+    @Serializable( PolymorphicSerializer::class )
     override val type: DataType = StubDataType() ) : Measure()
 {
     companion object

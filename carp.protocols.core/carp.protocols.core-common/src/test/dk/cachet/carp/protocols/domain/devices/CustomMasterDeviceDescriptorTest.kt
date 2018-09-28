@@ -9,7 +9,6 @@ import kotlin.test.*
 /**
  * Tests for [CustomMasterDeviceDescriptor].
  */
-@JsIgnore
 class CustomMasterDeviceDescriptorTest
 {
     @Test
@@ -22,7 +21,7 @@ class CustomMasterDeviceDescriptorTest
     }
 
     @Serializable
-    private data class IncorrectMasterDevice( val incorrect: String = "Not a master device." )
+    internal data class IncorrectMasterDevice( val incorrect: String = "Not a master device." )
 
     @Test
     fun initialization_from_invalid_json_fails()

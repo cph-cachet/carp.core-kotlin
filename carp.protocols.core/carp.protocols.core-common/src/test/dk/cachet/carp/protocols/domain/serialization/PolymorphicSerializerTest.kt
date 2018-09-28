@@ -70,8 +70,8 @@ class PolymorphicSerializerTest
 
     @Serializable
     internal class PolymorphicList(
-            @Serializable( PolymorphicArrayListSerializer::class )
-            val objects: List<BaseClass> )
+        @Serializable( PolymorphicArrayListSerializer::class )
+        val objects: List<BaseClass> )
 
     @Test
     fun can_serialize_and_deserialize_polymorph_list()
@@ -94,8 +94,8 @@ class PolymorphicSerializerTest
     }
     @Serializable
     internal class TopClass(
-            @Serializable( PolymorphicArrayListSerializer::class )
-            override val nested: List<AbstractNested> ) : AbstractTopClass()
+        @Serializable( PolymorphicArrayListSerializer::class )
+        override val nested: List<AbstractNested> ) : AbstractTopClass()
     @Serializable
     internal abstract class AbstractNested
     {
@@ -104,8 +104,8 @@ class PolymorphicSerializerTest
     }
     @Serializable
     internal class Nested(
-            @Serializable( PolymorphicSerializer::class )
-            override val field: BaseClass ) : AbstractNested()
+        @Serializable( PolymorphicSerializer::class )
+        override val field: BaseClass ) : AbstractNested()
     {
         companion object
         {

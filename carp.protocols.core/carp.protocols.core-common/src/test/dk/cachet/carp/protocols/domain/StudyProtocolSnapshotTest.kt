@@ -66,7 +66,6 @@ class StudyProtocolSnapshotTest
     }
 
     @Test
-    @JsIgnore
     fun can_serialize_and_deserialize_snapshot_using_JSON()
     {
         val protocol: StudyProtocol = createComplexProtocol()

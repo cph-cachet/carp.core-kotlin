@@ -8,7 +8,6 @@ import kotlin.test.*
 /**
  * Tests for [CustomDataType].
  */
-@JsIgnore
 class CustomDataTypeTest
 {
     @Test
