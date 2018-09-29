@@ -68,6 +68,22 @@ class PolymorphicSerializerTest
     }
 
 
+    internal class DuplicateClassName
+    {
+        @Serializable
+        class A
+    }
+
+    @Test
+    fun cant_register_duplicate_class_names()
+    {
+        assertFailsWith<IllegalArgumentException>
+        {
+            PolymorphicSerializer.registerSerializer( DuplicateClassName.A::class, "dk.cachet.carp.protocols.domain.serialization.PolymorphicSerializerTest.DuplicateClassName.A" )
+        }
+    }
+
+
     @Serializable
     internal class PolymorphicList(
         @Serializable( PolymorphicArrayListSerializer::class )

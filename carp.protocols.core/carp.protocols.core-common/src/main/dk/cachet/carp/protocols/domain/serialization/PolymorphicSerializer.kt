@@ -40,10 +40,21 @@ object PolymorphicSerializer : KSerializer<Any>
 
     fun <T: Any> registerSerializer( klass: KClass<T>, qualifiedName: String )
     {
-        val className = klass.simpleName!! // TODO: Is this dangerous?
-        val serializer = klass.serializer() as KSerializer<Any> // TODO: Is this dangerous?
+        val className = klass.simpleName!! // TODO: I presume anonymous classes don't have a name, but can these be serialized at all?
+        @Suppress(  "UNCHECKED_CAST" )
+        val serializer = klass.serializer() as KSerializer<Any>
 
-        // TODO: Throw exception when type with the same name is already registered.
+        // Cannot register duplicate class names.
+        val error = "For now, polymorphic serialization in JavaScript does not allow duplicate class names."
+        if ( simpleNameSerializers.containsKey( className ) )
+        {
+            throw IllegalArgumentException( "A class with the name '$className$' is already registered. $error" )
+        }
+        if ( qualifiedSerializers.containsKey( qualifiedName ) )
+        {
+            throw IllegalArgumentException( "A class with the qualified name '$qualifiedName' is already registered. $error" )
+        }
+
         simpleNameSerializers[ className ] = serializer
         qualifiedSerializers[ qualifiedName ] = serializer
     }
