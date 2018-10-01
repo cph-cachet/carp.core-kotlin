@@ -43,18 +43,19 @@ A deployment contains common concerns to 'running' a study, i.e., instantiating 
 This is a multiplatform Kotlin library which targets both the **Java Runtime Environment (JRE)** and **JavaScript (JS)**. However, due to (current) limitations of Kotlin, the JS runtime is missing certain features (as indicated by the ignored tests when tests are run for JS):
 
 - The `Immutable` base class does not enforce immutable implementations of extending classes.
-- (De)serialization does not work.
-
-The use of this library on a JS runtime is thus somewhat restricted (e.g., `protocol.getSnapshot().toJson()` won't work), but all other functionality works as expected.
 
 # Gradle tasks
 
 For `carp.core-kotlin`:
 - **build**: Builds the full project, for both runtimes.
+- **test**: Test the full project, for both runtimes. Test results only show up for JVM runtime in IntelliJ.
+
+For `:carp.*.core:carp.*.core-jvm` (for each individual JVM project):
+- **cleanTest test**: Test compiled Java classes using JUnit. `cleanTest` is optional to ensure test results always show up in IntelliJ; when tasks haven't changed it otherwise lists "Test events were not received".
+
+For `:carp.*.core:carp.*.core-js` (for each individual JavaScript project):
+- **test**: Test compiled JavaScript sources using mocha.
+
 
 For `:carp.protocols.core:carp.protocols.core-jvm`:
-- **cleanTest test**: Test compiled Java classes using JUnit. `cleanTest` is optional to ensure test results always show up in IntelliJ; when tasks haven't changed it otherwise lists "Test events were not received".
 - **publishSigned**: Prepare all jars to be published to Maven. This includes documentation, sources, and signing.
-
-For `:carp.protocols.core:carp.protocols.core-js`:
-- **test**: Test compiled JavaScript sources using mocha.

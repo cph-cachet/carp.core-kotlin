@@ -1,7 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.protocols.domain.devices.*
-import dk.cachet.carp.protocols.domain.serialization.PolymorphicSerializer
 import dk.cachet.carp.protocols.domain.serialization.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
@@ -46,18 +45,12 @@ internal object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, Custom
 data class StudyProtocolSnapshot(
     val ownerId: String,
     val name: String,
-    // TODO: Use the following serializer in JVM.
-    //@Serializable( MasterDevicesSerializer::class )
-    @Serializable( PolymorphicArrayListSerializer::class )
+    @Serializable( MasterDevicesSerializer::class )
     val masterDevices: List<MasterDeviceDescriptor>,
-    // TODO: Use the following serializer in JVM.
-    //@Serializable( DevicesSerializer::class )
-    @Serializable( PolymorphicArrayListSerializer::class )
+    @Serializable( DevicesSerializer::class )
     val connectedDevices: List<DeviceDescriptor>,
     val connections: List<DeviceConnection>,
-    // TODO: Use the following serializer in JVM.
-    //@Serializable( TasksSerializer::class )
-    @Serializable( PolymorphicArrayListSerializer::class )
+    @Serializable( TasksSerializer::class )
     val tasks: List<TaskDescriptor>,
     val triggers: List<TriggerWithId>,
     val triggeredTasks: List<TriggeredTask> )
@@ -68,9 +61,7 @@ data class StudyProtocolSnapshot(
     @Serializable
     data class TriggerWithId(
         val id: Int,
-        // TODO: Use the following serializer in JVM.
-        //@Serializable( TriggerSerializer::class )
-        @Serializable( PolymorphicSerializer::class )
+        @Serializable( TriggerSerializer::class )
         val trigger: Trigger )
 
     @Serializable

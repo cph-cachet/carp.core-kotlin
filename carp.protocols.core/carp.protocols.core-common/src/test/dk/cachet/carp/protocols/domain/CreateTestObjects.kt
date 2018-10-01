@@ -46,15 +46,33 @@ fun createComplexProtocol(): StudyProtocol
 
 @Serializable
 internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) : MasterDeviceDescriptor()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( UnknownMasterDeviceDescriptor::class, "dk.cachet.carp.protocols.domain.UnknownMasterDeviceDescriptor" ) }
+    }
+}
 
 @Serializable
 internal data class UnknownDeviceDescriptor( override val roleName: String ) : DeviceDescriptor()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( UnknownDeviceDescriptor::class, "dk.cachet.carp.protocols.domain.UnknownDeviceDescriptor" ) }
+    }
+}
 
 @Serializable
 internal data class UnknownTaskDescriptor(
     override val name: String,
     @Serializable( PolymorphicArrayListSerializer::class )
     override val measures: List<Measure> ) : TaskDescriptor()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( UnknownTaskDescriptor::class, "dk.cachet.carp.protocols.domain.UnknownTaskDescriptor" ) }
+    }
+}
 
 @Serializable
 internal data class UnknownMeasure(
@@ -69,9 +87,21 @@ internal data class UnknownMeasure(
 
 @Serializable
 internal data class UnknownDataType( override val category: DataCategory = DataCategory.Other ) : DataType()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( UnknownDataType::class, "dk.cachet.carp.protocols.domain.UnknownDataType" ) }
+    }
+}
 
 @Serializable
 internal data class UnknownTrigger( override val sourceDeviceRoleName: String ) : Trigger()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( UnknownTrigger::class, "dk.cachet.carp.protocols.domain.UnknownTrigger" ) }
+    }
+}
 
 /**
  * Creates a study protocol which includes:

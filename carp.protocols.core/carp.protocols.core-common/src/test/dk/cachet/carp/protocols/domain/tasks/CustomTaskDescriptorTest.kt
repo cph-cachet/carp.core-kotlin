@@ -11,7 +11,6 @@ import kotlin.test.*
 /**
  * Tests for [CustomTaskDescriptor].
  */
-@JsIgnore
 class CustomTaskDescriptorTest
 {
     @Test
@@ -26,7 +25,7 @@ class CustomTaskDescriptorTest
     }
 
     @Serializable
-    private data class IncorrectTask( val incorrect: String = "Not a task." )
+    internal data class IncorrectTask( val incorrect: String = "Not a task." )
 
     @Test
     fun initialization_from_invalid_json_fails()

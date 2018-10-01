@@ -296,7 +296,6 @@ class StudyProtocolTest
     }
 
     @Test
-    @JsIgnore
     fun create_protocol_fromSnapshot_with_custom_extending_types_succeeds()
     {
         val serialized = serializeProtocolSnapshotIncludingUnknownTypes()

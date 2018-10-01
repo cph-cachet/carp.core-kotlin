@@ -49,7 +49,7 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
         }
         else
         {
-            val saver = serializerByValue( obj )
+            val saver = PolymorphicSerializer.getSerializerBySimpleClassName( obj::class.simpleName!! )
             output.writeStringElementValue( serialClassDesc, 0, saver.serialClassDesc.name )
             output.writeSerializableElementValue( serialClassDesc, 1, saver, obj )
         }
@@ -65,20 +65,15 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
         // Determine class to be loaded and whether it is available at runtime.
         input.readElement( serialClassDesc )
         val className = input.readStringElementValue( serialClassDesc, 0 )
-        var canLoadClass = false
-        try
-        {
-            Class.forName( className )
-            canLoadClass = true
-        }
-        catch ( e: ClassNotFoundException ) { }
+        val canLoadClass = PolymorphicSerializer.isSerializerByQualifiedNameRegistered( className )
 
         // Deserialize object when serializer is available, or wrap in case type is unknown.
         val obj: P
         input.readElement( serialClassDesc )
         if ( canLoadClass )
         {
-            val loader = serializerBySerialDescClassname<P>( className )
+            @Suppress( "UNCHECKED_CAST" )
+            val loader = PolymorphicSerializer.getSerializerByQualifiedName( className ) as KSerializer<P>
             obj = input.readSerializableElementValue( serialClassDesc, 1, loader )
         }
         else

@@ -11,9 +11,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class IndefiniteTask(
     override val name: String,
-    // TODO: Use the following serializer in JVM.
-    //@Serializable( MeasuresSerializer::class )
-    @Serializable( PolymorphicArrayListSerializer::class )
+    @Serializable( MeasuresSerializer::class )
     override val measures: List<Measure> ) : TaskDescriptor()
 {
     companion object

@@ -59,7 +59,7 @@ object PolymorphicSerializer : KSerializer<Any>
         qualifiedSerializers[ qualifiedName ] = serializer
     }
 
-    private fun getSerializerBySimpleClassName( className: String ): KSerializer<Any>
+    fun getSerializerBySimpleClassName( className: String ): KSerializer<Any>
     {
         if ( !simpleNameSerializers.containsKey( className ) )
         {
@@ -69,14 +69,19 @@ object PolymorphicSerializer : KSerializer<Any>
         return simpleNameSerializers[ className ]!!
     }
 
-    private fun getSerializerByQualifiedName( qualifiedName: String ): KSerializer<Any>
+    fun getSerializerByQualifiedName( qualifiedName: String ): KSerializer<Any>
     {
-        if ( !qualifiedSerializers.containsKey( qualifiedName ) )
+        if ( !isSerializerByQualifiedNameRegistered( qualifiedName ) )
         {
             throw NoSuchElementException( "No polymorphic serializer is registered with the qualified name '$qualifiedName'." )
         }
 
         return qualifiedSerializers[ qualifiedName ]!!
+    }
+
+    fun isSerializerByQualifiedNameRegistered( qualifiedName: String ): Boolean
+    {
+        return qualifiedSerializers.containsKey( qualifiedName )
     }
 
     override fun save( output: KOutput, obj: Any )

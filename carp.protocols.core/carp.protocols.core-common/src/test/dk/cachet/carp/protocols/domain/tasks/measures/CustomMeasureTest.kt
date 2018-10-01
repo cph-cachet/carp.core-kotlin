@@ -10,7 +10,6 @@ import kotlin.test.*
 /**
  * Tests for [CustomMeasure].
  */
-@JsIgnore
 class CustomMeasureTest
 {
     @Test
@@ -24,7 +23,7 @@ class CustomMeasureTest
     }
 
     @Serializable
-    private data class IncorrectMeasure( val incorrect: String = "Not a measure." )
+    internal data class IncorrectMeasure( val incorrect: String = "Not a measure." )
 
     @Test
     fun initialization_from_invalid_json_fails()

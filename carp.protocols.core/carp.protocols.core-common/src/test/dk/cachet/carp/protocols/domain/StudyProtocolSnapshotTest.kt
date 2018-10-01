@@ -81,7 +81,6 @@ class StudyProtocolSnapshotTest
      * Types not known at compile time should not prevent deserializing a protocol, but should be loaded through a 'Custom' type wrapper.
      */
     @Test
-    @JsIgnore
     fun unknown_types_are_wrapped_when_deserializing()
     {
         val serialized: String = serializeProtocolSnapshotIncludingUnknownTypes()
@@ -97,7 +96,6 @@ class StudyProtocolSnapshotTest
     }
 
     @Test
-    @JsIgnore
     fun unknown_connected_master_device_is_deserialized_as_a_master_device()
     {
         val protocol = createEmptyProtocol()
@@ -117,7 +115,6 @@ class StudyProtocolSnapshotTest
      * Types which were wrapped in a 'Custom' type wrapper upon deserialization should be serialized to their original form (returning the original type, not the wrapper).
      */
     @Test
-    @JsIgnore
     fun serializing_unknown_types_removes_the_wrapper()
     {
         val serialized: String = serializeProtocolSnapshotIncludingUnknownTypes()
