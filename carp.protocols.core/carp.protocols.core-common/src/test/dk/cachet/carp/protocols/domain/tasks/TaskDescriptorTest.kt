@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.tasks
 
+import dk.cachet.carp.test.JsIgnore
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
-import dk.cachet.carp.protocols.domain.JsIgnore
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import kotlinx.serialization.Serializable
 import kotlin.test.*

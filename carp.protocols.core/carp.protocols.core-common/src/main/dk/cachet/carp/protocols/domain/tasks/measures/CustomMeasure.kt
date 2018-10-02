@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.protocols.domain.data.*
-import dk.cachet.carp.protocols.domain.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import kotlinx.serialization.json.*
 
 

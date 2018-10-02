@@ -13,9 +13,13 @@ sourceSets {
 dependencies {
     expectedBy project( ":carp.protocols.core:carp.protocols.core-common" )
 
+    implementation project(':carp.common:carp.common-jvm')
+    
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion"
+
+    testImplementation project( ':carp.test:carp.test-jvm' )
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"

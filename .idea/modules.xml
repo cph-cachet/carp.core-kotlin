@@ -2,7 +2,17 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/carp.core-kotlin.iml" filepath="$PROJECT_DIR$/carp.core-kotlin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.common/carp.common.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.common/carp.common.iml" group="carp.common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.common/carp.common-common/carp.common-common.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.common/carp.common-common/carp.common-common.iml" group="carp.common/carp.common-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.common/carp.common-common/carp.common-common_main.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.common/carp.common-common/carp.common-common_main.iml" group="carp.common/carp.common-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.common/carp.common-common/carp.common-common_test.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.common/carp.common-common/carp.common-common_test.iml" group="carp.common/carp.common-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.common/carp.common-js/carp.common-js.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.common/carp.common-js/carp.common-js.iml" group="carp.common/carp.common-js" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.common/carp.common-js/carp.common-js_main.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.common/carp.common-js/carp.common-js_main.iml" group="carp.common/carp.common-js" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.common/carp.common-js/carp.common-js_test.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.common/carp.common-js/carp.common-js_test.iml" group="carp.common/carp.common-js" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.common/carp.common-jvm/carp.common-jvm.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.common/carp.common-jvm/carp.common-jvm.iml" group="carp.common/carp.common-jvm" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.common/carp.common-jvm/carp.common-jvm_main.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.common/carp.common-jvm/carp.common-jvm_main.iml" group="carp.common/carp.common-jvm" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.common/carp.common-jvm/carp.common-jvm_test.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.common/carp.common-jvm/carp.common-jvm_test.iml" group="carp.common/carp.common-jvm" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.core-kotlin.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.core-kotlin.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.deployment.core/carp.deployment.core.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.deployment.core/carp.deployment.core.iml" group="carp.deployment.core" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.deployment.core/carp.deployment.core-common/carp.deployment.core-common.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.deployment.core/carp.deployment.core-common/carp.deployment.core-common.iml" group="carp.deployment.core/carp.deployment.core-common" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.deployment.core/carp.deployment.core-common/carp.deployment.core-common_main.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.deployment.core/carp.deployment.core-common/carp.deployment.core-common_main.iml" group="carp.deployment.core/carp.deployment.core-common" />
@@ -33,6 +43,16 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.studies.core/carp.studies.core-jvm/carp.studies.core-jvm.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.studies.core/carp.studies.core-jvm/carp.studies.core-jvm.iml" group="carp.studies.core/carp.studies.core-jvm" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.studies.core/carp.studies.core-jvm/carp.studies.core-jvm_main.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.studies.core/carp.studies.core-jvm/carp.studies.core-jvm_main.iml" group="carp.studies.core/carp.studies.core-jvm" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.studies.core/carp.studies.core-jvm/carp.studies.core-jvm_test.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.studies.core/carp.studies.core-jvm/carp.studies.core-jvm_test.iml" group="carp.studies.core/carp.studies.core-jvm" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.test/carp.test.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.test/carp.test.iml" group="carp.test" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.test/carp.test-common/carp.test-common.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.test/carp.test-common/carp.test-common.iml" group="carp.test/carp.test-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.test/carp.test-common/carp.test-common_main.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.test/carp.test-common/carp.test-common_main.iml" group="carp.test/carp.test-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.test/carp.test-common/carp.test-common_test.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.test/carp.test-common/carp.test-common_test.iml" group="carp.test/carp.test-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.test/carp.test-js/carp.test-js.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.test/carp.test-js/carp.test-js.iml" group="carp.test/carp.test-js" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.test/carp.test-js/carp.test-js_main.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.test/carp.test-js/carp.test-js_main.iml" group="carp.test/carp.test-js" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.test/carp.test-js/carp.test-js_test.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.test/carp.test-js/carp.test-js_test.iml" group="carp.test/carp.test-js" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.test/carp.test-jvm/carp.test-jvm.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.test/carp.test-jvm/carp.test-jvm.iml" group="carp.test/carp.test-jvm" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.test/carp.test-jvm/carp.test-jvm_main.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.test/carp.test-jvm/carp.test-jvm_main.iml" group="carp.test/carp.test-jvm" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/carp.test/carp.test-jvm/carp.test-jvm_test.iml" filepath="$PROJECT_DIR$/.idea/modules/carp.test/carp.test-jvm/carp.test-jvm_test.iml" group="carp.test/carp.test-jvm" />
     </modules>
   </component>
 </project>

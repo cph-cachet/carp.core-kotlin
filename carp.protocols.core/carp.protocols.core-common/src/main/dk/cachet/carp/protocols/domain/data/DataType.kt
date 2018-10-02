@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.domain.data
 
-import dk.cachet.carp.protocols.domain.common.Immutable
+import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
-import dk.cachet.carp.protocols.domain.serialization.UnknownPolymorphicSerializer
+import dk.cachet.carp.common.serialization.UnknownPolymorphicSerializer
 import kotlinx.serialization.*
 
 

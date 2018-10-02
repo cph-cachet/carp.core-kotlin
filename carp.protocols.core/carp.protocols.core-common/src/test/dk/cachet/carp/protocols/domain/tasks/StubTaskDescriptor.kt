@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.tasks
 
-import dk.cachet.carp.protocols.domain.serialization.*
+import dk.cachet.carp.common.serialization.PolymorphicSerializer
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import kotlinx.serialization.Serializable
 

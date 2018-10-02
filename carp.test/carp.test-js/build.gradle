@@ -1,0 +1,14 @@
+apply plugin: 'kotlin-platform-js'
+apply plugin: 'com.moowork.node'
+
+
+sourceSets {
+    main.kotlin.srcDirs += 'src/main'
+}
+
+dependencies {
+    expectedBy project(":carp.test:carp.test-common")
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib-js"
+    compile "org.jetbrains.kotlin:kotlin-test-js"
+}

@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.application
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.protocols.domain.*
-import dk.cachet.carp.protocols.domain.common.DateTime
 
 
 /**

@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.protocols.domain.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import kotlinx.serialization.json.*
 
 

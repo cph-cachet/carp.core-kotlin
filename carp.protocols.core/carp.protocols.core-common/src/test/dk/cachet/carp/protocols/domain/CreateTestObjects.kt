@@ -1,9 +1,9 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.protocols.domain.common.UUID
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.data.*
 import dk.cachet.carp.protocols.domain.devices.*
-import dk.cachet.carp.protocols.domain.serialization.*
+import dk.cachet.carp.common.serialization.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.tasks.measures.*

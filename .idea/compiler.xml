@@ -2,6 +2,18 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="carp.common-common_main" target="1.8" />
+      <module name="carp.common-common_test" target="1.8" />
+      <module name="carp.common-js_main" target="1.8" />
+      <module name="carp.common-js_test" target="1.8" />
+      <module name="carp.common-jvm_main" target="1.8" />
+      <module name="carp.common-jvm_test" target="1.8" />
+      <module name="carp.common.core-common_main" target="1.8" />
+      <module name="carp.common.core-common_test" target="1.8" />
+      <module name="carp.common.core-js_main" target="1.8" />
+      <module name="carp.common.core-js_test" target="1.8" />
+      <module name="carp.common.core-jvm_main" target="1.8" />
+      <module name="carp.common.core-jvm_test" target="1.8" />
       <module name="carp.deployment.core-common_main" target="1.8" />
       <module name="carp.deployment.core-common_test" target="1.8" />
       <module name="carp.deployment.core-js_main" target="1.8" />
@@ -20,6 +32,12 @@
       <module name="carp.studies.core-js_test" target="1.8" />
       <module name="carp.studies.core-jvm_main" target="1.8" />
       <module name="carp.studies.core-jvm_test" target="1.8" />
+      <module name="carp.test-common_main" target="1.8" />
+      <module name="carp.test-common_test" target="1.8" />
+      <module name="carp.test-js_main" target="1.8" />
+      <module name="carp.test-js_test" target="1.8" />
+      <module name="carp.test-jvm_main" target="1.8" />
+      <module name="carp.test-jvm_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

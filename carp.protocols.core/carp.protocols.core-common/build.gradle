@@ -8,9 +8,13 @@ sourceSets {
 }
 
 dependencies {
+    implementation project(':carp.common:carp.common-common')
+    
     implementation "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serializationVersion"
 
+    testImplementation project(':carp.test:carp.test-common')
+    
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common"
     testImplementation "org.jetbrains.kotlin:kotlin-test-common"
 }

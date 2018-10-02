@@ -38,6 +38,14 @@ A deployment contains common concerns to 'running' a study, i.e., instantiating 
 - Install the [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization#working-in-intellij-idea) IDE [plugin for the matching Kotlin version (0.6.2)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=KotlinTools_KotlinxSerialization_KotlinCompilerWithSerializationPlugin&branch_KotlinTools_KotlinxSerialization=1.2.70&tab=buildTypeStatusDiv)
 - Open project in IntelliJ (`File->Open`) by selecting the `build.gradle` file in the root directory and point to local gradle distribution in the wizard which appears (this can be changed after in `Settings->Build, Execution, Deployment->Build Tools->Gradle`)
 
+## carp.common
+
+Helper classes and base types relied upon by all subsystems. This library does not contain any domain logic.
+
+## carp.test
+
+Helper classes relied upon by test projects of all subsystems. E.g., to disable tests specified in common part of projects for the JavaScript runtime only.
+
 # Multiplatform
 
 This is a multiplatform Kotlin library which targets both the **Java Runtime Environment (JRE)** and **JavaScript (JS)**. However, due to (current) limitations of Kotlin, the JS runtime is missing certain features (as indicated by the ignored tests when tests are run for JS):

@@ -40,16 +40,22 @@
     <orderEntry type="jdk" jdkName="Kotlin SDK" jdkType="KotlinSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="carp.protocols.core-common_test" production-on-test="" />
+    <orderEntry type="module" module-name="carp.common-common_test" production-on-test="" />
+    <orderEntry type="module" module-name="carp.test-common_test" production-on-test="" />
     <orderEntry type="module" module-name="carp.protocols.core-js_main" />
     <orderEntry type="module" module-name="carp.protocols.core-common_main" />
+    <orderEntry type="module" module-name="carp.common-js_main" />
+    <orderEntry type="module" module-name="carp.test-js_main" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.6.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test-js:1.2.71" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-js:1.2.71" level="project" />
+    <orderEntry type="module" module-name="carp.common-common_main" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.6.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-jsonparser:0.6.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test-common:1.2.71" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test-annotations-common:1.2.71" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.2.71" level="project" />
+    <orderEntry type="module" module-name="carp.test-common_main" />
   </component>
   <component name="TestModuleProperties" production-module="carp.protocols.core-js_main" />
 </module>

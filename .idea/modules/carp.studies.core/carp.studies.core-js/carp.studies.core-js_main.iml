@@ -35,11 +35,10 @@
     <output url="file://$MODULE_DIR$/../../../../carp.studies.core/carp.studies.core-js/out/production/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../../carp.studies.core/carp.studies.core-js/src/main">
-      <sourceFolder url="file://$MODULE_DIR$/../../../../carp.studies.core/carp.studies.core-js/src/main" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../carp.studies.core/carp.studies.core-js/src/main" type="kotlin-source" />
     </content>
     <orderEntry type="jdk" jdkName="Kotlin SDK" jdkType="KotlinSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="carp.studies.core-common_main" />
     <orderEntry type="module" module-name="carp.studies.core-common_main" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.6.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-js:1.2.71" level="project" />
