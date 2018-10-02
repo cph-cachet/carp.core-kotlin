@@ -32,12 +32,6 @@ Manage the recruitment for and lifetime of study deployments, instantiated using
 
 A deployment contains common concerns to 'running' a study, i.e., instantiating a study protocol with a specific set of devices and users as specified in the study protocol. A deployment is responsible for managing registration of participant consent, tracking device connection issues, assessing data quality, and negotiating the connection between separate devices.
 
-# Setting up using IntelliJ IDEA
-- Install Gradle 4.10 (e.g., [using Chocolatey on Windows](https://chocolatey.org/packages/gradle))
-- Install the Kotlin plugin (1.2.71-release-IJ2018.2-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
-- Install the [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization#working-in-intellij-idea) IDE [plugin for the matching Kotlin version (0.6.2)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=KotlinTools_KotlinxSerialization_KotlinCompilerWithSerializationPlugin&branch_KotlinTools_KotlinxSerialization=1.2.70&tab=buildTypeStatusDiv)
-- Open project in IntelliJ (`File->Open`) by selecting the `build.gradle` file in the root directory and point to local gradle distribution in the wizard which appears (this can be changed after in `Settings->Build, Execution, Deployment->Build Tools->Gradle`)
-
 ## carp.common
 
 Helper classes and base types relied upon by all subsystems. This library does not contain any domain logic.
@@ -45,6 +39,12 @@ Helper classes and base types relied upon by all subsystems. This library does n
 ## carp.test
 
 Helper classes relied upon by test projects of all subsystems. E.g., to disable tests specified in common part of projects for the JavaScript runtime only.
+
+# Setting up using IntelliJ IDEA
+- Install Gradle 4.10 (e.g., [using Chocolatey on Windows](https://chocolatey.org/packages/gradle))
+- Install the Kotlin plugin (1.2.71-release-IJ2018.2-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Install the [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization#working-in-intellij-idea) IDE [plugin for the matching Kotlin version (0.6.2)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=KotlinTools_KotlinxSerialization_KotlinCompilerWithSerializationPlugin&branch_KotlinTools_KotlinxSerialization=1.2.70&tab=buildTypeStatusDiv)
+- Open project in IntelliJ (`File->Open`) by selecting the `build.gradle` file in the root directory and point to local gradle distribution in the wizard which appears (this can be changed after in `Settings->Build, Execution, Deployment->Build Tools->Gradle`)
 
 # Multiplatform
 
