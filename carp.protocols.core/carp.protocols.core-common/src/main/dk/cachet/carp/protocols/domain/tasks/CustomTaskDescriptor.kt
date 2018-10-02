@@ -26,7 +26,7 @@ data class CustomTaskDescriptor( override val className: String, override val js
         }
         name = json[ nameField ].content
 
-        // Get raw JSON string of measures (using klaxon) and use kotlinx serialization to deserialize.
+        // Get raw JSON string of measures and use kotlinx serialization to deserialize.
         val measuresField = TaskDescriptor::measures.name
         if ( !json.containsKey( measuresField ) )
         {
