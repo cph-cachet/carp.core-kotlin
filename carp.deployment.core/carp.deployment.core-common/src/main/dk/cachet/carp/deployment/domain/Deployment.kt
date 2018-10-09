@@ -13,16 +13,20 @@ import dk.cachet.carp.protocols.domain.*
  */
 class Deployment( protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() )
 {
-    companion object Factory
-    {
-        fun fromStatus( protocolSnapshot: StudyProtocolSnapshot, status: DeploymentStatus ): Deployment
-        {
-            return Deployment( protocolSnapshot, status.deploymentId )
-        }
-    }
-
-
     private val _protocol = StudyProtocol.fromSnapshot( protocolSnapshot )
+
+
+    init
+    {
+        // Verify whether protocol can be deployed.
+        if ( !_protocol.isDeployable() )
+        {
+            throw IllegalArgumentException( "The passed protocol snapshot contains deployment errors." )
+        }
+
+        // TODO: Create status for each master device which needs to be registered.
+        // TODO: What does registration entail?
+    }
 
 
     /**
@@ -30,6 +34,6 @@ class Deployment( protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.r
      */
     fun getStatus(): DeploymentStatus
     {
-        return DeploymentStatus.fromDeployment( this )
+        return DeploymentStatus( id )
     }
 }

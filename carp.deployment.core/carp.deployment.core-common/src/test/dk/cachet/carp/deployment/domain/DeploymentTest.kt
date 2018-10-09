@@ -11,16 +11,26 @@ import kotlin.test.*
 class DeploymentTest
 {
     @Test
-    fun creating_deployment_fromStatus_obtained_by_getStatus_is_the_same()
+    fun cant_initialize_deployment_with_errors()
     {
-        val owner = ProtocolOwner( UUID( "f3f4d91b-56b5-4117-bb98-7e2923cb2223" ) )
-        val protocol = StudyProtocol( owner, "Test" )
+        val protocol = createEmptyProtocol() // Does not contain a master device, thus contains deployment error.
+        val snapshot = protocol.getSnapshot()
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            Deployment( snapshot, UUID( "27c56423-b7cd-48dd-8b7f-f819621a34f0" ) )
+        }
+    }
+
+    @Test
+    fun getStatus_of_new_deployment()
+    {
+        val protocol = createSingleMasterDeviceProtocol()
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
         val deployment = Deployment( snapshot, UUID( "27c56423-b7cd-48dd-8b7f-f819621a34f0" ) )
 
         val status: DeploymentStatus = deployment.getStatus()
-        val fromStatus = Deployment.fromStatus( snapshot, status )
 
-        assertEquals( status.deploymentId, fromStatus.id )
+        assertEquals( deployment.id, status.deploymentId )
     }
 }

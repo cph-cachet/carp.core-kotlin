@@ -9,12 +9,3 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class DeploymentStatus( val deploymentId: UUID )
-{
-    companion object
-    {
-        fun fromDeployment( deployment: Deployment ): DeploymentStatus
-        {
-            return DeploymentStatus( deployment.id )
-        }
-    }
-}
