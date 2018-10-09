@@ -8,7 +8,7 @@ import dk.cachet.carp.protocols.domain.*
  * Application service which allows managing (multiple versions of) [StudyProtocolSnapshot]'s,
  * which can be instantiated locally through [StudyProtocol].
  */
-class ProtocolManager( val repository: StudyProtocolRepository )
+class ProtocolManager( private val repository: StudyProtocolRepository )
 {
     /**
      * Add the specified study [protocol].
