@@ -8,6 +8,9 @@ sourceSets {
 }
 
 dependencies {
+    implementation project(':carp.common:carp.common-common')
+    implementation project(':carp.protocols.core:carp.protocols.core-common')
+    
     implementation "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serializationVersion"
 

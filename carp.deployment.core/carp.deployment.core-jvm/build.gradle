@@ -10,6 +10,9 @@ sourceSets {
 dependencies {
     expectedBy project( ":carp.deployment.core:carp.deployment.core-common" )
 
+    implementation project(':carp.common:carp.common-jvm')
+    implementation project(':carp.protocols.core:carp.protocols.core-jvm')
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion"
