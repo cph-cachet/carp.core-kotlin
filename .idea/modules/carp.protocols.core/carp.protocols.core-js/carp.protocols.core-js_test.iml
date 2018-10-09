@@ -35,7 +35,7 @@
     <output-test url="file://$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js/out/test/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js/src/test">
-      <sourceFolder url="file://$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js/src/test" type="kotlin-test" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../carp.protocols.core/carp.protocols.core-js/src/test" isTestSource="true" />
     </content>
     <orderEntry type="jdk" jdkName="Kotlin SDK" jdkType="KotlinSDK" />
     <orderEntry type="sourceFolder" forTests="false" />

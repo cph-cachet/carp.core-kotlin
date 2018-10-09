@@ -32,7 +32,7 @@
     <output url="file://$MODULE_DIR$/../../../../carp.test/carp.test-js/out/production/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../../carp.test/carp.test-js/src/main">
-      <sourceFolder url="file://$MODULE_DIR$/../../../../carp.test/carp.test-js/src/main" type="kotlin-source" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../carp.test/carp.test-js/src/main" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Kotlin SDK" jdkType="KotlinSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
