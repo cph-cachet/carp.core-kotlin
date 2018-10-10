@@ -13,13 +13,18 @@ import dk.cachet.carp.protocols.domain.*
  */
 class Deployment( protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() )
 {
-    private val _protocol = StudyProtocol.fromSnapshot( protocolSnapshot )
-
-
     init
     {
         // Verify whether protocol can be deployed.
-        if ( !_protocol.isDeployable() )
+        val protocol = try
+        {
+            StudyProtocol.fromSnapshot( protocolSnapshot )
+        }
+        catch( e: InvalidConfigurationError )
+        {
+            throw IllegalArgumentException( "Invalid protocol snapshot passed." )
+        }
+        if ( !protocol.isDeployable() )
         {
             throw IllegalArgumentException( "The passed protocol snapshot contains deployment errors." )
         }
