@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.data.*
 import dk.cachet.carp.protocols.domain.devices.*
@@ -51,6 +52,8 @@ internal data class UnknownMasterDeviceDescriptor( override val roleName: String
     {
         init { PolymorphicSerializer.registerSerializer( UnknownMasterDeviceDescriptor::class, "dk.cachet.carp.protocols.domain.UnknownMasterDeviceDescriptor" ) }
     }
+
+    override fun isValidConfiguration( configuration: DeviceConfiguration ) = Trilean.TRUE
 }
 
 @Serializable
@@ -60,6 +63,8 @@ internal data class UnknownDeviceDescriptor( override val roleName: String ) : D
     {
         init { PolymorphicSerializer.registerSerializer( UnknownDeviceDescriptor::class, "dk.cachet.carp.protocols.domain.UnknownDeviceDescriptor" ) }
     }
+
+    override fun isValidConfiguration( configuration: DeviceConfiguration ) = Trilean.TRUE
 }
 
 @Serializable

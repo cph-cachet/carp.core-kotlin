@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
+import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.test.JsIgnore
 import dk.cachet.carp.protocols.domain.*
 import kotlin.test.*
@@ -15,6 +16,9 @@ class DeviceDescriptorTest
     fun mutable_implementation_triggers_exception()
     {
         class NoDataClass( override val roleName: String = "Not a data class" ) : DeviceDescriptor()
+        {
+            override fun isValidConfiguration(configuration: DeviceConfiguration): Trilean = Trilean.TRUE
+        }
 
         assertFailsWith<InvalidConfigurationError>
         {

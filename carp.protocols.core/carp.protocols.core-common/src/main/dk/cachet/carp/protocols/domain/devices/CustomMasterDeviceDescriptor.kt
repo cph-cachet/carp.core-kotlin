@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
+import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import kotlinx.serialization.json.*
 
@@ -24,4 +25,9 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
         }
         roleName = json[ roleNameField ].content
     }
+
+    /**
+     * For unknown types, it cannot be determined whether or not a given configuration is valid.
+     */
+    override fun isValidConfiguration( configuration: DeviceConfiguration ) = Trilean.UNKNOWN
 }

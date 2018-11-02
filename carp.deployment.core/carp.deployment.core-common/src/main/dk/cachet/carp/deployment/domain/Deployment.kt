@@ -2,6 +2,7 @@ package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.*
+import dk.cachet.carp.protocols.domain.devices.*
 
 
 /**
@@ -13,6 +14,22 @@ import dk.cachet.carp.protocols.domain.*
  */
 class Deployment( protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() )
 {
+    /**
+     * The set of all devices which can or need to be registered for this deployment.
+     */
+    val registrableDevices: Set<RegistrableDevice>
+        get() = _registrableDevices
+
+    private val _registrableDevices: MutableSet<RegistrableDevice>
+
+    /**
+     * The set of devices which have already been registered for this deployment.
+     */
+    val registeredDevices: Map<DeviceDescriptor, DeviceRegistration>
+        get() = _registeredDevices
+
+    private val _registeredDevices: MutableMap<DeviceDescriptor, DeviceRegistration> = mutableMapOf()
+
     init
     {
         // Verify whether protocol can be deployed.
@@ -29,8 +46,11 @@ class Deployment( protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.r
             throw IllegalArgumentException( "The passed protocol snapshot contains deployment errors." )
         }
 
-        // TODO: Create status for each master device which needs to be registered.
-        // TODO: What does registration entail?
+        // Initialize information which devices can or should be registered for this deployment.
+        _registrableDevices = protocol.devices.asSequence()
+            // Top-level master devices require registration.
+            .map { it ->  RegistrableDevice( it, protocol.masterDevices.contains( it ) ) }
+            .toMutableSet()
     }
 
 
@@ -39,6 +59,13 @@ class Deployment( protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.r
      */
     fun getStatus(): DeploymentStatus
     {
-        return DeploymentStatus( id )
+        val remainingRegistration: Set<String> = _registrableDevices
+            .asSequence()
+            .filter { it.requiresRegistration }
+            .map { it.device.roleName }
+            .minus( registeredDevices.keys.map { it.roleName } )
+            .toSet()
+
+        return DeploymentStatus( id.toString(), registrableDevices, remainingRegistration )
     }
 }

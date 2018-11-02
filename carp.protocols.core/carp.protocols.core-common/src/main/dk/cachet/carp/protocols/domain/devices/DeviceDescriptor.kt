@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.Immutable
+import dk.cachet.carp.common.*
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
 import kotlinx.serialization.*
 
@@ -21,4 +21,10 @@ abstract class DeviceDescriptor : Immutable( notImmutableErrorFor( DeviceDescrip
      */
     @Transient
     abstract val roleName: String
+
+    /**
+     * Determines whether the given device [configuration] is valid for this type of device.
+     * Specific devices may extend from [DeviceConfiguration] in case custom configuration is needed for them.
+     */
+    abstract fun isValidConfiguration( configuration: DeviceConfiguration ): Trilean
 }

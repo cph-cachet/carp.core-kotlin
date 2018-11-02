@@ -49,15 +49,19 @@ class DeploymentTest
     }
 
     @Test
-    fun getStatus_of_new_deployment()
+    fun new_deployment_has_unregistered_master_device()
     {
-        val protocol = createSingleMasterDeviceProtocol()
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
         val deployment = Deployment( snapshot, testId )
 
-        val status: DeploymentStatus = deployment.getStatus()
+        // Two devices can be registered, but none are by default.
+        assertEquals( 2, deployment.registrableDevices.size )
+        assertTrue { deployment.registrableDevices.map { it.device }.containsAll( protocol.devices ) }
+        assertEquals( 0, deployment.registeredDevices.size )
 
-        assertEquals( deployment.id, status.deploymentId )
-        // TODO: Verify whether the initial state is as expected. I.e., no devices registered.
+        // Only the master device requires registration.
+        val requiredRegistration = deployment.registrableDevices.single { it.requiresRegistration }
+        assertEquals( protocol.masterDevices.single(), requiredRegistration.device )
     }
 }

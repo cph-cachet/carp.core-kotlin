@@ -1,7 +1,10 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.*
+import dk.cachet.carp.common.serialization.PolymorphicSerializer
 import dk.cachet.carp.protocols.domain.*
+import dk.cachet.carp.protocols.domain.devices.*
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -14,11 +17,26 @@ fun createEmptyProtocol(): StudyProtocol
 }
 
 /**
- * Creates a study protocol with nothing more than a single master device.
+ * Creates a study protocol with a single master device which has a single connected device.
  */
-fun createSingleMasterDeviceProtocol(): StudyProtocol
+fun createSingleMasterWithConnectedDeviceProtocol(
+    masterDeviceName: String = "Master",
+    connectedDeviceName: String = "Connected" ): StudyProtocol
 {
     val protocol = createEmptyProtocol()
-    protocol.addMasterDevice( StubMasterDeviceDescriptor() )
+    val master = StubMasterDeviceDescriptor( masterDeviceName )
+    protocol.addMasterDevice( master )
+    protocol.addConnectedDevice( StubMasterDeviceDescriptor( connectedDeviceName ), master )
     return protocol
+}
+
+@Serializable
+internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) : MasterDeviceDescriptor()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( UnknownMasterDeviceDescriptor::class, "dk.cachet.carp.deployment.domain.UnknownMasterDeviceDescriptor" ) }
+    }
+
+    override fun isValidConfiguration( configuration: DeviceConfiguration ) = Trilean.TRUE
 }

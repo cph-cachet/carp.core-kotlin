@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
+import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
 
@@ -11,4 +12,6 @@ data class StubDeviceDescriptor( override val roleName: String = "Stub device" )
     {
         init { PolymorphicSerializer.registerSerializer( StubDeviceDescriptor::class, "dk.cachet.carp.protocols.domain.devices.StubDeviceDescriptor" ) }
     }
+
+    override fun isValidConfiguration(configuration: DeviceConfiguration): Trilean = Trilean.TRUE
 }

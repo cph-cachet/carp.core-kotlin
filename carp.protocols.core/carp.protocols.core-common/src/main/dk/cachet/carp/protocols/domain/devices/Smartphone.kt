@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
+import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
 
@@ -14,4 +15,6 @@ data class Smartphone( override val roleName: String ) : MasterDeviceDescriptor(
     {
         init { PolymorphicSerializer.registerSerializer( Smartphone::class, "dk.cachet.carp.protocols.domain.devices.Smartphone" ) }
     }
+
+    override fun isValidConfiguration( configuration: DeviceConfiguration ) = Trilean.TRUE
 }
