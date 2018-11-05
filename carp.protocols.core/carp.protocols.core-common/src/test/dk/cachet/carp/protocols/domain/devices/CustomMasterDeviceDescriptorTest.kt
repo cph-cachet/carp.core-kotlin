@@ -12,7 +12,8 @@ import kotlin.test.*
 class CustomMasterDeviceDescriptorTest
 {
     @Test
-    fun initialization_from_json_extracts_base_MasterDeviceDescriptor_properties() {
+    fun initialization_from_json_extracts_base_MasterDeviceDescriptor_properties()
+    {
         val device = UnknownMasterDeviceDescriptor( "Unknown" )
         val serialized: String = JSON.stringify( device )
 

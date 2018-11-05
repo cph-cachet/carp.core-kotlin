@@ -12,7 +12,8 @@ import kotlin.test.*
 class CustomDeviceDescriptorTest
 {
     @Test
-    fun initialization_from_json_extracts_base_DeviceDescriptor_properties() {
+    fun initialization_from_json_extracts_base_DeviceDescriptor_properties()
+    {
         val device = UnknownDeviceDescriptor( "Unknown" )
         val serialized: String = JSON.stringify( device )
 
