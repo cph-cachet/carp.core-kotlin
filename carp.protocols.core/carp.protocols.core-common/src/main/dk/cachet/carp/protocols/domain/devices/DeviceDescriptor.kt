@@ -26,5 +26,5 @@ abstract class DeviceDescriptor : Immutable( notImmutableErrorFor( DeviceDescrip
      * Determines whether the given device [configuration] is valid for this type of device.
      * Specific devices may extend from [DeviceConfiguration] in case custom configuration is needed for them.
      */
-    abstract fun isValidConfiguration( configuration: DeviceConfiguration ): Trilean
+    abstract fun isValidConfiguration( configuration: DeviceRegistration ): Trilean
 }

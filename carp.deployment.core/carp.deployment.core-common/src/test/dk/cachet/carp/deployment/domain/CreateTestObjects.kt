@@ -7,6 +7,9 @@ import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.Serializable
 
 
+val testId = UUID( "27c56423-b7cd-48dd-8b7f-f819621a34f0" )
+
+
 /**
  * Creates a study protocol using the default initialization (no devices, tasks, or triggers).
  */
@@ -30,6 +33,23 @@ fun createSingleMasterWithConnectedDeviceProtocol(
     return protocol
 }
 
+fun deploymentFor( protocol: StudyProtocol ): Deployment
+{
+    val snapshot = protocol.getSnapshot()
+    return Deployment( snapshot, testId )
+}
+
+@Serializable
+internal data class UnknownDeviceDescriptor( override val roleName: String ) : DeviceDescriptor()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( UnknownDeviceDescriptor::class, "dk.cachet.carp.deployment.domain.UnknownDeviceDescriptor" ) }
+    }
+
+    override fun isValidConfiguration( configuration: DeviceRegistration ) = Trilean.TRUE
+}
+
 @Serializable
 internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) : MasterDeviceDescriptor()
 {
@@ -38,5 +58,5 @@ internal data class UnknownMasterDeviceDescriptor( override val roleName: String
         init { PolymorphicSerializer.registerSerializer( UnknownMasterDeviceDescriptor::class, "dk.cachet.carp.deployment.domain.UnknownMasterDeviceDescriptor" ) }
     }
 
-    override fun isValidConfiguration( configuration: DeviceConfiguration ) = Trilean.TRUE
+    override fun isValidConfiguration( configuration: DeviceRegistration ) = Trilean.TRUE
 }

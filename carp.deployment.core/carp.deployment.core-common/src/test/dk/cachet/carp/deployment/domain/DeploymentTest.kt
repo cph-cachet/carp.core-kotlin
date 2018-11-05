@@ -1,7 +1,8 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.*
+import dk.cachet.carp.protocols.domain.devices.*
+import kotlinx.serialization.json.JSON
 import kotlin.test.*
 
 
@@ -10,9 +11,6 @@ import kotlin.test.*
  */
 class DeploymentTest
 {
-    private val testId = UUID( "27c56423-b7cd-48dd-8b7f-f819621a34f0" )
-
-
     @Test
     fun cant_initialize_deployment_with_errors()
     {
@@ -52,8 +50,7 @@ class DeploymentTest
     fun new_deployment_has_unregistered_master_device()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
-        val deployment = Deployment( snapshot, testId )
+        val deployment: Deployment = deploymentFor( protocol )
 
         // Two devices can be registered, but none are by default.
         assertEquals( 2, deployment.registrableDevices.size )
@@ -63,5 +60,76 @@ class DeploymentTest
         // Only the master device requires registration.
         val requiredRegistration = deployment.registrableDevices.single { it.requiresRegistration }
         assertEquals( protocol.masterDevices.single(), requiredRegistration.device )
+    }
+
+    @Test
+    fun registerDevice_succeeds()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        protocol.addMasterDevice( device )
+        val deployment: Deployment = deploymentFor( protocol )
+
+        val registration = DeviceRegistration( "0" )
+        deployment.registerDevice( device, registration )
+
+        assertEquals( 1, deployment.registeredDevices.size )
+        assertEquals( registration, deployment.registeredDevices.values.single() )
+    }
+
+    @Test
+    fun cant_registerDevice_not_part_of_deployment()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val deployment: Deployment = deploymentFor( protocol )
+
+        val invalidDevice = StubMasterDeviceDescriptor( "Not part of deployment" )
+        val registration = DeviceRegistration( "0" )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            deployment.registerDevice( invalidDevice, registration )
+        }
+    }
+
+    @Test
+    fun cant_registerDevice_if_already_registered()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        protocol.addMasterDevice( device )
+        val deployment: Deployment = deploymentFor( protocol )
+
+        deployment.registerDevice( device, DeviceRegistration( "0" ) )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            deployment.registerDevice( device, DeviceRegistration( "1" ))
+        }
+    }
+
+    /**
+     * When the runtime type of devices is unknown, deployment cannot verify whether a registration is valid (this is implemented on the type definition).
+     * However, rather than not supporting deployment, registration is simply considered valid and forwarded as is.
+     */
+    @Test
+    fun can_registerDevice_for_unknown_types()
+    {
+        val protocol = createEmptyProtocol()
+        val master = UnknownMasterDeviceDescriptor( "Unknown master" )
+        val connected = UnknownDeviceDescriptor( "Unknown connected" )
+
+        // Mimic that the 'Unknown...' types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
+        val masterCustom = CustomMasterDeviceDescriptor( "Irrelevant", JSON.stringify( master ) )
+        val connectedCustom = CustomDeviceDescriptor( "Irrelevant", JSON.stringify( connected ) )
+
+        protocol.addMasterDevice( masterCustom )
+        protocol.addConnectedDevice( connectedCustom, masterCustom )
+
+        val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
+        val deployment = Deployment( snapshot, testId )
+
+        deployment.registerDevice( masterCustom, DeviceRegistration( "0" ) )
+        deployment.registerDevice( connectedCustom, DeviceRegistration( "1" ) )
     }
 }

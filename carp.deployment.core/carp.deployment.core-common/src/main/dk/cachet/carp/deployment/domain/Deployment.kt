@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.devices.*
@@ -67,5 +68,34 @@ class Deployment( protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.r
             .toSet()
 
         return DeploymentStatus( id.toString(), registrableDevices, remainingRegistration )
+    }
+
+    /**
+     * Register the specified [device] for this deployment using the passed [registration] options.
+     */
+    fun registerDevice( device: DeviceDescriptor, registration: DeviceRegistration )
+    {
+        val containsDevice: Boolean = _registrableDevices.any { it.device == device }
+        if ( !containsDevice )
+        {
+            throw IllegalArgumentException( "The passed device is not part of this deployment." )
+        }
+
+        val isAlreadyRegistered = _registeredDevices.keys.contains( device )
+        if ( isAlreadyRegistered )
+        {
+            // TODO: For now, given that we don't fully know requirements of changing registration of devices yet, do not allow it.
+            throw IllegalArgumentException( "The passed device is already registered." )
+        }
+
+        // Verify whether the passed registration is known to be invalid for the given device.
+        // This may be 'UNKNOWN' when the device type is not known at runtime.
+        // In this case, simply forward as is assuming it to be valid (possibly failing in 'environment' later).
+        if ( device.isValidConfiguration( registration ) == Trilean.FALSE )
+        {
+            throw IllegalArgumentException( "The passed registration is not valid for the given device." )
+        }
+
+        _registeredDevices[ device ] = registration
     }
 }

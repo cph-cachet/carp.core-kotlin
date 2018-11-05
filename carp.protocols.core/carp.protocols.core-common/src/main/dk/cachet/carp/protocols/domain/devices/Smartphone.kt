@@ -16,5 +16,5 @@ data class Smartphone( override val roleName: String ) : MasterDeviceDescriptor(
         init { PolymorphicSerializer.registerSerializer( Smartphone::class, "dk.cachet.carp.protocols.domain.devices.Smartphone" ) }
     }
 
-    override fun isValidConfiguration( configuration: DeviceConfiguration ) = Trilean.TRUE
+    override fun isValidConfiguration( configuration: DeviceRegistration ) = Trilean.TRUE
 }
