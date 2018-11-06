@@ -13,5 +13,5 @@ data class StubDeviceDescriptor( override val roleName: String = "Stub device" )
         init { PolymorphicSerializer.registerSerializer( StubDeviceDescriptor::class, "dk.cachet.carp.protocols.domain.devices.StubDeviceDescriptor" ) }
     }
 
-    override fun isValidConfiguration(configuration: DeviceConfiguration): Trilean = Trilean.TRUE
+    override fun isValidConfiguration( registration: DeviceRegistration ): Trilean = Trilean.TRUE
 }

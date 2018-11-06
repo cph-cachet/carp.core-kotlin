@@ -91,11 +91,12 @@ class Deployment( protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.r
         // Verify whether the passed registration is known to be invalid for the given device.
         // This may be 'UNKNOWN' when the device type is not known at runtime.
         // In this case, simply forward as is assuming it to be valid (possibly failing in 'environment' later).
-        if ( device.isValidConfiguration( registration ) == Trilean.FALSE )
+        val registrationCopy = registration.copy() // Copy registration to prevent external modification.
+        if ( device.isValidConfiguration( registrationCopy ) == Trilean.FALSE )
         {
             throw IllegalArgumentException( "The passed registration is not valid for the given device." )
         }
 
-        _registeredDevices[ device ] = registration
+        _registeredDevices[ device ] = registrationCopy
     }
 }

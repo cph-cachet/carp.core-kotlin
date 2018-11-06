@@ -23,8 +23,8 @@ abstract class DeviceDescriptor : Immutable( notImmutableErrorFor( DeviceDescrip
     abstract val roleName: String
 
     /**
-     * Determines whether the given device [configuration] is valid for this type of device.
-     * Specific devices may extend from [DeviceConfiguration] in case custom configuration is needed for them.
+     * Determines whether the given [registration] is configured correctly valid for this type of device.
+     * Specific devices may extend from [DeviceRegistration] in case custom configuration is needed for them.
      */
-    abstract fun isValidConfiguration( configuration: DeviceRegistration ): Trilean
+    abstract fun isValidConfiguration( registration: DeviceRegistration ): Trilean
 }

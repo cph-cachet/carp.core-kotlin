@@ -17,7 +17,7 @@ class DeviceDescriptorTest
     {
         class NoDataClass( override val roleName: String = "Not a data class" ) : DeviceDescriptor()
         {
-            override fun isValidConfiguration(configuration: DeviceConfiguration): Trilean = Trilean.TRUE
+            override fun isValidConfiguration( registration: DeviceRegistration ): Trilean = Trilean.TRUE
         }
 
         assertFailsWith<InvalidConfigurationError>

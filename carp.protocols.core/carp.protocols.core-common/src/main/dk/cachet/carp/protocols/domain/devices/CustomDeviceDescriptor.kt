@@ -27,7 +27,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
     }
 
     /**
-     * For unknown types, it cannot be determined whether or not a given configuration is valid.
+     * For unknown types, it cannot be determined whether or not a given registration is valid.
      */
-    override fun isValidConfiguration( configuration: DeviceRegistration ) = Trilean.UNKNOWN
+    override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.UNKNOWN
 }
