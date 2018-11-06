@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.PolymorphicSerializer
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.serialization.Serializable
@@ -55,4 +56,12 @@ open class DeviceRegistration(
         val serialized = JSON.stringify( PolymorphicSerializer, this )
         return serialized.hashCode()
     }
+}
+
+/**
+ * Create a default device registration, which solely involves assigning a unique ID to the device.
+ */
+fun defaultDeviceRegistration(): DeviceRegistration
+{
+    return DeviceRegistration( UUID.randomUUID().toString() )
 }

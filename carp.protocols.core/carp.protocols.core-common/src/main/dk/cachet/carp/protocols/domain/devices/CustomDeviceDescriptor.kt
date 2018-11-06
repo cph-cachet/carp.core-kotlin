@@ -26,6 +26,9 @@ data class CustomDeviceDescriptor( override val className: String, override val 
         roleName = json[ roleNameField ].content
     }
 
+    override fun createRegistration(): DeviceRegistration
+        = throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, it is unknown which registration is required." )
+
     /**
      * For unknown types, it cannot be determined whether or not a given registration is valid.
      */

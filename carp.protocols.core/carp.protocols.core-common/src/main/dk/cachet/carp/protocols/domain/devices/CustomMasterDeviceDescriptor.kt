@@ -26,8 +26,11 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
         roleName = json[ roleNameField ].content
     }
 
+    override fun createRegistration(): DeviceRegistration
+        = throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, it is unknown which registration is required." )
+
     /**
      * For unknown types, it cannot be determined whether or not a given configuration is valid.
      */
-    override fun isValidConfiguration( configuration: DeviceRegistration ) = Trilean.UNKNOWN
+    override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.UNKNOWN
 }

@@ -23,7 +23,14 @@ abstract class DeviceDescriptor : Immutable( notImmutableErrorFor( DeviceDescrip
     abstract val roleName: String
 
     /**
-     * Determines whether the given [registration] is configured correctly valid for this type of device.
+     * Create a suitable [DeviceRegistration] which can be used to configure this device for deployment.
+     * Default registration for devices typically only involves assigning a unique ID to them.
+     * However, in case more specific configuration is needed as part of registration, [DeviceRegistration] can be extended.
+     */
+    abstract fun createRegistration(): DeviceRegistration
+
+    /**
+     * Determines whether the given [registration] is configured correctly for this type of device.
      * Specific devices may extend from [DeviceRegistration] in case custom configuration is needed for them.
      */
     abstract fun isValidConfiguration( registration: DeviceRegistration ): Trilean

@@ -53,6 +53,7 @@ internal data class UnknownMasterDeviceDescriptor( override val roleName: String
         init { PolymorphicSerializer.registerSerializer( UnknownMasterDeviceDescriptor::class, "dk.cachet.carp.protocols.domain.UnknownMasterDeviceDescriptor" ) }
     }
 
+    override fun createRegistration(): DeviceRegistration = defaultDeviceRegistration()
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
 }
 
@@ -64,6 +65,7 @@ internal data class UnknownDeviceDescriptor( override val roleName: String ) : D
         init { PolymorphicSerializer.registerSerializer( UnknownDeviceDescriptor::class, "dk.cachet.carp.protocols.domain.UnknownDeviceDescriptor" ) }
     }
 
+    override fun createRegistration(): DeviceRegistration = defaultDeviceRegistration()
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
 }
 

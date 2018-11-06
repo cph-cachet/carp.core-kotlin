@@ -35,4 +35,18 @@ class CustomMasterDeviceDescriptorTest
             CustomMasterDeviceDescriptor( "Irrelevant", serialized )
         }
     }
+
+    @Test
+    fun createRegistration_is_not_supported()
+    {
+        val device = UnknownMasterDeviceDescriptor( "Unknown" )
+        val serialized: String = JSON.stringify( device )
+
+        val custom = CustomMasterDeviceDescriptor( "Irrelevant", serialized )
+
+        assertFailsWith<UnsupportedOperationException>
+        {
+            custom.createRegistration()
+        }
+    }
 }
