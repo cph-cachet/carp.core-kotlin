@@ -15,6 +15,8 @@ open class DeviceRegistration(
     /**
      * An ID for the device, used to disambiguate between devices of the same type, as provided by the device itself.
      * It is up to specific types of devices to guarantee uniqueness across all devices of the same type.
+     *
+     * TODO: This might be useful for potential optimizations later (e.g., prevent pulling in data from the same source more than once), but for now is ignored.
      */
     var deviceId: String )
 {

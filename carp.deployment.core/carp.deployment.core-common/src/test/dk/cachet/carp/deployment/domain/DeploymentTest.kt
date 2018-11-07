@@ -128,10 +128,49 @@ class DeploymentTest
         protocol.addMasterDevice( masterCustom )
         protocol.addConnectedDevice( connectedCustom, masterCustom )
 
-        val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
-        val deployment = Deployment( snapshot, testId )
-
+        val deployment: Deployment = deploymentFor( protocol )
         deployment.registerDevice( masterCustom, DeviceRegistration( "0" ) )
         deployment.registerDevice( connectedCustom, DeviceRegistration( "1" ) )
+    }
+
+    @Test
+    fun cant_registerDevice_already_in_use_by_different_role()
+    {
+        val protocol = createEmptyProtocol()
+        val master = StubMasterDeviceDescriptor( "Master" )
+        val connected = StubMasterDeviceDescriptor( "Connected" )
+        protocol.addMasterDevice( master )
+        protocol.addConnectedDevice( connected, master )
+        val deployment: Deployment = deploymentFor( protocol )
+
+        val registration = DeviceRegistration( "0" )
+        deployment.registerDevice( master, registration )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            deployment.registerDevice( connected, registration )
+        }
+    }
+
+    @Test
+    fun can_registerDevice_with_same_id_for_two_different_unknown_types()
+    {
+        val protocol = createEmptyProtocol()
+        val master = StubMasterDeviceDescriptor()
+        val device1 = UnknownMasterDeviceDescriptor( "Unknown device 1" )
+        val device2 = UnknownDeviceDescriptor( "Unknown device 2" )
+
+        // Mimic that the 'Unknown...' types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
+        val device1Custom = CustomDeviceDescriptor( "One class", JSON.stringify( device1 ) )
+        val device2Custom = CustomDeviceDescriptor( "Not the same class", JSON.stringify( device2 ) )
+
+        protocol.addMasterDevice( master )
+        protocol.addConnectedDevice( device1Custom, master )
+        protocol.addConnectedDevice( device2Custom, master )
+        val deployment: Deployment = deploymentFor( protocol )
+
+        // Even though these two devices are registered using the same ID, this should succeed since they are of different types.
+        deployment.registerDevice( device1Custom, DeviceRegistration( "0" ) )
+        deployment.registerDevice( device2Custom, DeviceRegistration( "0" ) )
     }
 }

@@ -2,6 +2,7 @@ package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.devices.*
 
@@ -95,6 +96,20 @@ class Deployment( protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.r
         if ( device.isValidConfiguration( registrationCopy ) == Trilean.FALSE )
         {
             throw IllegalArgumentException( "The passed registration is not valid for the given device." )
+        }
+
+        // Verify whether deviceId is unique for the given device type within this deployment.
+        val isUnique = _registeredDevices.none {
+            val isSameId = it.value.deviceId == registrationCopy.deviceId
+            val otherDevice = it.key
+            val areUnknownDevices = device is UnknownPolymorphicWrapper && otherDevice is UnknownPolymorphicWrapper
+            val matchingUnknownDevices: Boolean by lazy { (device as UnknownPolymorphicWrapper).className == (otherDevice as UnknownPolymorphicWrapper).className }
+            isSameId && ( (!areUnknownDevices && otherDevice::class == device::class) || (areUnknownDevices && matchingUnknownDevices) ) }
+        if ( !isUnique )
+        {
+            throw IllegalArgumentException(
+                "The deviceId specified in the passed registration is already in use by a device of the same type. " +
+                "Cannot register the same device for different device roles within a deployment." )
         }
 
         _registeredDevices[ device ] = registrationCopy
