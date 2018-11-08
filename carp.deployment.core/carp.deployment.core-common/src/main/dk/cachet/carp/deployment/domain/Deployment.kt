@@ -1,7 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.Trilean
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.*
 import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.devices.*
@@ -14,8 +13,26 @@ import dk.cachet.carp.protocols.domain.devices.*
  * enabling a connection between them, tracking device connection issues, assessing data quality,
  * and registering participant consent.
  */
-class Deployment( protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() )
+class Deployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() )
 {
+    companion object Factory
+    {
+        fun fromSnapshot( snapshot: DeploymentSnapshot ): Deployment
+        {
+            val deployment = Deployment( snapshot.studyProtocolSnapshot, UUID( snapshot.deploymentId ) )
+
+            // Add registered devices.
+            snapshot.registeredDevices.forEach { r ->
+                val registrable = deployment.registrableDevices.firstOrNull { it.device.roleName == r.key }
+                    ?: throw IllegalArgumentException( "Can't find registered device with role name '${r.key}' in snapshot." )
+                deployment.registerDevice( registrable.device, r.value )
+            }
+
+            return deployment
+        }
+    }
+
+
     /**
      * The set of all devices which can or need to be registered for this deployment.
      */
@@ -113,5 +130,14 @@ class Deployment( protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.r
         }
 
         _registeredDevices[ device ] = registrationCopy
+    }
+
+
+    /**
+     * Get a serializable snapshot of the current state of this [Deployment].
+     */
+    fun getSnapshot(): DeploymentSnapshot
+    {
+        return DeploymentSnapshot.fromDeployment( this )
     }
 }
