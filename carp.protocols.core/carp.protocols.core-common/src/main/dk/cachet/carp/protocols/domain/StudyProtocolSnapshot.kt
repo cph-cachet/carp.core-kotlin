@@ -49,10 +49,7 @@ object TasksSerializer : KSerializer<List<TaskDescriptor>> by ArrayListSerialize
  */
 object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, CustomTrigger>( CustomTrigger::class )
 {
-    override fun createWrapper( className: String, json: String): CustomTrigger
-    {
-        return CustomTrigger( className, json )
-    }
+    override fun createWrapper( className: String, json: String): CustomTrigger = CustomTrigger( className, json )
 }
 
 

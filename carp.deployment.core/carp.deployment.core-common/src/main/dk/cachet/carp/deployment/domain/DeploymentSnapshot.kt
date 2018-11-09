@@ -1,17 +1,16 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.serialization.PolymorphicSerializer
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
+import dk.cachet.carp.protocols.domain.devices.*
+import kotlinx.serialization.*
 import kotlinx.serialization.internal.*
+import kotlinx.serialization.json.JSON
 
 
 /**
- * Custom serializer for a map containing [DeviceRegistration] values which may be extending types.
+ * Custom serializer for a map containing [DeviceRegistration] which enables deserializing types that are unknown at runtime, yet extend from [DeviceRegistration].
  */
-private object RegisteredDevicesSerializer : KSerializer<Map<String, Any>> by HashMapSerializer( StringSerializer, PolymorphicSerializer )
+private object RegisteredDevicesSerializer : KSerializer<Map<String, DeviceRegistration>> by HashMapSerializer( StringSerializer, DeviceRegistrationSerializer )
 
 
 /**
@@ -38,5 +37,24 @@ data class DeploymentSnapshot(
                 deployment.protocolSnapshot,
                 deployment.registeredDevices.mapKeys { it.key.roleName } )
         }
+
+        /**
+         * Create a snapshot from JSON serialized using the built-in serializer.
+         *
+         * @param json The JSON which was serialized using the built-in serializer (`DeploymentSnapshot.toJson`).
+         */
+        fun fromJson( json: String ): DeploymentSnapshot
+        {
+            return JSON.parse( json )
+        }
+    }
+
+
+    /**
+     * Serialize to JSON using the built-in serializer.
+     */
+    fun toJson(): String
+    {
+        return JSON.stringify( this )
     }
 }

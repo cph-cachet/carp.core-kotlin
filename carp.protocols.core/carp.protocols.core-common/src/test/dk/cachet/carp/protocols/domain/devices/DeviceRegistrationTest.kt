@@ -13,7 +13,7 @@ class DeviceRegistrationTest
     @Test
     fun copy_succeeds()
     {
-        val registration = DeviceRegistration( "0" )
+        val registration = DefaultDeviceRegistration( "0" )
         val copy = registration.copy()
 
         assertFalse { registration === copy }

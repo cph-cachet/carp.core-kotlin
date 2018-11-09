@@ -1,29 +1,35 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.serialization.PolymorphicSerializer
+import dk.cachet.carp.common.serialization.*
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlinx.serialization.json.JSON
+
+
+/**
+ * Custom serializer for a [DeviceRegistration] which enables deserializing types that are unknown at runtime, yet extend from [DeviceRegistration].
+ */
+object DeviceRegistrationSerializer : UnknownPolymorphicSerializer<DeviceRegistration, CustomDeviceRegistration>( CustomDeviceRegistration::class )
+{
+    override fun createWrapper( className: String, json: String ): CustomDeviceRegistration = CustomDeviceRegistration( className, json )
+}
 
 
 /**
  * A [DeviceRegistration] configures a [DeviceDescriptor] as part of the deployment of a [StudyProtocol].
  */
 @Serializable
-open class DeviceRegistration(
+abstract class DeviceRegistration
+{
     /**
      * An ID for the device, used to disambiguate between devices of the same type, as provided by the device itself.
      * It is up to specific types of devices to guarantee uniqueness across all devices of the same type.
      *
      * TODO: This might be useful for potential optimizations later (e.g., prevent pulling in data from the same source more than once), but for now is ignored.
      */
-    var deviceId: String )
-{
-    companion object
-    {
-        init { PolymorphicSerializer.registerSerializer( DeviceRegistration::class, "dk.cachet.carp.protocols.domain.devices.DeviceRegistration" ) }
-    }
+    @Transient
+    abstract var deviceId: String
 
     /**
      * Make an exact copy of this object.
@@ -32,8 +38,8 @@ open class DeviceRegistration(
     {
         // Use JSON serialization to make a clone.
         // This prevents each extending class from having to implement this method.
-        val serialized = JSON.stringify( PolymorphicSerializer, this )
-        return JSON.parse( PolymorphicSerializer, serialized ) as DeviceRegistration
+        val serialized = JSON.stringify( DeviceRegistrationSerializer, this )
+        return JSON.parse( DeviceRegistrationSerializer, serialized )
     }
 
     override fun equals( other: Any? ): Boolean
@@ -45,8 +51,8 @@ open class DeviceRegistration(
 
         // Use JSON serialization to verify equality.
         // This prevents each extending class from having to implement this method.
-        val serialized = JSON.stringify( PolymorphicSerializer, this )
-        val otherSerialized = JSON.stringify( PolymorphicSerializer, this )
+        val serialized = JSON.stringify( DeviceRegistrationSerializer, this )
+        val otherSerialized = JSON.stringify( DeviceRegistrationSerializer, this )
 
         return serialized == otherSerialized
     }
@@ -55,15 +61,16 @@ open class DeviceRegistration(
     {
         // Use JSON serialization to determine hashcode.
         // This prevents each extending class from having to implement this method.
-        val serialized = JSON.stringify( PolymorphicSerializer, this )
+        val serialized = JSON.stringify( DeviceRegistrationSerializer, this )
         return serialized.hashCode()
     }
 }
+
 
 /**
  * Create a default device registration, which solely involves assigning a unique ID to the device.
  */
 fun defaultDeviceRegistration(): DeviceRegistration
 {
-    return DeviceRegistration( UUID.randomUUID().toString() )
+    return DefaultDeviceRegistration( UUID.randomUUID().toString() )
 }

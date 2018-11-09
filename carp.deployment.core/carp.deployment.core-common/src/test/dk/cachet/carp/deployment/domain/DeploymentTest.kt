@@ -70,7 +70,7 @@ class DeploymentTest
         protocol.addMasterDevice( device )
         val deployment: Deployment = deploymentFor( protocol )
 
-        val registration = DeviceRegistration( "0" )
+        val registration = DefaultDeviceRegistration( "0" )
         deployment.registerDevice( device, registration )
 
         assertEquals( 1, deployment.registeredDevices.size )
@@ -86,7 +86,7 @@ class DeploymentTest
         val deployment: Deployment = deploymentFor( protocol )
 
         val invalidDevice = StubMasterDeviceDescriptor( "Not part of deployment" )
-        val registration = DeviceRegistration( "0" )
+        val registration = DefaultDeviceRegistration( "0" )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -102,11 +102,11 @@ class DeploymentTest
         protocol.addMasterDevice( device )
         val deployment: Deployment = deploymentFor( protocol )
 
-        deployment.registerDevice( device, DeviceRegistration( "0" ) )
+        deployment.registerDevice( device, DefaultDeviceRegistration( "0" ) )
 
         assertFailsWith<IllegalArgumentException>
         {
-            deployment.registerDevice( device, DeviceRegistration( "1" ))
+            deployment.registerDevice( device, DefaultDeviceRegistration( "1" ))
         }
     }
 
@@ -129,8 +129,8 @@ class DeploymentTest
         protocol.addConnectedDevice( connectedCustom, masterCustom )
 
         val deployment: Deployment = deploymentFor( protocol )
-        deployment.registerDevice( masterCustom, DeviceRegistration( "0" ) )
-        deployment.registerDevice( connectedCustom, DeviceRegistration( "1" ) )
+        deployment.registerDevice( masterCustom, DefaultDeviceRegistration( "0" ) )
+        deployment.registerDevice( connectedCustom, DefaultDeviceRegistration( "1" ) )
     }
 
     @Test
@@ -143,7 +143,7 @@ class DeploymentTest
         protocol.addConnectedDevice( connected, master )
         val deployment: Deployment = deploymentFor( protocol )
 
-        val registration = DeviceRegistration( "0" )
+        val registration = DefaultDeviceRegistration( "0" )
         deployment.registerDevice( master, registration )
 
         assertFailsWith<IllegalArgumentException>
@@ -170,7 +170,43 @@ class DeploymentTest
         val deployment: Deployment = deploymentFor( protocol )
 
         // Even though these two devices are registered using the same ID, this should succeed since they are of different types.
-        deployment.registerDevice( device1Custom, DeviceRegistration( "0" ) )
-        deployment.registerDevice( device2Custom, DeviceRegistration( "0" ) )
+        deployment.registerDevice( device1Custom, DefaultDeviceRegistration( "0" ) )
+        deployment.registerDevice( device2Custom, DefaultDeviceRegistration( "0" ) )
+    }
+
+    @Test
+    fun creating_deployment_fromSnapshot_obtained_by_getSnapshot_is_the_same()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val deployment = deploymentFor( protocol )
+
+        val snapshot: DeploymentSnapshot = deployment.getSnapshot()
+        val fromSnapshot = Deployment.fromSnapshot( snapshot )
+
+        assertEquals( deployment.id, fromSnapshot.id )
+        assertEquals( deployment.protocolSnapshot, fromSnapshot.protocolSnapshot )
+        assertEquals(
+            deployment.registrableDevices.count(),
+            deployment.registrableDevices.intersect( fromSnapshot.registrableDevices ).count() )
+        assertEquals(
+            deployment.registeredDevices.count(),
+            deployment.registeredDevices.entries.intersect( fromSnapshot.registeredDevices.entries ).count() )
+    }
+
+    @Test
+    fun create_deployment_fromSnapshot_with_custom_extending_types_succeeds()
+    {
+        val protocol = createEmptyProtocol()
+        val master = UnknownMasterDeviceDescriptor( "Unknown" )
+        protocol.addMasterDevice( master )
+        val deployment = deploymentFor( protocol )
+        deployment.registerDevice( master, UnknownDeviceRegistration( "0" ) )
+
+        var serialized: String = deployment.getSnapshot().toJson()
+        serialized = serialized.replace( "dk.cachet.carp.deployment.domain.UnknownMasterDeviceDescriptor", "com.unknown.CustomMasterDevice" )
+        serialized = serialized.replace( "dk.cachet.carp.deployment.domain.UnknownDeviceRegistration", "com.unknown.CustomDeviceRegistration" )
+
+        val snapshot = DeploymentSnapshot.fromJson( serialized )
+        Deployment.fromSnapshot( snapshot )
     }
 }

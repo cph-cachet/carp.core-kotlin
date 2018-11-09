@@ -70,6 +70,15 @@ internal data class UnknownDeviceDescriptor( override val roleName: String ) : D
 }
 
 @Serializable
+internal class UnknownDeviceRegistration( override var deviceId: String ) : DeviceRegistration()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( UnknownDeviceRegistration::class, "dk.cachet.carp.protocols.domain.UnknownDeviceRegistration" ) }
+    }
+}
+
+@Serializable
 internal data class UnknownTaskDescriptor(
     override val name: String,
     @Serializable( PolymorphicArrayListSerializer::class )

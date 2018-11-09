@@ -62,3 +62,12 @@ internal data class UnknownMasterDeviceDescriptor( override val roleName: String
     override fun createRegistration(): DeviceRegistration = defaultDeviceRegistration()
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
 }
+
+@Serializable
+internal class UnknownDeviceRegistration( override var deviceId: String ) : DeviceRegistration()
+{
+    companion object
+    {
+        init { PolymorphicSerializer.registerSerializer( UnknownDeviceRegistration::class, "dk.cachet.carp.deployment.domain.UnknownDeviceRegistration" ) }
+    }
+}
