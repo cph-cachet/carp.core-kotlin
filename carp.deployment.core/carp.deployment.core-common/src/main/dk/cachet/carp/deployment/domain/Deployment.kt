@@ -162,6 +162,30 @@ class Deployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UU
         _registeredDevices[ device ] = registrationCopy
     }
 
+    /**
+     * Get the deployment configuration for the specified [device] in this deployment.
+     *
+     * @throws IllegalArgumentException when the passed [device] is not part of the protocol of this deployment.
+     * @throws IllegalArgumentException when the passed [device] is not ready to receive a [DeviceDeployment] yet.
+     */
+    fun getDeploymentFor( device: MasterDeviceDescriptor ): DeviceDeployment
+    {
+        // Verify whether the specified device is part of the protocol of this deployment.
+        if ( !protocolSnapshot.masterDevices.contains( device ) )
+        {
+            throw IllegalArgumentException( "The specified device is not part of the protocol of this deployment." )
+        }
+
+        // Verify whether the specified device is ready to be deployed.
+        val canDeploy = canObtainDeviceDeployment( device )
+        if ( !canDeploy )
+        {
+            throw IllegalArgumentException( "The specified device is awaiting registration of other devices before it can be deployed." )
+        }
+
+        return DeviceDeployment( id.toString() )
+    }
+
 
     /**
      * Get a serializable snapshot of the current state of this [Deployment].

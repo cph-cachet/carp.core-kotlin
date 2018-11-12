@@ -234,4 +234,37 @@ class DeploymentTest
         assertTrue { readyStatus.remainingDevicesToRegister.isEmpty() }
         assertEquals( setOf( "Master" ), readyStatus.devicesReadyForDeployment )
     }
+
+    @Test
+    fun getDeploymentFor_succeeds()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
+        val master = protocol.masterDevices.first { it.roleName == "Master" }
+        val deployment = deploymentFor( protocol )
+        deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
+
+        deployment.getDeploymentFor( master )
+    }
+
+    @Test
+    fun getDeploymentFor_fails_when_device_not_in_protocol()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val deployment = deploymentFor( protocol )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            deployment.getDeploymentFor( StubMasterDeviceDescriptor( "Some other device" ) )
+        }
+    }
+
+    @Test
+    fun getDeploymentFor_fails_when_device_cant_be_deployed_yet()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
+        val master = protocol.masterDevices.first { it.roleName == "Master" }
+        val deployment = deploymentFor( protocol )
+
+        assertFailsWith<IllegalArgumentException>{ deployment.getDeploymentFor( master ) }
+    }
 }
