@@ -24,7 +24,7 @@ interface StudyProtocolRepositoryTest
 
         repo.add( protocol, "Initial" )
         val retrieved = repo.getBy( owner, "Study" )
-        assertEquals( protocol, retrieved )
+        assertEquals( protocol.getSnapshot(), retrieved.getSnapshot() ) // StudyProtocol does not implement equals, but snapshot does.
     }
 
     @Test
@@ -44,7 +44,7 @@ interface StudyProtocolRepositoryTest
         repo.update( protocol3, "Version 3" )
 
         val retrievedProtocol = repo.getBy( owner, "Study", "Version 2" )
-        assertEquals( protocol2, retrievedProtocol )
+        assertEquals( protocol2.getSnapshot(), retrievedProtocol.getSnapshot() ) // StudyProtocol does not implement equals, but snapshot does.
     }
 
     @Test
@@ -111,7 +111,7 @@ interface StudyProtocolRepositoryTest
         protocol.addMasterDevice( StubMasterDeviceDescriptor() )
         repo.update( protocol, "New version" )
         val retrieved = repo.getBy( owner, "Study" )
-        assertEquals( protocol, retrieved )
+        assertEquals( protocol.getSnapshot(), retrieved.getSnapshot() ) // StudyProtocol does not implement equals, but snapshot does.
     }
 
     @Test
@@ -138,8 +138,9 @@ interface StudyProtocolRepositoryTest
         protocol2.addMasterDevice( StubMasterDeviceDescriptor() )
         repo.update( protocol2, "Latest should be retrieved" )
 
-        val protocols: List<StudyProtocol> = repo.getAllFor( owner ).toList()
-        val expected = listOf( protocol1, protocol2 )
+        // StudyProtocol does not implement equals, but snapshot does, so compare snapshots.
+        val protocols: List<StudyProtocolSnapshot> = repo.getAllFor( owner ).map { it.getSnapshot() }.toList()
+        val expected = listOf( protocol1.getSnapshot(), protocol2.getSnapshot() )
         assertEquals( expected.count(), protocols.intersect( expected ).count() )
     }
 
