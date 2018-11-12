@@ -17,7 +17,11 @@ data class DeploymentStatus(
     /**
      * The role names of all [registrableDevices] which still require registration for the deployment to start running.
      */
-    val remainingDevicesToRegister: Set<String> )
+    val remainingDevicesToRegister: Set<String>,
+    /**
+     * The role names of all devices which have been registered successfully and are ready for deployment.
+     */
+    val devicesReadyForDeployment: Set<String> )
 {
     companion object {
         /**

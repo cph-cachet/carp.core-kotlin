@@ -78,14 +78,44 @@ class Deployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UU
      */
     fun getStatus(): DeploymentStatus
     {
-        val remainingRegistration: Set<String> = _registrableDevices
-            .asSequence()
-            .filter { it.requiresRegistration }
+        val remainingRegistration: Set<String> = getRemainingDevicesToRegister().map { it.roleName }.toSet()
+        val devicesReadyForDeployment: Set<String> = _registrableDevices
+            .filter {
+                it.device is MasterDeviceDescriptor && // Only master devices can be deployed.
+                canObtainDeviceDeployment( it.device ) }
             .map { it.device.roleName }
-            .minus( registeredDevices.keys.map { it.roleName } )
             .toSet()
 
-        return DeploymentStatus( id.toString(), registrableDevices, remainingRegistration )
+        return DeploymentStatus(
+            id.toString(),
+            registrableDevices,
+            remainingRegistration,
+            devicesReadyForDeployment )
+    }
+
+    /**
+     * Get the subset of registrable devices which require registration and are not yet registered.
+     */
+    private fun getRemainingDevicesToRegister(): Set<DeviceDescriptor>
+    {
+        return _registrableDevices
+            .asSequence()
+            .filter { it.requiresRegistration }
+            .map { it.device }
+            .minus( registeredDevices.keys )
+            .toSet()
+    }
+
+    /**
+     * Determines whether the deployment configuration for a specific device can be obtained.
+     * In case the device for which the deployment configuration is requested depends on another device which is not yet registered,
+     * the deployment configuration (to initialize the device environment) cannot be obtained.
+     */
+    private fun canObtainDeviceDeployment( device: MasterDeviceDescriptor ): Boolean
+    {
+        // TODO: For now, presume all devices which require registration may depend on one another.
+        //       This can be optimized by looking at the triggers which determine actual dependencies between devices.
+        return getRemainingDevicesToRegister().isEmpty()
     }
 
     /**

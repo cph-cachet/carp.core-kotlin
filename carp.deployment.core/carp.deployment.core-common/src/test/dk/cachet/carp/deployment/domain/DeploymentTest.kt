@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.json.JSON
@@ -208,5 +209,29 @@ class DeploymentTest
 
         val snapshot = DeploymentSnapshot.fromJson( serialized )
         Deployment.fromSnapshot( snapshot )
+    }
+
+    @Test
+    fun getStatus_lifecycle_master_and_connected()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
+        val master =  protocol.devices.first { it.roleName == "Master" }
+        val connected =  protocol.devices.first { it.roleName == "Connected" }
+        val deployment: Deployment = deploymentFor( protocol )
+
+        // Start of deployment, no devices registered.
+        val status: DeploymentStatus = deployment.getStatus()
+        assertEquals( deployment.id, UUID( status.deploymentId ) )
+        assertEquals( 2, status.registrableDevices.count() )
+        assertTrue { status.registrableDevices.any { it.device == master } }
+        assertTrue { status.registrableDevices.any { it.device == connected } }
+        assertEquals( setOf( "Master" ), status.remainingDevicesToRegister )
+        assertTrue { status.devicesReadyForDeployment.isEmpty() }
+
+        // After registering master device, master device is ready for deployment.
+        deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
+        val readyStatus = deployment.getStatus()
+        assertTrue { readyStatus.remainingDevicesToRegister.isEmpty() }
+        assertEquals( setOf( "Master" ), readyStatus.devicesReadyForDeployment )
     }
 }

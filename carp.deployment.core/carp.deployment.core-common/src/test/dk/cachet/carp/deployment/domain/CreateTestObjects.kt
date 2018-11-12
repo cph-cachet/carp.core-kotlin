@@ -29,7 +29,7 @@ fun createSingleMasterWithConnectedDeviceProtocol(
     val protocol = createEmptyProtocol()
     val master = StubMasterDeviceDescriptor( masterDeviceName )
     protocol.addMasterDevice( master )
-    protocol.addConnectedDevice( StubMasterDeviceDescriptor( connectedDeviceName ), master )
+    protocol.addConnectedDevice( StubDeviceDescriptor( connectedDeviceName ), master )
     return protocol
 }
 
