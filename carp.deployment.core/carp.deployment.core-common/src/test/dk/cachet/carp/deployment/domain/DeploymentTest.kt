@@ -240,14 +240,21 @@ class DeploymentTest
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
         val master = protocol.masterDevices.first { it.roleName == "Master" }
+        val connected = protocol.devices.first { it.roleName == "Connected" }
+        val masterTask = StubTaskDescriptor( "Master task" )
+        val connectedTask = StubTaskDescriptor( "Connected task" )
+        protocol.addTriggeredTask( master.atStartOfStudy(), masterTask, master )
+        protocol.addTriggeredTask( master.atStartOfStudy(), connectedTask, connected )
         val deployment = deploymentFor( protocol )
         val registration = DefaultDeviceRegistration( "Registered master" )
         deployment.registerDevice( master, registration )
 
         val deviceDeployment: DeviceDeployment = deployment.getDeploymentFor( master )
         assertEquals( "Registered master", deviceDeployment.configuration.deviceId )
-        assertEquals( protocol.getConnectedDevices( master ).toList(), deviceDeployment.connectedDevices )
+        assertEquals( protocol.getConnectedDevices( master ).toSet(), deviceDeployment.connectedDevices )
         assertEquals( 0, deviceDeployment.connectedDeviceConfigurations.count() ) // No preregistered connected devices.
+        // Device deployment lists both tasks, even if one is destined for the connected device.
+        assertEquals( protocol.tasks.count(), deviceDeployment.tasks.intersect( protocol.tasks ).count() )
     }
 
     @Test

@@ -136,6 +136,18 @@ class StudyProtocol(
     }
 
     /**
+     * Gets all the tasks triggered for the specified [device].
+     */
+    fun getTasksForDevice( device: DeviceDescriptor ): Set<TaskDescriptor>
+    {
+        return _triggeredTasks
+            .flatMap { it.value }
+            .filter { it.device == device }
+            .map { it.task }
+            .toSet()
+    }
+
+    /**
      * Remove a task currently present in the study protocol, including removing it from any [Trigger]'s which initiate it.
      *
      * @param task The task to remove.

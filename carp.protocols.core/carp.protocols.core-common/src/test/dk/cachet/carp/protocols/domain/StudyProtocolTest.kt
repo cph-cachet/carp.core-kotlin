@@ -209,6 +209,23 @@ class StudyProtocolTest
     }
 
     @Test
+    fun getTasksForDevice_succeeds()
+    {
+        val protocol = createEmptyProtocol()
+        val master = StubMasterDeviceDescriptor()
+        val connected = StubDeviceDescriptor()
+        protocol.addMasterDevice( master )
+        protocol.addConnectedDevice( connected, master )
+        val masterTask = StubTaskDescriptor( "Master task" )
+        val connectedTask = StubTaskDescriptor( "Connected task" )
+        protocol.addTriggeredTask( StubTrigger( master ), masterTask, master )
+        protocol.addTriggeredTask( StubTrigger( master ), connectedTask, connected )
+
+        assertEquals( setOf( masterTask ), protocol.getTasksForDevice( master ) )
+        assertEquals( setOf( connectedTask ), protocol.getTasksForDevice( connected ) )
+    }
+
+    @Test
     fun deployment_warning_when_a_trigger_sends_more_than_one_task_to_a_single_device()
     {
         // Create a study protocol with a trigger which triggers two tasks to a single device.

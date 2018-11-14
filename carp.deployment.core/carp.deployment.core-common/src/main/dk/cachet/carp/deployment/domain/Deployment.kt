@@ -183,16 +183,24 @@ class Deployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UU
             throw IllegalArgumentException( "The specified device is awaiting registration of itself or other devices before it can be deployed." )
         }
 
+        val configuration: DeviceRegistration = _registeredDevices[ device ]!! // Must be non-null, otherwise canObtainDeviceDeployment would fail.
+
         // Determine which devices this device needs to connect to and retrieve configuration for preregistered devices.
-        val connectedDevices: List<DeviceDescriptor> = _protocol.getConnectedDevices( device ).toList()
+        val connectedDevices: Set<DeviceDescriptor> = _protocol.getConnectedDevices( device ).toSet()
         val deviceRegistrations: Map<String, DeviceRegistration> = _registeredDevices
             .filter { connectedDevices.contains( it.key ) }
             .mapKeys { it.key.roleName }
 
+        // Get all tasks which might need to be executed on this or connected devices.
+        val tasks = arrayOf( device ).union( connectedDevices )
+            .flatMap { _protocol.getTasksForDevice( it ) }
+            .toSet()
+
         return DeviceDeployment(
-            _registeredDevices[ device ]!!, // Must be non-null, otherwise canObtainDeviceDeployment would fail.
+            configuration,
             connectedDevices,
-            deviceRegistrations )
+            deviceRegistrations,
+            tasks )
     }
 
 
