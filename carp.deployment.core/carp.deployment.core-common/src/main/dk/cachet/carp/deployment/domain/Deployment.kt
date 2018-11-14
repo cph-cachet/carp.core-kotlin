@@ -33,6 +33,15 @@ class Deployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UU
     }
 
 
+    private val _protocol: StudyProtocol = try
+    {
+        StudyProtocol.fromSnapshot( protocolSnapshot )
+    }
+    catch( e: InvalidConfigurationError )
+    {
+        throw IllegalArgumentException( "Invalid protocol snapshot passed." )
+    }
+
     /**
      * The set of all devices which can or need to be registered for this deployment.
      */
@@ -52,23 +61,15 @@ class Deployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UU
     init
     {
         // Verify whether protocol can be deployed.
-        val protocol = try
-        {
-            StudyProtocol.fromSnapshot( protocolSnapshot )
-        }
-        catch( e: InvalidConfigurationError )
-        {
-            throw IllegalArgumentException( "Invalid protocol snapshot passed." )
-        }
-        if ( !protocol.isDeployable() )
+        if ( !_protocol.isDeployable() )
         {
             throw IllegalArgumentException( "The passed protocol snapshot contains deployment errors." )
         }
 
         // Initialize information which devices can or should be registered for this deployment.
-        _registrableDevices = protocol.devices.asSequence()
+        _registrableDevices = _protocol.devices.asSequence()
             // Top-level master devices require registration.
-            .map { it ->  RegistrableDevice( it, protocol.masterDevices.contains( it ) ) }
+            .map { it ->  RegistrableDevice( it, _protocol.masterDevices.contains( it ) ) }
             .toMutableSet()
     }
 
@@ -107,9 +108,8 @@ class Deployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UU
     }
 
     /**
-     * Determines whether the deployment configuration for a specific device can be obtained.
-     * In case the device for which the deployment configuration is requested depends on another device which is not yet registered,
-     * the deployment configuration (to initialize the device environment) cannot be obtained.
+     * Determines whether the deployment configuration (to initialize the device environment) for a specific device can be obtained.
+     * This requires the specified device and all other master devices it depends on to be registered.
      */
     private fun canObtainDeviceDeployment( device: MasterDeviceDescriptor ): Boolean
     {
@@ -180,10 +180,19 @@ class Deployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UU
         val canDeploy = canObtainDeviceDeployment( device )
         if ( !canDeploy )
         {
-            throw IllegalArgumentException( "The specified device is awaiting registration of other devices before it can be deployed." )
+            throw IllegalArgumentException( "The specified device is awaiting registration of itself or other devices before it can be deployed." )
         }
 
-        return DeviceDeployment( id.toString() )
+        // Determine which devices this device needs to connect to and retrieve configuration for preregistered devices.
+        val connectedDevices: List<DeviceDescriptor> = _protocol.getConnectedDevices( device ).toList()
+        val deviceRegistrations: Map<String, DeviceRegistration> = _registeredDevices
+            .filter { connectedDevices.contains( it.key ) }
+            .mapKeys { it.key.roleName }
+
+        return DeviceDeployment(
+            _registeredDevices[ device ]!!, // Must be non-null, otherwise canObtainDeviceDeployment would fail.
+            connectedDevices,
+            deviceRegistrations )
     }
 
 

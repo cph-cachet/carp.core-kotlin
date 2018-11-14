@@ -241,9 +241,29 @@ class DeploymentTest
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
         val master = protocol.masterDevices.first { it.roleName == "Master" }
         val deployment = deploymentFor( protocol )
+        val registration = DefaultDeviceRegistration( "Registered master" )
+        deployment.registerDevice( master, registration )
+
+        val deviceDeployment: DeviceDeployment = deployment.getDeploymentFor( master )
+        assertEquals( "Registered master", deviceDeployment.configuration.deviceId )
+        assertEquals( protocol.getConnectedDevices( master ).toList(), deviceDeployment.connectedDevices )
+        assertEquals( 0, deviceDeployment.connectedDeviceConfigurations.count() ) // No preregistered connected devices.
+    }
+
+    @Test
+    fun getDeploymentFor_with_preregistered_device_succeeds()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
+        val master = protocol.masterDevices.first { it.roleName == "Master" }
+        val connected = protocol.devices.first { it.roleName == "Connected" }
+        val deployment = deploymentFor( protocol )
         deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
 
-        deployment.getDeploymentFor( master )
+        deployment.registerDevice( connected, DefaultDeviceRegistration( "42" ) )
+        val deviceDeployment = deployment.getDeploymentFor( master )
+
+        assertEquals( "Connected", deviceDeployment.connectedDeviceConfigurations.keys.single() )
+        assertEquals( "42", deviceDeployment.connectedDeviceConfigurations[ "Connected" ]!!.deviceId )
     }
 
     @Test

@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 
@@ -9,7 +10,18 @@ import kotlinx.serialization.json.JSON
  */
 @Serializable
 data class DeviceDeployment(
-    val deploymentId: String )
+    /**
+     * Configuration for this device.
+     */
+    val configuration: DeviceRegistration,
+    /**
+     * The devices this device needs to connect to.
+     */
+    val connectedDevices: List<DeviceDescriptor>,
+    /**
+     * Preregistration of connected devices, including configuration such as connection properties, stored per role name.
+     */
+    val connectedDeviceConfigurations: Map<String, DeviceRegistration> )
 {
     companion object
     {
