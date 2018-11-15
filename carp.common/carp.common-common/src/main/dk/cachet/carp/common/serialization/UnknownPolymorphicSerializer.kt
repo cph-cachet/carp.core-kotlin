@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
 
 internal object UnknownPolymorphicClassDesc : SerialClassDescImpl( "kotlin.Any" )
 {
-    override val kind: KSerialClassKind = KSerialClassKind.POLYMORPHIC
+    override val kind: SerialKind = UnionKind.POLYMORPHIC
 
     init
     {
@@ -28,9 +28,9 @@ internal object UnknownPolymorphicClassDesc : SerialClassDescImpl( "kotlin.Any" 
  */
 expect abstract class UnknownPolymorphicSerializer<P: Any, W: P>( wrapperClass: KClass<W>, verifyUnknownPolymorphicWrapper: Boolean = true ) : KSerializer<P>
 {
-    override val serialClassDesc: KSerialClassDesc
-    override fun save( output: KOutput, obj: P )
-    override fun load( input: KInput ): P
+    override val descriptor: SerialDescriptor
+    override fun serialize( output: Encoder, obj: P )
+    override fun deserialize( input: Decoder ): P
 
     /**
      * Create a wrapper for a class which could not be deserialized since it is not in any loaded assembly.

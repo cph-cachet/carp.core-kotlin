@@ -17,7 +17,7 @@ class CustomTaskDescriptorTest
     fun initialization_from_json_extracts_base_TaskDescriptor_properties() {
         val measures: List<Measure> = listOf( StubMeasure( StubDataType() ) )
         val task = UnknownTaskDescriptor( "Unknown", measures )
-        val serialized: String = JSON.stringify( task )
+        val serialized: String = JSON.stringify( UnknownTaskDescriptor.serializer(), task )
 
         val custom = CustomTaskDescriptor( "Irrelevant", serialized )
         assertEquals( task.name, custom.name )
@@ -31,7 +31,7 @@ class CustomTaskDescriptorTest
     fun initialization_from_invalid_json_fails()
     {
         val incorrect = IncorrectTask()
-        val serialized: String = JSON.stringify( incorrect )
+        val serialized: String = JSON.stringify( IncorrectTask.serializer(), incorrect )
 
         assertFailsWith<IllegalArgumentException>
         {

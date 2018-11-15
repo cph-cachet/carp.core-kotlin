@@ -50,7 +50,13 @@ internal data class UnknownMasterDeviceDescriptor( override val roleName: String
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( UnknownMasterDeviceDescriptor::class, "dk.cachet.carp.protocols.domain.UnknownMasterDeviceDescriptor" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                UnknownMasterDeviceDescriptor::class,
+                UnknownMasterDeviceDescriptor.serializer(),
+                "dk.cachet.carp.protocols.domain.UnknownMasterDeviceDescriptor" )
+        }
     }
 
     override fun createRegistration(): DeviceRegistration = defaultDeviceRegistration()
@@ -62,7 +68,13 @@ internal data class UnknownDeviceDescriptor( override val roleName: String ) : D
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( UnknownDeviceDescriptor::class, "dk.cachet.carp.protocols.domain.UnknownDeviceDescriptor" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                UnknownDeviceDescriptor::class,
+                UnknownDeviceDescriptor.serializer(),
+                "dk.cachet.carp.protocols.domain.UnknownDeviceDescriptor" )
+        }
     }
 
     override fun createRegistration(): DeviceRegistration = defaultDeviceRegistration()
@@ -74,7 +86,13 @@ internal class UnknownDeviceRegistration( override var deviceId: String ) : Devi
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( UnknownDeviceRegistration::class, "dk.cachet.carp.protocols.domain.UnknownDeviceRegistration" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                UnknownDeviceRegistration::class,
+                UnknownDeviceRegistration.serializer(),
+                "dk.cachet.carp.protocols.domain.UnknownDeviceRegistration" )
+        }
     }
 }
 
@@ -86,7 +104,13 @@ internal data class UnknownTaskDescriptor(
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( UnknownTaskDescriptor::class, "dk.cachet.carp.protocols.domain.UnknownTaskDescriptor" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                UnknownTaskDescriptor::class,
+                UnknownTaskDescriptor.serializer(),
+                "dk.cachet.carp.protocols.domain.UnknownTaskDescriptor" )
+        }
     }
 }
 
@@ -97,7 +121,13 @@ internal data class UnknownMeasure(
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( UnknownMeasure::class, "dk.cachet.carp.protocols.domain.UnknownMeasure" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                UnknownMeasure::class,
+                UnknownMeasure.serializer(),
+                "dk.cachet.carp.protocols.domain.UnknownMeasure" )
+        }
     }
 }
 
@@ -106,7 +136,13 @@ internal data class UnknownDataType( override val category: DataCategory = DataC
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( UnknownDataType::class, "dk.cachet.carp.protocols.domain.UnknownDataType" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                UnknownDataType::class,
+                UnknownDataType.serializer(),
+                "dk.cachet.carp.protocols.domain.UnknownDataType" )
+        }
     }
 }
 
@@ -115,7 +151,13 @@ internal data class UnknownTrigger( override val sourceDeviceRoleName: String ) 
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( UnknownTrigger::class, "dk.cachet.carp.protocols.domain.UnknownTrigger" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                UnknownTrigger::class,
+                UnknownTrigger.serializer(),
+                "dk.cachet.carp.protocols.domain.UnknownTrigger" )
+        }
     }
 }
 

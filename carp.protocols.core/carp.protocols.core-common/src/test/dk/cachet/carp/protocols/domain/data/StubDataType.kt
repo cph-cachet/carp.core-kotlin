@@ -9,6 +9,12 @@ data class StubDataType( override val category: DataCategory = DataCategory.Othe
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( StubDataType::class, "dk.cachet.carp.protocols.domain.data.StubDataType" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                StubDataType::class,
+                StubDataType.serializer(),
+                "dk.cachet.carp.protocols.domain.data.StubDataType" )
+        }
     }
 }

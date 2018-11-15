@@ -38,7 +38,7 @@ data class DeploymentSnapshot(
          */
         fun fromJson( json: String ): DeploymentSnapshot
         {
-            return JSON.parse( json )
+            return JSON.parse( DeploymentSnapshot.serializer(), json )
         }
     }
 
@@ -48,6 +48,6 @@ data class DeploymentSnapshot(
      */
     fun toJson(): String
     {
-        return JSON.stringify( this )
+        return JSON.stringify( DeploymentSnapshot.serializer(), this )
     }
 }

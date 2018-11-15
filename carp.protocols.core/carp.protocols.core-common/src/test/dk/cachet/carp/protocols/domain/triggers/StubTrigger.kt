@@ -12,7 +12,13 @@ data class StubTrigger(
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( StubTrigger::class, "dk.cachet.carp.protocols.domain.triggers.StubTrigger" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                StubTrigger::class,
+                StubTrigger.serializer(),
+                "dk.cachet.carp.protocols.domain.triggers.StubTrigger" )
+        }
     }
 
     constructor( device: DeviceDescriptor ) : this( device, "Unique" )

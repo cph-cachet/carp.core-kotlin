@@ -15,6 +15,12 @@ data class StepCountMeasure(
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( StepCountMeasure::class, "dk.cachet.carp.protocols.domain.tasks.measures.StepCountMeasure" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                StepCountMeasure::class,
+                StepCountMeasure.serializer(),
+                "dk.cachet.carp.protocols.domain.tasks.measures.StepCountMeasure" )
+        }
     }
 }

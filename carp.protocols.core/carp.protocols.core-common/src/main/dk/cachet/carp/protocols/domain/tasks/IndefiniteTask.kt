@@ -16,6 +16,12 @@ data class IndefiniteTask(
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( IndefiniteTask::class, "dk.cachet.carp.protocols.domain.tasks.IndefiniteTask" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                IndefiniteTask::class,
+                IndefiniteTask.serializer(),
+                "dk.cachet.carp.protocols.domain.tasks.IndefiniteTask" )
+        }
     }
 }

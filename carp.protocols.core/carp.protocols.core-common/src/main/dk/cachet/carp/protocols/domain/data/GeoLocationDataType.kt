@@ -12,6 +12,12 @@ data class GeoLocationDataType( override val category: DataCategory = DataCatego
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( GeoLocationDataType::class, "dk.cachet.carp.protocols.domain.data.GeoLocationDataType" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                GeoLocationDataType::class,
+                GeoLocationDataType.serializer(),
+                "dk.cachet.carp.protocols.domain.data.GeoLocationDataType" )
+        }
     }
 }

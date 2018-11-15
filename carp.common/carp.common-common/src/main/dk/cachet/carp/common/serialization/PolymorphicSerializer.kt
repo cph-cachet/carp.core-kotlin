@@ -10,7 +10,7 @@ import kotlin.reflect.*
  */
 object PolymorphicSerializerClassDesc : SerialClassDescImpl( "kotlin.Any" )
 {
-    override val kind: KSerialClassKind = KSerialClassKind.POLYMORPHIC
+    override val kind: SerialKind = UnionKind.POLYMORPHIC
 
     init
     {
@@ -32,17 +32,17 @@ object PolymorphicSerializerClassDesc : SerialClassDescImpl( "kotlin.Any" )
  */
 object PolymorphicSerializer : KSerializer<Any>
 {
-    override val serialClassDesc: KSerialClassDesc = PolymorphicSerializerClassDesc
+    override val descriptor: SerialDescriptor = PolymorphicSerializerClassDesc
 
     private val simpleNameSerializers = mutableMapOf<String, KSerializer<Any>>()
     private val qualifiedSerializers = mutableMapOf<String, KSerializer<Any>>()
 
 
-    fun <T: Any> registerSerializer( klass: KClass<T>, qualifiedName: String )
+    fun <T: Any> registerSerializer( klass: KClass<T>, serializer: KSerializer<T>, qualifiedName: String )
     {
         val className = klass.simpleName!! // TODO: I presume anonymous classes don't have a name, but can these be serialized at all?
-        @Suppress(  "UNCHECKED_CAST" )
-        val serializer = klass.serializer() as KSerializer<Any>
+        @Suppress( "UNCHECKED_CAST" )
+        val anySerializer = serializer as KSerializer<Any>
 
         // Cannot register duplicate class names.
         val error = "For now, polymorphic serialization in JavaScript does not allow duplicate class names."
@@ -55,8 +55,8 @@ object PolymorphicSerializer : KSerializer<Any>
             throw IllegalArgumentException( "A class with the qualified name '$qualifiedName' is already registered. $error" )
         }
 
-        simpleNameSerializers[ className ] = serializer
-        qualifiedSerializers[ qualifiedName ] = serializer
+        simpleNameSerializers[ className ] = anySerializer
+        qualifiedSerializers[ qualifiedName ] = anySerializer
     }
 
     fun getSerializerBySimpleClassName( className: String ): KSerializer<Any>
@@ -84,53 +84,53 @@ object PolymorphicSerializer : KSerializer<Any>
         return qualifiedSerializers.containsKey( qualifiedName )
     }
 
-    override fun save( output: KOutput, obj: Any )
+    override fun serialize( output: Encoder, obj: Any )
     {
         val saver = getSerializerBySimpleClassName( obj::class.simpleName!! )
 
         @Suppress( "NAME_SHADOWING" )
-        val output = output.writeBegin( serialClassDesc )
-        output.writeStringElementValue( serialClassDesc, 0, saver.serialClassDesc.name )
-        output.writeSerializableElementValue( serialClassDesc, 1, saver, obj )
-        output.writeEnd( serialClassDesc )
+        val output = output.beginStructure( descriptor )
+        output.encodeStringElement( descriptor, 0, saver.descriptor.name )
+        output.encodeSerializableElement( descriptor, 1, saver, obj )
+        output.endStructure( descriptor )
     }
 
-    override fun load( input: KInput ): Any
+    override fun deserialize( input: Decoder ): Any
     {
         @Suppress( "NAME_SHADOWING" )
-        val input = input.readBegin( serialClassDesc )
+        val input = input.beginStructure( descriptor )
         var klassName: String? = null
         var value: Any? = null
         mainLoop@ while ( true )
         {
-            when ( input.readElement( serialClassDesc ) )
+            when ( input.decodeElementIndex( descriptor ) )
             {
-                KInput.READ_ALL ->
+                CompositeDecoder.READ_ALL ->
                 {
-                    klassName = input.readStringElementValue( serialClassDesc, 0 )
+                    klassName = input.decodeStringElement( descriptor, 0 )
                     val loader = getSerializerByQualifiedName( klassName )
-                    value = input.readSerializableElementValue( serialClassDesc, 1, loader )
+                    value = input.decodeSerializableElement( descriptor, 1, loader )
                     break@mainLoop
                 }
-                KInput.READ_DONE ->
+                CompositeDecoder.READ_DONE ->
                 {
                     break@mainLoop
                 }
                 0 ->
                 {
-                    klassName = input.readStringElementValue( serialClassDesc, 0 )
+                    klassName = input.decodeStringElement( descriptor, 0 )
                 }
                 1 ->
                 {
                     klassName = requireNotNull( klassName ) { "Cannot read polymorphic value before its type token" }
                     val loader = getSerializerByQualifiedName( klassName )
-                    value = input.readSerializableElementValue( serialClassDesc, 1, loader )
+                    value = input.decodeSerializableElement( descriptor, 1, loader )
                 }
                 else -> throw SerializationException( "Invalid index" )
             }
         }
 
-        input.readEnd( serialClassDesc )
+        input.endStructure( descriptor )
         return requireNotNull( value ) { "Polymorphic value have not been read" }
     }
 }

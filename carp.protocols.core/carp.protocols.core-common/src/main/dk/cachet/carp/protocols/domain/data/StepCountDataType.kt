@@ -13,6 +13,12 @@ data class StepCountDataType( override val category: DataCategory = DataCategory
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( StepCountDataType::class, "dk.cachet.carp.protocols.domain.data.StepCountDataType" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                StepCountDataType::class,
+                StepCountDataType.serializer(),
+                "dk.cachet.carp.protocols.domain.data.StepCountDataType" )
+        }
     }
 }

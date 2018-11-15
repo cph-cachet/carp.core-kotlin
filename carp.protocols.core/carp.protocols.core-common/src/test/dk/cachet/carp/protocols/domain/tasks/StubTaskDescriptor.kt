@@ -13,6 +13,12 @@ data class StubTaskDescriptor(
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( StubTaskDescriptor::class, "dk.cachet.carp.protocols.domain.tasks.StubTaskDescriptor" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                StubTaskDescriptor::class,
+                StubTaskDescriptor.serializer(),
+                "dk.cachet.carp.protocols.domain.tasks.StubTaskDescriptor" )
+        }
     }
 }

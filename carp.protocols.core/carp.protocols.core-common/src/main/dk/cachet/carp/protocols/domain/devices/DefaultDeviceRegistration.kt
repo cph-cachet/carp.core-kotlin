@@ -14,6 +14,12 @@ class DefaultDeviceRegistration( override var deviceId: String ) : DeviceRegistr
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( DefaultDeviceRegistration::class, "dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                DefaultDeviceRegistration::class,
+                DefaultDeviceRegistration.serializer(),
+                "dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration" )
+        }
     }
 }

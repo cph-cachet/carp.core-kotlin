@@ -15,6 +15,12 @@ data class GeoLocationMeasure(
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( GeoLocationMeasure::class, "dk.cachet.carp.protocols.domain.tasks.measures.GeoLocationMeasure" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                GeoLocationMeasure::class,
+                GeoLocationMeasure.serializer(),
+                "dk.cachet.carp.protocols.domain.tasks.measures.GeoLocationMeasure" )
+        }
     }
 }

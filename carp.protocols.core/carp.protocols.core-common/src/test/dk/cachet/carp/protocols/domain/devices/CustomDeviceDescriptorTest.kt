@@ -15,7 +15,7 @@ class CustomDeviceDescriptorTest
     fun initialization_from_json_extracts_base_DeviceDescriptor_properties()
     {
         val device = UnknownDeviceDescriptor( "Unknown" )
-        val serialized: String = JSON.stringify( device )
+        val serialized: String = JSON.stringify( UnknownDeviceDescriptor.serializer(), device )
 
         val custom = CustomDeviceDescriptor( "Irrelevant", serialized )
         assertEquals( device.roleName, custom.roleName )
@@ -28,7 +28,7 @@ class CustomDeviceDescriptorTest
     fun initialization_from_invalid_json_fails()
     {
         val incorrect = IncorrectDevice()
-        val serialized: String = JSON.stringify( incorrect )
+        val serialized: String = JSON.stringify( IncorrectDevice.serializer(), incorrect )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -40,7 +40,7 @@ class CustomDeviceDescriptorTest
     fun createRegistration_is_not_supported()
     {
         val device = UnknownDeviceDescriptor( "Unknown" )
-        val serialized: String = JSON.stringify( device )
+        val serialized: String = JSON.stringify( UnknownDeviceDescriptor.serializer(), device )
 
         val custom = CustomDeviceDescriptor( "Irrelevant", serialized )
 

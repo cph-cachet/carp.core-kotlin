@@ -13,7 +13,13 @@ data class Smartphone( override val roleName: String ) : MasterDeviceDescriptor(
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( Smartphone::class, "dk.cachet.carp.protocols.domain.devices.Smartphone" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                Smartphone::class,
+                Smartphone.serializer(),
+                "dk.cachet.carp.protocols.domain.devices.Smartphone" )
+        }
     }
 
     override fun createRegistration(): DeviceRegistration = defaultDeviceRegistration()

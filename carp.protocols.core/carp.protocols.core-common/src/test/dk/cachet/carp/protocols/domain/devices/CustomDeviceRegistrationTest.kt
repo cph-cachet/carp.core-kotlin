@@ -15,7 +15,7 @@ class CustomDeviceRegistrationTest
     fun initialization_from_json_extracts_base_DeviceRegistration_properties()
     {
         val registration = UnknownDeviceRegistration( "Unknown" )
-        val serialized: String = JSON.stringify( registration )
+        val serialized: String = JSON.stringify( UnknownDeviceRegistration.serializer(), registration )
 
         val custom = CustomDeviceRegistration( "Irrelevant", serialized )
         assertEquals( registration.deviceId, custom.deviceId )
@@ -28,7 +28,7 @@ class CustomDeviceRegistrationTest
     fun initialization_from_invalid_json_fails()
     {
         val incorrect = IncorrectRegistration()
-        val serialized: String = JSON.stringify( incorrect )
+        val serialized: String = JSON.stringify( IncorrectRegistration.serializer(), incorrect )
 
         assertFailsWith<IllegalArgumentException>
         {

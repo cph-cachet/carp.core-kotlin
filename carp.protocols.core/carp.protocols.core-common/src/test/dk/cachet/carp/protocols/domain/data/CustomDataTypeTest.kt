@@ -14,7 +14,7 @@ class CustomDataTypeTest
     fun initialization_from_json_succeeds()
     {
         val type = UnknownDataType()
-        val serialized: String = JSON.stringify( type )
+        val serialized: String = JSON.stringify( UnknownDataType.serializer(), type )
 
         val custom = CustomDataType( "Irrelevant", serialized )
         assertEquals( type.category, custom.category )

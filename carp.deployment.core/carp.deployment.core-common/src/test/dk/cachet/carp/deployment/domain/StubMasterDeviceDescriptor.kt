@@ -11,7 +11,13 @@ data class StubMasterDeviceDescriptor( override val roleName: String = "Stub mas
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( StubMasterDeviceDescriptor::class, "dk.cachet.carp.deployment.domain.StubMasterDeviceDescriptor" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                StubMasterDeviceDescriptor::class,
+                StubMasterDeviceDescriptor.serializer(),
+                "dk.cachet.carp.deployment.domain.StubMasterDeviceDescriptor" )
+        }
     }
 
     override fun createRegistration(): DeviceRegistration = defaultDeviceRegistration()

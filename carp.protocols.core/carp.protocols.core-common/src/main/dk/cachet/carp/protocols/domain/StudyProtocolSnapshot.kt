@@ -116,7 +116,7 @@ data class StudyProtocolSnapshot(
          */
         fun fromJson( json: String ): StudyProtocolSnapshot
         {
-            return JSON.parse( json )
+            return JSON.parse( StudyProtocolSnapshot.serializer(), json )
         }
 
         private fun getConnections( protocol: StudyProtocol, masterDevice: MasterDeviceDescriptor ): Iterable<DeviceConnection>
@@ -141,7 +141,7 @@ data class StudyProtocolSnapshot(
      */
     fun toJson(): String
     {
-        return JSON.stringify( this )
+        return JSON.stringify( StudyProtocolSnapshot.serializer(), this )
     }
 
 

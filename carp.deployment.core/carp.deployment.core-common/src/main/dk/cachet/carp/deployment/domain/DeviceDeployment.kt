@@ -42,7 +42,7 @@ data class DeviceDeployment(
          */
         fun fromJson( json: String ): DeviceDeployment
         {
-            return JSON.parse( json )
+            return JSON.parse( DeviceDeployment.serializer(), json )
         }
     }
 
@@ -52,6 +52,6 @@ data class DeviceDeployment(
      */
     fun toJson(): String
     {
-        return JSON.stringify( this )
+        return JSON.stringify( DeviceDeployment.serializer(),this )
     }
 }

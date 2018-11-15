@@ -14,7 +14,13 @@ data class StartOfStudyTrigger( override val sourceDeviceRoleName: String ) : Tr
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( StartOfStudyTrigger::class, "dk.cachet.carp.protocols.domain.triggers.StartOfStudyTrigger" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                StartOfStudyTrigger::class,
+                StartOfStudyTrigger.serializer(),
+                "dk.cachet.carp.protocols.domain.triggers.StartOfStudyTrigger" )
+        }
     }
 
     @Transient

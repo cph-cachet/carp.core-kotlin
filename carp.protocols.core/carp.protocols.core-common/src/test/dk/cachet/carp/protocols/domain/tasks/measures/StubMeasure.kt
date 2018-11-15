@@ -12,6 +12,12 @@ data class StubMeasure(
 {
     companion object
     {
-        init { PolymorphicSerializer.registerSerializer( StubMeasure::class, "dk.cachet.carp.protocols.domain.tasks.measures.StubMeasure" ) }
+        init
+        {
+            PolymorphicSerializer.registerSerializer(
+                StubMeasure::class,
+                StubMeasure.serializer(),
+                "dk.cachet.carp.protocols.domain.tasks.measures.StubMeasure" )
+        }
     }
 }

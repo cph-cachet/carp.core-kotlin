@@ -20,7 +20,7 @@ class PolymorphicSerializerTest
     {
         companion object
         {
-            init { PolymorphicSerializer.registerSerializer( A::class, "dk.cachet.carp.common.serialization.PolymorphicSerializerTest.A" ) }
+            init { PolymorphicSerializer.registerSerializer( A::class, A.serializer(),"dk.cachet.carp.common.serialization.PolymorphicSerializerTest.A" ) }
         }
     }
     @Serializable
@@ -28,7 +28,7 @@ class PolymorphicSerializerTest
     {
         companion object
         {
-            init { PolymorphicSerializer.registerSerializer( B::class, "dk.cachet.carp.common.serialization.PolymorphicSerializerTest.B" ) }
+            init { PolymorphicSerializer.registerSerializer( B::class, B.serializer(),"dk.cachet.carp.common.serialization.PolymorphicSerializerTest.B" ) }
         }
     }
     @Serializable
@@ -79,7 +79,10 @@ class PolymorphicSerializerTest
     {
         assertFailsWith<IllegalArgumentException>
         {
-            PolymorphicSerializer.registerSerializer( DuplicateClassName.A::class, "dk.cachet.carp.common.serialization.PolymorphicSerializerTest.DuplicateClassName.A" )
+            PolymorphicSerializer.registerSerializer(
+                DuplicateClassName.A::class,
+                DuplicateClassName.A.serializer(),
+                "dk.cachet.carp.common.serialization.PolymorphicSerializerTest.DuplicateClassName.A" )
         }
     }
 
@@ -93,8 +96,9 @@ class PolymorphicSerializerTest
     fun can_serialize_and_deserialize_polymorph_list()
     {
         val list = PolymorphicList( listOf( A(), B() ) )
-        val json = JSON.stringify( list )
-        val parsed: PolymorphicList = JSON.parse( json )
+        val serializer = PolymorphicList.serializer()
+        val json = JSON.stringify( serializer, list )
+        val parsed: PolymorphicList = JSON.parse( serializer, json )
 
         assertEquals( 2, parsed.objects.count() )
         assertTrue { parsed.objects[ 0 ] is A }
@@ -125,7 +129,7 @@ class PolymorphicSerializerTest
     {
         companion object
         {
-            init { PolymorphicSerializer.registerSerializer( Nested::class, "dk.cachet.carp.common.serialization.PolymorphicSerializerTest.Nested" ) }
+            init { PolymorphicSerializer.registerSerializer( Nested::class, Nested.serializer(), "dk.cachet.carp.common.serialization.PolymorphicSerializerTest.Nested" ) }
         }
     }
 
@@ -133,8 +137,9 @@ class PolymorphicSerializerTest
     fun can_serialize_and_deserialize_nested_polymorph_object()
     {
         val top = TopClass( listOf( Nested(A()), Nested(B()) ) )
-        val json = JSON.stringify( top )
-        val parsed: TopClass = JSON.parse( json )
+        val serializer = TopClass.serializer()
+        val json = JSON.stringify( serializer, top )
+        val parsed: TopClass = JSON.parse( serializer, json )
 
         assertEquals( 2, parsed.nested.count() )
         assertTrue { parsed.nested[ 0 ].field is A }
