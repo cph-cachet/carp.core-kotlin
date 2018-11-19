@@ -8,12 +8,6 @@
       <module name="carp.common-js_test" target="1.8" />
       <module name="carp.common-jvm_main" target="1.8" />
       <module name="carp.common-jvm_test" target="1.8" />
-      <module name="carp.common.core-common_main" target="1.8" />
-      <module name="carp.common.core-common_test" target="1.8" />
-      <module name="carp.common.core-js_main" target="1.8" />
-      <module name="carp.common.core-js_test" target="1.8" />
-      <module name="carp.common.core-jvm_main" target="1.8" />
-      <module name="carp.common.core-jvm_test" target="1.8" />
       <module name="carp.deployment.core-common_main" target="1.8" />
       <module name="carp.deployment.core-common_test" target="1.8" />
       <module name="carp.deployment.core-js_main" target="1.8" />
