@@ -1,7 +1,7 @@
 # Domain Model and Application Service Definitions for all CARP Subsystems
 This project is part of the [CACHET Research Platform (CARP)](https://github.com/cph-cachet/carp.documentation). It contains all domain models and application services [for all CARP subsystems](https://github.com/cph-cachet/carp.documentation/wiki/Repository-design-overview). These represent an open standard and may not have any dependencies on concrete infrastructure.
 
-Currently this project is under development and only contains an initial unstable alpha version of the domain model and applications services of the `carp.protocols` subsystem, and placeholders for `carp.studies` and `carp.deployment`. Many changes will happen as the rest of the infrastructure is implemented. Once a minimum viable product is completed, a first version will be released and more documentation will be added. 
+Currently this project is under development and only contains an initial unstable alpha version of the domain model and applications services of the `carp.protocols` and `carp.deployment` subsystem, and a placeholder for `carp.studies`. Many changes will happen as the rest of the infrastructure is implemented. Once a minimum viable product is completed, a first version will be released and more documentation will be added. 
 
 ## carp.protocols
 
@@ -30,7 +30,19 @@ Manage the recruitment for and lifetime of study deployments, instantiated using
 
 ## carp.deployment
 
-A deployment contains common concerns to 'running' a study, i.e., instantiating a study protocol with a specific set of devices and users as specified in the study protocol. A deployment is responsible for managing registration of participant consent, tracking device connection issues, assessing data quality, and negotiating the connection between separate devices.
+A deployment contains common concerns to 'running' a study, i.e., instantiating a study protocol with a specific set of devices and users as specified in the study protocol. A deployment is responsible for managing registration of participant consent, tracking device connection issues, assessing data quality, and negotiating the connection between separate devices. Deployments are managed through the `DeploymentManager` application service:
+```
+val protocol: StudyProtocol = createSmartphoneStudy()
+val manager: DeploymentManager = createDeploymentEndpoint()
+val status: DeploymentStatus = manager.createDeployment( protocol.getSnapshot() )
+val deploymentId: UUID = UUID( status.deploymentId )
+val smartphone = status.registrableDevices.first().device as Smartphone
+val registration = smartphone.createRegistration() // Modify to configure.
+manager.registerDevice( deploymentId, smartphone.roleName, registration )
+
+// Call from the smartphone to retrieve all the necessary deployment information to start running the study.
+val deviceDeployment: DeviceDeployment = manager.getDeploymentFor( deploymentId, smartphone.roleName )
+```
 
 ## carp.common
 
