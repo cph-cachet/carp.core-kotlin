@@ -1,5 +1,8 @@
 apply plugin: 'kotlin-platform-jvm'
 apply plugin: 'kotlinx-serialization'
+apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 
 sourceSets {
@@ -37,3 +40,93 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = jvmTarget
 }
 sourceCompatibility = jvmTarget
+
+
+// Create a javadoc .jar.
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
+}
+
+task javadocJar(type: Jar) {
+    group JavaBasePlugin.DOCUMENTATION_GROUP
+    description 'Create javadoc jar using Dokka'
+    classifier 'javadoc'
+    from dokka
+}
+
+
+// Create java sources .jar.
+task sourcesJar(type: Jar) {
+    group JavaBasePlugin.DOCUMENTATION_GROUP
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+
+// Publish main, javadoc, and javasources .jar as a maven package.
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                artifactId = 'carp.deployment.core'
+                name = 'Deployment Domain Model and Application Services'
+                description = "A domain model and application services to handle common concerns to 'running' a study. A deployment is responsible for managing registration of participant consent, tracking device connection issues, assessing data quality, and negotiating the connection between separate devices."
+                url = 'https://github.com/cph-cachet/carp.core-kotlin'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/cph-cachet/carp.core-kotlin/blob/master/LICENSE.md'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'whathecode'
+                        name = 'Steven Jeuris'
+                        email = 'steven.jeuris@gmail.com'
+                        organization = 'CACHET'
+                        organizationUrl = 'http://www.cachet.dk/'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/cph-cachet/carp.core-kotlin.git'
+                    developerConnection = 'scm:git:ssh://github.com:cph-cachet/carp.core-kotlin.git'
+                    url = 'https://github.com/cph-cachet/carp.core-kotlin'
+                }
+            }
+
+            from components.java
+            artifact javadocJar
+            artifact sourcesJar
+        }
+    }
+    repositories {
+        maven {
+            url "$buildDir/repository"
+        }
+    }
+}
+
+
+/*
+Configure the 'sign' task to sign all files part of the maven package.
+For signing to work, a 'signing.properties' file needs to be added to the root containing the OpenPGP signature credentials:
+> signing.keyId=<LAST 8 SYMBOLS OF KEY ID>
+> signing.password=<SECRET>
+> signing.secretKeyRingFile=<ABSOLUTE PATH TO THE SECRET KEY RING FILE WITH PRIVATE KEY>
+*/
+signing {
+    sign publishing.publications.mavenJava
+}
+
+task publishSigned {
+    doFirst {
+        def signingProperties = new Properties()
+        signingProperties.load(new FileInputStream(rootProject.file('signing.properties')))
+        allprojects { ext."signing.keyId" = signingProperties['signing.keyId'] }
+        allprojects { ext."signing.password" = signingProperties['signing.password'] }
+        allprojects { ext."signing.secretKeyRingFile" = signingProperties['signing.secretKeyRingFile'] }
+    }
+}
+
+publishSigned.finalizedBy publish
