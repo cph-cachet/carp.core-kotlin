@@ -41,8 +41,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="carp.protocols.core-common_test" production-on-test="" />
     <orderEntry type="module" module-name="carp.common-common_test" production-on-test="" />
-    <orderEntry type="module" module-name="carp.protocols.core-js_main" />
     <orderEntry type="module" module-name="carp.test-common_test" production-on-test="" />
+    <orderEntry type="module" module-name="carp.protocols.core-js_main" />
     <orderEntry type="module" module-name="carp.protocols.core-common_main" />
     <orderEntry type="module" module-name="carp.common-js_main" />
     <orderEntry type="module" module-name="carp.test-js_main" />

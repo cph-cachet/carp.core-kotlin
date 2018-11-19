@@ -45,8 +45,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="carp.protocols.core-common_test" production-on-test="" />
     <orderEntry type="module" module-name="carp.common-common_test" production-on-test="" />
-    <orderEntry type="module" module-name="carp.test-common_test" production-on-test="" />
     <orderEntry type="module" module-name="carp.protocols.core-jvm_main" />
+    <orderEntry type="module" module-name="carp.test-common_test" production-on-test="" />
     <orderEntry type="module" module-name="carp.protocols.core-common_main" />
     <orderEntry type="module" module-name="carp.common-jvm_main" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.10" level="project" />

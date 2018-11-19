@@ -45,8 +45,8 @@
     <orderEntry type="module" module-name="carp.common-js_main" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.9.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-js:1.3.10" level="project" />
-    <orderEntry type="module" module-name="carp.protocols.core-common_main" />
     <orderEntry type="module" module-name="carp.common-common_main" />
+    <orderEntry type="module" module-name="carp.protocols.core-common_main" />
     <orderEntry type="module" module-name="carp.common-common_main" />
     <orderEntry type="module" module-name="carp.protocols.core-common_main" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.9.0" level="project" />
