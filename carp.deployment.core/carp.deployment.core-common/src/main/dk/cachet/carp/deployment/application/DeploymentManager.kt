@@ -4,6 +4,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.*
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 
 
 /**
@@ -62,5 +63,23 @@ class DeploymentManager( private val repository: DeploymentRepository )
         repository.update( deployment )
 
         return deployment.getStatus()
+    }
+
+    /**
+     * Get the deployment configuration for the device with [deviceRoleName] in the deployment with [deploymentId].
+     *
+     * @throws IllegalArgumentException when a deployment with [deploymentId] does not exist,
+     * or [deviceRoleName] is not present in the deployment, or not yet registered.
+     */
+    fun getDeploymentFor( deploymentId: UUID, deviceRoleName: String ): DeviceDeployment
+    {
+        val deployment = repository.getBy( deploymentId )
+
+        val device = deployment.registeredDevices.keys.firstOrNull { it.roleName == deviceRoleName }
+            ?: throw IllegalArgumentException( "The specified device role name is not part of this deployment or is not yet registered." )
+        val masterDevice = device as? MasterDeviceDescriptor
+            ?:  throw IllegalArgumentException( "The specified device is not a master device and therefore does not have a deployment configuration." )
+
+        return deployment.getDeploymentFor( masterDevice )
     }
 }
