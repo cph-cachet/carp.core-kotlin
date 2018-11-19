@@ -7,7 +7,7 @@ import kotlinx.serialization.json.JSON
 
 
 /**
- * A serializable snapshot of a [Deployment] at the moment in time when it was created.
+ * A serializable snapshot of a [StudyDeployment] at the moment in time when it was created.
  */
 @Serializable
 data class DeploymentSnapshot(
@@ -19,11 +19,11 @@ data class DeploymentSnapshot(
     companion object
     {
         /**
-         * Create a snapshot of the specified [Deployment].
+         * Create a snapshot of the specified [StudyDeployment].
          *
-         * @param deployment The [Deployment] to create a snapshot for.
+         * @param deployment The [StudyDeployment] to create a snapshot for.
          */
-        fun fromDeployment( deployment: Deployment ): DeploymentSnapshot
+        fun fromDeployment( deployment: StudyDeployment ): DeploymentSnapshot
         {
             return DeploymentSnapshot(
                 deployment.id.toString(),

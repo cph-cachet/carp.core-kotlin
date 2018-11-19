@@ -5,7 +5,7 @@ import kotlinx.serialization.json.JSON
 
 
 /**
- * Describes the status of a [Deployment]: registered devices, last received data, whether consent has been given, etc.
+ * Describes the status of a [StudyDeployment]: registered devices, last received data, whether consent has been given, etc.
  */
 @Serializable
 data class DeploymentStatus(

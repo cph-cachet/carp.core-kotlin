@@ -24,7 +24,7 @@ interface  DeploymentRepositoryTest
 
         repo.add( deployment )
         val retrieved = repo.getBy( deployment.id )
-        assertEquals( deployment.getSnapshot(), retrieved.getSnapshot() ) // Deployment does not implement equals, but snapshot does.
+        assertEquals( deployment.getSnapshot(), retrieved.getSnapshot() ) // StudyDeployment does not implement equals, but snapshot does.
     }
 
     @Test
@@ -38,6 +38,6 @@ interface  DeploymentRepositoryTest
         deployment.registerDevice( protocol.masterDevices.first(), DefaultDeviceRegistration( "0" ) )
         repo.update( deployment )
         val retrieved = repo.getBy( deployment.id )
-        assertEquals( deployment.getSnapshot(), retrieved.getSnapshot() ) // Deployment does not implement equals, but snapshot does.
+        assertEquals( deployment.getSnapshot(), retrieved.getSnapshot() ) // StudyDeployment does not implement equals, but snapshot does.
     }
 }

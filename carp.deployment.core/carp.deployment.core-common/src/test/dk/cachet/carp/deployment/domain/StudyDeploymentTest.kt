@@ -8,9 +8,9 @@ import kotlin.test.*
 
 
 /**
- * Tests for [Deployment].
+ * Tests for [StudyDeployment].
  */
-class DeploymentTest
+class StudyDeploymentTest
 {
     @Test
     fun cant_initialize_deployment_with_errors()
@@ -21,7 +21,7 @@ class DeploymentTest
         // Protocol does not contain a master device, thus contains deployment error and can't be initialized.
         assertFailsWith<IllegalArgumentException>
         {
-            Deployment( snapshot, testId )
+            StudyDeployment( snapshot, testId )
         }
     }
 
@@ -43,7 +43,7 @@ class DeploymentTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            Deployment( invalidSnapshot, testId )
+            StudyDeployment( invalidSnapshot, testId )
         }
     }
 
@@ -51,7 +51,7 @@ class DeploymentTest
     fun new_deployment_has_unregistered_master_device()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment: Deployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = deploymentFor( protocol )
 
         // Two devices can be registered, but none are by default.
         assertEquals( 2, deployment.registrableDevices.size )
@@ -69,7 +69,7 @@ class DeploymentTest
         val protocol = createEmptyProtocol()
         val device = StubMasterDeviceDescriptor()
         protocol.addMasterDevice( device )
-        val deployment: Deployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = deploymentFor( protocol )
 
         val registration = DefaultDeviceRegistration( "0" )
         deployment.registerDevice( device, registration )
@@ -84,7 +84,7 @@ class DeploymentTest
     fun cant_registerDevice_not_part_of_deployment()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment: Deployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = deploymentFor( protocol )
 
         val invalidDevice = StubMasterDeviceDescriptor( "Not part of deployment" )
         val registration = DefaultDeviceRegistration( "0" )
@@ -101,7 +101,7 @@ class DeploymentTest
         val protocol = createEmptyProtocol()
         val device = StubMasterDeviceDescriptor()
         protocol.addMasterDevice( device )
-        val deployment: Deployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = deploymentFor( protocol )
 
         deployment.registerDevice( device, DefaultDeviceRegistration( "0" ) )
 
@@ -129,7 +129,7 @@ class DeploymentTest
         protocol.addMasterDevice( masterCustom )
         protocol.addConnectedDevice( connectedCustom, masterCustom )
 
-        val deployment: Deployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = deploymentFor( protocol )
         deployment.registerDevice( masterCustom, DefaultDeviceRegistration( "0" ) )
         deployment.registerDevice( connectedCustom, DefaultDeviceRegistration( "1" ) )
     }
@@ -142,7 +142,7 @@ class DeploymentTest
         val connected = StubMasterDeviceDescriptor( "Connected" )
         protocol.addMasterDevice( master )
         protocol.addConnectedDevice( connected, master )
-        val deployment: Deployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = deploymentFor( protocol )
 
         val registration = DefaultDeviceRegistration( "0" )
         deployment.registerDevice( master, registration )
@@ -168,7 +168,7 @@ class DeploymentTest
         protocol.addMasterDevice( master )
         protocol.addConnectedDevice( device1Custom, master )
         protocol.addConnectedDevice( device2Custom, master )
-        val deployment: Deployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = deploymentFor( protocol )
 
         // Even though these two devices are registered using the same ID, this should succeed since they are of different types.
         deployment.registerDevice( device1Custom, DefaultDeviceRegistration( "0" ) )
@@ -182,7 +182,7 @@ class DeploymentTest
         val deployment = deploymentFor( protocol )
 
         val snapshot: DeploymentSnapshot = deployment.getSnapshot()
-        val fromSnapshot = Deployment.fromSnapshot( snapshot )
+        val fromSnapshot = StudyDeployment.fromSnapshot( snapshot )
 
         assertEquals( deployment.id, fromSnapshot.id )
         assertEquals( deployment.protocolSnapshot, fromSnapshot.protocolSnapshot )
@@ -208,7 +208,7 @@ class DeploymentTest
         serialized = serialized.replace( "dk.cachet.carp.deployment.domain.UnknownDeviceRegistration", "com.unknown.CustomDeviceRegistration" )
 
         val snapshot = DeploymentSnapshot.fromJson( serialized )
-        Deployment.fromSnapshot( snapshot )
+        StudyDeployment.fromSnapshot( snapshot )
     }
 
     @Test
@@ -217,7 +217,7 @@ class DeploymentTest
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
         val master =  protocol.devices.first { it.roleName == "Master" }
         val connected =  protocol.devices.first { it.roleName == "Connected" }
-        val deployment: Deployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = deploymentFor( protocol )
 
         // Start of deployment, no devices registered.
         val status: DeploymentStatus = deployment.getStatus()

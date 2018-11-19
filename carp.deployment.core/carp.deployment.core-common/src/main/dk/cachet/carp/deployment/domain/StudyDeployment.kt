@@ -9,17 +9,17 @@ import dk.cachet.carp.protocols.domain.devices.*
 /**
  * A single instantiation of a [StudyProtocol], taking care of common concerns when 'running' a study.
  *
- * I.e., a [Deployment] is responsible for registering the physical devices described in the [StudyProtocol],
+ * I.e., a [StudyDeployment] is responsible for registering the physical devices described in the [StudyProtocol],
  * enabling a connection between them, tracking device connection issues, assessing data quality,
  * and registering participant consent.
  */
-class Deployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() )
+class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() )
 {
     companion object Factory
     {
-        fun fromSnapshot( snapshot: DeploymentSnapshot ): Deployment
+        fun fromSnapshot( snapshot: DeploymentSnapshot ): StudyDeployment
         {
-            val deployment = Deployment( snapshot.studyProtocolSnapshot, UUID( snapshot.deploymentId ) )
+            val deployment = StudyDeployment( snapshot.studyProtocolSnapshot, UUID( snapshot.deploymentId ) )
 
             // Add registered devices.
             snapshot.registeredDevices.forEach { r ->
@@ -75,7 +75,7 @@ class Deployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UU
 
 
     /**
-     * Get the status (serializable) of this [Deployment].
+     * Get the status (serializable) of this [StudyDeployment].
      */
     fun getStatus(): DeploymentStatus
     {
@@ -205,7 +205,7 @@ class Deployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UU
 
 
     /**
-     * Get a serializable snapshot of the current state of this [Deployment].
+     * Get a serializable snapshot of the current state of this [StudyDeployment].
      */
     fun getSnapshot(): DeploymentSnapshot
     {

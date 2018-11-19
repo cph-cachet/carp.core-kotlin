@@ -33,10 +33,10 @@ fun createSingleMasterWithConnectedDeviceProtocol(
     return protocol
 }
 
-fun deploymentFor( protocol: StudyProtocol ): Deployment
+fun deploymentFor( protocol: StudyProtocol ): StudyDeployment
 {
     val snapshot = protocol.getSnapshot()
-    return Deployment( snapshot, testId )
+    return StudyDeployment( snapshot, testId )
 }
 
 @Serializable

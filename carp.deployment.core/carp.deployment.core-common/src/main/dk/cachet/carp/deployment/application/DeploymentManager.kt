@@ -8,7 +8,7 @@ import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 
 
 /**
- * Application service which allows instantiating [StudyProtocol]'s as [Deployment]'s.
+ * Application service which allows instantiating [StudyProtocol]'s as [StudyDeployment]'s.
  */
 class DeploymentManager( private val repository: DeploymentRepository )
 {
@@ -20,7 +20,7 @@ class DeploymentManager( private val repository: DeploymentRepository )
      */
     fun createDeployment( protocol: StudyProtocolSnapshot ): DeploymentStatus
     {
-        val newDeployment = Deployment( protocol )
+        val newDeployment = StudyDeployment( protocol )
 
         repository.add( newDeployment )
 
@@ -30,13 +30,13 @@ class DeploymentManager( private val repository: DeploymentRepository )
     /**
      * Get the status for a deployment with the given [deploymentId].
      *
-     * @param deploymentId The id of the [Deployment] to return [DeploymentStatus] for.
+     * @param deploymentId The id of the [StudyDeployment] to return [DeploymentStatus] for.
      *
      * @throws IllegalArgumentException when a deployment with [deploymentId] does not exist.
      */
     fun getDeploymentStatus( deploymentId: UUID ): DeploymentStatus
     {
-        val deployment: Deployment = repository.getBy( deploymentId )
+        val deployment: StudyDeployment = repository.getBy( deploymentId )
 
         return deployment.getStatus()
     }
@@ -44,7 +44,7 @@ class DeploymentManager( private val repository: DeploymentRepository )
     /**
      * Register the device with the specified [deviceRoleName] for the deployment with [deploymentId].
      *
-     * @param deploymentId The id of the [Deployment] to register the device for.
+     * @param deploymentId The id of the [StudyDeployment] to register the device for.
      * @param deviceRoleName The role name of the device in the deployment to register.
      * @param registration A matching configuration for the device with [deviceRoleName].
      *
