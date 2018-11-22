@@ -8,7 +8,8 @@ import kotlinx.serialization.*
 
 
 /**
- * Defines data that needs to be measured/collected as part of a task defined by [TaskDescriptor].
+ * Defines data that needs to be measured/collected from a data stream on a [DeviceDescriptor],
+ * as part of a task defined by [TaskDescriptor].
  */
 @Serializable
 abstract class Measure : Immutable( notImmutableErrorFor( Measure::class ) )

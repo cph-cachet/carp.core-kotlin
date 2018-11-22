@@ -11,7 +11,7 @@ const val CARP_NAMESPACE: String = "dk.cachet.carp"
 /**
  * Geographic location data: longitude and latitude.
  */
-val GEO_LOCATION: DataType = DataType( CARP_NAMESPACE, "geo_location" )
+val GEO_LOCATION: DataType = DataType( CARP_NAMESPACE, "geolocation" )
 /**
  * Amount of steps a participant has taken in a specified time interval.
  */
