@@ -3,7 +3,6 @@ package dk.cachet.carp.protocols.domain.tasks.measures
 import dk.cachet.carp.test.JsIgnore
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.data.*
-import kotlinx.serialization.Serializable
 import kotlin.test.*
 
 
@@ -16,13 +15,11 @@ class MeasureTest
     @JsIgnore
     fun mutable_implementation_triggers_exception()
     {
-        class NoDataClass(
-            @Serializable( DataTypeSerializer::class )
-            override val type: DataType ) : Measure()
+        class NoDataClass( override val type: DataType ) : Measure()
 
         assertFailsWith<InvalidConfigurationError>
         {
-            NoDataClass(StubDataType())
+            NoDataClass( STUB_DATA_TYPE )
         }
     }
 }

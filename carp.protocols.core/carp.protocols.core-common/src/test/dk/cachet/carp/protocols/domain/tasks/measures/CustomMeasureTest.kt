@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.protocols.domain.*
-import dk.cachet.carp.protocols.domain.data.StubDataType
+import dk.cachet.carp.protocols.domain.data.STUB_DATA_TYPE
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.Serializable
 import kotlin.test.*
@@ -15,7 +15,7 @@ class CustomMeasureTest
     @Test
     fun initialization_from_json_extracts_base_Measure_properties()
     {
-        val measure = UnknownMeasure( StubDataType() )
+        val measure = UnknownMeasure( STUB_DATA_TYPE )
         val serialized: String = JSON.stringify( UnknownMeasure.serializer(), measure )
 
         val custom = CustomMeasure( "Irrelevant", serialized )

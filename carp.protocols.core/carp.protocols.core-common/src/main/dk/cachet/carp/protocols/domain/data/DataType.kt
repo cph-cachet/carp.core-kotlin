@@ -1,23 +1,21 @@
 package dk.cachet.carp.protocols.domain.data
 
-import dk.cachet.carp.common.Immutable
-import dk.cachet.carp.protocols.domain.notImmutableErrorFor
-import dk.cachet.carp.common.serialization.UnknownPolymorphicSerializer
 import kotlinx.serialization.*
 
 
-internal object DataTypeSerializer : UnknownPolymorphicSerializer<DataType, CustomDataType>( CustomDataType::class )
-{
-    override fun createWrapper( className: String, json: String ): CustomDataType = CustomDataType( className, json )
-}
-
-
 /**
- * Defines a type of data which can be measured/collected.
+ * Defines a type of data which can be processed by the platform (e.g., measured/collected/uploaded).
+ * This is used by the infrastructure to determine whether the requested data can be collected on a device,
+ * how to upload it, how to process it in a secondary data stream, or how triggers can act on it.
  */
 @Serializable
-abstract class DataType : Immutable( notImmutableErrorFor( DataType::class ) )
-{
-    @Transient
-    abstract val category: DataCategory
-}
+data class DataType(
+    /**
+     * Uniquely identifies the organization/person who determines how to interpret [name].
+     * To prevent conflicts, a reverse domain namespace is suggested: e.g., "org.openmhealth" or "dk.cachet.carp".
+     */
+    val namespace: String,
+    /**
+     * Describes the data being collected (e.g., "acceleration", "stepcount", "audio"), but not the sensor (e.g., "accellerometer, "pedometer").
+     */
+    val name: String )

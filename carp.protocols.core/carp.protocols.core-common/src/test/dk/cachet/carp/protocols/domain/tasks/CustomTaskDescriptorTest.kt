@@ -1,7 +1,6 @@
 package dk.cachet.carp.protocols.domain.tasks
 
 import dk.cachet.carp.protocols.domain.*
-import dk.cachet.carp.protocols.domain.data.StubDataType
 import dk.cachet.carp.protocols.domain.tasks.measures.*
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.Serializable
@@ -15,7 +14,7 @@ class CustomTaskDescriptorTest
 {
     @Test
     fun initialization_from_json_extracts_base_TaskDescriptor_properties() {
-        val measures: List<Measure> = listOf( StubMeasure( StubDataType() ) )
+        val measures: List<Measure> = listOf( StubMeasure() )
         val task = UnknownTaskDescriptor( "Unknown", measures )
         val serialized: String = JSON.stringify( UnknownTaskDescriptor.serializer(), task )
 

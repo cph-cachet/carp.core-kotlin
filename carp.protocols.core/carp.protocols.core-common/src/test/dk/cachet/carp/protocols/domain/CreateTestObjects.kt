@@ -115,9 +115,7 @@ internal data class UnknownTaskDescriptor(
 }
 
 @Serializable
-internal data class UnknownMeasure(
-    @Serializable( PolymorphicSerializer::class )
-    override val type: DataType ) : Measure()
+internal data class UnknownMeasure( override val type: DataType ) : Measure()
 {
     companion object
     {
@@ -127,21 +125,6 @@ internal data class UnknownMeasure(
                 UnknownMeasure::class,
                 UnknownMeasure.serializer(),
                 "dk.cachet.carp.protocols.domain.UnknownMeasure" )
-        }
-    }
-}
-
-@Serializable
-internal data class UnknownDataType( override val category: DataCategory = DataCategory.Other ) : DataType()
-{
-    companion object
-    {
-        init
-        {
-            PolymorphicSerializer.registerSerializer(
-                UnknownDataType::class,
-                UnknownDataType.serializer(),
-                "dk.cachet.carp.protocols.domain.UnknownDataType" )
         }
     }
 }
@@ -179,13 +162,13 @@ fun serializeProtocolSnapshotIncludingUnknownTypes(): String
     protocol.addConnectedDevice( connected, master )
 
     // (2) Add unknown task with unknown measure.
-    val measures: List<Measure> = listOf( UnknownMeasure( StubDataType() ), StubMeasure( UnknownDataType() ) )
+    val measures: List<Measure> = listOf( UnknownMeasure( STUB_DATA_TYPE ), StubMeasure( STUB_DATA_TYPE ) )
     val task = UnknownTaskDescriptor( "Unknown task", measures )
     val trigger = UnknownTrigger( master.roleName )
     protocol.addTriggeredTask( trigger, task, master )
 
     // (3) Add known task with unknown measure.
-    val task2 = StubTaskDescriptor( "Known task", listOf( UnknownMeasure( StubDataType() ) ) )
+    val task2 = StubTaskDescriptor( "Known task", listOf( UnknownMeasure( STUB_DATA_TYPE ) ) )
     protocol.addTriggeredTask( trigger, task2, master )
 
     val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
@@ -197,7 +180,6 @@ fun serializeProtocolSnapshotIncludingUnknownTypes(): String
     serialized = serialized.replace( "dk.cachet.carp.protocols.domain.UnknownDeviceDescriptor", "com.unknown.CustomDevice" )
     serialized = serialized.replace( "dk.cachet.carp.protocols.domain.UnknownTaskDescriptor", "com.unknown.CustomTask" )
     serialized = serialized.replace( "dk.cachet.carp.protocols.domain.UnknownMeasure", "com.unknown.CustomMeasure" )
-    serialized = serialized.replace( "dk.cachet.carp.protocols.domain.UnknownDataType", "com.unknown.CustomDataType" )
     serialized = serialized.replace( "dk.cachet.carp.protocols.domain.UnknownTrigger", "com.unknown.CustomTrigger" )
 
     return serialized

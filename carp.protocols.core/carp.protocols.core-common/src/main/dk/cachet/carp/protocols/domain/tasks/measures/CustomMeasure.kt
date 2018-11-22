@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.domain.tasks.measures
 import dk.cachet.carp.protocols.domain.data.*
 import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import kotlinx.serialization.json.*
+import kotlinx.serialization.serializer
 
 
 /**
@@ -23,7 +24,7 @@ data class CustomMeasure( override val className: String, override val jsonSourc
         {
             throw IllegalArgumentException( "No '$typeField' defined." )
         }
-        val typeJson = json[ typeField ].jsonArray.toString()
-        type = JSON.parse( DataTypeSerializer, typeJson )
+        val typeJson = json[ typeField ].jsonObject.toString()
+        type = JSON.parse( DataType.serializer(), typeJson )
     }
 }

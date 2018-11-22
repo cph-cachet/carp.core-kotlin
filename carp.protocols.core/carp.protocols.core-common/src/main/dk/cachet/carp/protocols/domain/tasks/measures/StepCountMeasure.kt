@@ -2,6 +2,7 @@ package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.protocols.domain.data.*
 import dk.cachet.carp.common.serialization.PolymorphicSerializer
+import dk.cachet.carp.protocols.domain.data.carp.STEPCOUNT
 import kotlinx.serialization.Serializable
 
 
@@ -11,7 +12,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StepCountMeasure(
     @Serializable( PolymorphicSerializer::class )
-    override val type: DataType = StepCountDataType() ) : DataStreamMeasure()
+    override val type: DataType = STEPCOUNT ) : DataStreamMeasure()
 {
     companion object
     {
