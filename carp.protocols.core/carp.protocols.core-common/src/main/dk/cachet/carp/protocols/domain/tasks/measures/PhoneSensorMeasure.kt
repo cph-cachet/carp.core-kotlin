@@ -20,7 +20,7 @@ data class PhoneSensorMeasure private constructor(
      */
     val duration: TimeSpan = TimeSpan.INFINITE ) : Measure()
 {
-    companion object
+    companion object Factory : PhoneSensorMeasureFactory
     {
         init
         {
@@ -32,10 +32,8 @@ data class PhoneSensorMeasure private constructor(
 
         private val SUPPORTED_DATA_TYPES = arrayOf( GEO_LOCATION, STEPCOUNT )
 
-        fun geolocation( duration: TimeSpan = TimeSpan.INFINITE ): PhoneSensorMeasure
-            = PhoneSensorMeasure( GEO_LOCATION, duration )
-        fun stepcount( duration: TimeSpan = TimeSpan.INFINITE ): PhoneSensorMeasure
-            = PhoneSensorMeasure( STEPCOUNT, duration )
+        override fun geolocation( duration: TimeSpan ) = PhoneSensorMeasure( GEO_LOCATION, duration )
+        override fun stepcount( duration: TimeSpan ) = PhoneSensorMeasure( STEPCOUNT, duration )
     }
 
 
