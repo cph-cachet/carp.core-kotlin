@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
+import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.common.serialization.PolymorphicSerializer
 import dk.cachet.carp.protocols.domain.data.DataType
 import dk.cachet.carp.protocols.domain.data.carp.*
@@ -11,12 +12,16 @@ import kotlinx.serialization.*
  * or data which is derived from them using vendor-specific APIs (e.g., stepcount, or mode of transport).
  */
 @Serializable
-data class PhoneSensorMeasure private constructor( override val type: DataType ) : Measure()
+data class PhoneSensorMeasure private constructor(
+    override val type: DataType,
+    /**
+     * The optional duration over the course of which the sensor identified by [type] needs to be measured.
+     * Infinite by default.
+     */
+    val duration: TimeSpan = TimeSpan.INFINITE ) : Measure()
 {
     companion object
     {
-        private val SUPPORTED_DATA_TYPES = arrayOf( GEO_LOCATION, STEPCOUNT )
-
         init
         {
             PolymorphicSerializer.registerSerializer(
@@ -25,15 +30,12 @@ data class PhoneSensorMeasure private constructor( override val type: DataType )
                 "dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure" )
         }
 
-        fun geolocation(): PhoneSensorMeasure
-        {
-            return PhoneSensorMeasure( GEO_LOCATION )
-        }
+        private val SUPPORTED_DATA_TYPES = arrayOf( GEO_LOCATION, STEPCOUNT )
 
-        fun stepcount(): PhoneSensorMeasure
-        {
-            return PhoneSensorMeasure( STEPCOUNT )
-        }
+        fun geolocation( duration: TimeSpan = TimeSpan.INFINITE ): PhoneSensorMeasure
+            = PhoneSensorMeasure( GEO_LOCATION, duration )
+        fun stepcount( duration: TimeSpan = TimeSpan.INFINITE ): PhoneSensorMeasure
+            = PhoneSensorMeasure( STEPCOUNT, duration )
     }
 
 
