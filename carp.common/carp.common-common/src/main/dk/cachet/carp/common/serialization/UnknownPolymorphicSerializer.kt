@@ -29,8 +29,8 @@ internal object UnknownPolymorphicClassDesc : SerialClassDescImpl( "kotlin.Any" 
 expect abstract class UnknownPolymorphicSerializer<P: Any, W: P>( wrapperClass: KClass<W>, verifyUnknownPolymorphicWrapper: Boolean = true ) : KSerializer<P>
 {
     override val descriptor: SerialDescriptor
-    override fun serialize( output: Encoder, obj: P )
-    override fun deserialize( input: Decoder ): P
+    override fun serialize( encoder: Encoder, obj: P )
+    override fun deserialize( decoder: Decoder ): P
 
     /**
      * Create a wrapper for a class which could not be deserialized since it is not in any loaded assembly.

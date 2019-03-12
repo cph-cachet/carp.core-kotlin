@@ -1,7 +1,7 @@
 package dk.cachet.carp.deployment.domain
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JSON
+import kotlinx.serialization.json.Json
 
 
 /**
@@ -31,7 +31,7 @@ data class DeploymentStatus(
          */
         fun fromJson( json: String ): DeploymentStatus
         {
-            return JSON.parse( DeploymentStatus.serializer(), json )
+            return Json.parse( DeploymentStatus.serializer(), json )
         }
     }
 
@@ -41,6 +41,6 @@ data class DeploymentStatus(
      */
     fun toJson(): String
     {
-        return JSON.stringify( DeploymentStatus.serializer(),this )
+        return Json.stringify( DeploymentStatus.serializer(),this )
     }
 }

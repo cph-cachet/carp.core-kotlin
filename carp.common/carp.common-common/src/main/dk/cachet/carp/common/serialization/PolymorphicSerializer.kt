@@ -84,32 +84,32 @@ object PolymorphicSerializer : KSerializer<Any>
         return qualifiedSerializers.containsKey( qualifiedName )
     }
 
-    override fun serialize( output: Encoder, obj: Any )
+    override fun serialize( encoder: Encoder, obj: Any )
     {
         val saver = getSerializerBySimpleClassName( obj::class.simpleName!! )
 
         @Suppress( "NAME_SHADOWING" )
-        val output = output.beginStructure( descriptor )
-        output.encodeStringElement( descriptor, 0, saver.descriptor.name )
-        output.encodeSerializableElement( descriptor, 1, saver, obj )
-        output.endStructure( descriptor )
+        val encoder = encoder.beginStructure( descriptor )
+        encoder.encodeStringElement( descriptor, 0, saver.descriptor.name )
+        encoder.encodeSerializableElement( descriptor, 1, saver, obj )
+        encoder.endStructure( descriptor )
     }
 
-    override fun deserialize( input: Decoder ): Any
+    override fun deserialize( decoder: Decoder ): Any
     {
         @Suppress( "NAME_SHADOWING" )
-        val input = input.beginStructure( descriptor )
+        val decoder = decoder.beginStructure( descriptor )
         var klassName: String? = null
         var value: Any? = null
         mainLoop@ while ( true )
         {
-            when ( input.decodeElementIndex( descriptor ) )
+            when ( decoder.decodeElementIndex( descriptor ) )
             {
                 CompositeDecoder.READ_ALL ->
                 {
-                    klassName = input.decodeStringElement( descriptor, 0 )
+                    klassName = decoder.decodeStringElement( descriptor, 0 )
                     val loader = getSerializerByQualifiedName( klassName )
-                    value = input.decodeSerializableElement( descriptor, 1, loader )
+                    value = decoder.decodeSerializableElement( descriptor, 1, loader )
                     break@mainLoop
                 }
                 CompositeDecoder.READ_DONE ->
@@ -118,19 +118,19 @@ object PolymorphicSerializer : KSerializer<Any>
                 }
                 0 ->
                 {
-                    klassName = input.decodeStringElement( descriptor, 0 )
+                    klassName = decoder.decodeStringElement( descriptor, 0 )
                 }
                 1 ->
                 {
                     klassName = requireNotNull( klassName ) { "Cannot read polymorphic value before its type token" }
                     val loader = getSerializerByQualifiedName( klassName )
-                    value = input.decodeSerializableElement( descriptor, 1, loader )
+                    value = decoder.decodeSerializableElement( descriptor, 1, loader )
                 }
                 else -> throw SerializationException( "Invalid index" )
             }
         }
 
-        input.endStructure( descriptor )
+        decoder.endStructure( descriptor )
         return requireNotNull( value ) { "Polymorphic value have not been read" }
     }
 }

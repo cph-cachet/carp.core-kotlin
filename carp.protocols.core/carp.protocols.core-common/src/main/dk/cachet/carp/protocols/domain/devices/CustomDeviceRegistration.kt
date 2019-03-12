@@ -14,8 +14,7 @@ class CustomDeviceRegistration( override val className: String, override val jso
 
     init
     {
-        val parser = JsonTreeParser( jsonSource )
-        val json = parser.readFully() as JsonObject
+        val json = Json.plain.parseJson( jsonSource ) as JsonObject
 
         val deviceIdField = DeviceRegistration::deviceId.name
         if ( !json.containsKey( deviceIdField ) )

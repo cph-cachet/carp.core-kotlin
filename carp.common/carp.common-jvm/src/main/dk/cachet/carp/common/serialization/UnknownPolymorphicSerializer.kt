@@ -25,20 +25,20 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
     actual override val descriptor: SerialDescriptor
         get() = UnknownPolymorphicClassDesc
 
-    actual override fun serialize( output: Encoder, obj: P )
+    actual override fun serialize( encoder: Encoder, obj: P )
     {
         @Suppress( "NAME_SHADOWING" )
-        val output = output.beginStructure( descriptor )
+        val encoder = encoder.beginStructure( descriptor )
 
         if ( obj is UnknownPolymorphicWrapper )
         {
-            output.encodeStringElement( descriptor, 0, obj.className )
+            encoder.encodeStringElement( descriptor, 0, obj.className )
 
             // Output raw JSON as originally wrapped.
             // TODO: This relies on reflection since no raw JSON can be output using KOutput.
-            val composerField = output::class.members.first { it.name == "w" }
+            val composerField = encoder::class.members.first { it.name == "composer" }
             composerField.isAccessible = true
-            val composer = composerField.call( output )!!
+            val composer = composerField.call( encoder )!!
             val printMethod = composer::class.members.first {
                 it.name == "print" &&
                 it.parameters.any { it.type.classifier == String::class }
@@ -49,63 +49,63 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
         else
         {
             val saver = PolymorphicSerializer.getSerializerBySimpleClassName( obj::class.simpleName!! )
-            output.encodeStringElement( descriptor, 0, saver.descriptor.name )
-            output.encodeSerializableElement( descriptor, 1, saver, obj )
+            encoder.encodeStringElement( descriptor, 0, saver.descriptor.name )
+            encoder.encodeSerializableElement( descriptor, 1, saver, obj )
         }
 
-        output.endStructure( descriptor )
+        encoder.endStructure( descriptor )
     }
 
-    actual override fun deserialize( input: Decoder ): P
+    actual override fun deserialize( decoder: Decoder ): P
     {
         @Suppress("NAME_SHADOWING" )
-        val input = input.beginStructure( descriptor )
+        val decoder = decoder.beginStructure( descriptor )
 
         // Determine class to be loaded and whether it is available at runtime.
-        input.decodeElementIndex( descriptor )
-        val className = input.decodeStringElement( descriptor, 0 )
+        decoder.decodeElementIndex( descriptor )
+        val className = decoder.decodeStringElement( descriptor, 0 )
         val canLoadClass = PolymorphicSerializer.isSerializerByQualifiedNameRegistered( className )
 
         // Deserialize object when serializer is available, or wrap in case type is unknown.
         val obj: P
-        input.decodeElementIndex( descriptor )
+        decoder.decodeElementIndex( descriptor )
         if ( canLoadClass )
         {
             @Suppress( "UNCHECKED_CAST" )
             val loader = PolymorphicSerializer.getSerializerByQualifiedName( className ) as KSerializer<P>
-            obj = input.decodeSerializableElement( descriptor, 1, loader )
+            obj = decoder.decodeSerializableElement( descriptor, 1, loader )
         }
         else
         {
             // TODO: Currently the following relies on reflection and is probably specific to JSON parsing.
 
             // Get source string.
-            val parserField = input::class.members.first { m -> m.name == "p" }
-            parserField.isAccessible = true
-            val parser = parserField.call( input ) as Any
-            val parserMembers = parser::class.members
+            val readerField = decoder::class.members.first { m -> m.name == "reader" }
+            readerField.isAccessible = true
+            val reader = readerField.call( decoder ) as Any
+            val parserMembers = reader::class.members
             val sourceField = parserMembers.first { m -> m.name == "source" }
             sourceField.isAccessible = true
-            val jsonSource = sourceField.call( parser ) as String
+            val jsonSource = sourceField.call( reader ) as String
 
             // Find starting position of the unknown object.
-            val curPosField = parserMembers.first { m -> m.name == "tokenPos" }
+            val curPosField = parserMembers.first { m -> m.name == "tokenPosition" }
             curPosField.isAccessible = true
-            val start = curPosField.call( parser ) as Int
+            val start = curPosField.call( reader ) as Int
 
             // Find end position of the unknown object by skipping to the next element.
             // Skipping the element is also needed since otherwise deserialization of subsequent elements fails.
             val skipElementFunction = parserMembers.first { m -> m.name == "skipElement" }
             skipElementFunction.isAccessible = true
-            skipElementFunction.call( parser )
-            val end = curPosField.call( parser ) as Int
+            skipElementFunction.call( reader )
+            val end = curPosField.call( reader ) as Int
 
             // Initialize wrapper for unknown object based on source string.
             val elementSource = jsonSource.subSequence( start, end ).toString()
             obj = createWrapper( className, elementSource )
         }
 
-        input.endStructure( descriptor )
+        decoder.endStructure( descriptor )
 
         return obj
     }

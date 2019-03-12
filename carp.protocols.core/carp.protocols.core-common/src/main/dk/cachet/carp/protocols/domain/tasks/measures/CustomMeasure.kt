@@ -14,8 +14,7 @@ data class CustomMeasure( override val className: String, override val jsonSourc
 
     init
     {
-        val parser = JsonTreeParser( jsonSource )
-        val json = parser.readFully() as JsonObject
+        val json = Json.plain.parseJson( jsonSource ) as JsonObject
 
         // Get raw JSON string of type (using klaxon) and use kotlinx serialization to deserialize.
         val typeField = Measure::type.name
@@ -24,6 +23,6 @@ data class CustomMeasure( override val className: String, override val jsonSourc
             throw IllegalArgumentException( "No '$typeField' defined." )
         }
         val typeJson = json[ typeField ].jsonObject.toString()
-        type = JSON.parse( DataType.serializer(), typeJson )
+        type = Json.parse( DataType.serializer(), typeJson )
     }
 }

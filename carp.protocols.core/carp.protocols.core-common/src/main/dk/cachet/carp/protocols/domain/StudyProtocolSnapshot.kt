@@ -28,8 +28,7 @@ object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescripto
 {
     override fun createWrapper( className: String, json: String ): DeviceDescriptor
     {
-        val parser = JsonTreeParser( json )
-        val jsonObject = parser.readFully() as JsonObject
+        val jsonObject = Json.plain.parseJson( json ) as JsonObject
         val isMasterDevice = jsonObject.containsKey( MasterDeviceDescriptor::isMasterDevice.name )
         return if ( isMasterDevice )
             CustomMasterDeviceDescriptor( className, json )
@@ -116,7 +115,7 @@ data class StudyProtocolSnapshot(
          */
         fun fromJson( json: String ): StudyProtocolSnapshot
         {
-            return JSON.parse( StudyProtocolSnapshot.serializer(), json )
+            return Json.parse( StudyProtocolSnapshot.serializer(), json )
         }
 
         private fun getConnections( protocol: StudyProtocol, masterDevice: MasterDeviceDescriptor ): Iterable<DeviceConnection>
@@ -141,7 +140,7 @@ data class StudyProtocolSnapshot(
      */
     fun toJson(): String
     {
-        return JSON.stringify( StudyProtocolSnapshot.serializer(), this )
+        return Json.stringify( StudyProtocolSnapshot.serializer(), this )
     }
 
 

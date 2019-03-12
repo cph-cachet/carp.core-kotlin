@@ -20,73 +20,73 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
     actual override val descriptor: SerialDescriptor
         get() = UnknownPolymorphicClassDesc
 
-    actual override fun serialize( output: Encoder, obj: P )
+    actual override fun serialize( encoder: Encoder, obj: P )
     {
         @Suppress( "NAME_SHADOWING" )
-        val output = output.beginStructure( descriptor )
+        val encoder = encoder.beginStructure( descriptor )
 
         if ( obj is UnknownPolymorphicWrapper )
         {
-            output.encodeStringElement( descriptor, 0, obj.className )
+            encoder.encodeStringElement( descriptor, 0, obj.className )
 
             // Output raw JSON as originally wrapped.
             // TODO: This relies on accessing private properties dynamically since no raw JSON can be output using KOutput.
-            val composer = output.asDynamic().w_0
+            val composer = encoder.asDynamic().composer_0
             val toPrint = "," + obj.jsonSource // The ',' is needed since it is normally added by the Encoder which is not called here.
             composer.`print_61zpoe$`( toPrint ) // This is the generated 'print' function overload for strings.
         }
         else
         {
             val saver = PolymorphicSerializer.getSerializerBySimpleClassName( obj::class.simpleName!! )
-            output.encodeStringElement( descriptor, 0, saver.descriptor.name )
-            output.encodeSerializableElement( descriptor, 1, saver, obj )
+            encoder.encodeStringElement( descriptor, 0, saver.descriptor.name )
+            encoder.encodeSerializableElement( descriptor, 1, saver, obj )
         }
 
-        output.endStructure( descriptor )
+        encoder.endStructure( descriptor )
     }
 
-    actual override fun deserialize( input: Decoder ): P
+    actual override fun deserialize( decoder: Decoder ): P
     {
         @Suppress("NAME_SHADOWING" )
-        val input = input.beginStructure( descriptor )
+        val decoder = decoder.beginStructure( descriptor )
 
         // Determine class to be loaded and whether it is available at runtime.
-        input.decodeElementIndex( descriptor )
-        val className = input.decodeStringElement( descriptor, 0 )
+        decoder.decodeElementIndex( descriptor )
+        val className = decoder.decodeStringElement( descriptor, 0 )
         val canLoadClass = PolymorphicSerializer.isSerializerByQualifiedNameRegistered( className )
 
         // Deserialize object when serializer is available, or wrap in case type is unknown.
         val obj: P
-        input.decodeElementIndex( descriptor )
+        decoder.decodeElementIndex( descriptor )
         if ( canLoadClass )
         {
             @Suppress( "UNCHECKED_CAST" )
             val loader = PolymorphicSerializer.getSerializerByQualifiedName( className ) as KSerializer<P>
-            obj = input.decodeSerializableElement( descriptor, 1, loader )
+            obj = decoder.decodeSerializableElement( descriptor, 1, loader )
         }
         else
         {
             // TODO: Currently the following relies on accessing properties dynamically and is probably specific to JSON parsing.
 
-            val parser = input.asDynamic().p_0
+            val reader = decoder.asDynamic().reader_0
 
             // Get source string.
-            val jsonSource: String = parser.source as String
+            val jsonSource: String = reader.source_0 as String
 
             // Find starting position of the unknown object.
-            val start = parser.tokenPos as Int
+            val start = reader.tokenPosition_0 as Int
 
             // Find end position of the unknown object by skipping to the next element.
             // Skipping the element is also needed since otherwise deserialization of subsequent elements fails.
-            parser.skipElement()
-            val end = parser.tokenPos as Int
+            reader.skipElement()
+            val end = reader.tokenPosition_0 as Int
 
             // Initialize wrapper for unknown object based on source string.
             val elementSource = jsonSource.subSequence( start, end ).toString()
             obj = createWrapper( className, elementSource )
         }
 
-        input.endStructure( descriptor )
+        decoder.endStructure( descriptor )
 
         return obj
     }

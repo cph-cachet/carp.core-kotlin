@@ -3,7 +3,7 @@ package dk.cachet.carp.deployment.domain
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.*
-import kotlinx.serialization.json.JSON
+import kotlinx.serialization.json.Json
 
 
 /**
@@ -38,7 +38,7 @@ data class DeploymentSnapshot(
          */
         fun fromJson( json: String ): DeploymentSnapshot
         {
-            return JSON.parse( DeploymentSnapshot.serializer(), json )
+            return Json.parse( DeploymentSnapshot.serializer(), json )
         }
     }
 
@@ -48,6 +48,6 @@ data class DeploymentSnapshot(
      */
     fun toJson(): String
     {
-        return JSON.stringify( DeploymentSnapshot.serializer(), this )
+        return Json.stringify( DeploymentSnapshot.serializer(), this )
     }
 }

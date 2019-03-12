@@ -16,8 +16,7 @@ data class CustomTaskDescriptor( override val className: String, override val js
 
     init
     {
-        val parser = JsonTreeParser( jsonSource )
-        val json = parser.readFully() as JsonObject
+        val json = Json.plain.parseJson( jsonSource ) as JsonObject
 
         val nameField = TaskDescriptor::name.name
         if ( !json.containsKey( nameField ) )
@@ -33,6 +32,6 @@ data class CustomTaskDescriptor( override val className: String, override val js
             throw IllegalArgumentException( "No '$measuresField' defined." )
         }
         val measuresJson = json[ measuresField ].jsonArray.toString()
-        measures = JSON.parse( MeasuresSerializer, measuresJson )
+        measures = Json.parse( MeasuresSerializer, measuresJson )
     }
 }

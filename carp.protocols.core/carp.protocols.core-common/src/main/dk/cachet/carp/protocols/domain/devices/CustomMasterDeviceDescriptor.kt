@@ -15,8 +15,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
 
     init
     {
-        val parser = JsonTreeParser( jsonSource )
-        val json = parser.readFully() as JsonObject
+        val json = Json.plain.parseJson( jsonSource ) as JsonObject
 
         val roleNameField = MasterDeviceDescriptor::roleName.name
         if ( !json.containsKey( roleNameField ) )
