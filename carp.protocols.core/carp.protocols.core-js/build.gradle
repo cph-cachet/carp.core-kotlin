@@ -11,7 +11,7 @@ sourceSets {
 dependencies {
     expectedBy project(":carp.protocols.core:carp.protocols.core-common")
 
-    compile project(':carp.common:carp.common-js')
+    compile project(path: ':carp.common', configuration: 'jsDefault')
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-js"
     compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$serializationVersion"

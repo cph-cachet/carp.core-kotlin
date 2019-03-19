@@ -13,7 +13,7 @@ sourceSets {
 dependencies {
     expectedBy project( ":carp.protocols.core:carp.protocols.core-common" )
 
-    implementation project(':carp.common:carp.common-jvm')
+    implementation project(path: ':carp.common', configuration: 'archives')
     
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"

@@ -11,7 +11,7 @@ sourceSets {
 dependencies {
     expectedBy project(":carp.deployment.core:carp.deployment.core-common")
 
-    compile project(':carp.common:carp.common-js')
+    compile project(path: ':carp.common', configuration: 'jsDefault')
     compile project(':carp.protocols.core:carp.protocols.core-js')
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-js"

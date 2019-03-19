@@ -8,7 +8,7 @@ sourceSets {
 }
 
 dependencies {
-    implementation project(':carp.common:carp.common-common')
+    implementation project(path: ':carp.common', configuration: 'archives')
     implementation project(':carp.protocols.core:carp.protocols.core-common')
     
     implementation "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion"
