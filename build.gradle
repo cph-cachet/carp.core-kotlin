@@ -87,7 +87,7 @@ configure( subprojects.findAll { it.name == 'carp.common' } ) {
             }
             commonTest {
                 dependencies {
-                    implementation project(':carp.test:carp.test-common')
+                    implementation project(path: ':carp.test', configuration: 'archives')
                     implementation kotlin('test-common')
                     implementation kotlin('test-annotations-common')
                 }
@@ -101,7 +101,7 @@ configure( subprojects.findAll { it.name == 'carp.common' } ) {
             }
             jvmTest {
                 dependencies {
-                    implementation project(':carp.test:carp.test-jvm')
+                    implementation project(path: ':carp.test', configuration: 'archives')
                     implementation kotlin('test')
                     implementation kotlin('test-junit5')
                     implementation "org.junit.jupiter:junit-jupiter-api:$jUnit5Version"
@@ -116,7 +116,7 @@ configure( subprojects.findAll { it.name == 'carp.common' } ) {
             }
             jsTest {
                 dependencies {
-                    implementation project(':carp.test:carp.test-js')
+                    implementation project(path: ':carp.test', configuration: 'jsDefault')
                     implementation kotlin('test-js')
                 }
             }
@@ -176,4 +176,37 @@ configure( subprojects.findAll { it.name == 'carp.common' } ) {
         args = [compileTestKotlinJs.outputFile]
     }
     jsTest.dependsOn runMocha
+}
+
+// `carp.test` builds on top of the normal testing libraries.
+configure( subprojects.findAll { it.name == 'carp.test' } ) {
+    apply plugin: 'kotlin-multiplatform'
+    apply plugin: 'kotlinx-serialization'
+
+    kotlin {
+        jvm()
+        js()
+
+        sourceSets {
+            commonMain {
+                dependencies {
+                    implementation kotlin('stdlib-common')
+                    implementation kotlin('test-annotations-common')
+                }
+            }
+            jvmMain {
+                dependencies {
+                    implementation kotlin('stdlib-jdk8')
+                    implementation kotlin('test')
+                    implementation kotlin('test-junit5')
+                }
+            }
+            jsMain {
+                dependencies {
+                    implementation kotlin('stdlib-js')
+                    implementation kotlin('test-js')
+                }
+            }
+        }
+    }
 }

@@ -14,7 +14,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-js"
     compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$serializationVersion"
 
-    testCompile project(':carp.test:carp.test-js')
+    testCompile project(path: ':carp.test', configuration: 'jsDefault')
 
     testCompile "org.jetbrains.kotlin:kotlin-test-js"
 }

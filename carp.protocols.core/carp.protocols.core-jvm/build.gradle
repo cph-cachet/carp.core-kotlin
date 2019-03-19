@@ -19,7 +19,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion"
 
-    testImplementation project( ':carp.test:carp.test-jvm' )
+    testImplementation project(path: ':carp.test', configuration: 'archives')
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"
