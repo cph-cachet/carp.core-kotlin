@@ -70,7 +70,7 @@ configure( subprojects.findAll { it.name.endsWith( '-jvm' ) } ) {
 }
 
 // Common configuration for all projects with new Kotlin multiplatform plugin.
-configure( subprojects.findAll { it.name == 'carp.common' } ) {
+configure( subprojects.findAll { it.name == 'carp.common' || it.name == 'carp.deployment.core' } ) {
     apply plugin: 'kotlin-multiplatform'
     apply plugin: 'kotlinx-serialization'
 
@@ -176,6 +176,32 @@ configure( subprojects.findAll { it.name == 'carp.common' } ) {
         args = [compileTestKotlinJs.outputFile]
     }
     jsTest.dependsOn runMocha
+}
+
+// `carp.deployment` in addition to common dependencies depends on `common` and `protocols
+configure( subprojects.findAll { it.name == 'carp.deployment.core' } ) {
+    kotlin {
+        sourceSets {
+            commonMain {
+                dependencies {
+                    implementation project(path: ':carp.common', configuration: 'archives')
+                    implementation project(':carp.protocols.core:carp.protocols.core-common')
+                }
+            }
+            jsMain {
+                dependencies {
+                    implementation project(path: ':carp.common', configuration: 'jsDefault')
+                    implementation project(':carp.protocols.core:carp.protocols.core-js')
+                }
+            }
+            jvmMain {
+                dependencies {
+                    implementation project(path: ':carp.common', configuration: 'archives')
+                    implementation project(':carp.protocols.core:carp.protocols.core-jvm')
+                }
+            }
+        }
+    }
 }
 
 // `carp.test` builds on top of the normal testing libraries.
