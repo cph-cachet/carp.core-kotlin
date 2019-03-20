@@ -1,1 +1,22 @@
-
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(path: ':carp.common', configuration: 'archives')
+                implementation project(':carp.protocols.core:carp.protocols.core-common')
+            }
+        }
+        jsMain {
+            dependencies {
+                implementation project(path: ':carp.common', configuration: 'jsDefault')
+                implementation project(':carp.protocols.core:carp.protocols.core-js')
+            }
+        }
+        jvmMain {
+            dependencies {
+                implementation project(path: ':carp.common', configuration: 'archives')
+                implementation project(':carp.protocols.core:carp.protocols.core-jvm')
+            }
+        }
+    }
+}
