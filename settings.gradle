@@ -2,9 +2,9 @@ rootProject.name = 'carp.core-kotlin'
 
 include 'carp.common'
 include 'carp.test'
-include 'carp.protocols.core:carp.protocols.core-common', 'carp.protocols.core:carp.protocols.core-jvm', 'carp.protocols.core:carp.protocols.core-js'
-include 'carp.studies.core:carp.studies.core-common', 'carp.studies.core:carp.studies.core-jvm', 'carp.studies.core:carp.studies.core-js'
-include 'carp.deployment.core:carp.deployment.core-common', 'carp.deployment.core:carp.deployment.core-jvm', 'carp.deployment.core:carp.deployment.core-js'
+include 'carp.protocols.core'
+include 'carp.studies.core'
+include 'carp.deployment.core'
 
 // Required to remove 'deprecated feature' warning due to changes in Maven publishing:
 // https://docs.gradle.org/4.8/userguide/publishing_maven.html#publishing_maven:deferred_configuration

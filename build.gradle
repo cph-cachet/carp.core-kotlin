@@ -70,7 +70,7 @@ configure( subprojects.findAll { it.name.endsWith( '-jvm' ) } ) {
 }
 
 // Common configuration for all projects with new Kotlin multiplatform plugin.
-configure( subprojects.findAll { it.name == 'carp.common' || it.name == 'carp.deployment.core' || it.name == 'carp.studies.core' } ) {
+configure( subprojects.findAll { it.name == 'carp.common' || it.name == 'carp.deployment.core' || it.name == 'carp.studies.core' || it.name == 'carp.protocols.core' } ) {
     apply plugin: 'kotlin-multiplatform'
     apply plugin: 'kotlinx-serialization'
 

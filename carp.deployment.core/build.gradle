@@ -3,19 +3,19 @@ kotlin {
         commonMain {
             dependencies {
                 implementation project(path: ':carp.common', configuration: 'archives')
-                implementation project(':carp.protocols.core:carp.protocols.core-common')
+                implementation project(path: ':carp.protocols.core', configuration: 'archives')
             }
         }
         jsMain {
             dependencies {
                 implementation project(path: ':carp.common', configuration: 'jsDefault')
-                implementation project(':carp.protocols.core:carp.protocols.core-js')
+                implementation project(path: ':carp.protocols.core', configuration: 'jsDefault')
             }
         }
         jvmMain {
             dependencies {
                 implementation project(path: ':carp.common', configuration: 'archives')
-                implementation project(':carp.protocols.core:carp.protocols.core-jvm')
+                implementation project(path: ':carp.protocols.core', configuration: 'archives')
             }
         }
     }

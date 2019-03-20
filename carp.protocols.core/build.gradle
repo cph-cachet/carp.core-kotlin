@@ -2,3 +2,23 @@ subprojects {
     group = 'dk.cachet.carp.protocols'
     version = '1.0.0-alpha.1'
 }
+
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(path: ':carp.common', configuration: 'archives')
+            }
+        }
+        jsMain {
+            dependencies {
+                implementation project(path: ':carp.common', configuration: 'jsDefault')
+            }
+        }
+        jvmMain {
+            dependencies {
+                implementation project(path: ':carp.common', configuration: 'archives')
+            }
+        }
+    }
+}
