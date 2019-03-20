@@ -1,79 +1,38 @@
-buildscript {
-    ext {
-        kotlinVersion = '1.3.21'
-        serializationVersion = '0.10.0'
-        jUnit5Version = '5.4.0'
-        nodePluginVersion = '1.2.0'
-        nodeVersion = '8.9.4'
-    }
+def commonModule = subprojects.find { it.name == 'carp.common' }
+def coreModules = subprojects.findAll { it.name.endsWith( '.core' ) }
 
+
+// Load plugin dependencies.
+buildscript {
     dependencies {
+        // Kotlin plugins.
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
+
+        // JS plugins.
         classpath "com.moowork.gradle:gradle-node-plugin:$nodePluginVersion"
     }
 
     repositories {
         jcenter()
+
+        // Additional Kotlin plugin repos.
         maven { url 'https://kotlin.bintray.com/kotlinx' }
+
+        // Additional JS plugin repos.
         maven { url "https://plugins.gradle.org/m2/" }
     }
 }
 
-// Common configuration for all subprojects.
+
+// Configure all subprojects as testable Kotlin multiplatform projects.
 subprojects {
-    buildscript {
-        repositories {
-            jcenter()
-            maven { url 'https://kotlin.bintray.com/kotlinx' }
-        }
-
-        dependencies {
-            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-            classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
-        }
-    }
-
     repositories {
         jcenter()
-        maven { url 'https://kotlin.bintray.com/kotlinx' }
     }
-}
 
-
-// Common configuration for all JavaScript modules of the multiplatform projects.
-configure( subprojects.findAll { it.name.endsWith( '-js' ) } ) {
-    buildscript {
-        ext.nodeVersion = '8.9.4'
-
-        repositories {
-            maven { url "https://plugins.gradle.org/m2/" }
-        }
-
-        dependencies {
-            classpath "com.moowork.gradle:gradle-node-plugin:$nodePluginVersion"
-        }
-    }
-}
-
-
-// Common configuration for all JVM modules of the multiplatform projects.
-configure( subprojects.findAll { it.name.endsWith( '-jvm' ) } ) {
-    ext.jvmTarget = '1.8'
-    ext.junitVersion = '5.3.1'
-
-    buildscript {
-        dependencies {
-            classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
-        }
-    }
-}
-
-// Common configuration for all projects with new Kotlin multiplatform plugin.
-configure( subprojects.findAll { it.name == 'carp.common' || it.name == 'carp.deployment.core' || it.name == 'carp.studies.core' || it.name == 'carp.protocols.core' } ) {
+    // Specify platforms and test frameworks to use.
     apply plugin: 'kotlin-multiplatform'
-    apply plugin: 'kotlinx-serialization'
-
     kotlin {
         jvm()
         js()
@@ -82,12 +41,10 @@ configure( subprojects.findAll { it.name == 'carp.common' || it.name == 'carp.de
             commonMain {
                 dependencies {
                     implementation kotlin('stdlib-common')
-                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serializationVersion"
                 }
             }
             commonTest {
                 dependencies {
-                    implementation project(path: ':carp.test', configuration: 'archives')
                     implementation kotlin('test-common')
                     implementation kotlin('test-annotations-common')
                 }
@@ -95,13 +52,10 @@ configure( subprojects.findAll { it.name == 'carp.common' || it.name == 'carp.de
             jvmMain {
                 dependencies {
                     implementation kotlin('stdlib-jdk8')
-                    implementation kotlin('reflect')
-                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion"
                 }
             }
             jvmTest {
                 dependencies {
-                    implementation project(path: ':carp.test', configuration: 'archives')
                     implementation kotlin('test')
                     implementation kotlin('test-junit5')
                     implementation "org.junit.jupiter:junit-jupiter-api:$jUnit5Version"
@@ -111,25 +65,24 @@ configure( subprojects.findAll { it.name == 'carp.common' || it.name == 'carp.de
             jsMain {
                 dependencies {
                     implementation kotlin('stdlib-js')
-                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$serializationVersion"
                 }
             }
             jsTest {
                 dependencies {
-                    implementation project(path: ':carp.test', configuration: 'jsDefault')
                     implementation kotlin('test-js')
                 }
             }
         }
     }
 
-    // JVM configuration.
+    // JVM test configuration.
     jvmTest {
         useJUnitPlatform()
     }
 
-    // JS configuration (adapted from kotlinx-io's build file)
-    // I do not fully understand this configuration: https://stackoverflow.com/a/55244288/590790
+    // JS test configuration.
+    // This is adapted from kotlinx-io's build file; I do not fully understand this configuration:
+    // https://stackoverflow.com/a/55244288/590790
     apply plugin: 'com.moowork.node'
     compileKotlinJs.configure {
         kotlinOptions {
@@ -157,10 +110,10 @@ configure( subprojects.findAll { it.name == 'carp.common' || it.name == 'carp.de
         from(files {
             configuration.collect { File file ->
                 file.name.endsWith(".jar")
-                    ? zipTree(file.absolutePath).matching {
-                        include '*.js'
-                        include '*.js.map' }
-                    : files()
+                        ? zipTree(file.absolutePath).matching {
+                    include '*.js'
+                    include '*.js.map' }
+                        : files()
             }
         }.builtBy(configuration))
     }
@@ -176,4 +129,86 @@ configure( subprojects.findAll { it.name == 'carp.common' || it.name == 'carp.de
         args = [compileTestKotlinJs.outputFile]
     }
     jsTest.dependsOn runMocha
+}
+
+
+// Add common dependencies:
+// - `carp.test` for testing
+// - `kotlinx.serialization` to serialize domain models
+// - reflection is used to reinforce correct implementation of domain objects at runtime
+configure( coreModules + commonModule ) {
+    repositories {
+        maven { url 'https://kotlin.bintray.com/kotlinx' }
+    }
+
+    buildscript {
+        repositories {
+            jcenter()
+        }
+
+        dependencies {
+            classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
+        }
+    }
+
+    apply plugin: 'kotlinx-serialization'
+    kotlin {
+        sourceSets {
+            commonMain {
+                dependencies {
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serializationVersion"
+                }
+            }
+            commonTest {
+                dependencies {
+                    implementation project(path: ':carp.test', configuration: 'archives')
+                }
+            }
+            jvmMain {
+                dependencies {
+                    implementation kotlin('reflect')
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion"
+                }
+            }
+            jvmTest {
+                dependencies {
+                    implementation project(path: ':carp.test', configuration: 'archives')
+                }
+            }
+            jsMain {
+                dependencies {
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$serializationVersion"
+                }
+            }
+            jsTest {
+                dependencies {
+                    implementation project(path: ':carp.test', configuration: 'jsDefault')
+                }
+            }
+        }
+    }
+}
+
+
+// Add dependencies of all core modules on `carp.common`.
+configure( coreModules ) {
+    kotlin {
+        sourceSets {
+            commonMain {
+                dependencies {
+                    implementation project(path: ':carp.common', configuration: 'archives')
+                }
+            }
+            jsMain {
+                dependencies {
+                    implementation project(path: ':carp.common', configuration: 'jsDefault')
+                }
+            }
+            jvmMain {
+                dependencies {
+                    implementation project(path: ':carp.common', configuration: 'archives')
+                }
+            }
+        }
+    }
 }
