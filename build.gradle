@@ -31,6 +31,15 @@ subprojects {
         jcenter()
     }
 
+    // HACK: Workaround for bug in `gradle-node-plugin`: https://github.com/srs/gradle-node-plugin/issues/301
+    repositories.whenObjectAdded {
+        if (it instanceof IvyArtifactRepository) {
+            metadataSources {
+                artifact()
+            }
+        }
+    }
+
     // Specify platforms and test frameworks to use.
     apply plugin: 'kotlin-multiplatform'
     kotlin {
