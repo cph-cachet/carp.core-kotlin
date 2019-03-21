@@ -2,17 +2,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation project(path: ':carp.protocols.core', configuration: 'archives')
-            }
-        }
-        jsMain {
-            dependencies {
-                implementation project(path: ':carp.protocols.core', configuration: 'jsDefault')
-            }
-        }
-        jvmMain {
-            dependencies {
-                implementation project(path: ':carp.protocols.core', configuration: 'archives')
+                implementation project(':carp.protocols.core')
             }
         }
     }

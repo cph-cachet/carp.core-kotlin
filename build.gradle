@@ -161,7 +161,7 @@ configure( coreModules + commonModule ) {
             }
             commonTest {
                 dependencies {
-                    implementation project(path: ':carp.test', configuration: 'archives')
+                    implementation project(':carp.test')
                 }
             }
             jvmMain {
@@ -170,19 +170,9 @@ configure( coreModules + commonModule ) {
                     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion"
                 }
             }
-            jvmTest {
-                dependencies {
-                    implementation project(path: ':carp.test', configuration: 'archives')
-                }
-            }
             jsMain {
                 dependencies {
                     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$serializationVersion"
-                }
-            }
-            jsTest {
-                dependencies {
-                    implementation project(path: ':carp.test', configuration: 'jsDefault')
                 }
             }
         }
@@ -196,17 +186,7 @@ configure( coreModules ) {
         sourceSets {
             commonMain {
                 dependencies {
-                    implementation project(path: ':carp.common', configuration: 'archives')
-                }
-            }
-            jsMain {
-                dependencies {
-                    implementation project(path: ':carp.common', configuration: 'jsDefault')
-                }
-            }
-            jvmMain {
-                dependencies {
-                    implementation project(path: ':carp.common', configuration: 'archives')
+                    implementation project(':carp.common')
                 }
             }
         }
