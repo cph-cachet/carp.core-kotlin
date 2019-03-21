@@ -43,8 +43,26 @@ subprojects {
     // Specify platforms and test frameworks to use.
     apply plugin: 'kotlin-multiplatform'
     kotlin {
-        jvm()
-        js()
+        jvm {
+            compilations.main.kotlinOptions.jvmTarget = jvmTarget
+            compilations.test.kotlinOptions.jvmTarget = jvmTarget
+        }
+        js {
+            compilations.main.kotlinOptions {
+                metaInfo = true
+                sourceMap = true
+                moduleKind = 'umd'
+                main = "noCall"
+                sourceMapEmbedSources = 'always'
+            }
+            compilations.test.kotlinOptions {
+                metaInfo = true
+                sourceMap = true
+                moduleKind = 'umd'
+                main = "call"
+                sourceMapEmbedSources = 'always'
+            }
+        }
 
         sourceSets {
             commonMain {
@@ -93,24 +111,6 @@ subprojects {
     // This is adapted from kotlinx-io's build file; I do not fully understand this configuration:
     // https://stackoverflow.com/a/55244288/590790
     apply plugin: 'com.moowork.node'
-    compileKotlinJs.configure {
-        kotlinOptions {
-            metaInfo = true
-            sourceMap = true
-            moduleKind = 'umd'
-            main = "noCall"
-            sourceMapEmbedSources = 'always'
-        }
-    }
-    compileTestKotlinJs.configure {
-        kotlinOptions {
-            metaInfo = true
-            sourceMap = true
-            moduleKind = 'umd'
-            main = "call"
-            sourceMapEmbedSources = 'always'
-        }
-    }
     task copyJsDependencies(type: Copy, dependsOn: compileTestKotlinJs) {
         from compileKotlinJs.destinationDir
         into "${buildDir}/node_modules"
