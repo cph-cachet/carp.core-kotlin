@@ -55,7 +55,7 @@ Helper classes relied upon by test projects of all subsystems. E.g., to disable 
 
 # Setting up using IntelliJ IDEA
 - Install Gradle 4.10 (e.g., [using Chocolatey on Windows](https://chocolatey.org/packages/gradle))
-- Install the Kotlin plugin (1.3.0-release-IJ2018.2-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Install the Kotlin plugin (1.3.21-release-IJ2018.3-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
 - Open project in IntelliJ (`File->Open`) by selecting the `build.gradle` file in the root directory and point to local gradle distribution in the wizard which appears (this can be changed after in `Settings->Build, Execution, Deployment->Build Tools->Gradle`)
 
 # Multiplatform
@@ -68,14 +68,8 @@ This is a multiplatform Kotlin library which targets both the **Java Runtime Env
 
 For `carp.core-kotlin`:
 - **build**: Builds the full project, for both runtimes.
-- **test**: Test the full project, for both runtimes. Test results only show up for JVM runtime in IntelliJ.
+- **clean jvmTest**: Test the full project using JUnit5. `clean` is optional, but ensures that test results always show up in IntelliJ; when tasks haven't changed it otherwise lists "Test events were not received".
+- **jsTest**: Test the full project using Mocha. Test results only show up in the build output and not in IntelliJ.
 
-For `:carp.*.core:carp.*.core-jvm` (for each individual JVM project):
-- **cleanTest test**: Test compiled Java classes using JUnit. `cleanTest` is optional to ensure test results always show up in IntelliJ; when tasks haven't changed it otherwise lists "Test events were not received".
-
-For `:carp.*.core:carp.*.core-js` (for each individual JavaScript project):
-- **test**: Test compiled JavaScript sources using mocha.
-
-
-For `:carp.protocols.core:carp.protocols.core-jvm`:
+For `:carp.*.core` libraries:
 - **publishSigned**: Prepare all jars to be published to Maven. This includes documentation, sources, and signing.
