@@ -1,1 +1,21 @@
-
+// `carp.test` extends test libraries, thus has a dependency on them in the main components.
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation kotlin('test-annotations-common')
+            }
+        }
+        jvmMain {
+            dependencies {
+                implementation kotlin('test')
+                implementation kotlin('test-junit5')
+            }
+        }
+        jsMain {
+            dependencies {
+                implementation kotlin('test-js')
+            }
+        }
+    }
+}

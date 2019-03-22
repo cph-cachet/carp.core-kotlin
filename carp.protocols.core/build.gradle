@@ -1,4 +1,12 @@
-subprojects {
-    group = 'dk.cachet.carp.protocols'
-    version = '1.0.0-alpha.1'
+group = 'dk.cachet.carp.protocols'
+
+publishing {
+    publications {
+        jvm {
+            pom {
+                name = 'Study Protocol Domain Model and Application Services'
+                description = 'A domain model and application services to specify study protocols which can be deployed to one or more stationary or mobile devices.'
+            }
+        }
+    }
 }
