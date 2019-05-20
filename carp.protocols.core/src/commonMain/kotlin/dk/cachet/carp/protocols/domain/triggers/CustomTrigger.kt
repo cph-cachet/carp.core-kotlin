@@ -21,6 +21,6 @@ data class CustomTrigger( override val className: String, override val jsonSourc
         {
             throw IllegalArgumentException( "No '$sourceDeviceRoleNameField' defined." )
         }
-        sourceDeviceRoleName = json[ sourceDeviceRoleNameField ].content
+        sourceDeviceRoleName = json[ sourceDeviceRoleNameField ]!!.content
     }
 }

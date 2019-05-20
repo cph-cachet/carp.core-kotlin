@@ -22,7 +22,7 @@ data class CustomMeasure( override val className: String, override val jsonSourc
         {
             throw IllegalArgumentException( "No '$typeField' defined." )
         }
-        val typeJson = json[ typeField ].jsonObject.toString()
+        val typeJson = json[ typeField ]!!.jsonObject.toString()
         type = Json.parse( DataType.serializer(), typeJson )
     }
 }

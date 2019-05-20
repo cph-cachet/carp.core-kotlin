@@ -22,7 +22,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
         {
             throw IllegalArgumentException( "No '$roleNameField' defined." )
         }
-        roleName = json[ roleNameField ].content
+        roleName = json[ roleNameField ]!!.content
     }
 
     override fun createRegistration(): DeviceRegistration

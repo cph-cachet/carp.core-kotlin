@@ -21,6 +21,6 @@ class CustomDeviceRegistration( override val className: String, override val jso
         {
             throw IllegalArgumentException( "No '$deviceIdField' defined." )
         }
-        deviceId = json[ deviceIdField ].content
+        deviceId = json[ deviceIdField ]!!.content
     }
 }

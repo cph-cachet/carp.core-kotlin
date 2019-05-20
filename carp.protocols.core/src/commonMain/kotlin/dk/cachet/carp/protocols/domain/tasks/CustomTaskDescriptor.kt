@@ -23,7 +23,7 @@ data class CustomTaskDescriptor( override val className: String, override val js
         {
             throw IllegalArgumentException( "No '$nameField' defined." )
         }
-        name = json[ nameField ].content
+        name = json[ nameField ]!!.content
 
         // Get raw JSON string of measures and use kotlinx serialization to deserialize.
         val measuresField = TaskDescriptor::measures.name
@@ -31,7 +31,7 @@ data class CustomTaskDescriptor( override val className: String, override val js
         {
             throw IllegalArgumentException( "No '$measuresField' defined." )
         }
-        val measuresJson = json[ measuresField ].jsonArray.toString()
+        val measuresJson = json[ measuresField ]!!.jsonArray.toString()
         measures = Json.parse( MeasuresSerializer, measuresJson )
     }
 }
