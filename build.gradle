@@ -205,7 +205,7 @@ subprojects {
         download = true
     }
     task installMocha(type: NpmTask) {
-        args = ['install', 'mocha']
+        args = ['install', "mocha@$mochaVersion"]
     }
     task runMocha(type: NodeTask, dependsOn: [installMocha, compileTestKotlinJs, copyJsDependencies]) {
         script = file('node_modules/mocha/bin/mocha')
