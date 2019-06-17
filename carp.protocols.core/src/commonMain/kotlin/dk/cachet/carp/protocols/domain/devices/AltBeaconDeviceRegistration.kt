@@ -30,7 +30,7 @@ class AltBeaconDeviceRegistration(
      */
     var minorId: Short ) : DeviceRegistration()
 {
-    override var deviceId: String = "$manufacturerId"
+    override var deviceId: String = "$manufacturerId:$organizationId:$majorId:$minorId"
 
     constructor() : this(
         0x0000,
