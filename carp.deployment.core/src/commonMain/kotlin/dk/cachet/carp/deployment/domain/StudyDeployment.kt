@@ -19,7 +19,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     {
         fun fromSnapshot( snapshot: DeploymentSnapshot ): StudyDeployment
         {
-            val deployment = StudyDeployment( snapshot.studyProtocolSnapshot, UUID( snapshot.deploymentId ) )
+            val deployment = StudyDeployment( snapshot.studyProtocolSnapshot, snapshot.deploymentId )
 
             // Add registered devices.
             snapshot.registeredDevices.forEach { r ->

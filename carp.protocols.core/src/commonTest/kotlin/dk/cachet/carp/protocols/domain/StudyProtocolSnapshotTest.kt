@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.tasks.measures.CustomMeasure
@@ -139,16 +140,17 @@ class StudyProtocolSnapshotTest
             StudyProtocolSnapshot.TriggeredTask( 1, "T2", "C2" )
         )
 
+        val ownerId = UUID( "ef26be3f-2de8-4779-a608-bb6e027e4b75" )
         val snapshot = StudyProtocolSnapshot(
-            "Owner", "Study",
+            ownerId, "Study",
             masterDevices, connectedDevices, connections,
             tasks, triggers, triggeredTasks )
         val reorganizedSnapshot = StudyProtocolSnapshot(
-            "Owner", "Study",
+            ownerId, "Study",
             masterDevices.reversed(), connectedDevices.reversed(), connections.reversed(),
             tasks.reversed(), triggers.reversed(), triggeredTasks.reversed() )
 
-        assertTrue( snapshot == reorganizedSnapshot )
-        assertTrue( snapshot.hashCode() == reorganizedSnapshot.hashCode() )
+        assertEquals( snapshot, reorganizedSnapshot )
+        assertEquals( snapshot.hashCode(), reorganizedSnapshot.hashCode() )
     }
 }
