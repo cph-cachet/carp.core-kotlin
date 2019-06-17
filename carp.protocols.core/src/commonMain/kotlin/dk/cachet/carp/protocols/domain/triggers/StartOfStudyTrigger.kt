@@ -10,7 +10,7 @@ import kotlinx.serialization.*
  * This trigger needs to be evaluated on a master device since it is time bound and therefore requires a task scheduler.
  */
 @Serializable
-data class StartOfStudyTrigger( override val sourceDeviceRoleName: String ) : Trigger()
+data class StartOfStudyTrigger private constructor( override val sourceDeviceRoleName: String ) : Trigger()
 {
     companion object
     {

@@ -91,7 +91,7 @@ class StudyProtocolTest
         val connectedDevice = StubDeviceDescriptor()
         protocol.addMasterDevice( masterDevice )
         protocol.addConnectedDevice( connectedDevice, masterDevice )
-        val trigger = StartOfStudyTrigger( connectedDevice.roleName )
+        val trigger = StubTrigger( connectedDevice.roleName, "Unique", true )
 
         assertFailsWith<InvalidConfigurationError>
         {

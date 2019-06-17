@@ -2,13 +2,15 @@ package dk.cachet.carp.protocols.domain.triggers
 
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.common.serialization.PolymorphicSerializer
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 @Serializable
 data class StubTrigger(
     override val sourceDeviceRoleName: String,
-    val uniqueProperty: String = "Unique" ) : Trigger()
+    val uniqueProperty: String = "Unique",
+    @Transient
+    override val requiresMasterDevice: Boolean = false ) : Trigger()
 {
     companion object
     {
