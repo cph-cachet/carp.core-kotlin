@@ -10,30 +10,29 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TimeSpan(
     /**
-     * The duration of the time interval expressed in ticks.
-     * One tick is equal to 100 nanoseconds, or one ten-millionth of a second.
+     * The duration of the time interval expressed in microseconds.
      */
-    val ticks: Long )
+    val microseconds: Long )
 {
     companion object
     {
-        private const val TICKS_IN_MS: Long = 10000
+        private const val MICROSECONDS_IN_MS: Long = 1000
 
         /**
          * A constant used to specify an infinite time 'interval'.
          * This is equivalent to -1 millisecond, similar to .NET.
          */
-        val INFINITE: TimeSpan = TimeSpan( -TICKS_IN_MS )
+        val INFINITE: TimeSpan = TimeSpan( -MICROSECONDS_IN_MS )
 
         /**
          * Returns a [TimeSpan] that represents a specified number of milliseconds.
          *
-         * The value parameter is converted to ticks, and that number of ticks is used to initialize the new [TimeSpan].
-         * Therefore, value will only be considered accurate to the nearest millisecond.
+         * The value parameter is converted to microseconds, and that number of microseconds is used to initialize the new [TimeSpan].
+         * Therefore, value will only be considered accurate to the nearest microsecond.
          */
         fun fromMilliseconds( ms: Double ): TimeSpan
         {
-            val ticks: Long = (ms * TICKS_IN_MS).toLong()
+            val ticks: Long = (ms * MICROSECONDS_IN_MS).toLong()
             return TimeSpan( ticks )
         }
     }
@@ -41,5 +40,5 @@ data class TimeSpan(
     /**
      * Gets the value of the current [TimeSpan] expressed in whole and fractional milliseconds.
      */
-    val totalMilliseconds: Double get() = this.ticks.toDouble() / TICKS_IN_MS
+    val totalMilliseconds: Double get() = this.microseconds.toDouble() / MICROSECONDS_IN_MS
 }
