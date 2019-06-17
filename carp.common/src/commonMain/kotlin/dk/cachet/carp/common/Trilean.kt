@@ -10,3 +10,11 @@ enum class Trilean
     FALSE,
     UNKNOWN
 }
+
+/**
+ * Convert a [Boolean] value into a corresponding [Trilean].
+ */
+fun Boolean.toTrilean(): Trilean
+{
+    return if ( this ) Trilean.TRUE else Trilean.FALSE
+}
