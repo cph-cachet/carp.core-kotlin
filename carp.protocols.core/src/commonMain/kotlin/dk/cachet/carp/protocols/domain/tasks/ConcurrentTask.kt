@@ -6,10 +6,11 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * A [TaskDescriptor] which specifies that all containing measures and/or outputs should start immediately once triggered and run indefinitely.
+ * A [TaskDescriptor] which specifies that all containing measures and/or outputs should start immediately once triggered
+ * and run indefinitely until all containing measures have completed.
  */
 @Serializable
-data class IndefiniteTask(
+data class ConcurrentTask(
     override val name: String,
     @Serializable( MeasuresSerializer::class )
     override val measures: List<Measure> ) : TaskDescriptor()
@@ -19,9 +20,9 @@ data class IndefiniteTask(
         init
         {
             PolymorphicSerializer.registerSerializer(
-                IndefiniteTask::class,
-                IndefiniteTask.serializer(),
-                "dk.cachet.carp.protocols.domain.tasks.IndefiniteTask" )
+                ConcurrentTask::class,
+                ConcurrentTask.serializer(),
+                "dk.cachet.carp.protocols.domain.tasks.ConcurrentTask" )
         }
     }
 }
