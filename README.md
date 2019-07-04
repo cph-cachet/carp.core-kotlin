@@ -54,9 +54,8 @@ Helper classes and base types relied upon by all subsystems. This library does n
 Helper classes relied upon by test projects of all subsystems. E.g., to disable tests specified in common part of projects for the JavaScript runtime only.
 
 # Setting up using IntelliJ IDEA
-- Install Gradle 4.10 (e.g., [using Chocolatey on Windows](https://chocolatey.org/packages/gradle))
-- Install the Kotlin plugin (1.3.31-release-IJ2019.1-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
-- Open project in IntelliJ (`File->Open`) by selecting the `build.gradle` file in the root directory and point to local gradle distribution in the wizard which appears (this can be changed after in `Settings->Build, Execution, Deployment->Build Tools->Gradle`)
+- Install the Kotlin plugin (1.3.41-release-IJ2019.1-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Open project in IntelliJ (`File->Open`) by selecting the `build.gradle` file in the root directory.
 
 # Multiplatform
 
