@@ -23,6 +23,5 @@ abstract class Trigger : Immutable( notImmutableErrorFor( Trigger::class ) )
     /**
      * The device role name from which the trigger originates.
      */
-    @Transient
     abstract val sourceDeviceRoleName: String
 }

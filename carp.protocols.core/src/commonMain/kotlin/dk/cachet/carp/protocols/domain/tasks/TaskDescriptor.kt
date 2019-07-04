@@ -26,12 +26,10 @@ abstract class TaskDescriptor : Immutable( notImmutableErrorFor( TaskDescriptor:
     /**
      * A name which uniquely identifies the task.
      */
-    @Transient
     abstract val name: String
 
     /**
      * The data which needs to be collected/measured as part of this task.
      */
-    @Transient
     abstract val measures: List<Measure>
 }

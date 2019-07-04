@@ -3,7 +3,7 @@ package dk.cachet.carp.protocols.domain.devices
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.*
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 
@@ -28,7 +28,6 @@ abstract class DeviceRegistration
      *
      * TODO: This might be useful for potential optimizations later (e.g., prevent pulling in data from the same source more than once), but for now is ignored.
      */
-    @Transient
     abstract var deviceId: String
 
     /**

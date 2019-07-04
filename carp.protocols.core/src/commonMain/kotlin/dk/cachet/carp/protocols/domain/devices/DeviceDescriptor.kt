@@ -2,7 +2,7 @@ package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.*
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -19,7 +19,6 @@ abstract class DeviceDescriptor : Immutable( notImmutableErrorFor( DeviceDescrip
      * A name which describes how the device participates within the study protocol; it's 'role'.
      * E.g., "Patient's phone"
      */
-    @Transient
     abstract val roleName: String
 
     /**

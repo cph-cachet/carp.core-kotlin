@@ -109,7 +109,6 @@ class PolymorphicSerializerTest
     @Serializable
     internal abstract class AbstractTopClass
     {
-        @Transient
         abstract val nested: List<AbstractNested>
     }
     @Serializable
@@ -119,7 +118,6 @@ class PolymorphicSerializerTest
     @Serializable
     internal abstract class AbstractNested
     {
-        @Transient
         abstract val field: BaseClass
     }
     @Serializable
