@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.common.serialization.*
 import dk.cachet.carp.protocols.domain.tasks.*
@@ -57,7 +58,8 @@ object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, CustomTrigger>(
  */
 @Serializable
 data class StudyProtocolSnapshot(
-    val ownerId: String,
+    @Serializable( with = UUIDSerializer::class )
+    val ownerId: UUID,
     val name: String,
     @Serializable( MasterDevicesSerializer::class )
     val masterDevices: List<MasterDeviceDescriptor>,
@@ -95,7 +97,7 @@ data class StudyProtocolSnapshot(
             val triggers = protocol.triggers.map { TriggerWithId( curTriggerId++, it ) }.toList()
 
             return StudyProtocolSnapshot(
-                ownerId = protocol.owner.id.toString(),
+                ownerId = protocol.owner.id,
                 name = protocol.name,
                 masterDevices = protocol.masterDevices.toList(),
                 connectedDevices = protocol.devices.minus( protocol.masterDevices ).toList(),

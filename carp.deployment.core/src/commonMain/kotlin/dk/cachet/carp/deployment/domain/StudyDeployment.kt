@@ -19,7 +19,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     {
         fun fromSnapshot( snapshot: DeploymentSnapshot ): StudyDeployment
         {
-            val deployment = StudyDeployment( snapshot.studyProtocolSnapshot, UUID( snapshot.deploymentId ) )
+            val deployment = StudyDeployment( snapshot.studyProtocolSnapshot, snapshot.deploymentId )
 
             // Add registered devices.
             snapshot.registeredDevices.forEach { r ->
@@ -138,7 +138,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
         // Verify whether the passed registration is known to be invalid for the given device.
         // This may be 'UNKNOWN' when the device type is not known at runtime.
-        // In this case, simply forward as is assuming it to be valid (possibly failing in 'environment' later).
+        // In this case, simply forward as is assuming it to be valid (possibly failing on the 'client' later).
         val registrationCopy = registration.copy() // Copy registration to prevent external modification.
         if ( device.isValidConfiguration( registrationCopy ) == Trilean.FALSE )
         {

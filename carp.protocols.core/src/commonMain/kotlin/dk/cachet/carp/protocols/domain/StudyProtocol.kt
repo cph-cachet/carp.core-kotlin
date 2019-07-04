@@ -25,7 +25,7 @@ class StudyProtocol(
     {
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
-            val owner = ProtocolOwner( UUID( snapshot.ownerId ) )
+            val owner = ProtocolOwner( snapshot.ownerId )
             val protocol = StudyProtocol( owner, snapshot.name )
 
             // Add master devices.

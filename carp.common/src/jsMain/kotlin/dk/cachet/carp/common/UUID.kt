@@ -1,7 +1,7 @@
 package dk.cachet.carp.common
 
 
-actual class UUID actual constructor( val stringRepresentation: String )
+actual class UUID actual constructor( actual val stringRepresentation: String )
 {
     actual companion object
     {

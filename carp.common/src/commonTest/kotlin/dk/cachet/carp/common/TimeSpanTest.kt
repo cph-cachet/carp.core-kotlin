@@ -19,7 +19,7 @@ class TimeSpanTest
     @Test
     fun totalMilliseconds_with_fraction_succeeds()
     {
-        val halfMs = TimeSpan( 5000 )
+        val halfMs = TimeSpan( 500 )
         assertEquals( 0.5, halfMs.totalMilliseconds )
     }
 }
