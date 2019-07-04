@@ -9,7 +9,3 @@ include 'carp.deployment.core'
 // Allow specifying a single dependency in the common source sets to projects configured in this build.
 // https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html#experimental-metadata-publishing-mode
 enableFeaturePreview('GRADLE_METADATA')
-
-// Required to remove 'deprecated feature' warning due to changes in Maven publishing:
-// https://docs.gradle.org/4.8/userguide/publishing_maven.html#publishing_maven:deferred_configuration
-enableFeaturePreview('STABLE_PUBLISHING')
