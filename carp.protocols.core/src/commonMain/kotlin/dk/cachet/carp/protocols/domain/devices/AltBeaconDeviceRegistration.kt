@@ -32,12 +32,14 @@ class AltBeaconDeviceRegistration(
 {
     override var deviceId: String = "$manufacturerId:$organizationId:$majorId:$minorId"
 
-    constructor() : this(
-        0x0000,
-        UUID( "00000000-0000-0000-0000-000000000000" ), 0x0000, 0x0000 )
-
     companion object
     {
+        /**
+         * Initialize an [AltBeaconDeviceRegistration] with default placeholder values which still requires configuration (assigning variables).
+         */
+        fun createUnconfigured(): AltBeaconDeviceRegistration
+            = AltBeaconDeviceRegistration( 0x0000, UUID( "00000000-0000-0000-0000-000000000000" ), 0x0000, 0x0000 )
+
         init
         {
             PolymorphicSerializer.registerSerializer(
