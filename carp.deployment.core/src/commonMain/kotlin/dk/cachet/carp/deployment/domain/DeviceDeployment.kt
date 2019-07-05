@@ -1,10 +1,10 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.common.serialization.JSON
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 
 
 /**
@@ -42,7 +42,7 @@ data class DeviceDeployment(
          */
         fun fromJson( json: String ): DeviceDeployment
         {
-            return Json.parse( DeviceDeployment.serializer(), json )
+            return JSON.parse( serializer(), json )
         }
     }
 
@@ -52,6 +52,6 @@ data class DeviceDeployment(
      */
     fun toJson(): String
     {
-        return Json.stringify( DeviceDeployment.serializer(),this )
+        return JSON.stringify( serializer(),this )
     }
 }

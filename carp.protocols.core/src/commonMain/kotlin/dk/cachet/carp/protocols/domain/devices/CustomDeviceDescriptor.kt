@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.Trilean
-import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.common.serialization.*
 import kotlinx.serialization.json.*
 
 
@@ -15,7 +15,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
 
     init
     {
-        val json = Json.plain.parseJson( jsonSource ) as JsonObject
+        val json = JSON.parseJson( jsonSource ) as JsonObject
 
         val roleNameField = DeviceDescriptor::roleName.name
         if ( !json.containsKey( roleNameField ) )

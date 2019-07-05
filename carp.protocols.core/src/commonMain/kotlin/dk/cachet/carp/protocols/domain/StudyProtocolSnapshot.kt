@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.*
-import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.common.serialization.*
+import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import kotlinx.serialization.internal.ArrayListSerializer
@@ -29,7 +29,7 @@ object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescripto
 {
     override fun createWrapper( className: String, json: String ): DeviceDescriptor
     {
-        val jsonObject = Json.plain.parseJson( json ) as JsonObject
+        val jsonObject = JSON.parseJson( json ) as JsonObject
         val isMasterDevice = jsonObject.containsKey( MasterDeviceDescriptor::isMasterDevice.name )
         return if ( isMasterDevice )
             CustomMasterDeviceDescriptor( className, json )
@@ -117,7 +117,7 @@ data class StudyProtocolSnapshot(
          */
         fun fromJson( json: String ): StudyProtocolSnapshot
         {
-            return Json.parse( StudyProtocolSnapshot.serializer(), json )
+            return JSON.parse( serializer(), json )
         }
 
         private fun getConnections( protocol: StudyProtocol, masterDevice: MasterDeviceDescriptor ): Iterable<DeviceConnection>
@@ -142,7 +142,7 @@ data class StudyProtocolSnapshot(
      */
     fun toJson(): String
     {
-        return Json.stringify( StudyProtocolSnapshot.serializer(), this )
+        return JSON.stringify( serializer(), this )
     }
 
 

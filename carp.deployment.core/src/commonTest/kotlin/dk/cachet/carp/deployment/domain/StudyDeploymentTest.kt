@@ -1,9 +1,9 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.serialization.JSON
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.devices.*
-import kotlinx.serialization.json.Json
 import kotlin.test.*
 
 
@@ -123,8 +123,8 @@ class StudyDeploymentTest
         val connected = UnknownDeviceDescriptor( "Unknown connected" )
 
         // Mimic that the 'Unknown...' types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
-        val masterCustom = CustomMasterDeviceDescriptor( "Irrelevant", Json.stringify( UnknownMasterDeviceDescriptor.serializer(), master ) )
-        val connectedCustom = CustomDeviceDescriptor( "Irrelevant", Json.stringify( UnknownDeviceDescriptor.serializer(), connected ) )
+        val masterCustom = CustomMasterDeviceDescriptor( "Irrelevant", JSON.stringify( UnknownMasterDeviceDescriptor.serializer(), master ) )
+        val connectedCustom = CustomDeviceDescriptor( "Irrelevant", JSON.stringify( UnknownDeviceDescriptor.serializer(), connected ) )
 
         protocol.addMasterDevice( masterCustom )
         protocol.addConnectedDevice( connectedCustom, masterCustom )
@@ -162,8 +162,8 @@ class StudyDeploymentTest
         val device2 = UnknownDeviceDescriptor( "Unknown device 2" )
 
         // Mimic that the 'Unknown...' types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
-        val device1Custom = CustomDeviceDescriptor( "One class", Json.stringify( UnknownMasterDeviceDescriptor.serializer(), device1 ) )
-        val device2Custom = CustomDeviceDescriptor( "Not the same class", Json.stringify( UnknownDeviceDescriptor.serializer(), device2 ) )
+        val device1Custom = CustomDeviceDescriptor( "One class", JSON.stringify( UnknownMasterDeviceDescriptor.serializer(), device1 ) )
+        val device2Custom = CustomDeviceDescriptor( "Not the same class", JSON.stringify( UnknownDeviceDescriptor.serializer(), device2 ) )
 
         protocol.addMasterDevice( master )
         protocol.addConnectedDevice( device1Custom, master )
@@ -270,7 +270,7 @@ class StudyDeploymentTest
         val deviceDeployment = deployment.getDeploymentFor( master )
 
         assertEquals( "Connected", deviceDeployment.connectedDeviceConfigurations.keys.single() )
-        assertEquals( "42", deviceDeployment.connectedDeviceConfigurations[ "Connected" ]!!.deviceId )
+        assertEquals( "42", deviceDeployment.connectedDeviceConfigurations.getValue( "Connected" ).deviceId )
     }
 
     @Test

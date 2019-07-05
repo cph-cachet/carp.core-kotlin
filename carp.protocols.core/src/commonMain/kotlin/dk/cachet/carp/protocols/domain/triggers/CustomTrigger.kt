@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.triggers
 
-import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.common.serialization.*
 import kotlinx.serialization.json.*
 
 
@@ -14,7 +14,7 @@ data class CustomTrigger( override val className: String, override val jsonSourc
 
     init
     {
-        val json = Json.plain.parseJson( jsonSource ) as JsonObject
+        val json = JSON.parseJson( jsonSource ) as JsonObject
 
         val sourceDeviceRoleNameField = Trigger::sourceDeviceRoleName.name
         if ( !json.containsKey( sourceDeviceRoleNameField ) )

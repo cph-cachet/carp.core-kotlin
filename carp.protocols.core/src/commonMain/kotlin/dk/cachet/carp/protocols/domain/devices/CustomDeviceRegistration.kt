@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.common.serialization.*
 import kotlinx.serialization.json.*
 
 
@@ -14,7 +14,7 @@ class CustomDeviceRegistration( override val className: String, override val jso
 
     init
     {
-        val json = Json.plain.parseJson( jsonSource ) as JsonObject
+        val json = JSON.parseJson( jsonSource ) as JsonObject
 
         val deviceIdField = DeviceRegistration::deviceId.name
         if ( !json.containsKey( deviceIdField ) )

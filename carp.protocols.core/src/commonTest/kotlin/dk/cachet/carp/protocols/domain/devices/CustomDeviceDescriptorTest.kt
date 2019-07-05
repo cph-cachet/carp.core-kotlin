@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.devices
 
+import dk.cachet.carp.common.serialization.JSON
 import dk.cachet.carp.protocols.domain.*
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
 import kotlin.test.*
 
@@ -15,7 +15,7 @@ class CustomDeviceDescriptorTest
     fun initialization_from_json_extracts_base_DeviceDescriptor_properties()
     {
         val device = UnknownDeviceDescriptor( "Unknown" )
-        val serialized: String = Json.stringify( UnknownDeviceDescriptor.serializer(), device )
+        val serialized: String = JSON.stringify( UnknownDeviceDescriptor.serializer(), device )
 
         val custom = CustomDeviceDescriptor( "Irrelevant", serialized )
         assertEquals( device.roleName, custom.roleName )
@@ -28,7 +28,7 @@ class CustomDeviceDescriptorTest
     fun initialization_from_invalid_json_fails()
     {
         val incorrect = IncorrectDevice()
-        val serialized: String = Json.stringify( IncorrectDevice.serializer(), incorrect )
+        val serialized: String = JSON.stringify( IncorrectDevice.serializer(), incorrect )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -40,7 +40,7 @@ class CustomDeviceDescriptorTest
     fun createRegistration_is_not_supported()
     {
         val device = UnknownDeviceDescriptor( "Unknown" )
-        val serialized: String = Json.stringify( UnknownDeviceDescriptor.serializer(), device )
+        val serialized: String = JSON.stringify( UnknownDeviceDescriptor.serializer(), device )
 
         val custom = CustomDeviceDescriptor( "Irrelevant", serialized )
 

@@ -1,7 +1,6 @@
 package dk.cachet.carp.common.serialization
 
-import kotlinx.serialization.*
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.Serializable
 import kotlin.test.*
 
 
@@ -20,7 +19,7 @@ class PolymorphicSerializerTest
     {
         companion object
         {
-            init { PolymorphicSerializer.registerSerializer( A::class, A.serializer(),"dk.cachet.carp.common.serialization.PolymorphicSerializerTest.A" ) }
+            init { PolymorphicSerializer.registerSerializer( A::class, serializer(),"dk.cachet.carp.common.serialization.PolymorphicSerializerTest.A" ) }
         }
     }
     @Serializable
@@ -28,7 +27,7 @@ class PolymorphicSerializerTest
     {
         companion object
         {
-            init { PolymorphicSerializer.registerSerializer( B::class, B.serializer(),"dk.cachet.carp.common.serialization.PolymorphicSerializerTest.B" ) }
+            init { PolymorphicSerializer.registerSerializer( B::class, serializer(),"dk.cachet.carp.common.serialization.PolymorphicSerializerTest.B" ) }
         }
     }
     @Serializable
@@ -38,7 +37,7 @@ class PolymorphicSerializerTest
     fun can_serialize_polymorph_object()
     {
         val a = A()
-        val aJson = Json.stringify( PolymorphicSerializer, a )
+        val aJson = JSON.stringify( PolymorphicSerializer, a )
 
         assertEquals(
             """["dk.cachet.carp.common.serialization.PolymorphicSerializerTest.A",{"baseField":true,"a":"a"}]""",
@@ -49,8 +48,8 @@ class PolymorphicSerializerTest
     fun can_deserialize_polymorph_object()
     {
         val a = A()
-        val aJson = Json.stringify( PolymorphicSerializer, a )
-        val aParsed = Json.parse( PolymorphicSerializer, aJson ) as BaseClass
+        val aJson = JSON.stringify( PolymorphicSerializer, a )
+        val aParsed = JSON.parse( PolymorphicSerializer, aJson ) as BaseClass
 
         assertTrue { aParsed is A }
         assertTrue { aParsed.baseField }
@@ -63,7 +62,7 @@ class PolymorphicSerializerTest
 
         assertFailsWith<NoSuchElementException>
         {
-            Json.stringify( PolymorphicSerializer, unregistered )
+            JSON.stringify( PolymorphicSerializer, unregistered )
         }
     }
 
@@ -97,8 +96,8 @@ class PolymorphicSerializerTest
     {
         val list = PolymorphicList( listOf( A(), B() ) )
         val serializer = PolymorphicList.serializer()
-        val json = Json.stringify( serializer, list )
-        val parsed: PolymorphicList = Json.parse( serializer, json )
+        val json = JSON.stringify( serializer, list )
+        val parsed: PolymorphicList = JSON.parse( serializer, json )
 
         assertEquals( 2, parsed.objects.count() )
         assertTrue { parsed.objects[ 0 ] is A }
@@ -127,7 +126,7 @@ class PolymorphicSerializerTest
     {
         companion object
         {
-            init { PolymorphicSerializer.registerSerializer( Nested::class, Nested.serializer(), "dk.cachet.carp.common.serialization.PolymorphicSerializerTest.Nested" ) }
+            init { PolymorphicSerializer.registerSerializer( Nested::class, serializer(), "dk.cachet.carp.common.serialization.PolymorphicSerializerTest.Nested" ) }
         }
     }
 
@@ -136,8 +135,8 @@ class PolymorphicSerializerTest
     {
         val top = TopClass( listOf( Nested(A()), Nested(B()) ) )
         val serializer = TopClass.serializer()
-        val json = Json.stringify( serializer, top )
-        val parsed: TopClass = Json.parse( serializer, json )
+        val json = JSON.stringify( serializer, top )
+        val parsed: TopClass = JSON.parse( serializer, json )
 
         assertEquals( 2, parsed.nested.count() )
         assertTrue { parsed.nested[ 0 ].field is A }

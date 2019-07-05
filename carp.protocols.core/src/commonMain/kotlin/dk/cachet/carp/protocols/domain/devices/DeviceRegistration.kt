@@ -4,7 +4,6 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.*
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 
 
 /**
@@ -37,8 +36,8 @@ abstract class DeviceRegistration
     {
         // Use JSON serialization to make a clone.
         // This prevents each extending class from having to implement this method.
-        val serialized = Json.stringify( DeviceRegistrationSerializer, this )
-        return Json.parse( DeviceRegistrationSerializer, serialized )
+        val serialized = JSON.stringify( DeviceRegistrationSerializer, this )
+        return JSON.parse( DeviceRegistrationSerializer, serialized )
     }
 
     override fun equals( other: Any? ): Boolean
@@ -50,8 +49,8 @@ abstract class DeviceRegistration
 
         // Use JSON serialization to verify equality.
         // This prevents each extending class from having to implement this method.
-        val serialized = Json.stringify( DeviceRegistrationSerializer, this )
-        val otherSerialized = Json.stringify( DeviceRegistrationSerializer, this )
+        val serialized = JSON.stringify( DeviceRegistrationSerializer, this )
+        val otherSerialized = JSON.stringify( DeviceRegistrationSerializer, this )
 
         return serialized == otherSerialized
     }
@@ -60,7 +59,7 @@ abstract class DeviceRegistration
     {
         // Use JSON serialization to determine hashcode.
         // This prevents each extending class from having to implement this method.
-        val serialized = Json.stringify( DeviceRegistrationSerializer, this )
+        val serialized = JSON.stringify( DeviceRegistrationSerializer, this )
         return serialized.hashCode()
     }
 }
