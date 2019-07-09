@@ -14,7 +14,7 @@ data class RegistrableDevice(
      * The description of the device.
      */
     @Serializable( DeviceDescriptorSerializer::class )
-    val device: DeviceDescriptor,
+    val device: DeviceDescriptor<*>,
     /**
      * Determines whether registering the device is required for the deployment to start running.
      */

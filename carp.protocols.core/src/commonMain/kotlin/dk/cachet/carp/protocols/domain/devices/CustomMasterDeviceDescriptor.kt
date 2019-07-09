@@ -9,7 +9,7 @@ import kotlinx.serialization.json.*
  * A wrapper used to load extending types from [MasterDeviceDescriptor] serialized as JSON which are unknown at runtime.
  */
 data class CustomMasterDeviceDescriptor( override val className: String, override val jsonSource: String )
-    : MasterDeviceDescriptor(), UnknownPolymorphicWrapper
+    : MasterDeviceDescriptor<DeviceRegistrationBuilder>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
 
@@ -17,7 +17,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
     {
         val json = JSON.parseJson( jsonSource ) as JsonObject
 
-        val roleNameField = MasterDeviceDescriptor::roleName.name
+        val roleNameField = MasterDeviceDescriptor<*>::roleName.name
         if ( !json.containsKey( roleNameField ) )
         {
             throw IllegalArgumentException( "No '$roleNameField' defined." )
@@ -25,8 +25,8 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
         roleName = json[ roleNameField ]!!.content
     }
 
-    override fun createRegistration(): DeviceRegistration
-        = throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, it is unknown which registration is required." )
+    override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder
+        = throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, it is unknown which registration builder is required." )
 
     /**
      * For unknown types, it cannot be determined whether or not a given configuration is valid.

@@ -77,7 +77,6 @@ class StudyDeploymentTest
         assertEquals( 1, deployment.registeredDevices.size )
         val registered = deployment.registeredDevices.values.single()
         assertEquals( registration, registered )
-        assertFalse { registration === registered } // Object should be cloned during registration to prevent modification after registration.
     }
 
     @Test

@@ -53,10 +53,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * The set of devices which have already been registered for this deployment.
      */
-    val registeredDevices: Map<DeviceDescriptor, DeviceRegistration>
+    val registeredDevices: Map<DeviceDescriptor<*>, DeviceRegistration>
         get() = _registeredDevices
 
-    private val _registeredDevices: MutableMap<DeviceDescriptor, DeviceRegistration> = mutableMapOf()
+    private val _registeredDevices: MutableMap<DeviceDescriptor<*>, DeviceRegistration> = mutableMapOf()
 
     init
     {
@@ -82,7 +82,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val remainingRegistration: Set<String> = getRemainingDevicesToRegister().map { it.roleName }.toSet()
         val devicesReadyForDeployment: Set<String> = _registrableDevices
             .filter {
-                it.device is MasterDeviceDescriptor && // Only master devices can be deployed.
+                it.device is MasterDeviceDescriptor<*> && // Only master devices can be deployed.
                 canObtainDeviceDeployment( it.device ) }
             .map { it.device.roleName }
             .toSet()
@@ -97,7 +97,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * Get the subset of registrable devices which require registration and are not yet registered.
      */
-    private fun getRemainingDevicesToRegister(): Set<DeviceDescriptor>
+    private fun getRemainingDevicesToRegister(): Set<DeviceDescriptor<*>>
     {
         return _registrableDevices
             .asSequence()
@@ -111,7 +111,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
      * Determines whether the deployment configuration (to initialize the device environment) for a specific device can be obtained.
      * This requires the specified device and all other master devices it depends on to be registered.
      */
-    private fun canObtainDeviceDeployment( device: MasterDeviceDescriptor ): Boolean
+    private fun canObtainDeviceDeployment( device: MasterDeviceDescriptor<*> ): Boolean
     {
         // TODO: For now, presume all devices which require registration may depend on one another.
         //       This can be optimized by looking at the triggers which determine actual dependencies between devices.
@@ -121,7 +121,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * Register the specified [device] for this deployment using the passed [registration] options.
      */
-    fun registerDevice( device: DeviceDescriptor, registration: DeviceRegistration )
+    fun registerDevice( device: DeviceDescriptor<*>, registration: DeviceRegistration )
     {
         val containsDevice: Boolean = _registrableDevices.any { it.device == device }
         if ( !containsDevice )
@@ -139,15 +139,14 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         // Verify whether the passed registration is known to be invalid for the given device.
         // This may be 'UNKNOWN' when the device type is not known at runtime.
         // In this case, simply forward as is assuming it to be valid (possibly failing on the 'client' later).
-        val registrationCopy = registration.copy() // Copy registration to prevent external modification.
-        if ( device.isValidConfiguration( registrationCopy ) == Trilean.FALSE )
+        if ( device.isValidConfiguration( registration ) == Trilean.FALSE )
         {
             throw IllegalArgumentException( "The passed registration is not valid for the given device." )
         }
 
         // Verify whether deviceId is unique for the given device type within this deployment.
         val isUnique = _registeredDevices.none {
-            val isSameId = it.value.deviceId == registrationCopy.deviceId
+            val isSameId = it.value.deviceId == registration.deviceId
             val otherDevice = it.key
             val areUnknownDevices = device is UnknownPolymorphicWrapper && otherDevice is UnknownPolymorphicWrapper
             val matchingUnknownDevices: Boolean by lazy { (device as UnknownPolymorphicWrapper).className == (otherDevice as UnknownPolymorphicWrapper).className }
@@ -159,7 +158,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
                 "Cannot register the same device for different device roles within a deployment." )
         }
 
-        _registeredDevices[ device ] = registrationCopy
+        _registeredDevices[ device ] = registration
     }
 
     /**
@@ -168,7 +167,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
      * @throws IllegalArgumentException when the passed [device] is not part of the protocol of this deployment.
      * @throws IllegalArgumentException when the passed [device] is not ready to receive a [DeviceDeployment] yet.
      */
-    fun getDeploymentFor( device: MasterDeviceDescriptor ): DeviceDeployment
+    fun getDeploymentFor( device: MasterDeviceDescriptor<*> ): DeviceDeployment
     {
         // Verify whether the specified device is part of the protocol of this deployment.
         if ( !protocolSnapshot.masterDevices.contains( device ) )
@@ -186,7 +185,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val configuration: DeviceRegistration = _registeredDevices[ device ]!! // Must be non-null, otherwise canObtainDeviceDeployment would fail.
 
         // Determine which devices this device needs to connect to and retrieve configuration for preregistered devices.
-        val connectedDevices: Set<DeviceDescriptor> = _protocol.getConnectedDevices( device ).toSet()
+        val connectedDevices: Set<DeviceDescriptor<*>> = _protocol.getConnectedDevices( device ).toSet()
         val deviceRegistrations: Map<String, DeviceRegistration> = _registeredDevices
             .filter { connectedDevices.contains( it.key ) }
             .mapKeys { it.key.roleName }

@@ -7,10 +7,10 @@ import kotlinx.serialization.json.*
 /**
  * A wrapper used to load extending types from [DeviceRegistration] serialized as JSON which are unknown at runtime.
  */
-class CustomDeviceRegistration( override val className: String, override val jsonSource: String )
+data class CustomDeviceRegistration( override val className: String, override val jsonSource: String )
     : DeviceRegistration(), UnknownPolymorphicWrapper
 {
-    override var deviceId: String = ""
+    override val deviceId: String
 
     init
     {

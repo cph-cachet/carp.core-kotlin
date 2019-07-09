@@ -126,10 +126,10 @@ class StudyProtocolSnapshotTest
     @Test
     fun order_of_elements_in_snapshot_does_not_matter_for_equality_or_hashcode()
     {
-        val masterDevices = listOf<MasterDeviceDescriptor>( StubMasterDeviceDescriptor( "M1" ), StubMasterDeviceDescriptor( "M2" ))
-        val connectedDevices = listOf<DeviceDescriptor>( StubDeviceDescriptor( "C1" ), StubDeviceDescriptor( "C2" ))
+        val masterDevices = listOf<MasterDeviceDescriptor<*>>( StubMasterDeviceDescriptor( "M1" ), StubMasterDeviceDescriptor( "M2" ) )
+        val connectedDevices = listOf<DeviceDescriptor<*>>( StubDeviceDescriptor( "C1" ), StubDeviceDescriptor( "C2" ) )
         val connections = listOf(
-            StudyProtocolSnapshot.DeviceConnection("C1", "M1" ),
+            StudyProtocolSnapshot.DeviceConnection( "C1", "M1" ),
             StudyProtocolSnapshot.DeviceConnection( "C2", "M2" ) )
         val tasks = listOf<TaskDescriptor>( StubTaskDescriptor( "T1" ), StubTaskDescriptor( "T2" ) )
         val triggers = listOf(

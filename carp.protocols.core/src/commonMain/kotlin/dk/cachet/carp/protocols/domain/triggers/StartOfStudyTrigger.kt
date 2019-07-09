@@ -26,5 +26,5 @@ data class StartOfStudyTrigger private constructor( override val sourceDeviceRol
     @Transient
     override val requiresMasterDevice: Boolean = true
 
-    constructor( sourceDevice: MasterDeviceDescriptor ) : this( sourceDevice.roleName )
+    constructor( sourceDevice: MasterDeviceDescriptor<*> ) : this( sourceDevice.roleName )
 }

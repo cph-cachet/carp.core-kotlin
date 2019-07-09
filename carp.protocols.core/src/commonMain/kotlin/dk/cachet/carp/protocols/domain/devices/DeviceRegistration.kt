@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.serialization.*
-import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.*
 import kotlinx.serialization.Serializable
 
 
@@ -19,7 +19,7 @@ object DeviceRegistrationSerializer : UnknownPolymorphicSerializer<DeviceRegistr
  * A [DeviceRegistration] configures a [DeviceDescriptor] as part of the deployment of a [StudyProtocol].
  */
 @Serializable
-abstract class DeviceRegistration
+abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegistration::class ) )
 {
     /**
      * An ID for the device, used to disambiguate between devices of the same type, as provided by the device itself.
@@ -27,48 +27,21 @@ abstract class DeviceRegistration
      *
      * TODO: This might be useful for potential optimizations later (e.g., prevent pulling in data from the same source more than once), but for now is ignored.
      */
-    abstract var deviceId: String
-
-    /**
-     * Make an exact copy of this object.
-     */
-    fun copy(): DeviceRegistration
-    {
-        // Use JSON serialization to make a clone.
-        // This prevents each extending class from having to implement this method.
-        val serialized = JSON.stringify( DeviceRegistrationSerializer, this )
-        return JSON.parse( DeviceRegistrationSerializer, serialized )
-    }
-
-    override fun equals( other: Any? ): Boolean
-    {
-        if ( other !is DeviceRegistration )
-        {
-            return false
-        }
-
-        // Use JSON serialization to verify equality.
-        // This prevents each extending class from having to implement this method.
-        val serialized = JSON.stringify( DeviceRegistrationSerializer, this )
-        val otherSerialized = JSON.stringify( DeviceRegistrationSerializer, this )
-
-        return serialized == otherSerialized
-    }
-
-    override fun hashCode(): Int
-    {
-        // Use JSON serialization to determine hashcode.
-        // This prevents each extending class from having to implement this method.
-        val serialized = JSON.stringify( DeviceRegistrationSerializer, this )
-        return serialized.hashCode()
-    }
+    abstract val deviceId: String
 }
 
 
 /**
- * Create a default device registration, which solely involves assigning a unique ID to the device.
+ * A helper class to configure and construct immutable [DeviceRegistration] classes.
+ *
+ * TODO: This and extending classes are never expected to be serialized,
+ *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceDescriptor].
  */
-fun defaultDeviceRegistration(): DeviceRegistration
+@Serializable
+abstract class DeviceRegistrationBuilder
 {
-    return DefaultDeviceRegistration( UUID.randomUUID().toString() )
+    /**
+     * Build the immutable [DeviceRegistration] using the current configuration of this [DeviceRegistrationBuilder].
+     */
+    abstract fun build(): DeviceRegistration
 }

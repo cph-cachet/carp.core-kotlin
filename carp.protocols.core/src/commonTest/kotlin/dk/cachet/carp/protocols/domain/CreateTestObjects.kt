@@ -1,7 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.Trilean
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.*
 import dk.cachet.carp.protocols.domain.data.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.common.serialization.*
@@ -46,7 +45,7 @@ fun createComplexProtocol(): StudyProtocol
 }
 
 @Serializable
-internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) : MasterDeviceDescriptor()
+internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) : MasterDeviceDescriptor<DefaultDeviceRegistrationBuilder>()
 {
     companion object
     {
@@ -59,12 +58,12 @@ internal data class UnknownMasterDeviceDescriptor( override val roleName: String
         }
     }
 
-    override fun createRegistration(): DeviceRegistration = defaultDeviceRegistration()
+    override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
 }
 
 @Serializable
-internal data class UnknownDeviceDescriptor( override val roleName: String ) : DeviceDescriptor()
+internal data class UnknownDeviceDescriptor( override val roleName: String ) : DeviceDescriptor<DefaultDeviceRegistrationBuilder>()
 {
     companion object
     {
@@ -77,12 +76,12 @@ internal data class UnknownDeviceDescriptor( override val roleName: String ) : D
         }
     }
 
-    override fun createRegistration(): DeviceRegistration = defaultDeviceRegistration()
+    override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
 }
 
 @Serializable
-internal class UnknownDeviceRegistration( override var deviceId: String ) : DeviceRegistration()
+internal data class UnknownDeviceRegistration( override val deviceId: String ) : DeviceRegistration()
 {
     companion object
     {

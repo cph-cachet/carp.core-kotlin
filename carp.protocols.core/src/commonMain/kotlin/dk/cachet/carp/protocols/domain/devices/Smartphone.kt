@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
  * An internet-connected phone with built-in sensors.
  */
 @Serializable
-data class Smartphone( override val roleName: String ) : MasterDeviceDescriptor()
+data class Smartphone( override val roleName: String ) : MasterDeviceDescriptor<DefaultDeviceRegistrationBuilder>()
 {
     companion object
     {
@@ -28,6 +28,6 @@ data class Smartphone( override val roleName: String ) : MasterDeviceDescriptor(
         }
     }
 
-    override fun createRegistration(): DeviceRegistration = defaultDeviceRegistration()
+    override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
 }
