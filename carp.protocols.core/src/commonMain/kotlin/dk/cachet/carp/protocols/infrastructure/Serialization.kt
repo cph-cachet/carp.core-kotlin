@@ -2,7 +2,10 @@ package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
+import dk.cachet.carp.protocols.domain.tasks.measures.*
+import dk.cachet.carp.protocols.domain.triggers.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.*
 
@@ -11,9 +14,31 @@ import kotlinx.serialization.modules.*
  * Types in the [dk.cachet.carp.protocols] module which need to be registered when using [Json] serializer.
  */
 val PROTOCOLS_SERIAL_MODULE = SerializersModule {
+    polymorphic( DeviceDescriptor::class )
+    {
+        AltBeacon::class with AltBeacon.serializer()
+    }
+    polymorphic( MasterDeviceDescriptor::class, DeviceDescriptor::class )
+    {
+        Smartphone::class with Smartphone.serializer()
+    }
+    polymorphic( DeviceRegistration::class )
+    {
+        DefaultDeviceRegistration::class with DefaultDeviceRegistration.serializer()
+        AltBeaconDeviceRegistration::class with AltBeaconDeviceRegistration.serializer()
+    }
     polymorphic( TaskDescriptor::class )
     {
         ConcurrentTask::class with ConcurrentTask.serializer()
+    }
+    polymorphic( Measure::class )
+    {
+        DataTypeMeasure::class with DataTypeMeasure.serializer()
+        PhoneSensorMeasure::class with PhoneSensorMeasure.serializer()
+    }
+    polymorphic( Trigger::class )
+    {
+        StartOfStudyTrigger::class with StartOfStudyTrigger.serializer()
     }
 }
 
