@@ -1,9 +1,10 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
-import dk.cachet.carp.common.serialization.JSON
+import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.data.STUB_DATA_TYPE
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import kotlin.test.*
 
 
@@ -12,6 +13,12 @@ import kotlin.test.*
  */
 class CustomMeasureTest
 {
+    companion object
+    {
+        private val JSON: Json = createDefaultJSON()
+    }
+
+
     @Test
     fun initialization_from_json_extracts_base_Measure_properties()
     {

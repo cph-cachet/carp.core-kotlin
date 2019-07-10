@@ -27,6 +27,8 @@ object DevicesSerializer : KSerializer<List<DeviceDescriptor<*>>> by ArrayListSe
  */
 object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescriptor<*>, DeviceDescriptor<*>>( DeviceDescriptor::class, false )
 {
+    private val JSON: Json = createDefaultJSON()
+
     override fun createWrapper( className: String, json: String ): DeviceDescriptor<*>
     {
         val jsonObject = JSON.parseJson( json ) as JsonObject
@@ -110,16 +112,6 @@ data class StudyProtocolSnapshot(
             )
         }
 
-        /**
-         * Create a snapshot from JSON serialized using the built-in serializer.
-         *
-         * @param json The JSON which was serialized using the built-in serializer (`StudyProtocolSnapshot.toJson`).
-         */
-        fun fromJson( json: String ): StudyProtocolSnapshot
-        {
-            return JSON.parse( serializer(), json )
-        }
-
         private fun getConnections( protocol: StudyProtocol, masterDevice: MasterDeviceDescriptor<*> ): Iterable<DeviceConnection>
         {
             val connections: MutableList<DeviceConnection> = mutableListOf()
@@ -134,15 +126,6 @@ data class StudyProtocolSnapshot(
 
             return connections
         }
-    }
-
-
-    /**
-     * Serialize to JSON using the built-in serializer.
-     */
-    fun toJson(): String
-    {
-        return JSON.stringify( serializer(), this )
     }
 
 

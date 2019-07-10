@@ -10,6 +10,12 @@ import kotlinx.serialization.json.*
 data class CustomDeviceRegistration( override val className: String, override val jsonSource: String )
     : DeviceRegistration(), UnknownPolymorphicWrapper
 {
+    companion object
+    {
+        private val JSON: Json = createDefaultJSON()
+    }
+
+
     override val deviceId: String
 
     init

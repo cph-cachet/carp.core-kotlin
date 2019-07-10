@@ -10,6 +10,12 @@ import kotlinx.serialization.json.*
 data class CustomTrigger( override val className: String, override val jsonSource: String )
     : Trigger(), UnknownPolymorphicWrapper
 {
+    companion object
+    {
+        private val JSON: Json = createDefaultJSON()
+    }
+
+
     override val sourceDeviceRoleName: String
 
     init

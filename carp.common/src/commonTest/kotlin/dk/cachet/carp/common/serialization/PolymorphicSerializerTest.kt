@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.serialization
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import kotlin.test.*
 
 
@@ -9,6 +10,12 @@ import kotlin.test.*
  */
 class PolymorphicSerializerTest
 {
+    companion object
+    {
+        private val JSON: Json = createDefaultJSON()
+    }
+
+
     @Serializable
     internal abstract class BaseClass
     {
@@ -32,6 +39,7 @@ class PolymorphicSerializerTest
     }
     @Serializable
     internal class Unregistered : BaseClass()
+
 
     @Test
     fun can_serialize_polymorph_object()

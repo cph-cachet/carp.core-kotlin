@@ -11,6 +11,12 @@ import kotlinx.serialization.json.*
 data class CustomMasterDeviceDescriptor( override val className: String, override val jsonSource: String )
     : MasterDeviceDescriptor<DeviceRegistrationBuilder>(), UnknownPolymorphicWrapper
 {
+    companion object
+    {
+        private val JSON: Json = createDefaultJSON()
+    }
+
+
     override val roleName: String
 
     init

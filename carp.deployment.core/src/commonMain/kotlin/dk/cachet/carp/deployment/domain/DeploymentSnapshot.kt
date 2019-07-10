@@ -1,7 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.*
-import dk.cachet.carp.common.serialization.JSON
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.Serializable
@@ -32,24 +31,5 @@ data class DeploymentSnapshot(
                 deployment.protocolSnapshot,
                 deployment.registeredDevices.mapKeys { it.key.roleName } )
         }
-
-        /**
-         * Create a snapshot from JSON serialized using the built-in serializer.
-         *
-         * @param json The JSON which was serialized using the built-in serializer (`DeploymentSnapshot.toJson`).
-         */
-        fun fromJson( json: String ): DeploymentSnapshot
-        {
-            return JSON.parse( serializer(), json )
-        }
-    }
-
-
-    /**
-     * Serialize to JSON using the built-in serializer.
-     */
-    fun toJson(): String
-    {
-        return JSON.stringify( serializer(), this )
     }
 }

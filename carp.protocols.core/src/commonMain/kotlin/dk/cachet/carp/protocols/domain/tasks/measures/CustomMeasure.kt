@@ -10,6 +10,12 @@ import kotlinx.serialization.json.*
  */
 data class CustomMeasure( override val className: String, override val jsonSource: String ) : Measure(), UnknownPolymorphicWrapper
 {
+    companion object
+    {
+        private val JSON: Json = createDefaultJSON()
+    }
+
+
     override val type: DataType
 
     init

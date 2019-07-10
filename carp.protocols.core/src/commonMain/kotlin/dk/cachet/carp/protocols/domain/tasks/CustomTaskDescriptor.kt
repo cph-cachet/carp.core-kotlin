@@ -11,6 +11,12 @@ import kotlinx.serialization.json.*
 data class CustomTaskDescriptor( override val className: String, override val jsonSource: String )
     : TaskDescriptor(), UnknownPolymorphicWrapper
 {
+    companion object
+    {
+        private val JSON: Json = createDefaultJSON()
+    }
+
+
     override val name: String
     override val measures: List<Measure>
 
