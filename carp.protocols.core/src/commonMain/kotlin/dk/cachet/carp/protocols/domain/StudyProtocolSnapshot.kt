@@ -25,7 +25,7 @@ object DevicesSerializer : KSerializer<List<DeviceDescriptor<*>>> by ArrayListSe
 /**
  * Custom serializer for [DeviceDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
  */
-object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescriptor<*>, DeviceDescriptor<*>>( DeviceDescriptor::class, false )
+object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescriptor<*>, DeviceDescriptor<*>>( DeviceDescriptor::class, DeviceDescriptor::class, false )
 {
     override fun createWrapper( className: String, json: String, serializer: Json ): DeviceDescriptor<*>
     {
@@ -47,12 +47,8 @@ object TasksSerializer : KSerializer<List<TaskDescriptor>> by ArrayListSerialize
 /**
  * Custom serializer for a [Trigger] which enables deserializing types that are unknown at runtime, yet extend from [Trigger].
  */
-object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, CustomTrigger>( CustomTrigger::class )
-{
-    override fun createWrapper( className: String, json: String, serializer: Json ): CustomTrigger
-        = CustomTrigger( className, json, serializer )
-}
-
+object TriggerSerializer : KSerializer<Trigger>
+    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTrigger( className, json, serializer ) } )
 
 /**
  * A serializable snapshot of a [StudyProtocol] at the moment in time when it was created.

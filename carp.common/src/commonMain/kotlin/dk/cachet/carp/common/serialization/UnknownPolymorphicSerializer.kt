@@ -27,7 +27,7 @@ internal object UnknownPolymorphicClassDesc : SerialClassDescImpl( "kotlin.Any" 
  *  In case it is impossible for a base return type to implement this interface you can disable the runtime verification by setting this to false.
  *  However, ensure that all deriving classes of this base type implement [UnknownPolymorphicWrapper], otherwise serialization will not output the original JSON found upon deserializing.
  */
-expect abstract class UnknownPolymorphicSerializer<P: Any, W: P>( wrapperClass: KClass<W>, verifyUnknownPolymorphicWrapper: Boolean = true ) : KSerializer<P>
+expect abstract class UnknownPolymorphicSerializer<P: Any, W: P>( baseClass: KClass<P>, wrapperClass: KClass<W>, verifyUnknownPolymorphicWrapper: Boolean = true ) : KSerializer<P>
 {
     override val descriptor: SerialDescriptor
     override fun serialize( encoder: Encoder, obj: P )
@@ -51,7 +51,7 @@ expect abstract class UnknownPolymorphicSerializer<P: Any, W: P>( wrapperClass: 
  */
 inline fun <reified P: Any, reified W: P> createUnknownPolymorphicSerializer( crossinline createWrapper: (className: String, json: String, serializer: Json) -> W ): UnknownPolymorphicSerializer<P, W>
 {
-    return object : UnknownPolymorphicSerializer<P, W>( W::class )
+    return object : UnknownPolymorphicSerializer<P, W>( P::class, W::class )
     {
         override fun createWrapper( className: String, json: String, serializer: Json ): W
         {

@@ -3,18 +3,14 @@ package dk.cachet.carp.protocols.domain.devices
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.serialization.*
 import dk.cachet.carp.protocols.domain.*
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.*
 
 
 /**
  * Custom serializer for a [DeviceRegistration] which enables deserializing types that are unknown at runtime, yet extend from [DeviceRegistration].
  */
-object DeviceRegistrationSerializer : UnknownPolymorphicSerializer<DeviceRegistration, CustomDeviceRegistration>( CustomDeviceRegistration::class )
-{
-    override fun createWrapper( className: String, json: String, serializer: Json ): CustomDeviceRegistration
-        = CustomDeviceRegistration( className, json, serializer )
-}
+object DeviceRegistrationSerializer : KSerializer<DeviceRegistration>
+    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomDeviceRegistration( className, json, serializer ) } )
 
 
 /**

@@ -1,7 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -12,18 +11,6 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class DefaultDeviceRegistration( override val deviceId: String ) : DeviceRegistration()
-{
-    companion object
-    {
-        init
-        {
-            PolymorphicSerializer.registerSerializer(
-                DefaultDeviceRegistration::class,
-                DefaultDeviceRegistration.serializer(),
-                "dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration" )
-        }
-    }
-}
 
 
 /**

@@ -1,7 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.*
-import dk.cachet.carp.common.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -11,17 +10,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AltBeacon( override val roleName: String ) : DeviceDescriptor<AltBeaconDeviceRegistrationBuilder>()
 {
-    companion object
-    {
-        init
-        {
-            PolymorphicSerializer.registerSerializer(
-                AltBeacon::class,
-                AltBeacon.serializer(),
-                "dk.cachet.carp.protocols.domain.devices.AltBeacon" )
-        }
-    }
-
     override fun createDeviceRegistrationBuilder(): AltBeaconDeviceRegistrationBuilder = AltBeaconDeviceRegistrationBuilder()
     override fun isValidConfiguration( registration: DeviceRegistration ): Trilean
         = ( registration is AltBeaconDeviceRegistration ).toTrilean()
@@ -54,17 +42,6 @@ data class AltBeaconDeviceRegistration(
     val minorId: Short ) : DeviceRegistration()
 {
     override val deviceId: String = "$manufacturerId:$organizationId:$majorId:$minorId"
-
-    companion object
-    {
-        init
-        {
-            PolymorphicSerializer.registerSerializer(
-                AltBeaconDeviceRegistration::class,
-                AltBeaconDeviceRegistration.serializer(),
-                "dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration" )
-        }
-    }
 }
 
 

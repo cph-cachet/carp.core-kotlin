@@ -1,7 +1,6 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.common.TimeSpan
-import dk.cachet.carp.common.serialization.PolymorphicSerializer
 import dk.cachet.carp.protocols.domain.data.DataType
 import dk.cachet.carp.protocols.domain.data.carp.*
 import kotlinx.serialization.*
@@ -22,14 +21,6 @@ data class PhoneSensorMeasure private constructor(
 {
     companion object Factory : PhoneSensorMeasureFactory
     {
-        init
-        {
-            PolymorphicSerializer.registerSerializer(
-                PhoneSensorMeasure::class,
-                PhoneSensorMeasure.serializer(),
-                "dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure" )
-        }
-
         private val SUPPORTED_DATA_TYPES = arrayOf( GEO_LOCATION, STEPCOUNT )
 
         override fun geolocation( duration: TimeSpan ) = PhoneSensorMeasure( GEO_LOCATION, duration )

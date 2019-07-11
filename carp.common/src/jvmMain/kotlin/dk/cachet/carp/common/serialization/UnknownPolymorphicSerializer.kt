@@ -7,7 +7,10 @@ import kotlin.reflect.full.createType
 import kotlin.reflect.jvm.isAccessible
 
 
-actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual constructor( wrapperClass: KClass<W>, verifyUnknownPolymorphicWrapper: Boolean ) : KSerializer<P>
+actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual constructor(
+    private val baseClass: KClass<P>,
+    wrapperClass: KClass<W>,
+    verifyUnknownPolymorphicWrapper: Boolean ) : KSerializer<P>
 {
     companion object
     {
@@ -60,7 +63,11 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
         }
         else
         {
-            val saver = PolymorphicSerializer.getSerializerBySimpleClassName( obj::class.simpleName!! )
+            val registeredSerializer = encoder.context.getPolymorphic( baseClass, obj )
+                ?: throw SerializationException( "${obj.javaClass.typeName} is not registered for polymorph serialization." )
+
+            @Suppress( "UNCHECKED_CAST" )
+            val saver = registeredSerializer as KSerializer<P>
             encoder.encodeStringElement( descriptor, 0, saver.descriptor.name )
             encoder.encodeSerializableElement( descriptor, 1, saver, obj )
         }
@@ -83,7 +90,8 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
         // Determine class to be loaded and whether it is available at runtime.
         decoder.decodeElementIndex( descriptor )
         val className = decoder.decodeStringElement( descriptor, 0 )
-        val canLoadClass = PolymorphicSerializer.isSerializerByQualifiedNameRegistered( className )
+        val registeredSerializer = decoder.context.getPolymorphic( baseClass, className )
+        val canLoadClass = registeredSerializer != null
 
         // Deserialize object when serializer is available, or wrap in case type is unknown.
         val obj: P
@@ -91,12 +99,12 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
         if ( canLoadClass )
         {
             @Suppress( "UNCHECKED_CAST" )
-            val loader = PolymorphicSerializer.getSerializerByQualifiedName( className ) as KSerializer<P>
+            val loader = registeredSerializer as KSerializer<P>
             obj = decoder.decodeSerializableElement( descriptor, 1, loader )
         }
         else
         {
-            // TODO: Currently the following relies on reflection and is probably specific to JSON parsing.
+            // TODO: Currently, the following relies on reflection.
 
             // Get source string.
             val readerField = decoder::class.members.first { m -> m.name == "reader" }

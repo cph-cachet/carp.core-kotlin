@@ -1,7 +1,6 @@
 package dk.cachet.carp.protocols.domain.triggers
 
 import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
-import dk.cachet.carp.common.serialization.PolymorphicSerializer
 import kotlinx.serialization.*
 
 
@@ -12,17 +11,6 @@ import kotlinx.serialization.*
 @Serializable
 data class StartOfStudyTrigger private constructor( override val sourceDeviceRoleName: String ) : Trigger()
 {
-    companion object
-    {
-        init
-        {
-            PolymorphicSerializer.registerSerializer(
-                StartOfStudyTrigger::class,
-                StartOfStudyTrigger.serializer(),
-                "dk.cachet.carp.protocols.domain.triggers.StartOfStudyTrigger" )
-        }
-    }
-
     @Transient
     override val requiresMasterDevice: Boolean = true
 

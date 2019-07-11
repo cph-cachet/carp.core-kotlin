@@ -15,7 +15,7 @@ class CustomTaskDescriptorTest
 {
     companion object
     {
-        private val JSON: Json = createDefaultJSON()
+        private val JSON: Json = createDefaultJSON( STUBS_SERIAL_MODULE )
     }
 
 
