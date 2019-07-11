@@ -1,8 +1,9 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.serialization.JSON
+import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import kotlin.test.*
 
 
@@ -11,13 +12,19 @@ import kotlin.test.*
  */
 class CustomDeviceDescriptorTest
 {
+    companion object
+    {
+        private val JSON: Json = createDefaultJSON()
+    }
+
+
     @Test
     fun initialization_from_json_extracts_base_DeviceDescriptor_properties()
     {
         val device = UnknownDeviceDescriptor( "Unknown" )
         val serialized: String = JSON.stringify( UnknownDeviceDescriptor.serializer(), device )
 
-        val custom = CustomDeviceDescriptor( "Irrelevant", serialized )
+        val custom = CustomDeviceDescriptor( "Irrelevant", serialized, JSON )
         assertEquals( device.roleName, custom.roleName )
     }
 
@@ -32,7 +39,7 @@ class CustomDeviceDescriptorTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomDeviceDescriptor( "Irrelevant", serialized )
+            CustomDeviceDescriptor( "Irrelevant", serialized, JSON )
         }
     }
 
@@ -42,7 +49,7 @@ class CustomDeviceDescriptorTest
         val device = UnknownDeviceDescriptor( "Unknown" )
         val serialized: String = JSON.stringify( UnknownDeviceDescriptor.serializer(), device )
 
-        val custom = CustomDeviceDescriptor( "Irrelevant", serialized )
+        val custom = CustomDeviceDescriptor( "Irrelevant", serialized, JSON )
 
         assertFailsWith<UnsupportedOperationException>
         {

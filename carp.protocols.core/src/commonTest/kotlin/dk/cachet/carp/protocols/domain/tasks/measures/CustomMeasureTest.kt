@@ -1,9 +1,10 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
-import dk.cachet.carp.common.serialization.JSON
+import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.data.STUB_DATA_TYPE
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import kotlin.test.*
 
 
@@ -12,13 +13,19 @@ import kotlin.test.*
  */
 class CustomMeasureTest
 {
+    companion object
+    {
+        private val JSON: Json = createDefaultJSON()
+    }
+
+
     @Test
     fun initialization_from_json_extracts_base_Measure_properties()
     {
         val measure = UnknownMeasure( STUB_DATA_TYPE )
         val serialized: String = JSON.stringify( UnknownMeasure.serializer(), measure )
 
-        val custom = CustomMeasure( "Irrelevant", serialized )
+        val custom = CustomMeasure( "Irrelevant", serialized, JSON )
         assertEquals( measure.type, custom.type )
     }
 
@@ -33,7 +40,7 @@ class CustomMeasureTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomMeasure( "Irrelevant", serialized )
+            CustomMeasure( "Irrelevant", serialized, JSON )
         }
     }
 }

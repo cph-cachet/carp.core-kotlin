@@ -1,12 +1,14 @@
-package dk.cachet.carp.deployment.domain
+package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.*
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.infrastructure.*
 import kotlin.test.*
 
 
 /**
- * Tests for [DeploymentStatus].
+ * Tests for [DeploymentStatus] relying on core infrastructure.
  */
 class DeploymentStatusTest
 {

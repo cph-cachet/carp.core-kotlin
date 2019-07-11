@@ -1,8 +1,9 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.serialization.JSON
+import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.UnknownDeviceRegistration
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import kotlin.test.*
 
 
@@ -11,13 +12,19 @@ import kotlin.test.*
  */
 class CustomDeviceRegistrationTest
 {
+    companion object
+    {
+        private val JSON: Json = createDefaultJSON()
+    }
+
+
     @Test
     fun initialization_from_json_extracts_base_DeviceRegistration_properties()
     {
         val registration = UnknownDeviceRegistration( "Unknown" )
         val serialized: String = JSON.stringify( UnknownDeviceRegistration.serializer(), registration )
 
-        val custom = CustomDeviceRegistration( "Irrelevant", serialized )
+        val custom = CustomDeviceRegistration( "Irrelevant", serialized, JSON )
         assertEquals( registration.deviceId, custom.deviceId )
     }
 
@@ -32,7 +39,7 @@ class CustomDeviceRegistrationTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomDeviceRegistration( "Irrelevant", serialized )
+            CustomDeviceRegistration( "Irrelevant", serialized, JSON )
         }
     }
 }

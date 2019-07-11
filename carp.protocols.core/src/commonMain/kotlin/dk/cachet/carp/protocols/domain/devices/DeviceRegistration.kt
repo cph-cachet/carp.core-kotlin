@@ -4,6 +4,7 @@ import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.serialization.*
 import dk.cachet.carp.protocols.domain.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 
 /**
@@ -11,7 +12,8 @@ import kotlinx.serialization.Serializable
  */
 object DeviceRegistrationSerializer : UnknownPolymorphicSerializer<DeviceRegistration, CustomDeviceRegistration>( CustomDeviceRegistration::class )
 {
-    override fun createWrapper( className: String, json: String ): CustomDeviceRegistration = CustomDeviceRegistration( className, json )
+    override fun createWrapper( className: String, json: String, serializer: Json ): CustomDeviceRegistration
+        = CustomDeviceRegistration( className, json, serializer )
 }
 
 

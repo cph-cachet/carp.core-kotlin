@@ -8,14 +8,14 @@ import kotlinx.serialization.json.*
 /**
  * A wrapper used to load extending types from [DeviceDescriptor] serialized as JSON which are unknown at runtime.
  */
-data class CustomDeviceDescriptor( override val className: String, override val jsonSource: String )
+data class CustomDeviceDescriptor( override val className: String, override val jsonSource: String, val serializer: Json )
     : DeviceDescriptor<DeviceRegistrationBuilder>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
 
     init
     {
-        val json = JSON.parseJson( jsonSource ) as JsonObject
+        val json = serializer.parseJson( jsonSource ) as JsonObject
 
         val roleNameField = DeviceDescriptor<*>::roleName.name
         if ( !json.containsKey( roleNameField ) )

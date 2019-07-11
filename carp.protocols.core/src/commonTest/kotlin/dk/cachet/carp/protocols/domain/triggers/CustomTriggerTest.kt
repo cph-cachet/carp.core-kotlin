@@ -1,8 +1,9 @@
 package dk.cachet.carp.protocols.domain.triggers
 
-import dk.cachet.carp.common.serialization.JSON
+import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import kotlin.test.*
 
 
@@ -11,12 +12,18 @@ import kotlin.test.*
  */
 class CustomTriggerTest
 {
+    companion object
+    {
+        private val JSON: Json = createDefaultJSON()
+    }
+
+
     @Test
     fun initialization_from_json_extracts_base_Trigger_properties() {
         val trigger = UnknownTrigger( "Some device" )
         val serialized: String = JSON.stringify( UnknownTrigger.serializer(), trigger )
 
-        val custom = CustomTrigger( "Irrelevant", serialized )
+        val custom = CustomTrigger( "Irrelevant", serialized, JSON )
         assertEquals( trigger.sourceDeviceRoleName, custom.sourceDeviceRoleName )
     }
 
@@ -31,7 +38,7 @@ class CustomTriggerTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomTrigger( "Irrelevant", serialized )
+            CustomTrigger( "Irrelevant", serialized, JSON )
         }
     }
 }

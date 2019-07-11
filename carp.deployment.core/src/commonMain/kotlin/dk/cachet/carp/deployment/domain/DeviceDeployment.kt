@@ -1,6 +1,5 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.serialization.JSON
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
@@ -32,26 +31,3 @@ data class DeviceDeployment(
      */
     @Serializable( TasksSerializer::class )
     val tasks: Set<TaskDescriptor> )
-{
-    companion object
-    {
-        /**
-         * Create a [DeviceDeployment] from JSON serialized using the built-in serializer.
-         *
-         * @param json The JSON which was serialized using the built-in serializer (`DeviceDeployment.toJson`).
-         */
-        fun fromJson( json: String ): DeviceDeployment
-        {
-            return JSON.parse( serializer(), json )
-        }
-    }
-
-
-    /**
-     * Serialize to JSON using the built-in serializer.
-     */
-    fun toJson(): String
-    {
-        return JSON.stringify( serializer(),this )
-    }
-}

@@ -8,13 +8,14 @@ import kotlinx.serialization.json.*
 /**
  * A wrapper used to load extending types from [Measure] serialized as JSON which are unknown at runtime.
  */
-data class CustomMeasure( override val className: String, override val jsonSource: String ) : Measure(), UnknownPolymorphicWrapper
+data class CustomMeasure( override val className: String, override val jsonSource: String, val serializer: Json )
+    : Measure(), UnknownPolymorphicWrapper
 {
     override val type: DataType
 
     init
     {
-        val json = JSON.parseJson( jsonSource ) as JsonObject
+        val json = serializer.parseJson( jsonSource ) as JsonObject
 
         // Get raw JSON string of type (using klaxon) and use kotlinx serialization to deserialize.
         val typeField = Measure::type.name
@@ -23,6 +24,6 @@ data class CustomMeasure( override val className: String, override val jsonSourc
             throw IllegalArgumentException( "No '$typeField' defined." )
         }
         val typeJson = json[ typeField ]!!.jsonObject.toString()
-        type = JSON.parse( DataType.serializer(), typeJson )
+        type = serializer.parse( DataType.serializer(), typeJson )
     }
 }

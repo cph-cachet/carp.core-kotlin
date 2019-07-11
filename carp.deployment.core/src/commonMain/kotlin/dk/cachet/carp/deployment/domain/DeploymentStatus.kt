@@ -1,6 +1,5 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.serialization.JSON
 import kotlinx.serialization.Serializable
 
 
@@ -22,25 +21,3 @@ data class DeploymentStatus(
      * The role names of all devices which have been registered successfully and are ready for deployment.
      */
     val devicesReadyForDeployment: Set<String> )
-{
-    companion object {
-        /**
-         * Create a snapshot from JSON serialized using the built-in serializer.
-         *
-         * @param json The JSON which was serialized using the built-in serializer (`DeploymentStatus.toJson`).
-         */
-        fun fromJson( json: String ): DeploymentStatus
-        {
-            return JSON.parse( serializer(), json )
-        }
-    }
-
-
-    /**
-     * Serialize to JSON using the built-in serializer.
-     */
-    fun toJson(): String
-    {
-        return JSON.stringify( serializer(),this )
-    }
-}

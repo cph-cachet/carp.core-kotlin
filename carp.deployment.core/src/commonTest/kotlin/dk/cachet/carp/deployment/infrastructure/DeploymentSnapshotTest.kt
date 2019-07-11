@@ -1,11 +1,12 @@
-package dk.cachet.carp.deployment.domain
+package dk.cachet.carp.deployment.infrastructure
 
+import dk.cachet.carp.deployment.domain.*
 import dk.cachet.carp.protocols.domain.devices.CustomDeviceRegistration
 import kotlin.test.*
 
 
 /**
- * Tests for [DeploymentSnapshot].
+ * Tests for [DeploymentSnapshot] relying on core infrastructure.
  */
 class DeploymentSnapshotTest
 {
