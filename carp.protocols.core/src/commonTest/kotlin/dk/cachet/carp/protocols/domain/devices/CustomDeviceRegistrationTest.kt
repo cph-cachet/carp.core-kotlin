@@ -24,7 +24,7 @@ class CustomDeviceRegistrationTest
         val registration = UnknownDeviceRegistration( "Unknown" )
         val serialized: String = JSON.stringify( UnknownDeviceRegistration.serializer(), registration )
 
-        val custom = CustomDeviceRegistration( "Irrelevant", serialized )
+        val custom = CustomDeviceRegistration( "Irrelevant", serialized, JSON )
         assertEquals( registration.deviceId, custom.deviceId )
     }
 
@@ -39,7 +39,7 @@ class CustomDeviceRegistrationTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomDeviceRegistration( "Irrelevant", serialized )
+            CustomDeviceRegistration( "Irrelevant", serialized, JSON )
         }
     }
 }

@@ -23,7 +23,7 @@ class CustomTriggerTest
         val trigger = UnknownTrigger( "Some device" )
         val serialized: String = JSON.stringify( UnknownTrigger.serializer(), trigger )
 
-        val custom = CustomTrigger( "Irrelevant", serialized )
+        val custom = CustomTrigger( "Irrelevant", serialized, JSON )
         assertEquals( trigger.sourceDeviceRoleName, custom.sourceDeviceRoleName )
     }
 
@@ -38,7 +38,7 @@ class CustomTriggerTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomTrigger( "Irrelevant", serialized )
+            CustomTrigger( "Irrelevant", serialized, JSON )
         }
     }
 }

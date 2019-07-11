@@ -1,11 +1,18 @@
 package dk.cachet.carp.common.serialization
 
 import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 import kotlin.reflect.KClass
 
 
 actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual constructor( wrapperClass: KClass<W>, verifyUnknownPolymorphicWrapper: Boolean ) : KSerializer<P>
 {
+    companion object
+    {
+        private val unsupportedException
+            = SerializationException( "${UnknownPolymorphicSerializer::class.simpleName} only supports JSON serialization." )
+    }
+
     init
     {
         // Enforce that wrapper type (W) implements UnknownPolymorphicWrapper.
@@ -22,6 +29,11 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
 
     actual override fun serialize( encoder: Encoder, obj: P )
     {
+        if ( encoder !is JsonOutput )
+        {
+            throw unsupportedException
+        }
+
         @Suppress( "NAME_SHADOWING" )
         val encoder = encoder.beginStructure( descriptor )
 
@@ -47,6 +59,13 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
 
     actual override fun deserialize( decoder: Decoder ): P
     {
+        // Get JSON serializer. This serializer assumes JSON serialization.
+        if ( decoder !is JsonInput )
+        {
+            throw unsupportedException
+        }
+        val json = decoder.json
+
         @Suppress("NAME_SHADOWING" )
         val decoder = decoder.beginStructure( descriptor )
 
@@ -83,7 +102,7 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
 
             // Initialize wrapper for unknown object based on source string.
             val elementSource = jsonSource.subSequence( start, end ).toString()
-            obj = createWrapper( className, elementSource )
+            obj = createWrapper( className, elementSource, json )
         }
 
         decoder.endStructure( descriptor )
@@ -91,5 +110,5 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
         return obj
     }
 
-    actual abstract fun createWrapper( className: String, json: String ): W
+    actual abstract fun createWrapper( className: String, json: String, serializer: Json ): W
 }

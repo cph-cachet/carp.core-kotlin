@@ -2,6 +2,7 @@ package dk.cachet.carp.common.serialization
 
 import kotlinx.serialization.*
 import kotlinx.serialization.internal.SerialClassDescImpl
+import kotlinx.serialization.json.Json
 import kotlin.reflect.KClass
 
 
@@ -37,8 +38,9 @@ expect abstract class UnknownPolymorphicSerializer<P: Any, W: P>( wrapperClass: 
      *
      * @param className The fully qualified name of the class.
      * @param json The JSON which could not be deserialized.
+     * @param serializer The [Json] serializer being used to deserialize the object.
      */
-    abstract fun createWrapper( className: String, json: String ): W
+    abstract fun createWrapper( className: String, json: String, serializer: Json ): W
 }
 
 
@@ -47,13 +49,13 @@ expect abstract class UnknownPolymorphicSerializer<P: Any, W: P>( wrapperClass: 
  *
  * @param createWrapper Create the wrapper based on the fully qualified name of the class and the JSON which could not be deserialized.
  */
-inline fun <reified P: Any, reified W: P> createUnknownPolymorphicSerializer( crossinline createWrapper: (className: String, json: String) -> W ): UnknownPolymorphicSerializer<P, W>
+inline fun <reified P: Any, reified W: P> createUnknownPolymorphicSerializer( crossinline createWrapper: (className: String, json: String, serializer: Json) -> W ): UnknownPolymorphicSerializer<P, W>
 {
     return object : UnknownPolymorphicSerializer<P, W>( W::class )
     {
-        override fun createWrapper( className: String, json: String ): W
+        override fun createWrapper( className: String, json: String, serializer: Json ): W
         {
-            return createWrapper( className, json )
+            return createWrapper( className, json, serializer )
         }
     }
 }

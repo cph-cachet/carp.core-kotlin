@@ -12,7 +12,7 @@ import kotlinx.serialization.internal.ArrayListSerializer
  * Custom serializer for a list of [Measure]s which enables deserializing types that are unknown at runtime, yet extend from [Measure].
  */
 object MeasuresSerializer : KSerializer<List<Measure>> by ArrayListSerializer<Measure>(
-    createUnknownPolymorphicSerializer { className, json -> CustomMeasure( className, json ) }
+    createUnknownPolymorphicSerializer { className, json, serializer -> CustomMeasure( className, json, serializer ) }
 )
 
 

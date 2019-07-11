@@ -8,21 +8,15 @@ import kotlinx.serialization.json.*
 /**
  * A wrapper used to load extending types from [TaskDescriptor] serialized as JSON which are unknown at runtime.
  */
-data class CustomTaskDescriptor( override val className: String, override val jsonSource: String )
+data class CustomTaskDescriptor( override val className: String, override val jsonSource: String, val serializer: Json )
     : TaskDescriptor(), UnknownPolymorphicWrapper
 {
-    companion object
-    {
-        private val JSON: Json = createDefaultJSON()
-    }
-
-
     override val name: String
     override val measures: List<Measure>
 
     init
     {
-        val json = JSON.parseJson( jsonSource ) as JsonObject
+        val json = serializer.parseJson( jsonSource ) as JsonObject
 
         val nameField = TaskDescriptor::name.name
         if ( !json.containsKey( nameField ) )
@@ -38,6 +32,6 @@ data class CustomTaskDescriptor( override val className: String, override val js
             throw IllegalArgumentException( "No '$measuresField' defined." )
         }
         val measuresJson = json[ measuresField ]!!.jsonArray.toString()
-        measures = JSON.parse( MeasuresSerializer, measuresJson )
+        measures = serializer.parse( MeasuresSerializer, measuresJson )
     }
 }

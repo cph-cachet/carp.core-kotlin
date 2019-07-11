@@ -25,7 +25,7 @@ class CustomTaskDescriptorTest
         val task = UnknownTaskDescriptor( "Unknown", measures )
         val serialized: String = JSON.stringify( UnknownTaskDescriptor.serializer(), task )
 
-        val custom = CustomTaskDescriptor( "Irrelevant", serialized )
+        val custom = CustomTaskDescriptor( "Irrelevant", serialized, JSON )
         assertEquals( task.name, custom.name )
         assertEquals( task.measures.count(), task.measures.intersect( custom.measures ).count() )
     }
@@ -41,7 +41,7 @@ class CustomTaskDescriptorTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomTaskDescriptor( "Irrelevant", serialized )
+            CustomTaskDescriptor( "Irrelevant", serialized, JSON )
         }
     }
 }

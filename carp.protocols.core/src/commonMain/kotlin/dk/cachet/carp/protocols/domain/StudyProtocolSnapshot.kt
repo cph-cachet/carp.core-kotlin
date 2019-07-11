@@ -14,7 +14,7 @@ import kotlinx.serialization.*
  * Custom serializer for a list of [MasterDeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [MasterDeviceDescriptor].
  */
 object MasterDevicesSerializer : KSerializer<List<MasterDeviceDescriptor<*>>> by ArrayListSerializer<MasterDeviceDescriptor<*>>(
-    createUnknownPolymorphicSerializer { className, json -> CustomMasterDeviceDescriptor( className, json ) }
+    createUnknownPolymorphicSerializer { className, json, serializer -> CustomMasterDeviceDescriptor( className, json, serializer ) }
 )
 
 /**
@@ -27,15 +27,13 @@ object DevicesSerializer : KSerializer<List<DeviceDescriptor<*>>> by ArrayListSe
  */
 object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescriptor<*>, DeviceDescriptor<*>>( DeviceDescriptor::class, false )
 {
-    private val JSON: Json = createDefaultJSON()
-
-    override fun createWrapper( className: String, json: String ): DeviceDescriptor<*>
+    override fun createWrapper( className: String, json: String, serializer: Json ): DeviceDescriptor<*>
     {
-        val jsonObject = JSON.parseJson( json ) as JsonObject
+        val jsonObject = serializer.parseJson( json ) as JsonObject
         val isMasterDevice = jsonObject.containsKey( MasterDeviceDescriptor<*>::isMasterDevice.name )
         return if ( isMasterDevice )
-            CustomMasterDeviceDescriptor( className, json )
-            else CustomDeviceDescriptor( className, json )
+            CustomMasterDeviceDescriptor( className, json, serializer )
+            else CustomDeviceDescriptor( className, json, serializer )
     }
 }
 
@@ -43,7 +41,7 @@ object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescripto
  * Custom serializer for a list of [TaskDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [TaskDescriptor].
  */
 object TasksSerializer : KSerializer<List<TaskDescriptor>> by ArrayListSerializer<TaskDescriptor>(
-    createUnknownPolymorphicSerializer { className, json -> CustomTaskDescriptor( className, json ) }
+    createUnknownPolymorphicSerializer { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) }
 )
 
 /**
@@ -51,7 +49,8 @@ object TasksSerializer : KSerializer<List<TaskDescriptor>> by ArrayListSerialize
  */
 object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, CustomTrigger>( CustomTrigger::class )
 {
-    override fun createWrapper( className: String, json: String ): CustomTrigger = CustomTrigger( className, json )
+    override fun createWrapper( className: String, json: String, serializer: Json ): CustomTrigger
+        = CustomTrigger( className, json, serializer )
 }
 
 

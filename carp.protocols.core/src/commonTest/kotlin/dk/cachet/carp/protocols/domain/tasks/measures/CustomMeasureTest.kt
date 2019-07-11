@@ -25,7 +25,7 @@ class CustomMeasureTest
         val measure = UnknownMeasure( STUB_DATA_TYPE )
         val serialized: String = JSON.stringify( UnknownMeasure.serializer(), measure )
 
-        val custom = CustomMeasure( "Irrelevant", serialized )
+        val custom = CustomMeasure( "Irrelevant", serialized, JSON )
         assertEquals( measure.type, custom.type )
     }
 
@@ -40,7 +40,7 @@ class CustomMeasureTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomMeasure( "Irrelevant", serialized )
+            CustomMeasure( "Irrelevant", serialized, JSON )
         }
     }
 }

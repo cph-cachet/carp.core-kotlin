@@ -24,7 +24,7 @@ class CustomMasterDeviceDescriptorTest
         val device = UnknownMasterDeviceDescriptor( "Unknown" )
         val serialized: String = JSON.stringify( UnknownMasterDeviceDescriptor.serializer(), device )
 
-        val custom = CustomMasterDeviceDescriptor( "Irrelevant", serialized )
+        val custom = CustomMasterDeviceDescriptor( "Irrelevant", serialized, JSON )
         assertEquals( device.roleName, custom.roleName )
     }
 
@@ -39,7 +39,7 @@ class CustomMasterDeviceDescriptorTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomMasterDeviceDescriptor( "Irrelevant", serialized )
+            CustomMasterDeviceDescriptor( "Irrelevant", serialized, JSON )
         }
     }
 
@@ -49,7 +49,7 @@ class CustomMasterDeviceDescriptorTest
         val device = UnknownMasterDeviceDescriptor( "Unknown" )
         val serialized: String = JSON.stringify( UnknownMasterDeviceDescriptor.serializer(), device )
 
-        val custom = CustomMasterDeviceDescriptor( "Irrelevant", serialized )
+        val custom = CustomMasterDeviceDescriptor( "Irrelevant", serialized, JSON )
 
         assertFailsWith<UnsupportedOperationException>
         {
