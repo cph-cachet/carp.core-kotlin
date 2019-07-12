@@ -38,7 +38,8 @@ internal val STUBS_SERIAL_MODULE = SerializersModule {
 
 
 /**
- * Creates a study protocol using the default initialization (no devices, tasks, or triggers).
+ * Creates a study protocol using the default initialization (no devices, tasks, or triggers),
+ * and initializes the infrastructure serializer to be aware about polymorph stub testing classes.
  */
 fun createEmptyProtocol(): StudyProtocol
 {

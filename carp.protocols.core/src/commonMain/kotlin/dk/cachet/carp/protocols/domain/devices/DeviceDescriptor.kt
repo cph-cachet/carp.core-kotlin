@@ -2,7 +2,7 @@ package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.*
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**
@@ -13,6 +13,7 @@ import kotlinx.serialization.Serializable
  * TODO: Does this also allow specifying dynamic devices? E.g., 'closest smartphone'. Perhaps a 'DeviceSelector'?
  */
 @Serializable
+@Polymorphic
 abstract class DeviceDescriptor<out T: DeviceRegistrationBuilder> : Immutable( notImmutableErrorFor( DeviceDescriptor::class ) )
 {
     /**

@@ -21,6 +21,7 @@ object MeasuresSerializer : KSerializer<List<Measure>> by ArrayListSerializer<Me
  * TODO: Outputs are not yet specified.
  */
 @Serializable
+@Polymorphic
 abstract class TaskDescriptor : Immutable( notImmutableErrorFor( TaskDescriptor::class ) )
 {
     /**

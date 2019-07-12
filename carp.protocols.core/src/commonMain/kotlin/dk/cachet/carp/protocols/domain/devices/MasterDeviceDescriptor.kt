@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.protocols.domain.triggers.StartOfStudyTrigger
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**
@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
  * Typically, a desktop computer, smartphone, or web server.
  */
 @Serializable
+@Polymorphic
 abstract class MasterDeviceDescriptor<out T: DeviceRegistrationBuilder> : DeviceDescriptor<T>()
 {
     // This property is only here for (de)serialization purposes.

@@ -11,6 +11,7 @@ import kotlinx.serialization.*
  * The condition can either be time-bound, based on data streams, initiated by a user of the platform, or a combination of these.
  */
 @Serializable
+@Polymorphic
 abstract class Trigger : Immutable( notImmutableErrorFor( Trigger::class ) )
 {
     /**

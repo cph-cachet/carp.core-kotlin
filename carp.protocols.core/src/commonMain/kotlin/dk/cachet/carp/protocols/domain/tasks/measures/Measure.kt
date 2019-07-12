@@ -5,7 +5,7 @@ import dk.cachet.carp.protocols.domain.data.*
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**
@@ -13,6 +13,7 @@ import kotlinx.serialization.Serializable
  * as part of a task defined by [TaskDescriptor].
  */
 @Serializable
+@Polymorphic
 abstract class Measure : Immutable( notImmutableErrorFor( Measure::class ) )
 {
     /**

@@ -17,6 +17,7 @@ object DeviceRegistrationSerializer : KSerializer<DeviceRegistration>
  * A [DeviceRegistration] configures a [DeviceDescriptor] as part of the deployment of a [StudyProtocol].
  */
 @Serializable
+@Polymorphic
 abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegistration::class ) )
 {
     /**
@@ -36,6 +37,7 @@ abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegis
  *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceDescriptor].
  */
 @Serializable
+@Polymorphic
 abstract class DeviceRegistrationBuilder
 {
     /**
