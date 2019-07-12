@@ -16,9 +16,9 @@ val phone = Smartphone( "Patient phone" )
 protocol.addMasterDevice( phone )
 
 // Define what needs to be measured, on which device, when.
-val sensors = phone.SENSOR_MEASURES
+val sensors = Smartphone.SENSOR_MEASURES
 val measures = listOf( sensors.geolocation(), sensors.stepcount() )
-val startMeasures = IndefiniteTask( "Start measures", measures )
+val startMeasures = ConcurrentTask( "Start measures", measures )
 protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
 // JSON output of the study protocol, compatible with the rest of the CARP infrastructure.
@@ -36,9 +36,14 @@ A deployment contains common concerns to 'running' a study, i.e., instantiating 
 val protocol: StudyProtocol = createSmartphoneStudy()
 val manager: DeploymentManager = createDeploymentEndpoint()
 val status: DeploymentStatus = manager.createDeployment( protocol.getSnapshot() )
-val deploymentId: UUID = UUID( status.deploymentId )
+val deploymentId = UUID( status.deploymentId )
 val smartphone = status.registrableDevices.first().device as Smartphone
-val registration = smartphone.createRegistration() // Modify to configure.
+val registration = smartphone.createRegistration {
+    // Device-specific registration options can be accessed from here.
+    // Depending on the device type, different options are available.
+    // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
+    deviceId { "xxxxxxxxx" }
+}
 manager.registerDevice( deploymentId, smartphone.roleName, registration )
 
 // Call from the smartphone to retrieve all the necessary deployment information to start running the study.
@@ -55,7 +60,7 @@ Helper classes relied upon by test projects of all subsystems. E.g., to disable 
 
 # Setting up using IntelliJ IDEA 2019
 - Open the project folder in IntelliJ 2019.
-- Install the Kotlin plugin (1.3.31-release-IJ2019.1-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Install the Kotlin plugin (1.3.41-release-IJ2019.1-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
 
 # Multiplatform
 

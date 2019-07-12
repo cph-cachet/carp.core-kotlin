@@ -1,26 +1,24 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.serialization.*
-import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.*
 import kotlinx.serialization.*
-import kotlinx.serialization.json.Json
 
 
 /**
  * Custom serializer for a [DeviceRegistration] which enables deserializing types that are unknown at runtime, yet extend from [DeviceRegistration].
  */
-object DeviceRegistrationSerializer : UnknownPolymorphicSerializer<DeviceRegistration, CustomDeviceRegistration>( CustomDeviceRegistration::class )
-{
-    override fun createWrapper( className: String, json: String ): CustomDeviceRegistration = CustomDeviceRegistration( className, json )
-}
+object DeviceRegistrationSerializer : KSerializer<DeviceRegistration>
+    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomDeviceRegistration( className, json, serializer ) } )
 
 
 /**
  * A [DeviceRegistration] configures a [DeviceDescriptor] as part of the deployment of a [StudyProtocol].
  */
 @Serializable
-abstract class DeviceRegistration
+@Polymorphic
+abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegistration::class ) )
 {
     /**
      * An ID for the device, used to disambiguate between devices of the same type, as provided by the device itself.
@@ -28,49 +26,27 @@ abstract class DeviceRegistration
      *
      * TODO: This might be useful for potential optimizations later (e.g., prevent pulling in data from the same source more than once), but for now is ignored.
      */
-    @Transient
-    abstract var deviceId: String
-
-    /**
-     * Make an exact copy of this object.
-     */
-    fun copy(): DeviceRegistration
-    {
-        // Use JSON serialization to make a clone.
-        // This prevents each extending class from having to implement this method.
-        val serialized = Json.stringify( DeviceRegistrationSerializer, this )
-        return Json.parse( DeviceRegistrationSerializer, serialized )
-    }
-
-    override fun equals( other: Any? ): Boolean
-    {
-        if ( other !is DeviceRegistration )
-        {
-            return false
-        }
-
-        // Use JSON serialization to verify equality.
-        // This prevents each extending class from having to implement this method.
-        val serialized = Json.stringify( DeviceRegistrationSerializer, this )
-        val otherSerialized = Json.stringify( DeviceRegistrationSerializer, this )
-
-        return serialized == otherSerialized
-    }
-
-    override fun hashCode(): Int
-    {
-        // Use JSON serialization to determine hashcode.
-        // This prevents each extending class from having to implement this method.
-        val serialized = Json.stringify( DeviceRegistrationSerializer, this )
-        return serialized.hashCode()
-    }
+    abstract val deviceId: String
 }
 
 
 /**
- * Create a default device registration, which solely involves assigning a unique ID to the device.
+ * A helper class to configure and construct immutable [DeviceRegistration] classes.
+ *
+ * TODO: This and extending classes are never expected to be serialized,
+ *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceDescriptor].
  */
-fun defaultDeviceRegistration(): DeviceRegistration
+abstract class DeviceRegistrationBuilder
 {
-    return DefaultDeviceRegistration( UUID.randomUUID().toString() )
+    /**
+     * Build the immutable [DeviceRegistration] using the current configuration of this [DeviceRegistrationBuilder].
+     */
+    abstract fun build(): DeviceRegistration
 }
+
+/**
+ * Should be applied to all [DeviceRegistrationBuilder] implementations to ensure misuse of internal DSL.
+ * For more information: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-dsl-marker/index.html
+ */
+@DslMarker
+annotation class DeviceRegistrationBuilderDsl

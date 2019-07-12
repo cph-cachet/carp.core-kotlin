@@ -4,7 +4,6 @@ import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 
 
 /**
@@ -21,7 +20,7 @@ data class DeviceDeployment(
      * The devices this device needs to connect to.
      */
     @Serializable( DevicesSerializer::class )
-    val connectedDevices: Set<DeviceDescriptor>,
+    val connectedDevices: Set<DeviceDescriptor<*>>,
     /**
      * Preregistration of connected devices, including configuration such as connection properties, stored per role name.
      */
@@ -32,26 +31,3 @@ data class DeviceDeployment(
      */
     @Serializable( TasksSerializer::class )
     val tasks: Set<TaskDescriptor> )
-{
-    companion object
-    {
-        /**
-         * Create a [DeviceDeployment] from JSON serialized using the built-in serializer.
-         *
-         * @param json The JSON which was serialized using the built-in serializer (`DeviceDeployment.toJson`).
-         */
-        fun fromJson( json: String ): DeviceDeployment
-        {
-            return Json.parse( DeviceDeployment.serializer(), json )
-        }
-    }
-
-
-    /**
-     * Serialize to JSON using the built-in serializer.
-     */
-    fun toJson(): String
-    {
-        return Json.stringify( DeviceDeployment.serializer(),this )
-    }
-}

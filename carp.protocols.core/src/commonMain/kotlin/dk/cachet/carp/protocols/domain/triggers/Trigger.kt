@@ -11,6 +11,7 @@ import kotlinx.serialization.*
  * The condition can either be time-bound, based on data streams, initiated by a user of the platform, or a combination of these.
  */
 @Serializable
+@Polymorphic
 abstract class Trigger : Immutable( notImmutableErrorFor( Trigger::class ) )
 {
     /**
@@ -23,6 +24,5 @@ abstract class Trigger : Immutable( notImmutableErrorFor( Trigger::class ) )
     /**
      * The device role name from which the trigger originates.
      */
-    @Transient
     abstract val sourceDeviceRoleName: String
 }

@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.*
-import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.common.serialization.*
+import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import kotlinx.serialization.internal.ArrayListSerializer
@@ -13,27 +13,27 @@ import kotlinx.serialization.*
 /**
  * Custom serializer for a list of [MasterDeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [MasterDeviceDescriptor].
  */
-object MasterDevicesSerializer : KSerializer<List<MasterDeviceDescriptor>> by ArrayListSerializer<MasterDeviceDescriptor>(
-    createUnknownPolymorphicSerializer { className, json -> CustomMasterDeviceDescriptor( className, json ) }
+object MasterDevicesSerializer : KSerializer<List<MasterDeviceDescriptor<*>>> by ArrayListSerializer<MasterDeviceDescriptor<*>>(
+    createUnknownPolymorphicSerializer { className, json, serializer -> CustomMasterDeviceDescriptor( className, json, serializer ) }
 )
 
 /**
  * Custom serializer for a list of [DeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
  */
-object DevicesSerializer : KSerializer<List<DeviceDescriptor>> by ArrayListSerializer( DeviceDescriptorSerializer )
+object DevicesSerializer : KSerializer<List<DeviceDescriptor<*>>> by ArrayListSerializer( DeviceDescriptorSerializer )
 
 /**
  * Custom serializer for [DeviceDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
  */
-object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescriptor, DeviceDescriptor>( DeviceDescriptor::class, false )
+object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescriptor<*>, DeviceDescriptor<*>>( DeviceDescriptor::class, DeviceDescriptor::class, false )
 {
-    override fun createWrapper( className: String, json: String ): DeviceDescriptor
+    override fun createWrapper( className: String, json: String, serializer: Json ): DeviceDescriptor<*>
     {
-        val jsonObject = Json.plain.parseJson( json ) as JsonObject
-        val isMasterDevice = jsonObject.containsKey( MasterDeviceDescriptor::isMasterDevice.name )
+        val jsonObject = serializer.parseJson( json ) as JsonObject
+        val isMasterDevice = jsonObject.containsKey( MasterDeviceDescriptor<*>::isMasterDevice.name )
         return if ( isMasterDevice )
-            CustomMasterDeviceDescriptor( className, json )
-            else CustomDeviceDescriptor( className, json )
+            CustomMasterDeviceDescriptor( className, json, serializer )
+            else CustomDeviceDescriptor( className, json, serializer )
     }
 }
 
@@ -41,17 +41,14 @@ object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescripto
  * Custom serializer for a list of [TaskDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [TaskDescriptor].
  */
 object TasksSerializer : KSerializer<List<TaskDescriptor>> by ArrayListSerializer<TaskDescriptor>(
-    createUnknownPolymorphicSerializer { className, json -> CustomTaskDescriptor( className, json ) }
+    createUnknownPolymorphicSerializer { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) }
 )
 
 /**
  * Custom serializer for a [Trigger] which enables deserializing types that are unknown at runtime, yet extend from [Trigger].
  */
-object TriggerSerializer : UnknownPolymorphicSerializer<Trigger, CustomTrigger>( CustomTrigger::class )
-{
-    override fun createWrapper( className: String, json: String): CustomTrigger = CustomTrigger( className, json )
-}
-
+object TriggerSerializer : KSerializer<Trigger>
+    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTrigger( className, json, serializer ) } )
 
 /**
  * A serializable snapshot of a [StudyProtocol] at the moment in time when it was created.
@@ -62,9 +59,9 @@ data class StudyProtocolSnapshot(
     val ownerId: UUID,
     val name: String,
     @Serializable( MasterDevicesSerializer::class )
-    val masterDevices: List<MasterDeviceDescriptor>,
+    val masterDevices: List<MasterDeviceDescriptor<*>>,
     @Serializable( DevicesSerializer::class )
-    val connectedDevices: List<DeviceDescriptor>,
+    val connectedDevices: List<DeviceDescriptor<*>>,
     val connections: List<DeviceConnection>,
     @Serializable( TasksSerializer::class )
     val tasks: List<TaskDescriptor>,
@@ -110,23 +107,13 @@ data class StudyProtocolSnapshot(
             )
         }
 
-        /**
-         * Create a snapshot from JSON serialized using the built-in serializer.
-         *
-         * @param json The JSON which was serialized using the built-in serializer (`StudyProtocolSnapshot.toJson`).
-         */
-        fun fromJson( json: String ): StudyProtocolSnapshot
-        {
-            return Json.parse( StudyProtocolSnapshot.serializer(), json )
-        }
-
-        private fun getConnections( protocol: StudyProtocol, masterDevice: MasterDeviceDescriptor ): Iterable<DeviceConnection>
+        private fun getConnections( protocol: StudyProtocol, masterDevice: MasterDeviceDescriptor<*> ): Iterable<DeviceConnection>
         {
             val connections: MutableList<DeviceConnection> = mutableListOf()
 
             protocol.getConnectedDevices( masterDevice ).forEach {
                 connections.add( DeviceConnection( it.roleName, masterDevice.roleName ) )
-                if ( it is MasterDeviceDescriptor )
+                if ( it is MasterDeviceDescriptor<*> )
                 {
                     connections.addAll( getConnections( protocol, it ) )
                 }
@@ -134,15 +121,6 @@ data class StudyProtocolSnapshot(
 
             return connections
         }
-    }
-
-
-    /**
-     * Serialize to JSON using the built-in serializer.
-     */
-    fun toJson(): String
-    {
-        return Json.stringify( StudyProtocolSnapshot.serializer(), this )
     }
 
 

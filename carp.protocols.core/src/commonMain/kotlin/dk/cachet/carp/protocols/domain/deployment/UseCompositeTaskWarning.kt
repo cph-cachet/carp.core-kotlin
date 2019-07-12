@@ -17,7 +17,7 @@ class UseCompositeTaskWarning internal constructor() : DeploymentWarning
      * Holds [tasks] which are send by a single [trigger] to a single [targetDevice] when initiated.
      * When the [trigger] is initiated, the tasks would thus be sent out simultaneously to the [targetDevice].
      */
-    data class OverlappingTasks( val trigger: Trigger, val targetDevice: DeviceDescriptor, val tasks: List<TaskDescriptor> )
+    data class OverlappingTasks( val trigger: Trigger, val targetDevice: DeviceDescriptor<*>, val tasks: List<TaskDescriptor> )
 
     override val description: String =
         "The study protocol contains triggers which send multiple tasks to a single device. " +

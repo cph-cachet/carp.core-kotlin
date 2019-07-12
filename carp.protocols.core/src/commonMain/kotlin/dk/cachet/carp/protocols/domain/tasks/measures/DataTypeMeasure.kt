@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
-import dk.cachet.carp.common.serialization.PolymorphicSerializer
 import dk.cachet.carp.protocols.domain.data.*
 import kotlinx.serialization.Serializable
 
@@ -27,15 +26,4 @@ data class DataTypeMeasure( override val type: DataType ) : Measure()
          * Describes the data being collected.
          */
         name: String ) : this( DataType( namespace, name ) )
-
-    companion object
-    {
-        init
-        {
-            PolymorphicSerializer.registerSerializer(
-                DataTypeMeasure::class,
-                DataTypeMeasure.serializer(),
-                "dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure" )
-        }
-    }
 }

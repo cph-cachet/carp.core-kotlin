@@ -1,26 +1,26 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.common.serialization.*
 import kotlinx.serialization.json.*
 
 
 /**
  * A wrapper used to load extending types from [DeviceRegistration] serialized as JSON which are unknown at runtime.
  */
-class CustomDeviceRegistration( override val className: String, override val jsonSource: String )
+data class CustomDeviceRegistration( override val className: String, override val jsonSource: String, val serializer: Json )
     : DeviceRegistration(), UnknownPolymorphicWrapper
 {
-    override var deviceId: String = ""
+    override val deviceId: String
 
     init
     {
-        val json = Json.plain.parseJson( jsonSource ) as JsonObject
+        val json = serializer.parseJson( jsonSource ) as JsonObject
 
         val deviceIdField = DeviceRegistration::deviceId.name
         if ( !json.containsKey( deviceIdField ) )
         {
             throw IllegalArgumentException( "No '$deviceIdField' defined." )
         }
-        deviceId = json[ deviceIdField ].content
+        deviceId = json[ deviceIdField ]!!.content
     }
 }

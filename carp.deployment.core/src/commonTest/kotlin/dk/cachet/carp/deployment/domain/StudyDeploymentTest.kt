@@ -1,7 +1,7 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.protocols.domain.*
+import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.json.Json
 import kotlin.test.*
@@ -12,6 +12,12 @@ import kotlin.test.*
  */
 class StudyDeploymentTest
 {
+    companion object
+    {
+        private val JSON: Json = createDefaultJSON()
+    }
+
+
     @Test
     fun cant_initialize_deployment_with_errors()
     {
@@ -22,28 +28,6 @@ class StudyDeploymentTest
         assertFailsWith<IllegalArgumentException>
         {
             StudyDeployment( snapshot, testId )
-        }
-    }
-
-    @Test
-    fun cant_initialize_deployment_with_invalid_snapshot()
-    {
-        // Initialize valid protocol.
-        val protocol = createEmptyProtocol()
-        val master = StubMasterDeviceDescriptor( "Master" )
-        val connected = StubMasterDeviceDescriptor( "Connected" )
-        protocol.addMasterDevice( master )
-        protocol.addConnectedDevice( connected, master )
-        val snapshot = protocol.getSnapshot()
-
-        // Create invalid snapshot by editing JSON.
-        val json = snapshot.toJson()
-        val invalidJson = json.replaceFirst( "\"Master\"", "\"Non-existing device\"" )
-        val invalidSnapshot = StudyProtocolSnapshot.fromJson( invalidJson )
-
-        assertFailsWith<IllegalArgumentException>
-        {
-            StudyDeployment( invalidSnapshot, testId )
         }
     }
 
@@ -77,7 +61,6 @@ class StudyDeploymentTest
         assertEquals( 1, deployment.registeredDevices.size )
         val registered = deployment.registeredDevices.values.single()
         assertEquals( registration, registered )
-        assertFalse { registration === registered } // Object should be cloned during registration to prevent modification after registration.
     }
 
     @Test
@@ -123,8 +106,8 @@ class StudyDeploymentTest
         val connected = UnknownDeviceDescriptor( "Unknown connected" )
 
         // Mimic that the 'Unknown...' types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
-        val masterCustom = CustomMasterDeviceDescriptor( "Irrelevant", Json.stringify( UnknownMasterDeviceDescriptor.serializer(), master ) )
-        val connectedCustom = CustomDeviceDescriptor( "Irrelevant", Json.stringify( UnknownDeviceDescriptor.serializer(), connected ) )
+        val masterCustom = CustomMasterDeviceDescriptor( "Irrelevant", JSON.stringify( UnknownMasterDeviceDescriptor.serializer(), master ), JSON )
+        val connectedCustom = CustomDeviceDescriptor( "Irrelevant", JSON.stringify( UnknownDeviceDescriptor.serializer(), connected ), JSON )
 
         protocol.addMasterDevice( masterCustom )
         protocol.addConnectedDevice( connectedCustom, masterCustom )
@@ -162,8 +145,8 @@ class StudyDeploymentTest
         val device2 = UnknownDeviceDescriptor( "Unknown device 2" )
 
         // Mimic that the 'Unknown...' types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
-        val device1Custom = CustomDeviceDescriptor( "One class", Json.stringify( UnknownMasterDeviceDescriptor.serializer(), device1 ) )
-        val device2Custom = CustomDeviceDescriptor( "Not the same class", Json.stringify( UnknownDeviceDescriptor.serializer(), device2 ) )
+        val device1Custom = CustomDeviceDescriptor( "One class", JSON.stringify( UnknownMasterDeviceDescriptor.serializer(), device1 ), JSON )
+        val device2Custom = CustomDeviceDescriptor( "Not the same class", JSON.stringify( UnknownDeviceDescriptor.serializer(), device2 ), JSON )
 
         protocol.addMasterDevice( master )
         protocol.addConnectedDevice( device1Custom, master )
@@ -192,23 +175,6 @@ class StudyDeploymentTest
         assertEquals(
             deployment.registeredDevices.count(),
             deployment.registeredDevices.entries.intersect( fromSnapshot.registeredDevices.entries ).count() )
-    }
-
-    @Test
-    fun create_deployment_fromSnapshot_with_custom_extending_types_succeeds()
-    {
-        val protocol = createEmptyProtocol()
-        val master = UnknownMasterDeviceDescriptor( "Unknown" )
-        protocol.addMasterDevice( master )
-        val deployment = deploymentFor( protocol )
-        deployment.registerDevice( master, UnknownDeviceRegistration( "0" ) )
-
-        var serialized: String = deployment.getSnapshot().toJson()
-        serialized = serialized.replace( "dk.cachet.carp.deployment.domain.UnknownMasterDeviceDescriptor", "com.unknown.CustomMasterDevice" )
-        serialized = serialized.replace( "dk.cachet.carp.deployment.domain.UnknownDeviceRegistration", "com.unknown.CustomDeviceRegistration" )
-
-        val snapshot = DeploymentSnapshot.fromJson( serialized )
-        StudyDeployment.fromSnapshot( snapshot )
     }
 
     @Test
@@ -270,7 +236,7 @@ class StudyDeploymentTest
         val deviceDeployment = deployment.getDeploymentFor( master )
 
         assertEquals( "Connected", deviceDeployment.connectedDeviceConfigurations.keys.single() )
-        assertEquals( "42", deviceDeployment.connectedDeviceConfigurations[ "Connected" ]!!.deviceId )
+        assertEquals( "42", deviceDeployment.connectedDeviceConfigurations.getValue( "Connected" ).deviceId )
     }
 
     @Test

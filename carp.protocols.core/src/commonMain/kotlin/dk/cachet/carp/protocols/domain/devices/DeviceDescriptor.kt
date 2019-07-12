@@ -13,25 +13,27 @@ import kotlinx.serialization.*
  * TODO: Does this also allow specifying dynamic devices? E.g., 'closest smartphone'. Perhaps a 'DeviceSelector'?
  */
 @Serializable
-abstract class DeviceDescriptor : Immutable( notImmutableErrorFor( DeviceDescriptor::class ) )
+@Polymorphic
+abstract class DeviceDescriptor<out T: DeviceRegistrationBuilder> : Immutable( notImmutableErrorFor( DeviceDescriptor::class ) )
 {
     /**
      * A name which describes how the device participates within the study protocol; it's 'role'.
      * E.g., "Patient's phone"
      */
-    @Transient
     abstract val roleName: String
 
+    abstract fun createDeviceRegistrationBuilder(): T
+
     /**
-     * Create a suitable [DeviceRegistration] which can be used to configure this device for deployment.
-     * Default registration for devices typically only involves assigning a unique ID to them.
-     * However, in case more specific configuration is needed as part of registration, [DeviceRegistration] can be extended.
+     * Create a [DeviceRegistration] which can be used to configure this device for deployment.
+     * Use [builder] to configure device-specific registration options, if any.
      */
-    abstract fun createRegistration(): DeviceRegistration
+    fun createRegistration( builder: T.() -> Unit = {} ): DeviceRegistration
+        = createDeviceRegistrationBuilder().apply( builder ).build()
 
     /**
      * Determines whether the given [registration] is configured correctly for this type of device.
-     * Specific devices may extend from [DeviceRegistration] in case custom configuration is needed for them.
+     * Devices rely on a concrete [DeviceRegistration] to determine the specific configuration needed for them.
      */
     abstract fun isValidConfiguration( registration: DeviceRegistration ): Trilean
 }

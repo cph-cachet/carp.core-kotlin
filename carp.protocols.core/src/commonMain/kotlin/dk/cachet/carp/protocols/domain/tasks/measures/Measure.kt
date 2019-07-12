@@ -13,11 +13,11 @@ import kotlinx.serialization.*
  * as part of a task defined by [TaskDescriptor].
  */
 @Serializable
+@Polymorphic
 abstract class Measure : Immutable( notImmutableErrorFor( Measure::class ) )
 {
     /**
      * The type of data this measure collects.
      */
-    @Transient
     abstract val type: DataType
 }

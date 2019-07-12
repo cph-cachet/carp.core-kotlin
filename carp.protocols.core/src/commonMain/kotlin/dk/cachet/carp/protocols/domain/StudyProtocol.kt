@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.deployment.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
@@ -32,11 +31,11 @@ class StudyProtocol(
             snapshot.masterDevices.forEach { protocol.addMasterDevice( it ) }
 
             // Add connected devices.
-            val allDevices: List<DeviceDescriptor> = snapshot.connectedDevices.plus( snapshot.masterDevices ).toList()
+            val allDevices: List<DeviceDescriptor<*>> = snapshot.connectedDevices.plus( snapshot.masterDevices ).toList()
             snapshot.connections.forEach { c ->
-                val master: MasterDeviceDescriptor = allDevices.filterIsInstance<MasterDeviceDescriptor>().firstOrNull { it.roleName == c.connectedToRoleName }
+                val master: MasterDeviceDescriptor<*> = allDevices.filterIsInstance<MasterDeviceDescriptor<*>>().firstOrNull { it.roleName == c.connectedToRoleName }
                     ?: throw InvalidConfigurationError( "Can't find master device with role name '${c.connectedToRoleName}' in snapshot." )
-                val connected: DeviceDescriptor = allDevices.firstOrNull { it.roleName == c.roleName }
+                val connected: DeviceDescriptor<*> = allDevices.firstOrNull { it.roleName == c.roleName }
                     ?: throw InvalidConfigurationError( "Can't find connected device with role name '${c.roleName}' in snapshot." )
                 protocol.addConnectedDevice( connected, master )
             }
@@ -79,10 +78,10 @@ class StudyProtocol(
      */
     fun addTrigger( trigger: Trigger ): Boolean
     {
-        val device: DeviceDescriptor = _deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
+        val device: DeviceDescriptor<*> = _deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
             ?: throw InvalidConfigurationError( "The passed trigger does not belong to any device specified in this study protocol." )
 
-        if ( trigger.requiresMasterDevice && device !is MasterDeviceDescriptor )
+        if ( trigger.requiresMasterDevice && device !is MasterDeviceDescriptor<*> )
         {
             throw InvalidConfigurationError( "The passed trigger cannot be initiated by the specified device since it is not a master device." )
         }
@@ -105,7 +104,7 @@ class StudyProtocol(
      * @param targetDevice The device the [task] will be sent to once the [trigger] is initiated. The device needs to be part of the study protocol.
      * @return True if the task to be triggered has been added; false if the specified task is already triggered by the specified trigger to the specified device.
      */
-    fun addTriggeredTask( trigger: Trigger, task: TaskDescriptor, targetDevice: DeviceDescriptor ): Boolean
+    fun addTriggeredTask( trigger: Trigger, task: TaskDescriptor, targetDevice: DeviceDescriptor<*> ): Boolean
     {
         // The device needs to be included in the study protocol. We can not add it here since we do not know whether it should be a master or connected device.
         if ( !devices.contains( targetDevice ) )
@@ -138,7 +137,7 @@ class StudyProtocol(
     /**
      * Gets all the tasks triggered for the specified [device].
      */
-    fun getTasksForDevice( device: DeviceDescriptor ): Set<TaskDescriptor>
+    fun getTasksForDevice( device: DeviceDescriptor<*> ): Set<TaskDescriptor>
     {
         return _triggeredTasks
             .flatMap { it.value }

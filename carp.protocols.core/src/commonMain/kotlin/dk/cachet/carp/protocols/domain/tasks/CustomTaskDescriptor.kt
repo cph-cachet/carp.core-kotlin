@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.tasks
 
-import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.common.serialization.*
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import kotlinx.serialization.json.*
 
@@ -8,7 +8,7 @@ import kotlinx.serialization.json.*
 /**
  * A wrapper used to load extending types from [TaskDescriptor] serialized as JSON which are unknown at runtime.
  */
-data class CustomTaskDescriptor( override val className: String, override val jsonSource: String )
+data class CustomTaskDescriptor( override val className: String, override val jsonSource: String, val serializer: Json )
     : TaskDescriptor(), UnknownPolymorphicWrapper
 {
     override val name: String
@@ -16,14 +16,14 @@ data class CustomTaskDescriptor( override val className: String, override val js
 
     init
     {
-        val json = Json.plain.parseJson( jsonSource ) as JsonObject
+        val json = serializer.parseJson( jsonSource ) as JsonObject
 
         val nameField = TaskDescriptor::name.name
         if ( !json.containsKey( nameField ) )
         {
             throw IllegalArgumentException( "No '$nameField' defined." )
         }
-        name = json[ nameField ].content
+        name = json[ nameField ]!!.content
 
         // Get raw JSON string of measures and use kotlinx serialization to deserialize.
         val measuresField = TaskDescriptor::measures.name
@@ -31,7 +31,7 @@ data class CustomTaskDescriptor( override val className: String, override val js
         {
             throw IllegalArgumentException( "No '$measuresField' defined." )
         }
-        val measuresJson = json[ measuresField ].jsonArray.toString()
-        measures = Json.parse( MeasuresSerializer, measuresJson )
+        val measuresJson = json[ measuresField ]!!.jsonArray.toString()
+        measures = serializer.parse( MeasuresSerializer, measuresJson )
     }
 }

@@ -1,20 +1,50 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.*
-import dk.cachet.carp.common.serialization.PolymorphicSerializer
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
+import dk.cachet.carp.protocols.infrastructure.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 
 
 val testId = UUID( "27c56423-b7cd-48dd-8b7f-f819621a34f0" )
 
+/**
+ * Stubs for testing extending from types in [dk.cachet.carp.protocols] module which need to be registered when using [Json] serializer.
+ */
+internal val STUBS_SERIAL_MODULE = SerializersModule {
+    polymorphic( DeviceDescriptor::class )
+    {
+        StubDeviceDescriptor::class with StubDeviceDescriptor.serializer()
+        UnknownDeviceDescriptor::class with UnknownDeviceDescriptor.serializer()
+    }
+    polymorphic( MasterDeviceDescriptor::class, DeviceDescriptor::class )
+    {
+        StubMasterDeviceDescriptor::class with StubMasterDeviceDescriptor.serializer()
+        UnknownMasterDeviceDescriptor::class with UnknownMasterDeviceDescriptor.serializer()
+    }
+    polymorphic ( DeviceRegistration::class )
+    {
+        UnknownDeviceRegistration::class with UnknownDeviceRegistration.serializer()
+    }
+    polymorphic( TaskDescriptor::class )
+    {
+        StubTaskDescriptor::class with StubTaskDescriptor.serializer()
+    }
+}
+
 
 /**
- * Creates a study protocol using the default initialization (no devices, tasks, or triggers).
+ * Creates a study protocol using the default initialization (no devices, tasks, or triggers),
+ * and initializes the infrastructure serializer to be aware about polymorph stub testing classes.
  */
 fun createEmptyProtocol(): StudyProtocol
 {
+    JSON = createProtocolsSerializer( STUBS_SERIAL_MODULE )
+
     val alwaysSameOwner = ProtocolOwner( UUID( "f3f4d91b-56b5-4117-bb98-7e2923cb2223" ) )
     return StudyProtocol( alwaysSameOwner, "Test protocol" )
 }
@@ -40,52 +70,18 @@ fun deploymentFor( protocol: StudyProtocol ): StudyDeployment
 }
 
 @Serializable
-internal data class UnknownDeviceDescriptor( override val roleName: String ) : DeviceDescriptor()
+internal data class UnknownDeviceDescriptor( override val roleName: String ) : DeviceDescriptor<DefaultDeviceRegistrationBuilder>()
 {
-    companion object
-    {
-        init
-        {
-            PolymorphicSerializer.registerSerializer(
-                UnknownDeviceDescriptor::class,
-                UnknownDeviceDescriptor.serializer(),
-                "dk.cachet.carp.deployment.domain.UnknownDeviceDescriptor" )
-        }
-    }
-
-    override fun createRegistration(): DeviceRegistration = defaultDeviceRegistration()
+    override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
 }
 
 @Serializable
-internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) : MasterDeviceDescriptor()
+internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) : MasterDeviceDescriptor<DefaultDeviceRegistrationBuilder>()
 {
-    companion object
-    {
-        init
-        {
-            PolymorphicSerializer.registerSerializer(
-                UnknownMasterDeviceDescriptor::class,
-                UnknownMasterDeviceDescriptor.serializer(),
-                "dk.cachet.carp.deployment.domain.UnknownMasterDeviceDescriptor" )
-        }
-    }
-
-    override fun createRegistration(): DeviceRegistration = defaultDeviceRegistration()
+    override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
 }
 
 @Serializable
-internal class UnknownDeviceRegistration( override var deviceId: String ) : DeviceRegistration()
-{
-    companion object
-    {
-        init
-        {
-            PolymorphicSerializer.registerSerializer(
-                UnknownDeviceRegistration::class,
-                UnknownDeviceRegistration.serializer(),
-                "dk.cachet.carp.deployment.domain.UnknownDeviceRegistration" )
-        }
-    }
-}
+internal data class UnknownDeviceRegistration( override val deviceId: String ) : DeviceRegistration()

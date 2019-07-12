@@ -12,7 +12,7 @@ import kotlinx.serialization.internal.ArrayListSerializer
  * Custom serializer for a list of [Measure]s which enables deserializing types that are unknown at runtime, yet extend from [Measure].
  */
 object MeasuresSerializer : KSerializer<List<Measure>> by ArrayListSerializer<Measure>(
-    createUnknownPolymorphicSerializer { className, json -> CustomMeasure( className, json ) }
+    createUnknownPolymorphicSerializer { className, json, serializer -> CustomMeasure( className, json, serializer ) }
 )
 
 
@@ -21,17 +21,16 @@ object MeasuresSerializer : KSerializer<List<Measure>> by ArrayListSerializer<Me
  * TODO: Outputs are not yet specified.
  */
 @Serializable
+@Polymorphic
 abstract class TaskDescriptor : Immutable( notImmutableErrorFor( TaskDescriptor::class ) )
 {
     /**
      * A name which uniquely identifies the task.
      */
-    @Transient
     abstract val name: String
 
     /**
      * The data which needs to be collected/measured as part of this task.
      */
-    @Transient
     abstract val measures: List<Measure>
 }
