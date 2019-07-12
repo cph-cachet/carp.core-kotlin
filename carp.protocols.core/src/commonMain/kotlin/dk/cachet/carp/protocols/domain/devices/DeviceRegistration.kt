@@ -36,8 +36,6 @@ abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegis
  * TODO: This and extending classes are never expected to be serialized,
  *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceDescriptor].
  */
-@Serializable
-@Polymorphic
 abstract class DeviceRegistrationBuilder
 {
     /**

@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.*
+import dk.cachet.carp.common.serialization.NotSerializable
 import kotlinx.serialization.Serializable
 
 
@@ -45,7 +46,7 @@ data class AltBeaconDeviceRegistration(
 }
 
 
-@Serializable
+@Serializable( with = NotSerializable::class )
 class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder()
 {
     private var manufacturerId: Short = 0x0000
@@ -54,7 +55,6 @@ class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder()
      */
     fun manufacturerId( getId: () -> Short ) { this.manufacturerId = getId() }
 
-    @Serializable( with = UUIDSerializer::class )
     private var organizationId: UUID = UUID( "00000000-0000-0000-0000-000000000000" )
     /**
      * Set the first 16 bytes of the beacon identifier which should be unique to the advertiser's organizational unit.

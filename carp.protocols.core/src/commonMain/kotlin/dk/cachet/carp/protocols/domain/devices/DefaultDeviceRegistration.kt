@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.serialization.NotSerializable
 import kotlinx.serialization.Serializable
 
 
@@ -17,7 +18,7 @@ data class DefaultDeviceRegistration( override val deviceId: String ) : DeviceRe
  * A default device registration builder which solely involves assigning a unique ID to the device.
  * By default, a unique ID (UUID) is generated.
  */
-@Serializable
+@Serializable( with = NotSerializable::class )
 class DefaultDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() ) : DeviceRegistrationBuilder()
 {
     /**
