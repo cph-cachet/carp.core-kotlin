@@ -43,3 +43,10 @@ abstract class DeviceRegistrationBuilder
      */
     abstract fun build(): DeviceRegistration
 }
+
+/**
+ * Should be applied to all [DeviceRegistrationBuilder] implementations to ensure misuse of internal DSL.
+ * For more information: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-dsl-marker/index.html
+ */
+@DslMarker
+annotation class DeviceRegistrationBuilderDsl

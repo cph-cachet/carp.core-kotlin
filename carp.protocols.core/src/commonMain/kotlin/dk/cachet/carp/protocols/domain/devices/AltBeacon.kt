@@ -47,6 +47,7 @@ data class AltBeaconDeviceRegistration(
 
 
 @Serializable( with = NotSerializable::class )
+@DeviceRegistrationBuilderDsl
 class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder()
 {
     private var manufacturerId: Short = 0x0000

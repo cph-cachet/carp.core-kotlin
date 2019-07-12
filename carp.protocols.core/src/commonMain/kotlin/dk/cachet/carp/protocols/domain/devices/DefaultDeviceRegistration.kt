@@ -19,6 +19,7 @@ data class DefaultDeviceRegistration( override val deviceId: String ) : DeviceRe
  * By default, a unique ID (UUID) is generated.
  */
 @Serializable( with = NotSerializable::class )
+@DeviceRegistrationBuilderDsl
 class DefaultDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() ) : DeviceRegistrationBuilder()
 {
     /**
