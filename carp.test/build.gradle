@@ -1,3 +1,5 @@
+group = 'dk.cachet.carp.test'
+
 // `carp.test` extends test libraries, thus has a dependency on them in the main components.
 kotlin {
     sourceSets {

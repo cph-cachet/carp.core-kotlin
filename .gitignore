@@ -165,4 +165,4 @@ gradle-app.setting
 # End of https://www.gitignore.io/api/node,gradle,kotlin,intellij
 
 # Ignore files with secrets.
-signing.properties
+publish.properties

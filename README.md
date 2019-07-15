@@ -72,8 +72,6 @@ This is a multiplatform Kotlin library which targets both the **Java Runtime Env
 
 For `carp.core-kotlin`:
 - **build**: Builds the full project, for both runtimes.
-- **clean jvmTest**: Test the full project using JUnit5. `clean` is optional, but ensures that test results always show up in IntelliJ; when tasks haven't changed it otherwise lists "Test events were not received".
+- **cleanAllTests jvmTest**: Test the full project using JUnit5. `cleanAllTests` is optional, but ensures that test results always show up in IntelliJ; when tasks haven't changed it otherwise lists "Test events were not received".
 - **jsTest**: Test the full project using Mocha. Test results only show up in the build output and not in IntelliJ.
-
-For `:carp.*.core` libraries:
-- **publishSigned**: Prepare all jars to be published to Maven. This includes documentation, sources, and signing.
+- **publishSigned**: Publish all projects to Maven. This includes documentation, sources, and signing. For this to work you need to configure a `publish.properties` file with a signing signature and repository user in the project root folder. See main `build.gradle` for details.
