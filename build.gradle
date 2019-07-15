@@ -205,7 +205,9 @@ subprojects {
         download = true
     }
     task installMocha(type: NpmTask) {
-        args = ['install', "mocha@$mochaVersion"]
+        // A specific version of `lodash` is installed here, causing it to be used by `yargs-unparser`, a dependency of mocha.
+        // This resolves GitHub security vulnerability warnings for now: https://github.com/cph-cachet/carp.core-kotlin/issues/36
+        args = ['install', "lodash@4.17.14 mocha@$mochaVersion"]
     }
     task runMocha(type: NodeTask, dependsOn: [installMocha, compileTestKotlinJs, copyJsDependencies]) {
         script = file('node_modules/mocha/bin/mocha')
