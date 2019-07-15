@@ -112,75 +112,6 @@ subprojects {
         useJUnitPlatform()
     }
 
-    // JVM publish configuration.
-    apply plugin: 'maven-publish'
-    apply plugin: 'org.jetbrains.dokka'
-    dokka {
-        outputFormat = 'html'
-        outputDirectory = "$buildDir/javadoc"
-    }
-    task javadocJar(type: Jar) {
-        group JavaBasePlugin.DOCUMENTATION_GROUP
-        description 'Create javadoc jar using Dokka'
-        archiveClassifier = "javadoc"
-        from dokka
-    }
-    publishing {
-        publications {
-            jvm {
-                pom {
-                    url = 'https://github.com/cph-cachet/carp.core-kotlin'
-                    licenses {
-                        license {
-                            name = 'MIT License'
-                            url = 'https://github.com/cph-cachet/carp.core-kotlin/blob/master/LICENSE.md'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id = 'whathecode'
-                            name = 'Steven Jeuris'
-                            email = 'steven.jeuris@gmail.com'
-                            organization = 'CACHET'
-                            organizationUrl = 'http://www.cachet.dk/'
-                        }
-                    }
-                    scm {
-                        connection = 'scm:git:git://github.com/cph-cachet/carp.core-kotlin.git'
-                        developerConnection = 'scm:git:ssh://github.com:cph-cachet/carp.core-kotlin.git'
-                        url = 'https://github.com/cph-cachet/carp.core-kotlin'
-                    }
-                }
-
-                artifact javadocJar
-            }
-        }
-        repositories {
-            maven {
-                url "$buildDir/repository"
-            }
-        }
-    }
-    // Configure the 'sign' task to sign all files part of the maven package.
-    // For signing to work, a 'signing.properties' file needs to be added to the root containing the OpenPGP signature credentials:
-    // > signing.keyId=<LAST 8 SYMBOLS OF KEY ID>
-    // > signing.password=<SECRET>
-    // > signing.secretKeyRingFile=<ABSOLUTE PATH TO THE SECRET KEY RING FILE WITH PRIVATE KEY>
-    apply plugin: 'signing'
-    signing {
-        sign publishing.publications.jvm
-    }
-    task publishSigned {
-        doFirst {
-            def signingProperties = new Properties()
-            signingProperties.load(new FileInputStream(rootProject.file('signing.properties')))
-            allprojects { ext."signing.keyId" = signingProperties['signing.keyId'] }
-            allprojects { ext."signing.password" = signingProperties['signing.password'] }
-            allprojects { ext."signing.secretKeyRingFile" = signingProperties['signing.secretKeyRingFile'] }
-        }
-    }
-    publishSigned.finalizedBy publish
-
     // JS test configuration.
     // This is adapted from kotlinx-io's build file; I do not fully understand this configuration:
     // https://stackoverflow.com/a/55244288/590790
@@ -214,6 +145,90 @@ subprojects {
         args = [compileTestKotlinJs.outputFile]
     }
     jsTest.dependsOn runMocha
+
+    // Publish configuration.
+    // For signing and publishing to work, a 'publish.properties' file needs to be added to the root containing:
+    // The OpenPGP signature credentials to sign all artifacts:
+    // > signing.keyId=<LAST 8 SYMBOLS OF KEY ID>
+    // > signing.password=<SECRET>
+    // > signing.secretKeyRingFile=<ABSOLUTE PATH TO THE SECRET KEY RING FILE WITH PRIVATE KEY>
+    // A username and password to upload artifacts to the Sonatype repository:
+    // > repository.username=<SONATYPE USERNAME>
+    // > repository.password=<SONATYPE PASSWORD>
+    apply plugin: 'maven-publish'
+    apply plugin: 'org.jetbrains.dokka'
+    dokka {
+        outputFormat = 'html'
+        outputDirectory = "$buildDir/javadoc"
+    }
+    task javadocJar(type: Jar) {
+        group JavaBasePlugin.DOCUMENTATION_GROUP
+        description 'Create javadoc jar using Dokka'
+        archiveClassifier = "javadoc"
+        from dokka
+    }
+    def publishProperties = new Properties()
+    publishProperties.load(new FileInputStream(rootProject.file('publish.properties')))
+    publishing {
+        publications {
+            jvm {
+                pom {
+                    url = 'https://github.com/cph-cachet/carp.core-kotlin'
+                    licenses {
+                        license {
+                            name = 'MIT License'
+                            url = 'https://github.com/cph-cachet/carp.core-kotlin/blob/master/LICENSE.md'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'whathecode'
+                            name = 'Steven Jeuris'
+                            email = 'steven.jeuris@gmail.com'
+                            organization = 'CACHET'
+                            organizationUrl = 'http://www.cachet.dk/'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/cph-cachet/carp.core-kotlin.git'
+                        developerConnection = 'scm:git:ssh://github.com:cph-cachet/carp.core-kotlin.git'
+                        url = 'https://github.com/cph-cachet/carp.core-kotlin'
+                    }
+                }
+
+                artifact javadocJar
+            }
+        }
+        repositories {
+            maven {
+                name "local"
+                url "$buildDir/repository"
+            }
+            maven {
+                name = "sonatype"
+                def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+                def stagingRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : stagingRepoUrl
+                credentials {
+                    username = publishProperties['repository.username']
+                    password = publishProperties['repository.password']
+                }
+            }
+        }
+    }
+    // Configure the 'sign' task to sign all files part of the maven package.
+    apply plugin: 'signing'
+    signing {
+        sign publishing.publications.jvm
+    }
+    task publishSigned {
+        doFirst {
+            allprojects { ext."signing.keyId" = publishProperties['signing.keyId'] }
+            allprojects { ext."signing.password" = publishProperties['signing.password'] }
+            allprojects { ext."signing.secretKeyRingFile" = publishProperties['signing.secretKeyRingFile'] }
+        }
+    }
+    publishSigned.finalizedBy publish
 }
 
 
