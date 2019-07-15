@@ -28,7 +28,7 @@ buildscript {
 }
 
 
-// Configure all subprojects as testable Kotlin multiplatform projects.
+// Configure all subprojects as testable, publishable, Kotlin multiplatform projects.
 subprojects {
     version = globalVersion
 
@@ -122,7 +122,7 @@ subprojects {
     task javadocJar(type: Jar) {
         group JavaBasePlugin.DOCUMENTATION_GROUP
         description 'Create javadoc jar using Dokka'
-        classifier 'javadoc'
+        archiveClassifier = "javadoc"
         from dokka
     }
     publishing {
@@ -280,8 +280,6 @@ configure( coreModules ) {
 
 
 // HACK: Dokka currently does not work for multiplatform projects.
-// The following configuration is a workaround: https://discuss.kotlinlang.org/t/how-to-configure-dokka-for-kotlin-multiplatform/9834
-configure( coreModules ) {
 // The following configuration is a workaround to configure Dokka for JVM solely:
 // https://discuss.kotlinlang.org/t/how-to-configure-dokka-for-kotlin-multiplatform/9834
 configure( subprojects ) {
