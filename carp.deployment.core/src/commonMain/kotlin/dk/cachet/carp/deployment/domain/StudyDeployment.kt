@@ -88,7 +88,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             .toSet()
 
         return DeploymentStatus(
-            id.toString(),
+            id,
             registrableDevices,
             remainingRegistration,
             devicesReadyForDeployment )

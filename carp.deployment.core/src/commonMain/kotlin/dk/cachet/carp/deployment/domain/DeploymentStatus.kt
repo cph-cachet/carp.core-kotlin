@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.common.*
 import kotlinx.serialization.Serializable
 
 
@@ -8,7 +9,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class DeploymentStatus(
-    val deploymentId: String,
+    @Serializable( with = UUIDSerializer::class )
+    val deploymentId: UUID,
     /**
      * The set of all devices which can or need to be registered for this deployment.
      */

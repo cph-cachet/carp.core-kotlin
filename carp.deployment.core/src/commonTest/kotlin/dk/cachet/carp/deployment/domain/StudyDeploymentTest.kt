@@ -187,7 +187,7 @@ class StudyDeploymentTest
 
         // Start of deployment, no devices registered.
         val status: DeploymentStatus = deployment.getStatus()
-        assertEquals( deployment.id, UUID( status.deploymentId ) )
+        assertEquals( deployment.id, status.deploymentId )
         assertEquals( 2, status.registrableDevices.count() )
         assertTrue { status.registrableDevices.any { it.device == master } }
         assertTrue { status.registrableDevices.any { it.device == connected } }
