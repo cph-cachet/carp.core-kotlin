@@ -282,6 +282,9 @@ configure( coreModules ) {
 // HACK: Dokka currently does not work for multiplatform projects.
 // The following configuration is a workaround: https://discuss.kotlinlang.org/t/how-to-configure-dokka-for-kotlin-multiplatform/9834
 configure( coreModules ) {
+// The following configuration is a workaround to configure Dokka for JVM solely:
+// https://discuss.kotlinlang.org/t/how-to-configure-dokka-for-kotlin-multiplatform/9834
+configure( subprojects ) {
     dokka {
         kotlinTasks { [] }
         // Dokka fails to retrieve sources from multiplatform tasks. Setting this as empty avoids exceptions.
@@ -293,8 +296,11 @@ configure( coreModules ) {
             path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0] // There is only one source dir.
             platforms = ["JVM"]
         }
-
-        // Add source sets of 'carp.common'.
+    }
+}
+// HACK: Manually add source dependencies of core modules to 'common' so that Dokka can resolve them.
+configure( coreModules ) {
+    dokka {
         sourceRoot {
             path = project(':carp.common').kotlin.sourceSets.commonMain.kotlin.srcDirs[0] // There is only one source dir.
             platforms = ["Common"]
