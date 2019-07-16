@@ -1,5 +1,16 @@
 group = 'dk.cachet.carp.test'
 
+publishing {
+    publications {
+        all {
+            pom {
+                name = 'Common Test Library'
+                description = 'Helper classes relied upon by test projects of all subsystems. E.g., to disable tests specified in common part of projects for the JavaScript runtime only.'
+            }
+        }
+    }
+}
+
 // `carp.test` extends test libraries, thus has a dependency on them in the main components.
 kotlin {
     sourceSets {

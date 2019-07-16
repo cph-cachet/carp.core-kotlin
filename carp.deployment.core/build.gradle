@@ -2,7 +2,7 @@ group = 'dk.cachet.carp.deployment'
 
 publishing {
     publications {
-        jvm {
+        all {
             pom {
                 name = 'Deployment Domain Model and Application Services'
                 description = "A domain model and application services to handle common concerns to 'running' a study. A deployment is responsible for managing registration of participant consent, tracking device connection issues, assessing data quality, and negotiating the connection between separate devices."

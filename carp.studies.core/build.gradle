@@ -1,1 +1,12 @@
 group = 'dk.cachet.carp.studies'
+
+publishing {
+    publications {
+        all {
+            pom {
+                name = 'Studies Domain Model and Application Services'
+                description = 'Manage the recruitment for and lifetime of study deployments, instantiated using a study protocol from carp.protocols.'
+            }
+        }
+    }
+}

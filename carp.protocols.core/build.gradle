@@ -2,7 +2,7 @@ group = 'dk.cachet.carp.protocols'
 
 publishing {
     publications {
-        jvm {
+        all {
             pom {
                 name = 'Study Protocol Domain Model and Application Services'
                 description = 'A domain model and application services to specify study protocols which can be deployed to one or more stationary or mobile devices.'

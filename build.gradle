@@ -171,7 +171,7 @@ subprojects {
     publishProperties.load(new FileInputStream(rootProject.file('publish.properties')))
     publishing {
         publications {
-            jvm {
+            all {
                 pom {
                     url = 'https://github.com/cph-cachet/carp.core-kotlin'
                     licenses {
@@ -195,7 +195,8 @@ subprojects {
                         url = 'https://github.com/cph-cachet/carp.core-kotlin'
                     }
                 }
-
+            }
+            jvm {
                 artifact javadocJar
             }
         }
@@ -220,6 +221,9 @@ subprojects {
     apply plugin: 'signing'
     signing {
         sign publishing.publications.jvm
+        sign publishing.publications.js
+        sign publishing.publications.metadata
+        sign publishing.publications.kotlinMultiplatform
     }
     task publishSigned {
         doFirst {
