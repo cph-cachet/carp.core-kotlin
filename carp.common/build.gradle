@@ -1,0 +1,12 @@
+group = 'dk.cachet.carp.common'
+
+publishing {
+    publications {
+        all {
+            pom {
+                name = 'Common Library'
+                description = 'Helper classes and base types relied upon by all subsystems. This library does not contain any domain logic.'
+            }
+        }
+    }
+}

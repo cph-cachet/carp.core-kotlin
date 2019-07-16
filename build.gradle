@@ -1,143 +1,330 @@
-group = 'dk.cachet.carp.protocols'
-version = '1.0.0-alpha.1'
+def commonModule = subprojects.find { it.name == 'carp.common' }
+def coreModules = subprojects.findAll { it.name.endsWith( '.core' ) }
 
+
+// Load plugin dependencies.
 buildscript {
-    ext.kotlin_version = '1.2.50'
-    ext.serialization_version = '0.5.1'
-    ext.dokka_version = '0.9.17'
+    dependencies {
+        // Kotlin plugins.
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
+
+        // JS plugins.
+        classpath "com.moowork.gradle:gradle-node-plugin:$nodePluginVersion"
+
+        // JVM plugins.
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokkaPluginVersion"
+    }
 
     repositories {
         jcenter()
+
+        // Additional Kotlin plugin repos.
+        maven { url 'https://kotlin.bintray.com/kotlinx' }
+
+        // Additional JS plugin repos.
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+}
+
+
+// Configure all subprojects as testable, publishable, Kotlin multiplatform projects.
+subprojects {
+    version = globalVersion
+
+    repositories {
+        jcenter()
+    }
+
+    // HACK: Workaround for bug in `gradle-node-plugin`: https://github.com/srs/gradle-node-plugin/issues/301
+    repositories.whenObjectAdded {
+        if (it instanceof IvyArtifactRepository) {
+            metadataSources {
+                artifact()
+            }
+        }
+    }
+
+    // Specify platforms and test frameworks to use.
+    apply plugin: 'kotlin-multiplatform'
+    kotlin {
+        jvm {
+            compilations.main.kotlinOptions.jvmTarget = jvmTarget
+            compilations.test.kotlinOptions.jvmTarget = jvmTarget
+        }
+        js {
+            compilations.main.kotlinOptions {
+                metaInfo = true
+                sourceMap = true
+                moduleKind = 'umd'
+                main = "noCall"
+                sourceMapEmbedSources = 'always'
+            }
+            compilations.test.kotlinOptions {
+                metaInfo = true
+                sourceMap = true
+                moduleKind = 'umd'
+                main = "call"
+                sourceMapEmbedSources = 'always'
+            }
+        }
+
+        sourceSets {
+            commonMain {
+                dependencies {
+                    implementation kotlin('stdlib-common')
+                }
+            }
+            commonTest {
+                dependencies {
+                    implementation kotlin('test-common')
+                    implementation kotlin('test-annotations-common')
+                }
+            }
+            jvmMain {
+                dependencies {
+                    implementation kotlin('stdlib-jdk8')
+                }
+            }
+            jvmTest {
+                dependencies {
+                    implementation kotlin('test')
+                    implementation kotlin('test-junit5')
+                    implementation "org.junit.jupiter:junit-jupiter-api:$jUnit5Version"
+                    runtimeOnly "org.junit.jupiter:junit-jupiter-engine:$jUnit5Version"
+                }
+            }
+            jsMain {
+                dependencies {
+                    implementation kotlin('stdlib-js')
+                }
+            }
+            jsTest {
+                dependencies {
+                    implementation kotlin('test-js')
+                }
+            }
+        }
+    }
+
+    // JVM test configuration.
+    jvmTest {
+        useJUnitPlatform()
+    }
+
+    // JS test configuration.
+    // This is adapted from kotlinx-io's build file; I do not fully understand this configuration:
+    // https://stackoverflow.com/a/55244288/590790
+    apply plugin: 'com.moowork.node'
+    task copyJsDependencies(type: Copy, dependsOn: compileTestKotlinJs) {
+        from compileKotlinJs.destinationDir
+        into "${buildDir}/node_modules"
+
+        def configuration = configurations.jsTestRuntimeClasspath
+        from(files {
+            configuration.collect { File file ->
+                file.name.endsWith(".jar")
+                        ? zipTree(file.absolutePath).matching {
+                    include '*.js'
+                    include '*.js.map' }
+                        : files()
+            }
+        }.builtBy(configuration))
+    }
+    node {
+        version = nodeVersion
+        download = true
+    }
+    task installMocha(type: NpmTask) {
+        // A specific version of `lodash` is installed here, causing it to be used by `yargs-unparser`, a dependency of mocha.
+        // This resolves GitHub security vulnerability warnings for now: https://github.com/cph-cachet/carp.core-kotlin/issues/36
+        args = ['install', "lodash@4.17.14 mocha@$mochaVersion"]
+    }
+    task runMocha(type: NodeTask, dependsOn: [installMocha, compileTestKotlinJs, copyJsDependencies]) {
+        script = file('node_modules/mocha/bin/mocha')
+        args = [compileTestKotlinJs.outputFile]
+    }
+    jsTest.dependsOn runMocha
+
+    // Publish configuration.
+    // For signing and publishing to work, a 'publish.properties' file needs to be added to the root containing:
+    // The OpenPGP signature credentials to sign all artifacts:
+    // > signing.keyId=<LAST 8 SYMBOLS OF KEY ID>
+    // > signing.password=<SECRET>
+    // > signing.secretKeyRingFile=<ABSOLUTE PATH TO THE SECRET KEY RING FILE WITH PRIVATE KEY>
+    // A username and password to upload artifacts to the Sonatype repository:
+    // > repository.username=<SONATYPE USERNAME>
+    // > repository.password=<SONATYPE PASSWORD>
+    apply plugin: 'maven-publish'
+    apply plugin: 'org.jetbrains.dokka'
+    dokka {
+        outputFormat = 'html'
+        outputDirectory = "$buildDir/javadoc"
+    }
+    task javadocJar(type: Jar) {
+        group JavaBasePlugin.DOCUMENTATION_GROUP
+        description 'Create javadoc jar using Dokka'
+        archiveClassifier = "javadoc"
+        from dokka
+    }
+    def publishProperties = new Properties()
+    publishProperties.load(new FileInputStream(rootProject.file('publish.properties')))
+    publishing {
+        publications {
+            all {
+                pom {
+                    url = 'https://github.com/cph-cachet/carp.core-kotlin'
+                    licenses {
+                        license {
+                            name = 'MIT License'
+                            url = 'https://github.com/cph-cachet/carp.core-kotlin/blob/master/LICENSE.md'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'whathecode'
+                            name = 'Steven Jeuris'
+                            email = 'steven.jeuris@gmail.com'
+                            organization = 'CACHET'
+                            organizationUrl = 'http://www.cachet.dk/'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/cph-cachet/carp.core-kotlin.git'
+                        developerConnection = 'scm:git:ssh://github.com:cph-cachet/carp.core-kotlin.git'
+                        url = 'https://github.com/cph-cachet/carp.core-kotlin'
+                    }
+                }
+            }
+            jvm {
+                artifact javadocJar
+            }
+        }
+        repositories {
+            maven {
+                name "local"
+                url "$buildDir/repository"
+            }
+            maven {
+                name = "sonatype"
+                def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+                def stagingRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : stagingRepoUrl
+                credentials {
+                    username = publishProperties['repository.username']
+                    password = publishProperties['repository.password']
+                }
+            }
+        }
+    }
+    // Configure the 'sign' task to sign all files part of the maven package.
+    apply plugin: 'signing'
+    signing {
+        sign publishing.publications.jvm
+        sign publishing.publications.js
+        sign publishing.publications.metadata
+        sign publishing.publications.kotlinMultiplatform
+    }
+    task publishSigned {
+        doFirst {
+            allprojects { ext."signing.keyId" = publishProperties['signing.keyId'] }
+            allprojects { ext."signing.password" = publishProperties['signing.password'] }
+            allprojects { ext."signing.secretKeyRingFile" = publishProperties['signing.secretKeyRingFile'] }
+        }
+    }
+    publishSigned.finalizedBy publish
+}
+
+
+// Add common dependencies:
+// - `carp.test` for testing
+// - `kotlinx.serialization` to serialize domain models
+// - reflection is used to reinforce correct implementation of domain objects at runtime
+configure( coreModules + commonModule ) {
+    repositories {
         maven { url 'https://kotlin.bintray.com/kotlinx' }
     }
 
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:$serialization_version"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
+    buildscript {
+        repositories {
+            jcenter()
+        }
+
+        dependencies {
+            classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
+        }
     }
-}
 
-apply plugin: 'kotlin'
-apply plugin: 'kotlinx-serialization'
-apply plugin: 'org.jetbrains.dokka'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
-
-
-sourceSets {
-    main.kotlin.srcDirs += 'src/main'
-    test.kotlin.srcDirs += 'src/test'
-}
-
-repositories {
-    jcenter()
-    maven { url 'https://kotlin.bintray.com/kotlinx' }
-}
-
-dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
-    implementation 'org.jetbrains.kotlin:kotlin-reflect'
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version"
-    implementation 'com.beust:klaxon:3.0.1'
-
-    testImplementation "org.jetbrains.kotlin:kotlin-test"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit"
-
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.2.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
-}
-
-test {
-    useJUnitPlatform()
-}
-
-
-// Create a javadoc .jar.
-dokka {
-    outputFormat = 'html'
-    outputDirectory = "$buildDir/javadoc"
-}
-
-task javadocJar(type: Jar) {
-    group JavaBasePlugin.DOCUMENTATION_GROUP
-    description 'Create javadoc jar using Dokka'
-    classifier 'javadoc'
-    from dokka
-}
-
-
-// Create java sources .jar.
-task sourcesJar(type: Jar) {
-    classifier 'sources'
-    from sourceSets.main.allSource
-}
-
-
-// Publish main, javadoc, and javasources .jar as a maven package.
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            pom {
-                name = 'Study Protocol Domain Model and Application Services'
-                description = 'A domain model and application services to specify study protocols which can be deployed to one or more stationary or mobile devices.'
-                url = 'https://github.com/cph-cachet/carp.protocols.core'
-                licenses {
-                    license {
-                        name = 'MIT License'
-                        url = 'https://github.com/cph-cachet/carp.protocols.core/blob/master/LICENSE.md'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'whathecode'
-                        name = 'Steven Jeuris'
-                        email = 'steven.jeuris@gmail.com'
-                        organization = 'CACHET'
-                        organizationUrl = 'http://www.cachet.dk/'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:git://github.com/cph-cachet/carp.protocols.core.git'
-                    developerConnection = 'scm:git:ssh://github.com:cph-cachet/carp.protocols.core.git'
-                    url = 'https://github.com/cph-cachet/carp.protocols.core'
+    apply plugin: 'kotlinx-serialization'
+    kotlin {
+        sourceSets {
+            commonMain {
+                dependencies {
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serializationVersion"
                 }
             }
-
-            from components.java
-            artifact javadocJar
-            artifact sourcesJar
+            commonTest {
+                dependencies {
+                    implementation project(':carp.test')
+                }
+            }
+            jvmMain {
+                dependencies {
+                    implementation kotlin('reflect')
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion"
+                }
+            }
+            jsMain {
+                dependencies {
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$serializationVersion"
+                }
+            }
         }
     }
-    repositories {
-        maven {
-            url "$buildDir/repository"
+}
+
+
+// Add dependencies of all core modules on `carp.common`.
+configure( coreModules ) {
+    kotlin {
+        sourceSets {
+            commonMain {
+                dependencies {
+                    api project(':carp.common')
+                }
+            }
         }
     }
 }
 
 
-/*
-Configure the 'sign' task to sign all files part of the maven package.
-For signing to work, a 'signing.properties' file needs to be added to the root containing the OpenPGP signature credentials:
-> signing.keyId=<LAST 8 SYMBOLS OF KEY ID>
-> signing.password=<SECRET>
-> signing.secretKeyRingFile=<ABSOLUTE PATH TO THE SECRET KEY RING FILE WITH PRIVATE KEY>
-*/
-signing {
-    sign publishing.publications.mavenJava
-}
-
-task publishSigned {
-    doFirst {
-        def signingProperties = new Properties()
-        signingProperties.load(new FileInputStream(rootProject.file('signing.properties')))
-        allprojects { ext."signing.keyId" = signingProperties['signing.keyId'] }
-        allprojects { ext."signing.password" = signingProperties['signing.password'] }
-        allprojects { ext."signing.secretKeyRingFile" = signingProperties['signing.secretKeyRingFile'] }
+// HACK: Dokka currently does not work for multiplatform projects.
+// The following configuration is a workaround to configure Dokka for JVM solely:
+// https://discuss.kotlinlang.org/t/how-to-configure-dokka-for-kotlin-multiplatform/9834
+configure( subprojects ) {
+    dokka {
+        kotlinTasks { [] }
+        // Dokka fails to retrieve sources from multiplatform tasks. Setting this as empty avoids exceptions.
+        sourceRoot {
+            path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0] // There is only one source dir.
+            platforms = ["Common"]
+        }
+        sourceRoot {
+            path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0] // There is only one source dir.
+            platforms = ["JVM"]
+        }
     }
 }
-
-publishSigned.finalizedBy publish
-
-
+// HACK: Manually add source dependencies of core modules to 'common' so that Dokka can resolve them.
+configure( coreModules ) {
+    dokka {
+        sourceRoot {
+            path = project(':carp.common').kotlin.sourceSets.commonMain.kotlin.srcDirs[0] // There is only one source dir.
+            platforms = ["Common"]
+        }
+        sourceRoot {
+            path = project(':carp.common').kotlin.sourceSets.jvmMain.kotlin.srcDirs[0] // There is only one source dir.
+            platforms = ["JVM"]
+        }
+    }
+}
