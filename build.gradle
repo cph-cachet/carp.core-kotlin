@@ -168,7 +168,11 @@ subprojects {
         from dokka
     }
     def publishProperties = new Properties()
-    publishProperties.load(new FileInputStream(rootProject.file('publish.properties')))
+    def publishPropertiesFile = rootProject.file('publish.properties')
+    if (publishPropertiesFile.exists())
+    {
+        publishProperties.load(new FileInputStream(publishPropertiesFile))
+    }
     publishing {
         publications {
             all {
