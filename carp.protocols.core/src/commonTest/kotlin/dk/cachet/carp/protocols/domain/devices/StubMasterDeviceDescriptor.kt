@@ -5,8 +5,9 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class StubMasterDeviceDescriptor( override val roleName: String = "Stub master device" ) : MasterDeviceDescriptor<DefaultDeviceRegistrationBuilder>()
+data class StubMasterDeviceDescriptor( override val roleName: String = "Stub master device" )
+    : MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {
     override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
-    override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
+    override fun isValidConfiguration( registration: DefaultDeviceRegistration ) = Trilean.TRUE
 }

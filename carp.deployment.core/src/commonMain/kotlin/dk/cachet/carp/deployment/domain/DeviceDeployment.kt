@@ -20,7 +20,7 @@ data class DeviceDeployment(
      * The devices this device needs to connect to.
      */
     @Serializable( DevicesSerializer::class )
-    val connectedDevices: Set<DeviceDescriptor<*>>,
+    val connectedDevices: Set<AnyDeviceDescriptor>,
     /**
      * Preregistration of connected devices, including configuration such as connection properties, stored per role name.
      */

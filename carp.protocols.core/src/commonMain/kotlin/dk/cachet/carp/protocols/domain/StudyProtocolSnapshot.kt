@@ -13,24 +13,24 @@ import kotlinx.serialization.*
 /**
  * Custom serializer for a list of [MasterDeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [MasterDeviceDescriptor].
  */
-object MasterDevicesSerializer : KSerializer<List<MasterDeviceDescriptor<*>>> by ArrayListSerializer<MasterDeviceDescriptor<*>>(
+object MasterDevicesSerializer : KSerializer<List<AnyMasterDeviceDescriptor>> by ArrayListSerializer<AnyMasterDeviceDescriptor>(
     createUnknownPolymorphicSerializer { className, json, serializer -> CustomMasterDeviceDescriptor( className, json, serializer ) }
 )
 
 /**
  * Custom serializer for a list of [DeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
  */
-object DevicesSerializer : KSerializer<List<DeviceDescriptor<*>>> by ArrayListSerializer( DeviceDescriptorSerializer )
+object DevicesSerializer : KSerializer<List<AnyDeviceDescriptor>> by ArrayListSerializer( DeviceDescriptorSerializer )
 
 /**
  * Custom serializer for [DeviceDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
  */
-object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescriptor<*>, DeviceDescriptor<*>>( DeviceDescriptor::class, DeviceDescriptor::class, false )
+object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<AnyDeviceDescriptor, AnyDeviceDescriptor>( DeviceDescriptor::class, DeviceDescriptor::class, false )
 {
-    override fun createWrapper( className: String, json: String, serializer: Json ): DeviceDescriptor<*>
+    override fun createWrapper( className: String, json: String, serializer: Json ): AnyDeviceDescriptor
     {
         val jsonObject = serializer.parseJson( json ) as JsonObject
-        val isMasterDevice = jsonObject.containsKey( MasterDeviceDescriptor<*>::isMasterDevice.name )
+        val isMasterDevice = jsonObject.containsKey( AnyMasterDeviceDescriptor::isMasterDevice.name )
         return if ( isMasterDevice )
             CustomMasterDeviceDescriptor( className, json, serializer )
             else CustomDeviceDescriptor( className, json, serializer )
@@ -59,9 +59,9 @@ data class StudyProtocolSnapshot(
     val ownerId: UUID,
     val name: String,
     @Serializable( MasterDevicesSerializer::class )
-    val masterDevices: List<MasterDeviceDescriptor<*>>,
+    val masterDevices: List<AnyMasterDeviceDescriptor>,
     @Serializable( DevicesSerializer::class )
-    val connectedDevices: List<DeviceDescriptor<*>>,
+    val connectedDevices: List<AnyDeviceDescriptor>,
     val connections: List<DeviceConnection>,
     @Serializable( TasksSerializer::class )
     val tasks: List<TaskDescriptor>,
@@ -107,13 +107,13 @@ data class StudyProtocolSnapshot(
             )
         }
 
-        private fun getConnections( protocol: StudyProtocol, masterDevice: MasterDeviceDescriptor<*> ): Iterable<DeviceConnection>
+        private fun getConnections( protocol: StudyProtocol, masterDevice: AnyMasterDeviceDescriptor ): Iterable<DeviceConnection>
         {
             val connections: MutableList<DeviceConnection> = mutableListOf()
 
             protocol.getConnectedDevices( masterDevice ).forEach {
                 connections.add( DeviceConnection( it.roleName, masterDevice.roleName ) )
-                if ( it is MasterDeviceDescriptor<*> )
+                if ( it is AnyMasterDeviceDescriptor )
                 {
                     connections.addAll( getConnections( protocol, it ) )
                 }

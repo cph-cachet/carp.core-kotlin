@@ -10,10 +10,10 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Smartphone( override val roleName: String )
-    : MasterDeviceDescriptor<DefaultDeviceRegistrationBuilder>(), PhoneSensorMeasureFactory by PhoneSensorMeasure.Factory
+    : MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>(), PhoneSensorMeasureFactory by PhoneSensorMeasure.Factory
 {
     companion object : PhoneSensorMeasureFactory by PhoneSensorMeasure.Factory
 
     override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
-    override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
+    override fun isValidConfiguration( registration: DefaultDeviceRegistration ) = Trilean.TRUE
 }

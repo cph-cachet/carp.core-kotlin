@@ -313,12 +313,12 @@ class StudyProtocolTest
         }
     }
 
-    private fun connectedDevicesAreSame( protocol: StudyProtocol, fromSnapshot: StudyProtocol, masterDevice: MasterDeviceDescriptor<*> ): Boolean
+    private fun connectedDevicesAreSame( protocol: StudyProtocol, fromSnapshot: StudyProtocol, masterDevice: AnyMasterDeviceDescriptor ): Boolean
     {
         val protocolConnected = protocol.getConnectedDevices( masterDevice ).sortedWith( compareBy { it.roleName } )
         val snapshotConnected = fromSnapshot.getConnectedDevices( masterDevice ).sortedWith( compareBy { it.roleName } )
 
         val areSameDevices = snapshotConnected.count() == protocolConnected.intersect( snapshotConnected ).count()
-        return areSameDevices && protocolConnected.filterIsInstance<MasterDeviceDescriptor<*>>().all { connectedDevicesAreSame( protocol, fromSnapshot, it ) }
+        return areSameDevices && protocolConnected.filterIsInstance<AnyMasterDeviceDescriptor>().all { connectedDevicesAreSame( protocol, fromSnapshot, it ) }
     }
 }

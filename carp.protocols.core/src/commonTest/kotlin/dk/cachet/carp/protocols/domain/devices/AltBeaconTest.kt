@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
 import kotlin.test.*
 
@@ -10,17 +9,6 @@ import kotlin.test.*
  */
 class AltBeaconTest
 {
-    @Test
-    fun isValidConfiguration_expects_AltBeaconDeviceRegistration()
-    {
-        val beacon = AltBeacon( "beacon" )
-        val correctConfiguration = beacon.createRegistration()
-        val invalidConfiguration = DefaultDeviceRegistration( "id" )
-
-        assertEquals( Trilean.TRUE, beacon.isValidConfiguration( correctConfiguration ) )
-        assertEquals( Trilean.FALSE, beacon.isValidConfiguration( invalidConfiguration ) )
-    }
-
     @Test
     fun registration_deviceId_is_unique()
     {

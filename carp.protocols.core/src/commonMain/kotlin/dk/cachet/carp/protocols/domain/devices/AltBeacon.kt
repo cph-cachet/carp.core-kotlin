@@ -9,11 +9,10 @@ import kotlinx.serialization.Serializable
  * A beacon meeting the open AltBeacon standard.
  */
 @Serializable
-data class AltBeacon( override val roleName: String ) : DeviceDescriptor<AltBeaconDeviceRegistrationBuilder>()
+data class AltBeacon( override val roleName: String ) : DeviceDescriptor<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
 {
     override fun createDeviceRegistrationBuilder(): AltBeaconDeviceRegistrationBuilder = AltBeaconDeviceRegistrationBuilder()
-    override fun isValidConfiguration( registration: DeviceRegistration ): Trilean
-        = ( registration is AltBeaconDeviceRegistration ).toTrilean()
+    override fun isValidConfiguration( registration: AltBeaconDeviceRegistration ): Trilean = Trilean.TRUE
 }
 
 
@@ -48,7 +47,7 @@ data class AltBeaconDeviceRegistration(
 
 @Serializable( with = NotSerializable::class )
 @DeviceRegistrationBuilderDsl
-class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder()
+class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>()
 {
     private var manufacturerId: Short = 0x0000
     /**
