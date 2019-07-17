@@ -4,16 +4,39 @@ def coreModules = subprojects.findAll { it.name.endsWith( '.core' ) }
 
 // Load plugin dependencies.
 buildscript {
+    ext {
+        // Version used for all submodule artifacts.
+        // Suffix the version with '-SNAPSHOT' to publish to snapshot repository. All other versions will be published to staging.
+        globalVersion = '1.0.0-SNAPSHOT'
+        // globalVersion = 1.0.0-alpha.2
+
+        versions = [
+            // Kotlin multiplatform versions.
+            kotlin:'1.3.41',
+            serialization:'0.11.1',
+
+            // JVM versions.
+            jvmTarget:'1.6',
+            jUnit5:'5.5.0-M1',
+            dokkaPlugin:'0.9.18',
+
+            // JS versions.
+            nodePlugin:'1.3.1',
+            node:'12.6.0',
+            mocha:'6.1.4'
+        ]
+    }
+
     dependencies {
         // Kotlin plugins.
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
 
         // JS plugins.
-        classpath "com.moowork.gradle:gradle-node-plugin:$nodePluginVersion"
+        classpath "com.moowork.gradle:gradle-node-plugin:${versions.nodePlugin}"
 
         // JVM plugins.
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokkaPluginVersion"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${versions.dokkaPlugin}"
     }
 
     repositories {
@@ -23,7 +46,7 @@ buildscript {
         maven { url 'https://kotlin.bintray.com/kotlinx' }
 
         // Additional JS plugin repos.
-        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url 'https://plugins.gradle.org/m2/' }
     }
 }
 
@@ -49,8 +72,8 @@ subprojects {
     apply plugin: 'kotlin-multiplatform'
     kotlin {
         jvm {
-            compilations.main.kotlinOptions.jvmTarget = jvmTarget
-            compilations.test.kotlinOptions.jvmTarget = jvmTarget
+            compilations.main.kotlinOptions.jvmTarget = versions.jvmTarget
+            compilations.test.kotlinOptions.jvmTarget = versions.jvmTarget
         }
         js {
             compilations.main.kotlinOptions {
@@ -90,8 +113,8 @@ subprojects {
                 dependencies {
                     implementation kotlin('test')
                     implementation kotlin('test-junit5')
-                    implementation "org.junit.jupiter:junit-jupiter-api:$jUnit5Version"
-                    runtimeOnly "org.junit.jupiter:junit-jupiter-engine:$jUnit5Version"
+                    implementation "org.junit.jupiter:junit-jupiter-api:${versions.jUnit5}"
+                    runtimeOnly "org.junit.jupiter:junit-jupiter-engine:${versions.jUnit5}"
                 }
             }
             jsMain {
@@ -132,13 +155,13 @@ subprojects {
         }.builtBy(configuration))
     }
     node {
-        version = nodeVersion
+        version = versions.node
         download = true
     }
     task installMocha(type: NpmTask) {
         // A specific version of `lodash` is installed here, causing it to be used by `yargs-unparser`, a dependency of mocha.
         // This resolves GitHub security vulnerability warnings for now: https://github.com/cph-cachet/carp.core-kotlin/issues/36
-        args = ['install', "lodash@4.17.14 mocha@$mochaVersion"]
+        args = ['install', "lodash@4.17.14 mocha@${versions.mocha}"]
     }
     task runMocha(type: NodeTask, dependsOn: [installMocha, compileTestKotlinJs, copyJsDependencies]) {
         script = file('node_modules/mocha/bin/mocha')
@@ -255,7 +278,7 @@ configure( coreModules + commonModule ) {
         }
 
         dependencies {
-            classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
+            classpath "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
         }
     }
 
@@ -264,7 +287,7 @@ configure( coreModules + commonModule ) {
         sourceSets {
             commonMain {
                 dependencies {
-                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serializationVersion"
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${versions.serialization}"
                 }
             }
             commonTest {
@@ -275,12 +298,12 @@ configure( coreModules + commonModule ) {
             jvmMain {
                 dependencies {
                     implementation kotlin('reflect')
-                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion"
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${versions.serialization}"
                 }
             }
             jsMain {
                 dependencies {
-                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$serializationVersion"
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${versions.serialization}"
                 }
             }
         }
