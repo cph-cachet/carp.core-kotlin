@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.domain.devices
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.test.JsIgnore
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
+import kotlin.reflect.KClass
 import kotlin.test.*
 
 
@@ -19,6 +20,7 @@ class DeviceDescriptorTest
             : DeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
         {
             override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
+            override fun getRegistrationClass(): KClass<DefaultDeviceRegistration> = DefaultDeviceRegistration::class
             override fun isValidConfiguration( registration: DefaultDeviceRegistration ): Trilean = Trilean.TRUE
         }
 

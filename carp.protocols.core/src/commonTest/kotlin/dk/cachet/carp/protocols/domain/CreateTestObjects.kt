@@ -11,6 +11,7 @@ import dk.cachet.carp.protocols.infrastructure.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
+import kotlin.reflect.KClass
 
 
 /**
@@ -91,6 +92,7 @@ internal data class UnknownMasterDeviceDescriptor( override val roleName: String
     : MasterDeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
     override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
+    override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
 }
 
@@ -99,6 +101,7 @@ internal data class UnknownDeviceDescriptor( override val roleName: String )
     : DeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
     override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
+    override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
 }
 

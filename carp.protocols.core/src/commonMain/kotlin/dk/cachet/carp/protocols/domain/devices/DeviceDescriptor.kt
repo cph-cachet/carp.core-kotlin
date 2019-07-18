@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.domain.devices
 import dk.cachet.carp.common.*
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
 import kotlinx.serialization.*
+import kotlin.reflect.KClass
 
 
 /**
@@ -23,7 +24,7 @@ abstract class DeviceDescriptor<TRegistration: DeviceRegistration, out TBuilder:
      */
     abstract val roleName: String
 
-    abstract fun createDeviceRegistrationBuilder(): TBuilder
+    protected abstract fun createDeviceRegistrationBuilder(): TBuilder
 
     /**
      * Create a [DeviceRegistration] which can be used to configure this device for deployment.
@@ -31,6 +32,11 @@ abstract class DeviceDescriptor<TRegistration: DeviceRegistration, out TBuilder:
      */
     fun createRegistration( builder: TBuilder.() -> Unit = {} ): TRegistration
         = createDeviceRegistrationBuilder().apply( builder ).build()
+
+    /**
+     * Return the class information of the [DeviceRegistration] class used to register devices for this [DeviceDescriptor].
+     */
+    abstract fun getRegistrationClass(): KClass<TRegistration>
 
     /**
      * Determines whether the given [registration] is configured correctly for this type of device.

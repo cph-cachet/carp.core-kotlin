@@ -139,15 +139,13 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         // Verify whether the passed registration is known to be invalid for the given device.
         // This may be 'UNKNOWN' when the device type is not known at runtime.
         // In this case, simply forward as is assuming it to be valid (possibly failing on the 'client' later).
+        // TODO: `getRegistrationClass` is a trivial implementation in extending classes, but could this be enforced by using the type system instead?
+        //       On the JVM runtime, `isValidConfiguration` throws a `ClassCastException` when the wrong type were to be passed, but not on JS runtime.
+        val registrationClass = device.getRegistrationClass()
+        val isValidType = registrationClass.isInstance( registration )
         @Suppress( "UNCHECKED_CAST" )
         val anyDevice = device as DeviceDescriptor<DeviceRegistration, *>
-        var isValidConfiguration = false
-        try
-        {
-            isValidConfiguration = anyDevice.isValidConfiguration( registration ) != Trilean.FALSE
-        }
-        // TODO: This exception is not thrown for the JS runtime!
-        catch ( e: ClassCastException ) { }
+        val isValidConfiguration = isValidType && ( anyDevice.isValidConfiguration( registration ) != Trilean.FALSE )
         if ( !isValidConfiguration )
         {
             throw IllegalArgumentException( "The passed registration is not valid for the given device." )

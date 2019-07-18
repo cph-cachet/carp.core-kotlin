@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.domain.devices
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.serialization.*
 import kotlinx.serialization.json.*
+import kotlin.reflect.KClass
 
 
 /**
@@ -27,6 +28,8 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
 
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration>
         = throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, it is unknown which registration builder is required." )
+
+    override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
 
     /**
      * For unknown types, it cannot be determined whether or not a given configuration is valid.
