@@ -19,18 +19,12 @@ data class CustomTaskDescriptor( override val className: String, override val js
         val json = serializer.parseJson( jsonSource ) as JsonObject
 
         val nameField = TaskDescriptor::name.name
-        if ( !json.containsKey( nameField ) )
-        {
-            throw IllegalArgumentException( "No '$nameField' defined." )
-        }
+        require( json.containsKey( nameField ) ) { "No '$nameField' defined." }
         name = json[ nameField ]!!.content
 
         // Get raw JSON string of measures and use kotlinx serialization to deserialize.
         val measuresField = TaskDescriptor::measures.name
-        if ( !json.containsKey( measuresField ) )
-        {
-            throw IllegalArgumentException( "No '$measuresField' defined." )
-        }
+        require( json.containsKey( measuresField ) ) { "No '$measuresField' defined." }
         val measuresJson = json[ measuresField ]!!.jsonArray.toString()
         measures = serializer.parse( MeasuresSerializer, measuresJson )
     }

@@ -34,9 +34,6 @@ data class PhoneSensorMeasure private constructor(
         // Since supported sensors by CARP should co-evolve across the platform (measure definitions and matching probe implementations),
         // only data types that are supported are allowed. If new probes are implemented for PhoneSensorMeasure, this class should be updated correspondingly.
         // TODO: This is currently 'somewhat' enforced using a private constructor. But, 'copy' can still be used.
-        if ( !SUPPORTED_DATA_TYPES.contains( type ) )
-        {
-            throw IllegalArgumentException( "Invalid data type passed to ${PhoneSensorMeasure::class.simpleName}." )
-        }
+        require( SUPPORTED_DATA_TYPES.contains( type ) ) { "Invalid data type passed to ${PhoneSensorMeasure::class.simpleName}." }
     }
 }

@@ -17,10 +17,7 @@ data class CustomTrigger( override val className: String, override val jsonSourc
         val json = serializer.parseJson( jsonSource ) as JsonObject
 
         val sourceDeviceRoleNameField = Trigger::sourceDeviceRoleName.name
-        if ( !json.containsKey( sourceDeviceRoleNameField ) )
-        {
-            throw IllegalArgumentException( "No '$sourceDeviceRoleNameField' defined." )
-        }
+        require( json.containsKey( sourceDeviceRoleNameField ) ) { "No '$sourceDeviceRoleNameField' defined." }
         sourceDeviceRoleName = json[ sourceDeviceRoleNameField ]!!.content
     }
 }

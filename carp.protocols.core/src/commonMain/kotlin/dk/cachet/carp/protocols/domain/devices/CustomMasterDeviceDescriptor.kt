@@ -19,10 +19,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
         val json = serializer.parseJson( jsonSource ) as JsonObject
 
         val roleNameField = AnyMasterDeviceDescriptor::roleName.name
-        if ( !json.containsKey( roleNameField ) )
-        {
-            throw IllegalArgumentException( "No '$roleNameField' defined." )
-        }
+        require( json.containsKey( roleNameField ) ) { "No '$roleNameField' defined." }
         roleName = json[ roleNameField ]!!.content
     }
 

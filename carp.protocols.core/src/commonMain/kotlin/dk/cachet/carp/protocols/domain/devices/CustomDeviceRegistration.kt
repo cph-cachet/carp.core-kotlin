@@ -17,10 +17,7 @@ data class CustomDeviceRegistration( override val className: String, override va
         val json = serializer.parseJson( jsonSource ) as JsonObject
 
         val deviceIdField = DeviceRegistration::deviceId.name
-        if ( !json.containsKey( deviceIdField ) )
-        {
-            throw IllegalArgumentException( "No '$deviceIdField' defined." )
-        }
+        require( json.containsKey( deviceIdField ) ) { "No '$deviceIdField' defined." }
         deviceId = json[ deviceIdField ]!!.content
     }
 }

@@ -19,10 +19,7 @@ data class CustomMeasure( override val className: String, override val jsonSourc
 
         // Get raw JSON string of type (using klaxon) and use kotlinx serialization to deserialize.
         val typeField = Measure::type.name
-        if ( !json.containsKey( typeField ) )
-        {
-            throw IllegalArgumentException( "No '$typeField' defined." )
-        }
+        require( json.containsKey( typeField ) ) { "No '$typeField' defined." }
         val typeJson = json[ typeField ]!!.jsonObject.toString()
         type = serializer.parse( DataType.serializer(), typeJson )
     }

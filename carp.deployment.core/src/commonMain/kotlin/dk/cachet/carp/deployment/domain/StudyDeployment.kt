@@ -60,11 +60,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
     init
     {
-        // Verify whether protocol can be deployed.
-        if ( !_protocol.isDeployable() )
-        {
-            throw IllegalArgumentException( "The passed protocol snapshot contains deployment errors." )
-        }
+        require( _protocol.isDeployable() ) { "The passed protocol snapshot contains deployment errors." }
 
         // Initialize information which devices can or should be registered for this deployment.
         _registrableDevices = _protocol.devices.asSequence()
@@ -124,17 +120,11 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     fun registerDevice( device: AnyDeviceDescriptor, registration: DeviceRegistration )
     {
         val containsDevice: Boolean = _registrableDevices.any { it.device == device }
-        if ( !containsDevice )
-        {
-            throw IllegalArgumentException( "The passed device is not part of this deployment." )
-        }
+        require( containsDevice ) { "The passed device is not part of this deployment." }
 
+        // TODO: For now, given that we don't fully know requirements of changing registration of devices yet, do not allow it.
         val isAlreadyRegistered = _registeredDevices.keys.contains( device )
-        if ( isAlreadyRegistered )
-        {
-            // TODO: For now, given that we don't fully know requirements of changing registration of devices yet, do not allow it.
-            throw IllegalArgumentException( "The passed device is already registered." )
-        }
+        require( !isAlreadyRegistered ) { "The passed device is already registered." }
 
         // Verify whether the passed registration is known to be invalid for the given device.
         // This may be 'UNKNOWN' when the device type is not known at runtime.
@@ -146,10 +136,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         @Suppress( "UNCHECKED_CAST" )
         val anyDevice = device as DeviceDescriptor<DeviceRegistration, *>
         val isValidConfiguration = isValidType && ( anyDevice.isValidConfiguration( registration ) != Trilean.FALSE )
-        if ( !isValidConfiguration )
-        {
-            throw IllegalArgumentException( "The passed registration is not valid for the given device." )
-        }
+        require( isValidConfiguration ) { "The passed registration is not valid for the given device." }
 
         // Verify whether deviceId is unique for the given device type within this deployment.
         val isUnique = _registeredDevices.none {
@@ -158,12 +145,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             val areUnknownDevices = device is UnknownPolymorphicWrapper && otherDevice is UnknownPolymorphicWrapper
             val matchingUnknownDevices: Boolean by lazy { (device as UnknownPolymorphicWrapper).className == (otherDevice as UnknownPolymorphicWrapper).className }
             isSameId && ( (!areUnknownDevices && otherDevice::class == device::class) || (areUnknownDevices && matchingUnknownDevices) ) }
-        if ( !isUnique )
-        {
-            throw IllegalArgumentException(
-                "The deviceId specified in the passed registration is already in use by a device of the same type. " +
-                "Cannot register the same device for different device roles within a deployment." )
-        }
+        require( isUnique ) {
+            "The deviceId specified in the passed registration is already in use by a device of the same type. " +
+            "Cannot register the same device for different device roles within a deployment." }
 
         _registeredDevices[ device ] = registration
     }
@@ -177,17 +161,11 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     fun getDeploymentFor( device: AnyMasterDeviceDescriptor ): DeviceDeployment
     {
         // Verify whether the specified device is part of the protocol of this deployment.
-        if ( !protocolSnapshot.masterDevices.contains( device ) )
-        {
-            throw IllegalArgumentException( "The specified device is not part of the protocol of this deployment." )
-        }
+        require( protocolSnapshot.masterDevices.contains( device ) ) { "The specified device is not part of the protocol of this deployment." }
 
         // Verify whether the specified device is ready to be deployed.
         val canDeploy = canObtainDeviceDeployment( device )
-        if ( !canDeploy )
-        {
-            throw IllegalArgumentException( "The specified device is awaiting registration of itself or other devices before it can be deployed." )
-        }
+        require( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
         val configuration: DeviceRegistration = _registeredDevices[ device ]!! // Must be non-null, otherwise canObtainDeviceDeployment would fail.
 
