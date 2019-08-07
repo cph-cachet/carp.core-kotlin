@@ -13,7 +13,7 @@ class UUIDTest
     @Test
     fun can_serialize_and_deserialize_UUID_using_JSON()
     {
-        val id = UUID( "00000000-0000-0000-0000-00000000000" )
+        val id = UUID( "00000000-0000-0000-0000-000000000000" )
 
         val json = Json( JsonConfiguration.Stable )
         val serialized = json.stringify( UUIDSerializer, id )
@@ -33,7 +33,7 @@ class UUIDTest
         )
         val json = Json( JsonConfiguration.Stable )
 
-        val id: Id = Id( UUID( "00000000-0000-0000-0000-00000000000" ) )
+        val id = Id( UUID( "00000000-0000-0000-0000-000000000000" ) )
         val idSerialized = json.stringify( Id.serializer(), id )
         val idParsed = json.parse( Id.serializer(), idSerialized )
         assertEquals( id, idParsed )
@@ -42,5 +42,17 @@ class UUIDTest
         val nullableSerialized = json.stringify( Id.serializer(), nullableId )
         val nullableParsed = json.parse( Id.serializer(), nullableSerialized )
         assertEquals( nullableId, nullableParsed )
+    }
+
+    @Test
+    fun cant_initialize_incorrect_UUID()
+    {
+        assertFailsWith<IllegalArgumentException> { UUID( "Invalid" ) }
+        // Not long enough.
+        assertFailsWith<IllegalArgumentException> { UUID( "00000000-0000-0000-0000-00000000000" ) }
+        // Invalid character.
+        assertFailsWith<IllegalArgumentException> { UUID( "g0000000-0000-0000-0000-000000000000" ) }
+        // Incorrect dashes.
+        assertFailsWith<IllegalArgumentException> { UUID( "00000000-0000-00000-0000-00000000000" ) }
     }
 }
