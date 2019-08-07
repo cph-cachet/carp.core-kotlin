@@ -7,8 +7,8 @@ buildscript {
     ext {
         // Version used for all submodule artifacts.
         // Suffix the version with '-SNAPSHOT' to publish to snapshot repository. All other versions will be published to staging.
-        globalVersion = '1.0.0-SNAPSHOT'
-        // globalVersion = 1.0.0-alpha.2
+        // globalVersion = '1.0.0-SNAPSHOT'
+        globalVersion = '1.0.0-alpha.3'
 
         versions = [
             // Kotlin multiplatform versions.
