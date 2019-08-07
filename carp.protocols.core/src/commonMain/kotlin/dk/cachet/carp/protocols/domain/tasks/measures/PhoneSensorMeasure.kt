@@ -10,6 +10,7 @@ import kotlinx.serialization.*
  * Measures any of the sensors typically integrated in smartphones (e.g., accelerometer),
  * or data which is derived from them using vendor-specific APIs (e.g., stepcount, or mode of transport).
  */
+@Suppress( "DataClassPrivateConstructor" )
 @Serializable
 data class PhoneSensorMeasure private constructor(
     override val type: DataType,

@@ -16,6 +16,7 @@ object DevicesSetSerializer : KSerializer<Set<AnyDeviceDescriptor>> by HashSetSe
 /**
  * Custom serializer for a set of [TaskDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [TaskDescriptor].
  */
+@Suppress( "RemoveExplicitTypeArguments" ) // Removing this fails compilation. Might be a bug in the analyzer.
 object TasksSetSerializer : KSerializer<Set<TaskDescriptor>> by HashSetSerializer<TaskDescriptor>(
     createUnknownPolymorphicSerializer { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) }
 )

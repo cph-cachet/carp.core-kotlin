@@ -12,6 +12,7 @@ import kotlin.test.*
  */
 class StudyProtocolSnapshotTest
 {
+    @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
     @Test
     fun equals_and_hashcode_when_comparing_snapshots_of_same_protocol()
     {

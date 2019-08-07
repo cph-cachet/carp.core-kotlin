@@ -89,7 +89,7 @@ class StudyProtocol(
         val isAdded: Boolean = _triggers.add( trigger )
         if ( isAdded )
         {
-            _triggeredTasks.put( trigger, mutableSetOf() )
+            _triggeredTasks[ trigger ] = mutableSetOf()
         }
         return isAdded
     }

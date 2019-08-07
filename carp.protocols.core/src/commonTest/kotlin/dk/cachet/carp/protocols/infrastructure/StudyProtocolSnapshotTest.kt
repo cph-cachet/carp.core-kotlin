@@ -35,11 +35,11 @@ class StudyProtocolSnapshotTest
         val serialized: String = serializeProtocolSnapshotIncludingUnknownTypes()
 
         val parsed = StudyProtocolSnapshot.fromJson( serialized )
-        assertEquals( 1, parsed.masterDevices.filter { m -> m is CustomMasterDeviceDescriptor }.count() )
-        assertEquals( 1, parsed.connectedDevices.filter { m -> m is CustomDeviceDescriptor }.count() )
-        assertEquals( 1, parsed.tasks.filter { m -> m is CustomTaskDescriptor }.count() )
+        assertEquals( 1, parsed.masterDevices.filterIsInstance<CustomMasterDeviceDescriptor>().count() )
+        assertEquals( 1, parsed.connectedDevices.filterIsInstance<CustomDeviceDescriptor>().count() )
+        assertEquals( 1, parsed.tasks.filterIsInstance<CustomTaskDescriptor>().count() )
         val allMeasures = parsed.tasks.flatMap{ t -> t.measures }
-        assertEquals( 2, allMeasures.filter { m -> m is CustomMeasure }.count() )
+        assertEquals( 2, allMeasures.filterIsInstance<CustomMeasure>().count() )
         assertEquals( 1, parsed.triggers.filter { t -> t.trigger is CustomTrigger }.count() )
     }
 
@@ -88,7 +88,7 @@ class StudyProtocolSnapshotTest
      * (3) known task with an unknown measure and known data type
      * There is thus exactly one unknown object for each of these types, except for 'Measure' which has two.
      */
-    fun serializeProtocolSnapshotIncludingUnknownTypes(): String
+    private fun serializeProtocolSnapshotIncludingUnknownTypes(): String
     {
         val protocol = createComplexProtocol()
 

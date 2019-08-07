@@ -6,14 +6,10 @@ package dk.cachet.carp.common
  * TODO: Since reflection is not yet available for JavaScript runtimes, this is only verified by the JVM runtime.
  *
  * Immutable types may not contain mutable properties and may only contain data classes and basic types.
+ *
+ * @param exception The exception to throw in case the implementation is not immutable. [NotImmutableError] should be thrown by default.
  */
-expect abstract class Immutable
-{
-    /**
-     * @param exception The exception to throw in case the implementation is not immutable. [NotImmutableError] should be thrown by default.
-     */
-    constructor( exception: Throwable = NotImmutableError() )
-}
+expect abstract class Immutable( exception: Throwable = NotImmutableError() )
 
 
 /**

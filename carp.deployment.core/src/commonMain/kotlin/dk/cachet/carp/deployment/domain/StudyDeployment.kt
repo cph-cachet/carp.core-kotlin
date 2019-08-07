@@ -69,7 +69,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         // Initialize information which devices can or should be registered for this deployment.
         _registrableDevices = _protocol.devices.asSequence()
             // Top-level master devices require registration.
-            .map { it ->  RegistrableDevice( it, _protocol.masterDevices.contains( it ) ) }
+            .map { RegistrableDevice( it, _protocol.masterDevices.contains( it ) ) }
             .toMutableSet()
     }
 

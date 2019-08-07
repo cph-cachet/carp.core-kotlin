@@ -39,7 +39,7 @@ class ExtractUniqueKeyMap<K, V>(
             throw _elementPresentError
         }
 
-        _map.put( _keyOf( element ), element )
+        _map[ _keyOf( element ) ] = element
         return true
     }
 
@@ -54,36 +54,12 @@ class ExtractUniqueKeyMap<K, V>(
         return _map.remove( _keyOf( element ) ) != null
     }
 
-
-    override val entries: Set<Map.Entry<K, V>>
-        get() = _map.entries
-
-    override val keys: Set<K>
-        get() = _map.keys
-
-    override val size: Int
-        get() = _map.size
-
-    override val values: Collection<V>
-        get() = _map.values
-
-    override fun containsKey( key: K ): Boolean
-    {
-        return _map.containsKey( key )
-    }
-
-    override fun containsValue( value: V ): Boolean
-    {
-        return _map.containsValue( value )
-    }
-
-    override fun get( key: K ): V?
-    {
-        return _map.get( key )
-    }
-
-    override fun isEmpty(): Boolean
-    {
-        return _map.isEmpty()
-    }
+    override val entries: Set<Map.Entry<K, V>> get() = _map.entries
+    override val keys: Set<K> get() = _map.keys
+    override val size: Int get() = _map.size
+    override val values: Collection<V> get() = _map.values
+    override fun containsKey( key: K ): Boolean = _map.containsKey( key )
+    override fun containsValue( value: V ): Boolean = _map.containsValue( value )
+    override fun get( key: K ): V? = _map[ key ]
+    override fun isEmpty(): Boolean = _map.isEmpty()
 }

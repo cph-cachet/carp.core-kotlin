@@ -61,9 +61,9 @@ class UseCompositeTaskWarningTest
         val task2 = StubTaskDescriptor( "Task 2" )
         with ( protocol )
         {
-            protocol.addMasterDevice( device )
-            protocol.addTriggeredTask( trigger, task1, device )
-            protocol.addTriggeredTask( trigger, task2, device )
+            addMasterDevice( device )
+            addTriggeredTask( trigger, task1, device )
+            addTriggeredTask( trigger, task2, device )
         }
 
         val warning = UseCompositeTaskWarning()

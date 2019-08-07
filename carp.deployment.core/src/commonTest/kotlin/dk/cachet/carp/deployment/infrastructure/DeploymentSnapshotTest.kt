@@ -33,7 +33,7 @@ class DeploymentSnapshotTest
         val serialized = serializeDeploymentSnapshotIncludingUnknownRegistration()
         val parsed = DeploymentSnapshot.fromJson( serialized )
 
-        assertEquals( 1, parsed.registeredDevices.values.filter { m -> m is CustomDeviceRegistration }.count() )
+        assertEquals( 1, parsed.registeredDevices.values.filterIsInstance<CustomDeviceRegistration>().count() )
     }
 
     /**

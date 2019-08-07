@@ -32,8 +32,8 @@ class UnusedDevicesWarning internal constructor() : DeploymentWarning
         val unusedDevices = protocol.devices.minus( usedDevices )
 
         // Master devices which are not used in triggers but have connected devices used in triggers are still used to relay data.
-        val relayingMasterDevices = unusedDevices.filterIsInstance<AnyMasterDeviceDescriptor>().filter {
-            protocol.getConnectedDevices( it, true ).any { usedDevices.contains( it ) }
+        val relayingMasterDevices = unusedDevices.filterIsInstance<AnyMasterDeviceDescriptor>().filter { device ->
+            protocol.getConnectedDevices( device, true ).any { usedDevices.contains( it ) }
         }
 
         return unusedDevices.minus( relayingMasterDevices )
