@@ -20,7 +20,8 @@ data class DefaultDeviceRegistration( override val deviceId: String ) : DeviceRe
  */
 @Serializable( with = NotSerializable::class )
 @DeviceRegistrationBuilderDsl
-class DefaultDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() ) : DeviceRegistrationBuilder()
+class DefaultDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() )
+    : DeviceRegistrationBuilder<DefaultDeviceRegistration>()
 {
     /**
      * Override the default assigned UUID which has been set as device ID.

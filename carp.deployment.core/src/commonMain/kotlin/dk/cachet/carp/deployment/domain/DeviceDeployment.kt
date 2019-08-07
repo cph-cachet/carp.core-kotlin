@@ -11,7 +11,7 @@ import kotlinx.serialization.internal.HashSetSerializer
 /**
  * Custom serializer for a set of [DeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
  */
-object DevicesSetSerializer : KSerializer<Set<DeviceDescriptor<*>>> by HashSetSerializer( DeviceDescriptorSerializer )
+object DevicesSetSerializer : KSerializer<Set<AnyDeviceDescriptor>> by HashSetSerializer( DeviceDescriptorSerializer )
 
 /**
  * Custom serializer for a set of [TaskDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [TaskDescriptor].
@@ -34,7 +34,7 @@ data class DeviceDeployment(
      * The devices this device needs to connect to.
      */
     @Serializable( DevicesSetSerializer::class )
-    val connectedDevices: Set<DeviceDescriptor<*>>,
+    val connectedDevices: Set<AnyDeviceDescriptor>,
     /**
      * Preregistration of connected devices, including configuration such as connection properties, stored per role name.
      */

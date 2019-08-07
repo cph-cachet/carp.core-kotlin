@@ -1,6 +1,5 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.json.Json
@@ -156,6 +155,21 @@ class StudyDeploymentTest
         // Even though these two devices are registered using the same ID, this should succeed since they are of different types.
         deployment.registerDevice( device1Custom, DefaultDeviceRegistration( "0" ) )
         deployment.registerDevice( device2Custom, DefaultDeviceRegistration( "0" ) )
+    }
+
+    @Test
+    fun cant_registerDevice_with_wrong_registration_type()
+    {
+        val protocol = createEmptyProtocol()
+        val master = StubMasterDeviceDescriptor( "Master" )
+        protocol.addMasterDevice( master )
+        val deployment: StudyDeployment = deploymentFor( protocol )
+
+        val wrongRegistration = UnknownDeviceRegistration( "0" )
+        assertFailsWith<IllegalArgumentException>
+        {
+            deployment.registerDevice( master, wrongRegistration )
+        }
     }
 
     @Test

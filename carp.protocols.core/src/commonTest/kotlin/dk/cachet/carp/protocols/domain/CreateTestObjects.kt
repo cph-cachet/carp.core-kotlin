@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.*
+import dk.cachet.carp.common.serialization.NotSerializable
 import dk.cachet.carp.protocols.domain.data.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.triggers.*
@@ -10,6 +11,7 @@ import dk.cachet.carp.protocols.infrastructure.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
+import kotlin.reflect.KClass
 
 
 /**
@@ -86,17 +88,29 @@ fun createComplexProtocol(): StudyProtocol
 }
 
 @Serializable
-internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) : MasterDeviceDescriptor<DefaultDeviceRegistrationBuilder>()
+internal data class UnknownMasterDeviceDescriptor( override val roleName: String )
+    : MasterDeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
-    override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
+    override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
+    override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
 }
 
 @Serializable
-internal data class UnknownDeviceDescriptor( override val roleName: String ) : DeviceDescriptor<DefaultDeviceRegistrationBuilder>()
+internal data class UnknownDeviceDescriptor( override val roleName: String )
+    : DeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
-    override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
+    override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
+    override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
+}
+
+@Serializable( with = NotSerializable::class )
+@DeviceRegistrationBuilderDsl
+class UnknownDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() )
+    : DeviceRegistrationBuilder<DeviceRegistration>()
+{
+    override fun build(): DeviceRegistration = DefaultDeviceRegistration( deviceId )
 }
 
 @Serializable

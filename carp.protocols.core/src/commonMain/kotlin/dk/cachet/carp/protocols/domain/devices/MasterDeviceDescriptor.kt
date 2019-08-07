@@ -10,7 +10,8 @@ import kotlinx.serialization.*
  */
 @Serializable
 @Polymorphic
-abstract class MasterDeviceDescriptor<out T: DeviceRegistrationBuilder> : DeviceDescriptor<T>()
+abstract class MasterDeviceDescriptor<TRegistration: DeviceRegistration, out TBuilder: DeviceRegistrationBuilder<TRegistration>>
+    : DeviceDescriptor<TRegistration, TBuilder>()
 {
     // This property is only here for (de)serialization purposes.
     // For unknown types we need to know whether to treat them as master devices or not (in the case of 'DeviceDescriptor' collections).
@@ -21,3 +22,5 @@ abstract class MasterDeviceDescriptor<out T: DeviceRegistrationBuilder> : Device
      */
     fun atStartOfStudy(): StartOfStudyTrigger = StartOfStudyTrigger( this )
 }
+
+typealias AnyMasterDeviceDescriptor = MasterDeviceDescriptor<*,*>

@@ -36,12 +36,12 @@ abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegis
  * TODO: This and extending classes are never expected to be serialized,
  *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceDescriptor].
  */
-abstract class DeviceRegistrationBuilder
+abstract class DeviceRegistrationBuilder<T: DeviceRegistration>
 {
     /**
      * Build the immutable [DeviceRegistration] using the current configuration of this [DeviceRegistrationBuilder].
      */
-    abstract fun build(): DeviceRegistration
+    abstract fun build(): T
 }
 
 /**
