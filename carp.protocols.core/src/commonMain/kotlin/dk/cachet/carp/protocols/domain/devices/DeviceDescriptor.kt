@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.domain.devices
 import dk.cachet.carp.common.*
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
 import kotlinx.serialization.*
+import kotlin.reflect.KClass
 
 
 /**
@@ -14,7 +15,8 @@ import kotlinx.serialization.*
  */
 @Serializable
 @Polymorphic
-abstract class DeviceDescriptor<out T: DeviceRegistrationBuilder> : Immutable( notImmutableErrorFor( DeviceDescriptor::class ) )
+abstract class DeviceDescriptor<TRegistration: DeviceRegistration, out TBuilder: DeviceRegistrationBuilder<TRegistration>>
+    : Immutable( notImmutableErrorFor( DeviceDescriptor::class ) )
 {
     /**
      * A name which describes how the device participates within the study protocol; it's 'role'.
@@ -22,18 +24,25 @@ abstract class DeviceDescriptor<out T: DeviceRegistrationBuilder> : Immutable( n
      */
     abstract val roleName: String
 
-    abstract fun createDeviceRegistrationBuilder(): T
+    protected abstract fun createDeviceRegistrationBuilder(): TBuilder
 
     /**
      * Create a [DeviceRegistration] which can be used to configure this device for deployment.
      * Use [builder] to configure device-specific registration options, if any.
      */
-    fun createRegistration( builder: T.() -> Unit = {} ): DeviceRegistration
+    fun createRegistration( builder: TBuilder.() -> Unit = {} ): TRegistration
         = createDeviceRegistrationBuilder().apply( builder ).build()
+
+    /**
+     * Return the class information of the [DeviceRegistration] class used to register devices for this [DeviceDescriptor].
+     */
+    abstract fun getRegistrationClass(): KClass<TRegistration>
 
     /**
      * Determines whether the given [registration] is configured correctly for this type of device.
      * Devices rely on a concrete [DeviceRegistration] to determine the specific configuration needed for them.
      */
-    abstract fun isValidConfiguration( registration: DeviceRegistration ): Trilean
+    abstract fun isValidConfiguration( registration: TRegistration ): Trilean
 }
+
+typealias AnyDeviceDescriptor = DeviceDescriptor<*,*>

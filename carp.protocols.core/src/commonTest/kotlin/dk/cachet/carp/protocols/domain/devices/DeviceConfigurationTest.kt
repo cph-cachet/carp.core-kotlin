@@ -150,7 +150,7 @@ interface DeviceConfigurationTest
             addConnectedDevice( connected, master2 )
         }
 
-        val underlyingDevices: Iterable<DeviceDescriptor<*>> = configuration.getConnectedDevices( master1, true )
+        val underlyingDevices: Iterable<AnyDeviceDescriptor> = configuration.getConnectedDevices( master1, true )
         val expectedDevices = listOf( master2, connected )
         assertEquals( expectedDevices.count(), underlyingDevices.intersect( expectedDevices ).count() )
     }

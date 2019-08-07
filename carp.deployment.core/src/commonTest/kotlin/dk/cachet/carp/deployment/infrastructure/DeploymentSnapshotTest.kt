@@ -55,7 +55,7 @@ class DeploymentSnapshotTest
     private fun serializeDeploymentSnapshotIncludingUnknownRegistration(): String
     {
         val protocol = createEmptyProtocol()
-        val master = StubMasterDeviceDescriptor()
+        val master = UnknownMasterDeviceDescriptor( "Stub" )
         protocol.addMasterDevice( master )
         val deployment = deploymentFor( protocol )
         deployment.registerDevice( master, UnknownDeviceRegistration( "0" ) )

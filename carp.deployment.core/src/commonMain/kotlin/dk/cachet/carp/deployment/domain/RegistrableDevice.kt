@@ -1,7 +1,7 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.protocols.domain.DeviceDescriptorSerializer
-import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import kotlinx.serialization.Serializable
 
 
@@ -14,7 +14,7 @@ data class RegistrableDevice(
      * The description of the device.
      */
     @Serializable( DeviceDescriptorSerializer::class )
-    val device: DeviceDescriptor<*>,
+    val device: AnyDeviceDescriptor,
     /**
      * Determines whether registering the device is required for the deployment to start running.
      */

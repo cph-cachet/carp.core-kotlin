@@ -16,8 +16,7 @@ val phone = Smartphone( "Patient phone" )
 protocol.addMasterDevice( phone )
 
 // Define what needs to be measured, on which device, when.
-val sensors = Smartphone.SENSOR_MEASURES
-val measures = listOf( sensors.geolocation(), sensors.stepcount() )
+val measures = listOf( Smartphone.geolocation(), Smartphone.stepcount() )
 val startMeasures = ConcurrentTask( "Start measures", measures )
 protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
