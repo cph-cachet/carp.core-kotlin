@@ -26,10 +26,10 @@ class AltBeaconTest
     fun builder_sets_properties()
     {
         val registration = AltBeaconDeviceRegistrationBuilder().apply {
-            manufacturerId { 1 }
-            organizationId { UUID( "00000000-0000-0000-0000-000000000002" ) }
-            majorId { 3 }
-            minorId { 4 }
+            manufacturerId = 1
+            organizationId = UUID( "00000000-0000-0000-0000-000000000002" )
+            majorId = 3
+            minorId = 4
         }.build()
 
         assertEquals( 1, registration.manufacturerId )

@@ -41,7 +41,7 @@ val registration = smartphone.createRegistration {
     // Device-specific registration options can be accessed from here.
     // Depending on the device type, different options are available.
     // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
-    deviceId { "xxxxxxxxx" }
+    deviceId = "xxxxxxxxx"
 }
 manager.registerDevice( deploymentId, smartphone.roleName, registration )
 
