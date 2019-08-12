@@ -40,7 +40,7 @@ class StudyProtocolSnapshotTest
         assertEquals( 1, parsed.tasks.filterIsInstance<CustomTaskDescriptor>().count() )
         val allMeasures = parsed.tasks.flatMap{ t -> t.measures }
         assertEquals( 2, allMeasures.filterIsInstance<CustomMeasure>().count() )
-        assertEquals( 1, parsed.triggers.filter { t -> t.trigger is CustomTrigger }.count() )
+        assertEquals( 1, parsed.triggers.filter { t -> t.value is CustomTrigger }.count() )
     }
 
     @Test

@@ -22,17 +22,12 @@ data class StudyProtocolSnapshot(
     val connections: List<DeviceConnection>,
     @Serializable( TasksSerializer::class )
     val tasks: List<TaskDescriptor>,
-    val triggers: List<TriggerWithId>,
+    @Serializable( TriggersIdMapSerializer::class )
+    val triggers: Map<Int, Trigger>,
     val triggeredTasks: List<TriggeredTask> )
 {
     @Serializable
     data class DeviceConnection( val roleName: String, val connectedToRoleName: String )
-
-    @Serializable
-    data class TriggerWithId(
-        val id: Int,
-        @Serializable( TriggerSerializer::class )
-        val trigger: Trigger )
 
     @Serializable
     data class TriggeredTask( val triggerId: Int, val taskName: String, val targetDeviceRoleName: String )
@@ -48,7 +43,7 @@ data class StudyProtocolSnapshot(
         {
             // Uniquely identify each trigger.
             var curTriggerId = 0
-            val triggers = protocol.triggers.map { TriggerWithId( curTriggerId++, it ) }.toList()
+            val triggers = protocol.triggers.associateBy { curTriggerId++ }
 
             return StudyProtocolSnapshot(
                 ownerId = protocol.owner.id,
@@ -59,8 +54,8 @@ data class StudyProtocolSnapshot(
                 tasks = protocol.tasks.toList(),
                 triggers = triggers,
                 triggeredTasks = triggers
-                    .flatMap { idTrigger -> protocol.getTriggeredTasks( idTrigger.trigger ).map { Pair( idTrigger, it ) } }
-                    .map { (idTrigger, taskInfo) -> TriggeredTask( idTrigger.id, taskInfo.task.name, taskInfo.device.roleName ) }.toList()
+                    .flatMap { trigger -> protocol.getTriggeredTasks( trigger.value ).map { trigger to it } }
+                    .map { (trigger, taskInfo) -> TriggeredTask( trigger.key, taskInfo.task.name, taskInfo.device.roleName ) }.toList()
             )
         }
 
@@ -93,7 +88,7 @@ data class StudyProtocolSnapshot(
         if ( !listEquals( connectedDevices, other.connectedDevices ) ) return false
         if ( !listEquals( connections, other.connections ) ) return false
         if ( !listEquals( tasks, other.tasks ) ) return false
-        if ( !listEquals( triggers, other.triggers ) ) return false
+        if ( !listEquals( triggers.toList(), other.triggers.toList() ) ) return false
         if ( !listEquals( triggeredTasks, other.triggeredTasks ) ) return false
 
         return true
@@ -113,7 +108,7 @@ data class StudyProtocolSnapshot(
         result = 31 * result + connectedDevices.sortedWith( compareBy { it.roleName } ).toTypedArray().contentDeepHashCode()
         result = 31 * result + connections.sortedWith( compareBy( { it.roleName }, { it.connectedToRoleName } ) ).toTypedArray().contentDeepHashCode()
         result = 31 * result + tasks.sortedWith( compareBy { it.name } ).toTypedArray().contentDeepHashCode()
-        result = 31 * result + triggers.sortedWith( compareBy { it.id } ).toTypedArray().contentDeepHashCode()
+        result = 31 * result + triggers.entries.sortedWith( compareBy { it.key } ).toTypedArray().contentDeepHashCode()
         result = 31 * result + triggeredTasks.sortedWith( compareBy( { it.triggerId }, { it.taskName }, { it.targetDeviceRoleName } ) ).toTypedArray().contentDeepHashCode()
 
         return result
