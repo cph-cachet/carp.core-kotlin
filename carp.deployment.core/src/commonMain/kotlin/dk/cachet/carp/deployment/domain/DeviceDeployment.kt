@@ -1,25 +1,9 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.serialization.createUnknownPolymorphicSerializer
-import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import kotlinx.serialization.*
-import kotlinx.serialization.internal.HashSetSerializer
 
-
-/**
- * Custom serializer for a set of [DeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
- */
-object DevicesSetSerializer : KSerializer<Set<AnyDeviceDescriptor>> by HashSetSerializer( DeviceDescriptorSerializer )
-
-/**
- * Custom serializer for a set of [TaskDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [TaskDescriptor].
- */
-@Suppress( "RemoveExplicitTypeArguments" ) // Removing this fails compilation. Might be a bug in the analyzer.
-object TasksSetSerializer : KSerializer<Set<TaskDescriptor>> by HashSetSerializer<TaskDescriptor>(
-    createUnknownPolymorphicSerializer { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) }
-)
 
 /**
  * Contains the entire description and configuration for how a single device participates in running a study.
