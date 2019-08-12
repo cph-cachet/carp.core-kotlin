@@ -44,9 +44,6 @@ buildscript {
 
         // Additional Kotlin plugin repos.
         maven { url 'https://kotlin.bintray.com/kotlinx' }
-
-        // Additional JS plugin repos.
-        maven { url 'https://plugins.gradle.org/m2/' }
     }
 }
 
