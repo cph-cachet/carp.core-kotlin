@@ -1,56 +1,11 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.*
-import dk.cachet.carp.common.serialization.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
-import kotlinx.serialization.internal.ArrayListSerializer
-import kotlinx.serialization.json.*
 import kotlinx.serialization.*
 
-
-/**
- * Custom serializer for a list of [MasterDeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [MasterDeviceDescriptor].
- */
-@Suppress( "RemoveExplicitTypeArguments" ) // Removing this fails compilation. Might be a bug in the analyzer.
-object MasterDevicesSerializer : KSerializer<List<AnyMasterDeviceDescriptor>> by ArrayListSerializer<AnyMasterDeviceDescriptor>(
-    createUnknownPolymorphicSerializer { className, json, serializer -> CustomMasterDeviceDescriptor( className, json, serializer ) }
-)
-
-/**
- * Custom serializer for a list of [DeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
- */
-object DevicesSerializer : KSerializer<List<AnyDeviceDescriptor>> by ArrayListSerializer( DeviceDescriptorSerializer )
-
-/**
- * Custom serializer for [DeviceDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
- */
-object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<AnyDeviceDescriptor, AnyDeviceDescriptor>( DeviceDescriptor::class, DeviceDescriptor::class, false )
-{
-    override fun createWrapper( className: String, json: String, serializer: Json ): AnyDeviceDescriptor
-    {
-        val jsonObject = serializer.parseJson( json ) as JsonObject
-        val isMasterDevice = jsonObject.containsKey( AnyMasterDeviceDescriptor::isMasterDevice.name )
-        return if ( isMasterDevice )
-            CustomMasterDeviceDescriptor( className, json, serializer )
-            else CustomDeviceDescriptor( className, json, serializer )
-    }
-}
-
-/**
- * Custom serializer for a list of [TaskDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [TaskDescriptor].
- */
-@Suppress( "RemoveExplicitTypeArguments" ) // Removing this fails compilation. Might be a bug in the analyzer.
-object TasksSerializer : KSerializer<List<TaskDescriptor>> by ArrayListSerializer<TaskDescriptor>(
-    createUnknownPolymorphicSerializer { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) }
-)
-
-/**
- * Custom serializer for a [Trigger] which enables deserializing types that are unknown at runtime, yet extend from [Trigger].
- */
-object TriggerSerializer : KSerializer<Trigger>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTrigger( className, json, serializer ) } )
 
 /**
  * A serializable snapshot of a [StudyProtocol] at the moment in time when it was created.
