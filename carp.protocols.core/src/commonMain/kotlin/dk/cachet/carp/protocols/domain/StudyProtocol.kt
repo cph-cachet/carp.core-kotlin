@@ -42,17 +42,17 @@ class StudyProtocol(
 
             // Add tasks and triggers.
             snapshot.tasks.forEach { protocol.addTask( it ) }
-            snapshot.triggers.forEach { protocol.addTrigger( it.trigger ) }
+            snapshot.triggers.forEach { protocol.addTrigger( it.value ) }
 
             // Add triggered tasks.
             snapshot.triggeredTasks.forEach { triggeredTask ->
-                val triggerMatch = snapshot.triggers.singleOrNull { it.id == triggeredTask.triggerId }
+                val triggerMatch = snapshot.triggers.entries.singleOrNull { it.key == triggeredTask.triggerId }
                     ?: throw InvalidConfigurationError( "Can't find trigger with id '${triggeredTask.triggerId}' in snapshot." )
                 val task = protocol.tasks.singleOrNull { it.name == triggeredTask.taskName }
                     ?: throw InvalidConfigurationError( "Can't find task with name '${triggeredTask.taskName}' in snapshot." )
                 val device = protocol.devices.singleOrNull { it.roleName == triggeredTask.targetDeviceRoleName }
                     ?: throw InvalidConfigurationError( "Can't find device with role name '${triggeredTask.targetDeviceRoleName}' in snapshot." )
-                protocol.addTriggeredTask( triggerMatch.trigger, task, device )
+                protocol.addTriggeredTask( triggerMatch.value, task, device )
             }
 
             return protocol

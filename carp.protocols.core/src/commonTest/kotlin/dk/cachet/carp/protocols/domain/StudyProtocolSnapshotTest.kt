@@ -74,9 +74,9 @@ class StudyProtocolSnapshotTest
             StudyProtocolSnapshot.DeviceConnection( "C1", "M1" ),
             StudyProtocolSnapshot.DeviceConnection( "C2", "M2" ) )
         val tasks = listOf<TaskDescriptor>( StubTaskDescriptor( "T1" ), StubTaskDescriptor( "T2" ) )
-        val triggers = listOf(
-            StudyProtocolSnapshot.TriggerWithId( 0, StubTrigger( masterDevices[ 0 ] ) ),
-            StudyProtocolSnapshot.TriggerWithId( 1, StubTrigger( masterDevices[ 1 ] ) ) )
+        val triggers = mapOf<Int, Trigger>(
+            0 to StubTrigger( masterDevices[ 0 ] ),
+            1 to StubTrigger( masterDevices[ 1 ] ) )
         val triggeredTasks = listOf(
             StudyProtocolSnapshot.TriggeredTask( 0, "T1", "C1" ),
             StudyProtocolSnapshot.TriggeredTask( 1, "T2", "C2" )
@@ -90,7 +90,7 @@ class StudyProtocolSnapshotTest
         val reorganizedSnapshot = StudyProtocolSnapshot(
             ownerId, "Study",
             masterDevices.reversed(), connectedDevices.reversed(), connections.reversed(),
-            tasks.reversed(), triggers.reversed(), triggeredTasks.reversed() )
+            tasks.reversed(), triggers, triggeredTasks.reversed() )
 
         assertEquals( snapshot, reorganizedSnapshot )
         assertEquals( snapshot.hashCode(), reorganizedSnapshot.hashCode() )
