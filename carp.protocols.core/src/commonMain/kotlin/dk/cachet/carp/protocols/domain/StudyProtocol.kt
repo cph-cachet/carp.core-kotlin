@@ -141,7 +141,7 @@ class StudyProtocol(
     {
         return _triggeredTasks
             .flatMap { it.value }
-            .filter { it.device == device }
+            .filter { it.targetDevice == device }
             .map { it.task }
             .toSet()
     }

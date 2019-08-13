@@ -57,7 +57,9 @@ data class StudyProtocolSnapshot(
                 triggers = triggers,
                 triggeredTasks = triggers
                     .flatMap { trigger -> protocol.getTriggeredTasks( trigger.value ).map { trigger to it } }
-                    .map { (trigger, taskInfo) -> TriggeredTask( trigger.key, taskInfo.task.name, taskInfo.device.roleName ) }.toList()
+                    .map { (trigger, taskInfo) ->
+                        TriggeredTask( trigger.key, taskInfo.task.name, taskInfo.targetDevice.roleName ) }
+                    .toList()
             )
         }
 

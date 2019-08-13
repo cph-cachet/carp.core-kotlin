@@ -189,7 +189,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val triggeredTasks = usedTriggers
             .map { it to _protocol.getTriggeredTasks( it.value ) }
             .flatMap { pair -> pair.second.map {
-                DeviceDeployment.TriggeredTask( pair.first.key, it.task.name, it.device.roleName ) } }
+                DeviceDeployment.TriggeredTask( pair.first.key, it.task.name, it.targetDevice.roleName ) } }
             .toSet()
 
         return DeviceDeployment(
