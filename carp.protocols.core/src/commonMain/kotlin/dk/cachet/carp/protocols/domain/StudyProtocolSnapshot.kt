@@ -43,7 +43,9 @@ data class StudyProtocolSnapshot(
         {
             // Uniquely identify each trigger.
             var curTriggerId = 0
-            val triggers = protocol.triggers.associateBy { curTriggerId++ }
+            val triggers = protocol.triggers
+                .sortedBy { it.toString() } // Sort so that the order triggers were added in does not impact snapshot equality.
+                .associateBy { curTriggerId++ }
 
             return StudyProtocolSnapshot(
                 ownerId = protocol.owner.id,
