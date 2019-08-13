@@ -161,7 +161,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     fun getDeploymentFor( device: AnyMasterDeviceDescriptor ): DeviceDeployment
     {
         // Verify whether the specified device is part of the protocol of this deployment.
-        require( protocolSnapshot.masterDevices.contains( device ) ) { "The specified device is not part of the protocol of this deployment." }
+        require( protocolSnapshot.masterDevices.contains( device ) ) { "The specified master device is not part of the protocol of this deployment." }
 
         // Verify whether the specified device is ready to be deployed.
         val canDeploy = canObtainDeviceDeployment( device )
@@ -176,15 +176,29 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             .mapKeys { it.key.roleName }
 
         // Get all tasks which might need to be executed on this or connected devices.
-        val tasks = arrayOf( device ).union( connectedDevices )
+        val relevantDevices = arrayOf( device ).union( connectedDevices )
+        val tasks = relevantDevices
             .flatMap { _protocol.getTasksForDevice( it ) }
+            .toSet()
+
+        // Get all trigger information for this and connected devices.
+        // The trigger IDs assigned by snapshot are reused to identify them within the protocol.
+        val relevantDeviceRoles = relevantDevices.map { it.roleName }
+        val usedTriggers = protocolSnapshot.triggers
+            .filter { relevantDeviceRoles.contains( it.value.sourceDeviceRoleName ) }
+        val triggeredTasks = usedTriggers
+            .map { it to _protocol.getTriggeredTasks( it.value ) }
+            .flatMap { pair -> pair.second.map {
+                DeviceDeployment.TriggeredTask( pair.first.key, it.task.name, it.device.roleName ) } }
             .toSet()
 
         return DeviceDeployment(
             configuration,
             connectedDevices,
             deviceRegistrations,
-            tasks )
+            tasks,
+            usedTriggers,
+            triggeredTasks )
     }
 
 
