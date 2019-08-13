@@ -1,6 +1,7 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
+import dk.cachet.carp.deployment.domain.triggers.StubTrigger
 import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.json.Json
 import kotlin.test.*
@@ -229,12 +230,25 @@ class StudyDeploymentTest
         val registration = DefaultDeviceRegistration( "Registered master" )
         deployment.registerDevice( master, registration )
 
+        // Include an additional master device with a trigger which should not impact the `DeviceDeployment` tested here.
+        val ignoredMaster = StubMasterDeviceDescriptor( "Ignored" )
+        protocol.addMasterDevice( ignoredMaster )
+        protocol.addTriggeredTask( ignoredMaster.atStartOfStudy(), masterTask, ignoredMaster )
+
         val deviceDeployment: DeviceDeployment = deployment.getDeploymentFor( master )
         assertEquals( "Registered master", deviceDeployment.configuration.deviceId )
         assertEquals( protocol.getConnectedDevices( master ).toSet(), deviceDeployment.connectedDevices )
         assertEquals( 0, deviceDeployment.connectedDeviceConfigurations.count() ) // No preregistered connected devices.
+
         // Device deployment lists both tasks, even if one is destined for the connected device.
         assertEquals( protocol.tasks.count(), deviceDeployment.tasks.intersect( protocol.tasks ).count() )
+
+        // Device deployment contains correct trigger information.
+        assertEquals(1, deviceDeployment.triggers.count() )
+        assertEquals( master.atStartOfStudy(), deviceDeployment.triggers[ 0 ] )
+        assertEquals(2, deviceDeployment.triggeredTasks.count() )
+        assertTrue( deviceDeployment.triggeredTasks.contains( DeviceDeployment.TriggeredTask( 0, masterTask.name, master.roleName ) ) )
+        assertTrue( deviceDeployment.triggeredTasks.contains( DeviceDeployment.TriggeredTask( 0, connectedTask.name, connected.roleName ) ) )
     }
 
     @Test

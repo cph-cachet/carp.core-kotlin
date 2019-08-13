@@ -65,7 +65,7 @@ class DeploymentManager( private val repository: DeploymentRepository )
     }
 
     /**
-     * Get the deployment configuration for the device with [deviceRoleName] in the deployment with [deploymentId].
+     * Get the deployment configuration for the master device with [deviceRoleName] in the deployment with [deploymentId].
      *
      * @throws IllegalArgumentException when a deployment with [deploymentId] does not exist,
      * or [deviceRoleName] is not present in the deployment, or not yet registered.

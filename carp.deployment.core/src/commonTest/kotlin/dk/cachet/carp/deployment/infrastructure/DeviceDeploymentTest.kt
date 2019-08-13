@@ -1,6 +1,7 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.deployment.domain.*
+import dk.cachet.carp.deployment.domain.triggers.StubTrigger
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import kotlin.test.*
 
@@ -17,12 +18,15 @@ class DeviceDeploymentTest
         val connected = StubDeviceDescriptor( "Connected" )
         val connectedRegistration = DefaultDeviceRegistration( "1" )
         val task = StubTaskDescriptor( "Task" )
+        val trigger = StubTrigger( "Connected" )
 
         val deployment = DeviceDeployment(
             masterRegistration,
             setOf( connected ),
-            mapOf( Pair( "Connected", connectedRegistration ) ),
-            setOf( task )
+            mapOf( connected.roleName to connectedRegistration ),
+            setOf( task ),
+            mapOf( 0 to trigger ),
+            setOf( DeviceDeployment.TriggeredTask(0, task.name, connected.roleName ) )
         )
 
         val json = deployment.toJson()
