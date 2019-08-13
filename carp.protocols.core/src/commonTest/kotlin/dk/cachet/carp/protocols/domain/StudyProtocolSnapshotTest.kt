@@ -66,7 +66,7 @@ class StudyProtocolSnapshotTest
     }
 
     @Test
-    fun order_of_elements_in_snapshot_does_not_matter_for_equality_or_hashcode()
+    fun order_of_tasks_and_devices_in_snapshot_does_not_matter_for_equality_or_hashcode()
     {
         val masterDevices = listOf<AnyMasterDeviceDescriptor>( StubMasterDeviceDescriptor( "M1" ), StubMasterDeviceDescriptor( "M2" ) )
         val connectedDevices = listOf<AnyDeviceDescriptor>( StubDeviceDescriptor( "C1" ), StubDeviceDescriptor( "C2" ) )
@@ -94,5 +94,31 @@ class StudyProtocolSnapshotTest
 
         assertEquals( snapshot, reorganizedSnapshot )
         assertEquals( snapshot.hashCode(), reorganizedSnapshot.hashCode() )
+    }
+
+    @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
+    @Test
+    fun order_of_triggers_does_not_matter_for_snapshot_equality()
+    {
+        val device1 = StubMasterDeviceDescriptor( "One" )
+        val device2 = StubMasterDeviceDescriptor( "Two" )
+        val trigger1 = StubTrigger( "One" )
+        val trigger2 = StubTrigger( "Two" )
+
+        val protocol1: StudyProtocolSnapshot = createEmptyProtocol().apply {
+            addMasterDevice( device1 )
+            addMasterDevice( device2 )
+            addTrigger( trigger1 )
+            addTrigger( trigger2 )
+        }.getSnapshot()
+
+        val protocol2: StudyProtocolSnapshot = createEmptyProtocol().apply {
+            addMasterDevice( device1 )
+            addMasterDevice( device2 )
+            addTrigger( trigger2 )
+            addTrigger( trigger1 )
+        }.getSnapshot()
+
+        assertTrue( protocol1 == protocol2 )
     }
 }
