@@ -200,7 +200,7 @@ class StudyDeploymentTest
         val deployment: StudyDeployment = deploymentFor( protocol )
 
         // Start of deployment, no devices registered.
-        val status: DeploymentStatus = deployment.getStatus()
+        val status: StudyDeploymentStatus = deployment.getStatus()
         assertEquals( deployment.id, status.deploymentId )
         assertEquals( 2, status.registrableDevices.count() )
         assertTrue { status.registrableDevices.any { it.device == master } }

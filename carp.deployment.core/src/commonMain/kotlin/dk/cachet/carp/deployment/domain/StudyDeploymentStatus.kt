@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
  * Describes the status of a [StudyDeployment]: registered devices, last received data, whether consent has been given, etc.
  */
 @Serializable
-data class DeploymentStatus(
+data class StudyDeploymentStatus(
     @Serializable( with = UUIDSerializer::class )
     val deploymentId: UUID,
     /**

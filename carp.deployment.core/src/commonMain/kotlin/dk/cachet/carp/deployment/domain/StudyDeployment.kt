@@ -73,7 +73,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * Get the status (serializable) of this [StudyDeployment].
      */
-    fun getStatus(): DeploymentStatus
+    fun getStatus(): StudyDeploymentStatus
     {
         val remainingRegistration: Set<String> = getRemainingDevicesToRegister().map { it.roleName }.toSet()
         val devicesReadyForDeployment: Set<String> = _registrableDevices
@@ -83,7 +83,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             .map { it.device.roleName }
             .toSet()
 
-        return DeploymentStatus(
+        return StudyDeploymentStatus(
             id,
             registrableDevices,
             remainingRegistration,
