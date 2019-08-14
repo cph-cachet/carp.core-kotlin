@@ -1,7 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
-import dk.cachet.carp.deployment.domain.triggers.StubTrigger
 import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.json.Json
 import kotlin.test.*
@@ -179,7 +178,7 @@ class StudyDeploymentTest
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
         val deployment = deploymentFor( protocol )
 
-        val snapshot: DeploymentSnapshot = deployment.getSnapshot()
+        val snapshot: StudyDeploymentSnapshot = deployment.getSnapshot()
         val fromSnapshot = StudyDeployment.fromSnapshot( snapshot )
 
         assertEquals( deployment.id, fromSnapshot.id )

@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
  * A serializable snapshot of a [StudyDeployment] at the moment in time when it was created.
  */
 @Serializable
-data class DeploymentSnapshot(
+data class StudyDeploymentSnapshot(
     @Serializable( with = UUIDSerializer::class )
     val deploymentId: UUID,
     val studyProtocolSnapshot: StudyProtocolSnapshot,
@@ -24,9 +24,9 @@ data class DeploymentSnapshot(
          *
          * @param deployment The [StudyDeployment] to create a snapshot for.
          */
-        fun fromDeployment( deployment: StudyDeployment ): DeploymentSnapshot
+        fun fromDeployment( deployment: StudyDeployment ): StudyDeploymentSnapshot
         {
-            return DeploymentSnapshot(
+            return StudyDeploymentSnapshot(
                 deployment.id,
                 deployment.protocolSnapshot,
                 deployment.registeredDevices.mapKeys { it.key.roleName } )

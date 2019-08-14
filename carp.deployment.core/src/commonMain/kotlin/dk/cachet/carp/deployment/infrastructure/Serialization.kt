@@ -5,16 +5,16 @@ import dk.cachet.carp.protocols.infrastructure.JSON
 
 
 /**
- * Create a [DeploymentSnapshot] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ * Create a [StudyDeploymentSnapshot] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
-fun DeploymentSnapshot.Companion.fromJson( json: String ): DeploymentSnapshot
+fun StudyDeploymentSnapshot.Companion.fromJson( json: String ): StudyDeploymentSnapshot
     = JSON.parse( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
-fun DeploymentSnapshot.toJson(): String
-    = JSON.stringify( DeploymentSnapshot.serializer(), this )
+fun StudyDeploymentSnapshot.toJson(): String
+    = JSON.stringify( StudyDeploymentSnapshot.serializer(), this )
 
 /**
  * Create a [DeploymentStatus] from JSON, serialized using the globally set infrastructure serializer ([JSON]).

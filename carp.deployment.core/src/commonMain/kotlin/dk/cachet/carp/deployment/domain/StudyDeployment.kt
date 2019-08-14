@@ -17,7 +17,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 {
     companion object Factory
     {
-        fun fromSnapshot( snapshot: DeploymentSnapshot ): StudyDeployment
+        fun fromSnapshot( snapshot: StudyDeploymentSnapshot ): StudyDeployment
         {
             val deployment = StudyDeployment( snapshot.studyProtocolSnapshot, snapshot.deploymentId )
 
@@ -205,8 +205,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * Get a serializable snapshot of the current state of this [StudyDeployment].
      */
-    fun getSnapshot(): DeploymentSnapshot
+    fun getSnapshot(): StudyDeploymentSnapshot
     {
-        return DeploymentSnapshot.fromDeployment( this )
+        return StudyDeploymentSnapshot.fromDeployment( this )
     }
 }

@@ -6,7 +6,7 @@ import kotlin.test.*
 
 
 /**
- * Tests for [DeploymentSnapshot] relying on core infrastructure.
+ * Tests for [StudyDeploymentSnapshot] relying on core infrastructure.
  */
 class DeploymentSnapshotTest
 {
@@ -15,11 +15,11 @@ class DeploymentSnapshotTest
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
         val deployment = deploymentFor( protocol )
-        val snapshot: DeploymentSnapshot = deployment.getSnapshot()
+        val snapshot: StudyDeploymentSnapshot = deployment.getSnapshot()
 
 
         val serialized: String = snapshot.toJson()
-        val parsed: DeploymentSnapshot = DeploymentSnapshot.fromJson( serialized )
+        val parsed: StudyDeploymentSnapshot = StudyDeploymentSnapshot.fromJson( serialized )
 
         assertEquals( snapshot, parsed )
     }
@@ -31,7 +31,7 @@ class DeploymentSnapshotTest
     fun unknown_types_are_wrapped_when_deserializing()
     {
         val serialized = serializeDeploymentSnapshotIncludingUnknownRegistration()
-        val parsed = DeploymentSnapshot.fromJson( serialized )
+        val parsed = StudyDeploymentSnapshot.fromJson( serialized )
 
         assertEquals( 1, parsed.registeredDevices.values.filterIsInstance<CustomDeviceRegistration>().count() )
     }
@@ -43,7 +43,7 @@ class DeploymentSnapshotTest
     fun serializing_unknown_types_removes_the_wrapper()
     {
         val serialized: String = serializeDeploymentSnapshotIncludingUnknownRegistration()
-        val snapshot = DeploymentSnapshot.fromJson( serialized )
+        val snapshot = StudyDeploymentSnapshot.fromJson( serialized )
 
         val customSerialized = snapshot.toJson()
         assertEquals( serialized, customSerialized )

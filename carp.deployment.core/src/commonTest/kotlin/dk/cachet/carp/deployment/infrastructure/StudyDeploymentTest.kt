@@ -46,7 +46,7 @@ class StudyDeploymentTest
         serialized = serialized.replace( "dk.cachet.carp.deployment.domain.UnknownMasterDeviceDescriptor", "com.unknown.CustomMasterDevice" )
         serialized = serialized.replace( "dk.cachet.carp.deployment.domain.UnknownDeviceRegistration", "com.unknown.CustomDeviceRegistration" )
 
-        val snapshot = DeploymentSnapshot.fromJson( serialized )
+        val snapshot = StudyDeploymentSnapshot.fromJson( serialized )
         StudyDeployment.fromSnapshot( snapshot )
     }
 }
