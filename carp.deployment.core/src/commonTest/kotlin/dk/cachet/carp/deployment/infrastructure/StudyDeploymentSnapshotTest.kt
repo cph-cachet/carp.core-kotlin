@@ -8,7 +8,7 @@ import kotlin.test.*
 /**
  * Tests for [StudyDeploymentSnapshot] relying on core infrastructure.
  */
-class DeploymentSnapshotTest
+class StudyDeploymentSnapshotTest
 {
     @Test
     fun can_serialize_and_deserialize_snapshot_using_JSON()

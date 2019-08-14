@@ -29,13 +29,13 @@ fun DeploymentStatus.toJson(): String
     = JSON.stringify( DeploymentStatus.serializer(), this )
 
 /**
- * Create a [DeviceDeployment] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ * Create a [MasterDeviceDeployment] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
-fun DeviceDeployment.Companion.fromJson( json: String ): DeviceDeployment
+fun MasterDeviceDeployment.Companion.fromJson(json: String ): MasterDeviceDeployment
     = JSON.parse( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
-fun DeviceDeployment.toJson(): String
-    = JSON.stringify( DeviceDeployment.serializer(), this )
+fun MasterDeviceDeployment.toJson(): String
+    = JSON.stringify( MasterDeviceDeployment.serializer(), this )

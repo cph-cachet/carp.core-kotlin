@@ -7,7 +7,7 @@ import dk.cachet.carp.protocols.domain.devices.*
 
 
 /**
- * Application service which allows instantiating [StudyProtocol]'s as [StudyDeployment]'s.
+ * Application service which allows deploying [StudyProtocol]'s and retrieving [MasterDeviceDeployment]'s for participating devices as defined in the protocol.
  */
 class DeploymentManager( private val repository: DeploymentRepository )
 {
@@ -70,7 +70,7 @@ class DeploymentManager( private val repository: DeploymentRepository )
      * @throws IllegalArgumentException when a deployment with [deploymentId] does not exist,
      * or [deviceRoleName] is not present in the deployment, or not yet registered.
      */
-    fun getDeploymentFor( deploymentId: UUID, deviceRoleName: String ): DeviceDeployment
+    fun getDeploymentFor( deploymentId: UUID, deviceRoleName: String ): MasterDeviceDeployment
     {
         val deployment = repository.getBy( deploymentId )
 

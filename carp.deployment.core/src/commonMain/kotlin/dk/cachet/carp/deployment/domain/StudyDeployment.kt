@@ -156,9 +156,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
      * Get the deployment configuration for the specified [device] in this deployment.
      *
      * @throws IllegalArgumentException when the passed [device] is not part of the protocol of this deployment.
-     * @throws IllegalArgumentException when the passed [device] is not ready to receive a [DeviceDeployment] yet.
+     * @throws IllegalArgumentException when the passed [device] is not ready to receive a [MasterDeviceDeployment] yet.
      */
-    fun getDeploymentFor( device: AnyMasterDeviceDescriptor ): DeviceDeployment
+    fun getDeploymentFor( device: AnyMasterDeviceDescriptor ): MasterDeviceDeployment
     {
         // Verify whether the specified device is part of the protocol of this deployment.
         require( protocolSnapshot.masterDevices.contains( device ) ) { "The specified master device is not part of the protocol of this deployment." }
@@ -189,10 +189,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val triggeredTasks = usedTriggers
             .map { it to _protocol.getTriggeredTasks( it.value ) }
             .flatMap { pair -> pair.second.map {
-                DeviceDeployment.TriggeredTask( pair.first.key, it.task.name, it.targetDevice.roleName ) } }
+                MasterDeviceDeployment.TriggeredTask( pair.first.key, it.task.name, it.targetDevice.roleName ) } }
             .toSet()
 
-        return DeviceDeployment(
+        return MasterDeviceDeployment(
             configuration,
             connectedDevices,
             deviceRegistrations,

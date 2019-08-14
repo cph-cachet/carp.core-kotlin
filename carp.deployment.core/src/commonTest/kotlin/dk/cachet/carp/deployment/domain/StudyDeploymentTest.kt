@@ -234,7 +234,7 @@ class StudyDeploymentTest
         protocol.addMasterDevice( ignoredMaster )
         protocol.addTriggeredTask( ignoredMaster.atStartOfStudy(), masterTask, ignoredMaster )
 
-        val deviceDeployment: DeviceDeployment = deployment.getDeploymentFor( master )
+        val deviceDeployment: MasterDeviceDeployment = deployment.getDeploymentFor( master )
         assertEquals( "Registered master", deviceDeployment.configuration.deviceId )
         assertEquals( protocol.getConnectedDevices( master ).toSet(), deviceDeployment.connectedDevices )
         assertEquals( 0, deviceDeployment.connectedDeviceConfigurations.count() ) // No preregistered connected devices.
@@ -246,8 +246,8 @@ class StudyDeploymentTest
         assertEquals(1, deviceDeployment.triggers.count() )
         assertEquals( master.atStartOfStudy(), deviceDeployment.triggers[ 0 ] )
         assertEquals(2, deviceDeployment.triggeredTasks.count() )
-        assertTrue( deviceDeployment.triggeredTasks.contains( DeviceDeployment.TriggeredTask( 0, masterTask.name, master.roleName ) ) )
-        assertTrue( deviceDeployment.triggeredTasks.contains( DeviceDeployment.TriggeredTask( 0, connectedTask.name, connected.roleName ) ) )
+        assertTrue( deviceDeployment.triggeredTasks.contains( MasterDeviceDeployment.TriggeredTask( 0, masterTask.name, master.roleName ) ) )
+        assertTrue( deviceDeployment.triggeredTasks.contains( MasterDeviceDeployment.TriggeredTask( 0, connectedTask.name, connected.roleName ) ) )
     }
 
     @Test
