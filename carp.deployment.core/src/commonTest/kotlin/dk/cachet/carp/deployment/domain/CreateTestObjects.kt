@@ -71,7 +71,7 @@ fun createSingleMasterWithConnectedDeviceProtocol(
     return protocol
 }
 
-fun deploymentFor( protocol: StudyProtocol ): StudyDeployment
+fun studyDeploymentFor( protocol: StudyProtocol ): StudyDeployment
 {
     val snapshot = protocol.getSnapshot()
     return StudyDeployment( snapshot, testId )

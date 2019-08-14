@@ -14,7 +14,7 @@ class StudyDeploymentSnapshotTest
     fun can_serialize_and_deserialize_snapshot_using_JSON()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment = deploymentFor( protocol )
+        val deployment = studyDeploymentFor( protocol )
         val snapshot: StudyDeploymentSnapshot = deployment.getSnapshot()
 
 
@@ -57,7 +57,7 @@ class StudyDeploymentSnapshotTest
         val protocol = createEmptyProtocol()
         val master = UnknownMasterDeviceDescriptor( "Stub" )
         protocol.addMasterDevice( master )
-        val deployment = deploymentFor( protocol )
+        val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( master, UnknownDeviceRegistration( "0" ) )
 
         var serialized: String = deployment.getSnapshot().toJson()

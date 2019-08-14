@@ -10,7 +10,7 @@ import kotlin.test.*
 /**
  * Tests for [StudyDeploymentStatus] relying on core infrastructure.
  */
-class DeploymentStatusTest
+class StudyDeploymentStatusTest
 {
     private val testId = UUID( "27c56423-b7cd-48dd-8b7f-f819621a34f0" )
 

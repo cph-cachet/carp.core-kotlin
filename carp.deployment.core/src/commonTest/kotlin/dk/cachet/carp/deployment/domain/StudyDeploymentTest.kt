@@ -34,7 +34,7 @@ class StudyDeploymentTest
     fun new_deployment_has_unregistered_master_device()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment: StudyDeployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         // Two devices can be registered, but none are by default.
         assertEquals( 2, deployment.registrableDevices.size )
@@ -52,7 +52,7 @@ class StudyDeploymentTest
         val protocol = createEmptyProtocol()
         val device = StubMasterDeviceDescriptor()
         protocol.addMasterDevice( device )
-        val deployment: StudyDeployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         val registration = DefaultDeviceRegistration( "0" )
         deployment.registerDevice( device, registration )
@@ -66,7 +66,7 @@ class StudyDeploymentTest
     fun cant_registerDevice_not_part_of_deployment()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment: StudyDeployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         val invalidDevice = StubMasterDeviceDescriptor( "Not part of deployment" )
         val registration = DefaultDeviceRegistration( "0" )
@@ -83,7 +83,7 @@ class StudyDeploymentTest
         val protocol = createEmptyProtocol()
         val device = StubMasterDeviceDescriptor()
         protocol.addMasterDevice( device )
-        val deployment: StudyDeployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         deployment.registerDevice( device, DefaultDeviceRegistration( "0" ) )
 
@@ -111,7 +111,7 @@ class StudyDeploymentTest
         protocol.addMasterDevice( masterCustom )
         protocol.addConnectedDevice( connectedCustom, masterCustom )
 
-        val deployment: StudyDeployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
         deployment.registerDevice( masterCustom, DefaultDeviceRegistration( "0" ) )
         deployment.registerDevice( connectedCustom, DefaultDeviceRegistration( "1" ) )
     }
@@ -124,7 +124,7 @@ class StudyDeploymentTest
         val connected = StubMasterDeviceDescriptor( "Connected" )
         protocol.addMasterDevice( master )
         protocol.addConnectedDevice( connected, master )
-        val deployment: StudyDeployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         val registration = DefaultDeviceRegistration( "0" )
         deployment.registerDevice( master, registration )
@@ -150,7 +150,7 @@ class StudyDeploymentTest
         protocol.addMasterDevice( master )
         protocol.addConnectedDevice( device1Custom, master )
         protocol.addConnectedDevice( device2Custom, master )
-        val deployment: StudyDeployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         // Even though these two devices are registered using the same ID, this should succeed since they are of different types.
         deployment.registerDevice( device1Custom, DefaultDeviceRegistration( "0" ) )
@@ -163,7 +163,7 @@ class StudyDeploymentTest
         val protocol = createEmptyProtocol()
         val master = StubMasterDeviceDescriptor( "Master" )
         protocol.addMasterDevice( master )
-        val deployment: StudyDeployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         val wrongRegistration = UnknownDeviceRegistration( "0" )
         assertFailsWith<IllegalArgumentException>
@@ -176,7 +176,7 @@ class StudyDeploymentTest
     fun creating_deployment_fromSnapshot_obtained_by_getSnapshot_is_the_same()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment = deploymentFor( protocol )
+        val deployment = studyDeploymentFor( protocol )
 
         val snapshot: StudyDeploymentSnapshot = deployment.getSnapshot()
         val fromSnapshot = StudyDeployment.fromSnapshot( snapshot )
@@ -197,11 +197,11 @@ class StudyDeploymentTest
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
         val master =  protocol.devices.first { it.roleName == "Master" }
         val connected =  protocol.devices.first { it.roleName == "Connected" }
-        val deployment: StudyDeployment = deploymentFor( protocol )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         // Start of deployment, no devices registered.
         val status: StudyDeploymentStatus = deployment.getStatus()
-        assertEquals( deployment.id, status.deploymentId )
+        assertEquals( deployment.id, status.studyDeploymentId )
         assertEquals( 2, status.registrableDevices.count() )
         assertTrue { status.registrableDevices.any { it.device == master } }
         assertTrue { status.registrableDevices.any { it.device == connected } }
@@ -216,7 +216,7 @@ class StudyDeploymentTest
     }
 
     @Test
-    fun getDeploymentFor_succeeds()
+    fun getDeviceDeploymentFor_succeeds()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
         val master = protocol.masterDevices.first { it.roleName == "Master" }
@@ -225,7 +225,7 @@ class StudyDeploymentTest
         val connectedTask = StubTaskDescriptor( "Connected task" )
         protocol.addTriggeredTask( master.atStartOfStudy(), masterTask, master )
         protocol.addTriggeredTask( master.atStartOfStudy(), connectedTask, connected )
-        val deployment = deploymentFor( protocol )
+        val deployment = studyDeploymentFor( protocol )
         val registration = DefaultDeviceRegistration( "Registered master" )
         deployment.registerDevice( master, registration )
 
@@ -234,7 +234,7 @@ class StudyDeploymentTest
         protocol.addMasterDevice( ignoredMaster )
         protocol.addTriggeredTask( ignoredMaster.atStartOfStudy(), masterTask, ignoredMaster )
 
-        val deviceDeployment: MasterDeviceDeployment = deployment.getDeploymentFor( master )
+        val deviceDeployment: MasterDeviceDeployment = deployment.getDeviceDeploymentFor( master )
         assertEquals( "Registered master", deviceDeployment.configuration.deviceId )
         assertEquals( protocol.getConnectedDevices( master ).toSet(), deviceDeployment.connectedDevices )
         assertEquals( 0, deviceDeployment.connectedDeviceConfigurations.count() ) // No preregistered connected devices.
@@ -251,40 +251,40 @@ class StudyDeploymentTest
     }
 
     @Test
-    fun getDeploymentFor_with_preregistered_device_succeeds()
+    fun getDeviceDeploymentFor_with_preregistered_device_succeeds()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
         val master = protocol.masterDevices.first { it.roleName == "Master" }
         val connected = protocol.devices.first { it.roleName == "Connected" }
-        val deployment = deploymentFor( protocol )
+        val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
 
         deployment.registerDevice( connected, DefaultDeviceRegistration( "42" ) )
-        val deviceDeployment = deployment.getDeploymentFor( master )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( master )
 
         assertEquals( "Connected", deviceDeployment.connectedDeviceConfigurations.keys.single() )
         assertEquals( "42", deviceDeployment.connectedDeviceConfigurations.getValue( "Connected" ).deviceId )
     }
 
     @Test
-    fun getDeploymentFor_fails_when_device_not_in_protocol()
+    fun getDeviceDeploymentFor_fails_when_device_not_in_protocol()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment = deploymentFor( protocol )
+        val deployment = studyDeploymentFor( protocol )
 
         assertFailsWith<IllegalArgumentException>
         {
-            deployment.getDeploymentFor( StubMasterDeviceDescriptor( "Some other device" ) )
+            deployment.getDeviceDeploymentFor( StubMasterDeviceDescriptor( "Some other device" ) )
         }
     }
 
     @Test
-    fun getDeploymentFor_fails_when_device_cant_be_deployed_yet()
+    fun getDeviceDeploymentFor_fails_when_device_cant_be_deployed_yet()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
         val master = protocol.masterDevices.first { it.roleName == "Master" }
-        val deployment = deploymentFor( protocol )
+        val deployment = studyDeploymentFor( protocol )
 
-        assertFailsWith<IllegalArgumentException>{ deployment.getDeploymentFor( master ) }
+        assertFailsWith<IllegalArgumentException>{ deployment.getDeviceDeploymentFor( master ) }
     }
 }

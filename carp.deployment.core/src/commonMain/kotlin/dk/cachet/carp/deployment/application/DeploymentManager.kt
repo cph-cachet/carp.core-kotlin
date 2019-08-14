@@ -35,7 +35,7 @@ class DeploymentManager( private val repository: DeploymentRepository )
      */
     fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus
     {
-        val deployment: StudyDeployment = repository.getBy( studyDeploymentId )
+        val deployment: StudyDeployment = repository.getStudyDeploymentBy( studyDeploymentId )
 
         return deployment.getStatus()
     }
@@ -53,7 +53,7 @@ class DeploymentManager( private val repository: DeploymentRepository )
      */
     fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
     {
-        val deployment = repository.getBy( studyDeploymentId )
+        val deployment = repository.getStudyDeploymentBy( studyDeploymentId )
 
         val device = deployment.registrableDevices.firstOrNull { it.device.roleName == deviceRoleName }
             ?: throw IllegalArgumentException( "The specified device role name could not be found in the study deployment." )
@@ -72,13 +72,13 @@ class DeploymentManager( private val repository: DeploymentRepository )
      */
     fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
     {
-        val deployment = repository.getBy( studyDeploymentId )
+        val deployment = repository.getStudyDeploymentBy( studyDeploymentId )
 
         val device = deployment.registeredDevices.keys.firstOrNull { it.roleName == masterDeviceRoleName }
             ?: throw IllegalArgumentException( "The specified device role name is not part of this study deployment or is not yet registered." )
         val masterDevice = device as? AnyMasterDeviceDescriptor
             ?:  throw IllegalArgumentException( "The specified device is not a master device and therefore does not have a deployment configuration." )
 
-        return deployment.getDeploymentFor( masterDevice )
+        return deployment.getDeviceDeploymentFor( masterDevice )
     }
 }

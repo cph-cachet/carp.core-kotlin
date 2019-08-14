@@ -39,7 +39,7 @@ class StudyDeploymentTest
         val protocol = createEmptyProtocol()
         val master = UnknownMasterDeviceDescriptor( "Unknown" )
         protocol.addMasterDevice( master )
-        val deployment = deploymentFor( protocol )
+        val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( master, UnknownDeviceRegistration( "0" ) )
 
         var serialized: String = deployment.getSnapshot().toJson()
