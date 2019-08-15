@@ -46,7 +46,7 @@ val registration = smartphone.createRegistration {
 manager.registerDevice( studyDeploymentId, smartphone.roleName, registration )
 
 // Call from the smartphone to retrieve all the necessary information to start running the study on this device.
-val deviceDeployment: DeviceDeployment = manager.getDeviceDeploymentFor( studyDeploymentId, smartphone.roleName )
+val deviceDeployment: MasterDeviceDeployment = manager.getDeviceDeploymentFor( studyDeploymentId, smartphone.roleName )
 ```
 
 ## carp.common
