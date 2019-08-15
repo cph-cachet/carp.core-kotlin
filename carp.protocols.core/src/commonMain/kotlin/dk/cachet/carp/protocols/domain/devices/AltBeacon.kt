@@ -51,29 +51,25 @@ data class AltBeaconDeviceRegistration(
 @DeviceRegistrationBuilderDsl
 class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>()
 {
-    private var manufacturerId: Short = 0x0000
     /**
-     * Set the beacon's device manufacturer's company identifier code as maintained by the Bluetooth SIG assigned numbers database.
+     * The beacon's device manufacturer's company identifier code as maintained by the Bluetooth SIG assigned numbers database.
      */
-    fun manufacturerId( getId: () -> Short ) { this.manufacturerId = getId() }
+    var manufacturerId: Short = 0x0000
 
-    private var organizationId: UUID = UUID( "00000000-0000-0000-0000-000000000000" )
     /**
-     * Set the first 16 bytes of the beacon identifier which should be unique to the advertiser's organizational unit.
+     * The first 16 bytes of the beacon identifier which should be unique to the advertiser's organizational unit.
      */
-    fun organizationId( getId: () -> UUID ) { this.organizationId = getId() }
+    var organizationId: UUID = UUID( "00000000-0000-0000-0000-000000000000" )
 
-    private var majorId: Short = 0x0000
     /**
-     * Set the first 2 bytes of the beacon identifier after the [organizationId], commonly named major ID.
+     * The first 2 bytes of the beacon identifier after the [organizationId], commonly named major ID.
      */
-    fun majorId( getId: () -> Short ) { this.majorId = getId() }
+    var majorId: Short = 0x0000
 
-    private var minorId: Short = 0x0000
     /**
-     * Set the last 2 bytes of the beacon identifier, commonly named minor ID.
+     * The last 2 bytes of the beacon identifier, commonly named minor ID.
      */
-    fun minorId( getId: () -> Short ) { this.minorId = getId() }
+    var minorId: Short = 0x0000
 
     override fun build(): AltBeaconDeviceRegistration
         = AltBeaconDeviceRegistration( manufacturerId, organizationId, majorId, minorId )

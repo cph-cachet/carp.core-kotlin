@@ -1,54 +1,11 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.*
-import dk.cachet.carp.common.serialization.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
-import kotlinx.serialization.internal.ArrayListSerializer
-import kotlinx.serialization.json.*
 import kotlinx.serialization.*
 
-
-/**
- * Custom serializer for a list of [MasterDeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [MasterDeviceDescriptor].
- */
-object MasterDevicesSerializer : KSerializer<List<AnyMasterDeviceDescriptor>> by ArrayListSerializer<AnyMasterDeviceDescriptor>(
-    createUnknownPolymorphicSerializer { className, json, serializer -> CustomMasterDeviceDescriptor( className, json, serializer ) }
-)
-
-/**
- * Custom serializer for a list of [DeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
- */
-object DevicesSerializer : KSerializer<List<AnyDeviceDescriptor>> by ArrayListSerializer( DeviceDescriptorSerializer )
-
-/**
- * Custom serializer for [DeviceDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
- */
-object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<AnyDeviceDescriptor, AnyDeviceDescriptor>( DeviceDescriptor::class, DeviceDescriptor::class, false )
-{
-    override fun createWrapper( className: String, json: String, serializer: Json ): AnyDeviceDescriptor
-    {
-        val jsonObject = serializer.parseJson( json ) as JsonObject
-        val isMasterDevice = jsonObject.containsKey( AnyMasterDeviceDescriptor::isMasterDevice.name )
-        return if ( isMasterDevice )
-            CustomMasterDeviceDescriptor( className, json, serializer )
-            else CustomDeviceDescriptor( className, json, serializer )
-    }
-}
-
-/**
- * Custom serializer for a list of [TaskDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [TaskDescriptor].
- */
-object TasksSerializer : KSerializer<List<TaskDescriptor>> by ArrayListSerializer<TaskDescriptor>(
-    createUnknownPolymorphicSerializer { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) }
-)
-
-/**
- * Custom serializer for a [Trigger] which enables deserializing types that are unknown at runtime, yet extend from [Trigger].
- */
-object TriggerSerializer : KSerializer<Trigger>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTrigger( className, json, serializer ) } )
 
 /**
  * A serializable snapshot of a [StudyProtocol] at the moment in time when it was created.
@@ -65,17 +22,12 @@ data class StudyProtocolSnapshot(
     val connections: List<DeviceConnection>,
     @Serializable( TasksSerializer::class )
     val tasks: List<TaskDescriptor>,
-    val triggers: List<TriggerWithId>,
+    @Serializable( TriggersIdMapSerializer::class )
+    val triggers: Map<Int, Trigger>,
     val triggeredTasks: List<TriggeredTask> )
 {
     @Serializable
     data class DeviceConnection( val roleName: String, val connectedToRoleName: String )
-
-    @Serializable
-    data class TriggerWithId(
-        val id: Int,
-        @Serializable( TriggerSerializer::class )
-        val trigger: Trigger )
 
     @Serializable
     data class TriggeredTask( val triggerId: Int, val taskName: String, val targetDeviceRoleName: String )
@@ -91,7 +43,9 @@ data class StudyProtocolSnapshot(
         {
             // Uniquely identify each trigger.
             var curTriggerId = 0
-            val triggers = protocol.triggers.map { TriggerWithId( curTriggerId++, it ) }.toList()
+            val triggers = protocol.triggers
+                .sortedBy { it.toString() } // Sort so that the order triggers were added in does not impact snapshot equality.
+                .associateBy { curTriggerId++ }
 
             return StudyProtocolSnapshot(
                 ownerId = protocol.owner.id,
@@ -102,8 +56,10 @@ data class StudyProtocolSnapshot(
                 tasks = protocol.tasks.toList(),
                 triggers = triggers,
                 triggeredTasks = triggers
-                    .flatMap { idTrigger -> protocol.getTriggeredTasks( idTrigger.trigger ).map { Pair( idTrigger, it ) } }
-                    .map { (idTrigger, taskInfo) -> TriggeredTask( idTrigger.id, taskInfo.task.name, taskInfo.device.roleName ) }.toList()
+                    .flatMap { trigger -> protocol.getTriggeredTasks( trigger.value ).map { trigger to it } }
+                    .map { (trigger, taskInfo) ->
+                        TriggeredTask( trigger.key, taskInfo.task.name, taskInfo.targetDevice.roleName ) }
+                    .toList()
             )
         }
 
@@ -136,7 +92,7 @@ data class StudyProtocolSnapshot(
         if ( !listEquals( connectedDevices, other.connectedDevices ) ) return false
         if ( !listEquals( connections, other.connections ) ) return false
         if ( !listEquals( tasks, other.tasks ) ) return false
-        if ( !listEquals( triggers, other.triggers ) ) return false
+        if ( !listEquals( triggers.toList(), other.triggers.toList() ) ) return false
         if ( !listEquals( triggeredTasks, other.triggeredTasks ) ) return false
 
         return true
@@ -156,7 +112,7 @@ data class StudyProtocolSnapshot(
         result = 31 * result + connectedDevices.sortedWith( compareBy { it.roleName } ).toTypedArray().contentDeepHashCode()
         result = 31 * result + connections.sortedWith( compareBy( { it.roleName }, { it.connectedToRoleName } ) ).toTypedArray().contentDeepHashCode()
         result = 31 * result + tasks.sortedWith( compareBy { it.name } ).toTypedArray().contentDeepHashCode()
-        result = 31 * result + triggers.sortedWith( compareBy { it.id } ).toTypedArray().contentDeepHashCode()
+        result = 31 * result + triggers.entries.sortedWith( compareBy { it.key } ).toTypedArray().contentDeepHashCode()
         result = 31 * result + triggeredTasks.sortedWith( compareBy( { it.triggerId }, { it.taskName }, { it.targetDeviceRoleName } ) ).toTypedArray().contentDeepHashCode()
 
         return result

@@ -46,7 +46,7 @@ class UntriggeredTasksWarningTest
             addTask( untriggeredTask )
         }
 
-        var warning = UntriggeredTasksWarning()
+        val warning = UntriggeredTasksWarning()
         val untriggered = warning.getUntriggeredTasks( protocol ).toList()
         val expectedUntriggered = listOf( untriggeredTask )
         assertEquals( expectedUntriggered.count(), untriggered.intersect( expectedUntriggered ).count() )

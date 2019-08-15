@@ -40,7 +40,7 @@ class StudyProtocolTest
 
         // Therefore, the protocol is not deployable, indicated by an error in deployment issues.
         assertFalse( protocol.isDeployable() )
-        assertEquals( 1, protocol.getDeploymentIssues().filter { it is NoMasterDeviceError }.count() )
+        assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<NoMasterDeviceError>().count() )
     }
 
 

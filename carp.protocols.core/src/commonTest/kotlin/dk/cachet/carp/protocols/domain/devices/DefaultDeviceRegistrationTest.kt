@@ -12,7 +12,7 @@ class DefaultDeviceRegistrationTest
     fun builder_sets_deviceId()
     {
         val registration = DefaultDeviceRegistrationBuilder( "Default ID" ).apply {
-            deviceId { "Custom ID" }
+            deviceId = "Custom ID"
         }.build()
 
         assertEquals( "Custom ID", registration.deviceId )

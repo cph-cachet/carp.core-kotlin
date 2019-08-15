@@ -2,9 +2,11 @@ package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.*
 import dk.cachet.carp.common.serialization.NotSerializable
+import dk.cachet.carp.deployment.domain.triggers.StubTrigger
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
+import dk.cachet.carp.protocols.domain.triggers.Trigger
 import dk.cachet.carp.protocols.infrastructure.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -36,6 +38,10 @@ internal val STUBS_SERIAL_MODULE = SerializersModule {
     {
         StubTaskDescriptor::class with StubTaskDescriptor.serializer()
     }
+    polymorphic( Trigger::class )
+    {
+        StubTrigger::class with StubTrigger.serializer()
+    }
 }
 
 
@@ -65,7 +71,7 @@ fun createSingleMasterWithConnectedDeviceProtocol(
     return protocol
 }
 
-fun deploymentFor( protocol: StudyProtocol ): StudyDeployment
+fun studyDeploymentFor( protocol: StudyProtocol ): StudyDeployment
 {
     val snapshot = protocol.getSnapshot()
     return StudyDeployment( snapshot, testId )

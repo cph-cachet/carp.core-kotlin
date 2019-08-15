@@ -3,6 +3,11 @@ package dk.cachet.carp.common
 
 actual class UUID actual constructor( actual val stringRepresentation: String )
 {
+    init
+    {
+        require( UUIDRegex.matches( stringRepresentation ) ) { "Invalid UUID string representation." }
+    }
+
     actual companion object
     {
         actual fun randomUUID(): UUID

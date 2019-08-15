@@ -84,7 +84,7 @@ actual abstract class Immutable
             }
 
             // None of the properties should be mutable.
-            if  ( properties.filter { it is KMutableProperty<*> }.any() )
+            if  ( properties.filterIsInstance<KMutableProperty<*>>().any() )
             {
                 return false
             }

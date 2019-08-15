@@ -45,7 +45,7 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescripto
         // Add empty 'connections' collection in case it is a master device without any previous connections.
         if ( !_connections.contains( masterDevice ) )
         {
-            _connections.put( masterDevice, mutableSetOf() )
+            _connections[ masterDevice ] = mutableSetOf()
         }
 
         return _connections[ masterDevice ]!!.add( device )

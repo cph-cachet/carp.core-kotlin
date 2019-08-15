@@ -19,6 +19,12 @@ expect class UUID( stringRepresentation: String )
 
 
 /**
+ * Regular expression to verify whether the string representation of a UUID is valid.
+ */
+val UUIDRegex = Regex( "([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})" )
+
+
+/**
  * A custom serializer which needs to be applied to [UUID] members in [Serializable] classes.
  *
  * TODO: Unfortunately, the expected class itself cannot be made Serializable. For now, this workaround works.

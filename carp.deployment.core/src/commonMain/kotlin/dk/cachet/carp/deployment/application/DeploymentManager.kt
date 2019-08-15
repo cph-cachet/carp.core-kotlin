@@ -7,17 +7,17 @@ import dk.cachet.carp.protocols.domain.devices.*
 
 
 /**
- * Application service which allows instantiating [StudyProtocol]'s as [StudyDeployment]'s.
+ * Application service which allows deploying [StudyProtocol]'s and retrieving [MasterDeviceDeployment]'s for participating master devices as defined in the protocol.
  */
 class DeploymentManager( private val repository: DeploymentRepository )
 {
     /**
-     * Instantiate a deployment for a given [StudyProtocolSnapshot].
+     * Instantiate a study deployment for a given [StudyProtocolSnapshot].
      *
      * @throws InvalidConfigurationError when [protocol] is invalid.
-     * @return The [DeploymentStatus] of the newly created deployment.
+     * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
-    fun createDeployment( protocol: StudyProtocolSnapshot ): DeploymentStatus
+    fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus
     {
         val newDeployment = StudyDeployment( protocol )
 
@@ -27,36 +27,36 @@ class DeploymentManager( private val repository: DeploymentRepository )
     }
 
     /**
-     * Get the status for a deployment with the given [deploymentId].
+     * Get the status for a study deployment with the given [studyDeploymentId].
      *
-     * @param deploymentId The id of the [StudyDeployment] to return [DeploymentStatus] for.
+     * @param studyDeploymentId The id of the [StudyDeployment] to return [StudyDeploymentStatus] for.
      *
-     * @throws IllegalArgumentException when a deployment with [deploymentId] does not exist.
+     * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist.
      */
-    fun getDeploymentStatus( deploymentId: UUID ): DeploymentStatus
+    fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus
     {
-        val deployment: StudyDeployment = repository.getBy( deploymentId )
+        val deployment: StudyDeployment = repository.getStudyDeploymentBy( studyDeploymentId )
 
         return deployment.getStatus()
     }
 
     /**
-     * Register the device with the specified [deviceRoleName] for the deployment with [deploymentId].
+     * Register the device with the specified [deviceRoleName] for the study deployment with [studyDeploymentId].
      *
-     * @param deploymentId The id of the [StudyDeployment] to register the device for.
+     * @param studyDeploymentId The id of the [StudyDeployment] to register the device for.
      * @param deviceRoleName The role name of the device in the deployment to register.
      * @param registration A matching configuration for the device with [deviceRoleName].
      *
-     * @throws IllegalArgumentException when a deployment with [deploymentId] does not exist,
+     * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist,
      * [deviceRoleName] is not present in the deployment or is already registered,
      * or [registration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device.
      */
-    fun registerDevice( deploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): DeploymentStatus
+    fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
     {
-        val deployment = repository.getBy( deploymentId )
+        val deployment = repository.getStudyDeploymentBy( studyDeploymentId )
 
         val device = deployment.registrableDevices.firstOrNull { it.device.roleName == deviceRoleName }
-            ?: throw IllegalArgumentException( "The specified device role name could not be found in the deployment." )
+            ?: throw IllegalArgumentException( "The specified device role name could not be found in the study deployment." )
         deployment.registerDevice( device.device, registration )
 
         repository.update( deployment )
@@ -65,20 +65,20 @@ class DeploymentManager( private val repository: DeploymentRepository )
     }
 
     /**
-     * Get the deployment configuration for the device with [deviceRoleName] in the deployment with [deploymentId].
+     * Get the deployment configuration for the master device with [masterDeviceRoleName] in the study deployment with [studyDeploymentId].
      *
-     * @throws IllegalArgumentException when a deployment with [deploymentId] does not exist,
-     * or [deviceRoleName] is not present in the deployment, or not yet registered.
+     * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist,
+     * or [masterDeviceRoleName] is not present in the deployment, or not yet registered.
      */
-    fun getDeploymentFor( deploymentId: UUID, deviceRoleName: String ): DeviceDeployment
+    fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
     {
-        val deployment = repository.getBy( deploymentId )
+        val deployment = repository.getStudyDeploymentBy( studyDeploymentId )
 
-        val device = deployment.registeredDevices.keys.firstOrNull { it.roleName == deviceRoleName }
-            ?: throw IllegalArgumentException( "The specified device role name is not part of this deployment or is not yet registered." )
+        val device = deployment.registeredDevices.keys.firstOrNull { it.roleName == masterDeviceRoleName }
+            ?: throw IllegalArgumentException( "The specified device role name is not part of this study deployment or is not yet registered." )
         val masterDevice = device as? AnyMasterDeviceDescriptor
             ?:  throw IllegalArgumentException( "The specified device is not a master device and therefore does not have a deployment configuration." )
 
-        return deployment.getDeploymentFor( masterDevice )
+        return deployment.getDeviceDeploymentFor( masterDevice )
     }
 }

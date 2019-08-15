@@ -6,22 +6,22 @@ import dk.cachet.carp.common.UUID
 interface DeploymentRepository
 {
     /**
-     * Adds the specified [deployment] to the repository.
+     * Adds the specified [studyDeployment] to the repository.
      */
-    fun add( deployment: StudyDeployment )
+    fun add( studyDeployment: StudyDeployment )
 
     /**
      * Find the [StudyDeployment] with the specified [id].
      *
      * @param id The id of the [StudyDeployment] to search for.
-     * @throws IllegalArgumentException when a deployment with [id] does not exist.
+     * @throws IllegalArgumentException when a study deployment with [id] does not exist.
      */
-    fun getBy( id: UUID ): StudyDeployment
+    fun getStudyDeploymentBy( id: UUID ): StudyDeployment
 
     /**
-     * Update a [deployment] which is already stored in this repository.
+     * Update a [studyDeployment] which is already stored in this repository.
      *
-     * @param deployment The updated version of the deployment to store.
+     * @param studyDeployment The updated version of the study deployment to store.
      */
-    fun update( deployment: StudyDeployment )
+    fun update( studyDeployment: StudyDeployment )
 }

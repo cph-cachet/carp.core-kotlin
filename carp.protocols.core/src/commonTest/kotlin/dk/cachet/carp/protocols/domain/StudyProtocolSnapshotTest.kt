@@ -12,6 +12,7 @@ import kotlin.test.*
  */
 class StudyProtocolSnapshotTest
 {
+    @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
     @Test
     fun equals_and_hashcode_when_comparing_snapshots_of_same_protocol()
     {
@@ -65,7 +66,7 @@ class StudyProtocolSnapshotTest
     }
 
     @Test
-    fun order_of_elements_in_snapshot_does_not_matter_for_equality_or_hashcode()
+    fun order_of_tasks_and_devices_in_snapshot_does_not_matter_for_equality_or_hashcode()
     {
         val masterDevices = listOf<AnyMasterDeviceDescriptor>( StubMasterDeviceDescriptor( "M1" ), StubMasterDeviceDescriptor( "M2" ) )
         val connectedDevices = listOf<AnyDeviceDescriptor>( StubDeviceDescriptor( "C1" ), StubDeviceDescriptor( "C2" ) )
@@ -73,9 +74,9 @@ class StudyProtocolSnapshotTest
             StudyProtocolSnapshot.DeviceConnection( "C1", "M1" ),
             StudyProtocolSnapshot.DeviceConnection( "C2", "M2" ) )
         val tasks = listOf<TaskDescriptor>( StubTaskDescriptor( "T1" ), StubTaskDescriptor( "T2" ) )
-        val triggers = listOf(
-            StudyProtocolSnapshot.TriggerWithId( 0, StubTrigger( masterDevices[ 0 ] ) ),
-            StudyProtocolSnapshot.TriggerWithId( 1, StubTrigger( masterDevices[ 1 ] ) ) )
+        val triggers = mapOf<Int, Trigger>(
+            0 to StubTrigger( masterDevices[ 0 ] ),
+            1 to StubTrigger( masterDevices[ 1 ] ) )
         val triggeredTasks = listOf(
             StudyProtocolSnapshot.TriggeredTask( 0, "T1", "C1" ),
             StudyProtocolSnapshot.TriggeredTask( 1, "T2", "C2" )
@@ -89,9 +90,35 @@ class StudyProtocolSnapshotTest
         val reorganizedSnapshot = StudyProtocolSnapshot(
             ownerId, "Study",
             masterDevices.reversed(), connectedDevices.reversed(), connections.reversed(),
-            tasks.reversed(), triggers.reversed(), triggeredTasks.reversed() )
+            tasks.reversed(), triggers, triggeredTasks.reversed() )
 
         assertEquals( snapshot, reorganizedSnapshot )
         assertEquals( snapshot.hashCode(), reorganizedSnapshot.hashCode() )
+    }
+
+    @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
+    @Test
+    fun order_of_triggers_does_not_matter_for_snapshot_equality()
+    {
+        val device1 = StubMasterDeviceDescriptor( "One" )
+        val device2 = StubMasterDeviceDescriptor( "Two" )
+        val trigger1 = StubTrigger( "One" )
+        val trigger2 = StubTrigger( "Two" )
+
+        val protocol1: StudyProtocolSnapshot = createEmptyProtocol().apply {
+            addMasterDevice( device1 )
+            addMasterDevice( device2 )
+            addTrigger( trigger1 )
+            addTrigger( trigger2 )
+        }.getSnapshot()
+
+        val protocol2: StudyProtocolSnapshot = createEmptyProtocol().apply {
+            addMasterDevice( device1 )
+            addMasterDevice( device2 )
+            addTrigger( trigger2 )
+            addTrigger( trigger1 )
+        }.getSnapshot()
+
+        assertTrue( protocol1 == protocol2 )
     }
 }

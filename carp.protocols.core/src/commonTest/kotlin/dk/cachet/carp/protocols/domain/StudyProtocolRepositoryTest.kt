@@ -166,7 +166,7 @@ interface StudyProtocolRepositoryTest
         repo.update( protocol, "Version 2" )
 
         val history: List<ProtocolVersion> = repo.getVersionHistoryFor( owner, "Study" )
-        val historyVersions: List<String> = history.map { it -> it.tag }.toList()
+        val historyVersions: List<String> = history.map { it.tag }.toList()
         val expectedVersions: List<String> = listOf( "Initial", "Version 1", "Version 2" )
         assertEquals( expectedVersions.count(), historyVersions.intersect( expectedVersions ).count() )
     }

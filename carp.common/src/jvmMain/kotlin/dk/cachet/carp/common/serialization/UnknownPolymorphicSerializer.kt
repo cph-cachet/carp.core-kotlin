@@ -54,9 +54,9 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
             val composerField = encoder::class.members.first { it.name == "composer" }
             composerField.isAccessible = true
             val composer = composerField.call( encoder )!!
-            val printMethod = composer::class.members.first {
-                it.name == "print" &&
-                it.parameters.any { it.type.classifier == String::class }
+            val printMethod = composer::class.members.first { member ->
+                member.name == "print" &&
+                member.parameters.any { it.type.classifier == String::class }
             }
             printMethod.isAccessible = true
             printMethod.call( composer, "," + obj.jsonSource ) // The ',' is needed since it is normally added by the Encoder which is not called here.

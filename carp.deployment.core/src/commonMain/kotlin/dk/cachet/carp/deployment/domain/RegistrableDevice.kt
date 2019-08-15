@@ -1,7 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.protocols.domain.DeviceDescriptorSerializer
-import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.Serializable
 
 

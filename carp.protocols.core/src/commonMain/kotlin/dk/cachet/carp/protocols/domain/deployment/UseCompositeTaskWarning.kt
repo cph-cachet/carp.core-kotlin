@@ -34,12 +34,12 @@ class UseCompositeTaskWarning internal constructor() : DeploymentWarning
         return protocol.triggers.flatMap { trigger -> // For each trigger, ...
             protocol
                 .getTriggeredTasks( trigger )
-                .groupBy { it.device } // ... group triggered tasks by target device, ...
+                .groupBy { it.targetDevice } // ... group triggered tasks by target device, ...
                 .filter { it.value.count() > 1 } // ... select those with more than one task triggered (to a single target device).
-                .map {
+                .map { taskPerDevice ->
                     // Transform to data class which holds the trigger, device, and overlapping tasks
-                    val overlappingTasks = it.value.map { it.task }
-                    OverlappingTasks( trigger, it.key, overlappingTasks )
+                    val overlappingTasks = taskPerDevice.value.map { it.task }
+                    OverlappingTasks( trigger, taskPerDevice.key, overlappingTasks )
                 }
         }
     }

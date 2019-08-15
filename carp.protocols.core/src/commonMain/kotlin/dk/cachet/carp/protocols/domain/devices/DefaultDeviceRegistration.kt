@@ -17,17 +17,15 @@ data class DefaultDeviceRegistration( override val deviceId: String ) : DeviceRe
 /**
  * A default device registration builder which solely involves assigning a unique ID to the device.
  * By default, a unique ID (UUID) is generated.
+ *
+ * @param deviceId
+ *   Override the default assigned UUID which has been set as device ID.
+ *   Make sure this ID is unique for the type of device you are creating a registration for.
  */
 @Serializable( with = NotSerializable::class )
 @DeviceRegistrationBuilderDsl
-class DefaultDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() )
+class DefaultDeviceRegistrationBuilder( var deviceId: String = UUID.randomUUID().toString() )
     : DeviceRegistrationBuilder<DefaultDeviceRegistration>()
 {
-    /**
-     * Override the default assigned UUID which has been set as device ID.
-     * Make sure this ID is unique for the type of device you are creating a registration for.
-     */
-    fun deviceId( getId: () -> String ) { this.deviceId = getId() }
-
     override fun build(): DefaultDeviceRegistration = DefaultDeviceRegistration( deviceId )
 }
