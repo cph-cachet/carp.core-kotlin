@@ -10,7 +10,7 @@ import kotlinx.serialization.*
  * Contains the entire description and configuration for how a single master device participates in running a study.
  */
 @Serializable
-data class DeviceDeployment(
+data class MasterDeviceDeployment(
     /**
      * Configuration for this master device.
      */

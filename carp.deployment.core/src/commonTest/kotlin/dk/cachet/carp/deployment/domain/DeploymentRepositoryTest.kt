@@ -16,28 +16,28 @@ interface  DeploymentRepositoryTest
 
 
     @Test
-    fun adding_deployment_and_retrieving_it_succeeds()
+    fun adding_study_deployment_and_retrieving_it_succeeds()
     {
         val repo = createDeploymentRepository()
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment = deploymentFor( protocol )
+        val deployment = studyDeploymentFor( protocol )
 
         repo.add( deployment )
-        val retrieved = repo.getBy( deployment.id )
+        val retrieved = repo.getStudyDeploymentBy( deployment.id )
         assertEquals( deployment.getSnapshot(), retrieved.getSnapshot() ) // StudyDeployment does not implement equals, but snapshot does.
     }
 
     @Test
-    fun update_deployment_succeeds()
+    fun update_study_deployment_succeeds()
     {
         val repo = createDeploymentRepository()
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment = deploymentFor( protocol )
+        val deployment = studyDeploymentFor( protocol )
         repo.add( deployment )
 
         deployment.registerDevice( protocol.masterDevices.first(), DefaultDeviceRegistration( "0" ) )
         repo.update( deployment )
-        val retrieved = repo.getBy( deployment.id )
+        val retrieved = repo.getStudyDeploymentBy( deployment.id )
         assertEquals( deployment.getSnapshot(), retrieved.getSnapshot() ) // StudyDeployment does not implement equals, but snapshot does.
     }
 }

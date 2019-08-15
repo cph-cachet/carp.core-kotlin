@@ -17,9 +17,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 {
     companion object Factory
     {
-        fun fromSnapshot( snapshot: DeploymentSnapshot ): StudyDeployment
+        fun fromSnapshot( snapshot: StudyDeploymentSnapshot ): StudyDeployment
         {
-            val deployment = StudyDeployment( snapshot.studyProtocolSnapshot, snapshot.deploymentId )
+            val deployment = StudyDeployment( snapshot.studyProtocolSnapshot, snapshot.studyDeploymentId )
 
             // Add registered devices.
             snapshot.registeredDevices.forEach { r ->
@@ -43,7 +43,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     }
 
     /**
-     * The set of all devices which can or need to be registered for this deployment.
+     * The set of all devices which can or need to be registered for this study deployment.
      */
     val registrableDevices: Set<RegistrableDevice>
         get() = _registrableDevices
@@ -51,7 +51,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     private val _registrableDevices: MutableSet<RegistrableDevice>
 
     /**
-     * The set of devices which have already been registered for this deployment.
+     * The set of devices which have already been registered for this study deployment.
      */
     val registeredDevices: Map<AnyDeviceDescriptor, DeviceRegistration>
         get() = _registeredDevices
@@ -73,7 +73,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * Get the status (serializable) of this [StudyDeployment].
      */
-    fun getStatus(): DeploymentStatus
+    fun getStatus(): StudyDeploymentStatus
     {
         val remainingRegistration: Set<String> = getRemainingDevicesToRegister().map { it.roleName }.toSet()
         val devicesReadyForDeployment: Set<String> = _registrableDevices
@@ -83,7 +83,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             .map { it.device.roleName }
             .toSet()
 
-        return DeploymentStatus(
+        return StudyDeploymentStatus(
             id,
             registrableDevices,
             remainingRegistration,
@@ -153,12 +153,12 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     }
 
     /**
-     * Get the deployment configuration for the specified [device] in this deployment.
+     * Get the deployment configuration for the specified [device] in this study deployment.
      *
-     * @throws IllegalArgumentException when the passed [device] is not part of the protocol of this deployment.
-     * @throws IllegalArgumentException when the passed [device] is not ready to receive a [DeviceDeployment] yet.
+     * @throws IllegalArgumentException when the passed [device] is not part of the protocol of this study deployment.
+     * @throws IllegalArgumentException when the passed [device] is not ready to receive a [MasterDeviceDeployment] yet.
      */
-    fun getDeploymentFor( device: AnyMasterDeviceDescriptor ): DeviceDeployment
+    fun getDeviceDeploymentFor( device: AnyMasterDeviceDescriptor ): MasterDeviceDeployment
     {
         // Verify whether the specified device is part of the protocol of this deployment.
         require( protocolSnapshot.masterDevices.contains( device ) ) { "The specified master device is not part of the protocol of this deployment." }
@@ -189,10 +189,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val triggeredTasks = usedTriggers
             .map { it to _protocol.getTriggeredTasks( it.value ) }
             .flatMap { pair -> pair.second.map {
-                DeviceDeployment.TriggeredTask( pair.first.key, it.task.name, it.targetDevice.roleName ) } }
+                MasterDeviceDeployment.TriggeredTask( pair.first.key, it.task.name, it.targetDevice.roleName ) } }
             .toSet()
 
-        return DeviceDeployment(
+        return MasterDeviceDeployment(
             configuration,
             connectedDevices,
             deviceRegistrations,
@@ -205,8 +205,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * Get a serializable snapshot of the current state of this [StudyDeployment].
      */
-    fun getSnapshot(): DeploymentSnapshot
+    fun getSnapshot(): StudyDeploymentSnapshot
     {
-        return DeploymentSnapshot.fromDeployment( this )
+        return StudyDeploymentSnapshot.fromDeployment( this )
     }
 }

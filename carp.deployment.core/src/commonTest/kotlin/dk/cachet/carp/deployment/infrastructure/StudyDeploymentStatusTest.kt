@@ -8,9 +8,9 @@ import kotlin.test.*
 
 
 /**
- * Tests for [DeploymentStatus] relying on core infrastructure.
+ * Tests for [StudyDeploymentStatus] relying on core infrastructure.
  */
-class DeploymentStatusTest
+class StudyDeploymentStatusTest
 {
     private val testId = UUID( "27c56423-b7cd-48dd-8b7f-f819621a34f0" )
 
@@ -26,10 +26,10 @@ class DeploymentStatusTest
     fun can_serialize_and_deserialize_deployment_status_using_JSON()
     {
         val deployment = createSingleMasterWithConnectedDeviceDeployment()
-        val status: DeploymentStatus = deployment.getStatus()
+        val status: StudyDeploymentStatus = deployment.getStatus()
 
         val serialized: String = status.toJson()
-        val parsed: DeploymentStatus = DeploymentStatus.fromJson( serialized )
+        val parsed: StudyDeploymentStatus = StudyDeploymentStatus.fromJson( serialized )
 
         assertEquals( status, parsed )
     }
