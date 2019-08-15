@@ -6,9 +6,9 @@ def coreModules = subprojects.findAll { it.name.endsWith( '.core' ) }
 buildscript {
     ext {
         // Version used for all submodule artifacts.
-        // Suffix the version with '-SNAPSHOT' to publish to snapshot repository. All other versions will be published to staging.
-        globalVersion = '1.0.0-SNAPSHOT'
-        // globalVersion = '1.0.0-alpha.3'
+        // Snapshot publications change (or add) the suffix after '-' with 'SNAPSHOT' prior to building/publishing.
+        // The 'publishSigned' task publishes to SonaType's staging repo and 'publishSnapshot' instantly uploads to the snapshots repo.
+        globalVersion = '1.0.0-alpha.4'
 
         versions = [
             // Kotlin multiplatform versions.
@@ -229,9 +229,7 @@ subprojects {
             }
             maven {
                 name = "sonatype"
-                def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-                def stagingRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : stagingRepoUrl
+                url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2' // Staging repo.
                 credentials {
                     username = publishProperties['repository.username']
                     password = publishProperties['repository.password']
@@ -255,6 +253,17 @@ subprojects {
         }
     }
     publishSigned.finalizedBy publish
+    task publishSnapshot {
+        doFirst {
+            def versionSplit = version.split('-')
+            def snapshotVersion = "${versionSplit[0]}-SNAPSHOT"
+            version = snapshotVersion
+
+            // Override staging repo URL with snapshot repo.
+            publishing.repositories.sonatype.url = 'https://oss.sonatype.org/content/repositories/snapshots'
+        }
+    }
+    publishSnapshot.finalizedBy publishSigned
 }
 
 
