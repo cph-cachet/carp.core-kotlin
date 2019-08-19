@@ -35,7 +35,6 @@ The deployment subsystem contains common concerns to 'running' a study, i.e., in
 val protocol: StudyProtocol = createSmartphoneStudy()
 val manager: DeploymentManager = createDeploymentEndpoint()
 val status: StudyDeploymentStatus = manager.createStudyDeployment( protocol.getSnapshot() )
-val studyDeploymentId = UUID( status.deploymentId )
 val smartphone = status.registrableDevices.first().device as Smartphone
 val registration = smartphone.createRegistration {
     // Device-specific registration options can be accessed from here.
@@ -43,10 +42,11 @@ val registration = smartphone.createRegistration {
     // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
     deviceId = "xxxxxxxxx"
 }
-manager.registerDevice( studyDeploymentId, smartphone.roleName, registration )
+manager.registerDevice( status.studyDeploymentId, smartphone.roleName, registration )
 
 // Call from the smartphone to retrieve all the necessary information to start running the study on this device.
-val deviceDeployment: MasterDeviceDeployment = manager.getDeviceDeploymentFor( studyDeploymentId, smartphone.roleName )
+val deviceDeployment: MasterDeviceDeployment
+    = manager.getDeviceDeploymentFor( status.studyDeploymentId, smartphone.roleName )
 ```
 
 ## carp.common
