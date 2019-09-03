@@ -17,12 +17,12 @@ buildscript {
 
             // JVM versions.
             jvmTarget:'1.6',
-            jUnit5:'5.5.0-M1',
+            jUnit5:'5.5.1',
             dokkaPlugin:'0.9.18',
 
             // JS versions.
             nodePlugin:'1.3.1',
-            node:'12.6.0',
+            node:'12.9.1',
             mocha:'6.2.0'
         ]
     }
@@ -182,7 +182,7 @@ subprojects {
     task javadocJar(type: Jar) {
         group JavaBasePlugin.DOCUMENTATION_GROUP
         description 'Create javadoc jar using Dokka'
-        archiveClassifier = "javadoc"
+        archiveFileName = "javadoc"
         from dokka
     }
     def publishProperties = new Properties()

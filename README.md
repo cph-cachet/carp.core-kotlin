@@ -59,7 +59,7 @@ Helper classes relied upon by test projects of all subsystems. E.g., to disable 
 
 # Setting up using IntelliJ IDEA 2019
 - Open the project folder in IntelliJ 2019.
-- Install the Kotlin plugin (1.3.41-release-IJ2019.1-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Install the Kotlin plugin (1.3.50-release-IJ2019.2-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
 
 # Multiplatform
 
