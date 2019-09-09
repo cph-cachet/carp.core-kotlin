@@ -1,7 +1,7 @@
 # Domain Model and Application Service Definitions for all CARP Subsystems
 This project is part of the [CACHET Research Platform (CARP)](https://github.com/cph-cachet/carp.documentation). It contains all domain models and application services [for all CARP subsystems](https://github.com/cph-cachet/carp.documentation/wiki/Repository-design-overview). These represent an open standard and may not have any dependencies on concrete infrastructure.
 
-Currently this project is under development and only contains an initial unstable alpha version of the domain model and applications services of the `carp.protocols` and `carp.deployment` subsystem, and a placeholder for `carp.studies`. Many changes will happen as the rest of the infrastructure is implemented. Once a minimum viable product is completed, a first version will be released and more documentation will be added. 
+Currently this project is under development and only contains an initial unstable alpha version of the domain model and applications services of the `carp.protocols`, `carp.deployment`, and `carp.client` subsystems, and a placeholder for `carp.studies`. Many changes will happen as the rest of the infrastructure is implemented. Once a minimum viable product is completed, a first version will be released and more documentation will be added. 
 
 ## carp.protocols
 
@@ -48,6 +48,10 @@ manager.registerDevice( status.studyDeploymentId, smartphone.roleName, registrat
 val deviceDeployment: MasterDeviceDeployment
     = manager.getDeviceDeploymentFor( status.studyDeploymentId, smartphone.roleName )
 ```
+
+## carp.client
+
+Manage the runtime logic for studies on client devices (e.g., smartphone).
 
 ## carp.common
 
