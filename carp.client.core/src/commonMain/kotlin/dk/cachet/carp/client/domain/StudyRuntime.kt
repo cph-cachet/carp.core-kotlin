@@ -7,21 +7,48 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
 /**
  * Manage data collection for a particular study on a client device.
- *
- * @param deploymentManager The application service to use to retrieve and manage the study deployment with [studyDeploymentId].
- * @param studyDeploymentId The ID of the deployed study for which to collect data.
- * @param deviceRoleName The role which the client device this runtime is intended for plays in the deployment identified by [studyDeploymentId].
- * @param deviceRegistration The device configuration for the device this study runtime runs on, identified by [deviceRoleName] in the study deployment with [studyDeploymentId].
  */
 class StudyRuntime internal constructor(
+    /**
+     * The application service to use to retrieve and manage the study deployment with [studyDeploymentId].
+     */
     private val deploymentManager: DeploymentManager,
-    private val studyDeploymentId: UUID,
-    private val deviceRoleName: String,
-    deviceRegistration: DeviceRegistration )
+    /**
+     * The ID of the deployed study for which to collect data.
+     */
+    val studyDeploymentId: UUID,
+    /**
+     * The role which the client device this runtime is intended for plays in the deployment identified by [studyDeploymentId].
+     */
+    val deviceRoleName: String )
 {
-    init
+    companion object Factory
     {
-        // Register the client device this study runs on for the given study deployment.
-        deploymentManager.registerDevice( studyDeploymentId, deviceRoleName, deviceRegistration )
+        /**
+         * Instantiate and initialize a [StudyRuntime] by registering the client device in the [deploymentManager].
+         */
+        internal fun initialize(
+            /**
+             * The application service to use to retrieve and manage the study deployment with [studyDeploymentId].
+             */
+            deploymentManager: DeploymentManager,
+            /**
+             * The ID of the deployed study for which to collect data.
+             */
+            studyDeploymentId: UUID,
+            /**
+             * The role which the client device this runtime is intended for plays in the deployment identified by [studyDeploymentId].
+             */
+            deviceRoleName: String,
+            /**
+             * The device configuration for the device this study runtime runs on, identified by [deviceRoleName] in the study deployment with [studyDeploymentId].
+             */
+            deviceRegistration: DeviceRegistration ): StudyRuntime
+        {
+            // Register the client device this study runs on for the given study deployment.
+            deploymentManager.registerDevice( studyDeploymentId, deviceRoleName, deviceRegistration )
+
+            return StudyRuntime( deploymentManager, studyDeploymentId, deviceRoleName )
+        }
     }
 }

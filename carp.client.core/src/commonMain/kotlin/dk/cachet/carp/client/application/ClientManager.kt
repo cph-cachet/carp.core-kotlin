@@ -8,14 +8,33 @@ import dk.cachet.carp.protocols.domain.devices.*
 
 /**
  * Application service which allows managing [StudyRuntime]'s on a client device.
- *
- * @param deviceRegistration The device configuration for this client device, used to register for study deployments managed by the [deploymentManager].
- * @param deploymentManager The application service through which study deployments can be managed and retrieved.
  */
 class ClientManager<TMasterDevice: MasterDeviceDescriptor<TRegistration,*>, TRegistration: DeviceRegistration>(
-    private val deviceRegistration: TRegistration,
+    /**
+     * The device configuration for this client device, used to register for study deployments managed by the [deploymentManager].
+     */
+    val deviceRegistration: TRegistration,
+    /**
+     * The application service through which study deployments can be managed and retrieved.
+     */
     private val deploymentManager: DeploymentManager )
 {
+    companion object Factory
+    {
+        fun fromSnapshot( snapshot: ClientManagerSnapshot, deploymentManager: DeploymentManager ): ClientManager<*, *>
+        {
+            val manager = ClientManager( snapshot.deviceRegistration, deploymentManager )
+
+            // Add running studies.
+            snapshot.studies.forEach {
+                val study = StudyRuntime( deploymentManager, it.first, it.second )
+                manager._studies.add( study ) }
+
+            return manager
+        }
+    }
+
+
     private val _studies: MutableList<StudyRuntime> = mutableListOf()
     /**
      * The studies which run on this client device.
@@ -38,7 +57,7 @@ class ClientManager<TMasterDevice: MasterDeviceDescriptor<TRegistration,*>, TReg
     {
         // Create the study runtime.
         // IllegalArgumentException's will be thrown here when deployment or role name does not exist, or device is already registered.
-        val runtime = StudyRuntime( deploymentManager, studyDeploymentId, deviceRoleName, deviceRegistration )
+        val runtime = StudyRuntime.initialize( deploymentManager, studyDeploymentId, deviceRoleName, deviceRegistration )
 
         _studies.add( runtime )
         return runtime

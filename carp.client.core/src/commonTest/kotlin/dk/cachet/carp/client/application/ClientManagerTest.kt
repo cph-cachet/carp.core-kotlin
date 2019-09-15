@@ -67,6 +67,23 @@ class ClientManagerTest
         }
     }
 
+    @Test
+    fun can_serialize_and_deserialize_snapshot_using_JSON()
+    {
+        // Create deployment and client manager with one study.
+        val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val clientManager = SmartphoneManager( smartphone.createRegistration(), deploymentManager )
+        clientManager.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
+
+        val snapshot = ClientManagerSnapshot.fromClientManager( clientManager )
+        val parsed = SmartphoneManager.fromSnapshot( snapshot, deploymentManager ) // Optionally, this can be cast back to `SmartphoneManager`.
+        assertEquals( clientManager.deviceRegistration, parsed.deviceRegistration )
+        assertTrue {
+            parsed.studies.count() == 1 &&
+            parsed.studies[ 0 ].studyDeploymentId == deploymentStatus.studyDeploymentId &&
+            parsed.studies[ 0 ].deviceRoleName == smartphone.roleName }
+    }
+
 
     /**
      * Create a study protocol with [smartphone] as the single master device, i.e., a typical 'smartphone study'.
