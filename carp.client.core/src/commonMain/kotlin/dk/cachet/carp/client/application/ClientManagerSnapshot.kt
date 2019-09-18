@@ -1,7 +1,6 @@
 package dk.cachet.carp.client.application
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.UUIDSerializer
+import dk.cachet.carp.client.domain.StudyRuntimeSnapshot
 import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.Serializable
 
@@ -10,7 +9,7 @@ import kotlinx.serialization.Serializable
 data class ClientManagerSnapshot(
     @Serializable( with = DeviceRegistrationSerializer::class )
     val deviceRegistration: DeviceRegistration,
-    val studies: List<Pair<@Serializable( with = UUIDSerializer::class ) UUID, String>> )
+    val studies: List<StudyRuntimeSnapshot> )
 {
     companion object
     {
@@ -21,7 +20,7 @@ data class ClientManagerSnapshot(
          */
         fun fromClientManager( clientManager: ClientManager<*, *> ): ClientManagerSnapshot
         {
-            val studyRuntimes = clientManager.studies.map { Pair( it.studyDeploymentId, it.deviceRoleName ) }
+            val studyRuntimes = clientManager.studies.map { StudyRuntimeSnapshot.fromStudyRuntime( it ) }
 
             return ClientManagerSnapshot( clientManager.deviceRegistration, studyRuntimes )
         }

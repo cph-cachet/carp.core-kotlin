@@ -27,7 +27,7 @@ class ClientManager<TMasterDevice: MasterDeviceDescriptor<TRegistration,*>, TReg
 
             // Add running studies.
             snapshot.studies.forEach {
-                val study = StudyRuntime( deploymentManager, it.first, it.second )
+                val study = StudyRuntime.fromSnapshot( it, deploymentManager )
                 manager._studies.add( study ) }
 
             return manager

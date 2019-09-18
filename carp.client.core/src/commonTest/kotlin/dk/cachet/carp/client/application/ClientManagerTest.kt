@@ -1,10 +1,7 @@
 package dk.cachet.carp.client.application
 
+import dk.cachet.carp.client.domain.*
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.deployment.application.DeploymentManager
-import dk.cachet.carp.deployment.domain.*
-import dk.cachet.carp.protocols.domain.*
-import dk.cachet.carp.protocols.domain.devices.*
 import kotlin.test.*
 
 
@@ -13,9 +10,6 @@ import kotlin.test.*
  */
 class ClientManagerTest
 {
-    private val smartphone: Smartphone = Smartphone( "User's phone" )
-
-
     @Test
     fun add_study_succeeds()
     {
@@ -68,7 +62,7 @@ class ClientManagerTest
     }
 
     @Test
-    fun can_serialize_and_deserialize_snapshot_using_JSON()
+    fun creating_manager_fromSnapshot_obtained_by_getSnapshot_is_the_same()
     {
         // Create deployment and client manager with one study.
         val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
@@ -77,31 +71,8 @@ class ClientManagerTest
 
         val snapshot = ClientManagerSnapshot.fromClientManager( clientManager )
         val parsed = SmartphoneManager.fromSnapshot( snapshot, deploymentManager ) // Optionally, this can be cast back to `SmartphoneManager`.
+
         assertEquals( clientManager.deviceRegistration, parsed.deviceRegistration )
-        assertTrue {
-            parsed.studies.count() == 1 &&
-            parsed.studies[ 0 ].studyDeploymentId == deploymentStatus.studyDeploymentId &&
-            parsed.studies[ 0 ].deviceRoleName == smartphone.roleName }
-    }
-
-
-    /**
-     * Create a study protocol with [smartphone] as the single master device, i.e., a typical 'smartphone study'.
-     */
-    private fun createSmartphoneStudy(): StudyProtocol
-    {
-        val protocol = StudyProtocol( ProtocolOwner(), "Smartphone study" )
-        protocol.addMasterDevice( smartphone )
-        return protocol
-    }
-
-    /**
-     * Create a deployment manager which contains a study deployment for the specified [protocol].
-     */
-    private fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentManager, StudyDeploymentStatus>
-    {
-        val deploymentManager = DeploymentManager( InMemoryDeploymentRepository() )
-        val status = deploymentManager.createStudyDeployment( protocol.getSnapshot() )
-        return Pair( deploymentManager, status )
+        assertTrue { parsed.studies.count() == 1 } // Whether study runtime matches is tested in StudyRuntimeTest since this logic is simply delegated.
     }
 }

@@ -8,9 +8,10 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 /**
  * Manage data collection for a particular study on a client device.
  */
-class StudyRuntime internal constructor(
+class StudyRuntime private constructor(
     /**
      * The application service to use to retrieve and manage the study deployment with [studyDeploymentId].
+     * This deployment manager should have the deployment with [studyDeploymentId] available.
      */
     private val deploymentManager: DeploymentManager,
     /**
@@ -45,10 +46,17 @@ class StudyRuntime internal constructor(
              */
             deviceRegistration: DeviceRegistration ): StudyRuntime
         {
+            val runtime = StudyRuntime( deploymentManager, studyDeploymentId, deviceRoleName )
+
             // Register the client device this study runs on for the given study deployment.
             deploymentManager.registerDevice( studyDeploymentId, deviceRoleName, deviceRegistration )
 
-            return StudyRuntime( deploymentManager, studyDeploymentId, deviceRoleName )
+            return runtime
+        }
+
+        internal fun fromSnapshot( snapshot: StudyRuntimeSnapshot, deploymentManager: DeploymentManager ): StudyRuntime
+        {
+            return StudyRuntime( deploymentManager, snapshot.studyDeploymentId, snapshot.deviceRoleName )
         }
     }
 }
