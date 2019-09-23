@@ -75,7 +75,11 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
      */
     fun getStatus(): StudyDeploymentStatus
     {
-        val remainingRegistration: Set<String> = getRemainingDevicesToRegister().map { it.roleName }.toSet()
+        val devicesStatus: List<DeviceDeploymentStatus> =
+            _registrableDevices.map {
+                val isRegistered = _registeredDevices.contains( it.device )
+                DeviceDeploymentStatus( it.device, it.requiresRegistration, isRegistered )
+            }
         val devicesReadyForDeployment: Set<String> = _registrableDevices
             .filter {
                 it.device is AnyMasterDeviceDescriptor && // Only master devices can be deployed.
@@ -83,11 +87,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             .map { it.device.roleName }
             .toSet()
 
-        return StudyDeploymentStatus(
-            id,
-            registrableDevices,
-            remainingRegistration,
-            devicesReadyForDeployment )
+        return StudyDeploymentStatus( id, devicesStatus, devicesReadyForDeployment )
     }
 
     /**
