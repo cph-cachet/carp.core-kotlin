@@ -202,16 +202,16 @@ class StudyDeploymentTest
         // Start of deployment, no devices registered.
         val status: StudyDeploymentStatus = deployment.getStatus()
         assertEquals( deployment.id, status.studyDeploymentId )
-        assertEquals( 2, status.registrableDevices.count() )
-        assertTrue { status.registrableDevices.any { it.device == master } }
-        assertTrue { status.registrableDevices.any { it.device == connected } }
-        assertEquals( setOf( "Master" ), status.remainingDevicesToRegister )
+        assertEquals( 2, status.devicesStatus.count() )
+        assertTrue { status.devicesStatus.any { it.device == master } }
+        assertTrue { status.devicesStatus.any { it.device == connected } }
+        assertEquals( setOf( master ), status.getRemainingDevicesToRegister() )
         assertTrue { status.devicesReadyForDeployment.isEmpty() }
 
         // After registering master device, master device is ready for deployment.
         deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
         val readyStatus = deployment.getStatus()
-        assertTrue { readyStatus.remainingDevicesToRegister.isEmpty() }
+        assertTrue { readyStatus.getRemainingDevicesToRegister().isEmpty() }
         assertEquals( setOf( "Master" ), readyStatus.devicesReadyForDeployment )
     }
 
