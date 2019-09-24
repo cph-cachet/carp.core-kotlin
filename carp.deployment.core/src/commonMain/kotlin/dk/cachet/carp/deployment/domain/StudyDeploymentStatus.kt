@@ -15,15 +15,21 @@ data class StudyDeploymentStatus(
     /**
      * The list of all devices part of this study deployment and their status.
      */
-    val devicesStatus: List<DeviceDeploymentStatus>,
-    /**
-     * The role names of all devices which have been registered successfully and are ready for deployment.
-     */
-    val devicesReadyForDeployment: Set<String> )
+    val devicesStatus: List<DeviceDeploymentStatus> )
 {
     /**
      * Returns all [DeviceDescriptor]'s in [devicesStatus] which require registration.
      */
     fun getRemainingDevicesToRegister(): Set<AnyDeviceDescriptor> =
-        devicesStatus.filter { it.requiresRegistration && !it.isRegistered }.map{ it.device }.toSet()
+        devicesStatus.filter { it.requiresRegistration && !it.isRegistered }.map { it.device }.toSet()
+
+    /**
+     * Returns all [AnyMasterDeviceDescriptor] which are ready for deployment and have not yet been deployed.
+     */
+    fun getRemainingDevicesReadyToDeploy(): Set<AnyMasterDeviceDescriptor> =
+        devicesStatus
+            .filter { it.isReadyForDeployment && !it.isDeployed }
+            .map { it.device }
+            .filterIsInstance<AnyMasterDeviceDescriptor>()
+            .toSet()
 }
