@@ -206,13 +206,13 @@ class StudyDeploymentTest
         assertTrue { status.devicesStatus.any { it.device == master } }
         assertTrue { status.devicesStatus.any { it.device == connected } }
         assertEquals( setOf( master ), status.getRemainingDevicesToRegister() )
-        assertTrue { status.devicesReadyForDeployment.isEmpty() }
+        assertTrue { status.getRemainingDevicesReadyToDeploy().isEmpty() }
 
         // After registering master device, master device is ready for deployment.
         deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
         val readyStatus = deployment.getStatus()
         assertTrue { readyStatus.getRemainingDevicesToRegister().isEmpty() }
-        assertEquals( setOf( "Master" ), readyStatus.devicesReadyForDeployment )
+        assertEquals( setOf( master ), readyStatus.getRemainingDevicesReadyToDeploy() )
     }
 
     @Test
