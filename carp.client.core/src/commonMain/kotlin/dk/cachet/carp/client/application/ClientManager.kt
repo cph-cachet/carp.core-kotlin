@@ -55,6 +55,8 @@ class ClientManager<TMasterDevice: MasterDeviceDescriptor<TRegistration,*>, TReg
      */
     fun addStudy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntime
     {
+        // TODO: Can/should it be reinforced here that only study runtimes for a matching master device type can be created?
+
         // Create the study runtime.
         // IllegalArgumentException's will be thrown here when deployment or role name does not exist, or device is already registered.
         val runtime = StudyRuntime.initialize( deploymentManager, studyDeploymentId, deviceRoleName, deviceRegistration )
