@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.Immutable
+import dk.cachet.carp.common.serialization.NotSerializable
 import dk.cachet.carp.protocols.domain.*
 import kotlinx.serialization.*
 
@@ -28,6 +29,7 @@ abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegis
  * TODO: This and extending classes are never expected to be serialized,
  *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceDescriptor].
  */
+@Serializable( NotSerializable::class )
 abstract class DeviceRegistrationBuilder<T: DeviceRegistration>
 {
     /**
