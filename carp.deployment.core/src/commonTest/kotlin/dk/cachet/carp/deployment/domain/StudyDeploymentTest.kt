@@ -216,6 +216,22 @@ class StudyDeploymentTest
     }
 
     @Test
+    fun chained_master_devices_do_not_require_registration_or_deployment()
+    {
+        val protocol = createEmptyProtocol()
+        val master = StubMasterDeviceDescriptor( "Master" )
+        val chained = StubMasterDeviceDescriptor( "Chained master" )
+        protocol.addMasterDevice( master )
+        protocol.addConnectedDevice( chained, master )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+
+        val status: StudyDeploymentStatus = deployment.getStatus()
+        val chainedStatus = status.devicesStatus.first { it.device == chained }
+        assertFalse { chainedStatus.requiresDeployment }
+        assertFalse { chainedStatus.requiresRegistration }
+    }
+
+    @Test
     fun getDeviceDeploymentFor_succeeds()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
