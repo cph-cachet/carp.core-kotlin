@@ -64,4 +64,12 @@ class ClientManager<TMasterDevice: MasterDeviceDescriptor<TRegistration,*>, TReg
         _studies.add( runtime )
         return runtime
     }
+
+    /**
+     * Get a serializable snapshot of the current state of this [ClientManager].
+     */
+    fun getSnapshot(): ClientManagerSnapshot
+    {
+        return ClientManagerSnapshot.fromClientManager( this )
+    }
 }

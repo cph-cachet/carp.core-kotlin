@@ -17,7 +17,7 @@ class ClientManagerSnapshotTest
         val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val clientManager = SmartphoneManager( smartphone.createRegistration(), deploymentManager )
         clientManager.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
-        val snapshot = ClientManagerSnapshot.fromClientManager( clientManager )
+        val snapshot = clientManager.getSnapshot()
 
         val serialized = snapshot.toJson()
         val parsed = ClientManagerSnapshot.fromJson( serialized )
