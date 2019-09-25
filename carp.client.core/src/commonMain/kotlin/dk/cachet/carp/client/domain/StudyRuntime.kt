@@ -74,8 +74,8 @@ class StudyRuntime private constructor(
             // After registration, deployment information might immediately be available for this client device.
             if ( clientDeviceStatus.isReadyForDeployment )
             {
-                val deploymentInformation = deploymentManager.getDeviceDeploymentFor( studyDeploymentId, deviceRoleName )
-                runtime.deploy( deploymentInformation )
+                runtime.deploymentInformation = deploymentManager.getDeviceDeploymentFor( studyDeploymentId, deviceRoleName )
+                runtime.deploy( runtime.deploymentInformation!! )
             }
 
             return runtime
@@ -85,6 +85,7 @@ class StudyRuntime private constructor(
         {
             val runtime = StudyRuntime( deploymentManager, snapshot.studyDeploymentId, snapshot.device )
             runtime.isDeployed = snapshot.isDeployed
+            runtime.deploymentInformation = snapshot.deploymentInformation
 
             return runtime
         }
@@ -95,6 +96,14 @@ class StudyRuntime private constructor(
      * Determines whether the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
      */
     var isDeployed: Boolean = false
+        private set
+
+    /**
+     * In case deployment succeeded ([isDeployed] is true), this contains all the information on the study the run.
+     * TODO: This should be consumed within this domain model and not be public.
+     *       Currently, it is in order to work towards a first MVP which includes server/client communication through the domain model.
+     */
+    var deploymentInformation: MasterDeviceDeployment? = null
         private set
 
     /**
@@ -109,8 +118,8 @@ class StudyRuntime private constructor(
 
         if ( clientDeviceStatus.isReadyForDeployment )
         {
-            val requiredDeployment = deploymentManager.getDeviceDeploymentFor( studyDeploymentId, device.roleName )
-            deploy( requiredDeployment )
+            deploymentInformation = deploymentManager.getDeviceDeploymentFor( studyDeploymentId, device.roleName )
+            deploy( deploymentInformation!! )
         }
 
         return DeploymentState( clientDeviceStatus.isReadyForDeployment, isDeployed )
