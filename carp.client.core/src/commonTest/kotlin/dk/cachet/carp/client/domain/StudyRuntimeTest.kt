@@ -81,5 +81,6 @@ class StudyRuntimeTest
         assertEquals( runtime.studyDeploymentId, parsed.studyDeploymentId )
         assertEquals( runtime.device, parsed.device )
         assertEquals( runtime.isDeployed, parsed.isDeployed )
+        assertEquals( runtime.deploymentInformation, parsed.deploymentInformation )
     }
 }
