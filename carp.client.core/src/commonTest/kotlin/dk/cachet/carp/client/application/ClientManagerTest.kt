@@ -69,7 +69,7 @@ class ClientManagerTest
         val clientManager = SmartphoneManager( smartphone.createRegistration(), deploymentManager )
         clientManager.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
 
-        val snapshot = ClientManagerSnapshot.fromClientManager( clientManager )
+        val snapshot = clientManager.getSnapshot()
         val parsed = SmartphoneManager.fromSnapshot( snapshot, deploymentManager ) // Optionally, this can be cast back to `SmartphoneManager`.
 
         assertEquals( clientManager.deviceRegistration, parsed.deviceRegistration )
