@@ -2,6 +2,7 @@ package dk.cachet.carp.client.application
 
 import dk.cachet.carp.client.domain.*
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.application.DeploymentManager
 import kotlin.test.*
 
 
@@ -15,7 +16,7 @@ class ClientManagerTest
     {
         // Create deployment and client manager.
         val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = SmartphoneManager( smartphone.createRegistration(), deploymentManager )
+        val clientManager = createSmartphoneManager( deploymentManager )
 
         clientManager.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
     }
@@ -25,7 +26,7 @@ class ClientManagerTest
     {
         // Create deployment and client manager.
         val ( deploymentManager, _) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = SmartphoneManager( smartphone.createRegistration(), deploymentManager )
+        val clientManager = createSmartphoneManager( deploymentManager )
 
         val invalidId = UUID( "00000000-0000-0000-0000-000000000000" )
         assertFailsWith<IllegalArgumentException>
@@ -39,7 +40,7 @@ class ClientManagerTest
     {
         // Create deployment and client manager.
         val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = SmartphoneManager( smartphone.createRegistration(), deploymentManager )
+        val clientManager = createSmartphoneManager( deploymentManager )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -52,7 +53,7 @@ class ClientManagerTest
     {
         // Create deployment and client manager.
         val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = SmartphoneManager( smartphone.createRegistration(), deploymentManager )
+        val clientManager = createSmartphoneManager( deploymentManager )
 
         clientManager.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
         assertFailsWith<IllegalArgumentException>
@@ -66,7 +67,7 @@ class ClientManagerTest
     {
         // Create deployment and client manager with one study.
         val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = SmartphoneManager( smartphone.createRegistration(), deploymentManager )
+        val clientManager = createSmartphoneManager( deploymentManager )
         clientManager.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
 
         val snapshot = clientManager.getSnapshot()
@@ -74,5 +75,20 @@ class ClientManagerTest
 
         assertEquals( clientManager.deviceRegistration, parsed.deviceRegistration )
         assertTrue { parsed.studies.count() == 1 } // Whether study runtime matches is tested in StudyRuntimeTest since this logic is simply delegated.
+    }
+
+    fun test()
+    {
+val deploymentManager = DeploymentManager( DeploymentRepositoryEndPoint() )
+val clientManager: SmartphoneManager = createSmartphoneManager( deploymentManager )
+val runtime: StudyRuntime = clientManager.addStudy( studyDeploymentId, "Patient's phone" ) // Provided by researcher.
+
+// Suppose a deployment also depends on incoming data from a "Parent's phone"; deployment cannot complete yet.
+var isDeployed = runtime.isDeployed // False, since awaiting initialization of parent's phone.
+
+// After the parent's phone has been initialized, attempt deployment again.
+val status: StudyRuntime.DeploymentState = runtime.tryDeployment()
+isDeployed = status.isDeployed // True when dependent clients have been registered.
+
     }
 }
