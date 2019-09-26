@@ -12,7 +12,7 @@ val owner = ProtocolOwner()
 val protocol = StudyProtocol( owner, "Example study" )
 
 // Define which devices are used for data collection.
-val phone = Smartphone( "Patient phone" )
+val phone = Smartphone( "Patient's phone" )
 protocol.addMasterDevice( phone )
 
 // Define what needs to be measured, on which device, when.
@@ -35,7 +35,7 @@ The deployment subsystem contains common concerns to 'running' a study, i.e., in
 val protocol: StudyProtocol = createSmartphoneStudy()
 val manager: DeploymentManager = createDeploymentEndpoint()
 val status: StudyDeploymentStatus = manager.createStudyDeployment( protocol.getSnapshot() )
-val smartphone = status.registrableDevices.first().device as Smartphone
+val smartphone = status.devicesStatus.first().device as Smartphone
 val registration = smartphone.createRegistration {
     // Device-specific registration options can be accessed from here.
     // Depending on the device type, different options are available.
@@ -51,7 +51,20 @@ val deviceDeployment: MasterDeviceDeployment
 
 ## carp.client
 
-Manage the runtime logic for studies on client devices (e.g., smartphone).
+Manage the runtime logic for studies on client devices. For example, the following initializes a smartphone client:
+
+```
+val deploymentManager = DeploymentManager( DeploymentRepositoryEndPoint() )
+val clientManager: SmartphoneManager = createSmartphoneManager( deploymentManager )
+val runtime: StudyRuntime = clientManager.addStudy( studyDeploymentId, "Patient's phone" ) // Provided by study manager (carp.studies).
+
+// Suppose a deployment also depends on incoming data from a "Clinician's phone"; deployment cannot complete yet.
+var isDeployed = runtime.isDeployed // False, since awaiting initialization of clinician's phone.
+
+// After the clinician's phone has been initialized, attempt deployment again.
+val status: StudyRuntime.DeploymentState = runtime.tryDeployment()
+isDeployed = status.isDeployed // True once dependent clients have been registered.
+```
 
 ## carp.common
 
