@@ -76,19 +76,4 @@ class ClientManagerTest
         assertEquals( clientManager.deviceRegistration, parsed.deviceRegistration )
         assertTrue { parsed.studies.count() == 1 } // Whether study runtime matches is tested in StudyRuntimeTest since this logic is simply delegated.
     }
-
-    fun test()
-    {
-val deploymentManager = DeploymentManager( DeploymentRepositoryEndPoint() )
-val clientManager: SmartphoneManager = createSmartphoneManager( deploymentManager )
-val runtime: StudyRuntime = clientManager.addStudy( studyDeploymentId, "Patient's phone" ) // Provided by researcher.
-
-// Suppose a deployment also depends on incoming data from a "Parent's phone"; deployment cannot complete yet.
-var isDeployed = runtime.isDeployed // False, since awaiting initialization of parent's phone.
-
-// After the parent's phone has been initialized, attempt deployment again.
-val status: StudyRuntime.DeploymentState = runtime.tryDeployment()
-isDeployed = status.isDeployed // True when dependent clients have been registered.
-
-    }
 }
