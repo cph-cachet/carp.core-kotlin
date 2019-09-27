@@ -182,7 +182,7 @@ subprojects {
     task javadocJar(type: Jar) {
         group JavaBasePlugin.DOCUMENTATION_GROUP
         description 'Create javadoc jar using Dokka'
-        archiveFileName = "javadoc"
+        archiveClassifier = "javadoc"
         from dokka
     }
     def publishProperties = new Properties()
@@ -259,7 +259,8 @@ subprojects {
             def snapshotVersion = "${versionSplit[0]}-SNAPSHOT"
             version = snapshotVersion
 
-            // Override staging repo URL with snapshot repo.
+            // Override 'maven-publish' publication versions and change staging repo URL to snapshot repo.
+            publishing.publications.all { version = version }
             publishing.repositories.sonatype.url = 'https://oss.sonatype.org/content/repositories/snapshots'
         }
     }
