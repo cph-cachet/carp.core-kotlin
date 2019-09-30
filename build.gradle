@@ -255,18 +255,20 @@ subprojects {
     publishSigned.finalizedBy publish
     task publishSnapshot {
         doFirst {
-            def versionSplit = version.split('-')
-            def snapshotVersion = "${versionSplit[0]}-SNAPSHOT"
-            version = snapshotVersion
+            // Since project dependencies trigger publications of other projects, immediately modify versions of all subprojects.
+            rootProject.subprojects.each { project ->
+                def versionSplit = project.version.split('-')
+                def snapshotVersion = "${versionSplit[0]}-SNAPSHOT"
+                project.version = snapshotVersion
 
-            // Override 'maven-publish' publication versions and change staging repo URL to snapshot repo.
-            publishing.publications.all { version = version }
-            publishing.repositories.sonatype.url = 'https://oss.sonatype.org/content/repositories/snapshots'
+                // Override 'maven-publish' publication versions and change staging repo URL to snapshot repo.
+                project.publishing.publications.all { version = version }
+                project.publishing.repositories.sonatype.url = 'https://oss.sonatype.org/content/repositories/snapshots'
+            }
         }
     }
     publishSnapshot.finalizedBy publishSigned
 }
-
 
 // Add common dependencies:
 // - `carp.test` for testing
