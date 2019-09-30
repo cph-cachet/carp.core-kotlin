@@ -1,6 +1,5 @@
-package dk.cachet.carp.client.application
+package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.client.domain.StudyRuntime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentManager
 import dk.cachet.carp.protocols.domain.devices.*

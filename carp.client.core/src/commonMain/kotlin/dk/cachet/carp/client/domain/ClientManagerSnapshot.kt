@@ -1,6 +1,5 @@
-package dk.cachet.carp.client.application
+package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.client.domain.StudyRuntimeSnapshot
 import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.Serializable
 
