@@ -8,7 +8,7 @@ import dk.cachet.carp.protocols.domain.*
  * Application service which allows managing (multiple versions of) [StudyProtocolSnapshot]'s,
  * which can be instantiated locally through [StudyProtocol].
  */
-class ProtocolManager( private val repository: StudyProtocolRepository )
+interface ProtocolService
 {
     /**
      * Add the specified study [protocol].
@@ -19,10 +19,6 @@ class ProtocolManager( private val repository: StudyProtocolRepository )
      * @throws InvalidConfigurationError when [protocol] is invalid.
      */
     fun add( protocol: StudyProtocolSnapshot, versionTag: String = "Initial" )
-    {
-        val initializedProtocol = StudyProtocol.fromSnapshot( protocol )
-        repository.add( initializedProtocol, versionTag )
-    }
 
     /**
      * Store an updated version of the specified study [protocol].
@@ -33,10 +29,6 @@ class ProtocolManager( private val repository: StudyProtocolRepository )
      * @throws InvalidConfigurationError when [protocol] is invalid.
      */
     fun update( protocol: StudyProtocolSnapshot, versionTag: String = DateTime.now().toString() )
-    {
-        val initializedProtocol = StudyProtocol.fromSnapshot( protocol )
-        repository.update( initializedProtocol, versionTag )
-    }
 
     /**
      * Find the [StudyProtocolSnapshot] with the specified [protocolName] owned by [owner].
@@ -47,10 +39,6 @@ class ProtocolManager( private val repository: StudyProtocolRepository )
      * @throws IllegalArgumentException when the [owner], [protocolName], or [versionTag] does not exist.
      */
     fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? = null ): StudyProtocolSnapshot
-    {
-        val protocol: StudyProtocol = repository.getBy( owner, protocolName, versionTag )
-        return protocol.getSnapshot()
-    }
 
     /**
      * Find all [StudyProtocolSnapshot]'s owned by [owner].
@@ -59,16 +47,9 @@ class ProtocolManager( private val repository: StudyProtocolRepository )
      * @return This returns the last version of each [StudyProtocolSnapshot] owned by the specified [owner].
      */
     fun getAllFor( owner: ProtocolOwner ): List<StudyProtocolSnapshot>
-    {
-        val protocols: Sequence<StudyProtocol> = repository.getAllFor( owner )
-        return protocols.map { it.getSnapshot() }.toList()
-    }
 
     /**
      * Returns all stored versions for the [StudyProtocol] owned by [owner] with [protocolName].
      */
     fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion>
-    {
-        return repository.getVersionHistoryFor( owner, protocolName )
-    }
 }

@@ -8,7 +8,7 @@ buildscript {
         // Version used for all submodule artifacts.
         // Snapshot publishing changes (or adds) the suffix after '-' with 'SNAPSHOT' prior to publishing.
         // The 'publishSigned' task publishes to SonaType's staging repo and 'publishSnapshot' instantly uploads to the snapshots repo.
-        globalVersion = '1.0.0-alpha.5'
+        globalVersion = '1.0.0-alpha.6'
 
         versions = [
             // Kotlin multiplatform versions.
@@ -182,7 +182,7 @@ subprojects {
     task javadocJar(type: Jar) {
         group JavaBasePlugin.DOCUMENTATION_GROUP
         description 'Create javadoc jar using Dokka'
-        archiveFileName = "javadoc"
+        archiveClassifier = "javadoc"
         from dokka
     }
     def publishProperties = new Properties()
@@ -255,17 +255,20 @@ subprojects {
     publishSigned.finalizedBy publish
     task publishSnapshot {
         doFirst {
-            def versionSplit = version.split('-')
-            def snapshotVersion = "${versionSplit[0]}-SNAPSHOT"
-            version = snapshotVersion
+            // Since project dependencies trigger publications of other projects, immediately modify versions of all subprojects.
+            rootProject.subprojects.each { project ->
+                def versionSplit = project.version.split('-')
+                def snapshotVersion = "${versionSplit[0]}-SNAPSHOT"
+                project.version = snapshotVersion
 
-            // Override staging repo URL with snapshot repo.
-            publishing.repositories.sonatype.url = 'https://oss.sonatype.org/content/repositories/snapshots'
+                // Override 'maven-publish' publication versions and change staging repo URL to snapshot repo.
+                project.publishing.publications.all { version = version }
+                project.publishing.repositories.sonatype.url = 'https://oss.sonatype.org/content/repositories/snapshots'
+            }
         }
     }
     publishSnapshot.finalizedBy publishSigned
 }
-
 
 // Add common dependencies:
 // - `carp.test` for testing

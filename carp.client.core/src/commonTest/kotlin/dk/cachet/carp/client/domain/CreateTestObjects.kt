@@ -1,6 +1,6 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.deployment.application.DeploymentManager
+import dk.cachet.carp.deployment.application.*
 import dk.cachet.carp.deployment.domain.*
 import dk.cachet.carp.protocols.domain.*
 import dk.cachet.carp.protocols.domain.devices.*
@@ -33,11 +33,11 @@ fun createDependentSmartphoneStudy(): StudyProtocol
 }
 
 /**
- * Create a deployment manager which contains a study deployment for the specified [protocol].
+ * Create a deployment service which contains a study deployment for the specified [protocol].
  */
-fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentManager, StudyDeploymentStatus>
+fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentService, StudyDeploymentStatus>
 {
-    val deploymentManager = DeploymentManager( InMemoryDeploymentRepository() )
-    val status = deploymentManager.createStudyDeployment( protocol.getSnapshot() )
-    return Pair( deploymentManager, status )
+    val deploymentService = DeploymentServiceHost( InMemoryDeploymentRepository() )
+    val status = deploymentService.createStudyDeployment( protocol.getSnapshot() )
+    return Pair( deploymentService, status )
 }
