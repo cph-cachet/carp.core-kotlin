@@ -56,7 +56,7 @@ Manage the runtime logic for studies on client devices. For example, the followi
 ```
 val deploymentService = createDeploymentEndpoint()
 val clientManager: SmartphoneManager = createSmartphoneManager( deploymentService )
-// Parameters to pass to 'addStudy' are provided by the study manager (carp.studies).
+// Parameters to pass to 'addStudy' are provided by the study service (carp.studies).
 val runtime: StudyRuntime = clientManager.addStudy( studyDeploymentId, "Patient's phone" )
 
 // Suppose a deployment also depends on incoming data from a "Clinician's phone"; deployment cannot complete yet.
