@@ -30,11 +30,11 @@ Manage the recruitment for and lifetime of study deployments, instantiated using
 
 ## carp.deployment
 
-The deployment subsystem contains common concerns to 'running' a study, i.e., instantiating a study protocol with a specific set of devices and users as specified in the study protocol. A study deployment is responsible for managing registration of participant consent, tracking device connection issues, assessing data quality, and negotiating the connection between separate devices. Study deployments are managed through the `DeploymentManager` application service:
+The deployment subsystem contains common concerns to 'running' a study, i.e., instantiating a study protocol with a specific set of devices and users as specified in the study protocol. A study deployment is responsible for managing registration of participant consent, tracking device connection issues, assessing data quality, and negotiating the connection between separate devices. Study deployments are managed through the `DeploymentService` application service:
 ```
 val protocol: StudyProtocol = createSmartphoneStudy()
-val manager: DeploymentManager = createDeploymentEndpoint()
-val status: StudyDeploymentStatus = manager.createStudyDeployment( protocol.getSnapshot() )
+val deploymentService: DeploymentService = createDeploymentEndpoint()
+val status: StudyDeploymentStatus = deploymentService.createStudyDeployment( protocol.getSnapshot() )
 val smartphone = status.devicesStatus.first().device as Smartphone
 val registration = smartphone.createRegistration {
     // Device-specific registration options can be accessed from here.
@@ -42,11 +42,11 @@ val registration = smartphone.createRegistration {
     // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
     deviceId = "xxxxxxxxx"
 }
-manager.registerDevice( status.studyDeploymentId, smartphone.roleName, registration )
+deploymentService.registerDevice( status.studyDeploymentId, smartphone.roleName, registration )
 
 // Call from the smartphone to retrieve all the necessary information to start running the study on this device.
 val deviceDeployment: MasterDeviceDeployment
-    = manager.getDeviceDeploymentFor( status.studyDeploymentId, smartphone.roleName )
+    = deploymentService.getDeviceDeploymentFor( status.studyDeploymentId, smartphone.roleName )
 ```
 
 ## carp.client
@@ -54,9 +54,10 @@ val deviceDeployment: MasterDeviceDeployment
 Manage the runtime logic for studies on client devices. For example, the following initializes a smartphone client:
 
 ```
-val deploymentManager = DeploymentManager( DeploymentRepositoryEndPoint() )
-val clientManager: SmartphoneManager = createSmartphoneManager( deploymentManager )
-val runtime: StudyRuntime = clientManager.addStudy( studyDeploymentId, "Patient's phone" ) // Provided by study manager (carp.studies).
+val deploymentService = createDeploymentEndpoint()
+val clientManager: SmartphoneManager = createSmartphoneManager( deploymentService )
+// Parameters to pass to 'addStudy' are provided by the study manager (carp.studies).
+val runtime: StudyRuntime = clientManager.addStudy( studyDeploymentId, "Patient's phone" )
 
 // Suppose a deployment also depends on incoming data from a "Clinician's phone"; deployment cannot complete yet.
 var isDeployed = runtime.isDeployed // False, since awaiting initialization of clinician's phone.

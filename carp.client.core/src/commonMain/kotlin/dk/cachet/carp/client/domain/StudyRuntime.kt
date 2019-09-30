@@ -1,7 +1,7 @@
 package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.deployment.application.DeploymentManager
+import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.Serializable
@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
  * Manage data collection for a particular study on a client device.
  */
 class StudyRuntime private constructor(
-    private val deploymentManager: DeploymentManager,
+    private val deploymentService: DeploymentService,
     /**
      * The ID of the deployed study for which to collect data.
      */
@@ -39,7 +39,7 @@ class StudyRuntime private constructor(
     companion object Factory
     {
         /**
-         * Instantiate a [StudyRuntime] by registering the client device in the [deploymentManager].
+         * Instantiate a [StudyRuntime] by registering the client device in the [deploymentService].
          * In case the device is immediately ready for deployment, also deploy.
          *
          * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
@@ -47,9 +47,9 @@ class StudyRuntime private constructor(
         internal fun initialize(
             /**
              * The application service to use to retrieve and manage the study deployment with [studyDeploymentId].
-             * This deployment manager should have the deployment with [studyDeploymentId] available.
+             * This deployment service should have the deployment with [studyDeploymentId] available.
              */
-            deploymentManager: DeploymentManager,
+            deploymentService: DeploymentService,
             /**
              * The ID of the deployed study for which to collect data.
              */
@@ -65,25 +65,25 @@ class StudyRuntime private constructor(
         {
             // Register the client device this study runs on for the given study deployment.
             // TODO: What if registration succeeds, but deployment fails since not all required plugins are available? Registering again is not allowed right now.
-            val deploymentStatus = deploymentManager.registerDevice( studyDeploymentId, deviceRoleName, deviceRegistration )
+            val deploymentStatus = deploymentService.registerDevice( studyDeploymentId, deviceRoleName, deviceRegistration )
 
             // Initialize runtime.
             val clientDeviceStatus = deploymentStatus.devicesStatus.first { it.device.roleName == deviceRoleName }
-            val runtime = StudyRuntime( deploymentManager, studyDeploymentId, clientDeviceStatus.device as AnyMasterDeviceDescriptor )
+            val runtime = StudyRuntime( deploymentService, studyDeploymentId, clientDeviceStatus.device as AnyMasterDeviceDescriptor )
 
             // After registration, deployment information might immediately be available for this client device.
             if ( clientDeviceStatus.isReadyForDeployment )
             {
-                runtime.deploymentInformation = deploymentManager.getDeviceDeploymentFor( studyDeploymentId, deviceRoleName )
+                runtime.deploymentInformation = deploymentService.getDeviceDeploymentFor( studyDeploymentId, deviceRoleName )
                 runtime.deploy( runtime.deploymentInformation!! )
             }
 
             return runtime
         }
 
-        internal fun fromSnapshot( snapshot: StudyRuntimeSnapshot, deploymentManager: DeploymentManager ): StudyRuntime
+        internal fun fromSnapshot( snapshot: StudyRuntimeSnapshot, deploymentService: DeploymentService ): StudyRuntime
         {
-            val runtime = StudyRuntime( deploymentManager, snapshot.studyDeploymentId, snapshot.device )
+            val runtime = StudyRuntime( deploymentService, snapshot.studyDeploymentId, snapshot.device )
             runtime.isDeployed = snapshot.isDeployed
             runtime.deploymentInformation = snapshot.deploymentInformation
 
@@ -113,12 +113,12 @@ class StudyRuntime private constructor(
      */
     fun tryDeployment(): DeploymentState
     {
-        val deploymentStatus = deploymentManager.getStudyDeploymentStatus( studyDeploymentId )
+        val deploymentStatus = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
         val clientDeviceStatus = deploymentStatus.devicesStatus.first { it.device == device }
 
         if ( clientDeviceStatus.isReadyForDeployment )
         {
-            deploymentInformation = deploymentManager.getDeviceDeploymentFor( studyDeploymentId, device.roleName )
+            deploymentInformation = deploymentService.getDeviceDeploymentFor( studyDeploymentId, device.roleName )
             deploy( deploymentInformation!! )
         }
 

@@ -1,32 +1,32 @@
 package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.deployment.application.DeploymentManager
+import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.protocols.domain.devices.*
 
 
 /**
- * Application service which allows managing [StudyRuntime]'s on a client device.
+ * Allows managing [StudyRuntime]'s on a client device.
  */
 class ClientManager<TMasterDevice: MasterDeviceDescriptor<TRegistration,*>, TRegistration: DeviceRegistration>(
     /**
-     * The device configuration for this client device, used to register for study deployments managed by the [deploymentManager].
+     * The device configuration for this client device, used to register for study deployments managed by the [deploymentService].
      */
     val deviceRegistration: TRegistration,
     /**
      * The application service through which study deployments can be managed and retrieved.
      */
-    private val deploymentManager: DeploymentManager )
+    private val deploymentService: DeploymentService )
 {
     companion object Factory
     {
-        fun fromSnapshot( snapshot: ClientManagerSnapshot, deploymentManager: DeploymentManager ): ClientManager<*, *>
+        fun fromSnapshot( snapshot: ClientManagerSnapshot, deploymentService: DeploymentService ): ClientManager<*, *>
         {
-            val manager = ClientManager( snapshot.deviceRegistration, deploymentManager )
+            val manager = ClientManager( snapshot.deviceRegistration, deploymentService )
 
             // Add running studies.
             snapshot.studies.forEach {
-                val study = StudyRuntime.fromSnapshot( it, deploymentManager )
+                val study = StudyRuntime.fromSnapshot( it, deploymentService )
                 manager._studies.add( study ) }
 
             return manager
@@ -58,7 +58,7 @@ class ClientManager<TMasterDevice: MasterDeviceDescriptor<TRegistration,*>, TReg
 
         // Create the study runtime.
         // IllegalArgumentException's will be thrown here when deployment or role name does not exist, or device is already registered.
-        val runtime = StudyRuntime.initialize( deploymentManager, studyDeploymentId, deviceRoleName, deviceRegistration )
+        val runtime = StudyRuntime.initialize( deploymentService, studyDeploymentId, deviceRoleName, deviceRegistration )
 
         _studies.add( runtime )
         return runtime

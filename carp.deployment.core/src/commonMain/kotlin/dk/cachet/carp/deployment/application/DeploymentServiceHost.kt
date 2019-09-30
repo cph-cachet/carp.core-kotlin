@@ -7,9 +7,9 @@ import dk.cachet.carp.protocols.domain.devices.*
 
 
 /**
- * Application service which allows deploying [StudyProtocol]'s and retrieving [MasterDeviceDeployment]'s for participating master devices as defined in the protocol.
+ * Implementation of [DeploymentService] which allows deploying [StudyProtocol]'s and retrieving [MasterDeviceDeployment]'s for participating master devices as defined in the protocol.
  */
-class DeploymentManager( private val repository: DeploymentRepository )
+class DeploymentServiceHost( private val repository: DeploymentRepository ) : DeploymentService
 {
     /**
      * Instantiate a study deployment for a given [StudyProtocolSnapshot].
@@ -17,7 +17,7 @@ class DeploymentManager( private val repository: DeploymentRepository )
      * @throws InvalidConfigurationError when [protocol] is invalid.
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
-    fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus
+    override fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus
     {
         val newDeployment = StudyDeployment( protocol )
 
@@ -33,7 +33,7 @@ class DeploymentManager( private val repository: DeploymentRepository )
      *
      * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist.
      */
-    fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus
+    override fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus
     {
         val deployment: StudyDeployment = repository.getStudyDeploymentBy( studyDeploymentId )
 
@@ -51,7 +51,7 @@ class DeploymentManager( private val repository: DeploymentRepository )
      * [deviceRoleName] is not present in the deployment or is already registered,
      * or [registration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device.
      */
-    fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
+    override fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
     {
         val deployment = repository.getStudyDeploymentBy( studyDeploymentId )
 
@@ -70,7 +70,7 @@ class DeploymentManager( private val repository: DeploymentRepository )
      * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist,
      * or [masterDeviceRoleName] is not present in the deployment, or not yet registered.
      */
-    fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
+    override fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
     {
         val deployment = repository.getStudyDeploymentBy( studyDeploymentId )
 

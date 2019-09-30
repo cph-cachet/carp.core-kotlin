@@ -1,8 +1,6 @@
-package dk.cachet.carp.client.application
+package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.client.domain.*
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.deployment.application.DeploymentManager
 import kotlin.test.*
 
 
@@ -14,9 +12,9 @@ class ClientManagerTest
     @Test
     fun add_study_succeeds()
     {
-        // Create deployment and client manager.
-        val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = createSmartphoneManager( deploymentManager )
+        // Create deployment service and client manager.
+        val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val clientManager = createSmartphoneManager( deploymentService )
 
         clientManager.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
     }
@@ -24,9 +22,9 @@ class ClientManagerTest
     @Test
     fun add_study_fails_for_invalid_deployment()
     {
-        // Create deployment and client manager.
-        val ( deploymentManager, _) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = createSmartphoneManager( deploymentManager )
+        // Create deployment service and client manager.
+        val ( deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
+        val clientManager = createSmartphoneManager( deploymentService )
 
         val invalidId = UUID( "00000000-0000-0000-0000-000000000000" )
         assertFailsWith<IllegalArgumentException>
@@ -38,9 +36,9 @@ class ClientManagerTest
     @Test
     fun add_study_fails_for_nonexisting_device_role()
     {
-        // Create deployment and client manager.
-        val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = createSmartphoneManager( deploymentManager )
+        // Create deployment service and client manager.
+        val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val clientManager = createSmartphoneManager( deploymentService )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -51,9 +49,9 @@ class ClientManagerTest
     @Test
     fun add_study_fails_for_device_role_name_already_in_use()
     {
-        // Create deployment and client manager.
-        val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = createSmartphoneManager( deploymentManager )
+        // Create deployment service and client manager.
+        val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val clientManager = createSmartphoneManager( deploymentService )
 
         clientManager.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
         assertFailsWith<IllegalArgumentException>
@@ -65,13 +63,13 @@ class ClientManagerTest
     @Test
     fun creating_manager_fromSnapshot_obtained_by_getSnapshot_is_the_same()
     {
-        // Create deployment and client manager with one study.
-        val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = createSmartphoneManager( deploymentManager )
+        // Create deployment service and client manager with one study.
+        val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val clientManager = createSmartphoneManager( deploymentService )
         clientManager.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
 
         val snapshot = clientManager.getSnapshot()
-        val parsed = SmartphoneManager.fromSnapshot( snapshot, deploymentManager ) // Optionally, this can be cast back to `SmartphoneManager`.
+        val parsed = SmartphoneManager.fromSnapshot( snapshot, deploymentService ) // Optionally, this can be cast back to `SmartphoneManager`.
 
         assertEquals( clientManager.deviceRegistration, parsed.deviceRegistration )
         assertTrue { parsed.studies.count() == 1 } // Whether study runtime matches is tested in StudyRuntimeTest since this logic is simply delegated.
