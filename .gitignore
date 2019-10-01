@@ -166,3 +166,7 @@ gradle-app.setting
 
 # Ignore files with secrets.
 publish.properties
+
+# OS generated files
+.DS_Store
+
