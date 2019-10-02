@@ -35,7 +35,7 @@ fun createDependentSmartphoneStudy(): StudyProtocol
 /**
  * Create a deployment service which contains a study deployment for the specified [protocol].
  */
-fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentService, StudyDeploymentStatus>
+suspend fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentService, StudyDeploymentStatus>
 {
     val deploymentService = DeploymentServiceHost( InMemoryDeploymentRepository() )
     val status = deploymentService.createStudyDeployment( protocol.getSnapshot() )

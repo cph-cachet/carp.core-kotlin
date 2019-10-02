@@ -1,8 +1,8 @@
 package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
-
 
 /**
  * Tests for [ClientManager].
@@ -10,8 +10,7 @@ import kotlin.test.*
 class ClientManagerTest
 {
     @Test
-    fun add_study_succeeds()
-    {
+    fun add_study_succeeds() = runBlockingTest {
         // Create deployment service and client manager.
         val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val clientManager = createSmartphoneManager( deploymentService )
@@ -20,8 +19,7 @@ class ClientManagerTest
     }
 
     @Test
-    fun add_study_fails_for_invalid_deployment()
-    {
+    fun add_study_fails_for_invalid_deployment() = runBlockingTest {
         // Create deployment service and client manager.
         val ( deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
         val clientManager = createSmartphoneManager( deploymentService )
@@ -34,8 +32,7 @@ class ClientManagerTest
     }
 
     @Test
-    fun add_study_fails_for_nonexisting_device_role()
-    {
+    fun add_study_fails_for_nonexisting_device_role() = runBlockingTest {
         // Create deployment service and client manager.
         val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val clientManager = createSmartphoneManager( deploymentService )
@@ -47,8 +44,7 @@ class ClientManagerTest
     }
 
     @Test
-    fun add_study_fails_for_device_role_name_already_in_use()
-    {
+    fun add_study_fails_for_device_role_name_already_in_use() = runBlockingTest {
         // Create deployment service and client manager.
         val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val clientManager = createSmartphoneManager( deploymentService )
@@ -61,8 +57,7 @@ class ClientManagerTest
     }
 
     @Test
-    fun creating_manager_fromSnapshot_obtained_by_getSnapshot_is_the_same()
-    {
+    fun creating_manager_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runBlockingTest {
         // Create deployment service and client manager with one study.
         val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val clientManager = createSmartphoneManager( deploymentService )

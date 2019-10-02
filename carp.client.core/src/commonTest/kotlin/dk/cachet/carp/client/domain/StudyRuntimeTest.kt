@@ -1,6 +1,7 @@
 package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.client.infrastructure.*
+import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
 
@@ -10,8 +11,7 @@ import kotlin.test.*
 class StudyRuntimeTest
 {
     @Test
-    fun initialize_matches_requested_runtime()
-    {
+    fun initialize_matches_requested_runtime() = runBlockingTest {
         // Create a deployment manager which contains a 'smartphone study'.
         val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
@@ -23,8 +23,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun initialize_deploys_when_possible()
-    {
+    fun initialize_deploys_when_possible() = runBlockingTest {
         // Create a deployment manager which contains a 'smartphone study'.
         val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
@@ -35,8 +34,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun initialize_does_not_deploy_when_depending_on_other_devices()
-    {
+    fun initialize_does_not_deploy_when_depending_on_other_devices() = runBlockingTest {
         // Create a deployment manager which contains a study where 'smartphone' depends on another master device.
         val ( deploymentManager, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
 
@@ -47,8 +45,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun tryDeployment_only_succeeds_after_dependent_devices_are_registered()
-    {
+    fun tryDeployment_only_succeeds_after_dependent_devices_are_registered() = runBlockingTest {
         // Create a study runtime for a study where 'smartphone' depends on another master device ('deviceSmartphoneDependsOn').
         val ( deploymentManager, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val deviceRegistration = smartphone.createRegistration()
@@ -67,8 +64,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun creating_runtime_fromSnapshot_obtained_by_getSnapshot_is_the_same()
-    {
+    fun creating_runtime_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runBlockingTest {
         // Create a study runtime snapshot for the 'smartphone' in 'smartphone study'.
         val ( deploymentManager, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val deviceRegistration = smartphone.createRegistration()
