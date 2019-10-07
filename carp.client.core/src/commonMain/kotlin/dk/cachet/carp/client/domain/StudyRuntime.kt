@@ -44,7 +44,7 @@ class StudyRuntime private constructor(
          *
          * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
          */
-        internal fun initialize(
+        internal suspend fun initialize(
             /**
              * The application service to use to retrieve and manage the study deployment with [studyDeploymentId].
              * This deployment service should have the deployment with [studyDeploymentId] available.
@@ -111,7 +111,7 @@ class StudyRuntime private constructor(
      *
      * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
      */
-    fun tryDeployment(): DeploymentState
+    suspend fun tryDeployment(): DeploymentState
     {
         val deploymentStatus = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
         val clientDeviceStatus = deploymentStatus.devicesStatus.first { it.device == device }
