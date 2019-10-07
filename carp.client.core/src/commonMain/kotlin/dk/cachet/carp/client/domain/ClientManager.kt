@@ -52,7 +52,7 @@ class ClientManager<TMasterDevice: MasterDeviceDescriptor<TRegistration,*>, TReg
      * or the [deviceRegistration] of this client is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device.
      * @return The [StudyRuntime] through which data collection for the newly added study can be managed.
      */
-    fun addStudy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntime
+    suspend fun addStudy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntime
     {
         // TODO: Can/should it be reinforced here that only study runtimes for a matching master device type can be created?
 

@@ -17,7 +17,7 @@ interface DeploymentService
      * @throws InvalidConfigurationError when [protocol] is invalid.
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
-    fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus
+    suspend fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus
 
     /**
      * Get the status for a study deployment with the given [studyDeploymentId].
@@ -26,7 +26,7 @@ interface DeploymentService
      *
      * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist.
      */
-    fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus
+    suspend fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus
 
     /**
      * Register the device with the specified [deviceRoleName] for the study deployment with [studyDeploymentId].
@@ -39,7 +39,7 @@ interface DeploymentService
      * [deviceRoleName] is not present in the deployment or is already registered,
      * or [registration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device.
      */
-    fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
+    suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
 
     /**
      * Get the deployment configuration for the master device with [masterDeviceRoleName] in the study deployment with [studyDeploymentId].
@@ -47,5 +47,5 @@ interface DeploymentService
      * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist,
      * or [masterDeviceRoleName] is not present in the deployment, or not yet registered.
      */
-    fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
+    suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
 }
