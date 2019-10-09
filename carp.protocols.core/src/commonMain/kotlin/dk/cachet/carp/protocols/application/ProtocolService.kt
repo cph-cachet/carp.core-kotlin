@@ -18,7 +18,7 @@ interface ProtocolService
      * @throws IllegalArgumentException when the [protocol] already exists.
      * @throws InvalidConfigurationError when [protocol] is invalid.
      */
-    fun add( protocol: StudyProtocolSnapshot, versionTag: String = "Initial" )
+    suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String = "Initial" )
 
     /**
      * Store an updated version of the specified study [protocol].
@@ -28,7 +28,7 @@ interface ProtocolService
      * @throws IllegalArgumentException when the [protocol] is not yet stored in the repository or when the [versionTag] is already in use.
      * @throws InvalidConfigurationError when [protocol] is invalid.
      */
-    fun update( protocol: StudyProtocolSnapshot, versionTag: String = DateTime.now().toString() )
+    suspend fun update( protocol: StudyProtocolSnapshot, versionTag: String = DateTime.now().toString() )
 
     /**
      * Find the [StudyProtocolSnapshot] with the specified [protocolName] owned by [owner].
@@ -38,7 +38,7 @@ interface ProtocolService
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      * @throws IllegalArgumentException when the [owner], [protocolName], or [versionTag] does not exist.
      */
-    fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? = null ): StudyProtocolSnapshot
+    suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? = null ): StudyProtocolSnapshot
 
     /**
      * Find all [StudyProtocolSnapshot]'s owned by [owner].
@@ -46,10 +46,10 @@ interface ProtocolService
      * @throws IllegalArgumentException when the [owner] does not exist.
      * @return This returns the last version of each [StudyProtocolSnapshot] owned by the specified [owner].
      */
-    fun getAllFor( owner: ProtocolOwner ): List<StudyProtocolSnapshot>
+    suspend fun getAllFor( owner: ProtocolOwner ): List<StudyProtocolSnapshot>
 
     /**
      * Returns all stored versions for the [StudyProtocol] owned by [owner] with [protocolName].
      */
-    fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion>
+    suspend fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion>
 }
