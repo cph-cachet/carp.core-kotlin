@@ -10,7 +10,8 @@ data class StudySnapshot(
     val studyId: UUID,
     @Serializable( with = UUIDSerializer::class )
     val ownerId: UUID,
-    val name: String )
+    val name: String,
+    val participantIds: List<@Serializable( with = UUIDSerializer::class ) UUID> )
 {
     companion object
     {
@@ -21,7 +22,11 @@ data class StudySnapshot(
          */
         fun fromStudy( study: Study ): StudySnapshot
         {
-            return StudySnapshot( study.id, study.owner.id, study.name )
+            return StudySnapshot(
+                studyId = study.id,
+                ownerId = study.owner.id,
+                name = study.name,
+                participantIds = study.participantIds.toList() )
         }
     }
 }
