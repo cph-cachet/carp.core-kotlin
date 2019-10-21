@@ -21,7 +21,12 @@ class Study(
     {
         fun fromSnapshot( snapshot: StudySnapshot ): Study
         {
-            return Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.studyId )
+            val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.studyId )
+
+            // Add participants.
+            snapshot.participantIds.forEach { study.includeParticipant( it ) }
+
+            return study
         }
     }
 
