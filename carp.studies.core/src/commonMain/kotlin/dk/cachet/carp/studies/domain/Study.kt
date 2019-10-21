@@ -26,6 +26,20 @@ class Study(
     }
 
 
+    private val _participantIds: MutableSet<UUID> = mutableSetOf()
+
+    /**
+     * The set of participants which have been included in this [Study].
+     */
+    val participantIds: Set<UUID>
+        get() = _participantIds
+
+    /**
+     * Include a participant in this [Study].
+     */
+    fun includeParticipant( participantId: UUID ) = _participantIds.add( participantId )
+
+
     /**
      * Get a serializable snapshot of the current state of this [Study].
      */

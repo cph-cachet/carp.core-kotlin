@@ -1,8 +1,7 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import kotlin.test.*
 
 
 /**
@@ -10,6 +9,36 @@ import kotlin.test.assertEquals
  */
 class StudyTest
 {
+    private fun createTestStudy(): Study
+    {
+        val owner = StudyOwner()
+        val id = UUID.randomUUID()
+        return Study( owner, "Test study", id )
+    }
+
+    @Test
+    fun includeParticipant_succeeds()
+    {
+        val study: Study = createTestStudy()
+        val participantId = UUID.randomUUID()
+
+        study.includeParticipant( participantId )
+
+        assertEquals( participantId, study.participantIds.single() )
+    }
+
+    @Test
+    fun includeParticipant_multiple_times_only_adds_once()
+    {
+        val study: Study = createTestStudy()
+        val participantId = UUID.randomUUID()
+
+        study.includeParticipant( participantId )
+        study.includeParticipant( participantId )
+
+        assertEquals( participantId, study.participantIds.single() )
+    }
+
     @Test
     fun creating_study_fromSnapshot_obtained_by_getSnapshot_is_the_same()
     {
