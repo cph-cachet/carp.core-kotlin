@@ -7,16 +7,16 @@ import kotlin.test.*
 
 
 /**
- * Tests for implementations of [ParticipantService].
+ * Tests for implementations of [UserService].
  */
-interface ParticipantServiceTest
+interface UserServiceTest
 {
-    fun createParticipantService(): ParticipantService
+    fun createUserService(): UserService
 
 
     @Test
     fun createParticipant_has_matching_studyId() = runBlockingTest {
-        val service: ParticipantService = createParticipantService()
+        val service: UserService = createUserService()
         val studyId = UUID.randomUUID()
 
         val participant = service.createParticipant( studyId, EmailAddress( "test@test.com" ) )
@@ -27,7 +27,7 @@ interface ParticipantServiceTest
     @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
     @Test
     fun createParticipant_with_same_studyId_and_email_returns_same_participant() = runBlockingTest {
-        val service: ParticipantService = createParticipantService()
+        val service: UserService = createUserService()
         val studyId = UUID.randomUUID()
         val email = EmailAddress( "test@test.com" )
 
