@@ -1,6 +1,6 @@
 package dk.cachet.carp.studies.application
 
-import dk.cachet.carp.studies.domain.InMemoryUserRepository
+import dk.cachet.carp.studies.domain.*
 
 
 /**
@@ -8,5 +8,11 @@ import dk.cachet.carp.studies.domain.InMemoryUserRepository
  */
 class UserServiceHostTest : UserServiceTest
 {
-    override fun createUserService(): UserService = UserServiceHost( InMemoryUserRepository() )
+    override fun createUserService(): Pair<UserService, UserRepository>
+    {
+        val repo = InMemoryUserRepository()
+        val service = UserServiceHost( repo )
+
+        return Pair( service, repo )
+    }
 }
