@@ -12,5 +12,5 @@ data class Account(
     /**
      * The set of studies this account participates in as a participant.
      */
-    val studyParticipations: Set<Participant>,
+    val studyParticipations: Set<Participant> = setOf(),
     val id: UUID = UUID.randomUUID() )
