@@ -1,6 +1,6 @@
 package dk.cachet.carp.studies.domain
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.*
 
 
 interface UserRepository
@@ -11,6 +11,11 @@ interface UserRepository
      * @throws IllegalArgumentException when an [account] with the same ID or email address already exists.
      */
     fun addAccount( account: Account )
+
+    /**
+     * Returns the [Account] which has the specified [emailAddress] identity, or null when no account is found.
+     */
+    fun findAccountWithEmail( emailAddress: EmailAddress ): Account?
 
     /**
      * Add [participant] information of a study that an account with the given [accountId] should participate in.
