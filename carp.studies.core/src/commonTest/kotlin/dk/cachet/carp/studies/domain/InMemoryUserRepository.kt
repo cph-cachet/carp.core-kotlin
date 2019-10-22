@@ -1,6 +1,6 @@
 package dk.cachet.carp.studies.domain
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.*
 
 
 /**
@@ -17,6 +17,9 @@ class InMemoryUserRepository : UserRepository
 
         accounts.add( account )
     }
+
+    override fun findAccountWithEmail( emailAddress: EmailAddress ): Account?
+        = accounts.firstOrNull { it.emailAddress == emailAddress }
 
     override fun addStudyParticipation( accountId: UUID, participant: Participant )
     {

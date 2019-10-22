@@ -44,14 +44,35 @@ interface UserRepositoryTest
     {
         val repo = createUserRepository()
         val email = EmailAddress( "test@test.com" )
-        val account1 = Account( email, setOf() )
-        val account2 = Account( email, setOf() )
+        val account1 = Account( email )
+        val account2 = Account( email )
         repo.addAccount( account1 )
 
         assertFailsWith<IllegalArgumentException>
         {
             repo.addAccount( account2 )
         }
+    }
+
+    @Test
+    fun findAccountWithEmail_succeeds()
+    {
+        val repo = createUserRepository()
+        val email = EmailAddress( "test@test.com" )
+        val account = Account( email )
+        repo.addAccount( account )
+
+        val foundAccount = repo.findAccountWithEmail( email )
+        assertEquals( account, foundAccount )
+    }
+
+    @Test
+    fun findAccountWithEmail_null_when_not_found()
+    {
+        val ( repo, account ) = createRepoWithTestAccount()
+
+        val foundAccount = repo.findAccountWithEmail( EmailAddress( "unknown@email.com" ) )
+        assertNull( foundAccount )
     }
 
     @Test
