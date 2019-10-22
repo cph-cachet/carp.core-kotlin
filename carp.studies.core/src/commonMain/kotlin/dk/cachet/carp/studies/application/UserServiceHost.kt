@@ -5,13 +5,16 @@ import dk.cachet.carp.studies.domain.*
 
 
 /**
- * Application service which allows creating [Account]'s and including them as [Participant]'s for a [Study].
+ * Implementation of [UserService] which allows creating [Account]'s and including them as [Participant]'s for a [Study].
  */
-interface UserService
+class UserServiceHost( private val repository: UserRepository ) : UserService
 {
     /**
      * Create a participant for the [Study] with the specified [studyId] and [Account] identified by [emailAddress].
      * In case no [Account] is associated with the specified [emailAddress] yet, an invitation to register will be sent out.
      */
-    suspend fun createParticipant( studyId: UUID, emailAddress: EmailAddress ): Participant
+    override suspend fun createParticipant( studyId: UUID, emailAddress: EmailAddress ): Participant
+    {
+        TODO()
+    }
 }
