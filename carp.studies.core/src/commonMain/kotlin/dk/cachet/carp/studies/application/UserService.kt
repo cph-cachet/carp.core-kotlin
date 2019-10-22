@@ -11,7 +11,7 @@ interface UserService
 {
     /**
      * Create a participant for the [Study] with the specified [studyId] and [Account] identified by [emailAddress].
-     * In case no [Account] is associated with the specified [emailAddress] yet, an invitation to register will be sent out.
+     * In case no [Account] is associated with the specified [emailAddress] yet, an invitation to register is sent out.
      */
     suspend fun createParticipant( studyId: UUID, emailAddress: EmailAddress ): Participant
 }
