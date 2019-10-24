@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.*
-import dk.cachet.carp.studies.domain.*
+import dk.cachet.carp.studies.domain.users.*
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 

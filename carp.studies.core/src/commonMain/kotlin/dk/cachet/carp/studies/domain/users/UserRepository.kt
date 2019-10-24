@@ -1,4 +1,4 @@
-package dk.cachet.carp.studies.domain
+package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.*
 
