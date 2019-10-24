@@ -1,6 +1,6 @@
 package dk.cachet.carp.studies.application
 
-import dk.cachet.carp.studies.domain.*
+import dk.cachet.carp.studies.domain.users.*
 
 
 /**
