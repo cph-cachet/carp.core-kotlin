@@ -5,12 +5,48 @@ import dk.cachet.carp.common.*
 
 /**
  * Uniquely identifies an account with associated identities and the studies it participates in.
- * TODO: For now only an email identity is implemented. Simple 'username' support might also need to be provided.
  */
 data class Account(
-    val emailAddress: EmailAddress,
+    /**
+     * Identities associated with this account.
+     */
+    val identities: List<AccountIdentity> = listOf(),
     /**
      * The set of studies this account participates in as a participant.
      */
     val studyParticipations: Set<Participant> = setOf(),
     val id: UUID = UUID.randomUUID() )
+{
+    companion object Factory
+    {
+        /**
+         * Create a new [Account] uniquely identified by the specified [emailAddress].
+         */
+        fun withEmailIdentity( emailAddress: String ): Account
+            = Account( listOf( EmailAccountIdentity( emailAddress ) ) )
+
+        /**
+         * Create a new [Account] uniquely identified by the specified [emailAddress].
+         */
+        fun withEmailIdentity( emailAddress: EmailAddress ): Account
+            = Account( listOf( EmailAccountIdentity( emailAddress ) ) )
+
+        /**
+         * Create a new [Account] uniquely identified by the specified [username].
+         */
+        fun withUsernameIdentity( username: String ): Account
+            = Account( listOf( UsernameAccountIdentity( username ) ) )
+
+        /**
+         * Create a new [Account] uniquely identified by the specified [username].
+         */
+        fun withUsernameIdentity( username: Username ): Account
+            = Account( listOf( UsernameAccountIdentity( username ) ) )
+    }
+
+    /**
+     * Determines whether this account has associated [identities] matching [otherAccount].
+     */
+    fun hasMatchingIdentity( otherAccount: Account ): Boolean
+        = identities.intersect( otherAccount.identities ).any()
+}
