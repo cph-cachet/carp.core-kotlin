@@ -1,7 +1,6 @@
 package dk.cachet.carp.studies.domain.users
 
-import dk.cachet.carp.common.EmailAddress
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.*
 import kotlin.test.*
 
 
@@ -16,9 +15,7 @@ interface UserRepositoryTest
     fun createRepoWithTestAccount(): Pair<UserRepository, Account>
     {
         val repo = createUserRepository()
-
-        val id = UUID( "ce1fd1eb-aa35-4922-8dc4-c107d83357e1" )
-        val testAccount = Account( EmailAddress( "test@test.com" ), setOf(), id )
+        val testAccount = Account.withUsernameIdentity( "test" )
 
         repo.addAccount( testAccount )
         return Pair( repo, testAccount )
@@ -29,8 +26,10 @@ interface UserRepositoryTest
     {
         val repo = createUserRepository()
         val id = UUID.randomUUID()
-        val account1 = Account( EmailAddress( "test@test.com" ), setOf(), id )
-        val account2 = Account( EmailAddress( "test2@test.com" ), setOf(), id )
+        val username1 = UsernameAccountIdentity( "test" )
+        val username2 = UsernameAccountIdentity( "test2" )
+        val account1 = Account( listOf( username1 ), setOf(), id )
+        val account2 = Account( listOf( username2 ), setOf(), id )
         repo.addAccount( account1 )
 
         assertFailsWith<IllegalArgumentException>
@@ -40,12 +39,12 @@ interface UserRepositoryTest
     }
 
     @Test
-    fun cant_add_account_with_email_that_already_exists()
+    fun cant_add_account_with_identity_that_already_exists()
     {
         val repo = createUserRepository()
-        val email = EmailAddress( "test@test.com" )
-        val account1 = Account( email )
-        val account2 = Account( email )
+        val username = "test"
+        val account1 = Account.withUsernameIdentity( username )
+        val account2 = Account.withUsernameIdentity( username )
         repo.addAccount( account1 )
 
         assertFailsWith<IllegalArgumentException>
@@ -55,23 +54,41 @@ interface UserRepositoryTest
     }
 
     @Test
-    fun findAccountWithEmail_succeeds()
+    fun findAccountWithId_succeeds()
     {
-        val repo = createUserRepository()
-        val email = EmailAddress( "test@test.com" )
-        val account = Account( email )
-        repo.addAccount( account )
+        val ( repo, account ) = createRepoWithTestAccount()
 
-        val foundAccount = repo.findAccountWithEmail( email )
+        val foundAccount = repo.findAccountWithId( account.id )
         assertEquals( account, foundAccount )
     }
 
     @Test
-    fun findAccountWithEmail_null_when_not_found()
+    fun findAccountWithId_null_when_not_found()
     {
-        val ( repo, account ) = createRepoWithTestAccount()
+        val repo = createUserRepository()
 
-        val foundAccount = repo.findAccountWithEmail( EmailAddress( "unknown@email.com" ) )
+        val foundAccount = repo.findAccountWithId( UUID.randomUUID() )
+        assertNull( foundAccount )
+    }
+
+    @Test
+    fun findAccountWithIdentity_succeeds()
+    {
+        val repo = createUserRepository()
+        val username = "test"
+        val account = Account.withUsernameIdentity( username )
+        repo.addAccount( account )
+
+        val foundAccount = repo.findAccountWithIdentity( AccountIdentity.fromUsername( username ) )
+        assertEquals( account, foundAccount )
+    }
+
+    @Test
+    fun findAccountWithIdentity_null_when_not_found()
+    {
+        val ( repo, _ ) = createRepoWithTestAccount()
+
+        val foundAccount = repo.findAccountWithIdentity( AccountIdentity.fromEmailAddress( "non@existing.com" ) )
         assertNull( foundAccount )
     }
 
@@ -86,6 +103,18 @@ interface UserRepositoryTest
         val participants = repo.getParticipantsForStudy( studyId )
 
         assertEquals( participant, participants.single() )
+    }
+
+    @Test
+    fun addStudyParticipation_for_unknown_account_fails()
+    {
+        val repo = createUserRepository()
+        val studyId = UUID.randomUUID()
+        val unknownId = UUID.randomUUID()
+
+        assertFailsWith<IllegalArgumentException> {
+            repo.addStudyParticipation( unknownId, Participant( studyId ) )
+        }
     }
 
     @Test
