@@ -17,7 +17,7 @@ class ProtocolServiceHost(private val repository: StudyProtocolRepository ) : Pr
      * @throws IllegalArgumentException when the [protocol] already exists.
      * @throws InvalidConfigurationError when [protocol] is invalid.
      */
-    override fun add( protocol: StudyProtocolSnapshot, versionTag: String )
+    override suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String )
     {
         val initializedProtocol = StudyProtocol.fromSnapshot( protocol )
         repository.add( initializedProtocol, versionTag )
@@ -31,7 +31,7 @@ class ProtocolServiceHost(private val repository: StudyProtocolRepository ) : Pr
      * @throws IllegalArgumentException when the [protocol] is not yet stored in the repository or when the [versionTag] is already in use.
      * @throws InvalidConfigurationError when [protocol] is invalid.
      */
-    override fun update( protocol: StudyProtocolSnapshot, versionTag: String )
+    override suspend fun update( protocol: StudyProtocolSnapshot, versionTag: String )
     {
         val initializedProtocol = StudyProtocol.fromSnapshot( protocol )
         repository.update( initializedProtocol, versionTag )
@@ -45,7 +45,7 @@ class ProtocolServiceHost(private val repository: StudyProtocolRepository ) : Pr
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      * @throws IllegalArgumentException when the [owner], [protocolName], or [versionTag] does not exist.
      */
-    override fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? ): StudyProtocolSnapshot
+    override suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? ): StudyProtocolSnapshot
     {
         val protocol: StudyProtocol = repository.getBy( owner, protocolName, versionTag )
         return protocol.getSnapshot()
@@ -57,7 +57,7 @@ class ProtocolServiceHost(private val repository: StudyProtocolRepository ) : Pr
      * @throws IllegalArgumentException when the [owner] does not exist.
      * @return This returns the last version of each [StudyProtocolSnapshot] owned by the specified [owner].
      */
-    override fun getAllFor( owner: ProtocolOwner ): List<StudyProtocolSnapshot>
+    override suspend fun getAllFor( owner: ProtocolOwner ): List<StudyProtocolSnapshot>
     {
         val protocols: Sequence<StudyProtocol> = repository.getAllFor( owner )
         return protocols.map { it.getSnapshot() }.toList()
@@ -66,7 +66,7 @@ class ProtocolServiceHost(private val repository: StudyProtocolRepository ) : Pr
     /**
      * Returns all stored versions for the [StudyProtocol] owned by [owner] with [protocolName].
      */
-    override fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion>
+    override suspend fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion>
     {
         return repository.getVersionHistoryFor( owner, protocolName )
     }

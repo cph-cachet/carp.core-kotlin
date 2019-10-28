@@ -17,7 +17,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository ) : De
      * @throws InvalidConfigurationError when [protocol] is invalid.
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
-    override fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus
+    override suspend fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus
     {
         val newDeployment = StudyDeployment( protocol )
 
@@ -33,7 +33,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository ) : De
      *
      * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist.
      */
-    override fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus
+    override suspend fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus
     {
         val deployment: StudyDeployment = repository.getStudyDeploymentBy( studyDeploymentId )
 
@@ -51,7 +51,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository ) : De
      * [deviceRoleName] is not present in the deployment or is already registered,
      * or [registration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device.
      */
-    override fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
+    override suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
     {
         val deployment = repository.getStudyDeploymentBy( studyDeploymentId )
 
@@ -70,7 +70,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository ) : De
      * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist,
      * or [masterDeviceRoleName] is not present in the deployment, or not yet registered.
      */
-    override fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
+    override suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
     {
         val deployment = repository.getStudyDeploymentBy( studyDeploymentId )
 
