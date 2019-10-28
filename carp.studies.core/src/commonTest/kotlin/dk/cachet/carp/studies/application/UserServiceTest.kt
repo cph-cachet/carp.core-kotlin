@@ -66,13 +66,12 @@ abstract class UserServiceTest
 
         // Verify whether user was notified of account creation.
         assertEquals( email, notifyUser.lastAccountConfirmationEmail?.emailAddress )
-        val account = notifyUser.lastAccountConfirmationEmail!!.account
-        assertEquals( expectedIdentity, account.identities.single() )
-        assertEquals( 0, account.studyParticipations.count() )
+        val accountId = notifyUser.lastAccountConfirmationEmail!!.accountId
 
         // Verify whether account was added to the repository.
         val foundAccount = repo.findAccountWithIdentity( expectedIdentity )
-        assertEquals( account, foundAccount )
+        assertNotNull( foundAccount )
+        assertEquals( accountId, foundAccount.id )
     }
 
     @Test
@@ -128,20 +127,17 @@ abstract class UserServiceTest
 
         val studyId = UUID.randomUUID()
         val email = EmailAddress( "test@test.com" )
-        val expectedIdentity = EmailAccountIdentity( email )
-        val participant = service.inviteParticipant( studyId, email )
+        service.inviteParticipant( studyId, email )
 
         // Verify whether user was notified to register account.
         assertEquals( email, notifyUser.lastAccountInvitationEmail?.emailAddress )
         assertEquals( studyId, notifyUser.lastAccountInvitationEmail?.studyId )
-        val account = notifyUser.lastAccountInvitationEmail!!.account
-        assertEquals( expectedIdentity, account.identities.single() )
-        assertEquals( participant, account.studyParticipations.single() )
+        val accountId = notifyUser.lastAccountInvitationEmail!!.accountId
 
         // Verify whether account was added to the repository.
         val foundAccount = repo.findAccountWithIdentity( EmailAccountIdentity( email ) )
         assertNotNull( foundAccount )
-        assertEquals( account, foundAccount )
+        assertEquals( accountId, foundAccount.id )
     }
 
     @Suppress( "ReplaceAssertBooleanWithAssertEquality" )

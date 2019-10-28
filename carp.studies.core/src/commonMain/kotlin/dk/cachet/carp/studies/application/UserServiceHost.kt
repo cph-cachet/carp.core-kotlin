@@ -38,7 +38,7 @@ class UserServiceHost( private val repository: UserRepository, private val notif
         {
             val newAccount = Account.withEmailIdentity( emailAddress )
             repository.addAccount( newAccount )
-            notifyUserService.sendAccountConfirmationEmail( newAccount, emailAddress )
+            notifyUserService.sendAccountConfirmationEmail( newAccount.id, emailAddress )
         }
     }
 
@@ -67,11 +67,12 @@ class UserServiceHost( private val repository: UserRepository, private val notif
         val isNewAccount = account == null
         var participant: Participant? = account?.studyParticipations?.firstOrNull { it.studyId == studyId }
 
-        // Create an unverified account if it does not yet exist.
+        // Create an unverified account if it does not yet exist and send out invitation email.
         if ( isNewAccount )
         {
             account = Account.withEmailIdentity( emailAddress )
             repository.addAccount( account )
+            notifyUserService.sendAccountInvitationEmail( account.id, studyId, emailAddress )
         }
 
         // Create and add participant if it does not yet exist.
@@ -79,14 +80,6 @@ class UserServiceHost( private val repository: UserRepository, private val notif
         {
             participant = Participant( studyId )
             repository.addStudyParticipation( account!!.id, participant )
-        }
-
-        // Send invitation email in case it is a new account, including the potentially newly added study participation.
-        // TODO: Does the invitation email really need the full account information? Maybe account ID suffices, removing this unnecessary complexity.
-        if ( isNewAccount )
-        {
-            val updatedAccount = repository.findAccountWithId( account!!.id )!!
-            notifyUserService.sendAccountInvitationEmail( updatedAccount, studyId, emailAddress )
         }
 
         return participant
