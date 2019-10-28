@@ -27,7 +27,7 @@ class UserServiceHost( private val repository: UserRepository, private val notif
 
     /**
      * Create an account which is identified by an [emailAddress] someone has access to.
-     * In case no [Account] is associated with the specified [emailAddress], send out a confirmation email.
+     * In case no [Account] is associated with the specified [emailAddress], send out a verification email.
      */
     override suspend fun createAccount( emailAddress: EmailAddress )
     {
@@ -38,7 +38,7 @@ class UserServiceHost( private val repository: UserRepository, private val notif
         {
             val newAccount = Account.withEmailIdentity( emailAddress )
             repository.addAccount( newAccount )
-            notifyUserService.sendAccountConfirmationEmail( newAccount.id, emailAddress )
+            notifyUserService.sendAccountVerificationEmail( newAccount.id, emailAddress )
         }
     }
 

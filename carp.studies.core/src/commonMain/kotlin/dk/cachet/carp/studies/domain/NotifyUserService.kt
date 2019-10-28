@@ -9,9 +9,9 @@ import dk.cachet.carp.common.*
 interface NotifyUserService
 {
     /**
-     * Send an email to [emailAddress] requesting the user to confirm the creation of the account with the specified [accountId].
+     * Send an email to [emailAddress] requesting the user to verify the creation of the account with the specified [accountId].
      */
-    fun sendAccountConfirmationEmail( accountId: UUID, emailAddress: EmailAddress )
+    fun sendAccountVerificationEmail( accountId: UUID, emailAddress: EmailAddress )
 
     /**
      * Send an email to [emailAddress] inviting the user to participate in the study identified by [studyId],

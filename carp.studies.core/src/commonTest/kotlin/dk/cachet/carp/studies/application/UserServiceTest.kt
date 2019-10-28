@@ -65,8 +65,8 @@ abstract class UserServiceTest
         service.createAccount( email )
 
         // Verify whether user was notified of account creation.
-        assertEquals( email, notifyUser.lastAccountConfirmationEmail?.emailAddress )
-        val accountId = notifyUser.lastAccountConfirmationEmail!!.accountId
+        assertEquals( email, notifyUser.lastAccountVerificationEmail?.emailAddress )
+        val accountId = notifyUser.lastAccountVerificationEmail!!.accountId
 
         // Verify whether account was added to the repository.
         val foundAccount = repo.findAccountWithIdentity( expectedIdentity )
@@ -85,7 +85,7 @@ abstract class UserServiceTest
 
         // Create user which already exists, so no notification is sent.
         service.createAccount( emailAddress )
-        assertNull( notifyUser.lastAccountConfirmationEmail )
+        assertNull( notifyUser.lastAccountVerificationEmail )
     }
 
     @Test
