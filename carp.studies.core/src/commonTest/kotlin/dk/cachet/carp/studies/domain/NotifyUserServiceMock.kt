@@ -5,16 +5,16 @@ import dk.cachet.carp.common.*
 
 class NotifyUserServiceMock : NotifyUserService
 {
-    class AccountConfirmationEmail( val accountId: UUID, val emailAddress: EmailAddress )
+    class AccountVerificationEmail(val accountId: UUID, val emailAddress: EmailAddress )
     class AccountInvitationEmail( val accountId: UUID, val studyId: UUID, val emailAddress: EmailAddress )
 
 
-    var lastAccountConfirmationEmail: AccountConfirmationEmail? = null
+    var lastAccountVerificationEmail: AccountVerificationEmail? = null
     var lastAccountInvitationEmail: AccountInvitationEmail? = null
 
-    override fun sendAccountConfirmationEmail( accountId: UUID, emailAddress: EmailAddress )
+    override fun sendAccountVerificationEmail( accountId: UUID, emailAddress: EmailAddress )
     {
-        lastAccountConfirmationEmail = AccountConfirmationEmail( accountId, emailAddress )
+        lastAccountVerificationEmail = AccountVerificationEmail( accountId, emailAddress )
     }
 
     override fun sendAccountInvitationEmail( accountId: UUID, studyId: UUID, emailAddress: EmailAddress )
@@ -24,7 +24,7 @@ class NotifyUserServiceMock : NotifyUserService
 
     fun reset()
     {
-        lastAccountConfirmationEmail = null
+        lastAccountVerificationEmail = null
         lastAccountInvitationEmail = null
     }
 }
