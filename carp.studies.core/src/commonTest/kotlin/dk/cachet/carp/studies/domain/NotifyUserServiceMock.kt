@@ -1,26 +1,25 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.*
-import dk.cachet.carp.studies.domain.users.Account
 
 
 class NotifyUserServiceMock : NotifyUserService
 {
-    class AccountConfirmationEmail( val account: Account, val emailAddress: EmailAddress )
-    class AccountInvitationEmail( val account: Account, val studyId: UUID, val emailAddress: EmailAddress )
+    class AccountConfirmationEmail( val accountId: UUID, val emailAddress: EmailAddress )
+    class AccountInvitationEmail( val accountId: UUID, val studyId: UUID, val emailAddress: EmailAddress )
 
 
     var lastAccountConfirmationEmail: AccountConfirmationEmail? = null
     var lastAccountInvitationEmail: AccountInvitationEmail? = null
 
-    override fun sendAccountConfirmationEmail( account: Account, emailAddress: EmailAddress )
+    override fun sendAccountConfirmationEmail( accountId: UUID, emailAddress: EmailAddress )
     {
-        lastAccountConfirmationEmail = AccountConfirmationEmail( account, emailAddress )
+        lastAccountConfirmationEmail = AccountConfirmationEmail( accountId, emailAddress )
     }
 
-    override fun sendAccountInvitationEmail( account: Account, studyId: UUID, emailAddress: EmailAddress )
+    override fun sendAccountInvitationEmail( accountId: UUID, studyId: UUID, emailAddress: EmailAddress )
     {
-        lastAccountInvitationEmail = AccountInvitationEmail( account, studyId, emailAddress )
+        lastAccountInvitationEmail = AccountInvitationEmail( accountId, studyId, emailAddress )
     }
 
     fun reset()
