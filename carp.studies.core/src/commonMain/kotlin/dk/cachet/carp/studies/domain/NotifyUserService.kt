@@ -1,8 +1,6 @@
 package dk.cachet.carp.studies.domain
 
-import dk.cachet.carp.common.EmailAddress
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.studies.domain.users.Account
+import dk.cachet.carp.common.*
 
 
 /**
@@ -11,13 +9,13 @@ import dk.cachet.carp.studies.domain.users.Account
 interface NotifyUserService
 {
     /**
-     * Send an email to [emailAddress] requesting the user to confirm the creation of the specified [account].
+     * Send an email to [emailAddress] requesting the user to confirm the creation of the account with the specified [accountId].
      */
-    fun sendAccountConfirmationEmail( account: Account, emailAddress: EmailAddress )
+    fun sendAccountConfirmationEmail( accountId: UUID, emailAddress: EmailAddress )
 
     /**
      * Send an email to [emailAddress] inviting the user to participate in the study identified by [studyId],
-     * requiring the user to confirm the creation of the specified [account].
+     * requiring the user to confirm the creation of the account with the specified [accountId].
      */
-    fun sendAccountInvitationEmail( account: Account, studyId: UUID, emailAddress: EmailAddress )
+    fun sendAccountInvitationEmail( accountId: UUID, studyId: UUID, emailAddress: EmailAddress )
 }
