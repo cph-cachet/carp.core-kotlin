@@ -1,7 +1,10 @@
 package dk.cachet.carp.studies.domain.users
 
+import kotlinx.serialization.Serializable
+
 
 /**
  * A unique name which identifies an [Account].
  */
-data class Username(val name: String )
+@Serializable
+data class Username( val name: String )

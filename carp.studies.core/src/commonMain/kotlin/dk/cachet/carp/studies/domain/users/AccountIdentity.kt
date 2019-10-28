@@ -1,11 +1,13 @@
 package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.EmailAddress
+import kotlinx.serialization.*
 
 
 /**
  * Identifies an [Account].
  */
+@Polymorphic
 interface AccountIdentity
 {
     companion object Factory
@@ -25,6 +27,7 @@ interface AccountIdentity
 /**
  * Identifies an [Account] by an [emailAddress] somebody has access to.
  */
+@Serializable
 data class EmailAccountIdentity( val emailAddress: EmailAddress ) : AccountIdentity
 {
     constructor( emailAddress: String ) : this( EmailAddress( emailAddress ) )
@@ -33,6 +36,7 @@ data class EmailAccountIdentity( val emailAddress: EmailAddress ) : AccountIdent
 /**
  * Identifies an [Account] by a unique [username].
  */
+@Serializable
 data class UsernameAccountIdentity( val username: Username ) : AccountIdentity
 {
     constructor( username: String ) : this( Username( username ) )
