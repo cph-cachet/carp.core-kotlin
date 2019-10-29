@@ -12,7 +12,7 @@ class Study(
      */
     val owner: StudyOwner,
     /**
-     * A descriptive name for the study assigned by the [StudyOwner].
+     * A descriptive name for the study, assigned by, and only visible to, the [StudyOwner].
      */
     val name: String,
     val id: UUID = UUID.randomUUID() )

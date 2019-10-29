@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
-import dk.cachet.carp.studies.domain.StudySnapshot
+import dk.cachet.carp.studies.domain.*
 import dk.cachet.carp.studies.domain.users.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.*
@@ -70,3 +70,15 @@ fun StudySnapshot.Companion.fromJson( json: String ): StudySnapshot
  */
 fun StudySnapshot.toJson(): String
     = JSON.stringify( StudySnapshot.serializer(), this )
+
+/**
+ * Create a [StudyStatus] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyStatus.Companion.fromJson( json: String ): StudyStatus
+    = JSON.parse( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyStatus.toJson(): String
+    = JSON.stringify( StudyStatus.serializer(), this )
