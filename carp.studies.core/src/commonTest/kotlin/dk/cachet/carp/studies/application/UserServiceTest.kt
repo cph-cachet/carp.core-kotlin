@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.*
-import dk.cachet.carp.studies.domain.NotifyUserServiceMock
+import dk.cachet.carp.studies.domain.*
 import dk.cachet.carp.studies.domain.users.*
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
@@ -64,14 +64,12 @@ abstract class UserServiceTest
         val expectedIdentity = EmailAccountIdentity( email )
         service.createAccount( email )
 
-        // Verify whether user was notified of account creation.
-        assertEquals( email, notifyUser.lastAccountVerificationEmail?.emailAddress )
-        val accountId = notifyUser.lastAccountVerificationEmail!!.accountId
-
         // Verify whether account was added to the repository.
         val foundAccount = repo.findAccountWithIdentity( expectedIdentity )
         assertNotNull( foundAccount )
-        assertEquals( accountId, foundAccount.id )
+
+        // Verify whether user was notified of account creation.
+        assertTrue( notifyUser.wasCalled( NotifyUserService::sendAccountVerificationEmail, foundAccount.id, email ) )
     }
 
     @Test
@@ -85,7 +83,7 @@ abstract class UserServiceTest
 
         // Create user which already exists, so no notification is sent.
         service.createAccount( emailAddress )
-        assertNull( notifyUser.lastAccountVerificationEmail )
+        assertTrue( notifyUser.wasNotCalled( NotifyUserService::sendAccountVerificationEmail ) )
     }
 
     @Test
@@ -129,15 +127,12 @@ abstract class UserServiceTest
         val email = EmailAddress( "test@test.com" )
         service.inviteParticipant( studyId, email )
 
-        // Verify whether user was notified to register account.
-        assertEquals( email, notifyUser.lastAccountInvitationEmail?.emailAddress )
-        assertEquals( studyId, notifyUser.lastAccountInvitationEmail?.studyId )
-        val accountId = notifyUser.lastAccountInvitationEmail!!.accountId
-
         // Verify whether account was added to the repository.
         val foundAccount = repo.findAccountWithIdentity( EmailAccountIdentity( email ) )
         assertNotNull( foundAccount )
-        assertEquals( accountId, foundAccount.id )
+
+        // Verify whether user was notified to register account.
+        assertTrue( notifyUser.wasCalled( NotifyUserService::sendAccountInvitationEmail, foundAccount.id, studyId, email ) )
     }
 
     @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
@@ -154,6 +149,6 @@ abstract class UserServiceTest
         // Subsequent invitations will return the same participant, and will not notify the user again.
         val p2: Participant = service.inviteParticipant( studyId, email )
         assertTrue( p1.id == p2.id )
-        assertNull( notifyUser.lastAccountInvitationEmail )
+        assertTrue( notifyUser.wasNotCalled( NotifyUserService::sendAccountInvitationEmail ) )
     }
 }
