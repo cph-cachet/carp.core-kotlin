@@ -40,6 +40,11 @@ class Study(
         get() = _participantIds
 
     /**
+     * Get the status (serializable) of this [Study].
+     */
+    fun getStatus(): StudyStatus = StudyStatus( id, name )
+
+    /**
      * Include a participant in this [Study].
      */
     fun includeParticipant( participantId: UUID ) = _participantIds.add( participantId )

@@ -5,7 +5,7 @@ import dk.cachet.carp.studies.domain.*
 
 
 /**
- * Application service which allows creating and managing [Study]'s.
+ * Application service which allows creating and managing studies.
  */
 interface StudyService
 {
@@ -15,4 +15,13 @@ interface StudyService
      * @param name A descriptive name for the study, assigned by, and only visible to, the [owner].
      */
     suspend fun createStudy( owner: StudyOwner, name: String ): StudyStatus
+
+    /**
+     * Get the status for a study with the given [studyId].
+     *
+     * @param studyId The id of the study to return [StudyStatus] for.
+     *
+     * @throws IllegalArgumentException when a deployment with [studyId] does not exist.
+     */
+    suspend fun getStudyStatus( studyId: UUID ): StudyStatus
 }
