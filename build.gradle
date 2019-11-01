@@ -14,17 +14,17 @@ buildscript {
             // Kotlin multiplatform versions.
             kotlin:'1.3.41',
             serialization:'0.11.1',
-            coroutines:'1.2.2',
+            coroutines:'1.3.2',
 
             // JVM versions.
             jvmTarget:'1.6',
-            jUnit5:'5.5.1',
+            jUnit5:'5.5.2',
             dokkaPlugin:'0.9.18',
 
             // JS versions.
             nodePlugin:'1.3.1',
-            node:'12.9.1',
-            mocha:'6.2.0'
+            node:'13.0.1',
+            mocha:'6.2.2'
         ]
     }
 
