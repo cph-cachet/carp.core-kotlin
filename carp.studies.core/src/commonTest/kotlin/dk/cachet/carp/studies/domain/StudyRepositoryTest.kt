@@ -17,10 +17,10 @@ interface StudyRepositoryTest
     {
         val repo = createStudyRepository()
         val id = UUID.randomUUID()
-        val study1 = Study( StudyOwner(), "Study 1", id )
+        val study1 = Study( StudyOwner(), "Study 1", StudyDescription.empty(), id )
         repo.add( study1 )
 
-        val studyWithSameId = Study( StudyOwner(), "Study 2", id)
+        val studyWithSameId = Study( StudyOwner(), "Study 2", StudyDescription.empty(), id )
         assertFailsWith<IllegalArgumentException>
         {
             repo.add( studyWithSameId )

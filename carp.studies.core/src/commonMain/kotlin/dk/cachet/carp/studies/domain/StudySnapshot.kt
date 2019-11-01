@@ -11,6 +11,7 @@ data class StudySnapshot(
     @Serializable( with = UUIDSerializer::class )
     val ownerId: UUID,
     val name: String,
+    val description: StudyDescription,
     val participantIds: List<@Serializable( with = UUIDSerializer::class ) UUID> )
 {
     companion object
@@ -26,6 +27,7 @@ data class StudySnapshot(
                 studyId = study.id,
                 ownerId = study.owner.id,
                 name = study.name,
+                description = study.description,
                 participantIds = study.participantIds.toList() )
         }
     }

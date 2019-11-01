@@ -13,10 +13,12 @@ class StudyServiceHost( private val repository: StudyRepository ) : StudyService
      * Create a new study for the specified [owner].
      *
      * @param name A descriptive name for the study, assigned by, and only visible to, the [owner].
+     * @param description A description of the study, visible to all participants.
      */
-    override suspend fun createStudy( owner: StudyOwner, name: String ): StudyStatus
+    override suspend fun createStudy( owner: StudyOwner, name: String, description: StudyDescription? ): StudyStatus
     {
-        val study = Study( owner, name )
+        val ensuredDescription = description ?: StudyDescription( name )
+        val study = Study( owner, name, ensuredDescription )
 
         repository.add( study )
 

@@ -72,6 +72,18 @@ fun StudySnapshot.toJson(): String
     = JSON.stringify( StudySnapshot.serializer(), this )
 
 /**
+ * Create a [StudyDescription] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyDescription.Companion.fromJson( json: String ): StudyDescription
+    = JSON.parse( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyDescription.toJson(): String
+    = JSON.stringify( StudyDescription.serializer(), this )
+
+/**
  * Create a [StudyStatus] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun StudyStatus.Companion.fromJson( json: String ): StudyStatus

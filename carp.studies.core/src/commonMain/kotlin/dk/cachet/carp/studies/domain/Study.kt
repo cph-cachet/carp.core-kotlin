@@ -15,13 +15,17 @@ class Study(
      * A descriptive name for the study, assigned by, and only visible to, the [StudyOwner].
      */
     val name: String,
+    /**
+     * A description of the study, visible to all participants.
+     */
+    val description: StudyDescription = StudyDescription.empty(),
     val id: UUID = UUID.randomUUID() )
 {
     companion object Factory
     {
         fun fromSnapshot( snapshot: StudySnapshot ): Study
         {
-            val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.studyId )
+            val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.description, snapshot.studyId )
 
             // Add participants.
             snapshot.participantIds.forEach { study.includeParticipant( it ) }
