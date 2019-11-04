@@ -84,4 +84,12 @@ class UserServiceHost( private val repository: UserRepository, private val notif
 
         return participant
     }
+
+    /**
+     * Get all participants included in a study for the given [studyId].
+     */
+    override suspend fun getParticipantsForStudy( studyId: UUID ): List<Participant>
+    {
+        return repository.getParticipantsForStudy( studyId )
+    }
 }

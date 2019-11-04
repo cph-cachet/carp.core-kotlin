@@ -151,4 +151,16 @@ abstract class UserServiceTest
         assertTrue( p1.id == p2.id )
         assertTrue( notifyUser.wasNotCalled( NotifyUserService::sendAccountInvitationEmail ) )
     }
+
+    @Test
+    fun getParticipantsForStudy_succeeds() = runBlockingTest {
+        val ( service, _ ) = createUserService()
+        val account = service.createAccount( Username( "test" ) )
+        val studyId = UUID.randomUUID()
+        val participant = service.createParticipant( studyId, account.id )
+
+        val participants = service.getParticipantsForStudy( studyId )
+
+        assertEquals( participant, participants.single() )
+    }
 }
