@@ -4,6 +4,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import kotlinx.serialization.json.content
 import kotlinx.serialization.modules.SerializersModule
+import kotlin.math.exp
 import kotlin.test.*
 
 
@@ -50,14 +51,31 @@ class UnknownPolymorphicSerializerTest
         by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomBaseType( className, json, serializer ) } )
 
 
+    private fun initializeJson() = Json( JsonConfiguration.Stable, SERIAL_MODULE )
+
     @Test
     fun base_properties_are_serialized()
     {
-        val json = Json( JsonConfiguration.Stable, SERIAL_MODULE )
+        val json = initializeJson()
         val knownType: BaseType = DerivingType( "Test" )
 
         val serialized = json.stringify( UnknownBaseTypeSerializer, knownType )
 
-        assertTrue( serialized.contains( "baseProperty" ) )
+        assertTrue( serialized.contains( BaseType::baseProperty.name ) )
+    }
+
+    @Test
+    fun unknown_types_are_wrapped_when_deserializing()
+    {
+        val json = initializeJson()
+        val toSerialize = DerivingType( "Test" )
+        val serialized = json.stringify( UnknownBaseTypeSerializer, toSerialize )
+        val unknownSerialized = serialized.replace( DerivingType::class.simpleName!!, "UnknownType" )
+
+        val parsed = json.parse( UnknownBaseTypeSerializer, unknownSerialized )
+        assertTrue( parsed is CustomBaseType )
+        assertEquals( "dk.cachet.carp.common.serialization.UnknownPolymorphicSerializerTest.UnknownType", parsed.className )
+        val expectedJsonSource = json.stringify( DerivingType.serializer(), toSerialize )
+        assertEquals( expectedJsonSource, parsed.jsonSource )
     }
 }
