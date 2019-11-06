@@ -7,7 +7,7 @@ actual class DateTime( private val dateTime: LocalDateTime )
 {
     actual companion object {
         actual fun now(): DateTime {
-            return DateTime(LocalDateTime.now())
+            return DateTime( LocalDateTime.now() )
         }
     }
 }

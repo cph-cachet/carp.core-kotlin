@@ -84,7 +84,7 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
         }
         val json = decoder.json
 
-        @Suppress("NAME_SHADOWING" )
+        @Suppress( "NAME_SHADOWING" )
         val decoder = decoder.beginStructure( descriptor )
 
         // Determine class to be loaded and whether it is available at runtime.
