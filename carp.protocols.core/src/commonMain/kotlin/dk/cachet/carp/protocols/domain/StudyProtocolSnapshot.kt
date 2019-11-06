@@ -15,15 +15,11 @@ data class StudyProtocolSnapshot(
     @Serializable( with = UUIDSerializer::class )
     val ownerId: UUID,
     val name: String,
-    @Serializable( MasterDevicesSerializer::class )
-    val masterDevices: List<AnyMasterDeviceDescriptor>,
-    @Serializable( DevicesSerializer::class )
-    val connectedDevices: List<AnyDeviceDescriptor>,
+    val masterDevices: List<@Serializable( MasterDeviceDescriptorSerializer::class ) AnyMasterDeviceDescriptor>,
+    val connectedDevices: List<@Serializable( DeviceDescriptorSerializer::class ) AnyDeviceDescriptor>,
     val connections: List<DeviceConnection>,
-    @Serializable( TasksSerializer::class )
-    val tasks: List<TaskDescriptor>,
-    @Serializable( TriggersIdMapSerializer::class )
-    val triggers: Map<Int, Trigger>,
+    val tasks: List<@Serializable( TaskDescriptorSerializer::class ) TaskDescriptor>,
+    val triggers: Map<Int, @Serializable( TriggerSerializer::class ) Trigger>,
     val triggeredTasks: List<TriggeredTask> )
 {
     @Serializable

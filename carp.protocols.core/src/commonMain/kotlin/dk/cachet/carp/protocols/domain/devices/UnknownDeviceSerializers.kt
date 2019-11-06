@@ -3,7 +3,6 @@ package dk.cachet.carp.protocols.domain.devices
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.serialization.*
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.internal.*
 import kotlinx.serialization.json.*
 import kotlin.reflect.KClass
 
@@ -80,22 +79,10 @@ object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<AnyDeviceDescri
 }
 
 /**
- * Custom serializer for a list of [DeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
+ * Custom serializer for [MasterDeviceDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [MasterDeviceDescriptor].
  */
-object DevicesSerializer : KSerializer<List<AnyDeviceDescriptor>> by ArrayListSerializer( DeviceDescriptorSerializer )
-
-/**
- * Custom serializer for a set of [DeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
- */
-object DevicesSetSerializer : KSerializer<Set<AnyDeviceDescriptor>> by HashSetSerializer( DeviceDescriptorSerializer )
-
-/**
- * Custom serializer for a list of [MasterDeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [MasterDeviceDescriptor].
- */
-@Suppress( "RemoveExplicitTypeArguments" ) // Removing this fails compilation. Might be a bug in the analyzer.
-object MasterDevicesSerializer : KSerializer<List<AnyMasterDeviceDescriptor>> by ArrayListSerializer<AnyMasterDeviceDescriptor>(
-    createUnknownPolymorphicSerializer { className, json, serializer -> CustomMasterDeviceDescriptor( className, json, serializer ) }
-)
+object MasterDeviceDescriptorSerializer : KSerializer<AnyMasterDeviceDescriptor>
+    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomMasterDeviceDescriptor( className, json, serializer ) } )
 
 
 /**
