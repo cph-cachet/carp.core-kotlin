@@ -57,8 +57,10 @@ abstract class Mock<TMock>
         return calledArguments.contentEquals( expectedArguments )
     }
 
+    fun <TReturn> wasCalled( function: KCallable<TReturn> ) : Boolean
+        = functionCalls.containsKey( function.name )
     fun <TReturn> wasNotCalled( function: KCallable<TReturn> ) : Boolean
-        = !functionCalls.containsKey( function.name )
+        = !wasCalled( function )
 
     fun reset()
     {
