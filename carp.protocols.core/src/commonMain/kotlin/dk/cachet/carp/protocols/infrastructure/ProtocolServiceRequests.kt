@@ -10,25 +10,32 @@ import kotlinx.serialization.*
 /**
  * Serializable application service requests to [ProtocolService] which can be executed on demand.
  */
-class ProtocolServiceRequests
+@Polymorphic
+@Serializable
+abstract class ProtocolServiceRequest
 {
     @Serializable
-    data class Add( val protocol: StudyProtocolSnapshot, val versionTag: String = "Initial" )
-        : ApplicationServiceRequest<ProtocolService, Unit> by createRequest( { add( protocol, versionTag ) } )
+    data class Add( val protocol: StudyProtocolSnapshot, val versionTag: String = "Initial" ) :
+        ProtocolServiceRequest(),
+        ServiceInvoker<ProtocolService, Unit> by createServiceInvoker( ProtocolService::add, protocol, versionTag )
 
     @Serializable
-    data class Update( val protocol: StudyProtocolSnapshot, val versionTag: String = DateTime.now().toString() )
-        : ApplicationServiceRequest<ProtocolService, Unit> by createRequest( { update( protocol, versionTag ) } )
+    data class Update( val protocol: StudyProtocolSnapshot, val versionTag: String = DateTime.now().toString() ) :
+        ProtocolServiceRequest(),
+        ServiceInvoker<ProtocolService, Unit> by createServiceInvoker( ProtocolService::update, protocol, versionTag )
 
     @Serializable
-    data class GetBy( val owner: ProtocolOwner, val protocolName: String, val versionTag: String? = null )
-        : ApplicationServiceRequest<ProtocolService, StudyProtocolSnapshot> by createRequest( { getBy( owner, protocolName, versionTag ) } )
+    data class GetBy( val owner: ProtocolOwner, val protocolName: String, val versionTag: String? = null ) :
+        ProtocolServiceRequest(),
+        ServiceInvoker<ProtocolService, StudyProtocolSnapshot> by createServiceInvoker( ProtocolService::getBy, owner, protocolName, versionTag )
 
     @Serializable
-    data class GetAllFor( val owner: ProtocolOwner )
-        : ApplicationServiceRequest<ProtocolService, List<StudyProtocolSnapshot>> by createRequest( { getAllFor( owner ) } )
+    data class GetAllFor( val owner: ProtocolOwner ) :
+        ProtocolServiceRequest(),
+        ServiceInvoker<ProtocolService, List<StudyProtocolSnapshot>> by createServiceInvoker( ProtocolService::getAllFor, owner )
 
     @Serializable
-    data class GetVersionHistoryFor( val owner: ProtocolOwner, val protocolName: String )
-        : ApplicationServiceRequest<ProtocolService, List<ProtocolVersion>> by createRequest( { getVersionHistoryFor( owner, protocolName ) } )
+    data class GetVersionHistoryFor( val owner: ProtocolOwner, val protocolName: String ) :
+        ProtocolServiceRequest(),
+        ServiceInvoker<ProtocolService, List<ProtocolVersion>> by createServiceInvoker( ProtocolService::getVersionHistoryFor, owner, protocolName )
 }

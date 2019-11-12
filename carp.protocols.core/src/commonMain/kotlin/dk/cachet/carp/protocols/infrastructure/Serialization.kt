@@ -40,6 +40,15 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
     {
         StartOfStudyTrigger::class with StartOfStudyTrigger.serializer()
     }
+
+    polymorphic( ProtocolServiceRequest::class )
+    {
+        ProtocolServiceRequest.Add::class with ProtocolServiceRequest.Add.serializer()
+        ProtocolServiceRequest.Update::class with ProtocolServiceRequest.Update.serializer()
+        ProtocolServiceRequest.GetBy::class with ProtocolServiceRequest.GetBy.serializer()
+        ProtocolServiceRequest.GetAllFor::class with ProtocolServiceRequest.GetAllFor.serializer()
+        ProtocolServiceRequest.GetVersionHistoryFor::class with ProtocolServiceRequest.GetVersionHistoryFor.serializer()
+    }
 }
 
 /**
