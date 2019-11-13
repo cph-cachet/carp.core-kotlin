@@ -7,7 +7,7 @@ import dk.cachet.carp.protocols.domain.devices.*
 
 
 val smartphone: Smartphone = Smartphone( "User's phone" )
-val deviceSmartphoneDependsOn: AnyMasterDeviceDescriptor = Smartphone( "Some other device" )
+val deviceSmartphoneDependsOn: MasterDeviceDescriptor<*,*> = Smartphone( "Some other device" )
 
 /**
  * Create a study protocol with [smartphone] as the single master device, i.e., a typical 'smartphone study'.

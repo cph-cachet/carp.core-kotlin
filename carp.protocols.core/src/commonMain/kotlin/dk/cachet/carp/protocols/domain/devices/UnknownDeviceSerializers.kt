@@ -19,7 +19,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
     {
         val json = serializer.parseJson( jsonSource ) as JsonObject
 
-        val roleNameField = AnyDeviceDescriptor::roleName.name
+        val roleNameField = DeviceDescriptor<*,*>::roleName.name
         require( json.containsKey( roleNameField ) ) { "No '$roleNameField' defined." }
         roleName = json[ roleNameField ]!!.content
     }
@@ -47,7 +47,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
     {
         val json = serializer.parseJson( jsonSource ) as JsonObject
 
-        val roleNameField = AnyMasterDeviceDescriptor::roleName.name
+        val roleNameField = MasterDeviceDescriptor<*,*>::roleName.name
         require( json.containsKey( roleNameField ) ) { "No '$roleNameField' defined." }
         roleName = json[ roleNameField ]!!.content
     }
@@ -66,12 +66,12 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
 /**
  * Custom serializer for [DeviceDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
  */
-object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<AnyDeviceDescriptor, AnyDeviceDescriptor>( DeviceDescriptor::class, DeviceDescriptor::class, false )
+object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescriptor<*,*>, DeviceDescriptor<*,*>>( DeviceDescriptor::class, DeviceDescriptor::class, false )
 {
-    override fun createWrapper( className: String, json: String, serializer: Json ): AnyDeviceDescriptor
+    override fun createWrapper( className: String, json: String, serializer: Json ): DeviceDescriptor<*,*>
     {
         val jsonObject = serializer.parseJson( json ) as JsonObject
-        val isMasterDevice = jsonObject.containsKey( AnyMasterDeviceDescriptor::isMasterDevice.name )
+        val isMasterDevice = jsonObject.containsKey( MasterDeviceDescriptor<*,*>::isMasterDevice.name )
         return if ( isMasterDevice )
             CustomMasterDeviceDescriptor( className, json, serializer )
         else CustomDeviceDescriptor( className, json, serializer )
@@ -81,7 +81,7 @@ object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<AnyDeviceDescri
 /**
  * Custom serializer for [MasterDeviceDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [MasterDeviceDescriptor].
  */
-object MasterDeviceDescriptorSerializer : KSerializer<AnyMasterDeviceDescriptor>
+object MasterDeviceDescriptorSerializer : KSerializer<MasterDeviceDescriptor<*,*>>
     by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomMasterDeviceDescriptor( className, json, serializer ) } )
 
 
