@@ -95,7 +95,7 @@ actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual construc
         {
             // TODO: Currently, the following relies on accessing properties dynamically.
 
-            val reader = decoder.asDynamic().reader_0
+            val reader = decoder.asDynamic().`reader_8be2vx$`
 
             // Get source string.
             val jsonSource: String = reader.source_0 as String
