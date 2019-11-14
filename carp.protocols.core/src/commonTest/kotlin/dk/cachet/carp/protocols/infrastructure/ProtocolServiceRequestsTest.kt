@@ -13,7 +13,7 @@ import kotlin.test.*
 class ProtocolServiceRequestsTest
 {
     companion object {
-        private val requests: List<ProtocolServiceRequest> = listOf(
+        val requests: List<ProtocolServiceRequest> = listOf(
             ProtocolServiceRequest.Add( createComplexProtocol().getSnapshot(), "Initial" ),
             ProtocolServiceRequest.Update( createComplexProtocol().getSnapshot(), "Updated" ),
             ProtocolServiceRequest.GetBy( ProtocolOwner(), "Name", "Version" ),
