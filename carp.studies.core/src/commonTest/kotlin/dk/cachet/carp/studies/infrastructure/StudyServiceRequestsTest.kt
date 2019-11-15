@@ -9,7 +9,7 @@ import kotlin.test.*
 
 
 /**
- * Tests for [StudyServiceRequest]'s which rely on reflection, and for now can only be executed on the JVM platform.
+ * Tests for [StudyServiceRequest]'s.
  */
 class StudyServiceRequestsTest
 {
@@ -44,19 +44,5 @@ class StudyServiceRequestsTest
             assertTrue( mock.wasCalled( function, serviceInvoker.overloadIdentifier ) )
             mock.reset()
         }
-    }
-
-    @Suppress( "UNCHECKED_CAST" )
-    @Test
-    fun request_object_for_each_request_available()
-    {
-        val serviceFunctions = StudyService::class.members
-            .filterNot { it.name == "equals" || it.name == "hashCode" || it.name == "toString" }
-        val testedRequests = requests.map {
-            val serviceInvoker = it as ServiceInvoker<StudyService, *>
-            serviceInvoker.function
-        }
-
-        assertTrue( testedRequests.containsAll( serviceFunctions ) )
     }
 }

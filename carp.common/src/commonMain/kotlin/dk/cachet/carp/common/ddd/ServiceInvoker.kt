@@ -24,7 +24,7 @@ fun <TService, TReturn> createServiceInvoker( function: KSuspendFunction1<TServi
         override suspend fun invokeOn( service: TService ): TReturn = function.invoke( service )
     }
 
-fun <TService, TReturn> createServiceInvoker( function: KSuspendFunction1<TService, TReturn>, overloadIdentifier: String ): ServiceInvoker<TService, TReturn>
+fun <TService, TReturn> createServiceInvokerOverloaded( function: KSuspendFunction1<TService, TReturn>, overloadIdentifier: String ): ServiceInvoker<TService, TReturn>
     = object : ServiceInvoker<TService, TReturn> {
         override val function = function
         override val overloadIdentifier = overloadIdentifier
@@ -38,7 +38,7 @@ fun <TService, T1, TReturn> createServiceInvoker( function: KSuspendFunction2<TS
         override suspend fun invokeOn( service: TService ): TReturn = function.invoke( service, arg1 )
     }
 
-fun <TService, T1, TReturn> createServiceInvoker( function: KSuspendFunction2<TService, T1, TReturn>, overloadIdentifier: String, arg1: T1 ): ServiceInvoker<TService, TReturn>
+fun <TService, T1, TReturn> createServiceInvokerOverloaded( function: KSuspendFunction2<TService, T1, TReturn>, overloadIdentifier: String, arg1: T1 ): ServiceInvoker<TService, TReturn>
     = object : ServiceInvoker<TService, TReturn> {
         override val function = function
         override val overloadIdentifier = overloadIdentifier
@@ -52,7 +52,7 @@ fun <TService, T1, T2, TReturn> createServiceInvoker( function: KSuspendFunction
         override suspend fun invokeOn( service: TService ): TReturn = function.invoke( service, arg1, arg2 )
     }
 
-fun <TService, T1, T2, TReturn> createServiceInvoker( function: KSuspendFunction3<TService, T1, T2, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2 ): ServiceInvoker<TService, TReturn>
+fun <TService, T1, T2, TReturn> createServiceInvokerOverloaded( function: KSuspendFunction3<TService, T1, T2, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2 ): ServiceInvoker<TService, TReturn>
     = object : ServiceInvoker<TService, TReturn> {
         override val function = function
         override val overloadIdentifier = overloadIdentifier
@@ -66,7 +66,7 @@ fun <TService, T1, T2, T3, TReturn> createServiceInvoker( function: KSuspendFunc
         override suspend fun invokeOn( service: TService ): TReturn = function.invoke( service, arg1, arg2, arg3 )
     }
 
-fun <TService, T1, T2, T3, TReturn> createServiceInvoker( function: KSuspendFunction4<TService, T1, T2, T3, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3 ): ServiceInvoker<TService, TReturn>
+fun <TService, T1, T2, T3, TReturn> createServiceInvokerOverloaded( function: KSuspendFunction4<TService, T1, T2, T3, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3 ): ServiceInvoker<TService, TReturn>
     = object : ServiceInvoker<TService, TReturn> {
         override val function = function
         override val overloadIdentifier = overloadIdentifier
@@ -80,7 +80,7 @@ fun <TService, T1, T2, T3, T4, TReturn> createServiceInvoker( function: KSuspend
         override suspend fun invokeOn( service: TService ): TReturn = function.invoke( service, arg1, arg2, arg3, arg4 )
     }
 
-fun <TService, T1, T2, T3, T4, TReturn> createServiceInvoker( function: KSuspendFunction5<TService, T1, T2, T3, T4, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ): ServiceInvoker<TService, TReturn>
+fun <TService, T1, T2, T3, T4, TReturn> createServiceInvokerOverloaded( function: KSuspendFunction5<TService, T1, T2, T3, T4, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ): ServiceInvoker<TService, TReturn>
     = object : ServiceInvoker<TService, TReturn> {
         override val function = function
         override val overloadIdentifier = overloadIdentifier
