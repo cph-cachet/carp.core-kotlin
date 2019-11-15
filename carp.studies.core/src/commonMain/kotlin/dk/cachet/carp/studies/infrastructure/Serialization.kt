@@ -25,6 +25,11 @@ val STUDIES_SERIAL_MODULE = SerializersModule {
         UserServiceRequest.InviteParticipant::class with UserServiceRequest.InviteParticipant.serializer()
         UserServiceRequest.GetParticipantsForStudy::class with UserServiceRequest.GetParticipantsForStudy.serializer()
     }
+    polymorphic( StudyServiceRequest::class )
+    {
+        StudyServiceRequest.CreateStudy::class with StudyServiceRequest.CreateStudy.serializer()
+        StudyServiceRequest.GetStudyStatus::class with StudyServiceRequest.GetStudyStatus.serializer()
+    }
 }
 
 /**
