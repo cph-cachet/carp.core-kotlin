@@ -8,7 +8,7 @@ import kotlin.test.*
 
 
 /**
- * Tests for [ProtocolServiceRequest]'s.
+ * Tests for [ProtocolServiceRequest]'s which rely on reflection, and for now can only be executed on the JVM platform.
  */
 class ProtocolServiceRequestsTest
 {
@@ -42,8 +42,21 @@ class ProtocolServiceRequestsTest
             val serviceInvoker = request as ServiceInvoker<ProtocolService, *>
             val function = serviceInvoker.function
             serviceInvoker.invokeOn( mock )
-            assertTrue( mock.wasCalled( function ) )
+            assertTrue( mock.wasCalled( function, serviceInvoker.overloadIdentifier ) )
             mock.reset()
         }
+    }
+
+    @Test
+    fun request_object_for_each_request_available()
+    {
+        val serviceFunctions = ProtocolService::class.members
+            .filterNot { it.name == "equals" || it.name == "hashCode" || it.name == "toString" }
+        val testedRequests = ProtocolServiceRequestsTest.requests.map {
+            val serviceInvoker = it as ServiceInvoker<ProtocolService, *>
+            serviceInvoker.function
+        }
+
+        assertTrue( testedRequests.containsAll( serviceFunctions ) )
     }
 }
