@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
@@ -12,7 +12,6 @@ import kotlinx.serialization.*
  */
 @Serializable
 data class StudyProtocolSnapshot(
-    @Serializable( with = UUIDSerializer::class )
     val ownerId: UUID,
     val name: String,
     val masterDevices: List<@Serializable( MasterDeviceDescriptorSerializer::class ) MasterDeviceDescriptor<*,*>>,

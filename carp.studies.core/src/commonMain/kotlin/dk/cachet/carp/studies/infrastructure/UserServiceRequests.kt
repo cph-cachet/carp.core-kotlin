@@ -1,5 +1,3 @@
-@file:UseSerializers( UUIDSerializer::class )
-
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.*
@@ -7,7 +5,6 @@ import dk.cachet.carp.common.ddd.*
 import dk.cachet.carp.studies.application.UserService
 import dk.cachet.carp.studies.domain.users.*
 import kotlinx.serialization.*
-import kotlin.reflect.KSuspendFunction2
 
 
 /**

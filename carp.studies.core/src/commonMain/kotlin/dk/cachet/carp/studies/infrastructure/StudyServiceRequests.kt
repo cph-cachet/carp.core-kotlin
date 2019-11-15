@@ -1,8 +1,6 @@
-@file:UseSerializers( UUIDSerializer::class )
-
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.*
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.domain.*

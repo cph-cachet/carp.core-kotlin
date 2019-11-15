@@ -1,6 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.Serializable
 
@@ -10,7 +10,6 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class StudyDeploymentStatus(
-    @Serializable( with = UUIDSerializer::class )
     val studyDeploymentId: UUID,
     /**
      * The list of all devices part of this study deployment and their status.

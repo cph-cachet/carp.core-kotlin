@@ -1,6 +1,9 @@
 package dk.cachet.carp.common
 
+import kotlinx.serialization.Serializable
 
+
+@Serializable
 actual class UUID actual constructor( actual val stringRepresentation: String )
 {
     init

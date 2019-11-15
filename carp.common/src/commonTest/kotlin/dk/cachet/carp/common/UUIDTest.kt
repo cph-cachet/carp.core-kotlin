@@ -16,8 +16,8 @@ class UUIDTest
         val id = UUID( "00000000-0000-0000-0000-000000000000" )
 
         val json = Json( JsonConfiguration.Stable )
-        val serialized = json.stringify( UUIDSerializer, id )
-        val parsed = json.parse( UUIDSerializer, serialized )
+        val serialized = json.stringify( UUID.serializer(), id )
+        val parsed = json.parse( UUID.serializer(), serialized )
 
         assertEquals( id, parsed )
     }
@@ -28,7 +28,6 @@ class UUIDTest
         @Serializable
         data class Id
         (
-            @Serializable( with = UUIDSerializer::class )
             val id: UUID?
         )
         val json = Json( JsonConfiguration.Stable )

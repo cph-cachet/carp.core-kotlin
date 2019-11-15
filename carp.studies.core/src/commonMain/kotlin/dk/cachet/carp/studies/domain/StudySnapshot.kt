@@ -1,18 +1,16 @@
 package dk.cachet.carp.studies.domain
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.UUID
 import kotlinx.serialization.Serializable
 
 
 @Serializable
 data class StudySnapshot(
-    @Serializable( with = UUIDSerializer::class )
     val studyId: UUID,
-    @Serializable( with = UUIDSerializer::class )
     val ownerId: UUID,
     val name: String,
     val description: StudyDescription,
-    val participantIds: List<@Serializable( with = UUIDSerializer::class ) UUID> )
+    val participantIds: List<UUID> )
 {
     companion object
     {
