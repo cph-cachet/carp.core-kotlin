@@ -42,9 +42,6 @@ buildscript {
 
     repositories {
         jcenter()
-
-        // Additional Kotlin plugin repos.
-        maven { url 'https://kotlin.bintray.com/kotlinx' }
     }
 }
 
@@ -276,10 +273,6 @@ subprojects {
 // - `kotlinx.serialization` to serialize domain models
 // - reflection is used to reinforce correct implementation of domain objects at runtime
 configure( coreModules + commonModule ) {
-    repositories {
-        maven { url 'https://kotlin.bintray.com/kotlinx' }
-    }
-
     buildscript {
         repositories {
             jcenter()
