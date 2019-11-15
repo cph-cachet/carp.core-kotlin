@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
-import dk.cachet.carp.studies.domain.StudySnapshot
+import dk.cachet.carp.studies.domain.*
 import dk.cachet.carp.studies.domain.users.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.*
@@ -15,6 +15,20 @@ val STUDIES_SERIAL_MODULE = SerializersModule {
     {
         UsernameAccountIdentity::class with UsernameAccountIdentity.serializer()
         EmailAccountIdentity::class with EmailAccountIdentity.serializer()
+    }
+
+    polymorphic( UserServiceRequest::class )
+    {
+        UserServiceRequest.CreateAccountWithUsername::class with UserServiceRequest.CreateAccountWithUsername.serializer()
+        UserServiceRequest.CreateAccountWithEmailAddress::class with UserServiceRequest.CreateAccountWithEmailAddress.serializer()
+        UserServiceRequest.CreateParticipant::class with UserServiceRequest.CreateParticipant.serializer()
+        UserServiceRequest.InviteParticipant::class with UserServiceRequest.InviteParticipant.serializer()
+        UserServiceRequest.GetParticipantsForStudy::class with UserServiceRequest.GetParticipantsForStudy.serializer()
+    }
+    polymorphic( StudyServiceRequest::class )
+    {
+        StudyServiceRequest.CreateStudy::class with StudyServiceRequest.CreateStudy.serializer()
+        StudyServiceRequest.GetStudyStatus::class with StudyServiceRequest.GetStudyStatus.serializer()
     }
 }
 
@@ -70,3 +84,27 @@ fun StudySnapshot.Companion.fromJson( json: String ): StudySnapshot
  */
 fun StudySnapshot.toJson(): String
     = JSON.stringify( StudySnapshot.serializer(), this )
+
+/**
+ * Create a [StudyDescription] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyDescription.Companion.fromJson( json: String ): StudyDescription
+    = JSON.parse( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyDescription.toJson(): String
+    = JSON.stringify( StudyDescription.serializer(), this )
+
+/**
+ * Create a [StudyStatus] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyStatus.Companion.fromJson( json: String ): StudyStatus
+    = JSON.parse( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyStatus.toJson(): String
+    = JSON.stringify( StudyStatus.serializer(), this )

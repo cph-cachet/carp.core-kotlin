@@ -35,4 +35,9 @@ interface UserService
      * TODO: studyId should be replaced with specific information about the study in order to prevent a dependency on study service here.
      */
     suspend fun inviteParticipant( studyId: UUID, emailAddress: EmailAddress ): Participant
+
+    /**
+     * Get all participants included in a study for the given [studyId].
+     */
+    suspend fun getParticipantsForStudy( studyId: UUID ): List<Participant>
 }

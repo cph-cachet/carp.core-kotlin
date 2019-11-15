@@ -11,6 +11,12 @@ import kotlin.test.*
  */
 class MasterDeviceDeploymentTest
 {
+    @BeforeTest
+    fun initializeSerializer()
+    {
+        JSON = createDeploymentSerializer( STUBS_SERIAL_MODULE )
+    }
+
     @Test
     fun can_serialize_and_deserialize_devicedeployment_using_JSON()
     {

@@ -2,7 +2,6 @@ package dk.cachet.carp.protocols.domain.triggers
 
 import dk.cachet.carp.common.serialization.*
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.internal.*
 import kotlinx.serialization.json.*
 
 
@@ -29,8 +28,3 @@ data class CustomTrigger( override val className: String, override val jsonSourc
  */
 object TriggerSerializer : KSerializer<Trigger>
     by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTrigger( className, json, serializer ) } )
-
-/**
- * Custom serializer for a [Map] of [Trigger]s, mapped by their assigned id ([Int]).
- */
-object TriggersIdMapSerializer : KSerializer<Map<Int, Trigger>> by HashMapSerializer( IntSerializer, TriggerSerializer )

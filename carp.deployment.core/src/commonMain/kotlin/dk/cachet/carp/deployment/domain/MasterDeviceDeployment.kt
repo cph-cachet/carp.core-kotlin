@@ -19,23 +19,19 @@ data class MasterDeviceDeployment(
     /**
      * The devices this device needs to connect to.
      */
-    @Serializable( DevicesSetSerializer::class )
-    val connectedDevices: Set<AnyDeviceDescriptor>,
+    val connectedDevices: Set<@Serializable( DeviceDescriptorSerializer::class ) DeviceDescriptor<*,*>>,
     /**
      * Preregistration of connected devices, including configuration such as connection properties, stored per role name.
      */
-    @Serializable( RegisteredDevicesSerializer::class )
-    val connectedDeviceConfigurations: Map<String, DeviceRegistration>,
+    val connectedDeviceConfigurations: Map<String, @Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration>,
     /**
      * All tasks which should be able to be executed on this or connected devices.
      */
-    @Serializable( TasksSetSerializer::class )
-    val tasks: Set<TaskDescriptor>,
+    val tasks: Set<@Serializable( TaskDescriptorSerializer::class ) TaskDescriptor>,
     /**
      * All triggers originating from this device and connected devices, stored per assigned id unique within the study protocol.
      */
-    @Serializable( TriggersIdMapSerializer::class )
-    val triggers: Map<Int, Trigger>,
+    val triggers: Map<Int, @Serializable( TriggerSerializer::class ) Trigger>,
     /**
      * The specification of tasks triggered and the devices they are sent to.
      */

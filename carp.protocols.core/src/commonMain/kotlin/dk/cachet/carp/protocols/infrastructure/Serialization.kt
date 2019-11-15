@@ -40,6 +40,15 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
     {
         StartOfStudyTrigger::class with StartOfStudyTrigger.serializer()
     }
+
+    polymorphic( ProtocolServiceRequest::class )
+    {
+        ProtocolServiceRequest.Add::class with ProtocolServiceRequest.Add.serializer()
+        ProtocolServiceRequest.Update::class with ProtocolServiceRequest.Update.serializer()
+        ProtocolServiceRequest.GetBy::class with ProtocolServiceRequest.GetBy.serializer()
+        ProtocolServiceRequest.GetAllFor::class with ProtocolServiceRequest.GetAllFor.serializer()
+        ProtocolServiceRequest.GetVersionHistoryFor::class with ProtocolServiceRequest.GetVersionHistoryFor.serializer()
+    }
 }
 
 /**
@@ -48,9 +57,7 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
  * Additional types the serializer needs to be aware about (such as polymorph extending classes) should be registered through [module].
  */
 fun createProtocolsSerializer( module: SerialModule = EmptyModule ): Json
-{
-    return createDefaultJSON( PROTOCOLS_SERIAL_MODULE + module )
-}
+    = createDefaultJSON( PROTOCOLS_SERIAL_MODULE + module )
 
 /**
  * A default CARP infrastructure serializer capable of serializing all [dk.cachet.carp.protocols] types.
@@ -64,14 +71,22 @@ var JSON: Json = createProtocolsSerializer()
  * Create a [StudyProtocolSnapshot] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun StudyProtocolSnapshot.Companion.fromJson( json: String ): StudyProtocolSnapshot
-{
-    return JSON.parse( serializer(), json )
-}
+    = JSON.parse( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
 fun StudyProtocolSnapshot.toJson(): String
-{
-    return JSON.stringify( StudyProtocolSnapshot.serializer(), this )
-}
+    = JSON.stringify( StudyProtocolSnapshot.serializer(), this )
+
+/**
+ * Create a [DeviceRegistration] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun DeviceRegistration.Companion.fromJson( json: String ): DeviceRegistration
+    = JSON.parse( DeviceRegistrationSerializer, json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun DeviceRegistration.toJson(): String
+    = JSON.stringify( DeviceRegistrationSerializer, this )

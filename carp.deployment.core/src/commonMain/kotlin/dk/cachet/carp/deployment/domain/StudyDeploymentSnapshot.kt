@@ -14,8 +14,7 @@ data class StudyDeploymentSnapshot(
     @Serializable( with = UUIDSerializer::class )
     val studyDeploymentId: UUID,
     val studyProtocolSnapshot: StudyProtocolSnapshot,
-    @Serializable( RegisteredDevicesSerializer::class )
-    val registeredDevices: Map<String, DeviceRegistration> )
+    val registeredDevices: Map<String, @Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration> )
 {
     companion object
     {

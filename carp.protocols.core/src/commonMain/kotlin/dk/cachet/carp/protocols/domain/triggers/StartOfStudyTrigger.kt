@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.triggers
 
-import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 import kotlinx.serialization.*
 
 
@@ -15,5 +15,5 @@ data class StartOfStudyTrigger private constructor( override val sourceDeviceRol
     @Transient
     override val requiresMasterDevice: Boolean = true
 
-    constructor( sourceDevice: AnyMasterDeviceDescriptor ) : this( sourceDevice.roleName )
+    constructor( sourceDevice: MasterDeviceDescriptor<*,*> ) : this( sourceDevice.roleName )
 }

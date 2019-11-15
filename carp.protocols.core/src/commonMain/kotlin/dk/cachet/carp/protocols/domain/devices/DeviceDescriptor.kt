@@ -45,4 +45,5 @@ abstract class DeviceDescriptor<TRegistration: DeviceRegistration, out TBuilder:
     abstract fun isValidConfiguration( registration: TRegistration ): Trilean
 }
 
-typealias AnyDeviceDescriptor = DeviceDescriptor<*,*>
+// TODO: Make public once kotlinx.serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/563
+//typealias AnyDeviceDescriptor = DeviceDescriptor<*,*>

@@ -11,6 +11,12 @@ import kotlin.test.*
  */
 class StudyDeploymentTest
 {
+    @BeforeTest
+    fun initializeSerializer()
+    {
+        JSON = createDeploymentSerializer( STUBS_SERIAL_MODULE )
+    }
+
     @Test
     fun cant_initialize_deployment_with_invalid_snapshot()
     {

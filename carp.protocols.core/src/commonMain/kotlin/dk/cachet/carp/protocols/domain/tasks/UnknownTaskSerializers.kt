@@ -4,7 +4,7 @@ import dk.cachet.carp.common.serialization.*
 import dk.cachet.carp.protocols.domain.data.DataType
 import dk.cachet.carp.protocols.domain.tasks.measures.*
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.internal.*
+import kotlinx.serialization.internal.ArrayListSerializer
 import kotlinx.serialization.json.*
 
 
@@ -34,26 +34,16 @@ data class CustomTaskDescriptor( override val className: String, override val js
 }
 
 /**
- * Custom serializer for a list of [TaskDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [TaskDescriptor].
+ * Custom serializer for [TaskDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [TaskDescriptor].
  */
-@Suppress( "RemoveExplicitTypeArguments" ) // Removing this fails compilation. Might be a bug in the analyzer.
-object TasksSerializer : KSerializer<List<TaskDescriptor>> by ArrayListSerializer<TaskDescriptor>(
-    createUnknownPolymorphicSerializer { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) }
-)
-
-/**
- * Custom serializer for a set of [TaskDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [TaskDescriptor].
- */
-@Suppress( "RemoveExplicitTypeArguments" ) // Removing this fails compilation. Might be a bug in the analyzer.
-object TasksSetSerializer : KSerializer<Set<TaskDescriptor>> by HashSetSerializer<TaskDescriptor>(
-    createUnknownPolymorphicSerializer { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) }
-)
+object TaskDescriptorSerializer : KSerializer<TaskDescriptor>
+    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) } )
 
 
 /**
  * A wrapper used to load extending types from [Measure] serialized as JSON which are unknown at runtime.
  */
-data class CustomMeasure( override val className: String, override val jsonSource: String, val serializer: Json)
+data class CustomMeasure( override val className: String, override val jsonSource: String, val serializer: Json )
     : Measure(), UnknownPolymorphicWrapper
 {
     override val type: DataType
@@ -71,9 +61,12 @@ data class CustomMeasure( override val className: String, override val jsonSourc
 }
 
 /**
+ * Custom serializer for [Measure] which enables deserializing types that are unknown at runtime, yet extend from [Measure].
+ */
+object MeasureSerializer : KSerializer<Measure>
+    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomMeasure( className, json, serializer ) } )
+
+/**
  * Custom serializer for a list of [Measure]s which enables deserializing types that are unknown at runtime, yet extend from [Measure].
  */
-@Suppress( "RemoveExplicitTypeArguments" ) // Removing this fails compilation. Might be a bug in the analyzer.
-object MeasuresSerializer : KSerializer<List<Measure>> by ArrayListSerializer<Measure>(
-    createUnknownPolymorphicSerializer { className, json, serializer -> CustomMeasure( className, json, serializer ) }
-)
+object MeasuresSerializer : KSerializer<List<Measure>> by ArrayListSerializer( MeasureSerializer )

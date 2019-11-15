@@ -6,7 +6,7 @@ import kotlin.reflect.full.*
 import kotlin.reflect.jvm.internal.KotlinReflectionInternalError
 
 
-@Suppress("LeakingThis") // 'this' in init is only used to inspect the derived type, thus incomplete initialization is irrelevant.
+@Suppress( "LeakingThis" ) // 'this' in init is only used to inspect the derived type, thus incomplete initialization is irrelevant.
 @Serializable
 actual abstract class Immutable
 {
@@ -27,7 +27,7 @@ actual abstract class Immutable
         }
     }
 
-    companion object ImmutableCheck
+    companion object
     {
         private val basicKotlinTypes = arrayOf(
             Double::class,

@@ -10,6 +10,12 @@ import kotlin.test.*
  */
 class StudyDeploymentSnapshotTest
 {
+    @BeforeTest
+    fun initializeSerializer()
+    {
+        JSON = createDeploymentSerializer( STUBS_SERIAL_MODULE )
+    }
+
     @Test
     fun can_serialize_and_deserialize_snapshot_using_JSON()
     {

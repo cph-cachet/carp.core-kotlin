@@ -15,15 +15,11 @@ data class StudyProtocolSnapshot(
     @Serializable( with = UUIDSerializer::class )
     val ownerId: UUID,
     val name: String,
-    @Serializable( MasterDevicesSerializer::class )
-    val masterDevices: List<AnyMasterDeviceDescriptor>,
-    @Serializable( DevicesSerializer::class )
-    val connectedDevices: List<AnyDeviceDescriptor>,
+    val masterDevices: List<@Serializable( MasterDeviceDescriptorSerializer::class ) MasterDeviceDescriptor<*,*>>,
+    val connectedDevices: List<@Serializable( DeviceDescriptorSerializer::class ) DeviceDescriptor<*,*>>,
     val connections: List<DeviceConnection>,
-    @Serializable( TasksSerializer::class )
-    val tasks: List<TaskDescriptor>,
-    @Serializable( TriggersIdMapSerializer::class )
-    val triggers: Map<Int, Trigger>,
+    val tasks: List<@Serializable( TaskDescriptorSerializer::class ) TaskDescriptor>,
+    val triggers: Map<Int, @Serializable( TriggerSerializer::class ) Trigger>,
     val triggeredTasks: List<TriggeredTask> )
 {
     @Serializable
@@ -63,13 +59,13 @@ data class StudyProtocolSnapshot(
             )
         }
 
-        private fun getConnections( protocol: StudyProtocol, masterDevice: AnyMasterDeviceDescriptor ): Iterable<DeviceConnection>
+        private fun getConnections( protocol: StudyProtocol, masterDevice: MasterDeviceDescriptor<*,*> ): Iterable<DeviceConnection>
         {
             val connections: MutableList<DeviceConnection> = mutableListOf()
 
             protocol.getConnectedDevices( masterDevice ).forEach {
                 connections.add( DeviceConnection( it.roleName, masterDevice.roleName ) )
-                if ( it is AnyMasterDeviceDescriptor )
+                if ( it is MasterDeviceDescriptor<*,*> )
                 {
                     connections.addAll( getConnections( protocol, it ) )
                 }

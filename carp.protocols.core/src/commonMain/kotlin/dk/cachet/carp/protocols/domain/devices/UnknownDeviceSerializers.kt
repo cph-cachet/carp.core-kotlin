@@ -3,7 +3,6 @@ package dk.cachet.carp.protocols.domain.devices
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.serialization.*
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.internal.*
 import kotlinx.serialization.json.*
 import kotlin.reflect.KClass
 
@@ -20,7 +19,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
     {
         val json = serializer.parseJson( jsonSource ) as JsonObject
 
-        val roleNameField = AnyDeviceDescriptor::roleName.name
+        val roleNameField = DeviceDescriptor<*,*>::roleName.name
         require( json.containsKey( roleNameField ) ) { "No '$roleNameField' defined." }
         roleName = json[ roleNameField ]!!.content
     }
@@ -48,7 +47,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
     {
         val json = serializer.parseJson( jsonSource ) as JsonObject
 
-        val roleNameField = AnyMasterDeviceDescriptor::roleName.name
+        val roleNameField = MasterDeviceDescriptor<*,*>::roleName.name
         require( json.containsKey( roleNameField ) ) { "No '$roleNameField' defined." }
         roleName = json[ roleNameField ]!!.content
     }
@@ -67,12 +66,12 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
 /**
  * Custom serializer for [DeviceDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
  */
-object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<AnyDeviceDescriptor, AnyDeviceDescriptor>( DeviceDescriptor::class, DeviceDescriptor::class, false )
+object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<DeviceDescriptor<*,*>, DeviceDescriptor<*,*>>( DeviceDescriptor::class, DeviceDescriptor::class, false )
 {
-    override fun createWrapper( className: String, json: String, serializer: Json ): AnyDeviceDescriptor
+    override fun createWrapper( className: String, json: String, serializer: Json ): DeviceDescriptor<*,*>
     {
         val jsonObject = serializer.parseJson( json ) as JsonObject
-        val isMasterDevice = jsonObject.containsKey( AnyMasterDeviceDescriptor::isMasterDevice.name )
+        val isMasterDevice = jsonObject.containsKey( MasterDeviceDescriptor<*,*>::isMasterDevice.name )
         return if ( isMasterDevice )
             CustomMasterDeviceDescriptor( className, json, serializer )
         else CustomDeviceDescriptor( className, json, serializer )
@@ -80,22 +79,10 @@ object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<AnyDeviceDescri
 }
 
 /**
- * Custom serializer for a list of [DeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
+ * Custom serializer for [MasterDeviceDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [MasterDeviceDescriptor].
  */
-object DevicesSerializer : KSerializer<List<AnyDeviceDescriptor>> by ArrayListSerializer( DeviceDescriptorSerializer )
-
-/**
- * Custom serializer for a set of [DeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
- */
-object DevicesSetSerializer : KSerializer<Set<AnyDeviceDescriptor>> by HashSetSerializer( DeviceDescriptorSerializer )
-
-/**
- * Custom serializer for a list of [MasterDeviceDescriptor]s which enables deserializing types that are unknown at runtime, yet extend from [MasterDeviceDescriptor].
- */
-@Suppress( "RemoveExplicitTypeArguments" ) // Removing this fails compilation. Might be a bug in the analyzer.
-object MasterDevicesSerializer : KSerializer<List<AnyMasterDeviceDescriptor>> by ArrayListSerializer<AnyMasterDeviceDescriptor>(
-    createUnknownPolymorphicSerializer { className, json, serializer -> CustomMasterDeviceDescriptor( className, json, serializer ) }
-)
+object MasterDeviceDescriptorSerializer : KSerializer<MasterDeviceDescriptor<*,*>>
+    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomMasterDeviceDescriptor( className, json, serializer ) } )
 
 
 /**

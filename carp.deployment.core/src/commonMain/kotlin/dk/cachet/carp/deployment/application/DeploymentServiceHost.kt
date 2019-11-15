@@ -76,7 +76,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository ) : De
 
         val device = deployment.registeredDevices.keys.firstOrNull { it.roleName == masterDeviceRoleName }
             ?: throw IllegalArgumentException( "The specified device role name is not part of this study deployment or is not yet registered." )
-        val masterDevice = device as? AnyMasterDeviceDescriptor
+        val masterDevice = device as? MasterDeviceDescriptor<*,*>
             ?:  throw IllegalArgumentException( "The specified device is not a master device and therefore does not have a deployment configuration." )
 
         return deployment.getDeviceDeploymentFor( masterDevice )
