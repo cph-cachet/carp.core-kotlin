@@ -27,7 +27,7 @@ actual abstract class Immutable
         }
     }
 
-    companion object ImmutableCheck
+    companion object
     {
         private val basicKotlinTypes = arrayOf(
             Double::class,

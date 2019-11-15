@@ -104,7 +104,7 @@ abstract class Mock<TMock>
     }
 
     fun <TReturn> wasCalled( function: KCallable<TReturn>, overloadIdentifier: String? = null ) : Boolean =
-        if (overloadIdentifier == null )
+        if ( overloadIdentifier == null )
             functionCalls.containsKey( function.name )
         else
             functionCalls.containsKey( function.name + "-" + overloadIdentifier )

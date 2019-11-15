@@ -3,7 +3,7 @@ This project is part of the [CACHET Research Platform (CARP)](https://github.com
 
 Currently this project is under development and only contains an initial unstable alpha version of the domain model and applications services of the `carp.protocols`, `carp.deployment`, and `carp.client` subsystems, and a placeholder for `carp.studies`. Many changes will happen as the rest of the infrastructure is implemented. Once a minimum viable product is completed, a first version will be released and more documentation will be added. 
 
-## carp.protocols
+## carp.protocols [![Maven Central](https://img.shields.io/maven-central/v/dk.cachet.carp.protocols/carp.protocols.core)](https://mvnrepository.com/artifact/dk.cachet.carp.protocols) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.protocols/carp.protocols.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/protocols/)
 
 Specify study protocols which can be deployed to one or more stationary or mobile devices. Using this library, CARP-compatible studies can be defined:
 ```
@@ -24,11 +24,11 @@ protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 val json = protocol.getSnapshot().toJson()
 ```
 
-## carp.studies
+## carp.studies [![Maven Central](https://img.shields.io/maven-central/v/dk.cachet.carp.studies/carp.studies.core)](https://mvnrepository.com/artifact/dk.cachet.carp.studies) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.studies/carp.studies.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/studies/)
 
 Manage the recruitment for and lifetime of study deployments, instantiated using a study protocol from `carp.protocols`.
 
-## carp.deployment
+## carp.deployment [![Maven Central](https://img.shields.io/maven-central/v/dk.cachet.carp.deployment/carp.deployment.core)](https://mvnrepository.com/artifact/dk.cachet.carp.deployment) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.deployment/carp.deployment.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/deployment/)
 
 The deployment subsystem contains common concerns to 'running' a study, i.e., instantiating a study protocol with a specific set of devices and users as specified in the study protocol. A study deployment is responsible for managing registration of participant consent, tracking device connection issues, assessing data quality, and negotiating the connection between separate devices. Study deployments are managed through the `DeploymentService` application service:
 ```
@@ -49,7 +49,7 @@ val deviceDeployment: MasterDeviceDeployment
     = deploymentService.getDeviceDeploymentFor( status.studyDeploymentId, smartphone.roleName )
 ```
 
-## carp.client
+## carp.client [![Maven Central](https://img.shields.io/maven-central/v/dk.cachet.carp.client/carp.client.core)](https://mvnrepository.com/artifact/dk.cachet.carp.client) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.client/carp.client.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/client/)
 
 Manage the runtime logic for studies on client devices. For example, the following initializes a smartphone client:
 
@@ -67,11 +67,12 @@ val status: StudyRuntime.DeploymentState = runtime.tryDeployment()
 isDeployed = status.isDeployed // True once dependent clients have been registered.
 ```
 
-## carp.common
+## carp.common [![Maven Central](https://img.shields.io/maven-central/v/dk.cachet.carp.common/carp.common)](https://mvnrepository.com/artifact/dk.cachet.carp.common) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.common/carp.common?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/common/)
+
 
 Helper classes and base types relied upon by all subsystems. This library does not contain any domain logic.
 
-## carp.test
+## carp.test [![Maven Central](https://img.shields.io/maven-central/v/dk.cachet.carp.test/carp.test)](https://mvnrepository.com/artifact/dk.cachet.carp.test) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.test/carp.test?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/test/)
 
 Helper classes relied upon by test projects of all subsystems. E.g., to disable tests specified in common part of projects for the JavaScript runtime only.
 

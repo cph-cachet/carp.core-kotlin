@@ -1,5 +1,7 @@
 package dk.cachet.carp.common
 
+import kotlinx.serialization.*
+
 
 /**
  * A base class which verifies whether the derived implementation is immutable during initialization.
@@ -9,7 +11,11 @@ package dk.cachet.carp.common
  *
  * @param exception The exception to throw in case the implementation is not immutable. [NotImmutableError] should be thrown by default.
  */
-expect abstract class Immutable( exception: Throwable = NotImmutableError() )
+@Serializable
+expect abstract class Immutable
+{
+    constructor( exception: Throwable = NotImmutableError() )
+}
 
 
 /**

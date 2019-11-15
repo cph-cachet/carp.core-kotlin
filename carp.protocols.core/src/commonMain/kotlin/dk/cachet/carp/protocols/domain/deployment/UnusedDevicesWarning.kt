@@ -20,10 +20,10 @@ class UnusedDevicesWarning internal constructor() : DeploymentWarning
         return getUnusedDevices( protocol ).any()
     }
 
-    fun getUnusedDevices( protocol: StudyProtocol ): Set<AnyDeviceDescriptor>
+    fun getUnusedDevices( protocol: StudyProtocol ): Set<DeviceDescriptor<*,*>>
     {
         // Get all devices used in triggers.
-        val usedDevices: Set<AnyDeviceDescriptor> = protocol.triggers.flatMap { trigger ->
+        val usedDevices: Set<DeviceDescriptor<*,*>> = protocol.triggers.flatMap { trigger ->
             val usedInTrigger
                 = protocol.getTriggeredTasks( trigger ).map { it.targetDevice }.toMutableList()
             usedInTrigger.add( protocol.devices.single { trigger.sourceDeviceRoleName == it.roleName } )
@@ -33,7 +33,7 @@ class UnusedDevicesWarning internal constructor() : DeploymentWarning
         val unusedDevices = protocol.devices.minus( usedDevices )
 
         // Master devices which are not used in triggers but have connected devices used in triggers are still used to relay data.
-        val relayingMasterDevices = unusedDevices.filterIsInstance<AnyMasterDeviceDescriptor>().filter { device ->
+        val relayingMasterDevices = unusedDevices.filterIsInstance<MasterDeviceDescriptor<*,*>>().filter { device ->
             protocol.getConnectedDevices( device, true ).any { usedDevices.contains( it ) }
         }
 

@@ -11,7 +11,7 @@ data class StudyRuntimeSnapshot(
     @Serializable( UUIDSerializer::class )
     val studyDeploymentId: UUID,
     @Serializable( DeviceDescriptorSerializer::class )
-    val device: AnyMasterDeviceDescriptor,
+    val device: MasterDeviceDescriptor<*,*>,
     val isDeployed: Boolean,
     val deploymentInformation: MasterDeviceDeployment? )
 {
