@@ -38,7 +38,7 @@ class ProtocolServiceRequestsTest
 
     @Suppress( "UNCHECKED_CAST" )
     @Test
-    fun executeOn_requests_call_service() = runBlockingTest {
+    fun invokeOn_requests_call_service() = runBlockingTest {
         requests.forEach { request ->
             val serviceInvoker = request as ServiceInvoker<ProtocolService, *>
             val function = serviceInvoker.function
@@ -46,5 +46,26 @@ class ProtocolServiceRequestsTest
             assertTrue( mock.wasCalled( function, serviceInvoker.overloadIdentifier ) )
             mock.reset()
         }
+    }
+
+    @Test
+    fun invokeOn_deserialized_request_requires_copy() = runBlockingTest {
+        val request = ProtocolServiceRequest.Add( createComplexProtocol().getSnapshot(), "Initial" )
+        val serializer = ProtocolServiceRequest.serializer()
+        val serialized = JSON.stringify( serializer, request )
+        val parsed = JSON.parse( serializer, serialized ) as ProtocolServiceRequest.Add
+
+        // `ServiceInvoker` class delegation is not initialized as part of deserialization:
+        // https://github.com/Kotlin/kotlinx.serialization/issues/241#issuecomment-555020729
+        assertFailsWith<NullPointerException>
+        {
+            parsed.invokeOn( mock )
+        }
+
+        // But, it is initialized as part of copying the data object.
+        // This is a suitable workaround for now for anyone that needs access to `ServiceInvoker`.
+        val parsedCopy = parsed.copy()
+        parsedCopy.invokeOn( mock )
+        assertTrue( mock.wasCalled( parsedCopy.function ) )
     }
 }

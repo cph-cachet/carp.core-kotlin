@@ -39,7 +39,7 @@ class UserServiceRequestsTest
 
     @Suppress( "UNCHECKED_CAST" )
     @Test
-    fun executeOn_requests_call_service() = runBlockingTest {
+    fun invokeOn_requests_call_service() = runBlockingTest {
         requests.forEach { request ->
             val serviceInvoker = request as ServiceInvoker<UserService, *>
             val function = serviceInvoker.function
