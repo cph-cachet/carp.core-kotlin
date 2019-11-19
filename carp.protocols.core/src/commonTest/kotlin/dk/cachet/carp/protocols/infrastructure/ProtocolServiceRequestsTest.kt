@@ -57,7 +57,7 @@ class ProtocolServiceRequestsTest
 
         // `ServiceInvoker` class delegation is not initialized as part of deserialization:
         // https://github.com/Kotlin/kotlinx.serialization/issues/241#issuecomment-555020729
-        assertFailsWith<NullPointerException>
+        assertFails() // This throws a 'TypeError', which seems to be an inaccessible type.
         {
             parsed.invokeOn( mock )
         }
