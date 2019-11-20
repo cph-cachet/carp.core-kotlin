@@ -12,7 +12,7 @@ import kotlinx.serialization.*
  */
 @Polymorphic
 @Serializable
-abstract class StudyServiceRequest
+sealed class StudyServiceRequest
 {
     @Serializable
     data class CreateStudy( val owner: StudyOwner, val name: String, val description: StudyDescription? = null ) :

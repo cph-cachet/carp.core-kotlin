@@ -12,7 +12,7 @@ import kotlinx.serialization.*
  */
 @Polymorphic
 @Serializable
-abstract class UserServiceRequest
+sealed class UserServiceRequest
 {
     @Serializable
     @Suppress( "RemoveExplicitTypeArguments" ) // Needed for JS build to work.
