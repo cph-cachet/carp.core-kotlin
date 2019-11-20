@@ -16,7 +16,7 @@ class AccountTest
         val account = Account.withEmailIdentity( "test@test.com" )
 
         val expectedIdentity = EmailAccountIdentity( EmailAddress( emailAddress ))
-        assertEquals( expectedIdentity, account.identities.single() )
+        assertEquals( expectedIdentity, account.identity )
     }
 
     @Test
@@ -26,17 +26,16 @@ class AccountTest
         val account = Account.withUsernameIdentity( username )
 
         val expectedIdentity = UsernameAccountIdentity( Username( username ) )
-        assertEquals( expectedIdentity, account.identities.single() )
+        assertEquals( expectedIdentity, account.identity )
     }
 
     @Test
-    fun hasMatchingIdentity_succeeds()
+    fun sameIdentity_succeeds()
     {
         val identity1 = AccountIdentity.fromUsername( "identity1" )
-        val identity2 = AccountIdentity.fromUsername( "identity2" )
-        val account1 = Account( identities = listOf( identity1 ) )
-        val account2 = Account( identities = listOf( identity1, identity2 ) )
+        val account1 = Account( identity = identity1 )
+        val account2 = Account( identity = identity1 )
 
-        assertTrue( account1.hasMatchingIdentity( account2 ) )
+        assertTrue( account1.sameIdentity( account2 ) )
     }
 }
