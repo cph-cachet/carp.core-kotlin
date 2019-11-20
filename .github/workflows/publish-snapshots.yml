@@ -22,8 +22,8 @@ jobs:
           echo "${{ secrets.PUBLISH_PROPERTIES }}" > publish.properties
 
       - name: Build and test
-        run: gradlew build 
+        run: ./gradlew build 
 
       - name: Deploy snapshot
         if: success()
-        run: gradlew publishSnapshot
+        run: ./gradlew publishSnapshot
