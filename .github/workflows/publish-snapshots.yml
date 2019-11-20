@@ -18,8 +18,8 @@ jobs:
 
       - name: Set up 'publish.properties'
         run: |
-          echo ${{ secrets.SIGNING_KEY_FILE }} > signingKey.asc
-          echo ${{ secrets.PUBLISH_PROPERTIES }} > publish.properties
+          echo "${{ secrets.SIGNING_KEY_FILE }}" > signingKey.asc
+          echo "${{ secrets.PUBLISH_PROPERTIES }}" > publish.properties
 
       - name: Build and test
         run: gradlew build 
