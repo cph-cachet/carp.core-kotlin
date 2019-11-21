@@ -12,7 +12,7 @@ import kotlinx.serialization.*
  */
 @Polymorphic
 @Serializable
-abstract class ProtocolServiceRequest
+sealed class ProtocolServiceRequest
 {
     @Serializable
     data class Add( val protocol: StudyProtocolSnapshot, val versionTag: String = "Initial" ) :

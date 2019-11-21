@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 data class StudyRuntimeSnapshot(
     val studyDeploymentId: UUID,
     @Serializable( DeviceDescriptorSerializer::class )
-    val device: MasterDeviceDescriptor<*,*>,
+    val device: AnyMasterDeviceDescriptor,
     val isDeployed: Boolean,
     val deploymentInformation: MasterDeviceDeployment? )
 {

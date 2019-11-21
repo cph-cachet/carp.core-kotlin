@@ -14,7 +14,7 @@ import kotlinx.serialization.*
  */
 @Polymorphic
 @Serializable
-abstract class DeploymentServiceRequest
+sealed class DeploymentServiceRequest
 {
     @Serializable
     data class CreateStudyDeployment( val protocol: StudyProtocolSnapshot ) :

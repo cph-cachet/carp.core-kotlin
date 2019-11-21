@@ -8,7 +8,7 @@ import kotlin.reflect.KClass
 
 internal object UnknownPolymorphicClassDesc : SerialClassDescImpl( "kotlin.Any" )
 {
-    override val kind: SerialKind = UnionKind.POLYMORPHIC
+    override val kind: SerialKind = PolymorphicKind.OPEN
 
     init
     {

@@ -9,25 +9,25 @@ import dk.cachet.carp.protocols.domain.InvalidConfigurationError
  *
  * Role names within a configuration should be unique.
  */
-internal class EmptyDeviceConfiguration : AbstractMap<String, DeviceDescriptor<*,*>>(), DeviceConfiguration
+internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescriptor>(), DeviceConfiguration
 {
-    private val _devices: ExtractUniqueKeyMap<String, DeviceDescriptor<*,*>> = ExtractUniqueKeyMap(
+    private val _devices: ExtractUniqueKeyMap<String, AnyDeviceDescriptor> = ExtractUniqueKeyMap(
         { device -> device.roleName },
         InvalidConfigurationError( "Role names of devices within a device configuration should be unique." ) )
 
-    override val entries: Set<Map.Entry<String, DeviceDescriptor<*,*>>>
+    override val entries: Set<Map.Entry<String, AnyDeviceDescriptor>>
         get() = _devices.entries
 
-    private val _connections: MutableMap<DeviceDescriptor<*,*>, MutableSet<DeviceDescriptor<*,*>>> = mutableMapOf()
+    private val _connections: MutableMap<AnyDeviceDescriptor, MutableSet<AnyDeviceDescriptor>> = mutableMapOf()
 
-    override val devices: Set<DeviceDescriptor<*,*>>
+    override val devices: Set<AnyDeviceDescriptor>
         get() { return _devices.values.toSet() }
 
-    private val _masterDevices: MutableSet<MasterDeviceDescriptor<*,*>> = mutableSetOf()
-    override val masterDevices: Set<MasterDeviceDescriptor<*,*>>
+    private val _masterDevices: MutableSet<AnyMasterDeviceDescriptor> = mutableSetOf()
+    override val masterDevices: Set<AnyMasterDeviceDescriptor>
         get() { return _masterDevices }
 
-    override fun addMasterDevice( masterDevice: MasterDeviceDescriptor<*,*> ): Boolean
+    override fun addMasterDevice( masterDevice: AnyMasterDeviceDescriptor ): Boolean
     {
         val isNewDevice: Boolean = _devices.tryAddIfKeyIsNew( masterDevice )
         _masterDevices.add( masterDevice )
@@ -35,7 +35,7 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, DeviceDescriptor<*
         return isNewDevice
     }
 
-    override fun addConnectedDevice( device: DeviceDescriptor<*,*>, masterDevice: MasterDeviceDescriptor<*,*> ): Boolean
+    override fun addConnectedDevice( device: AnyDeviceDescriptor, masterDevice: AnyMasterDeviceDescriptor ): Boolean
     {
         verifyMasterDevice( masterDevice )
 
@@ -51,11 +51,11 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, DeviceDescriptor<*
         return _connections[ masterDevice ]!!.add( device )
     }
 
-    override fun getConnectedDevices( masterDevice: MasterDeviceDescriptor<*,*>, includeChainedDevices: Boolean ): Iterable<DeviceDescriptor<*,*>>
+    override fun getConnectedDevices( masterDevice: AnyMasterDeviceDescriptor, includeChainedDevices: Boolean ): Iterable<AnyDeviceDescriptor>
     {
         verifyMasterDevice( masterDevice )
 
-        val connectedDevices: MutableList<DeviceDescriptor<*,*>> = mutableListOf()
+        val connectedDevices: MutableList<AnyDeviceDescriptor> = mutableListOf()
 
         // Add all connections of the master device.
         if ( _connections.contains( masterDevice ) )
@@ -65,7 +65,7 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, DeviceDescriptor<*
             // When requested, recursively get all connected devices through chained master devices.
             if ( includeChainedDevices )
             {
-                connectedDevices.filterIsInstance<MasterDeviceDescriptor<*,*>>().forEach {
+                connectedDevices.filterIsInstance<AnyMasterDeviceDescriptor>().forEach {
                     connectedDevices.addAll( getConnectedDevices( it, true ) )
                 }
             }
@@ -77,7 +77,7 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, DeviceDescriptor<*
     /**
      * Throws error when master device is not part of this configuration.
      */
-    private fun verifyMasterDevice( device: MasterDeviceDescriptor<*,*> )
+    private fun verifyMasterDevice( device: AnyMasterDeviceDescriptor )
     {
         if ( !devices.contains( device ) )
         {

@@ -13,7 +13,7 @@ buildscript {
         versions = [
             // Kotlin multiplatform versions.
             kotlin:'1.3.60',
-            serialization:'0.13.0',
+            serialization:'0.14.0',
             coroutines:'1.3.2',
 
             // JVM versions.
@@ -164,10 +164,9 @@ subprojects {
 
     // Publish configuration.
     // For signing and publishing to work, a 'publish.properties' file needs to be added to the root containing:
-    // The OpenPGP signature credentials to sign all artifacts:
-    // > signing.keyId=<LAST 8 SYMBOLS OF KEY ID>
+    // The OpenPGP credentials to sign all artifacts:
+    // > signing.keyFile=<ABSOLUTE PATH TO THE ASCII-ARMORED KEY FILE>
     // > signing.password=<SECRET>
-    // > signing.secretKeyRingFile=<ABSOLUTE PATH TO THE SECRET KEY RING FILE WITH PRIVATE KEY>
     // A username and password to upload artifacts to the Sonatype repository:
     // > repository.username=<SONATYPE USERNAME>
     // > repository.password=<SONATYPE PASSWORD>
@@ -245,9 +244,9 @@ subprojects {
     }
     task publishSigned {
         doFirst {
-            allprojects { ext."signing.keyId" = publishProperties['signing.keyId'] }
-            allprojects { ext."signing.password" = publishProperties['signing.password'] }
-            allprojects { ext."signing.secretKeyRingFile" = publishProperties['signing.secretKeyRingFile'] }
+            def signingKey = new File(publishProperties['signing.keyFile']).text
+            def signingPassword = publishProperties['signing.password']
+            signing.useInMemoryPgpKeys(signingKey, signingPassword)
         }
     }
     publishSigned.finalizedBy publish

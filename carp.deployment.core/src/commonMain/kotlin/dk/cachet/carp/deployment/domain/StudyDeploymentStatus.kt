@@ -19,16 +19,16 @@ data class StudyDeploymentStatus(
     /**
      * Returns all [DeviceDescriptor]'s in [devicesStatus] which require registration.
      */
-    fun getRemainingDevicesToRegister(): Set<DeviceDescriptor<*,*>> =
+    fun getRemainingDevicesToRegister(): Set<AnyDeviceDescriptor> =
         devicesStatus.filter { it.requiresRegistration && !it.isRegistered }.map { it.device }.toSet()
 
     /**
      * Returns all [AnyMasterDeviceDescriptor] which are ready for deployment and have not yet been deployed.
      */
-    fun getRemainingDevicesReadyToDeploy(): Set<MasterDeviceDescriptor<*,*>> =
+    fun getRemainingDevicesReadyToDeploy(): Set<AnyMasterDeviceDescriptor> =
         devicesStatus
             .filter { it.isReadyForDeployment && !it.isDeployed }
             .map { it.device }
-            .filterIsInstance<MasterDeviceDescriptor<*,*>>()
+            .filterIsInstance<AnyMasterDeviceDescriptor>()
             .toSet()
 }
