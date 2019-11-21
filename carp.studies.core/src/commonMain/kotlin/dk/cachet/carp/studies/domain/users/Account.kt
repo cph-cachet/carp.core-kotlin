@@ -9,15 +9,14 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Account(
-        /**
-     * Identities associated with this account.
+    /**
+     * Identity associated with this account.
      */
     val identity: AccountIdentity,
-        /**
+    /**
      * The set of studies this account participates in as a participant.
      */
     val studyParticipations: Set<Participant> = setOf(),
-        @Serializable( with = UUIDSerializer::class )
     val id: UUID = UUID.randomUUID() )
 {
     companion object
@@ -48,8 +47,8 @@ data class Account(
     }
 
     /**
-     * Determines whether this account has associated [identity] matching [otherAccount].
+     * Determines whether this account has the same [identity] as [otherAccount].
      */
-    fun sameIdentity(otherAccount: Account ): Boolean
+    fun hasSameIdentity( otherAccount: Account ): Boolean
         = identity == otherAccount.identity
 }

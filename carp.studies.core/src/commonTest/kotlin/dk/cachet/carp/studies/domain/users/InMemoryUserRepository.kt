@@ -13,7 +13,7 @@ class InMemoryUserRepository : UserRepository
 
     override fun addAccount( account: Account )
     {
-        require( accounts.none { it.id == account.id || it.sameIdentity( account ) } )
+        require( accounts.none { it.id == account.id || it.hasSameIdentity( account ) } )
 
         accounts.add( account )
     }

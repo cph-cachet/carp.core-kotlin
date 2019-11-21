@@ -30,12 +30,12 @@ class AccountTest
     }
 
     @Test
-    fun sameIdentity_succeeds()
+    fun hasSameIdentity_succeeds()
     {
         val identity1 = AccountIdentity.fromUsername( "identity1" )
         val account1 = Account( identity = identity1 )
         val account2 = Account( identity = identity1 )
 
-        assertTrue( account1.sameIdentity( account2 ) )
+        assertTrue( account1.hasSameIdentity( account2 ) )
     }
 }
