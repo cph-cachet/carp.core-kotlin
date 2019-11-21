@@ -14,8 +14,8 @@ import kotlinx.serialization.*
 data class StudyProtocolSnapshot(
     val ownerId: UUID,
     val name: String,
-    val masterDevices: List<@Serializable( MasterDeviceDescriptorSerializer::class ) MasterDeviceDescriptor<*,*>>,
-    val connectedDevices: List<@Serializable( DeviceDescriptorSerializer::class ) DeviceDescriptor<*,*>>,
+    val masterDevices: List<@Serializable( MasterDeviceDescriptorSerializer::class ) AnyMasterDeviceDescriptor>,
+    val connectedDevices: List<@Serializable( DeviceDescriptorSerializer::class ) AnyDeviceDescriptor>,
     val connections: List<DeviceConnection>,
     val tasks: List<@Serializable( TaskDescriptorSerializer::class ) TaskDescriptor>,
     val triggers: Map<Int, @Serializable( TriggerSerializer::class ) Trigger>,
@@ -58,13 +58,13 @@ data class StudyProtocolSnapshot(
             )
         }
 
-        private fun getConnections( protocol: StudyProtocol, masterDevice: MasterDeviceDescriptor<*,*> ): Iterable<DeviceConnection>
+        private fun getConnections( protocol: StudyProtocol, masterDevice: AnyMasterDeviceDescriptor ): Iterable<DeviceConnection>
         {
             val connections: MutableList<DeviceConnection> = mutableListOf()
 
             protocol.getConnectedDevices( masterDevice ).forEach {
                 connections.add( DeviceConnection( it.roleName, masterDevice.roleName ) )
-                if ( it is MasterDeviceDescriptor<*,*> )
+                if ( it is AnyMasterDeviceDescriptor )
                 {
                     connections.addAll( getConnections( protocol, it ) )
                 }
