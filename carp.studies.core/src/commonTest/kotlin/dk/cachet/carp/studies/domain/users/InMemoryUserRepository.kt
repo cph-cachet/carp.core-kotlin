@@ -13,7 +13,7 @@ class InMemoryUserRepository : UserRepository
 
     override fun addAccount( account: Account )
     {
-        require( accounts.none { it.id == account.id || it.hasMatchingIdentity( account ) } )
+        require( accounts.none { it.id == account.id || it.hasSameIdentity( account ) } )
 
         accounts.add( account )
     }
@@ -22,7 +22,7 @@ class InMemoryUserRepository : UserRepository
         = accounts.firstOrNull { it.id == accountId }
 
     override fun findAccountWithIdentity( identity: AccountIdentity ): Account?
-        = accounts.firstOrNull { it.identities.contains( identity ) }
+        = accounts.firstOrNull { it.identity == identity }
 
     override fun addStudyParticipation( accountId: UUID, participant: Participant )
     {

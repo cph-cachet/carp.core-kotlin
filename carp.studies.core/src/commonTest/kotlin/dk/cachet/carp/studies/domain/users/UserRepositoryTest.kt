@@ -28,8 +28,8 @@ interface UserRepositoryTest
         val id = UUID.randomUUID()
         val username1 = UsernameAccountIdentity( "test" )
         val username2 = UsernameAccountIdentity( "test2" )
-        val account1 = Account( listOf( username1 ), setOf(), id )
-        val account2 = Account( listOf( username2 ), setOf(), id )
+        val account1 = Account( username1, setOf(), id )
+        val account2 = Account( username2, setOf(), id )
         repo.addAccount( account1 )
 
         assertFailsWith<IllegalArgumentException>

@@ -36,7 +36,7 @@ abstract class UserServiceTest
         val username = "User"
         val account = service.createAccount( Username( username ) )
         val expectedIdentity = AccountIdentity.fromUsername( username )
-        assertEquals( expectedIdentity, account.identities.single() )
+        assertEquals( expectedIdentity, account.identity )
         assertEquals( 0, account.studyParticipations.count() )
 
         // Verify whether account was added to the repository.
