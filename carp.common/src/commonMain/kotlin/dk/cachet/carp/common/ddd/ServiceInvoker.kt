@@ -1,3 +1,5 @@
+@file:Suppress( "LongParameterList" )
+
 package dk.cachet.carp.common.ddd
 
 import kotlin.reflect.*

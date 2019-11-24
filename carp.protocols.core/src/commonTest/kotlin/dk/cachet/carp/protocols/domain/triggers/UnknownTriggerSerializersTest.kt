@@ -1,3 +1,5 @@
+@file:Suppress( "MatchingDeclarationName" )
+
 package dk.cachet.carp.protocols.domain.triggers
 
 import dk.cachet.carp.common.serialization.createDefaultJSON

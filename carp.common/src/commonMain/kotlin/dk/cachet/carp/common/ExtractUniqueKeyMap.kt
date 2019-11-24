@@ -11,13 +11,13 @@ class ExtractUniqueKeyMap<K, V>(
     /**
      * Specifies how to retrieve the key for the specified element.
      */
-    private val _keyOf: (V) -> K,
+    private val keyOf: (V) -> K,
     /**
      * The error which should be thrown when attempting to add an element with a key which is already present.
      */
-    private val _elementPresentError: Throwable ) : Map<K, V>
+    private val elementPresentError: Throwable ) : Map<K, V>
 {
-    private val _map: MutableMap<K, V> = mutableMapOf()
+    private val map: MutableMap<K, V> = mutableMapOf()
 
     /**
      * Associates the specified [element] with the key extracted from the [element] and adds the key/value pair in case the key does not yet exist.
@@ -28,7 +28,7 @@ class ExtractUniqueKeyMap<K, V>(
      */
     fun tryAddIfKeyIsNew( element: V ): Boolean
     {
-        val storedElement: V? = _map[ _keyOf( element ) ]
+        val storedElement: V? = map[ keyOf( element ) ]
         if ( storedElement != null )
         {
             if ( element === storedElement )
@@ -36,10 +36,10 @@ class ExtractUniqueKeyMap<K, V>(
                 return false
             }
 
-            throw _elementPresentError
+            throw elementPresentError
         }
 
-        _map[ _keyOf( element ) ] = element
+        map[ keyOf( element ) ] = element
         return true
     }
 
@@ -51,15 +51,15 @@ class ExtractUniqueKeyMap<K, V>(
      */
     fun remove( element: V ): Boolean
     {
-        return _map.remove( _keyOf( element ) ) != null
+        return map.remove( keyOf( element ) ) != null
     }
 
-    override val entries: Set<Map.Entry<K, V>> get() = _map.entries
-    override val keys: Set<K> get() = _map.keys
-    override val size: Int get() = _map.size
-    override val values: Collection<V> get() = _map.values
-    override fun containsKey( key: K ): Boolean = _map.containsKey( key )
-    override fun containsValue( value: V ): Boolean = _map.containsValue( value )
-    override fun get( key: K ): V? = _map[ key ]
-    override fun isEmpty(): Boolean = _map.isEmpty()
+    override val entries: Set<Map.Entry<K, V>> get() = map.entries
+    override val keys: Set<K> get() = map.keys
+    override val size: Int get() = map.size
+    override val values: Collection<V> get() = map.values
+    override fun containsKey( key: K ): Boolean = map.containsKey( key )
+    override fun containsValue( value: V ): Boolean = map.containsValue( value )
+    override fun get( key: K ): V? = map[ key ]
+    override fun isEmpty(): Boolean = map.isEmpty()
 }

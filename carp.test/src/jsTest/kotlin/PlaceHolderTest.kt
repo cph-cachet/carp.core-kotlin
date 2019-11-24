@@ -8,5 +8,6 @@ import kotlin.test.Test
 class PlaceHolderTest
 {
     @Test
+    @Suppress( "EmptyFunctionBlock" )
     fun placeholder() { }
 }

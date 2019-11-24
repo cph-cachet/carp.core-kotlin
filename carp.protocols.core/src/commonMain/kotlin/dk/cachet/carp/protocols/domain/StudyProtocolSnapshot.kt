@@ -83,12 +83,16 @@ data class StudyProtocolSnapshot(
         if ( ownerId != other.ownerId ) return false
         if ( name != other.name ) return false
 
-        if ( !listEquals( masterDevices, other.masterDevices ) ) return false
-        if ( !listEquals( connectedDevices, other.connectedDevices ) ) return false
-        if ( !listEquals( connections, other.connections ) ) return false
-        if ( !listEquals( tasks, other.tasks ) ) return false
-        if ( !listEquals( triggers.toList(), other.triggers.toList() ) ) return false
-        if ( !listEquals( triggeredTasks, other.triggeredTasks ) ) return false
+        val listsToCompare = listOf(
+            masterDevices to other.masterDevices,
+            connectedDevices to other.connectedDevices,
+            connections to other.connections,
+            tasks to other.tasks,
+            triggers.toList() to other.triggers.toList(),
+            triggeredTasks to other.triggeredTasks
+        )
+        val allListsMatch = listsToCompare.all { listEquals( it.first, it.second ) }
+        if ( !allListsMatch ) return false
 
         return true
     }

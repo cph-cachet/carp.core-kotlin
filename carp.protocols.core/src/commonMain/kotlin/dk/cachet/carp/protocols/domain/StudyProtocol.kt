@@ -68,7 +68,7 @@ class StudyProtocol(
     val triggers: Set<Trigger>
         get() = _triggers
 
-    private val _triggeredTasks: MutableMap<Trigger, MutableSet<TriggeredTask>> = mutableMapOf()
+    private val triggeredTasks: MutableMap<Trigger, MutableSet<TriggeredTask>> = mutableMapOf()
 
     /**
      * Add a trigger to this protocol.
@@ -78,7 +78,7 @@ class StudyProtocol(
      */
     fun addTrigger( trigger: Trigger ): Boolean
     {
-        val device: AnyDeviceDescriptor = _deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
+        val device: AnyDeviceDescriptor = deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
             ?: throw InvalidConfigurationError( "The passed trigger does not belong to any device specified in this study protocol." )
 
         if ( trigger.requiresMasterDevice && device !is AnyMasterDeviceDescriptor )
@@ -89,7 +89,7 @@ class StudyProtocol(
         val isAdded: Boolean = _triggers.add( trigger )
         if ( isAdded )
         {
-            _triggeredTasks[ trigger ] = mutableSetOf()
+            triggeredTasks[ trigger ] = mutableSetOf()
         }
         return isAdded
     }
@@ -114,9 +114,9 @@ class StudyProtocol(
 
         // Add trigger and task to ensure they are included in the protocol.
         addTrigger( trigger )
-        _taskConfiguration.addTask( task )
+        taskConfiguration.addTask( task )
 
-        return _triggeredTasks[ trigger ]!!.add( TriggeredTask( task, targetDevice ) )
+        return triggeredTasks[ trigger ]!!.add( TriggeredTask( task, targetDevice ) )
     }
 
     /**
@@ -131,7 +131,7 @@ class StudyProtocol(
             throw InvalidConfigurationError( "The passed trigger is not part of this study protocol." )
         }
 
-        return _triggeredTasks[ trigger ]!!
+        return triggeredTasks[ trigger ]!!
     }
 
     /**
@@ -139,7 +139,7 @@ class StudyProtocol(
      */
     fun getTasksForDevice( device: AnyDeviceDescriptor ): Set<TaskDescriptor>
     {
-        return _triggeredTasks
+        return triggeredTasks
             .flatMap { it.value }
             .filter { it.targetDevice == device }
             .map { it.task }
@@ -154,21 +154,14 @@ class StudyProtocol(
      */
     override fun removeTask( task: TaskDescriptor ): Boolean
     {
-        val isRemoved = _taskConfiguration.removeTask( task )
+        val isRemoved = taskConfiguration.removeTask( task )
 
         // Also remove task from triggers.
         if ( isRemoved )
         {
-            _triggeredTasks.map { it.value }.forEach {
-                val iterator: MutableIterator<TriggeredTask> = it.iterator()
-                while ( iterator.hasNext() )
-                {
-                    val triggeredTask = iterator.next()
-                    if ( triggeredTask.task == task )
-                    {
-                        iterator.remove()
-                    }
-                }
+            triggeredTasks.map { it.value }.forEach {
+                val triggeredTasks = it.filter { triggered -> triggered.task == task }
+                it.removeAll( triggeredTasks )
             }
         }
 

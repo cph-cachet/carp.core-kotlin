@@ -1,3 +1,5 @@
+@file:Suppress( "TooManyFunctions" )
+
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON

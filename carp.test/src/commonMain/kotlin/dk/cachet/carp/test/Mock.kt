@@ -1,3 +1,5 @@
+@file:Suppress( "TooManyFunctions" )
+
 package dk.cachet.carp.test
 
 import kotlin.reflect.*
