@@ -27,7 +27,8 @@ buildscript {
             mocha:'6.2.2',
 
             // DevOps versions.
-            detektPlugin:'1.1.1'
+            detektPlugin:'1.1.1',
+            nexusReleasePlugin:'0.21.1'
         ]
     }
 
@@ -44,6 +45,7 @@ buildscript {
 
         // DevOps plugins.
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:${versions.detektPlugin}"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:${versions.nexusReleasePlugin}"
     }
 
     repositories {
@@ -288,6 +290,11 @@ subprojects {
         }
     }
     publishSnapshot.finalizedBy publishSigned
+}
+// Add 'closeAndReleaseRepository' task to close and release uploads to Sonatype Nexus Repository after 'publishSigned'.
+apply plugin: 'io.codearte.nexus-staging'
+nexusStaging {
+    packageGroup = 'dk.cachet.carp'
 }
 
 // Add common dependencies:
