@@ -7,6 +7,7 @@ import kotlinx.serialization.*
  * A class that represents an immutable universally unique identifier (UUID).
  * A UUID represents a 128-bit value.
  */
+@Serializable( UUIDSerializer::class )
 expect class UUID( stringRepresentation: String )
 {
     val stringRepresentation: String
@@ -25,9 +26,7 @@ val UUIDRegex = Regex( "([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9
 
 
 /**
- * A custom serializer which needs to be applied to [UUID] members in [Serializable] classes.
- *
- * TODO: Unfortunately, the expected class itself cannot be made Serializable. For now, this workaround works.
+ * A custom serializer for [UUID].
  */
 @Serializer( forClass = UUID::class )
 object UUIDSerializer : KSerializer<UUID>

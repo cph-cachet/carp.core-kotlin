@@ -1,4 +1,7 @@
 # Domain Model and Application Service Definitions for all CARP Subsystems
+
+[![Publish snapshots status](https://github.com/cph-cachet/carp.core-kotlin/workflows/Publish%20snapshots/badge.svg?branch=develop)](https://github.com/cph-cachet/carp.core-kotlin/actions?query=workflow%3A%22Publish+snapshots%22) 
+
 This project is part of the [CACHET Research Platform (CARP)](https://github.com/cph-cachet/carp.documentation). It contains all domain models and application services [for all CARP subsystems](https://github.com/cph-cachet/carp.documentation/wiki/Repository-design-overview). These represent an open standard and may not have any dependencies on concrete infrastructure.
 
 Currently this project is under development and only contains an initial unstable alpha version of the domain model and applications services of the `carp.protocols`, `carp.deployment`, and `carp.client` subsystems, and a placeholder for `carp.studies`. Many changes will happen as the rest of the infrastructure is implemented. Once a minimum viable product is completed, a first version will be released and more documentation will be added. 
@@ -78,7 +81,7 @@ Helper classes relied upon by test projects of all subsystems. E.g., to disable 
 
 # Setting up using IntelliJ IDEA 2019
 - Open the project folder in IntelliJ 2019.
-- Install the Kotlin plugin (1.3.50-release-IJ2019.2-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Install the Kotlin plugin (1.3.60-release-IJ2019.2-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
 
 # Multiplatform
 

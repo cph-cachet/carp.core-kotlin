@@ -6,7 +6,7 @@ import dk.cachet.carp.test.Mock
 
 
 class UserServiceMock(
-    private val createAccountResult: Account = Account(),
+    private val createAccountResult: Account = Account( UsernameAccountIdentity( "test" ) ),
     private val createParticipantResult: Participant = Participant( UUID.randomUUID() ),
     private val inviteParticipantResult: Participant = Participant( UUID.randomUUID() ),
     private val getParticipantsForStudyResult: List<Participant> = listOf()

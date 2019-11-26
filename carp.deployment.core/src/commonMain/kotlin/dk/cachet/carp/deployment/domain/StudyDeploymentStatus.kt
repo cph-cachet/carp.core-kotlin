@@ -1,6 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.devices.*
 import kotlinx.serialization.Serializable
 
@@ -10,7 +10,6 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class StudyDeploymentStatus(
-    @Serializable( with = UUIDSerializer::class )
     val studyDeploymentId: UUID,
     /**
      * The list of all devices part of this study deployment and their status.
@@ -20,16 +19,16 @@ data class StudyDeploymentStatus(
     /**
      * Returns all [DeviceDescriptor]'s in [devicesStatus] which require registration.
      */
-    fun getRemainingDevicesToRegister(): Set<DeviceDescriptor<*,*>> =
+    fun getRemainingDevicesToRegister(): Set<AnyDeviceDescriptor> =
         devicesStatus.filter { it.requiresRegistration && !it.isRegistered }.map { it.device }.toSet()
 
     /**
      * Returns all [AnyMasterDeviceDescriptor] which are ready for deployment and have not yet been deployed.
      */
-    fun getRemainingDevicesReadyToDeploy(): Set<MasterDeviceDescriptor<*,*>> =
+    fun getRemainingDevicesReadyToDeploy(): Set<AnyMasterDeviceDescriptor> =
         devicesStatus
             .filter { it.isReadyForDeployment && !it.isDeployed }
             .map { it.device }
-            .filterIsInstance<MasterDeviceDescriptor<*,*>>()
+            .filterIsInstance<AnyMasterDeviceDescriptor>()
             .toSet()
 }

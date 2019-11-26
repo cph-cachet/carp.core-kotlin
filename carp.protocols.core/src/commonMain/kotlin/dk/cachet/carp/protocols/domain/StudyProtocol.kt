@@ -31,11 +31,11 @@ class StudyProtocol(
             snapshot.masterDevices.forEach { protocol.addMasterDevice( it ) }
 
             // Add connected devices.
-            val allDevices: List<DeviceDescriptor<*,*>> = snapshot.connectedDevices.plus( snapshot.masterDevices ).toList()
+            val allDevices: List<AnyDeviceDescriptor> = snapshot.connectedDevices.plus( snapshot.masterDevices ).toList()
             snapshot.connections.forEach { c ->
-                val master: MasterDeviceDescriptor<*,*> = allDevices.filterIsInstance<MasterDeviceDescriptor<*,*>>().firstOrNull { it.roleName == c.connectedToRoleName }
+                val master: AnyMasterDeviceDescriptor = allDevices.filterIsInstance<AnyMasterDeviceDescriptor>().firstOrNull { it.roleName == c.connectedToRoleName }
                     ?: throw InvalidConfigurationError( "Can't find master device with role name '${c.connectedToRoleName}' in snapshot." )
-                val connected: DeviceDescriptor<*,*> = allDevices.firstOrNull { it.roleName == c.roleName }
+                val connected: AnyDeviceDescriptor = allDevices.firstOrNull { it.roleName == c.roleName }
                     ?: throw InvalidConfigurationError( "Can't find connected device with role name '${c.roleName}' in snapshot." )
                 protocol.addConnectedDevice( connected, master )
             }
@@ -68,7 +68,7 @@ class StudyProtocol(
     val triggers: Set<Trigger>
         get() = _triggers
 
-    private val _triggeredTasks: MutableMap<Trigger, MutableSet<TriggeredTask>> = mutableMapOf()
+    private val triggeredTasks: MutableMap<Trigger, MutableSet<TriggeredTask>> = mutableMapOf()
 
     /**
      * Add a trigger to this protocol.
@@ -78,10 +78,10 @@ class StudyProtocol(
      */
     fun addTrigger( trigger: Trigger ): Boolean
     {
-        val device: DeviceDescriptor<*,*> = _deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
+        val device: AnyDeviceDescriptor = deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
             ?: throw InvalidConfigurationError( "The passed trigger does not belong to any device specified in this study protocol." )
 
-        if ( trigger.requiresMasterDevice && device !is MasterDeviceDescriptor<*,*> )
+        if ( trigger.requiresMasterDevice && device !is AnyMasterDeviceDescriptor )
         {
             throw InvalidConfigurationError( "The passed trigger cannot be initiated by the specified device since it is not a master device." )
         }
@@ -89,7 +89,7 @@ class StudyProtocol(
         val isAdded: Boolean = _triggers.add( trigger )
         if ( isAdded )
         {
-            _triggeredTasks[ trigger ] = mutableSetOf()
+            triggeredTasks[ trigger ] = mutableSetOf()
         }
         return isAdded
     }
@@ -104,7 +104,7 @@ class StudyProtocol(
      * @param targetDevice The device the [task] will be sent to once the [trigger] is initiated. The device needs to be part of the study protocol.
      * @return True if the task to be triggered has been added; false if the specified task is already triggered by the specified trigger to the specified device.
      */
-    fun addTriggeredTask( trigger: Trigger, task: TaskDescriptor, targetDevice: DeviceDescriptor<*,*> ): Boolean
+    fun addTriggeredTask( trigger: Trigger, task: TaskDescriptor, targetDevice: AnyDeviceDescriptor ): Boolean
     {
         // The device needs to be included in the study protocol. We can not add it here since we do not know whether it should be a master or connected device.
         if ( !devices.contains( targetDevice ) )
@@ -114,9 +114,9 @@ class StudyProtocol(
 
         // Add trigger and task to ensure they are included in the protocol.
         addTrigger( trigger )
-        _taskConfiguration.addTask( task )
+        taskConfiguration.addTask( task )
 
-        return _triggeredTasks[ trigger ]!!.add( TriggeredTask( task, targetDevice ) )
+        return triggeredTasks[ trigger ]!!.add( TriggeredTask( task, targetDevice ) )
     }
 
     /**
@@ -131,15 +131,15 @@ class StudyProtocol(
             throw InvalidConfigurationError( "The passed trigger is not part of this study protocol." )
         }
 
-        return _triggeredTasks[ trigger ]!!
+        return triggeredTasks[ trigger ]!!
     }
 
     /**
      * Gets all the tasks triggered for the specified [device].
      */
-    fun getTasksForDevice( device: DeviceDescriptor<*,*> ): Set<TaskDescriptor>
+    fun getTasksForDevice( device: AnyDeviceDescriptor ): Set<TaskDescriptor>
     {
-        return _triggeredTasks
+        return triggeredTasks
             .flatMap { it.value }
             .filter { it.targetDevice == device }
             .map { it.task }
@@ -154,21 +154,14 @@ class StudyProtocol(
      */
     override fun removeTask( task: TaskDescriptor ): Boolean
     {
-        val isRemoved = _taskConfiguration.removeTask( task )
+        val isRemoved = taskConfiguration.removeTask( task )
 
         // Also remove task from triggers.
         if ( isRemoved )
         {
-            _triggeredTasks.map { it.value }.forEach {
-                val iterator: MutableIterator<TriggeredTask> = it.iterator()
-                while ( iterator.hasNext() )
-                {
-                    val triggeredTask = iterator.next()
-                    if ( triggeredTask.task == task )
-                    {
-                        iterator.remove()
-                    }
-                }
+            triggeredTasks.map { it.value }.forEach {
+                val triggeredTasks = it.filter { triggered -> triggered.task == task }
+                it.removeAll( triggeredTasks )
             }
         }
 

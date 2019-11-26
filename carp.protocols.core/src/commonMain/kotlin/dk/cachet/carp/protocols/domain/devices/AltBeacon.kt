@@ -32,7 +32,6 @@ data class AltBeaconDeviceRegistration(
     /**
      * The first 16 bytes of the beacon identifier which should be unique to the advertiser's organizational unit.
      */
-    @Serializable( with = UUIDSerializer::class )
     val organizationId: UUID,
     /**
      * The first 2 bytes of the beacon identifier after the [organizationId], commonly named major ID.

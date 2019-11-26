@@ -10,14 +10,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Account(
     /**
-     * Identities associated with this account.
+     * Identity associated with this account.
      */
-    val identities: List<AccountIdentity> = listOf(),
+    val identity: AccountIdentity,
     /**
      * The set of studies this account participates in as a participant.
      */
     val studyParticipations: Set<Participant> = setOf(),
-    @Serializable( with = UUIDSerializer::class )
     val id: UUID = UUID.randomUUID() )
 {
     companion object
@@ -26,30 +25,30 @@ data class Account(
          * Create a new [Account] uniquely identified by the specified [emailAddress].
          */
         fun withEmailIdentity( emailAddress: String ): Account
-            = Account( listOf( EmailAccountIdentity( emailAddress ) ) )
+            = Account( EmailAccountIdentity( emailAddress ) )
 
         /**
          * Create a new [Account] uniquely identified by the specified [emailAddress].
          */
         fun withEmailIdentity( emailAddress: EmailAddress ): Account
-            = Account( listOf( EmailAccountIdentity( emailAddress ) ) )
+            = Account( EmailAccountIdentity( emailAddress ) )
 
         /**
          * Create a new [Account] uniquely identified by the specified [username].
          */
         fun withUsernameIdentity( username: String ): Account
-            = Account( listOf( UsernameAccountIdentity( username ) ) )
+            = Account( UsernameAccountIdentity( username ) )
 
         /**
          * Create a new [Account] uniquely identified by the specified [username].
          */
         fun withUsernameIdentity( username: Username ): Account
-            = Account( listOf( UsernameAccountIdentity( username ) ) )
+            = Account( UsernameAccountIdentity( username ) )
     }
 
     /**
-     * Determines whether this account has associated [identities] matching [otherAccount].
+     * Determines whether this account has the same [identity] as [otherAccount].
      */
-    fun hasMatchingIdentity( otherAccount: Account ): Boolean
-        = identities.intersect( otherAccount.identities ).any()
+    fun hasSameIdentity( otherAccount: Account ): Boolean
+        = identity == otherAccount.identity
 }

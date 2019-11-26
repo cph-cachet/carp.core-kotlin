@@ -1,8 +1,6 @@
-@file:UseSerializers( UUIDSerializer::class )
-
 package dk.cachet.carp.deployment.infrastructure
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.*
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.*
@@ -16,7 +14,7 @@ import kotlinx.serialization.*
  */
 @Polymorphic
 @Serializable
-abstract class DeploymentServiceRequest
+sealed class DeploymentServiceRequest
 {
     @Serializable
     data class CreateStudyDeployment( val protocol: StudyProtocolSnapshot ) :

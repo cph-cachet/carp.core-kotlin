@@ -1,8 +1,6 @@
-@file:UseSerializers( UUIDSerializer::class )
-
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.*
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.domain.*
@@ -14,7 +12,7 @@ import kotlinx.serialization.*
  */
 @Polymorphic
 @Serializable
-abstract class StudyServiceRequest
+sealed class StudyServiceRequest
 {
     @Serializable
     data class CreateStudy( val owner: StudyOwner, val name: String, val description: StudyDescription? = null ) :

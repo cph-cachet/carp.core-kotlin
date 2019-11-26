@@ -19,7 +19,7 @@ class StudyRuntime private constructor(
     /**
      * The description of the device this runtime is intended for within the deployment identified by [studyDeploymentId].
      */
-    val device: MasterDeviceDescriptor<*,*> )
+    val device: AnyMasterDeviceDescriptor )
 {
     /**
      * Determines whether a study runtime is ready for deployment, and once it is, whether it has been deployed successfully.
@@ -69,7 +69,7 @@ class StudyRuntime private constructor(
 
             // Initialize runtime.
             val clientDeviceStatus = deploymentStatus.devicesStatus.first { it.device.roleName == deviceRoleName }
-            val runtime = StudyRuntime( deploymentService, studyDeploymentId, clientDeviceStatus.device as MasterDeviceDescriptor<*,*> )
+            val runtime = StudyRuntime( deploymentService, studyDeploymentId, clientDeviceStatus.device as AnyMasterDeviceDescriptor )
 
             // After registration, deployment information might immediately be available for this client device.
             if ( clientDeviceStatus.isReadyForDeployment )

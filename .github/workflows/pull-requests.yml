@@ -1,0 +1,32 @@
+# Verify pull requests on develop.
+
+name: Verify pull requests
+
+on:
+  pull_request:
+    branches: 
+      - develop
+
+jobs:
+  unit-tests-pass:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: Build and test
+        run: ./gradlew build 
+
+        
+  code-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: Code analysis
+        run: ./gradlew detektPasses 

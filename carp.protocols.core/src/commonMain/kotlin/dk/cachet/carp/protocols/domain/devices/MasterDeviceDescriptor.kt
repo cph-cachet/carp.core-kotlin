@@ -23,5 +23,4 @@ abstract class MasterDeviceDescriptor<TRegistration: DeviceRegistration, out TBu
     fun atStartOfStudy(): StartOfStudyTrigger = StartOfStudyTrigger( this )
 }
 
-// TODO: Make public once kotlinx.serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/563
-//typealias AnyMasterDeviceDescriptor = MasterDeviceDescriptor<*,*>
+typealias AnyMasterDeviceDescriptor = MasterDeviceDescriptor<*,*>

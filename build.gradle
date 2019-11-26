@@ -8,12 +8,12 @@ buildscript {
         // Version used for all submodule artifacts.
         // Snapshot publishing changes (or adds) the suffix after '-' with 'SNAPSHOT' prior to publishing.
         // The 'publishSigned' task publishes to SonaType's staging repo and 'publishSnapshot' instantly uploads to the snapshots repo.
-        globalVersion = '1.0.0-alpha.8'
+        globalVersion = '1.0.0-alpha.9'
 
         versions = [
             // Kotlin multiplatform versions.
-            kotlin:'1.3.50',
-            serialization:'0.13.0',
+            kotlin:'1.3.60',
+            serialization:'0.14.0',
             coroutines:'1.3.2',
 
             // JVM versions.
@@ -23,8 +23,12 @@ buildscript {
 
             // JS versions.
             nodePlugin:'1.3.1',
-            node:'13.0.1',
-            mocha:'6.2.2'
+            node:'13.1.0',
+            mocha:'6.2.2',
+
+            // DevOps versions.
+            detektPlugin:'1.1.1',
+            nexusReleasePlugin:'0.21.1'
         ]
     }
 
@@ -38,13 +42,18 @@ buildscript {
 
         // JVM plugins.
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${versions.dokkaPlugin}"
+
+        // DevOps plugins.
+        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:${versions.detektPlugin}"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:${versions.nexusReleasePlugin}"
     }
 
     repositories {
         jcenter()
 
-        // Additional Kotlin plugin repos.
-        maven { url 'https://kotlin.bintray.com/kotlinx' }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
 }
 
@@ -165,12 +174,24 @@ subprojects {
     }
     jsTest.dependsOn runMocha
 
+    // Add code analysis.
+    apply plugin: 'io.gitlab.arturbosch.detekt'
+    detekt {
+        input = files("$projectDir")
+        config = files("$rootDir/detekt.yml")
+        ignoreFailures = true
+    }
+    task detektPasses(type: io.gitlab.arturbosch.detekt.Detekt) {
+        input = files("$projectDir")
+        config = files("$rootDir/detekt.yml")
+        ignoreFailures = false
+    }
+
     // Publish configuration.
     // For signing and publishing to work, a 'publish.properties' file needs to be added to the root containing:
-    // The OpenPGP signature credentials to sign all artifacts:
-    // > signing.keyId=<LAST 8 SYMBOLS OF KEY ID>
+    // The OpenPGP credentials to sign all artifacts:
+    // > signing.keyFile=<ABSOLUTE PATH TO THE ASCII-ARMORED KEY FILE>
     // > signing.password=<SECRET>
-    // > signing.secretKeyRingFile=<ABSOLUTE PATH TO THE SECRET KEY RING FILE WITH PRIVATE KEY>
     // A username and password to upload artifacts to the Sonatype repository:
     // > repository.username=<SONATYPE USERNAME>
     // > repository.password=<SONATYPE PASSWORD>
@@ -248,9 +269,9 @@ subprojects {
     }
     task publishSigned {
         doFirst {
-            allprojects { ext."signing.keyId" = publishProperties['signing.keyId'] }
-            allprojects { ext."signing.password" = publishProperties['signing.password'] }
-            allprojects { ext."signing.secretKeyRingFile" = publishProperties['signing.secretKeyRingFile'] }
+            def signingKey = new File(publishProperties['signing.keyFile']).text
+            def signingPassword = publishProperties['signing.password']
+            signing.useInMemoryPgpKeys(signingKey, signingPassword)
         }
     }
     publishSigned.finalizedBy publish
@@ -270,16 +291,17 @@ subprojects {
     }
     publishSnapshot.finalizedBy publishSigned
 }
+// Add 'closeAndReleaseRepository' task to close and release uploads to Sonatype Nexus Repository after 'publishSigned'.
+apply plugin: 'io.codearte.nexus-staging'
+nexusStaging {
+    packageGroup = 'dk.cachet.carp'
+}
 
 // Add common dependencies:
 // - `carp.test` for testing
 // - `kotlinx.serialization` to serialize domain models
 // - reflection is used to reinforce correct implementation of domain objects at runtime
 configure( coreModules + commonModule ) {
-    repositories {
-        maven { url 'https://kotlin.bintray.com/kotlinx' }
-    }
-
     buildscript {
         repositories {
             jcenter()

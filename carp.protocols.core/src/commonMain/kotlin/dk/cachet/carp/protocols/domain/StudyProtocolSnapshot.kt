@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.triggers.*
@@ -12,11 +12,10 @@ import kotlinx.serialization.*
  */
 @Serializable
 data class StudyProtocolSnapshot(
-    @Serializable( with = UUIDSerializer::class )
     val ownerId: UUID,
     val name: String,
-    val masterDevices: List<@Serializable( MasterDeviceDescriptorSerializer::class ) MasterDeviceDescriptor<*,*>>,
-    val connectedDevices: List<@Serializable( DeviceDescriptorSerializer::class ) DeviceDescriptor<*,*>>,
+    val masterDevices: List<@Serializable( MasterDeviceDescriptorSerializer::class ) AnyMasterDeviceDescriptor>,
+    val connectedDevices: List<@Serializable( DeviceDescriptorSerializer::class ) AnyDeviceDescriptor>,
     val connections: List<DeviceConnection>,
     val tasks: List<@Serializable( TaskDescriptorSerializer::class ) TaskDescriptor>,
     val triggers: Map<Int, @Serializable( TriggerSerializer::class ) Trigger>,
@@ -59,13 +58,13 @@ data class StudyProtocolSnapshot(
             )
         }
 
-        private fun getConnections( protocol: StudyProtocol, masterDevice: MasterDeviceDescriptor<*,*> ): Iterable<DeviceConnection>
+        private fun getConnections( protocol: StudyProtocol, masterDevice: AnyMasterDeviceDescriptor ): Iterable<DeviceConnection>
         {
             val connections: MutableList<DeviceConnection> = mutableListOf()
 
             protocol.getConnectedDevices( masterDevice ).forEach {
                 connections.add( DeviceConnection( it.roleName, masterDevice.roleName ) )
-                if ( it is MasterDeviceDescriptor<*,*> )
+                if ( it is AnyMasterDeviceDescriptor )
                 {
                     connections.addAll( getConnections( protocol, it ) )
                 }
@@ -84,12 +83,16 @@ data class StudyProtocolSnapshot(
         if ( ownerId != other.ownerId ) return false
         if ( name != other.name ) return false
 
-        if ( !listEquals( masterDevices, other.masterDevices ) ) return false
-        if ( !listEquals( connectedDevices, other.connectedDevices ) ) return false
-        if ( !listEquals( connections, other.connections ) ) return false
-        if ( !listEquals( tasks, other.tasks ) ) return false
-        if ( !listEquals( triggers.toList(), other.triggers.toList() ) ) return false
-        if ( !listEquals( triggeredTasks, other.triggeredTasks ) ) return false
+        val listsToCompare = listOf(
+            masterDevices to other.masterDevices,
+            connectedDevices to other.connectedDevices,
+            connections to other.connections,
+            tasks to other.tasks,
+            triggers.toList() to other.triggers.toList(),
+            triggeredTasks to other.triggeredTasks
+        )
+        val allListsMatch = listsToCompare.all { listEquals( it.first, it.second ) }
+        if ( !allListsMatch ) return false
 
         return true
     }

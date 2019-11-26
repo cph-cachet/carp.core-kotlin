@@ -1,3 +1,5 @@
+@file:Suppress( "TooManyFunctions" )
+
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
@@ -15,20 +17,6 @@ val STUDIES_SERIAL_MODULE = SerializersModule {
     {
         UsernameAccountIdentity::class with UsernameAccountIdentity.serializer()
         EmailAccountIdentity::class with EmailAccountIdentity.serializer()
-    }
-
-    polymorphic( UserServiceRequest::class )
-    {
-        UserServiceRequest.CreateAccountWithUsername::class with UserServiceRequest.CreateAccountWithUsername.serializer()
-        UserServiceRequest.CreateAccountWithEmailAddress::class with UserServiceRequest.CreateAccountWithEmailAddress.serializer()
-        UserServiceRequest.CreateParticipant::class with UserServiceRequest.CreateParticipant.serializer()
-        UserServiceRequest.InviteParticipant::class with UserServiceRequest.InviteParticipant.serializer()
-        UserServiceRequest.GetParticipantsForStudy::class with UserServiceRequest.GetParticipantsForStudy.serializer()
-    }
-    polymorphic( StudyServiceRequest::class )
-    {
-        StudyServiceRequest.CreateStudy::class with StudyServiceRequest.CreateStudy.serializer()
-        StudyServiceRequest.GetStudyStatus::class with StudyServiceRequest.GetStudyStatus.serializer()
     }
 }
 

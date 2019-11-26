@@ -39,7 +39,7 @@ class UserServiceRequestsTest
 
     @Suppress( "UNCHECKED_CAST" )
     @Test
-    fun executeOn_requests_call_service() = runBlockingTest {
+    fun invokeOn_requests_call_service() = runBlockingTest {
         requests.forEach { request ->
             val serviceInvoker = request as ServiceInvoker<UserService, *>
             val function = serviceInvoker.function
@@ -47,19 +47,5 @@ class UserServiceRequestsTest
             assertTrue( mock.wasCalled( function, serviceInvoker.overloadIdentifier ) )
             mock.reset()
         }
-    }
-
-    @Suppress( "UNCHECKED_CAST" )
-    @Test
-    fun request_object_for_each_request_available()
-    {
-        val serviceFunctions = UserService::class.members
-            .filterNot { it.name == "equals" || it.name == "hashCode" || it.name == "toString" }
-        val testedRequests = requests.map {
-            val serviceInvoker = it as ServiceInvoker<UserService, *>
-            serviceInvoker.function
-        }
-
-        assertTrue( testedRequests.containsAll( serviceFunctions ) )
     }
 }
