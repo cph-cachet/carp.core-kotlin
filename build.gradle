@@ -296,6 +296,7 @@ subprojects {
 apply plugin: 'io.codearte.nexus-staging'
 nexusStaging {
     packageGroup = 'dk.cachet.carp'
+    numberOfRetries = 30
     username = publishProperties['repository.username']
     password = publishProperties['repository.password']
 }
