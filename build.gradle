@@ -57,6 +57,13 @@ buildscript {
     }
 }
 
+// Load dependent properties.
+def publishProperties = new Properties()
+def publishPropertiesFile = rootProject.file('publish.properties')
+if (publishPropertiesFile.exists())
+{
+    publishProperties.load(new FileInputStream(publishPropertiesFile))
+}
 
 // Configure all subprojects as testable, publishable, Kotlin multiplatform projects.
 subprojects {
@@ -207,12 +214,6 @@ subprojects {
         archiveClassifier = "javadoc"
         from dokka
     }
-    def publishProperties = new Properties()
-    def publishPropertiesFile = rootProject.file('publish.properties')
-    if (publishPropertiesFile.exists())
-    {
-        publishProperties.load(new FileInputStream(publishPropertiesFile))
-    }
     publishing {
         publications {
             all {
@@ -295,6 +296,8 @@ subprojects {
 apply plugin: 'io.codearte.nexus-staging'
 nexusStaging {
     packageGroup = 'dk.cachet.carp'
+    username = publishProperties['repository.username']
+    password = publishProperties['repository.password']
 }
 
 // Add common dependencies:
