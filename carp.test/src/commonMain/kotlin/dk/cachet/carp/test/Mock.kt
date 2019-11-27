@@ -54,7 +54,7 @@ abstract class Mock<TMock>
     }
     private fun trackCallableOverloaded( function: KCallable<*>, overloadIdentifier: String, vararg arguments: Any )
     {
-        functionCalls[ function.name + "-" + overloadIdentifier ] = arguments
+        functionCalls[ "${function.name}-$overloadIdentifier" ] = arguments
     }
 
 
@@ -107,7 +107,7 @@ abstract class Mock<TMock>
 
     fun <TReturn> wasCalled( function: KCallable<TReturn>, overloadIdentifier: String? = null ): Boolean =
         if ( overloadIdentifier == null ) functionCalls.containsKey( function.name )
-        else functionCalls.containsKey( "$function.name-$overloadIdentifier" )
+        else functionCalls.containsKey( "${function.name}-$overloadIdentifier" )
     fun <TReturn> wasNotCalled( function: KCallable<TReturn>, overloadIdentifier: String? = null ): Boolean =
         !wasCalled( function, overloadIdentifier )
 
