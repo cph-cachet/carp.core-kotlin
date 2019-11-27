@@ -1,7 +1,9 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.devices.CustomDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import kotlinx.serialization.json.Json
 import kotlin.test.*
 

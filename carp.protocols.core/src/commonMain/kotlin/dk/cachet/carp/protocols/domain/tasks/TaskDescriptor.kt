@@ -2,8 +2,9 @@ package dk.cachet.carp.protocols.domain.tasks
 
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
-import dk.cachet.carp.protocols.domain.tasks.measures.*
-import kotlinx.serialization.*
+import dk.cachet.carp.protocols.domain.tasks.measures.Measure
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Serializable
 
 
 /**

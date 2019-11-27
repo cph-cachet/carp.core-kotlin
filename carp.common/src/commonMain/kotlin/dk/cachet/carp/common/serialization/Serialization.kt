@@ -1,7 +1,9 @@
 package dk.cachet.carp.common.serialization
 
-import kotlinx.serialization.json.*
-import kotlinx.serialization.modules.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.modules.EmptyModule
+import kotlinx.serialization.modules.SerialModule
 
 
 /**

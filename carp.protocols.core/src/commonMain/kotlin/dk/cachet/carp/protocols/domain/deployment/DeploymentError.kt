@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.deployment
 
-import dk.cachet.carp.protocols.domain.*
+import dk.cachet.carp.protocols.domain.StudyProtocol
 
 
 /**

@@ -1,6 +1,6 @@
 package dk.cachet.carp.studies.domain
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.UUID
 import kotlinx.serialization.Serializable
 
 
@@ -9,5 +9,4 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class StudyOwner(
-    @Serializable( with = UUIDSerializer::class )
     val id: UUID = UUID.randomUUID() )

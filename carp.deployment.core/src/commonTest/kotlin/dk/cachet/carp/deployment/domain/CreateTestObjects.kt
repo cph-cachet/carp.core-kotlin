@@ -1,13 +1,21 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.Trilean
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.NotSerializable
 import dk.cachet.carp.deployment.domain.triggers.StubTrigger
-import dk.cachet.carp.protocols.domain.*
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.ProtocolOwner
+import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilder
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilderDsl
+import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.triggers.Trigger
-import dk.cachet.carp.protocols.infrastructure.*
+import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
+import dk.cachet.carp.protocols.infrastructure.JSON
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule

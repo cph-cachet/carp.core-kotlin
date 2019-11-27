@@ -1,6 +1,6 @@
 package dk.cachet.carp.common
 
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.internal.KotlinReflectionInternalError

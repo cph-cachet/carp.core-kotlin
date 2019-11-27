@@ -4,6 +4,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
+
 /**
  * Tests for [ClientManager].
  */

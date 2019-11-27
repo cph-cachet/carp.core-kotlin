@@ -1,6 +1,12 @@
 package dk.cachet.carp.deployment.infrastructure
 
-import dk.cachet.carp.deployment.domain.*
+import dk.cachet.carp.deployment.domain.createEmptyProtocol
+import dk.cachet.carp.deployment.domain.createSingleMasterWithConnectedDeviceProtocol
+import dk.cachet.carp.deployment.domain.STUBS_SERIAL_MODULE
+import dk.cachet.carp.deployment.domain.studyDeploymentFor
+import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
+import dk.cachet.carp.deployment.domain.UnknownDeviceRegistration
+import dk.cachet.carp.deployment.domain.UnknownMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomDeviceRegistration
 import kotlin.test.*
 

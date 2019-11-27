@@ -1,9 +1,13 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.Trilean
-import dk.cachet.carp.common.serialization.*
+import dk.cachet.carp.common.serialization.createUnknownPolymorphicSerializer
+import dk.cachet.carp.common.serialization.UnknownPolymorphicSerializer
+import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.content
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import kotlin.reflect.KClass
 
 

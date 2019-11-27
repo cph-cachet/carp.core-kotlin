@@ -1,6 +1,9 @@
 package dk.cachet.carp.protocols.application
 
-import dk.cachet.carp.protocols.domain.*
+import dk.cachet.carp.protocols.domain.ProtocolOwner
+import dk.cachet.carp.protocols.domain.ProtocolVersion
+import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.test.Mock
 
 

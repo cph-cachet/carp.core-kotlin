@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.data
 
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
 
 
 /**

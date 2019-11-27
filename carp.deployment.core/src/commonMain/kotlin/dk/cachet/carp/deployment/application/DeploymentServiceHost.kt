@@ -1,9 +1,14 @@
 package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.deployment.domain.*
-import dk.cachet.carp.protocols.domain.*
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.deployment.domain.DeploymentRepository
+import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
+import dk.cachet.carp.deployment.domain.StudyDeployment
+import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.protocols.domain.InvalidConfigurationError
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
 
 /**

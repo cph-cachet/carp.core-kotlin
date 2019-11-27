@@ -3,7 +3,8 @@ package dk.cachet.carp.client.domain
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import kotlinx.serialization.Serializable
 
 

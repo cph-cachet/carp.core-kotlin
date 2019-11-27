@@ -1,8 +1,10 @@
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.EmailAddress
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.ServiceInvoker
-import dk.cachet.carp.studies.application.*
+import dk.cachet.carp.studies.application.UserService
+import dk.cachet.carp.studies.application.UserServiceMock
 import dk.cachet.carp.studies.domain.users.Username
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*

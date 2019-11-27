@@ -1,10 +1,24 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.protocols.domain.*
+import dk.cachet.carp.protocols.domain.createEmptyProtocol
+import dk.cachet.carp.protocols.domain.createComplexProtocol
+import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.domain.UnknownDeviceDescriptor
+import dk.cachet.carp.protocols.domain.UnknownMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.UnknownMeasure
+import dk.cachet.carp.protocols.domain.UnknownTaskDescriptor
+import dk.cachet.carp.protocols.domain.UnknownTrigger
 import dk.cachet.carp.protocols.domain.data.STUB_DATA_TYPE
-import dk.cachet.carp.protocols.domain.devices.*
-import dk.cachet.carp.protocols.domain.tasks.*
-import dk.cachet.carp.protocols.domain.tasks.measures.*
+import dk.cachet.carp.protocols.domain.devices.CustomDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.StubMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.tasks.CustomMeasure
+import dk.cachet.carp.protocols.domain.tasks.CustomTaskDescriptor
+import dk.cachet.carp.protocols.domain.tasks.StubTaskDescriptor
+import dk.cachet.carp.protocols.domain.tasks.measures.Measure
+import dk.cachet.carp.protocols.domain.tasks.measures.StubMeasure
 import dk.cachet.carp.protocols.domain.triggers.CustomTrigger
 import kotlin.test.*
 

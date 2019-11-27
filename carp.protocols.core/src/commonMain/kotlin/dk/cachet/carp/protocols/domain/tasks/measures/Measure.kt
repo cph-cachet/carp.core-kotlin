@@ -1,11 +1,12 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.common.Immutable
-import dk.cachet.carp.protocols.domain.data.*
+import dk.cachet.carp.protocols.domain.data.DataType
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
-import kotlinx.serialization.*
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Serializable
 
 
 /**

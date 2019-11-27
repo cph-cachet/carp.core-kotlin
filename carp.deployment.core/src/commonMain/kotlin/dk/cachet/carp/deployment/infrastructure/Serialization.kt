@@ -1,10 +1,14 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
-import dk.cachet.carp.deployment.domain.*
+import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
+import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
+import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.infrastructure.PROTOCOLS_SERIAL_MODULE
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.*
+import kotlinx.serialization.modules.EmptyModule
+import kotlinx.serialization.modules.plus
+import kotlinx.serialization.modules.SerialModule
 
 
 /**

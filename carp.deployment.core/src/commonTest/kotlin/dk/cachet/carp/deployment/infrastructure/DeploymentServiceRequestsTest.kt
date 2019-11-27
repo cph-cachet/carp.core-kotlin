@@ -2,7 +2,8 @@ package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.ServiceInvoker
-import dk.cachet.carp.deployment.application.*
+import dk.cachet.carp.deployment.application.DeploymentService
+import dk.cachet.carp.deployment.application.DeploymentServiceMock
 import dk.cachet.carp.deployment.domain.createEmptyProtocol
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.test.runBlockingTest

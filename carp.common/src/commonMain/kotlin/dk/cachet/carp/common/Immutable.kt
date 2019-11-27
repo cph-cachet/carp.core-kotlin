@@ -1,6 +1,6 @@
 package dk.cachet.carp.common
 
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
 
 
 /**

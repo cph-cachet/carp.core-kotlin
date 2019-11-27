@@ -2,8 +2,9 @@ package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.protocols.domain.data.DataType
-import dk.cachet.carp.protocols.domain.data.carp.*
-import kotlinx.serialization.*
+import dk.cachet.carp.protocols.domain.data.carp.GEO_LOCATION
+import dk.cachet.carp.protocols.domain.data.carp.STEPCOUNT
+import kotlinx.serialization.Serializable
 
 
 /**

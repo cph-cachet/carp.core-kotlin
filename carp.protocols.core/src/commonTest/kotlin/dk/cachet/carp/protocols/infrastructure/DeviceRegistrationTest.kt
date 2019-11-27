@@ -1,6 +1,8 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.CustomDeviceRegistration
 import kotlin.test.*
 
 

@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.Trilean
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.NotSerializable
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass

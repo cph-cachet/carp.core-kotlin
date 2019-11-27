@@ -1,7 +1,8 @@
 package dk.cachet.carp.protocols.domain.deployment
 
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 
 
 /**

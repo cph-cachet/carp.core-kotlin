@@ -1,6 +1,11 @@
 package dk.cachet.carp.common.serialization
 
-import kotlinx.serialization.*
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.PolymorphicKind
+import kotlinx.serialization.SerialDescriptor
+import kotlinx.serialization.SerialKind
 import kotlinx.serialization.internal.SerialClassDescImpl
 import kotlinx.serialization.json.Json
 import kotlin.reflect.KClass

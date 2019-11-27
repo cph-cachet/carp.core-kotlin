@@ -1,11 +1,14 @@
 package dk.cachet.carp.protocols.domain.tasks
 
-import dk.cachet.carp.common.serialization.*
+import dk.cachet.carp.common.serialization.createUnknownPolymorphicSerializer
+import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.protocols.domain.data.DataType
-import dk.cachet.carp.protocols.domain.tasks.measures.*
+import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.internal.ArrayListSerializer
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.content
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 
 
 /**

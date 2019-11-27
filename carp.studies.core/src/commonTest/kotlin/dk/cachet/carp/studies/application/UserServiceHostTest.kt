@@ -1,7 +1,8 @@
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.studies.domain.NotifyUserServiceMock
-import dk.cachet.carp.studies.domain.users.*
+import dk.cachet.carp.studies.domain.users.InMemoryUserRepository
+import dk.cachet.carp.studies.domain.users.UserRepository
 
 
 /**

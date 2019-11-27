@@ -1,6 +1,7 @@
 package dk.cachet.carp.client.infrastructure
 
-import dk.cachet.carp.client.domain.*
+import dk.cachet.carp.client.domain.ClientManagerSnapshot
+import dk.cachet.carp.client.domain.StudyRuntimeSnapshot
 import dk.cachet.carp.protocols.infrastructure.JSON
 
 

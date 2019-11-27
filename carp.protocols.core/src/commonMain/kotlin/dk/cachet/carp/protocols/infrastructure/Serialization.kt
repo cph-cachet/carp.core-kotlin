@@ -2,12 +2,26 @@ package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.devices.*
-import dk.cachet.carp.protocols.domain.tasks.*
-import dk.cachet.carp.protocols.domain.tasks.measures.*
-import dk.cachet.carp.protocols.domain.triggers.*
+import dk.cachet.carp.protocols.domain.devices.AltBeacon
+import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
+import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.Smartphone
+import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
+import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
+import dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure
+import dk.cachet.carp.protocols.domain.tasks.measures.Measure
+import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure
+import dk.cachet.carp.protocols.domain.triggers.StartOfStudyTrigger
+import dk.cachet.carp.protocols.domain.triggers.Trigger
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.*
+import kotlinx.serialization.modules.EmptyModule
+import kotlinx.serialization.modules.plus
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.SerialModule
 
 
 /**

@@ -1,6 +1,7 @@
 package dk.cachet.carp.studies.domain
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.EmailAddress
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.test.Mock
 
 

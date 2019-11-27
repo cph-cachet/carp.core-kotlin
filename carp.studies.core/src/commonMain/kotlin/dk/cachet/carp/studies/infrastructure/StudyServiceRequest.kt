@@ -1,10 +1,14 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.ddd.*
+import dk.cachet.carp.common.ddd.createServiceInvoker
+import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.studies.application.StudyService
-import dk.cachet.carp.studies.domain.*
-import kotlinx.serialization.*
+import dk.cachet.carp.studies.domain.StudyDescription
+import dk.cachet.carp.studies.domain.StudyOwner
+import dk.cachet.carp.studies.domain.StudyStatus
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Serializable
 
 
 /**

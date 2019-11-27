@@ -1,7 +1,8 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.protocols.domain.triggers.StartOfStudyTrigger
-import kotlinx.serialization.*
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Serializable
 
 
 /**

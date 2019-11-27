@@ -3,10 +3,19 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
-import dk.cachet.carp.studies.domain.*
-import dk.cachet.carp.studies.domain.users.*
+import dk.cachet.carp.studies.domain.StudyDescription
+import dk.cachet.carp.studies.domain.StudySnapshot
+import dk.cachet.carp.studies.domain.StudyStatus
+import dk.cachet.carp.studies.domain.users.Account
+import dk.cachet.carp.studies.domain.users.AccountIdentity
+import dk.cachet.carp.studies.domain.users.EmailAccountIdentity
+import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.UsernameAccountIdentity
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.*
+import kotlinx.serialization.modules.EmptyModule
+import kotlinx.serialization.modules.plus
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.SerialModule
 
 
 /**

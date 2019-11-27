@@ -249,7 +249,7 @@ formatting:
     active: true
     autoCorrect: true
   NoWildcardImports:
-    active: false
+    active: true
   PackageName:
     active: true
     autoCorrect: true
@@ -564,6 +564,6 @@ style:
   VarCouldBeVal:
     active: false
   WildcardImport:
-    active: false
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
-    excludeImports: 'java.util.*,kotlinx.android.synthetic.*'
+    active: true
+    # excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludeImports: 'kotlin.reflect.*,kotlin.test.*'

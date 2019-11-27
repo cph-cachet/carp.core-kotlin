@@ -2,7 +2,8 @@ package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.test.JsIgnore
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
-import dk.cachet.carp.protocols.domain.data.*
+import dk.cachet.carp.protocols.domain.data.DataType
+import dk.cachet.carp.protocols.domain.data.STUB_DATA_TYPE
 import kotlin.test.*
 
 

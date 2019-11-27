@@ -1,7 +1,9 @@
 package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.deployment.application.DeploymentService
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistrationBuilder
+import dk.cachet.carp.protocols.domain.devices.Smartphone
 
 
 typealias SmartphoneManager = ClientManager<Smartphone, DefaultDeviceRegistration>

@@ -1,6 +1,7 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.client.infrastructure.*
+import dk.cachet.carp.client.infrastructure.fromJson
+import dk.cachet.carp.client.infrastructure.toJson
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 

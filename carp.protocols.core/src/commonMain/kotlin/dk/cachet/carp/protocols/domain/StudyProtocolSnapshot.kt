@@ -1,10 +1,15 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.protocols.domain.devices.*
-import dk.cachet.carp.protocols.domain.tasks.*
-import dk.cachet.carp.protocols.domain.triggers.*
-import kotlinx.serialization.*
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
+import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptorSerializer
+import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
+import dk.cachet.carp.protocols.domain.tasks.TaskDescriptorSerializer
+import dk.cachet.carp.protocols.domain.triggers.Trigger
+import dk.cachet.carp.protocols.domain.triggers.TriggerSerializer
+import kotlinx.serialization.Serializable
 
 
 /**

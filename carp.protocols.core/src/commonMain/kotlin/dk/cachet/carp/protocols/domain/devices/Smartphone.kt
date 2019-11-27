@@ -1,7 +1,8 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.Trilean
-import dk.cachet.carp.protocols.domain.tasks.measures.*
+import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure
+import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasureFactory
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 

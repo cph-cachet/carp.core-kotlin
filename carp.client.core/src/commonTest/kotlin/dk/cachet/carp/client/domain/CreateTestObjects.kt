@@ -1,9 +1,13 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.deployment.application.*
-import dk.cachet.carp.deployment.domain.*
-import dk.cachet.carp.protocols.domain.*
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.deployment.application.DeploymentService
+import dk.cachet.carp.deployment.application.DeploymentServiceHost
+import dk.cachet.carp.deployment.domain.InMemoryDeploymentRepository
+import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.protocols.domain.ProtocolOwner
+import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.Smartphone
 
 
 val smartphone: Smartphone = Smartphone( "User's phone" )

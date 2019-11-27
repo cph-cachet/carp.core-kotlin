@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.protocols.domain.devices.*
-import dk.cachet.carp.protocols.domain.tasks.*
+import dk.cachet.carp.protocols.domain.devices.DeviceConfiguration
+import dk.cachet.carp.protocols.domain.tasks.TaskConfiguration
 
 
 /**

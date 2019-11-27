@@ -1,14 +1,23 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.protocols.domain.deployment.*
-import dk.cachet.carp.protocols.domain.devices.*
-import dk.cachet.carp.protocols.domain.tasks.*
-import dk.cachet.carp.protocols.domain.triggers.*
+import dk.cachet.carp.protocols.domain.deployment.DeploymentError
+import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
+import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
+import dk.cachet.carp.protocols.domain.deployment.UntriggeredTasksWarning
+import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
+import dk.cachet.carp.protocols.domain.deployment.UseCompositeTaskWarning
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.EmptyDeviceConfiguration
+import dk.cachet.carp.protocols.domain.tasks.EmptyTaskConfiguration
+import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
+import dk.cachet.carp.protocols.domain.triggers.Trigger
+import dk.cachet.carp.protocols.domain.triggers.TriggeredTask
 
 
 /**
- * A description of how a study is to be executed, defining the type(s) of master device(s) ([MasterDeviceDescriptor]) responsible for aggregating data,
- * the optional devices ([DeviceDescriptor]) connected to them, and the [Trigger]'s which lead to data collection on said devices.
+ * A description of how a study is to be executed, defining the type(s) of master device(s) ([AnyMasterDeviceDescriptor]) responsible for aggregating data,
+ * the optional devices ([AnyDeviceDescriptor]) connected to them, and the [Trigger]'s which lead to data collection on said devices.
  */
 class StudyProtocol(
     /**
