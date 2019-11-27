@@ -17,8 +17,8 @@ import kotlin.reflect.KClass
  */
 @Serializable
 @Polymorphic
-abstract class DeviceDescriptor<TRegistration: DeviceRegistration, out TBuilder: DeviceRegistrationBuilder<TRegistration>>
-    : Immutable( notImmutableErrorFor( DeviceDescriptor::class ) )
+abstract class DeviceDescriptor<TRegistration : DeviceRegistration, out TBuilder : DeviceRegistrationBuilder<TRegistration>> :
+    Immutable( notImmutableErrorFor( DeviceDescriptor::class ) )
 {
     /**
      * A name which describes how the device participates within the study protocol; it's 'role'.
@@ -32,8 +32,8 @@ abstract class DeviceDescriptor<TRegistration: DeviceRegistration, out TBuilder:
      * Create a [DeviceRegistration] which can be used to configure this device for deployment.
      * Use [builder] to configure device-specific registration options, if any.
      */
-    fun createRegistration( builder: TBuilder.() -> Unit = {} ): TRegistration
-        = createDeviceRegistrationBuilder().apply( builder ).build()
+    fun createRegistration( builder: TBuilder.() -> Unit = {} ): TRegistration =
+        createDeviceRegistrationBuilder().apply( builder ).build()
 
     /**
      * Return the class information of the [DeviceRegistration] class used to register devices for this [DeviceDescriptor].
@@ -47,4 +47,4 @@ abstract class DeviceDescriptor<TRegistration: DeviceRegistration, out TBuilder:
     abstract fun isValidConfiguration( registration: TRegistration ): Trilean
 }
 
-typealias AnyDeviceDescriptor = DeviceDescriptor<*,*>
+typealias AnyDeviceDescriptor = DeviceDescriptor<*, *>

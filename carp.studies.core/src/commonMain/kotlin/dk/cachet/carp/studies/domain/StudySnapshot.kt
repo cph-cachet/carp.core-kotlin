@@ -10,7 +10,8 @@ data class StudySnapshot(
     val ownerId: UUID,
     val name: String,
     val description: StudyDescription,
-    val participantIds: List<UUID> )
+    val participantIds: List<UUID>
+)
 {
     companion object
     {

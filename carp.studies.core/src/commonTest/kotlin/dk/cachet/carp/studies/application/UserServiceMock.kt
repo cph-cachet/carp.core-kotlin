@@ -24,8 +24,8 @@ class UserServiceMock(
     }
 
     @Suppress( "RemoveExplicitTypeArguments" ) // Compilation fails if `trackSuspendCall` type arguments are removed.
-    override suspend fun createAccount( emailAddress: EmailAddress )
-        = trackSuspendCallOverloaded<EmailAddress, Unit>( UserService::createAccount, "emailAddress", emailAddress )
+    override suspend fun createAccount( emailAddress: EmailAddress ) =
+        trackSuspendCallOverloaded<EmailAddress, Unit>( UserService::createAccount, "emailAddress", emailAddress )
 
     override suspend fun createParticipant( studyId: UUID, accountId: UUID ): Participant
     {

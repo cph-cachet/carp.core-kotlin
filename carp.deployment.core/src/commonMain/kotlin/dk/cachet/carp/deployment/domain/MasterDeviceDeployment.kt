@@ -40,7 +40,8 @@ data class MasterDeviceDeployment(
     /**
      * The specification of tasks triggered and the devices they are sent to.
      */
-    val triggeredTasks: Set<TriggeredTask> )
+    val triggeredTasks: Set<TriggeredTask>
+)
 {
     /**
      * Specifies the task with [taskName] which is sent to [destinationDeviceRoleName] when the condition of the trigger with [triggerId] is met.
@@ -58,5 +59,6 @@ data class MasterDeviceDeployment(
         /**
          * The role name of the device to which to send the task with [taskName] when the [trigger] condition is met.
          */
-        val destinationDeviceRoleName: String )
+        val destinationDeviceRoleName: String
+    )
 }

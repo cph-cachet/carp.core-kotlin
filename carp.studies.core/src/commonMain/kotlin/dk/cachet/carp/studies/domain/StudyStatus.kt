@@ -13,4 +13,5 @@ data class StudyStatus(
     /**
      * A descriptive name for the study, as assigned by the [StudyOwner].
      */
-    val name: String )
+    val name: String
+)

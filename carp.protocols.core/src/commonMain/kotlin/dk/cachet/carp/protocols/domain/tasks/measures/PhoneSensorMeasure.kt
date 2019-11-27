@@ -19,7 +19,8 @@ data class PhoneSensorMeasure private constructor(
      * The optional duration over the course of which the sensor identified by [type] needs to be measured.
      * Infinite by default.
      */
-    val duration: TimeSpan = TimeSpan.INFINITE ) : Measure()
+    val duration: TimeSpan = TimeSpan.INFINITE
+) : Measure()
 {
     companion object Factory : PhoneSensorMeasureFactory
     {

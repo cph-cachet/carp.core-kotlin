@@ -27,10 +27,8 @@ class UUIDTest
     fun can_serialize_and_deserialize_nullable_UUID()
     {
         @Serializable
-        data class Id
-        (
-            val id: UUID?
-        )
+        data class Id( val id: UUID? )
+
         val json = Json( JsonConfiguration.Stable )
 
         val id = Id( UUID( "00000000-0000-0000-0000-000000000000" ) )

@@ -35,8 +35,8 @@ class UnknownPolymorphicSerializerTest
     @Serializable
     class DerivingType( override val toOverrideProperty: String ) : BaseType()
 
-    data class CustomBaseType( override val className: String, override val jsonSource: String, val serializer: Json )
-        : BaseType(), UnknownPolymorphicWrapper
+    data class CustomBaseType( override val className: String, override val jsonSource: String, val serializer: Json ) :
+        BaseType(), UnknownPolymorphicWrapper
     {
         override val toOverrideProperty: String
 

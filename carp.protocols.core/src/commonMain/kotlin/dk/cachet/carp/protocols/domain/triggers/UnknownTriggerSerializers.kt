@@ -11,8 +11,8 @@ import kotlinx.serialization.json.JsonObject
 /**
  * A wrapper used to load extending types from [Trigger] serialized as JSON which are unknown at runtime.
  */
-data class CustomTrigger( override val className: String, override val jsonSource: String, val serializer: Json )
-    : Trigger(), UnknownPolymorphicWrapper
+data class CustomTrigger( override val className: String, override val jsonSource: String, val serializer: Json ) :
+    Trigger(), UnknownPolymorphicWrapper
 {
     override val sourceDeviceRoleName: String
 

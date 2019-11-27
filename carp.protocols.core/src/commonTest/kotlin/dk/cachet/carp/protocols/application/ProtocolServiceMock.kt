@@ -13,11 +13,11 @@ class ProtocolServiceMock(
     val getVersionHistoryForResult: List<ProtocolVersion> = listOf()
 ) : Mock<ProtocolService>(), ProtocolService
 {
-    override suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String )
-        = trackSuspendCall( ProtocolService::add, protocol, versionTag )
+    override suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String ) =
+        trackSuspendCall( ProtocolService::add, protocol, versionTag )
 
-    override suspend fun update( protocol: StudyProtocolSnapshot, versionTag: String )
-        = trackSuspendCall( ProtocolService::update, protocol, versionTag )
+    override suspend fun update( protocol: StudyProtocolSnapshot, versionTag: String ) =
+        trackSuspendCall( ProtocolService::update, protocol, versionTag )
 
     override suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? ): StudyProtocolSnapshot
     {

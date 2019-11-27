@@ -15,7 +15,8 @@ data class StudyDeploymentStatus(
     /**
      * The list of all devices part of this study deployment and their status.
      */
-    val devicesStatus: List<DeviceDeploymentStatus> )
+    val devicesStatus: List<DeviceDeploymentStatus>
+)
 {
     /**
      * Returns all [DeviceDescriptor]'s in [devicesStatus] which require registration.

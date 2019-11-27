@@ -13,7 +13,8 @@ data class StudyRuntimeSnapshot(
     @Serializable( DeviceDescriptorSerializer::class )
     val device: AnyMasterDeviceDescriptor,
     val isDeployed: Boolean,
-    val deploymentInformation: MasterDeviceDeployment? )
+    val deploymentInformation: MasterDeviceDeployment?
+)
 {
     companion object
     {

@@ -222,13 +222,13 @@ formatting:
     active: true
     autoCorrect: true
   NoConsecutiveBlankLines:
-    active: true
+    active: false
     autoCorrect: true
   NoEmptyClassBody:
     active: true
     autoCorrect: true
   NoLineBreakAfterElse:
-    active: true
+    active: false
     autoCorrect: true
   NoLineBreakBeforeAssignment:
     active: true
@@ -249,7 +249,7 @@ formatting:
     active: true
     autoCorrect: true
   NoWildcardImports:
-    active: true
+    active: false
   PackageName:
     active: true
     autoCorrect: true
@@ -264,19 +264,19 @@ formatting:
     active: true
     autoCorrect: true
   SpacingAroundCurly:
-    active: true
+    active: false
     autoCorrect: true
   SpacingAroundDot:
     active: true
     autoCorrect: true
   SpacingAroundKeyword:
-    active: true
+    active: false
     autoCorrect: true
   SpacingAroundOperators:
     active: true
     autoCorrect: true
   SpacingAroundParens:
-    active: true
+    active: false
     autoCorrect: true
   SpacingAroundRangeOperator:
     active: true

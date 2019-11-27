@@ -17,7 +17,8 @@ fun createSmartphoneManager(
      * Use [registrationBuilder] to configure or override default registration options.
      */
     deploymentService: DeploymentService,
-    registrationBuilder: DefaultDeviceRegistrationBuilder.() -> Unit = {} ): SmartphoneManager
+    registrationBuilder: DefaultDeviceRegistrationBuilder.() -> Unit = {}
+): SmartphoneManager
 {
     val registration: DefaultDeviceRegistration = DefaultDeviceRegistrationBuilder().apply( registrationBuilder ).build()
     return SmartphoneManager( registration, deploymentService )

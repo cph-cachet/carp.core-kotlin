@@ -35,8 +35,8 @@ sealed class DeploymentServiceRequest
         val studyDeploymentId: UUID,
         val deviceRoleName: String,
         @Serializable( DeviceRegistrationSerializer::class )
-        val registration: DeviceRegistration ) :
-        DeploymentServiceRequest(),
+        val registration: DeviceRegistration
+    ) : DeploymentServiceRequest(),
         ServiceInvoker<DeploymentService, StudyDeploymentStatus> by createServiceInvoker( DeploymentService::registerDevice, studyDeploymentId, deviceRoleName, registration )
 
     @Serializable

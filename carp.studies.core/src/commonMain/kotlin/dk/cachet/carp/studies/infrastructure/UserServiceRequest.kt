@@ -29,7 +29,7 @@ sealed class UserServiceRequest
                 UserService::createAccount, "username", username )
 
     @Serializable
-    @Suppress( "RemoveExplicitTypeArguments" )  // Needed for JS build to work.
+    @Suppress( "RemoveExplicitTypeArguments" ) // Needed for JS build to work.
     data class CreateAccountWithEmailAddress( val emailAddress: EmailAddress ) :
         UserServiceRequest(),
         ServiceInvoker<UserService, Unit>

@@ -187,6 +187,10 @@ subprojects {
         input = files("$projectDir")
         config = files("$rootDir/detekt.yml")
         ignoreFailures = true
+
+        dependencies {
+            detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:${versions.detektPlugin}"
+        }
     }
     task detektPasses(type: io.gitlab.arturbosch.detekt.Detekt) {
         input = files("$projectDir")

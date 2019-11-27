@@ -25,5 +25,6 @@ data class DataTypeMeasure( override val type: DataType ) : Measure()
          * The name of the [DataType] for which data needs to be measured.
          * Describes the data being collected.
          */
-        name: String ) : this( DataType( namespace, name ) )
+        name: String
+    ) : this( DataType( namespace, name ) )
 }

@@ -9,7 +9,7 @@ import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 /**
  * Allows managing [StudyRuntime]'s on a client device.
  */
-class ClientManager<TMasterDevice: MasterDeviceDescriptor<TRegistration,*>, TRegistration: DeviceRegistration>(
+class ClientManager<TMasterDevice : MasterDeviceDescriptor<TRegistration, *>, TRegistration : DeviceRegistration>(
     /**
      * The device configuration for this client device, used to register for study deployments managed by the [deploymentService].
      */
@@ -17,7 +17,8 @@ class ClientManager<TMasterDevice: MasterDeviceDescriptor<TRegistration,*>, TReg
     /**
      * The application service through which study deployments can be managed and retrieved.
      */
-    private val deploymentService: DeploymentService )
+    private val deploymentService: DeploymentService
+)
 {
     companion object Factory
     {

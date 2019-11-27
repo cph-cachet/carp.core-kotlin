@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
 class InvalidConfigurationError( message: String ) : Throwable( message )
 
 
-fun<T: Any> notImmutableErrorFor( type: KClass<T> ): InvalidConfigurationError
+fun <T : Any> notImmutableErrorFor( type: KClass<T> ): InvalidConfigurationError
 {
     return InvalidConfigurationError( "Implementations of '${type.simpleName}' should be data classes and may not contain any mutable properties." )
 }

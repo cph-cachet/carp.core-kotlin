@@ -35,4 +35,5 @@ data class DeviceDeploymentStatus(
     /**
      * True if the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
      */
-    val isDeployed: Boolean )
+    val isDeployed: Boolean
+)

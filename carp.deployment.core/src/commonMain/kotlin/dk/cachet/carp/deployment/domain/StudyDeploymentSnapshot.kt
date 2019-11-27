@@ -14,7 +14,8 @@ import kotlinx.serialization.Serializable
 data class StudyDeploymentSnapshot(
     val studyDeploymentId: UUID,
     val studyProtocolSnapshot: StudyProtocolSnapshot,
-    val registeredDevices: Map<String, @Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration> )
+    val registeredDevices: Map<String, @Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration>
+)
 {
     companion object
     {

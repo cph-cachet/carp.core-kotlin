@@ -93,8 +93,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         return StudyDeploymentStatus( id, devicesStatus )
     }
 
-    private fun isTopLevelMasterDevice( device: AnyDeviceDescriptor ): Boolean
-        = device is AnyMasterDeviceDescriptor && _protocol.masterDevices.contains( device )
+    private fun isTopLevelMasterDevice( device: AnyDeviceDescriptor ): Boolean =
+        device is AnyMasterDeviceDescriptor && _protocol.masterDevices.contains( device )
 
     /**
      * Determines whether the deployment configuration (to initialize the device environment) for a specific device can be obtained.

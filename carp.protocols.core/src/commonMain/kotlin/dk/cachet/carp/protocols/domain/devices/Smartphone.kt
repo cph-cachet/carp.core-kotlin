@@ -11,8 +11,8 @@ import kotlin.reflect.KClass
  * An internet-connected phone with built-in sensors.
  */
 @Serializable
-data class Smartphone( override val roleName: String )
-    : MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>(), PhoneSensorMeasureFactory by PhoneSensorMeasure.Factory
+data class Smartphone( override val roleName: String ) :
+    MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>(), PhoneSensorMeasureFactory by PhoneSensorMeasure.Factory
 {
     companion object : PhoneSensorMeasureFactory by PhoneSensorMeasure.Factory
 

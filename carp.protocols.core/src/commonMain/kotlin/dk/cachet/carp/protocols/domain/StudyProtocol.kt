@@ -27,7 +27,8 @@ class StudyProtocol(
     /**
      * A unique descriptive name for the protocol assigned by the [ProtocolOwner].
      */
-    val name: String ) : StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration() )
+    val name: String
+) : StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration() )
 {
     companion object Factory
     {

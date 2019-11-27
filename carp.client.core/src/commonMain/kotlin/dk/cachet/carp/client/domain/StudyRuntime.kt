@@ -20,7 +20,8 @@ class StudyRuntime private constructor(
     /**
      * The description of the device this runtime is intended for within the deployment identified by [studyDeploymentId].
      */
-    val device: AnyMasterDeviceDescriptor )
+    val device: AnyMasterDeviceDescriptor
+)
 {
     /**
      * Determines whether a study runtime is ready for deployment, and once it is, whether it has been deployed successfully.
@@ -34,7 +35,8 @@ class StudyRuntime private constructor(
         /**
          * True if the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
          */
-        val isDeployed: Boolean )
+        val isDeployed: Boolean
+    )
 
 
     companion object Factory
@@ -62,7 +64,8 @@ class StudyRuntime private constructor(
             /**
              * The device configuration for the device this study runtime runs on, identified by [deviceRoleName] in the study deployment with [studyDeploymentId].
              */
-            deviceRegistration: DeviceRegistration ): StudyRuntime
+            deviceRegistration: DeviceRegistration
+        ): StudyRuntime
         {
             // Register the client device this study runs on for the given study deployment.
             // TODO: What if registration succeeds, but deployment fails since not all required plugins are available? Registering again is not allowed right now.

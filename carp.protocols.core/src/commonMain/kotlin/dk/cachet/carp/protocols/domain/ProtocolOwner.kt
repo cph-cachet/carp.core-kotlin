@@ -8,5 +8,4 @@ import kotlinx.serialization.Serializable
  * Uniquely identifies the person or group that created a [StudyProtocol].
  */
 @Serializable
-data class ProtocolOwner(
-    val id: UUID = UUID.randomUUID() )
+data class ProtocolOwner( val id: UUID = UUID.randomUUID() )

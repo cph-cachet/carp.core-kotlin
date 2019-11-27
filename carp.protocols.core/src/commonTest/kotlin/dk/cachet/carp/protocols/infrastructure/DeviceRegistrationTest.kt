@@ -14,7 +14,7 @@ class DeviceRegistrationTest
     @Test
     fun can_serialize_and_deserialize_device_registration_using_JSON()
     {
-        val default: DeviceRegistration  = DefaultDeviceRegistration( "Test" )
+        val default: DeviceRegistration = DefaultDeviceRegistration( "Test" )
 
         val serialized = default.toJson()
         val parsed = DeviceRegistration.fromJson( serialized )

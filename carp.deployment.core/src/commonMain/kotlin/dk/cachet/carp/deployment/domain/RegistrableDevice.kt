@@ -18,4 +18,5 @@ data class RegistrableDevice(
     /**
      * Determines whether registering the device is required for the deployment to start running.
      */
-    val requiresRegistration: Boolean )
+    val requiresRegistration: Boolean
+)

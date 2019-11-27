@@ -31,35 +31,35 @@ var JSON: Json = createDeploymentSerializer()
 /**
  * Create a [StudyDeploymentSnapshot] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
-fun StudyDeploymentSnapshot.Companion.fromJson( json: String ): StudyDeploymentSnapshot
-    = JSON.parse( serializer(), json )
+fun StudyDeploymentSnapshot.Companion.fromJson( json: String ): StudyDeploymentSnapshot =
+    JSON.parse( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
-fun StudyDeploymentSnapshot.toJson(): String
-    = JSON.stringify( StudyDeploymentSnapshot.serializer(), this )
+fun StudyDeploymentSnapshot.toJson(): String =
+    JSON.stringify( StudyDeploymentSnapshot.serializer(), this )
 
 /**
  * Create a [StudyDeploymentStatus] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
-fun StudyDeploymentStatus.Companion.fromJson( json: String ): StudyDeploymentStatus
-    = JSON.parse( serializer(), json )
+fun StudyDeploymentStatus.Companion.fromJson( json: String ): StudyDeploymentStatus =
+    JSON.parse( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
-fun StudyDeploymentStatus.toJson(): String
-    = JSON.stringify( StudyDeploymentStatus.serializer(), this )
+fun StudyDeploymentStatus.toJson(): String =
+    JSON.stringify( StudyDeploymentStatus.serializer(), this )
 
 /**
  * Create a [MasterDeviceDeployment] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
-fun MasterDeviceDeployment.Companion.fromJson( json: String ): MasterDeviceDeployment
-    = JSON.parse( serializer(), json )
+fun MasterDeviceDeployment.Companion.fromJson( json: String ): MasterDeviceDeployment =
+    JSON.parse( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
-fun MasterDeviceDeployment.toJson(): String
-    = JSON.stringify( MasterDeviceDeployment.serializer(), this )
+fun MasterDeviceDeployment.toJson(): String =
+    JSON.stringify( MasterDeviceDeployment.serializer(), this )

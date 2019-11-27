@@ -70,7 +70,8 @@ fun createEmptyProtocol(): StudyProtocol
  */
 fun createSingleMasterWithConnectedDeviceProtocol(
     masterDeviceName: String = "Master",
-    connectedDeviceName: String = "Connected" ): StudyProtocol
+    connectedDeviceName: String = "Connected"
+): StudyProtocol
 {
     val protocol = createEmptyProtocol()
     val master = StubMasterDeviceDescriptor( masterDeviceName )
@@ -86,8 +87,8 @@ fun studyDeploymentFor( protocol: StudyProtocol ): StudyDeployment
 }
 
 @Serializable
-internal data class UnknownDeviceDescriptor( override val roleName: String )
-    : DeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
+internal data class UnknownDeviceDescriptor( override val roleName: String ) :
+    DeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
     override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
@@ -95,8 +96,8 @@ internal data class UnknownDeviceDescriptor( override val roleName: String )
 }
 
 @Serializable
-internal data class UnknownMasterDeviceDescriptor( override val roleName: String )
-    : MasterDeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
+internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) :
+    MasterDeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
     override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
@@ -108,8 +109,8 @@ internal data class UnknownDeviceRegistration( override val deviceId: String ) :
 
 @Serializable( with = NotSerializable::class )
 @DeviceRegistrationBuilderDsl
-class UnknownDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() )
-    : DeviceRegistrationBuilder<DeviceRegistration>()
+class UnknownDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() ) :
+    DeviceRegistrationBuilder<DeviceRegistration>()
 {
     override fun build(): DeviceRegistration = DefaultDeviceRegistration( deviceId )
 }

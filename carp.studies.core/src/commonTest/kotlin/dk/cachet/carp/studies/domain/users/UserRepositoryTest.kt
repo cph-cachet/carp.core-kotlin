@@ -139,7 +139,7 @@ interface UserRepositoryTest
         val studyParticipants = listOf( Participant( studyId ), Participant( studyId ) )
         val otherParticipant = Participant( UUID.randomUUID() ) // Some other study.
 
-        (studyParticipants + otherParticipant).forEach { repo.addStudyParticipation( account.id, it )  }
+        (studyParticipants + otherParticipant).forEach { repo.addStudyParticipation( account.id, it ) }
         val participants = repo.getParticipantsForStudy( studyId )
 
         assertEquals( 2, participants.intersect( studyParticipants ).count() )

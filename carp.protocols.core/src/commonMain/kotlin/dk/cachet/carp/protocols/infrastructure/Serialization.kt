@@ -61,8 +61,8 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
  * This ensures a global configuration on how serialization should occur.
  * Additional types the serializer needs to be aware about (such as polymorph extending classes) should be registered through [module].
  */
-fun createProtocolsSerializer( module: SerialModule = EmptyModule ): Json
-    = createDefaultJSON( PROTOCOLS_SERIAL_MODULE + module )
+fun createProtocolsSerializer( module: SerialModule = EmptyModule ): Json =
+    createDefaultJSON( PROTOCOLS_SERIAL_MODULE + module )
 
 /**
  * A default CARP infrastructure serializer capable of serializing all [dk.cachet.carp.protocols] types.
@@ -75,23 +75,23 @@ var JSON: Json = createProtocolsSerializer()
 /**
  * Create a [StudyProtocolSnapshot] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
-fun StudyProtocolSnapshot.Companion.fromJson( json: String ): StudyProtocolSnapshot
-    = JSON.parse( serializer(), json )
+fun StudyProtocolSnapshot.Companion.fromJson( json: String ): StudyProtocolSnapshot =
+    JSON.parse( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
-fun StudyProtocolSnapshot.toJson(): String
-    = JSON.stringify( StudyProtocolSnapshot.serializer(), this )
+fun StudyProtocolSnapshot.toJson(): String =
+    JSON.stringify( StudyProtocolSnapshot.serializer(), this )
 
 /**
  * Create a [DeviceRegistration] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
-fun DeviceRegistration.Companion.fromJson( json: String ): DeviceRegistration
-    = JSON.parse( DeviceRegistrationSerializer, json )
+fun DeviceRegistration.Companion.fromJson( json: String ): DeviceRegistration =
+    JSON.parse( DeviceRegistrationSerializer, json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
-fun DeviceRegistration.toJson(): String
-    = JSON.stringify( DeviceRegistrationSerializer, this )
+fun DeviceRegistration.toJson(): String =
+    JSON.stringify( DeviceRegistrationSerializer, this )

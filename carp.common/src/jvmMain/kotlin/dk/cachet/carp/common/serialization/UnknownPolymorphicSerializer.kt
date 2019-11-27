@@ -13,15 +13,16 @@ import kotlin.reflect.full.createType
 import kotlin.reflect.jvm.isAccessible
 
 
-actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual constructor(
+actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constructor(
     private val baseClass: KClass<P>,
     wrapperClass: KClass<W>,
-    verifyUnknownPolymorphicWrapper: Boolean ) : KSerializer<P>
+    verifyUnknownPolymorphicWrapper: Boolean
+) : KSerializer<P>
 {
     companion object
     {
-        private val unsupportedException
-            = SerializationException( "${UnknownPolymorphicSerializer::class.simpleName} only supports JSON serialization." )
+        private val unsupportedException =
+            SerializationException( "${UnknownPolymorphicSerializer::class.simpleName} only supports JSON serialization." )
     }
 
     init
