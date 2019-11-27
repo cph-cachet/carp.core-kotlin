@@ -14,5 +14,3 @@ data class StubTrigger(
     constructor( device: AnyDeviceDescriptor ) : this( device, "Unique" )
     constructor( device: AnyDeviceDescriptor, uniqueName: String ) : this( device.roleName, uniqueName )
 }
-
-
