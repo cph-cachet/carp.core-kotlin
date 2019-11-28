@@ -1,0 +1,17 @@
+group = 'dk.cachet.carp.detekt'
+
+repositories {
+    jcenter()
+}
+
+apply {
+    plugin("kotlin")
+    plugin("maven-publish")
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "io.gitlab.arturbosch.detekt:detekt-api:${versions.detektPlugin}"
+}
+
+project.tasks.publish.enabled = false

@@ -43,7 +43,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     {
         StudyProtocol.fromSnapshot( protocolSnapshot )
     }
-    catch( e: InvalidConfigurationError )
+    catch ( e: InvalidConfigurationError )
     {
         throw IllegalArgumentException( "Invalid protocol snapshot passed." )
     }

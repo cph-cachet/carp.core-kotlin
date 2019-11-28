@@ -11,7 +11,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
  * Implementation of [ProtocolService] which allows managing (multiple versions of) [StudyProtocolSnapshot]'s,
  * which can be instantiated locally through [StudyProtocol].
  */
-class ProtocolServiceHost(private val repository: StudyProtocolRepository ) : ProtocolService
+class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : ProtocolService
 {
     /**
      * Add the specified study [protocol].

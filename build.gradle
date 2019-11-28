@@ -1,5 +1,6 @@
 def commonModule = subprojects.find { it.name == 'carp.common' }
 def coreModules = subprojects.findAll { it.name.endsWith( '.core' ) }
+def detektModule = subprojects.find { it.name == 'carp.detekt' }
 
 
 // Load plugin dependencies.
@@ -66,7 +67,7 @@ if (publishPropertiesFile.exists())
 }
 
 // Configure all subprojects as testable, publishable, Kotlin multiplatform projects.
-subprojects {
+configure( subprojects - detektModule ) {
     version = globalVersion
 
     repositories {
@@ -190,6 +191,7 @@ subprojects {
 
         dependencies {
             detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:${versions.detektPlugin}"
+            detektPlugins project(":carp.detekt") // Add custom project-specific rules.
         }
     }
     task detektPasses(type: io.gitlab.arturbosch.detekt.Detekt) {
@@ -197,6 +199,7 @@ subprojects {
         config = files("$rootDir/detekt.yml")
         ignoreFailures = false
     }
+    tasks.detekt.dependsOn ":carp.detekt:assemble" // Ensure 'carp.detekt' is build prior to running code analysis.
 
     // Publish configuration.
     // For signing and publishing to work, a 'publish.properties' file needs to be added to the root containing:
@@ -283,7 +286,7 @@ subprojects {
     task publishSnapshot {
         doFirst {
             // Since project dependencies trigger publications of other projects, immediately modify versions of all subprojects.
-            rootProject.subprojects.each { project ->
+            (subprojects - detektModule).each { project ->
                 def versionSplit = project.version.split('-')
                 def snapshotVersion = "${versionSplit[0]}-SNAPSHOT"
                 project.version = snapshotVersion
@@ -366,7 +369,7 @@ configure( coreModules ) {
 // HACK: Dokka currently does not work for multiplatform projects.
 // The following configuration is a workaround to configure Dokka for JVM solely:
 // https://discuss.kotlinlang.org/t/how-to-configure-dokka-for-kotlin-multiplatform/9834
-configure( subprojects ) {
+configure( subprojects - detektModule ) {
     dokka {
         kotlinTasks { [] }
         // Dokka fails to retrieve sources from multiplatform tasks. Setting this as empty avoids exceptions.
