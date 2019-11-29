@@ -1,6 +1,6 @@
 package dk.cachet.carp.detekt.extensions
 
-import dk.cachet.carp.detekt.extensions.rules.SpacingInParens
+import dk.cachet.carp.detekt.extensions.rules.SpacingInParentheses
 import io.gitlab.arturbosch.detekt.api.Config
 import io.gitlab.arturbosch.detekt.api.RuleSet
 import io.gitlab.arturbosch.detekt.api.RuleSetProvider
@@ -14,7 +14,7 @@ class CarpRuleSetProvider : RuleSetProvider
         RuleSet(
             ruleSetId,
             listOf(
-                SpacingInParens()
+                SpacingInParentheses()
             )
         )
 }

@@ -6,12 +6,27 @@ repositories {
 
 apply {
     plugin("kotlin")
-    plugin("maven-publish")
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "io.gitlab.arturbosch.detekt:detekt-api:${versions.detektPlugin}"
+
+    testImplementation "io.gitlab.arturbosch.detekt:detekt-test:${versions.detektPlugin}"
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${versions.jUnit5}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${versions.jUnit5}"
 }
 
+test {
+    useJUnitPlatform()
+}
+
+
+// This project is not intended to be published, but the root project is.
+// This skips this project when publishing the root: https://stackoverflow.com/a/59096967/590790
+apply {
+    plugin("maven-publish")
+}
 project.tasks.publish.enabled = false

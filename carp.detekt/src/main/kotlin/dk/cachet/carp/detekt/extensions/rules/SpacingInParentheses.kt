@@ -15,7 +15,10 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.stubs.elements.KtParameterElementType
 
 
-class SpacingInParens : Rule()
+/**
+ * A rule which verifies whether spaces are added in all parentheses, except those of higher-order functions.
+ */
+class SpacingInParentheses : Rule()
 {
     override val issue = Issue(
         javaClass.simpleName,

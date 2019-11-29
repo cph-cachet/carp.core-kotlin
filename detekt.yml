@@ -28,7 +28,7 @@ console-reports:
 
 comments:
   active: true
-  excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+  excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
   CommentOverPrivateFunction:
     active: false
   CommentOverPrivateProperty:
@@ -58,7 +58,7 @@ complexity:
     includeStaticDeclarations: false
   ComplexMethod:
     active: true
-    threshold: 10
+    threshold: 15
     ignoreSingleWhenExpression: false
     ignoreSimpleWhenEntries: false
   LabeledExpression:
@@ -82,14 +82,14 @@ complexity:
     threshold: 4
   StringLiteralDuplication:
     active: false
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     threshold: 3
     ignoreAnnotation: true
     excludeStringsWithLessThan5Characters: true
     ignoreStringsRegex: '$^'
   TooManyFunctions:
     active: true
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     thresholdInFiles: 11
     thresholdInClasses: 11
     thresholdInInterfaces: 11
@@ -139,7 +139,7 @@ exceptions:
     methodNames: 'toString,hashCode,equals,finalize'
   InstanceOfCheckForException:
     active: false
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
   NotImplementedDeclaration:
     active: false
   PrintStackTrace:
@@ -164,7 +164,7 @@ exceptions:
     active: false
   TooGenericExceptionCaught:
     active: true
-    excludes: "**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     exceptionNames:
      - ArrayIndexOutOfBoundsException
      - Error
@@ -289,39 +289,39 @@ naming:
   active: true
   ClassNaming:
     active: true
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     classPattern: '[A-Z$][a-zA-Z0-9$]*'
   ConstructorParameterNaming:
     active: true
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     parameterPattern: '[a-z][A-Za-z0-9]*'
     privateParameterPattern: '[a-z][A-Za-z0-9]*'
     excludeClassPattern: '$^'
   EnumNaming:
     active: true
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     enumEntryPattern: '^[A-Z][_a-zA-Z0-9]*'
   ForbiddenClassName:
     active: false
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     forbiddenName: ''
   FunctionMaxLength:
     active: false
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     maximumFunctionNameLength: 30
   FunctionMinLength:
     active: false
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     minimumFunctionNameLength: 3
   FunctionNaming:
     active: true
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     functionPattern: '^([a-z$][a-zA-Z$0-9]*)|(`.*`)$'
     excludeClassPattern: '$^'
     ignoreOverridden: true
   FunctionParameterNaming:
     active: true
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     parameterPattern: '[a-z][A-Za-z0-9]*'
     excludeClassPattern: '$^'
     ignoreOverriddenFunctions: true
@@ -335,31 +335,31 @@ naming:
     ignoreOverriddenFunction: true
   ObjectPropertyNaming:
     active: true
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     constantPattern: '[A-Za-z][_A-Za-z0-9]*'
     propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
     privatePropertyPattern: '(_)?[A-Za-z][_A-Za-z0-9]*'
   PackageNaming:
     active: true
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     packagePattern: '^[a-z]+(\.[a-z][A-Za-z0-9]*)*$'
   TopLevelPropertyNaming:
     active: true
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     constantPattern: '[A-Z][_A-Z0-9]*'
     propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
     privatePropertyPattern: '_?[A-Za-z][_A-Za-z0-9]*'
   VariableMaxLength:
     active: false
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     maximumVariableNameLength: 64
   VariableMinLength:
     active: false
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     minimumVariableNameLength: 1
   VariableNaming:
     active: true
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     variablePattern: '[a-z][A-Za-z0-9]*'
     privateVariablePattern: '(_)?[a-z][A-Za-z0-9]*'
     excludeClassPattern: '$^'
@@ -371,10 +371,10 @@ performance:
     active: false
   ForEachOnRange:
     active: true
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
   SpreadOperator:
     active: true
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
   UnnecessaryTemporaryInstantiation:
     active: true
 
@@ -400,7 +400,7 @@ potential-bugs:
     active: false
   LateinitUsage:
     active: false
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     excludeAnnotatedProperties: ""
     ignoreOnClassesPattern: ""
   MissingWhenCase:
@@ -462,7 +462,7 @@ style:
     maxJumpCount: 1
   MagicNumber:
     active: true
-    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**"
+    excludes: "**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**"
     ignoreNumbers: '-1,0,1,2'
     ignoreHashCodeFunction: true
     ignorePropertyDeclaration: false
