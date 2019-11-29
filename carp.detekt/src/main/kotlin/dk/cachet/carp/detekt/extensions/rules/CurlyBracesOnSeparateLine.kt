@@ -3,6 +3,7 @@ package dk.cachet.carp.detekt.extensions.rules
 import io.gitlab.arturbosch.detekt.api.*
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.children
 
 
 /**
@@ -22,9 +23,18 @@ class CurlyBracesOnSeparateLine : Rule()
         super.visitClassBody( classBody )
 
         val node = classBody.node
-        val precededBy = node.treePrev
 
-        val blockOpensOnNewLine = precededBy is PsiWhiteSpace && (precededBy as PsiWhiteSpace).text.contains( "\n" )
+        // Do not report classes which are fully defined on one line.
+        val isOneLineClass = node.children()
+            .filterIsInstance<PsiWhiteSpace>()
+            .none { it.text.contains( "\n" ) }
+        if ( isOneLineClass ) return
+
+        // Multi-line class definitions require curly braces on separate lines.
+        val precededBy = node.treePrev
+        val blockOpensOnNewLine =
+            precededBy is PsiWhiteSpace &&
+            (precededBy as PsiWhiteSpace).text.contains( "\n" )
         if ( !blockOpensOnNewLine )
         {
             val message = "Curly braces around code blocks need to be placed on separate lines."
