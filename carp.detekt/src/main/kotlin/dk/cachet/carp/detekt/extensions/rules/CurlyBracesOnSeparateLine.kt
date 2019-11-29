@@ -4,6 +4,7 @@ import io.gitlab.arturbosch.detekt.api.*
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.children
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 
 /**
@@ -31,14 +32,20 @@ class CurlyBracesOnSeparateLine : Rule()
         if ( isOneLineClass ) return
 
         // Multi-line class definitions require curly braces on separate lines.
-        val precededBy = node.treePrev
-        val blockOpensOnNewLine =
-            precededBy is PsiWhiteSpace &&
-            (precededBy as PsiWhiteSpace).text.contains( "\n" )
-        if ( !blockOpensOnNewLine )
+        var invalidCurlyBraces = false
+        val beforeOpen = node.treePrev
+        val beforeClose = node.lastChildNode.treePrev
+        val areWhitespaces = beforeOpen is PsiWhiteSpace && beforeClose is PsiWhiteSpace
+        invalidCurlyBraces = !areWhitespaces
+        if ( areWhitespaces )
         {
-            val message = "Curly braces around code blocks need to be placed on separate lines."
-            report( CodeSmell( issue, Entity.from( classBody ), message ) )
+            val sameIndentation = beforeOpen.text == beforeClose.text
+            val blockOpensOnNewLine = beforeClose.text.startsWith( "\n" )
+            invalidCurlyBraces = !sameIndentation || !blockOpensOnNewLine
+        }
+        if ( invalidCurlyBraces )
+        {
+            report( CodeSmell( issue, Entity.from( classBody ), issue.description ) )
         }
     }
 }
