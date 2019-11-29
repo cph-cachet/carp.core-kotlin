@@ -15,7 +15,8 @@ import kotlin.test.*
  */
 class DeploymentServiceRequestsTest
 {
-    companion object {
+    companion object
+    {
         val requests: List<DeploymentServiceRequest> = listOf(
             DeploymentServiceRequest.CreateStudyDeployment( createEmptyProtocol().getSnapshot() ),
             DeploymentServiceRequest.GetStudyDeploymentStatus( UUID.randomUUID() ),

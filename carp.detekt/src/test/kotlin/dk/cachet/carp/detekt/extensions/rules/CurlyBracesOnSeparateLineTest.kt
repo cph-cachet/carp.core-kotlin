@@ -10,7 +10,7 @@ import kotlin.test.*
 class CurlyBracesOnSeparateLineTest
 {
     @Test
-    fun curly_braces_of_class_blocks_on_separate_lines()
+    fun curly_braces_of_class_blocks_need_to_be_on_separate_lines()
     {
         val newLine =
             """
@@ -28,6 +28,13 @@ class CurlyBracesOnSeparateLineTest
             }
             """
         assertEquals( 1, codeSmells( noNewLine ) )
+    }
+
+    @Test
+    fun classes_may_be_defined_on_one_line()
+    {
+        val oneLine = "class OneLine { val test: Int }"
+        assertEquals( 0, codeSmells( oneLine ) )
     }
 
 

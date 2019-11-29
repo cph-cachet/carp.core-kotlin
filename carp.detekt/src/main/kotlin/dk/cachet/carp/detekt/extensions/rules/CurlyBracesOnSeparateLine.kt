@@ -1,9 +1,8 @@
 package dk.cachet.carp.detekt.extensions.rules
 
-import io.gitlab.arturbosch.detekt.api.Debt
-import io.gitlab.arturbosch.detekt.api.Issue
-import io.gitlab.arturbosch.detekt.api.Rule
-import io.gitlab.arturbosch.detekt.api.Severity
+import io.gitlab.arturbosch.detekt.api.*
+import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
+import org.jetbrains.kotlin.psi.*
 
 
 /**
@@ -17,4 +16,19 @@ class CurlyBracesOnSeparateLine : Rule()
         "Curly braces around code blocks need to be placed on separate lines.",
         Debt.FIVE_MINS
     )
+
+    override fun visitClassBody( classBody: KtClassBody )
+    {
+        super.visitClassBody( classBody )
+
+        val node = classBody.node
+        val precededBy = node.treePrev
+
+        val blockOpensOnNewLine = precededBy is PsiWhiteSpace && (precededBy as PsiWhiteSpace).text.contains( "\n" )
+        if ( !blockOpensOnNewLine )
+        {
+            val message = "Curly braces around code blocks need to be placed on separate lines."
+            report( CodeSmell( issue, Entity.from( classBody ), message ) )
+        }
+    }
 }

@@ -14,7 +14,8 @@ import kotlin.test.*
  */
 class ProtocolServiceRequestsTest
 {
-    companion object {
+    companion object
+    {
         val requests: List<ProtocolServiceRequest> = listOf(
             ProtocolServiceRequest.Add( createComplexProtocol().getSnapshot(), "Initial" ),
             ProtocolServiceRequest.Update( createComplexProtocol().getSnapshot(), "Updated" ),
