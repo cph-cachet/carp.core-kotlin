@@ -1,5 +1,8 @@
 package dk.cachet.carp.detekt.extensions.rules
 
+import dk.cachet.carp.detekt.extensions.areAligned
+import dk.cachet.carp.detekt.extensions.isDefinedOnOneLine
+import dk.cachet.carp.detekt.extensions.startsOnNewLine
 import io.gitlab.arturbosch.detekt.api.CodeSmell
 import io.gitlab.arturbosch.detekt.api.Debt
 import io.gitlab.arturbosch.detekt.api.Entity
@@ -8,25 +11,45 @@ import io.gitlab.arturbosch.detekt.api.Rule
 import io.gitlab.arturbosch.detekt.api.Severity
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
+import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtObjectDeclaration
 import org.jetbrains.kotlin.psi.KtObjectLiteralExpression
 import org.jetbrains.kotlin.psi.KtReturnExpression
-import org.jetbrains.kotlin.psi.psiUtil.children
 
 
 /**
- * A rule which verifies whether curly braces of class definitions are placed on separate lines,
- * aligned with the start of the line on which the class is defined.
+ * A rule which verifies whether curly braces of blocks are placed on separate lines,
+ * aligned with the start of the definition the block is associated with.
  */
-class CurlyClassBracesOnSeparateLine : Rule()
+class CurlyBracesOnSeparateLine : Rule()
 {
     override val issue = Issue(
         javaClass.simpleName,
         Severity.Style,
-        "Curly braces of class definitions need to be placed on separate lines, aligned with the start of the line on which the class is defined.",
+        "Curly braces of blocks need to be placed on separate lines, aligned with the start of the definition the block is associated with.",
         Debt.FIVE_MINS
     )
+
+    override fun visitBlockExpression( expression: KtBlockExpression )
+    {
+        super.visitBlockExpression( expression )
+
+        val node = expression.node
+
+        // Do not report blocks which are fully defined on one line.
+        if ( isDefinedOnOneLine( node ) ) return
+
+        // Multi-line blocks require curly braces on separate lines, aligned with each other.
+        val leftBrace = node.firstChildNode
+        val rightBrace = node.lastChildNode
+        val bracesAligned = areAligned( leftBrace, rightBrace )
+        val blockOpensOnNewLine = startsOnNewLine( leftBrace )
+        if ( !bracesAligned || !blockOpensOnNewLine )
+        {
+            report( CodeSmell( issue, Entity.from( expression ), issue.description ) )
+        }
+    }
 
     override fun visitClassBody( classBody: KtClassBody )
     {
@@ -34,25 +57,15 @@ class CurlyClassBracesOnSeparateLine : Rule()
 
         val node = classBody.node
 
-        // Do not report classes which are fully defined on one line.
-        val isOneLineClass = node.children()
-            .filterIsInstance<PsiWhiteSpace>()
-            .none { it.text.contains( "\n" ) }
-        if ( isOneLineClass ) return
+        // Do not report blocks which are fully defined on one line.
+        if ( isDefinedOnOneLine( node ) ) return
 
         // Multi-line class definitions require curly braces on separate lines, aligned with the class definition.
-        var invalidCurlyBraces: Boolean
-        val beforeOpen = node.treePrev
-        val beforeClose = node.lastChildNode.treePrev
-        val areWhitespaces = beforeOpen is PsiWhiteSpace && beforeClose is PsiWhiteSpace
-        invalidCurlyBraces = !areWhitespaces
-        if ( areWhitespaces )
-        {
-            val bracesAligned = beforeOpen.text == beforeClose.text
-            val blockOpensOnNewLine = beforeClose.text.startsWith( "\n" )
-            invalidCurlyBraces = !bracesAligned || !blockOpensOnNewLine || !isAlignedWithParent( classBody )
-        }
-        if ( invalidCurlyBraces )
+        val leftBrace = node.firstChildNode
+        val rightBrace = node.lastChildNode
+        val bracesAligned = areAligned( leftBrace, rightBrace )
+        val blockOpensOnNewLine = startsOnNewLine( leftBrace )
+        if ( !bracesAligned || !blockOpensOnNewLine || !isAlignedWithParent( classBody ) )
         {
             report( CodeSmell( issue, Entity.from( classBody ), issue.description ) )
         }
@@ -90,7 +103,7 @@ class CurlyClassBracesOnSeparateLine : Rule()
         var indentSize = 0
         if ( beforeElement is PsiWhiteSpace )
         {
-            val text = (beforeElement as PsiWhiteSpace).text
+            val text = ( beforeElement as PsiWhiteSpace ).text
             indentSize = text.count { it != '\n' } // Do not count preceding new lines.
         }
 

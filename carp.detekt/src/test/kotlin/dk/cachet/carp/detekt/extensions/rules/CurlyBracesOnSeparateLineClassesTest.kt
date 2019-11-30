@@ -5,9 +5,9 @@ import kotlin.test.*
 
 
 /**
- * Tests for [CurlyClassBracesOnSeparateLine].
+ * Tests for [CurlyBracesOnSeparateLine] for class and object definitions.
  */
-class CurlyClassBracesOnSeparateLineTest
+class CurlyBracesOnSeparateLineClassesTest
 {
     @Test
     fun curly_braces_of_class_need_to_be_on_separate_lines()
@@ -59,7 +59,7 @@ class CurlyClassBracesOnSeparateLineTest
 
         val notAligned =
             """
-            class Aligned()
+            class NotAligned()
                 {
                 fun answer(): Int = 42
             }
@@ -68,7 +68,7 @@ class CurlyClassBracesOnSeparateLineTest
 
         val notAligned2 =
             """
-            class Aligned()
+            class NotAligned()
             {
                 fun answer(): Int = 42
         }
@@ -177,7 +177,7 @@ class CurlyClassBracesOnSeparateLineTest
 
     private fun codeSmells( code: String ): Int
     {
-        val rule = CurlyClassBracesOnSeparateLine()
+        val rule = CurlyBracesOnSeparateLine()
         return rule.lint( code ).count()
     }
 }
