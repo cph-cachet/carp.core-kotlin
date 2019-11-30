@@ -16,14 +16,15 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 
 
 /**
- * A rule which verifies whether curly braces around code blocks are placed on separate lines, aligned with the parent.
+ * A rule which verifies whether curly braces of class definitions are placed on separate lines,
+ * aligned with the start of the line on which the class is defined.
  */
-class CurlyBracesOnSeparateLine : Rule()
+class CurlyClassBracesOnSeparateLine : Rule()
 {
     override val issue = Issue(
         javaClass.simpleName,
         Severity.Style,
-        "Curly braces around code blocks need to be placed on separate lines, aligned with the parent.",
+        "Curly braces of class definitions need to be placed on separate lines, aligned with the start of the line on which the class is defined.",
         Debt.FIVE_MINS
     )
 
@@ -39,7 +40,7 @@ class CurlyBracesOnSeparateLine : Rule()
             .none { it.text.contains( "\n" ) }
         if ( isOneLineClass ) return
 
-        // Multi-line class definitions require curly braces on separate lines, aligned with the parent.
+        // Multi-line class definitions require curly braces on separate lines, aligned with the class definition.
         var invalidCurlyBraces: Boolean
         val beforeOpen = node.treePrev
         val beforeClose = node.lastChildNode.treePrev

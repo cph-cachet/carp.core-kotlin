@@ -1,6 +1,6 @@
 package dk.cachet.carp.detekt.extensions
 
-import dk.cachet.carp.detekt.extensions.rules.CurlyBracesOnSeparateLine
+import dk.cachet.carp.detekt.extensions.rules.CurlyClassBracesOnSeparateLine
 import dk.cachet.carp.detekt.extensions.rules.SpacingInParentheses
 import io.gitlab.arturbosch.detekt.api.Config
 import io.gitlab.arturbosch.detekt.api.RuleSet
@@ -16,7 +16,7 @@ class CarpRuleSetProvider : RuleSetProvider
             ruleSetId,
             listOf(
                 SpacingInParentheses(),
-                CurlyBracesOnSeparateLine()
+                CurlyClassBracesOnSeparateLine()
             )
         )
 }

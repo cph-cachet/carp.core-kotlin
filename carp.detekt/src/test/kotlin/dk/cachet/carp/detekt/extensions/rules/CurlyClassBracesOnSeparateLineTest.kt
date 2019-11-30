@@ -5,12 +5,12 @@ import kotlin.test.*
 
 
 /**
- * Tests for [CurlyBracesOnSeparateLine].
+ * Tests for [CurlyClassBracesOnSeparateLine].
  */
-class CurlyBracesOnSeparateLineTest
+class CurlyClassBracesOnSeparateLineTest
 {
     @Test
-    fun curly_braces_of_blocks_need_to_be_on_separate_lines()
+    fun curly_braces_of_class_need_to_be_on_separate_lines()
     {
         val newLine =
             """
@@ -39,14 +39,14 @@ class CurlyBracesOnSeparateLineTest
     }
 
     @Test
-    fun blocks_may_be_defined_on_one_line()
+    fun classes_may_be_defined_on_one_line()
     {
         val oneLine = "class OneLine { val test: Int }"
         assertEquals( 0, codeSmells( oneLine ) )
     }
 
     @Test
-    fun curly_braces_of_blocks_need_to_be_aligned()
+    fun curly_braces_of_classes_need_to_be_aligned()
     {
         val aligned =
             """
@@ -77,7 +77,7 @@ class CurlyBracesOnSeparateLineTest
     }
 
     @Test
-    fun indentation_should_be_aligned_with_parent()
+    fun indentation_should_be_aligned_with_start_of_definition()
     {
         val wrongIndentation =
             """
@@ -121,9 +121,9 @@ class CurlyBracesOnSeparateLineTest
     }
 
     @Test
-    fun object_literal_should_be_treated_as_parent()
+    fun object_literal_should_be_treated_as_start_of_definition()
     {
-        val anonymous =
+        val objectLiteral =
             """
             fun getObject() =
                 object : Comparable<Int>
@@ -131,13 +131,24 @@ class CurlyBracesOnSeparateLineTest
                     override fun compareTo( other: Int ): Int = 0
                 } 
             """
-        assertEquals( 0, codeSmells( anonymous ) )
+        assertEquals( 0, codeSmells( objectLiteral ) )
+
+        val objectLiteral2 =
+            """
+            fun getObject() =
+                object :
+                    Comparable<Int>
+                {
+                    override fun compareTo( other: Int ): Int = 0
+                } 
+            """
+        assertEquals( 0, codeSmells( objectLiteral2 ) )
     }
 
     @Test
-    fun return_object_literal_should_be_treated_as_parent()
+    fun return_object_literal_should_be_treated_as_start_of_definition()
     {
-        val anonymous =
+        val objectLiteral =
             """
             fun getObject(): Comparable<Int>
             {
@@ -147,13 +158,26 @@ class CurlyBracesOnSeparateLineTest
                 }
             }
             """
-        assertEquals( 0, codeSmells( anonymous ) )
+        assertEquals( 0, codeSmells( objectLiteral ) )
+
+        val objectLiteral2 =
+            """
+            fun getObject(): Comparable<Int>
+            {
+                return object :
+                    Comparable<Int>
+                {
+                    override fun compareTo( other: Int ): Int = 0
+                }
+            }
+            """
+        assertEquals( 0, codeSmells( objectLiteral2 ) )
     }
 
 
     private fun codeSmells( code: String ): Int
     {
-        val rule = CurlyBracesOnSeparateLine()
+        val rule = CurlyClassBracesOnSeparateLine()
         return rule.lint( code ).count()
     }
 }
