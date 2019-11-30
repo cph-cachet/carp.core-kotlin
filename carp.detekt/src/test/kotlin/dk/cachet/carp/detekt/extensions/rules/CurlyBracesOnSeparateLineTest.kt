@@ -81,12 +81,27 @@ class CurlyBracesOnSeparateLineTest
     {
         val wrongIndentation =
             """
-            class CompanionAligned()
+            class WrongIndentation()
                 {
                     fun answer(): Int = 42
                 }
             """
         assertEquals( 1, codeSmells( wrongIndentation ) )
+    }
+
+    @Test
+    fun position_in_file_should_not_impact_rule()
+    {
+        val notAtStart =
+            """
+            import kotlin.text.*
+            
+            class PositionedElsewhere()
+            {
+                fun answer(): Int = 42
+            }
+            """
+        assertEquals( 0, codeSmells( notAtStart ) )
     }
 
     @Test
@@ -103,6 +118,36 @@ class CurlyBracesOnSeparateLineTest
             }
             """
         assertEquals( 0, codeSmells( companionAligned ) )
+    }
+
+    @Test
+    fun object_literal_should_be_treated_as_parent()
+    {
+        val anonymous =
+            """
+            fun getObject() =
+                object : Comparable<Int>
+                {
+                    override fun compareTo( other: Int ): Int = 0
+                } 
+            """
+        assertEquals( 0, codeSmells( anonymous ) )
+    }
+
+    @Test
+    fun return_object_literal_should_be_treated_as_parent()
+    {
+        val anonymous =
+            """
+            fun getObject(): Comparable<Int>
+            {
+                return object : Comparable<Int>
+                {
+                    override fun compareTo( other: Int ): Int = 0
+                }
+            }
+            """
+        assertEquals( 0, codeSmells( anonymous ) )
     }
 
 
