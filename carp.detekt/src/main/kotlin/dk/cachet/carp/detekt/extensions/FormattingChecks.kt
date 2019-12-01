@@ -1,6 +1,7 @@
 package dk.cachet.carp.detekt.extensions
 
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.psiUtil.children
 
@@ -23,7 +24,7 @@ fun startsOnNewLine( node: ASTNode ): Boolean
     // In case there is no preceding node, it has to start on a new line.
     val beforeNode = node.treePrev ?: return true
 
-    return beforeNode is PsiWhiteSpace && (beforeNode as PsiWhiteSpace).text.startsWith( "\n" )
+    return beforeNode is PsiWhiteSpace && (beforeNode as PsiWhiteSpace).text.contains( "\n" )
 }
 
 /**
@@ -31,13 +32,24 @@ fun startsOnNewLine( node: ASTNode ): Boolean
  */
 fun areAligned( node1: ASTNode, node2: ASTNode ): Boolean
 {
-    val node1Indent = getPrecedingNode( node1 )
-    val node2Indent = getPrecedingNode( node2 )
+    val node1Indent = getIndentSize( node1 )
+    val node2Indent = getIndentSize( node2 )
 
-    // node1 and node2 cannot possibly be on separate lines if not preceded by PsiWhiteSpace, which includes newlines.
-    if ( node1Indent !is PsiWhiteSpace || node2Indent !is PsiWhiteSpace ) return false
+    return node1Indent == node2Indent
+}
 
-    return node1Indent.textMatches( node2Indent )
+private fun getIndentSize( node: ASTNode ): Int
+{
+    val beforeNode = getPrecedingNode( node )
+
+    var indentSize = 0
+    if ( beforeNode is PsiWhiteSpace )
+    {
+        val text = ( beforeNode as PsiWhiteSpace ).text
+        indentSize = text.count { it != '\n' } // Do not count preceding new lines.
+    }
+
+    return indentSize
 }
 
 /**
@@ -57,5 +69,25 @@ fun getPrecedingNode( node: ASTNode ): ASTNode?
     }
 
     // No preceding node and no parent with preceding nodes. This must be the first node.
+    return null
+}
+
+/**
+ * Get the element preceding the given element, regardless of whether or not it is owned by a different parent.
+ *
+ * @return The preceding element, or null when there is no preceding element.
+ */
+fun getPrecedingElement( element: PsiElement ): PsiElement?
+{
+    // If preceding element is part of the same parent, no need to start traversing parent.
+    if ( element.prevSibling != null ) return element.prevSibling
+
+    // If no preceding element exists, search in the parent if available.
+    if ( element.parent != null )
+    {
+        return getPrecedingElement( element.parent )
+    }
+
+    // No preceding element and no parent with preceding elements. This must be the first element.
     return null
 }
