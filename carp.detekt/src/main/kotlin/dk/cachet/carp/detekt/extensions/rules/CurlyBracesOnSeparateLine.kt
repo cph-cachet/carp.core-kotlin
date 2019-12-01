@@ -10,6 +10,7 @@ import io.gitlab.arturbosch.detekt.api.Entity
 import io.gitlab.arturbosch.detekt.api.Issue
 import io.gitlab.arturbosch.detekt.api.Rule
 import io.gitlab.arturbosch.detekt.api.Severity
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtClassBody
@@ -56,15 +57,18 @@ class CurlyBracesOnSeparateLine : Rule()
         // Do not report blocks which are fully defined on one line.
         if ( isDefinedOnOneLine( node ) ) return
 
-        // Determine what should be considered the 'parent' to align with, i.e., 'return' or 'if.
+        // Determine what should be considered the 'parent' to align with, i.e., 'return' or 'if'.
         var parent = element.parent
-        val spacing = getPrecedingElement( parent )
-        if ( spacing is PsiWhiteSpace )
+        when ( val precedingKeyword = getPrecedingKeyword( parent ) )
         {
-            var precedingParent = getPrecedingElement( spacing )?.parent
-            if ( precedingParent is KtReturnExpression || precedingParent is KtIfExpression )
+            // 'return' is the topmost expected parent.
+            is KtReturnExpression -> parent = precedingKeyword
+            // 'if' might still be preceded by 'return'.
+            is KtIfExpression ->
             {
-                parent = precedingParent
+                val beforeIf = getPrecedingKeyword( precedingKeyword )
+                parent = if ( beforeIf is KtReturnExpression ) beforeIf
+                else precedingKeyword
             }
         }
 
@@ -77,5 +81,18 @@ class CurlyBracesOnSeparateLine : Rule()
         {
             report( CodeSmell( issue, Entity.from( element ), issue.description ) )
         }
+    }
+
+    /**
+     * Get the keyword expression preceding the given element, if any.
+     */
+    private fun getPrecedingKeyword( element: PsiElement ): PsiElement?
+    {
+        val spacing = getPrecedingElement( element )
+
+        // In case the preceding element is not whitespace, we do not expect a preceding keyword.
+        if ( spacing !is PsiWhiteSpace ) return null
+
+        return getPrecedingElement( spacing )?.parent
     }
 }
