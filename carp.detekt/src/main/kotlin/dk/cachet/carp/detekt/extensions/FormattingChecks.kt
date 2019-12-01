@@ -3,18 +3,13 @@ package dk.cachet.carp.detekt.extensions
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
-import org.jetbrains.kotlin.psi.psiUtil.children
 
 
 /**
  * Verifies whether the entire node is defined on one line.
  */
-fun isDefinedOnOneLine( node: ASTNode ): Boolean
-{
-    return node.children()
-        .filterIsInstance<PsiWhiteSpace>()
-        .none { it.text.contains( "\n" ) }
-}
+fun isDefinedOnOneLine( node: ASTNode ): Boolean =
+    !node.textContains( '\n' )
 
 /**
  * Determines whether the given [node] starts on a new line, without anything other than whitespace preceding it.

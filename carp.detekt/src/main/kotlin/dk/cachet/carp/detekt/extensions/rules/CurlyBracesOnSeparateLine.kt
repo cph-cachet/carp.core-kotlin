@@ -11,25 +11,33 @@ import io.gitlab.arturbosch.detekt.api.Issue
 import io.gitlab.arturbosch.detekt.api.Rule
 import io.gitlab.arturbosch.detekt.api.Severity
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
-import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.KtBlockExpression
+import org.jetbrains.kotlin.psi.KtClassBody
+import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.psi.KtFunctionLiteral
+import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.KtReturnExpression
 
 
 /**
- * A rule which verifies whether curly braces of blocks are placed on separate lines,
- * aligned with the start of the definition the block is associated with.
+ * A rule which verifies whether curly braces of blocks are placed on separate lines (except for function literals),
+ * aligned with the start of the definition the block is associated with,
  */
 class CurlyBracesOnSeparateLine : Rule()
 {
     override val issue = Issue(
         javaClass.simpleName,
         Severity.Style,
-        "Curly braces of blocks need to be placed on separate lines, aligned with the start of the definition the block is associated with.",
+        "Curly braces of blocks need to be placed on separate lines (except for function literals), aligned with the start of the definition the block is associated with.",
         Debt.FIVE_MINS
     )
 
     override fun visitBlockExpression( expression: KtBlockExpression )
     {
         super.visitBlockExpression( expression )
+
+        // This rule should not verify function literal blocks.
+        if ( expression.parent is KtFunctionLiteral ) return
 
         visitBlock( expression )
     }

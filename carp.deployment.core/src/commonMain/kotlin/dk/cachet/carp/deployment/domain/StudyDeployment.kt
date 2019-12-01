@@ -39,14 +39,15 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     }
 
 
-    private val _protocol: StudyProtocol = try
-    {
-        StudyProtocol.fromSnapshot( protocolSnapshot )
-    }
-    catch ( e: InvalidConfigurationError )
-    {
-        throw IllegalArgumentException( "Invalid protocol snapshot passed." )
-    }
+    private val _protocol: StudyProtocol =
+        try
+        {
+            StudyProtocol.fromSnapshot( protocolSnapshot )
+        }
+        catch ( e: InvalidConfigurationError )
+        {
+            throw IllegalArgumentException( "Invalid protocol snapshot passed." )
+        }
 
     /**
      * The set of all devices which can or need to be registered for this study deployment.
