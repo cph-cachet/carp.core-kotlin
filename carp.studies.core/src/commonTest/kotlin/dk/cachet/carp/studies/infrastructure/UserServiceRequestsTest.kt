@@ -15,7 +15,8 @@ import kotlin.test.*
  */
 class UserServiceRequestsTest
 {
-    companion object {
+    companion object
+    {
         val requests: List<UserServiceRequest> = listOf(
             UserServiceRequest.CreateAccountWithUsername( Username( "Test" ) ),
             UserServiceRequest.CreateAccountWithEmailAddress( EmailAddress( "test@test.com" ) ),

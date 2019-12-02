@@ -24,7 +24,8 @@ class CustomTaskDescriptorTest
 
 
     @Test
-    fun initialization_from_json_extracts_base_TaskDescriptor_properties() {
+    fun initialization_from_json_extracts_base_TaskDescriptor_properties()
+    {
         val measures: List<Measure> = listOf( StubMeasure() )
         val task = UnknownTaskDescriptor( "Unknown", measures )
         val serialized: String = JSON.stringify( UnknownTaskDescriptor.serializer(), task )

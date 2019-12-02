@@ -15,7 +15,8 @@ import kotlin.test.*
  */
 class StudyServiceRequestsTest
 {
-    companion object {
+    companion object
+    {
         val requests: List<StudyServiceRequest> = listOf(
             StudyServiceRequest.CreateStudy( StudyOwner(), "Test", StudyDescription.empty() ),
             StudyServiceRequest.GetStudyStatus( UUID.randomUUID() )
