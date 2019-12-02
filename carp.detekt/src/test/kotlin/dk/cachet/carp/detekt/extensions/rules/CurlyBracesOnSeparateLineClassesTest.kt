@@ -146,6 +146,20 @@ class CurlyBracesOnSeparateLineClassesTest
     }
 
     @Test
+    fun braces_should_be_aligned_with_object_literal()
+    {
+        val wrongLine =
+            """
+            fun getObject() = object :
+                Comparable<Int>
+            {
+                  override fun compareTo( other: Int ): Int = 0
+            } 
+            """
+        assertEquals( 1, codeSmells( wrongLine ) )
+    }
+
+    @Test
     fun return_object_literal_should_be_treated_as_start_of_definition()
     {
         val objectLiteral =

@@ -22,14 +22,15 @@ import org.jetbrains.kotlin.psi.KtReturnExpression
 
 /**
  * A rule which verifies whether curly braces of blocks are placed on separate lines (except for function literals),
- * aligned with the start of the definition the block is associated with,
+ * aligned with the start of the definition the block is associated with (e.g., class, function, object literal, or return).
  */
 class CurlyBracesOnSeparateLine : Rule()
 {
     override val issue = Issue(
         javaClass.simpleName,
         Severity.Style,
-        "Curly braces of blocks need to be placed on separate lines (except for function literals), aligned with the start of the definition the block is associated with.",
+        "Curly braces of blocks need to be placed on separate lines (except for function literals), " +
+        "aligned with the start of the definition the block is associated with (e.g., class, function, object literal, or return).",
         Debt.FIVE_MINS
     )
 
