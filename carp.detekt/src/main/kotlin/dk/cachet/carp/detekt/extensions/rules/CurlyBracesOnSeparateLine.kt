@@ -52,10 +52,8 @@ class CurlyBracesOnSeparateLine : Rule()
 
     private fun visitBlock( element: KtElement )
     {
-        val node = element.node
-
         // Do not report blocks which are fully defined on one line.
-        if ( isDefinedOnOneLine( node ) ) return
+        if ( isDefinedOnOneLine( element ) ) return
 
         // Determine what should be considered the 'parent' to align with, i.e., 'return' or 'if'.
         var parent = element.parent
@@ -73,11 +71,11 @@ class CurlyBracesOnSeparateLine : Rule()
         }
 
         // Multi-line blocks require curly braces on separate lines, aligned with each other and with the parent.
-        val leftBrace = node.firstChildNode
-        val rightBrace = node.lastChildNode
+        val leftBrace = element.firstChild
+        val rightBrace = element.lastChild
         val bracesAligned = areAligned( leftBrace, rightBrace )
         val blockOpensOnNewLine = startsOnNewLine( leftBrace )
-        if ( !bracesAligned || !blockOpensOnNewLine || !areAligned( parent.node, leftBrace ) )
+        if ( !bracesAligned || !blockOpensOnNewLine || !areAligned( parent, leftBrace ) )
         {
             report( CodeSmell( issue, Entity.from( element ), issue.description ) )
         }
