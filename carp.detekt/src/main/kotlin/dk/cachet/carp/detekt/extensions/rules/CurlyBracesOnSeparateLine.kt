@@ -17,11 +17,12 @@ import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFunctionLiteral
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.KtLambdaArgument
 import org.jetbrains.kotlin.psi.KtReturnExpression
 
 
 /**
- * A rule which verifies whether curly braces of blocks are placed on separate lines (except for function literals),
+ * A rule which verifies whether curly braces of blocks are placed on separate lines (except for trailing lambda arguments),
  * aligned with the start of the definition the block is associated with (e.g., class, function, object literal, or return).
  */
 class CurlyBracesOnSeparateLine : Rule()
@@ -29,7 +30,7 @@ class CurlyBracesOnSeparateLine : Rule()
     override val issue = Issue(
         javaClass.simpleName,
         Severity.Style,
-        "Curly braces of blocks need to be placed on separate lines (except for function literals), " +
+        "Curly braces of blocks need to be placed on separate lines (except for trailing lambda arguments), " +
         "aligned with the start of the definition the block is associated with (e.g., class, function, object literal, or return).",
         Debt.FIVE_MINS
     )
@@ -38,10 +39,18 @@ class CurlyBracesOnSeparateLine : Rule()
     {
         super.visitBlockExpression( expression )
 
-        // This rule should not verify function literal blocks.
-        if ( expression.parent is KtFunctionLiteral ) return
+        // The function literal block visitor does not include the braces. It is defined in its parent instead.
+        // Therefore, in case the block is part of a function literal, visit the parent instead.
+        val toVisit: KtElement =
+            if ( expression.parent is KtFunctionLiteral ) expression.parent as KtFunctionLiteral
+            else expression
 
-        visitBlock( expression )
+        // Lambda arguments require the first brace to be on the same line, so ignore them.
+        // Visit all other blocks.
+        if ( toVisit.parent?.parent !is KtLambdaArgument )
+        {
+            visitBlock( toVisit )
+        }
     }
 
     override fun visitClassBody( classBody: KtClassBody )
