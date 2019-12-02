@@ -15,14 +15,16 @@ class CurlyBracesOnSeparateLineLambdaTest
         val newLine =
             """
             val test: (Int) -> Unit =
-                { _ ->
+                {
+                    _ ->
                 }
             """
         assertEquals( 0, codeSmells( newLine ) )
 
         val noNewLineOpen =
             """
-            val test: () -> Unit = { _ ->
+            val test: () -> Unit = {
+                    _ ->
                 }
             """
         assertEquals( 1, codeSmells( noNewLineOpen ) )
@@ -30,8 +32,8 @@ class CurlyBracesOnSeparateLineLambdaTest
         val noNewLineClose =
             """
             val test: () -> Unit =
-                { _ ->
-                    val answer = 42 }
+                {
+                    _ -> val answer = 42 }
             """
         assertEquals( 1, codeSmells( noNewLineClose ) )
     }
@@ -49,7 +51,8 @@ class CurlyBracesOnSeparateLineLambdaTest
         val aligned =
             """
             val test: (Int) -> Unit =
-                { _ ->
+                {
+                    _ ->
                 }
             """
         assertEquals( 0, codeSmells( aligned ) )
@@ -57,7 +60,8 @@ class CurlyBracesOnSeparateLineLambdaTest
         val notAligned =
             """
             val test: (Int) -> Unit =
-            { _ ->
+            {
+                _ ->
                 }
             """
         assertEquals( 1, codeSmells( notAligned ) )
@@ -65,7 +69,8 @@ class CurlyBracesOnSeparateLineLambdaTest
         val notAligned2 =
             """
             val test: (Int) -> Unit =
-                { _ ->
+                {
+                _ ->
             }
             """
         assertEquals( 1, codeSmells( notAligned2 ) )
@@ -79,7 +84,8 @@ class CurlyBracesOnSeparateLineLambdaTest
         val indented =
             """
             val test: (Int) -> Unit =
-                    { _ ->
+                    {
+                        _ ->
                     }
             """
         assertEquals( 0, codeSmells( indented ) )
