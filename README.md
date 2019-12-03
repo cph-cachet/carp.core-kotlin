@@ -103,8 +103,10 @@ As this project progresses, we intend to include [native targets](https://kotlin
 <a name="gradle-tasks"></a>
 
 For `carp.core-kotlin`:
-- **build**: Builds the full project, for both runtimes.
+- **build**: Builds the full project, for both runtimes, including running unit tests and code analysis.
 - **cleanAllTests jvmTest**: Test the full project using JUnit5. `cleanAllTests` is optional, but ensures that test results always show up in IntelliJ; when tasks haven't changed it otherwise lists "Test events were not received".
 - **jsTest**: Test the full project using Mocha. Test results only show up in the build output and not in IntelliJ.
+- **detekt**: Run code analysis, ignoring failures. Output will still be successful in case code smells are detected. Apply `--rerun-tasks` to always see output, even when ran before.
+- **detektPasses**:: Run code analysis, but do not ignore failures. Output will list failure in case code smells are detected.
 - **publishSigned**: Publish all projects to Maven using the version number specified in `ext.globalVersion`. This includes documentation, sources, and signing. For this to work you need to configure a `publish.properties` file with a signing signature and repository user in the project root folder. See main `build.gradle` for details.
 - **publishSnapshot**: Publish a snapshot build for all projects to Maven, substituting the suffix of the version specified in `ext.globalVersion` with `-SNAPSHOT`.
