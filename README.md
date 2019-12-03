@@ -6,7 +6,9 @@ This project is part of the [CACHET Research Platform (CARP)](https://github.com
 
 ![Subsystem decomposition](https://i.imgur.com/qexzTej.png) 
 
-Currently this project contains an unstable (not backwards compatible) alpha version of the domain model and applications services of the `carp.protocols`, `carp.deployment`, `carp.client`, and `carp.studies` subsystems. Many changes will happen as the rest of the infrastructure is implemented. 
+Currently this project contains an unstable (not backwards compatible) alpha version of the domain model and applications services of the `carp.protocols`, `carp.deployment`, `carp.client`, and `carp.studies` subsystems. Many changes will happen as the rest of the infrastructure is implemented.
+
+In case you want to contribute, please follow our [contribution guidelines](https://github.com/cph-cachet/carp.core-kotlin/blob/develop/CONTRIBUTING.md). 
 
 ## carp.protocols [![Maven Central](https://img.shields.io/maven-central/v/dk.cachet.carp.protocols/carp.protocols.core)](https://mvnrepository.com/artifact/dk.cachet.carp.protocols) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.protocols/carp.protocols.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/protocols/)
 
