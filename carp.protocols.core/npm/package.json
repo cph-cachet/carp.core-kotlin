@@ -1,0 +1,16 @@
+{
+  "name": "@cachet/carp.protocols.core",
+  "version": "$carp_version",
+  "description": "A domain model and application services to specify study protocols which can be deployed to one or more stationary or mobile devices.",
+  "main": "carp.protocols.core.js",
+  "repository": "https://github.com/cph-cachet/carp.core-kotlin",
+  "peerDependencies": {
+    "kotlin": "$kotlin_version",
+    "@cachet/kotlinx-serialization-runtime": "$serialization_version"
+  },
+  "dependencies": {
+    "@cachet/carp.common": "$carp_version"
+  },
+  "author": "Steven Jeuris",
+  "license": "MIT"
+}

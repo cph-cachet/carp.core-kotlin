@@ -1,0 +1,13 @@
+{
+  "name": "@cachet/carp.common",
+  "version": "$carp_version",
+  "description": "Helper classes and base types relied upon by all subsystems. This library does not contain any domain logic.",
+  "main": "carp.common.js",
+  "repository": "https://github.com/cph-cachet/carp.core-kotlin",
+  "peerDependencies": {
+    "kotlin": "$kotlin_version",
+    "@cachet/kotlinx-serialization-runtime": "$serialization_version"
+  },
+  "author": "Steven Jeuris",
+  "license": "MIT"
+}

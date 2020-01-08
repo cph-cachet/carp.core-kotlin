@@ -1,0 +1,17 @@
+{
+  "name": "@cachet/carp.studies.core",
+  "version": "$carp_version",
+  "description": "Manage the recruitment for and lifetime of study deployments, instantiated using a study protocol from carp.protocols.",
+  "main": "carp.studies.core.js",
+  "repository": "https://github.com/cph-cachet/carp.core-kotlin",
+  "peerDependencies": {
+    "kotlin": "$kotlin_version",
+    "@cachet/kotlinx-serialization-runtime": "$serialization_version"
+  },
+  "dependencies": {
+    "@cachet/carp.common": "$carp_version",
+    "@cachet/carp.protocols.core": "$carp_version"
+  },
+  "author": "Steven Jeuris",
+  "license": "MIT"
+}

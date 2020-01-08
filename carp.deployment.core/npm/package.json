@@ -1,0 +1,17 @@
+{
+  "name": "@cachet/carp.deployment.core",
+  "version": "$carp_version",
+  "description": "A domain model and application services to handle common concerns to 'running' a study. A deployment is responsible for managing registration of participant consent, tracking device connection issues, assessing data quality, and negotiating the connection between separate devices.",
+  "main": "carp.deployment.core.js",
+  "repository": "https://github.com/cph-cachet/carp.core-kotlin",
+  "peerDependencies": {
+    "kotlin": "$kotlin_version",
+    "@cachet/kotlinx-serialization-runtime": "$serialization_version"
+  },
+  "dependencies": {
+    "@cachet/carp.common": "$carp_version",
+    "@cachet/carp.protocols.core": "$carp_version"
+  },
+  "author": "Steven Jeuris",
+  "license": "MIT"
+}

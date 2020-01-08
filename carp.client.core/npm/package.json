@@ -1,0 +1,18 @@
+{
+  "name": "@cachet/carp.client.core",
+  "version": "$carp_version",
+  "description": "A domain model and application services to manage the runtime logic for studies on client devices (e.g., smartphone). What to run as part of an overarching study is retrieved via the deployment subsystem.",
+  "main": "carp.client.core.js",
+  "repository": "https://github.com/cph-cachet/carp.core-kotlin",
+  "peerDependencies": {
+    "kotlin": "$kotlin_version",
+    "@cachet/kotlinx-serialization-runtime": "$serialization_version"
+  },
+  "dependencies": {
+    "@cachet/carp.common": "$carp_version",
+    "@cachet/carp.protocols.core": "$carp_version",
+    "@cachet/carp.deployment.core": "$carp_version"
+  },
+  "author": "Steven Jeuris",
+  "license": "MIT"
+}
