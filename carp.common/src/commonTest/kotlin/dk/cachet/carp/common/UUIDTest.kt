@@ -42,6 +42,18 @@ class UUIDTest
         assertEquals( nullableId, nullableParsed )
     }
 
+    @Suppress( "TestFunctionName" )
+    @Test
+    fun UUID_is_automatically_serialized_with_custom_serializer()
+    {
+        val id = UUID( "00000000-0000-0000-0000-000000000000" )
+
+        val json = Json( JsonConfiguration.Stable )
+        val serialized = json.stringify( UUID.serializer(), id )
+
+        assertEquals( "\"${id.stringRepresentation}\"", serialized )
+    }
+
     @Test
     fun cant_initialize_incorrect_UUID()
     {
