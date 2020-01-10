@@ -9,14 +9,12 @@ import dk.cachet.carp.studies.application.UserService
 import dk.cachet.carp.studies.domain.users.Account
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.Username
-import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 
 
 /**
  * Serializable application service requests to [UserService] which can be executed on demand.
  */
-@Polymorphic
 @Serializable
 sealed class UserServiceRequest
 {

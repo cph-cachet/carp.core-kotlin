@@ -7,14 +7,12 @@ import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 
 
 /**
  * Serializable application service requests to [ProtocolService] which can be executed on demand.
  */
-@Polymorphic
 @Serializable
 sealed class ProtocolServiceRequest
 {

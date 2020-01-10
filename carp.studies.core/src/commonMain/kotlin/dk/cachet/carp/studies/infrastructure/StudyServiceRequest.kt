@@ -7,14 +7,12 @@ import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.domain.StudyDescription
 import dk.cachet.carp.studies.domain.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
-import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 
 
 /**
  * Serializable application service requests to [StudyService] which can be executed on demand.
  */
-@Polymorphic
 @Serializable
 sealed class StudyServiceRequest
 {

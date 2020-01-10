@@ -9,14 +9,12 @@ import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
-import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 
 
 /**
  * Serializable application service requests to [ProtocolService] which can be executed on demand.
  */
-@Polymorphic
 @Serializable
 sealed class DeploymentServiceRequest
 {
