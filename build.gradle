@@ -277,7 +277,7 @@ configure( subprojects - detektModule ) {
     task publishSnapshot {
         doFirst {
             // Since project dependencies trigger publications of other projects, immediately modify versions of all subprojects.
-            (subprojects - detektModule).each { project ->
+            (rootProject.subprojects - detektModule).each { project ->
                 def versionSplit = project.version.split('-')
                 def snapshotVersion = "${versionSplit[0]}-SNAPSHOT"
                 project.version = snapshotVersion
