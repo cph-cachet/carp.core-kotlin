@@ -1,6 +1,8 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.CustomDeviceRegistration
 import kotlin.test.*
 
 
@@ -12,7 +14,7 @@ class DeviceRegistrationTest
     @Test
     fun can_serialize_and_deserialize_device_registration_using_JSON()
     {
-        val default: DeviceRegistration  = DefaultDeviceRegistration( "Test" )
+        val default: DeviceRegistration = DefaultDeviceRegistration( "Test" )
 
         val serialized = default.toJson()
         val parsed = DeviceRegistration.fromJson( serialized )

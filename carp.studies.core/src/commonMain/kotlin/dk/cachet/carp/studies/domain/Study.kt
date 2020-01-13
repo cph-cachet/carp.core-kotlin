@@ -19,7 +19,8 @@ class Study(
      * A description of the study, visible to all participants.
      */
     val description: StudyDescription = StudyDescription.empty(),
-    val id: UUID = UUID.randomUUID() )
+    val id: UUID = UUID.randomUUID()
+)
 {
     companion object Factory
     {

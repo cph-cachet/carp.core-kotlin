@@ -11,7 +11,8 @@ data class StudyDescription(
     /**
      * A descriptive name for the [Study] to be shown to participants.
      */
-    val name: String )
+    val name: String
+)
 {
     companion object
     {

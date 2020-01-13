@@ -1,16 +1,20 @@
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.*
-import dk.cachet.carp.common.ddd.*
+import dk.cachet.carp.common.EmailAddress
+import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.createServiceInvoker
+import dk.cachet.carp.common.ddd.createServiceInvokerOverloaded
+import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.studies.application.UserService
-import dk.cachet.carp.studies.domain.users.*
-import kotlinx.serialization.*
+import dk.cachet.carp.studies.domain.users.Account
+import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.Username
+import kotlinx.serialization.Serializable
 
 
 /**
  * Serializable application service requests to [UserService] which can be executed on demand.
  */
-@Polymorphic
 @Serializable
 sealed class UserServiceRequest
 {
@@ -23,7 +27,7 @@ sealed class UserServiceRequest
                 UserService::createAccount, "username", username )
 
     @Serializable
-    @Suppress( "RemoveExplicitTypeArguments" )  // Needed for JS build to work.
+    @Suppress( "RemoveExplicitTypeArguments" ) // Needed for JS build to work.
     data class CreateAccountWithEmailAddress( val emailAddress: EmailAddress ) :
         UserServiceRequest(),
         ServiceInvoker<UserService, Unit>

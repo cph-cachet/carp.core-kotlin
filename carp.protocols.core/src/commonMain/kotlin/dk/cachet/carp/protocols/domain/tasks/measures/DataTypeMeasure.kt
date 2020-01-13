@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
-import dk.cachet.carp.protocols.domain.data.*
+import dk.cachet.carp.protocols.domain.data.DataType
 import kotlinx.serialization.Serializable
 
 
@@ -25,5 +25,6 @@ data class DataTypeMeasure( override val type: DataType ) : Measure()
          * The name of the [DataType] for which data needs to be measured.
          * Describes the data being collected.
          */
-        name: String ) : this( DataType( namespace, name ) )
+        name: String
+    ) : this( DataType( namespace, name ) )
 }

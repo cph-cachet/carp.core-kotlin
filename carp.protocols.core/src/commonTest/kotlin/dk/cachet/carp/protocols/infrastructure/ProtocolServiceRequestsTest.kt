@@ -1,8 +1,10 @@
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.ddd.ServiceInvoker
-import dk.cachet.carp.protocols.application.*
-import dk.cachet.carp.protocols.domain.*
+import dk.cachet.carp.protocols.application.ProtocolService
+import dk.cachet.carp.protocols.application.ProtocolServiceMock
+import dk.cachet.carp.protocols.domain.createComplexProtocol
+import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -12,7 +14,8 @@ import kotlin.test.*
  */
 class ProtocolServiceRequestsTest
 {
-    companion object {
+    companion object
+    {
         val requests: List<ProtocolServiceRequest> = listOf(
             ProtocolServiceRequest.Add( createComplexProtocol().getSnapshot(), "Initial" ),
             ProtocolServiceRequest.Update( createComplexProtocol().getSnapshot(), "Updated" ),

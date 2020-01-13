@@ -1,9 +1,14 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.protocols.domain.devices.*
-import dk.cachet.carp.protocols.domain.tasks.*
-import dk.cachet.carp.protocols.domain.triggers.*
-import kotlinx.serialization.*
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
+import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
+import dk.cachet.carp.protocols.domain.tasks.TaskDescriptorSerializer
+import dk.cachet.carp.protocols.domain.triggers.Trigger
+import dk.cachet.carp.protocols.domain.triggers.TriggerSerializer
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -35,7 +40,8 @@ data class MasterDeviceDeployment(
     /**
      * The specification of tasks triggered and the devices they are sent to.
      */
-    val triggeredTasks: Set<TriggeredTask> )
+    val triggeredTasks: Set<TriggeredTask>
+)
 {
     /**
      * Specifies the task with [taskName] which is sent to [destinationDeviceRoleName] when the condition of the trigger with [triggerId] is met.
@@ -53,5 +59,6 @@ data class MasterDeviceDeployment(
         /**
          * The role name of the device to which to send the task with [taskName] when the [trigger] condition is met.
          */
-        val destinationDeviceRoleName: String )
+        val destinationDeviceRoleName: String
+    )
 }

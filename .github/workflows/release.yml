@@ -8,7 +8,7 @@ on:
       - master
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

@@ -2,8 +2,9 @@ package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.protocols.domain.data.DataType
-import dk.cachet.carp.protocols.domain.data.carp.*
-import kotlinx.serialization.*
+import dk.cachet.carp.protocols.domain.data.carp.GEO_LOCATION
+import dk.cachet.carp.protocols.domain.data.carp.STEPCOUNT
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -18,7 +19,8 @@ data class PhoneSensorMeasure private constructor(
      * The optional duration over the course of which the sensor identified by [type] needs to be measured.
      * Infinite by default.
      */
-    val duration: TimeSpan = TimeSpan.INFINITE ) : Measure()
+    val duration: TimeSpan = TimeSpan.INFINITE
+) : Measure()
 {
     companion object Factory : PhoneSensorMeasureFactory
     {

@@ -2,8 +2,10 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.ServiceInvoker
-import dk.cachet.carp.studies.application.*
-import dk.cachet.carp.studies.domain.*
+import dk.cachet.carp.studies.application.StudyService
+import dk.cachet.carp.studies.application.StudyServiceMock
+import dk.cachet.carp.studies.domain.StudyDescription
+import dk.cachet.carp.studies.domain.StudyOwner
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -13,7 +15,8 @@ import kotlin.test.*
  */
 class StudyServiceRequestsTest
 {
-    companion object {
+    companion object
+    {
         val requests: List<StudyServiceRequest> = listOf(
             StudyServiceRequest.CreateStudy( StudyOwner(), "Test", StudyDescription.empty() ),
             StudyServiceRequest.GetStudyStatus( UUID.randomUUID() )

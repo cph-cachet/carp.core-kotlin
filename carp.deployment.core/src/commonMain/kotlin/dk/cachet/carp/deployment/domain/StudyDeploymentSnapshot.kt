@@ -2,7 +2,8 @@ package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -13,7 +14,8 @@ import kotlinx.serialization.Serializable
 data class StudyDeploymentSnapshot(
     val studyDeploymentId: UUID,
     val studyProtocolSnapshot: StudyProtocolSnapshot,
-    val registeredDevices: Map<String, @Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration> )
+    val registeredDevices: Map<String, @Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration>
+)
 {
     companion object
     {

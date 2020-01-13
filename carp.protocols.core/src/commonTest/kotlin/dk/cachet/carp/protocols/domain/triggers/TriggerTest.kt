@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.triggers
 
 import dk.cachet.carp.test.JsIgnore
-import dk.cachet.carp.protocols.domain.*
+import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import kotlin.test.*
 
 

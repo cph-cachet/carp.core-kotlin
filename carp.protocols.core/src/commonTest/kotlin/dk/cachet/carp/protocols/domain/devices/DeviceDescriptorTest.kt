@@ -16,8 +16,8 @@ class DeviceDescriptorTest
     @JsIgnore
     fun mutable_implementation_triggers_exception()
     {
-        class NoDataClass( override val roleName: String = "Not a data class" )
-            : DeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
+        class NoDataClass( override val roleName: String = "Not a data class" ) :
+            DeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
         {
             override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
             override fun getRegistrationClass(): KClass<DefaultDeviceRegistration> = DefaultDeviceRegistration::class

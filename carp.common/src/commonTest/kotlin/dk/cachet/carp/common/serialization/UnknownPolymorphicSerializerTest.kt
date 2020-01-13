@@ -1,7 +1,11 @@
 package dk.cachet.carp.common.serialization
 
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.content
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.test.*
@@ -31,8 +35,8 @@ class UnknownPolymorphicSerializerTest
     @Serializable
     class DerivingType( override val toOverrideProperty: String ) : BaseType()
 
-    data class CustomBaseType( override val className: String, override val jsonSource: String, val serializer: Json )
-        : BaseType(), UnknownPolymorphicWrapper
+    data class CustomBaseType( override val className: String, override val jsonSource: String, val serializer: Json ) :
+        BaseType(), UnknownPolymorphicWrapper
     {
         override val toOverrideProperty: String
 

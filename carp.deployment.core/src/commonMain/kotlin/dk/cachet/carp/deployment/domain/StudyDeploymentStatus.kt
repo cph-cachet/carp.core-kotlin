@@ -1,7 +1,8 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import kotlinx.serialization.Serializable
 
 
@@ -14,7 +15,8 @@ data class StudyDeploymentStatus(
     /**
      * The list of all devices part of this study deployment and their status.
      */
-    val devicesStatus: List<DeviceDeploymentStatus> )
+    val devicesStatus: List<DeviceDeploymentStatus>
+)
 {
     /**
      * Returns all [DeviceDescriptor]'s in [devicesStatus] which require registration.

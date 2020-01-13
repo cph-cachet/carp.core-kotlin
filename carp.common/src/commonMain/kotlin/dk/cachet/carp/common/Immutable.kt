@@ -1,6 +1,6 @@
 package dk.cachet.carp.common
 
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -22,4 +22,5 @@ expect abstract class Immutable
  * Exception which is thrown by default when an extending class of [Immutable] is not implemented as immutable.
  */
 class NotImmutableError(
-    error: String = "Immutable types should be data classes, may not contain mutable properties, and may only contain basic types and other Immutable properties." ) : Throwable( error )
+    error: String = "Immutable types should be data classes, may not contain mutable properties, and may only contain basic types and other Immutable properties."
+) : Throwable( error )

@@ -1,6 +1,6 @@
 package dk.cachet.carp.studies.domain.users
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.UUID
 
 
 /**
@@ -18,11 +18,11 @@ class InMemoryUserRepository : UserRepository
         accounts.add( account )
     }
 
-    override fun findAccountWithId( accountId: UUID ): Account?
-        = accounts.firstOrNull { it.id == accountId }
+    override fun findAccountWithId( accountId: UUID ): Account? =
+        accounts.firstOrNull { it.id == accountId }
 
-    override fun findAccountWithIdentity( identity: AccountIdentity ): Account?
-        = accounts.firstOrNull { it.identity == identity }
+    override fun findAccountWithIdentity( identity: AccountIdentity ): Account? =
+        accounts.firstOrNull { it.identity == identity }
 
     override fun addStudyParticipation( accountId: UUID, participant: Participant )
     {
@@ -38,8 +38,8 @@ class InMemoryUserRepository : UserRepository
         accounts.add( newAccount )
     }
 
-    override fun getParticipantsForStudy( studyId: UUID ): List<Participant>
-        = accounts.fold( mutableListOf() ) { participants, account ->
+    override fun getParticipantsForStudy( studyId: UUID ): List<Participant> =
+        accounts.fold( mutableListOf() ) { participants, account ->
             val participations = account.studyParticipations.filter { it.studyId == studyId }
             participants.addAll( participations )
             participants

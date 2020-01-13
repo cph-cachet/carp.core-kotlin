@@ -8,4 +8,5 @@ import kotlinx.serialization.Serializable
 data class StubTaskDescriptor(
     override val name: String = "Stub task",
     @Serializable( MeasuresSerializer::class )
-    override val measures: List<Measure> = listOf() ) : TaskDescriptor()
+    override val measures: List<Measure> = listOf()
+) : TaskDescriptor()

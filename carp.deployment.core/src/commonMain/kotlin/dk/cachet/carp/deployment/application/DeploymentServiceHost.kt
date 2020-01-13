@@ -1,9 +1,14 @@
 package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.deployment.domain.*
-import dk.cachet.carp.protocols.domain.*
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.deployment.domain.DeploymentRepository
+import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
+import dk.cachet.carp.deployment.domain.StudyDeployment
+import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.protocols.domain.InvalidConfigurationError
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
 
 /**
@@ -77,7 +82,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository ) : De
         val device = deployment.registeredDevices.keys.firstOrNull { it.roleName == masterDeviceRoleName }
             ?: throw IllegalArgumentException( "The specified device role name is not part of this study deployment or is not yet registered." )
         val masterDevice = device as? AnyMasterDeviceDescriptor
-            ?:  throw IllegalArgumentException( "The specified device is not a master device and therefore does not have a deployment configuration." )
+            ?: throw IllegalArgumentException( "The specified device is not a master device and therefore does not have a deployment configuration." )
 
         return deployment.getDeviceDeploymentFor( masterDevice )
     }

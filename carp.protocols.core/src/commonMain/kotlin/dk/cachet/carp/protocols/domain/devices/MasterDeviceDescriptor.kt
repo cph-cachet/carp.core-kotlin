@@ -1,7 +1,8 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.protocols.domain.triggers.StartOfStudyTrigger
-import kotlinx.serialization.*
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -10,8 +11,8 @@ import kotlinx.serialization.*
  */
 @Serializable
 @Polymorphic
-abstract class MasterDeviceDescriptor<TRegistration: DeviceRegistration, out TBuilder: DeviceRegistrationBuilder<TRegistration>>
-    : DeviceDescriptor<TRegistration, TBuilder>()
+abstract class MasterDeviceDescriptor<TRegistration : DeviceRegistration, out TBuilder : DeviceRegistrationBuilder<TRegistration>> :
+    DeviceDescriptor<TRegistration, TBuilder>()
 {
     // This property is only here for (de)serialization purposes.
     // For unknown types we need to know whether to treat them as master devices or not (in the case of 'DeviceDescriptor' collections).
@@ -23,4 +24,4 @@ abstract class MasterDeviceDescriptor<TRegistration: DeviceRegistration, out TBu
     fun atStartOfStudy(): StartOfStudyTrigger = StartOfStudyTrigger( this )
 }
 
-typealias AnyMasterDeviceDescriptor = MasterDeviceDescriptor<*,*>
+typealias AnyMasterDeviceDescriptor = MasterDeviceDescriptor<*, *>

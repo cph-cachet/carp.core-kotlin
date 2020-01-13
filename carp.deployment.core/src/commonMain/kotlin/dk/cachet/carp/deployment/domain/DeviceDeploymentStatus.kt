@@ -1,6 +1,7 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -34,4 +35,5 @@ data class DeviceDeploymentStatus(
     /**
      * True if the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
      */
-    val isDeployed: Boolean )
+    val isDeployed: Boolean
+)

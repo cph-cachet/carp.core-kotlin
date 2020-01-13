@@ -1,8 +1,14 @@
 package dk.cachet.carp.studies.application
 
-import dk.cachet.carp.common.*
-import dk.cachet.carp.studies.domain.*
-import dk.cachet.carp.studies.domain.users.*
+import dk.cachet.carp.common.EmailAddress
+import dk.cachet.carp.common.UUID
+import dk.cachet.carp.studies.domain.NotifyUserService
+import dk.cachet.carp.studies.domain.NotifyUserServiceMock
+import dk.cachet.carp.studies.domain.users.AccountIdentity
+import dk.cachet.carp.studies.domain.users.EmailAccountIdentity
+import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.Username
+import dk.cachet.carp.studies.domain.users.UserRepository
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 

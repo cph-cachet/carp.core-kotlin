@@ -19,7 +19,8 @@ class TaskDescriptorTest
         class NoDataClass(
             override val name: String = "Not a data class",
             @Serializable( MeasuresSerializer::class )
-            override val measures: List<Measure> = listOf() ) : TaskDescriptor()
+            override val measures: List<Measure> = listOf()
+        ) : TaskDescriptor()
 
         assertFailsWith<InvalidConfigurationError>
         {

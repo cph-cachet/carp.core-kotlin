@@ -1,7 +1,9 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.devices.CustomDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import kotlinx.serialization.json.Json
 import kotlin.test.*
 
@@ -195,8 +197,8 @@ class StudyDeploymentTest
     fun getStatus_lifecycle_master_and_connected()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
-        val master =  protocol.devices.first { it.roleName == "Master" }
-        val connected =  protocol.devices.first { it.roleName == "Connected" }
+        val master = protocol.devices.first { it.roleName == "Master" }
+        val connected = protocol.devices.first { it.roleName == "Connected" }
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         // Start of deployment, no devices registered.

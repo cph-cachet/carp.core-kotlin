@@ -1,21 +1,28 @@
 package dk.cachet.carp.common.serialization
 
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialDescriptor
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonInput
+import kotlinx.serialization.json.JsonOutput
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
 import kotlin.reflect.jvm.isAccessible
 
 
-actual abstract class UnknownPolymorphicSerializer<P: Any, W: P> actual constructor(
+actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constructor(
     private val baseClass: KClass<P>,
     wrapperClass: KClass<W>,
-    verifyUnknownPolymorphicWrapper: Boolean ) : KSerializer<P>
+    verifyUnknownPolymorphicWrapper: Boolean
+) : KSerializer<P>
 {
     companion object
     {
-        private val unsupportedException
-            = SerializationException( "${UnknownPolymorphicSerializer::class.simpleName} only supports JSON serialization." )
+        private val unsupportedException =
+            SerializationException( "${UnknownPolymorphicSerializer::class.simpleName} only supports JSON serialization." )
     }
 
     init

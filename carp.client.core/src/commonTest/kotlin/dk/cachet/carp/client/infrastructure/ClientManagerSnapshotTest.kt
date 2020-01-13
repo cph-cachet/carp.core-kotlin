@@ -1,6 +1,10 @@
 package dk.cachet.carp.client.infrastructure
 
-import dk.cachet.carp.client.domain.*
+import dk.cachet.carp.client.domain.ClientManagerSnapshot
+import dk.cachet.carp.client.domain.createSmartphoneStudy
+import dk.cachet.carp.client.domain.createStudyDeployment
+import dk.cachet.carp.client.domain.smartphone
+import dk.cachet.carp.client.domain.SmartphoneManager
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 

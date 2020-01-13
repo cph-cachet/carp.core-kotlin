@@ -1,18 +1,20 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.ddd.*
+import dk.cachet.carp.common.ddd.createServiceInvoker
+import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.deployment.application.DeploymentService
-import dk.cachet.carp.deployment.domain.*
+import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
+import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.devices.*
-import kotlinx.serialization.*
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
+import kotlinx.serialization.Serializable
 
 
 /**
  * Serializable application service requests to [ProtocolService] which can be executed on demand.
  */
-@Polymorphic
 @Serializable
 sealed class DeploymentServiceRequest
 {
@@ -31,8 +33,8 @@ sealed class DeploymentServiceRequest
         val studyDeploymentId: UUID,
         val deviceRoleName: String,
         @Serializable( DeviceRegistrationSerializer::class )
-        val registration: DeviceRegistration ) :
-        DeploymentServiceRequest(),
+        val registration: DeviceRegistration
+    ) : DeploymentServiceRequest(),
         ServiceInvoker<DeploymentService, StudyDeploymentStatus> by createServiceInvoker( DeploymentService::registerDevice, studyDeploymentId, deviceRoleName, registration )
 
     @Serializable

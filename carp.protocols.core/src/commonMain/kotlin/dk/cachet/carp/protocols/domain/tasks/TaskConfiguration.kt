@@ -1,7 +1,5 @@
 package dk.cachet.carp.protocols.domain.tasks
 
-import dk.cachet.carp.protocols.domain.*
-
 
 /**
  * Defines a set of tasks ([TaskDescriptor]).

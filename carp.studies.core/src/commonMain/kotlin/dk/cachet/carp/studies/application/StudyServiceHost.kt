@@ -1,7 +1,11 @@
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.studies.domain.*
+import dk.cachet.carp.studies.domain.Study
+import dk.cachet.carp.studies.domain.StudyDescription
+import dk.cachet.carp.studies.domain.StudyOwner
+import dk.cachet.carp.studies.domain.StudyRepository
+import dk.cachet.carp.studies.domain.StudyStatus
 
 
 /**

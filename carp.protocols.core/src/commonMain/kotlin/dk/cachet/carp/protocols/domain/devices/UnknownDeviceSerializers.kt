@@ -1,17 +1,21 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.Trilean
-import dk.cachet.carp.common.serialization.*
+import dk.cachet.carp.common.serialization.createUnknownPolymorphicSerializer
+import dk.cachet.carp.common.serialization.UnknownPolymorphicSerializer
+import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.content
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import kotlin.reflect.KClass
 
 
 /**
  * A wrapper used to load extending types from [DeviceDescriptor] serialized as JSON which are unknown at runtime.
  */
-data class CustomDeviceDescriptor( override val className: String, override val jsonSource: String, val serializer: Json )
-    : DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
+data class CustomDeviceDescriptor( override val className: String, override val jsonSource: String, val serializer: Json ) :
+    DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
 
@@ -24,8 +28,8 @@ data class CustomDeviceDescriptor( override val className: String, override val 
         roleName = json[ roleNameField ]!!.content
     }
 
-    override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration>
-        = throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, it is unknown which registration builder is required." )
+    override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
+        throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, it is unknown which registration builder is required." )
 
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
 
@@ -38,8 +42,8 @@ data class CustomDeviceDescriptor( override val className: String, override val 
 /**
  * A wrapper used to load extending types from [MasterDeviceDescriptor] serialized as JSON which are unknown at runtime.
  */
-data class CustomMasterDeviceDescriptor( override val className: String, override val jsonSource: String, val serializer: Json )
-    : MasterDeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
+data class CustomMasterDeviceDescriptor( override val className: String, override val jsonSource: String, val serializer: Json ) :
+    MasterDeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
 
@@ -52,8 +56,8 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
         roleName = json[ roleNameField ]!!.content
     }
 
-    override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration>
-        = throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, it is unknown which registration builder is required." )
+    override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
+        throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, it is unknown which registration builder is required." )
 
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
 
@@ -72,9 +76,15 @@ object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<AnyDeviceDescri
     {
         val jsonObject = serializer.parseJson( json ) as JsonObject
         val isMasterDevice = jsonObject.containsKey( AnyMasterDeviceDescriptor::isMasterDevice.name )
+
         return if ( isMasterDevice )
+        {
             CustomMasterDeviceDescriptor( className, json, serializer )
-        else CustomDeviceDescriptor( className, json, serializer )
+        }
+        else
+        {
+            CustomDeviceDescriptor( className, json, serializer )
+        }
     }
 }
 
@@ -88,8 +98,8 @@ object MasterDeviceDescriptorSerializer : KSerializer<AnyMasterDeviceDescriptor>
 /**
  * A wrapper used to load extending types from [DeviceRegistration] serialized as JSON which are unknown at runtime.
  */
-data class CustomDeviceRegistration( override val className: String, override val jsonSource: String, val serializer: Json )
-    : DeviceRegistration(), UnknownPolymorphicWrapper
+data class CustomDeviceRegistration( override val className: String, override val jsonSource: String, val serializer: Json ) :
+    DeviceRegistration(), UnknownPolymorphicWrapper
 {
     override val deviceId: String
 

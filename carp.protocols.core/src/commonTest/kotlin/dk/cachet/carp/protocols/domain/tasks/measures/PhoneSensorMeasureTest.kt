@@ -1,8 +1,7 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.protocols.domain.data.DataType
-import kotlin.test.Test
-import kotlin.test.assertFailsWith
+import kotlin.test.*
 
 
 /**

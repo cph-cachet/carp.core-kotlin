@@ -2,8 +2,9 @@ package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.serialization.NotSerializable
-import dk.cachet.carp.protocols.domain.*
-import kotlinx.serialization.*
+import dk.cachet.carp.protocols.domain.notImmutableErrorFor
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -30,7 +31,7 @@ abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegis
  *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceDescriptor].
  */
 @Serializable( NotSerializable::class )
-abstract class DeviceRegistrationBuilder<T: DeviceRegistration>
+abstract class DeviceRegistrationBuilder<T : DeviceRegistration>
 {
     /**
      * Build the immutable [DeviceRegistration] using the current configuration of this [DeviceRegistrationBuilder].

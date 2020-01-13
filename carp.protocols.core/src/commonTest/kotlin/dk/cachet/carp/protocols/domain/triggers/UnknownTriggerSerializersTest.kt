@@ -21,7 +21,8 @@ class CustomTriggerTest
 
 
     @Test
-    fun initialization_from_json_extracts_base_Trigger_properties() {
+    fun initialization_from_json_extracts_base_Trigger_properties()
+    {
         val trigger = UnknownTrigger( "Some device" )
         val serialized: String = JSON.stringify( UnknownTrigger.serializer(), trigger )
 

@@ -1,6 +1,9 @@
 package dk.cachet.carp.protocols.application
 
-import dk.cachet.carp.protocols.domain.*
+import dk.cachet.carp.protocols.domain.ProtocolOwner
+import dk.cachet.carp.protocols.domain.ProtocolVersion
+import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.test.Mock
 
 
@@ -10,11 +13,11 @@ class ProtocolServiceMock(
     val getVersionHistoryForResult: List<ProtocolVersion> = listOf()
 ) : Mock<ProtocolService>(), ProtocolService
 {
-    override suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String )
-        = trackSuspendCall( ProtocolService::add, protocol, versionTag )
+    override suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String ) =
+        trackSuspendCall( ProtocolService::add, protocol, versionTag )
 
-    override suspend fun update( protocol: StudyProtocolSnapshot, versionTag: String )
-        = trackSuspendCall( ProtocolService::update, protocol, versionTag )
+    override suspend fun update( protocol: StudyProtocolSnapshot, versionTag: String ) =
+        trackSuspendCall( ProtocolService::update, protocol, versionTag )
 
     override suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? ): StudyProtocolSnapshot
     {

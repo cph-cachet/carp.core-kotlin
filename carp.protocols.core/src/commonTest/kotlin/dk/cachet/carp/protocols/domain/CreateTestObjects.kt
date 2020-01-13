@@ -1,13 +1,25 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.Trilean
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.NotSerializable
-import dk.cachet.carp.protocols.domain.data.*
-import dk.cachet.carp.protocols.domain.devices.*
-import dk.cachet.carp.protocols.domain.triggers.*
-import dk.cachet.carp.protocols.domain.tasks.*
-import dk.cachet.carp.protocols.domain.tasks.measures.*
-import dk.cachet.carp.protocols.infrastructure.*
+import dk.cachet.carp.protocols.domain.data.DataType
+import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilder
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilderDsl
+import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.StubDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.StubMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.triggers.Trigger
+import dk.cachet.carp.protocols.domain.triggers.StubTrigger
+import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
+import dk.cachet.carp.protocols.domain.tasks.StubTaskDescriptor
+import dk.cachet.carp.protocols.domain.tasks.measures.Measure
+import dk.cachet.carp.protocols.domain.tasks.measures.StubMeasure
+import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
+import dk.cachet.carp.protocols.infrastructure.JSON
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -88,8 +100,8 @@ fun createComplexProtocol(): StudyProtocol
 }
 
 @Serializable
-internal data class UnknownMasterDeviceDescriptor( override val roleName: String )
-    : MasterDeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
+internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) :
+    MasterDeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
     override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
@@ -97,8 +109,8 @@ internal data class UnknownMasterDeviceDescriptor( override val roleName: String
 }
 
 @Serializable
-internal data class UnknownDeviceDescriptor( override val roleName: String )
-    : DeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
+internal data class UnknownDeviceDescriptor( override val roleName: String ) :
+    DeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
     override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
@@ -107,8 +119,8 @@ internal data class UnknownDeviceDescriptor( override val roleName: String )
 
 @Serializable( with = NotSerializable::class )
 @DeviceRegistrationBuilderDsl
-class UnknownDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() )
-    : DeviceRegistrationBuilder<DeviceRegistration>()
+class UnknownDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() ) :
+    DeviceRegistrationBuilder<DeviceRegistration>()
 {
     override fun build(): DeviceRegistration = DefaultDeviceRegistration( deviceId )
 }
@@ -119,7 +131,8 @@ internal data class UnknownDeviceRegistration( override val deviceId: String ) :
 @Serializable
 internal data class UnknownTaskDescriptor(
     override val name: String,
-    override val measures: List<Measure> ) : TaskDescriptor()
+    override val measures: List<Measure>
+) : TaskDescriptor()
 
 @Serializable
 internal data class UnknownMeasure( override val type: DataType ) : Measure()

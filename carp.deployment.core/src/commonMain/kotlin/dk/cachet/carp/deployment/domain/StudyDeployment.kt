@@ -1,9 +1,15 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.Trilean
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
-import dk.cachet.carp.protocols.domain.*
-import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.InvalidConfigurationError
+import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
 
 /**
@@ -33,14 +39,15 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     }
 
 
-    private val _protocol: StudyProtocol = try
-    {
-        StudyProtocol.fromSnapshot( protocolSnapshot )
-    }
-    catch( e: InvalidConfigurationError )
-    {
-        throw IllegalArgumentException( "Invalid protocol snapshot passed." )
-    }
+    private val _protocol: StudyProtocol =
+        try
+        {
+            StudyProtocol.fromSnapshot( protocolSnapshot )
+        }
+        catch ( e: InvalidConfigurationError )
+        {
+            throw IllegalArgumentException( "Invalid protocol snapshot passed." )
+        }
 
     /**
      * The set of all devices which can or need to be registered for this study deployment.
@@ -87,8 +94,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         return StudyDeploymentStatus( id, devicesStatus )
     }
 
-    private fun isTopLevelMasterDevice( device: AnyDeviceDescriptor ): Boolean
-        = device is AnyMasterDeviceDescriptor && _protocol.masterDevices.contains( device )
+    private fun isTopLevelMasterDevice( device: AnyDeviceDescriptor ): Boolean =
+        device is AnyMasterDeviceDescriptor && _protocol.masterDevices.contains( device )
 
     /**
      * Determines whether the deployment configuration (to initialize the device environment) for a specific device can be obtained.

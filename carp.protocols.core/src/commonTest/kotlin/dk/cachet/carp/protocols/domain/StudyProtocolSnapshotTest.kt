@@ -1,9 +1,14 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.protocols.domain.devices.*
-import dk.cachet.carp.protocols.domain.tasks.*
-import dk.cachet.carp.protocols.domain.triggers.*
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.StubDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.StubMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.tasks.StubTaskDescriptor
+import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
+import dk.cachet.carp.protocols.domain.triggers.StubTrigger
+import dk.cachet.carp.protocols.domain.triggers.Trigger
 import kotlin.test.*
 
 

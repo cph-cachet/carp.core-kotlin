@@ -1,15 +1,18 @@
 package dk.cachet.carp.protocols.domain.triggers
 
-import dk.cachet.carp.common.serialization.*
+import dk.cachet.carp.common.serialization.createUnknownPolymorphicSerializer
+import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.content
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 
 
 /**
  * A wrapper used to load extending types from [Trigger] serialized as JSON which are unknown at runtime.
  */
-data class CustomTrigger( override val className: String, override val jsonSource: String, val serializer: Json)
-    : Trigger(), UnknownPolymorphicWrapper
+data class CustomTrigger( override val className: String, override val jsonSource: String, val serializer: Json ) :
+    Trigger(), UnknownPolymorphicWrapper
 {
     override val sourceDeviceRoleName: String
 

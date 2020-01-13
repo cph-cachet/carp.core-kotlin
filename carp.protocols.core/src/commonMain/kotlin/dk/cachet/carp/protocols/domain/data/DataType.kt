@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.data
 
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -18,4 +18,5 @@ data class DataType(
     /**
      * Describes the data being collected (e.g., "acceleration", "stepcount", "audio"), but not the sensor (e.g., "accellerometer, "pedometer").
      */
-    val name: String )
+    val name: String
+)

@@ -1,7 +1,8 @@
 package dk.cachet.carp.common
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import kotlin.test.*
 
 
@@ -26,10 +27,8 @@ class UUIDTest
     fun can_serialize_and_deserialize_nullable_UUID()
     {
         @Serializable
-        data class Id
-        (
-            val id: UUID?
-        )
+        data class Id( val id: UUID? )
+
         val json = Json( JsonConfiguration.Stable )
 
         val id = Id( UUID( "00000000-0000-0000-0000-000000000000" ) )
@@ -41,6 +40,18 @@ class UUIDTest
         val nullableSerialized = json.stringify( Id.serializer(), nullableId )
         val nullableParsed = json.parse( Id.serializer(), nullableSerialized )
         assertEquals( nullableId, nullableParsed )
+    }
+
+    @Suppress( "TestFunctionName" )
+    @Test
+    fun UUID_is_automatically_serialized_with_custom_serializer()
+    {
+        val id = UUID( "00000000-0000-0000-0000-000000000000" )
+
+        val json = Json( JsonConfiguration.Stable )
+        val serialized = json.stringify( UUID.serializer(), id )
+
+        assertEquals( "\"${id.stringRepresentation}\"", serialized )
     }
 
     @Test

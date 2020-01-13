@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.*
+import dk.cachet.carp.common.Trilean
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.NotSerializable
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
@@ -40,7 +41,8 @@ data class AltBeaconDeviceRegistration(
     /**
      * The last 2 bytes of the beacon identifier, commonly named minor ID.
      */
-    val minorId: Short ) : DeviceRegistration()
+    val minorId: Short
+) : DeviceRegistration()
 {
     override val deviceId: String = "$manufacturerId:$organizationId:$majorId:$minorId"
 }
@@ -70,6 +72,6 @@ class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDe
      */
     var minorId: Short = 0x0000
 
-    override fun build(): AltBeaconDeviceRegistration
-        = AltBeaconDeviceRegistration( manufacturerId, organizationId, majorId, minorId )
+    override fun build(): AltBeaconDeviceRegistration =
+        AltBeaconDeviceRegistration( manufacturerId, organizationId, majorId, minorId )
 }

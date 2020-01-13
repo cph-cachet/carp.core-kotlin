@@ -15,7 +15,8 @@ class ExtractUniqueKeyMap<K, V>(
     /**
      * The error which should be thrown when attempting to add an element with a key which is already present.
      */
-    private val elementPresentError: Throwable ) : Map<K, V>
+    private val elementPresentError: Throwable
+) : Map<K, V>
 {
     private val map: MutableMap<K, V> = mutableMapOf()
 

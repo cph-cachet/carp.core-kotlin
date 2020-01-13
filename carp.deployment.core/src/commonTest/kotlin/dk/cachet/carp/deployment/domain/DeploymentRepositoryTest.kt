@@ -7,7 +7,7 @@ import kotlin.test.*
 /**
  * Tests for implementations of [DeploymentRepository].
  */
-interface  DeploymentRepositoryTest
+interface DeploymentRepositoryTest
 {
     /**
      * Called for each test to create a repository to run tests on.

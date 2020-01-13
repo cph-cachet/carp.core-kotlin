@@ -1,7 +1,11 @@
 package dk.cachet.carp.studies.application
 
-import dk.cachet.carp.common.*
-import dk.cachet.carp.studies.domain.users.*
+import dk.cachet.carp.common.EmailAddress
+import dk.cachet.carp.common.UUID
+import dk.cachet.carp.studies.domain.users.Account
+import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.Username
+import dk.cachet.carp.studies.domain.users.UsernameAccountIdentity
 import dk.cachet.carp.test.Mock
 
 
@@ -20,8 +24,8 @@ class UserServiceMock(
     }
 
     @Suppress( "RemoveExplicitTypeArguments" ) // Compilation fails if `trackSuspendCall` type arguments are removed.
-    override suspend fun createAccount( emailAddress: EmailAddress )
-        = trackSuspendCallOverloaded<EmailAddress, Unit>( UserService::createAccount, "emailAddress", emailAddress )
+    override suspend fun createAccount( emailAddress: EmailAddress ) =
+        trackSuspendCallOverloaded<EmailAddress, Unit>( UserService::createAccount, "emailAddress", emailAddress )
 
     override suspend fun createParticipant( studyId: UUID, accountId: UUID ): Participant
     {

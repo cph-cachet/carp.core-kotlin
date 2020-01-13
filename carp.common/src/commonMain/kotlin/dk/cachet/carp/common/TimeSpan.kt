@@ -12,7 +12,8 @@ data class TimeSpan(
     /**
      * The duration of the time interval expressed in microseconds.
      */
-    val microseconds: Long )
+    val microseconds: Long
+)
 {
     companion object
     {
