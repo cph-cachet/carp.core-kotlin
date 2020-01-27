@@ -1,6 +1,7 @@
 package dk.cachet.carp.common
 
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 actual class DateTime( private val dateTime: LocalDateTime )
@@ -11,5 +12,11 @@ actual class DateTime( private val dateTime: LocalDateTime )
         {
             return DateTime( LocalDateTime.now() )
         }
+    }
+
+    actual override fun toString(): String
+    {
+        val isoFormatter = DateTimeFormatter.ofPattern( "yyyy-MM-dd'T'HH:mm:ss'Z'" )
+        return dateTime.format( isoFormatter )
     }
 }

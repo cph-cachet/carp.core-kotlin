@@ -12,4 +12,12 @@ actual class DateTime( private val dateTime: Date )
             return DateTime( Date( Date.now() ) )
         }
     }
+
+    actual override fun toString(): String
+    {
+        val isoString = dateTime.toISOString()
+        val msAndTimeZoneLength = 5 // E.g., ".000Z"
+        val dropMs = isoString.dropLast( msAndTimeZoneLength )
+        return dropMs + "Z"
+    }
 }
