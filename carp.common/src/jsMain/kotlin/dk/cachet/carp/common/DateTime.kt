@@ -1,23 +1,35 @@
 package dk.cachet.carp.common
 
+import kotlinx.serialization.Serializable
 import kotlin.js.Date
 
 
-actual class DateTime( private val dateTime: Date )
+@Serializable( DateTimeSerializer::class )
+actual class DateTime actual constructor( actual val msSinceUTC: Long )
 {
     actual companion object
     {
         actual fun now(): DateTime
         {
-            return DateTime( Date( Date.now() ) )
+            return DateTime( Date.now().toLong() )
         }
     }
 
-    actual override fun toString(): String
+
+    private val dateTime: Date = Date( msSinceUTC )
+
+    actual override fun toString(): String = dateTime.toISOString()
+
+    override fun equals( other: Any? ): Boolean
     {
-        val isoString = dateTime.toISOString()
-        val msAndTimeZoneLength = 5 // E.g., ".000Z"
-        val dropMs = isoString.dropLast( msAndTimeZoneLength )
-        return dropMs + "Z"
+        if ( this === other ) return true
+        if ( other !is DateTime ) return false
+
+        return msSinceUTC == other.msSinceUTC
+    }
+
+    override fun hashCode(): Int
+    {
+        return msSinceUTC.hashCode()
     }
 }
