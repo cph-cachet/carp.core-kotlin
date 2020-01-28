@@ -4,12 +4,14 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.studies.domain.StudyDescription
+import dk.cachet.carp.studies.domain.StudyOwner
 import dk.cachet.carp.studies.domain.StudySnapshot
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.Account
 import dk.cachet.carp.studies.domain.users.AccountIdentity
 import dk.cachet.carp.studies.domain.users.EmailAccountIdentity
 import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.Username
 import dk.cachet.carp.studies.domain.users.UsernameAccountIdentity
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.EmptyModule
@@ -59,6 +61,18 @@ fun Account.toJson(): String =
     JSON.stringify( Account.serializer(), this )
 
 /**
+ * Create a [Username] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun Username.Companion.fromJson( json: String ): Username =
+    JSON.parse( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun Username.toJson(): String =
+    JSON.stringify( Username.serializer(), this )
+
+/**
  * Create a [Participant] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun Participant.Companion.fromJson( json: String ): Participant =
@@ -93,6 +107,18 @@ fun StudyDescription.Companion.fromJson( json: String ): StudyDescription =
  */
 fun StudyDescription.toJson(): String =
     JSON.stringify( StudyDescription.serializer(), this )
+
+/**
+ * Create a [StudyOwner] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyOwner.Companion.fromJson( json: String ): StudyOwner =
+    JSON.parse( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyOwner.toJson(): String =
+    JSON.stringify( StudyOwner.serializer(), this )
 
 /**
  * Create a [StudyStatus] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
