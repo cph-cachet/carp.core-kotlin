@@ -1,7 +1,7 @@
-package dk.cachet.carp.studies.infrastructure
+package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.ddd.ServiceInvoker
-import dk.cachet.carp.studies.application.UserService
+import dk.cachet.carp.deployment.application.UserService
 import kotlin.test.*
 
 

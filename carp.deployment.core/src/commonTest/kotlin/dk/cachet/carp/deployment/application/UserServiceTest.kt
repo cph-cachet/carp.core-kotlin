@@ -1,14 +1,14 @@
-package dk.cachet.carp.studies.application
+package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.studies.domain.NotifyUserService
-import dk.cachet.carp.studies.domain.NotifyUserServiceMock
-import dk.cachet.carp.studies.domain.users.AccountIdentity
-import dk.cachet.carp.studies.domain.users.EmailAccountIdentity
-import dk.cachet.carp.studies.domain.users.Participant
-import dk.cachet.carp.studies.domain.users.Username
-import dk.cachet.carp.studies.domain.users.UserRepository
+import dk.cachet.carp.deployment.domain.NotifyUserService
+import dk.cachet.carp.deployment.domain.NotifyUserServiceMock
+import dk.cachet.carp.deployment.domain.users.AccountIdentity
+import dk.cachet.carp.deployment.domain.users.EmailAccountIdentity
+import dk.cachet.carp.deployment.domain.users.Participant
+import dk.cachet.carp.deployment.domain.users.Username
+import dk.cachet.carp.deployment.domain.users.UserRepository
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 

@@ -1,4 +1,4 @@
-package dk.cachet.carp.studies.domain.users
+package dk.cachet.carp.deployment.domain.users
 
 import dk.cachet.carp.common.EmailAddress
 import kotlinx.serialization.Polymorphic

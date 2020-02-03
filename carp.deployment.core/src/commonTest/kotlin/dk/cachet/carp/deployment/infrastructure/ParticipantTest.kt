@@ -1,7 +1,7 @@
-package dk.cachet.carp.studies.infrastructure
+package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.deployment.domain.users.Participant
 import kotlin.test.*
 
 
