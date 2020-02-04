@@ -2,12 +2,12 @@ package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.common.users.EmailAccountIdentity
+import dk.cachet.carp.common.users.Username
+import dk.cachet.carp.common.users.UsernameAccountIdentity
 import dk.cachet.carp.deployment.domain.NotifyUserService
-import dk.cachet.carp.deployment.domain.users.Account
-import dk.cachet.carp.deployment.domain.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.domain.users.Participant
-import dk.cachet.carp.deployment.domain.users.Username
-import dk.cachet.carp.deployment.domain.users.UsernameAccountIdentity
 import dk.cachet.carp.deployment.domain.users.UserRepository
 
 
@@ -71,7 +71,9 @@ class UserServiceHost( private val repository: UserRepository, private val notif
     {
         var account = repository.findAccountWithIdentity( EmailAccountIdentity( emailAddress ) )
         val isNewAccount = account == null
-        var participant: Participant? = account?.studyParticipations?.firstOrNull { it.studyId == studyId }
+        var participant =
+            if ( isNewAccount ) null
+            else repository.getStudyParticipations( account!!.id ).firstOrNull { it.studyId == studyId }
 
         // Create an unverified account if it does not yet exist and send out invitation email.
         if ( isNewAccount )

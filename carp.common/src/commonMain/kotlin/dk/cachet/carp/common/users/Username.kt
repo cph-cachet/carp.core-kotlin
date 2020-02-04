@@ -1,4 +1,4 @@
-package dk.cachet.carp.deployment.domain.users
+package dk.cachet.carp.common.users
 
 import kotlinx.serialization.Serializable
 

@@ -1,6 +1,9 @@
 package dk.cachet.carp.deployment.domain.users
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.common.users.AccountIdentity
+import dk.cachet.carp.common.users.UsernameAccountIdentity
 import kotlin.test.*
 
 
@@ -28,8 +31,8 @@ interface UserRepositoryTest
         val id = UUID.randomUUID()
         val username1 = UsernameAccountIdentity( "test" )
         val username2 = UsernameAccountIdentity( "test2" )
-        val account1 = Account( username1, setOf(), id )
-        val account2 = Account( username2, setOf(), id )
+        val account1 = Account( username1, id )
+        val account2 = Account( username2, id )
         repo.addAccount( account1 )
 
         assertFailsWith<IllegalArgumentException>

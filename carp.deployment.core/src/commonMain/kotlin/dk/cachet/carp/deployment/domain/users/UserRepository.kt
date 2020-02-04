@@ -1,6 +1,8 @@
 package dk.cachet.carp.deployment.domain.users
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.common.users.AccountIdentity
 
 
 interface UserRepository
@@ -29,6 +31,11 @@ interface UserRepository
      * @param participant The [Participant] information of the study to participate in.
      */
     fun addStudyParticipation( accountId: UUID, participant: Participant )
+
+    /**
+     * Get [participant] information for all studies an account with the given [accountId] participates in.
+     */
+    fun getStudyParticipations( accountId: UUID ): List<Participant>
 
     /**
      * Get all participants included in a study for the given [studyId].

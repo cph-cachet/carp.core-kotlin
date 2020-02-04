@@ -3,7 +3,6 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
-import dk.cachet.carp.deployment.infrastructure.DEPLOYMENT_SERIAL_MODULE
 import dk.cachet.carp.protocols.infrastructure.PROTOCOLS_SERIAL_MODULE
 import dk.cachet.carp.studies.domain.StudyDescription
 import dk.cachet.carp.studies.domain.StudyOwner
@@ -22,7 +21,7 @@ import kotlinx.serialization.modules.SerialModule
  */
 fun createStudiesSerializer( module: SerialModule = EmptyModule ): Json
 {
-    return createDefaultJSON( PROTOCOLS_SERIAL_MODULE + DEPLOYMENT_SERIAL_MODULE + module )
+    return createDefaultJSON( PROTOCOLS_SERIAL_MODULE + module )
 }
 
 /**

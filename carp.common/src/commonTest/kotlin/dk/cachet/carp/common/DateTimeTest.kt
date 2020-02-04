@@ -1,7 +1,6 @@
 package dk.cachet.carp.common
 
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
+import dk.cachet.carp.common.serialization.createDefaultJSON
 import kotlin.test.*
 
 
@@ -25,7 +24,7 @@ class DateTimeTest
     {
         val dateTime = DateTime.now()
 
-        val json = Json( JsonConfiguration.Stable )
+        val json = createDefaultJSON()
         val serialized = json.stringify( DateTime.serializer(), dateTime )
         val parsed = json.parse( DateTime.serializer(), serialized )
 

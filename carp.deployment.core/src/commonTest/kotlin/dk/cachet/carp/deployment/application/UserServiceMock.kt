@@ -2,10 +2,10 @@ package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.deployment.domain.users.Account
+import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.common.users.Username
+import dk.cachet.carp.common.users.UsernameAccountIdentity
 import dk.cachet.carp.deployment.domain.users.Participant
-import dk.cachet.carp.deployment.domain.users.Username
-import dk.cachet.carp.deployment.domain.users.UsernameAccountIdentity
 import dk.cachet.carp.test.Mock
 
 

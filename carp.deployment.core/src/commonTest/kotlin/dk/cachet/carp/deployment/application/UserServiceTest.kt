@@ -2,12 +2,12 @@ package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.users.AccountIdentity
+import dk.cachet.carp.common.users.EmailAccountIdentity
+import dk.cachet.carp.common.users.Username
 import dk.cachet.carp.deployment.domain.NotifyUserService
 import dk.cachet.carp.deployment.domain.NotifyUserServiceMock
-import dk.cachet.carp.deployment.domain.users.AccountIdentity
-import dk.cachet.carp.deployment.domain.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.domain.users.Participant
-import dk.cachet.carp.deployment.domain.users.Username
 import dk.cachet.carp.deployment.domain.users.UserRepository
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
@@ -43,7 +43,6 @@ abstract class UserServiceTest
         val account = service.createAccount( Username( username ) )
         val expectedIdentity = AccountIdentity.fromUsername( username )
         assertEquals( expectedIdentity, account.identity )
-        assertEquals( 0, account.studyParticipations.count() )
 
         // Verify whether account was added to the repository.
         val foundAccount = repo.findAccountWithIdentity( expectedIdentity )
