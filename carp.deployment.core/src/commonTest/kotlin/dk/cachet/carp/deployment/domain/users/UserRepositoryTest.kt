@@ -99,52 +99,52 @@ interface UserRepositoryTest
     fun addStudyParticipation_and_retrieving_it_succeeds()
     {
         val ( repo, account ) = createRepoWithTestAccount()
-        val studyId = UUID.randomUUID()
-        val participant = Participant( studyId )
+        val studyDeploymentId = UUID.randomUUID()
+        val participation = Participation( studyDeploymentId )
 
-        repo.addStudyParticipation( account.id, participant )
-        val participants = repo.getParticipantsForStudy( studyId )
+        repo.addParticipation( account.id, participation )
+        val participations = repo.getParticipationsForStudyDeployment( studyDeploymentId )
 
-        assertEquals( participant, participants.single() )
+        assertEquals( participation, participations.single() )
     }
 
     @Test
     fun addStudyParticipation_for_unknown_account_fails()
     {
         val repo = createUserRepository()
-        val studyId = UUID.randomUUID()
+        val studyDeploymentId = UUID.randomUUID()
         val unknownId = UUID.randomUUID()
 
         assertFailsWith<IllegalArgumentException> {
-            repo.addStudyParticipation( unknownId, Participant( studyId ) )
+            repo.addParticipation( unknownId, Participation( studyDeploymentId ) )
         }
     }
 
     @Test
-    fun addStudyParticipation_with_existing_participant_only_adds_once()
+    fun addStudyParticipation_with_existing_participation_only_adds_once()
     {
         val ( repo, account ) = createRepoWithTestAccount()
-        val studyId = UUID.randomUUID()
-        val participant = Participant( studyId )
+        val studyDeploymentId = UUID.randomUUID()
+        val participation = Participation( studyDeploymentId )
 
-        repo.addStudyParticipation( account.id, participant )
-        repo.addStudyParticipation( account.id, participant )
-        val participants = repo.getParticipantsForStudy( studyId )
+        repo.addParticipation( account.id, participation )
+        repo.addParticipation( account.id, participation )
+        val participations = repo.getParticipationsForStudyDeployment( studyDeploymentId )
 
-        assertEquals( participant, participants.single() )
+        assertEquals( participation, participations.single() )
     }
 
     @Test
-    fun getParticipantsForStudy_returns_study_participants_only()
+    fun getParticipationsForStudyDeployment_returns_matching_participations_only()
     {
         val ( repo, account ) = createRepoWithTestAccount()
-        val studyId = UUID.randomUUID()
-        val studyParticipants = listOf( Participant( studyId ), Participant( studyId ) )
-        val otherParticipant = Participant( UUID.randomUUID() ) // Some other study.
+        val studyDeploymentId = UUID.randomUUID()
+        val participations = listOf( Participation( studyDeploymentId ), Participation( studyDeploymentId ) )
+        val otherParticipations = Participation( UUID.randomUUID() ) // Some other study deployment.
 
-        (studyParticipants + otherParticipant).forEach { repo.addStudyParticipation( account.id, it ) }
-        val participants = repo.getParticipantsForStudy( studyId )
+        (participations + otherParticipations).forEach { repo.addParticipation( account.id, it ) }
+        val retrievedParticipations = repo.getParticipationsForStudyDeployment( studyDeploymentId )
 
-        assertEquals( 2, participants.intersect( studyParticipants ).count() )
+        assertEquals( 2, retrievedParticipations.intersect( participations ).count() )
     }
 }

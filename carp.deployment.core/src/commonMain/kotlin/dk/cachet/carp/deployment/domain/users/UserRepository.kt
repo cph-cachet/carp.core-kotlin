@@ -25,20 +25,20 @@ interface UserRepository
     fun findAccountWithIdentity( identity: AccountIdentity ): Account?
 
     /**
-     * Add [participant] information for a study that an account with the given [accountId] should participate in.
+     * Add [participation] information for a study deployment that an account with the given [accountId] should participate in.
      *
-     * @param accountId The ID of the account which acts as a [Participant] in a study.
-     * @param participant The [Participant] information of the study to participate in.
+     * @param accountId The ID of the account which acts as a [Participation] in a study.
+     * @param participation The [Participation] information of the study to participate in.
      */
-    fun addStudyParticipation( accountId: UUID, participant: Participant )
+    fun addParticipation( accountId: UUID, participation: Participation )
 
     /**
-     * Get [participant] information for all studies an account with the given [accountId] participates in.
+     * Get [Participation] information for all study deployments an account with the given [accountId] participates in.
      */
-    fun getStudyParticipations( accountId: UUID ): List<Participant>
+    fun getParticipations( accountId: UUID ): List<Participation>
 
     /**
-     * Get all participants included in a study for the given [studyId].
+     * Get all participations included in a study deployment for the given [studyDeploymentId].
      */
-    fun getParticipantsForStudy( studyId: UUID ): List<Participant>
+    fun getParticipationsForStudyDeployment( studyDeploymentId: UUID ): List<Participation>
 }

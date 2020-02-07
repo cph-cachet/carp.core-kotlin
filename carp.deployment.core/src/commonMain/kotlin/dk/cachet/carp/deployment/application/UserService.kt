@@ -3,12 +3,13 @@ package dk.cachet.carp.deployment.application
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.Username
-import dk.cachet.carp.deployment.domain.users.Participant
+import dk.cachet.carp.deployment.domain.users.Participation
 
 
 /**
- * Application service which allows creating [Account]'s and including them as [Participant]'s for a study.
+ * Application service which allows creating [Account]'s and register in which study deployments they participate.
  */
 interface UserService
 {
@@ -26,21 +27,14 @@ interface UserService
     suspend fun createAccount( emailAddress: EmailAddress )
 
     /**
-     * Create a participant for the study with the specified [studyId] and [Account] identified by [accountId].
-     *
-     * @throws IllegalArgumentException when an [Account] with the specified [accountId] does not exist.
+     * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId].
+     * In case no account is associated to the specified identity, a new account is created.
+     * Account details should either be sent when deployment starts, or be retrievable for the person managing the specified [identity].
      */
-    suspend fun createParticipant( studyId: UUID, accountId: UUID ): Participant
+    suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity ): Participation
 
     /**
-     * Create a participant for the study with the specified [studyId] and [Account] identified by [emailAddress].
-     * In case no [Account] is associated with the specified [emailAddress], send out an invitation to register in order to participate in the study.
-     * TODO: studyId should be replaced with specific information about the study in order to prevent a dependency on study service here.
+     * Get all participations included in a study deployment for the given [studyDeploymentId].
      */
-    suspend fun inviteParticipant( studyId: UUID, emailAddress: EmailAddress ): Participant
-
-    /**
-     * Get all participants included in a study for the given [studyId].
-     */
-    suspend fun getParticipantsForStudy( studyId: UUID ): List<Participant>
+    suspend fun getParticipationsForStudyDeployment( studyDeploymentId: UUID ): List<Participation>
 }

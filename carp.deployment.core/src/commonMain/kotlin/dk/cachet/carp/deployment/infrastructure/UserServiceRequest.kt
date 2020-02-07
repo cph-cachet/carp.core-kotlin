@@ -6,9 +6,10 @@ import dk.cachet.carp.common.ddd.createServiceInvoker
 import dk.cachet.carp.common.ddd.createServiceInvokerOverloaded
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.Username
 import dk.cachet.carp.deployment.application.UserService
-import dk.cachet.carp.deployment.domain.users.Participant
+import dk.cachet.carp.deployment.domain.users.Participation
 import kotlinx.serialization.Serializable
 
 
@@ -35,17 +36,12 @@ sealed class UserServiceRequest
                 UserService::createAccount, "emailAddress", emailAddress )
 
     @Serializable
-    data class CreateParticipant( val studyId: UUID, val accountId: UUID ) :
+    data class AddParticipation( val studyDeploymentId: UUID, val identity: AccountIdentity ) :
         UserServiceRequest(),
-        ServiceInvoker<UserService, Participant> by createServiceInvoker( UserService::createParticipant, studyId, accountId )
+        ServiceInvoker<UserService, Participation> by createServiceInvoker( UserService::addParticipation, studyDeploymentId, identity )
 
     @Serializable
-    data class InviteParticipant( val studyId: UUID, val emailAddress: EmailAddress ) :
+    data class GetParticipationsForStudyDeployment( val studyId: UUID ) :
         UserServiceRequest(),
-        ServiceInvoker<UserService, Participant> by createServiceInvoker( UserService::inviteParticipant, studyId, emailAddress )
-
-    @Serializable
-    data class GetParticipantsForStudy( val studyId: UUID ) :
-        UserServiceRequest(),
-        ServiceInvoker<UserService, List<Participant>> by createServiceInvoker( UserService::getParticipantsForStudy, studyId )
+        ServiceInvoker<UserService, List<Participation>> by createServiceInvoker( UserService::getParticipationsForStudyDeployment, studyId )
 }

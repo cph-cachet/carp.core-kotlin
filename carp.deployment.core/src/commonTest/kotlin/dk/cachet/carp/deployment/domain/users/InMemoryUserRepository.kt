@@ -6,12 +6,12 @@ import dk.cachet.carp.common.users.AccountIdentity
 
 
 /**
- * A [UserRepository] which holds accounts and participants in memory as long as the instance is held in memory.
+ * A [UserRepository] which holds accounts and participations in memory as long as the instance is held in memory.
  */
 class InMemoryUserRepository : UserRepository
 {
     private val accounts: MutableList<Account> = mutableListOf()
-    private val participations: MutableMap<UUID, MutableSet<Participant>> = mutableMapOf()
+    private val participations: MutableMap<UUID, MutableSet<Participation>> = mutableMapOf()
 
 
     override fun addAccount( account: Account )
@@ -27,20 +27,20 @@ class InMemoryUserRepository : UserRepository
     override fun findAccountWithIdentity( identity: AccountIdentity ): Account? =
         accounts.firstOrNull { it.identity == identity }
 
-    override fun addStudyParticipation( accountId: UUID, participant: Participant )
+    override fun addParticipation( accountId: UUID, participation: Participation )
     {
         val account = accounts.firstOrNull { it.id == accountId }
         require( account != null )
 
         val accountParticipations = participations.getOrPut( accountId ) { mutableSetOf() }
-        accountParticipations.add( participant )
+        accountParticipations.add( participation )
     }
 
-    override fun getStudyParticipations( accountId: UUID ): List<Participant> =
+    override fun getParticipations( accountId: UUID ): List<Participation> =
         participations[ accountId ]?.toList() ?: listOf()
 
-    override fun getParticipantsForStudy( studyId: UUID ): List<Participant> =
-        participations.flatMap { it.component2().filter { p -> p.studyId == studyId } }
+    override fun getParticipationsForStudyDeployment( studyDeploymentId: UUID ): List<Participation> =
+        participations.flatMap { it.component2().filter { p -> p.studyDeploymentId == studyDeploymentId } }
 }
 
 

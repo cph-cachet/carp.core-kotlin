@@ -5,10 +5,10 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Uniquely identifies a participant as part of a particular study.
+ * Uniquely identifies the participation of an account in a study deployment.
  */
 @Serializable
-data class Participant(
-    val studyId: UUID,
+data class Participation(
+    val studyDeploymentId: UUID,
     val id: UUID = UUID.randomUUID()
 )

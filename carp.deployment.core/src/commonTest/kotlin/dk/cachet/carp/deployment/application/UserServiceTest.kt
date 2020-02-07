@@ -7,7 +7,7 @@ import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.common.users.Username
 import dk.cachet.carp.deployment.domain.NotifyUserService
 import dk.cachet.carp.deployment.domain.NotifyUserServiceMock
-import dk.cachet.carp.deployment.domain.users.Participant
+import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.UserRepository
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
@@ -92,80 +92,51 @@ abstract class UserServiceTest
     }
 
     @Test
-    fun createParticipant_succeeds() = runBlockingTest {
+    fun addParticipation_has_matching_studyDeploymentId() = runBlockingTest {
         val ( service, _ ) = createUserService()
 
         val account = service.createAccount( Username( "test" ) )
-        val studyId = UUID.randomUUID()
-        val participant = service.createParticipant( studyId, account.id )
+        val studyDeploymentId = UUID.randomUUID()
+        val participation = service.addParticipation( studyDeploymentId, account.identity )
 
-        assertEquals( studyId, participant.studyId )
+        assertEquals( studyDeploymentId, participation.studyDeploymentId )
     }
 
     @Test
-    fun createParticipant_fails_for_unknown_accountid() = runBlockingTest {
-        val ( service, _ ) = createUserService()
-
-        val studyId = UUID.randomUUID()
-        val unknownAccountId = UUID.randomUUID()
-
-        assertFailsWith<IllegalArgumentException> {
-            service.createParticipant( studyId, unknownAccountId )
-        }
-    }
-
-    @Test
-    fun inviteParticipant_has_matching_studyId() = runBlockingTest {
-        val ( service, _ ) = createUserService()
-        val studyId = UUID.randomUUID()
-
-        val participant = service.inviteParticipant( studyId, EmailAddress( "test@test.com" ) )
-
-        assertEquals( studyId, participant.studyId )
-    }
-
-    @Test
-    fun inviteParticipant_creates_new_account_for_new_email() = runBlockingTest {
+    fun addParticipation_creates_new_account_for_new_identity() = runBlockingTest {
         val ( service, repo ) = createUserService()
 
-        val studyId = UUID.randomUUID()
-        val email = EmailAddress( "test@test.com" )
-        service.inviteParticipant( studyId, email )
+        val studyDeploymentId = UUID.randomUUID()
+        val emailIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
+        service.addParticipation( studyDeploymentId, emailIdentity )
 
         // Verify whether account was added to the repository.
-        val foundAccount = repo.findAccountWithIdentity( EmailAccountIdentity( email ) )
+        val foundAccount = repo.findAccountWithIdentity( emailIdentity )
         assertNotNull( foundAccount )
-
-        // Verify whether user was notified to register account.
-        assertTrue( notifyUser.wasCalled( NotifyUserService::sendAccountInvitationEmail, foundAccount.id, studyId, email ) )
     }
 
     @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
     @Test
-    fun inviteParticipant_with_same_studyId_and_email() = runBlockingTest {
+    fun addParticipation_with_same_studyDeploymentId_and_identity() = runBlockingTest {
         val ( service, _ ) = createUserService()
-        val studyId = UUID.randomUUID()
-        val email = EmailAddress( "test@test.com" )
+        val studyDeploymentId = UUID.randomUUID()
+        val emailIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
 
-        // The first invite will notify the user to register, so reset notify mock.
-        val p1: Participant = service.inviteParticipant( studyId, email )
-        notifyUser.reset()
-
-        // Subsequent invitations will return the same participant, and will not notify the user again.
-        val p2: Participant = service.inviteParticipant( studyId, email )
+        // Adding the same identity to a deployment returns the same participation.
+        val p1: Participation = service.addParticipation( studyDeploymentId, emailIdentity )
+        val p2: Participation = service.addParticipation( studyDeploymentId, emailIdentity )
         assertTrue( p1.id == p2.id )
-        assertTrue( notifyUser.wasNotCalled( NotifyUserService::sendAccountInvitationEmail ) )
     }
 
     @Test
     fun getParticipantsForStudy_succeeds() = runBlockingTest {
         val ( service, _ ) = createUserService()
         val account = service.createAccount( Username( "test" ) )
-        val studyId = UUID.randomUUID()
-        val participant = service.createParticipant( studyId, account.id )
+        val studyDeploymentId = UUID.randomUUID()
+        val participation = service.addParticipation( studyDeploymentId, account.identity )
 
-        val participants = service.getParticipantsForStudy( studyId )
+        val participations = service.getParticipationsForStudyDeployment( studyDeploymentId )
 
-        assertEquals( participant, participants.single() )
+        assertEquals( participation, participations.single() )
     }
 }

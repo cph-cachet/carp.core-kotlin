@@ -8,7 +8,7 @@ import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.Username
-import dk.cachet.carp.deployment.domain.users.Participant
+import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.infrastructure.PROTOCOLS_SERIAL_MODULE
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.EmptyModule
@@ -58,16 +58,16 @@ fun Username.toJson(): String =
     JSON.stringify( Username.serializer(), this )
 
 /**
- * Create a [Participant] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ * Create a [Participation] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
-fun Participant.Companion.fromJson( json: String ): Participant =
+fun Participation.Companion.fromJson( json: String ): Participation =
     JSON.parse( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
-fun Participant.toJson(): String =
-    JSON.stringify( Participant.serializer(), this )
+fun Participation.toJson(): String =
+    JSON.stringify( Participation.serializer(), this )
 
 /**
  * Create a [StudyDeploymentSnapshot] from JSON, serialized using the globally set infrastructure serializer ([JSON]).

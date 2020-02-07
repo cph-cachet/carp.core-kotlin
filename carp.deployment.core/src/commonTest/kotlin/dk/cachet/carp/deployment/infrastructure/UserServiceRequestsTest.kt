@@ -4,6 +4,7 @@ import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.common.users.Username
+import dk.cachet.carp.common.users.UsernameAccountIdentity
 import dk.cachet.carp.deployment.application.UserService
 import dk.cachet.carp.deployment.application.UserServiceMock
 import dk.cachet.carp.test.runBlockingTest
@@ -20,9 +21,8 @@ class UserServiceRequestsTest
         val requests: List<UserServiceRequest> = listOf(
             UserServiceRequest.CreateAccountWithUsername( Username( "Test" ) ),
             UserServiceRequest.CreateAccountWithEmailAddress( EmailAddress( "test@test.com" ) ),
-            UserServiceRequest.CreateParticipant( UUID.randomUUID(), UUID.randomUUID() ),
-            UserServiceRequest.InviteParticipant( UUID.randomUUID(), EmailAddress( "test@test.com" ) ),
-            UserServiceRequest.GetParticipantsForStudy( UUID.randomUUID() )
+            UserServiceRequest.AddParticipation( UUID.randomUUID(), UsernameAccountIdentity( "Test" ) ),
+            UserServiceRequest.GetParticipationsForStudyDeployment( UUID.randomUUID() )
         )
     }
 

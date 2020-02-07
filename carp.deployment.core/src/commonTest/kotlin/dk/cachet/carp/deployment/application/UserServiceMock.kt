@@ -3,17 +3,17 @@ package dk.cachet.carp.deployment.application
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.Username
 import dk.cachet.carp.common.users.UsernameAccountIdentity
-import dk.cachet.carp.deployment.domain.users.Participant
+import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.test.Mock
 
 
 class UserServiceMock(
     private val createAccountResult: Account = Account( UsernameAccountIdentity( "test" ) ),
-    private val createParticipantResult: Participant = Participant( UUID.randomUUID() ),
-    private val inviteParticipantResult: Participant = Participant( UUID.randomUUID() ),
-    private val getParticipantsForStudyResult: List<Participant> = listOf()
+    private val addParticipationResult: Participation = Participation( UUID.randomUUID() ),
+    private val getParticipationsForStudyDeploymentResult: List<Participation> = listOf()
 ) : Mock<UserService>(), UserService
 {
     @Suppress( "RemoveExplicitTypeArguments" ) // Compilation fails if `trackSuspendCall` type arguments are removed.
@@ -27,21 +27,15 @@ class UserServiceMock(
     override suspend fun createAccount( emailAddress: EmailAddress ) =
         trackSuspendCallOverloaded<EmailAddress, Unit>( UserService::createAccount, "emailAddress", emailAddress )
 
-    override suspend fun createParticipant( studyId: UUID, accountId: UUID ): Participant
+    override suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity ): Participation
     {
-        trackSuspendCall( UserService::createParticipant, studyId, accountId )
-        return createParticipantResult
+        trackSuspendCall( UserService::addParticipation, studyDeploymentId, identity )
+        return addParticipationResult
     }
 
-    override suspend fun inviteParticipant( studyId: UUID, emailAddress: EmailAddress ): Participant
+    override suspend fun getParticipationsForStudyDeployment( studyDeploymentId: UUID ): List<Participation>
     {
-        trackSuspendCall( UserService::inviteParticipant, studyId, emailAddress )
-        return inviteParticipantResult
-    }
-
-    override suspend fun getParticipantsForStudy( studyId: UUID ): List<Participant>
-    {
-        trackSuspendCall( UserService::getParticipantsForStudy, studyId )
-        return getParticipantsForStudyResult
+        trackSuspendCall( UserService::getParticipationsForStudyDeployment, studyDeploymentId )
+        return getParticipationsForStudyDeploymentResult
     }
 }

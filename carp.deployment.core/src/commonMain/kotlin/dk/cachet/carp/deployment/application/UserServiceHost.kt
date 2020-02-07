@@ -3,16 +3,17 @@ package dk.cachet.carp.deployment.application
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.common.users.Username
 import dk.cachet.carp.common.users.UsernameAccountIdentity
 import dk.cachet.carp.deployment.domain.NotifyUserService
-import dk.cachet.carp.deployment.domain.users.Participant
+import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.UserRepository
 
 
 /**
- * Implementation of [UserService] which allows creating [Account]'s and including them as [Participant]'s for a study.
+ * Implementation of [UserService] which allows creating [Account]'s and register in which study deployments they participate.
  */
 class UserServiceHost( private val repository: UserRepository, private val notifyUserService: NotifyUserService ) : UserService
 {
@@ -49,55 +50,40 @@ class UserServiceHost( private val repository: UserRepository, private val notif
     }
 
     /**
-     * Create a participant for the study with the specified [studyId] and [Account] identified by [accountId].
-     *
-     * @throws IllegalArgumentException when an [Account] with the specified [accountId] does not exist.
+     * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId].
+     * In case no account is associated to the specified identity, a new account is created.
+     * Account details should either be sent when deployment starts, or be retrievable for the person managing the specified [identity].
      */
-    override suspend fun createParticipant( studyId: UUID, accountId: UUID ): Participant
+    override suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity ): Participation
     {
-        require( repository.findAccountWithId( accountId ) != null )
-
-        val participant = Participant( studyId )
-        repository.addStudyParticipation( accountId, participant )
-
-        return participant
-    }
-
-    /**
-     * Create a participant for the study with the specified [studyId] and [Account] identified by [emailAddress].
-     * In case no [Account] is associated with the specified [emailAddress] yet, an invitation to register is sent out.
-     */
-    override suspend fun inviteParticipant( studyId: UUID, emailAddress: EmailAddress ): Participant
-    {
-        var account = repository.findAccountWithIdentity( EmailAccountIdentity( emailAddress ) )
+        var account = repository.findAccountWithIdentity( identity )
         val isNewAccount = account == null
-        var participant =
+        var participation =
             if ( isNewAccount ) null
-            else repository.getStudyParticipations( account!!.id ).firstOrNull { it.studyId == studyId }
+            else repository.getParticipations( account!!.id ).firstOrNull { it.studyDeploymentId == studyDeploymentId }
 
-        // Create an unverified account if it does not yet exist and send out invitation email.
+        // Create an account for the given identity if it does not yet exist.
         if ( isNewAccount )
         {
-            account = Account.withEmailIdentity( emailAddress )
+            account = Account( identity )
             repository.addAccount( account )
-            notifyUserService.sendAccountInvitationEmail( account.id, studyId, emailAddress )
         }
 
-        // Create and add participant if it does not yet exist.
-        if ( participant == null )
+        // Create and add participation if it does not yet exist.
+        if ( participation == null )
         {
-            participant = Participant( studyId )
-            repository.addStudyParticipation( account!!.id, participant )
+            participation = Participation( studyDeploymentId )
+            repository.addParticipation( account!!.id, participation )
         }
 
-        return participant
+        return participation
     }
 
     /**
-     * Get all participants included in a study for the given [studyId].
+     * Get all participations included in a study deployment for the given [studyDeploymentId].
      */
-    override suspend fun getParticipantsForStudy( studyId: UUID ): List<Participant>
+    override suspend fun getParticipationsForStudyDeployment( studyDeploymentId: UUID ): List<Participation>
     {
-        return repository.getParticipantsForStudy( studyId )
+        return repository.getParticipationsForStudyDeployment( studyDeploymentId )
     }
 }
