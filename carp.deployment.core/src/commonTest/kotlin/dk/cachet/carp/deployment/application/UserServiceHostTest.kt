@@ -1,6 +1,6 @@
 package dk.cachet.carp.deployment.application
 
-import dk.cachet.carp.deployment.domain.NotifyUserServiceMock
+import dk.cachet.carp.common.users.AccountRepository
 import dk.cachet.carp.deployment.domain.users.InMemoryUserRepository
 import dk.cachet.carp.deployment.domain.users.UserRepository
 
@@ -10,11 +10,12 @@ import dk.cachet.carp.deployment.domain.users.UserRepository
  */
 class UserServiceHostTest : UserServiceTest()
 {
-    override fun createUserService( notify: NotifyUserServiceMock ): Pair<UserService, UserRepository>
+    override fun createUserService(): Triple<UserService, UserRepository, AccountRepository>
     {
         val repo = InMemoryUserRepository()
-        val service = UserServiceHost( repo, notify )
+        val accountRepo = InMemoryAccountRepository()
+        val service = UserServiceHost( repo, accountRepo )
 
-        return Pair( service, repo )
+        return Triple( service, repo, accountRepo )
     }
 }
