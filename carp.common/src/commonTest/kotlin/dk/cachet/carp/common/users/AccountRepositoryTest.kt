@@ -12,12 +12,12 @@ import kotlin.test.assertNull
  */
 interface AccountRepositoryTest
 {
-    fun createAccountRepository(): AccountRepository
+    fun createRepository(): AccountRepository
 
 
     fun createRepoWithTestAccount(): Pair<AccountRepository, Account>
     {
-        val repo = createAccountRepository()
+        val repo = createRepository()
         val testAccount = Account.withUsernameIdentity( "test" )
 
         repo.addAccount( testAccount )
@@ -27,7 +27,7 @@ interface AccountRepositoryTest
     @Test
     fun cant_add_account_with_id_that_already_exists()
     {
-        val repo = createAccountRepository()
+        val repo = createRepository()
         val id = UUID.randomUUID()
         val username1 = UsernameAccountIdentity( "test" )
         val username2 = UsernameAccountIdentity( "test2" )
@@ -44,7 +44,7 @@ interface AccountRepositoryTest
     @Test
     fun cant_add_account_with_identity_that_already_exists()
     {
-        val repo = createAccountRepository()
+        val repo = createRepository()
         val username = "test"
         val account1 = Account.withUsernameIdentity( username )
         val account2 = Account.withUsernameIdentity( username )
@@ -68,7 +68,7 @@ interface AccountRepositoryTest
     @Test
     fun findAccountWithId_null_when_not_found()
     {
-        val repo = createAccountRepository()
+        val repo = createRepository()
 
         val foundAccount = repo.findAccountWithId( UUID.randomUUID() )
         assertNull( foundAccount )
@@ -77,7 +77,7 @@ interface AccountRepositoryTest
     @Test
     fun findAccountWithIdentity_succeeds()
     {
-        val repo = createAccountRepository()
+        val repo = createRepository()
         val username = "test"
         val account = Account.withUsernameIdentity( username )
         repo.addAccount( account )

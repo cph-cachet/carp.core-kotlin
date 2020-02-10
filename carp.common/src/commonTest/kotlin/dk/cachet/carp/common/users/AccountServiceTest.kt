@@ -24,12 +24,12 @@ abstract class AccountServiceTest
      *
      * @param notify The user notification service to be used when initializing the account service.
      */
-    abstract fun createAccountService( notify: NotifyUserServiceMock = notifyUser ): Pair<AccountService, AccountRepository>
+    abstract fun createService( notify: NotifyUserServiceMock = notifyUser ): Pair<AccountService, AccountRepository>
 
 
     @Test
     fun createAccount_with_username_succeeds() = runBlockingTest {
-        val ( service, repo ) = createAccountService()
+        val ( service, repo ) = createService()
 
         val username = "User"
         val account = service.createAccount( Username( username ) )
@@ -43,7 +43,7 @@ abstract class AccountServiceTest
 
     @Test
     fun createAccount_with_existing_username_fails() = runBlockingTest {
-        val ( service, _ ) = createAccountService()
+        val ( service, _ ) = createService()
 
         val username = Username( "User" )
         service.createAccount( username )
@@ -55,7 +55,7 @@ abstract class AccountServiceTest
 
     @Test
     fun createAccount_with_new_email_succeeds() = runBlockingTest {
-        val ( service, repo ) = createAccountService()
+        val ( service, repo ) = createService()
 
         val email = EmailAddress( "user@user.com" )
         val expectedIdentity = EmailAccountIdentity( email )
@@ -71,7 +71,7 @@ abstract class AccountServiceTest
 
     @Test
     fun createAccount_with_existing_email_does_not_notify() = runBlockingTest {
-        val ( service, _ ) = createAccountService()
+        val ( service, _ ) = createService()
 
         // Create user, which will get notified, so reset notify mock.
         val emailAddress = EmailAddress( "user@user.com" )

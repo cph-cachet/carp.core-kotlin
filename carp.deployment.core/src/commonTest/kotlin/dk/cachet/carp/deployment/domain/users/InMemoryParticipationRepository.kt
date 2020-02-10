@@ -4,9 +4,9 @@ import dk.cachet.carp.common.UUID
 
 
 /**
- * A [UserRepository] which holds participations for study deployments in memory as long as the instance is held in memory.
+ * A [ParticipationRepository] which holds participations for study deployments in memory as long as the instance is held in memory.
  */
-class InMemoryUserRepository : UserRepository
+class InMemoryParticipationRepository : ParticipationRepository
 {
     private val participations: MutableMap<UUID, MutableSet<Participation>> = mutableMapOf()
 
@@ -26,9 +26,9 @@ class InMemoryUserRepository : UserRepository
 
 
 /**
- * Tests whether the [InMemoryUserRepository] stub is implemented correctly.
+ * Tests whether the [InMemoryParticipationRepository] stub is implemented correctly.
  */
-class InMemoryUserRepositoryTest : UserRepositoryTest
+class InMemoryParticipationRepositoryTest : ParticipationRepositoryTest
 {
-    override fun createUserRepository(): UserRepository = InMemoryUserRepository()
+    override fun createRepository(): ParticipationRepository = InMemoryParticipationRepository()
 }

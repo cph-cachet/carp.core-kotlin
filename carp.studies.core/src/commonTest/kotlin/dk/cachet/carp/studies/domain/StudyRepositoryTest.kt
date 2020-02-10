@@ -9,13 +9,13 @@ import kotlin.test.*
  */
 interface StudyRepositoryTest
 {
-    fun createStudyRepository(): StudyRepository
+    fun createRepository(): StudyRepository
 
 
     @Test
     fun cant_add_study_with_id_that_already_exists()
     {
-        val repo = createStudyRepository()
+        val repo = createRepository()
         val id = UUID.randomUUID()
         val study1 = Study( StudyOwner(), "Study 1", StudyDescription.empty(), id )
         repo.add( study1 )
@@ -30,7 +30,7 @@ interface StudyRepositoryTest
     @Test
     fun getById_succeeds()
     {
-        val repo = createStudyRepository()
+        val repo = createRepository()
         val study = Study( StudyOwner(), "Study" )
         repo.add( study )
 
@@ -41,7 +41,7 @@ interface StudyRepositoryTest
     @Test
     fun getById_null_when_not_found()
     {
-        val repo = createStudyRepository()
+        val repo = createRepository()
 
         val foundStudy = repo.getById( UUID.randomUUID() )
         assertNull( foundStudy )

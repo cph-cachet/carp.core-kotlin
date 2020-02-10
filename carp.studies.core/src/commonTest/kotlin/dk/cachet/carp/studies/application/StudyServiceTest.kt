@@ -16,12 +16,12 @@ interface StudyServiceTest
     /**
      * Create a user service and repository it depends on to be used in the tests.
      */
-    fun createStudyService(): Pair<StudyService, StudyRepository>
+    fun createService(): Pair<StudyService, StudyRepository>
 
 
     @Test
     fun createStudy_succeeds() = runBlockingTest {
-        val ( service, repo ) = createStudyService()
+        val ( service, repo ) = createService()
 
         val owner = StudyOwner()
         val name = "Test"
@@ -37,7 +37,7 @@ interface StudyServiceTest
 
     @Test
     fun createStudy_with_description_succeeds() = runBlockingTest {
-        val ( service, repo ) = createStudyService()
+        val ( service, repo ) = createService()
 
         val owner = StudyOwner()
         val name = "Test"
@@ -52,7 +52,7 @@ interface StudyServiceTest
 
     @Test
     fun getStudyStatus_succeeds() = runBlockingTest {
-        val ( service, _ ) = createStudyService()
+        val ( service, _ ) = createService()
         val status = service.createStudy( StudyOwner(), "Test" )
 
         val foundStatus = service.getStudyStatus( status.studyId )
@@ -61,7 +61,7 @@ interface StudyServiceTest
 
     @Test
     fun getStudyStatus_fails_for_unknown_study_id() = runBlockingTest {
-        val ( service, _ ) = createStudyService()
+        val ( service, _ ) = createService()
 
         assertFailsWith<IllegalArgumentException>
         {

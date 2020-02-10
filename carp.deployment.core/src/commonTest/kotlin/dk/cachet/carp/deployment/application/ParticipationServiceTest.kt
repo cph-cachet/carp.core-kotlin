@@ -4,7 +4,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.AccountRepository
 import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.deployment.domain.users.UserRepository
+import dk.cachet.carp.deployment.domain.users.ParticipationRepository
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -15,14 +15,14 @@ import kotlin.test.*
 abstract class ParticipationServiceTest
 {
     /**
-     * Create a user service and repositories it depends on to be used in the tests.
+     * Create a participation service and repositories it depends on to be used in the tests.
      */
-    abstract fun createUserService(): Triple<ParticipationService, UserRepository, AccountRepository>
+    abstract fun createService(): Triple<ParticipationService, ParticipationRepository, AccountRepository>
 
 
     @Test
     fun addParticipation_has_matching_studyDeploymentId() = runBlockingTest {
-        val ( service, _, _ ) = createUserService()
+        val ( service, _, _ ) = createService()
 
         val accountIdentity = AccountIdentity.fromUsername( "test" )
         val studyDeploymentId = UUID.randomUUID()
@@ -33,7 +33,7 @@ abstract class ParticipationServiceTest
 
     @Test
     fun addParticipation_creates_new_account_for_new_identity() = runBlockingTest {
-        val ( service, _, accountRepo ) = createUserService()
+        val ( service, _, accountRepo ) = createService()
 
         val studyDeploymentId = UUID.randomUUID()
         val emailIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
@@ -47,7 +47,7 @@ abstract class ParticipationServiceTest
     @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
     @Test
     fun addParticipation_with_same_studyDeploymentId_and_identity() = runBlockingTest {
-        val ( service, _, _ ) = createUserService()
+        val ( service, _, _ ) = createService()
         val studyDeploymentId = UUID.randomUUID()
         val emailIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
 
@@ -59,7 +59,7 @@ abstract class ParticipationServiceTest
 
     @Test
     fun getParticipantsForStudy_succeeds() = runBlockingTest {
-        val ( service, _, _ ) = createUserService()
+        val ( service, _, _ ) = createService()
         val accountIdentity = AccountIdentity.fromUsername( "test" )
         val studyDeploymentId = UUID.randomUUID()
         val participation = service.addParticipation( studyDeploymentId, accountIdentity )

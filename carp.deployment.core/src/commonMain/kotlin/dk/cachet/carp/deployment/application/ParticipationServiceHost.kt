@@ -5,13 +5,13 @@ import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.AccountRepository
 import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.deployment.domain.users.UserRepository
+import dk.cachet.carp.deployment.domain.users.ParticipationRepository
 
 
 /**
  * Implementation of [ParticipationService] which allows registering participations for study deployments.
  */
-class ParticipationServiceHost( private val repository: UserRepository, private val accountRepository: AccountRepository ) :
+class ParticipationServiceHost( private val repository: ParticipationRepository, private val accountRepository: AccountRepository ) :
     ParticipationService
 {
     /**

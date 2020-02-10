@@ -6,17 +6,17 @@ import kotlin.test.*
 
 
 /**
- * Tests for implementations of [UserRepository].
+ * Tests for implementations of [ParticipationRepository].
  */
-interface UserRepositoryTest
+interface ParticipationRepositoryTest
 {
-    fun createUserRepository(): UserRepository
+    fun createRepository(): ParticipationRepository
 
 
     @Test
     fun addStudyParticipation_and_retrieving_it_succeeds()
     {
-        val repo = createUserRepository()
+        val repo = createRepository()
         val account = Account.withUsernameIdentity( "test" )
         val studyDeploymentId = UUID.randomUUID()
         val participation = Participation( studyDeploymentId )
@@ -30,7 +30,7 @@ interface UserRepositoryTest
     @Test
     fun addStudyParticipation_with_existing_participation_only_adds_once()
     {
-        val repo = createUserRepository()
+        val repo = createRepository()
         val account = Account.withUsernameIdentity( "test" )
         val studyDeploymentId = UUID.randomUUID()
         val participation = Participation( studyDeploymentId )
@@ -45,7 +45,7 @@ interface UserRepositoryTest
     @Test
     fun getParticipationsForStudyDeployment_returns_matching_participations_only()
     {
-        val repo = createUserRepository()
+        val repo = createRepository()
         val account = Account.withUsernameIdentity( "test" )
         val studyDeploymentId = UUID.randomUUID()
         val participations = listOf( Participation( studyDeploymentId ), Participation( studyDeploymentId ) )

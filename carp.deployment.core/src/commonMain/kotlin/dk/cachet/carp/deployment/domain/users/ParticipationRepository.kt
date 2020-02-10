@@ -3,7 +3,7 @@ package dk.cachet.carp.deployment.domain.users
 import dk.cachet.carp.common.UUID
 
 
-interface UserRepository
+interface ParticipationRepository
 {
     /**
      * Add [participation] information for a study deployment that an account with the given [accountId] should participate in.

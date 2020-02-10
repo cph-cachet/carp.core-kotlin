@@ -26,5 +26,5 @@ class InMemoryStudyRepository : StudyRepository
  */
 class InMemoryStudyRepositoryTest : StudyRepositoryTest
 {
-    override fun createStudyRepository(): StudyRepository = InMemoryStudyRepository()
+    override fun createRepository(): StudyRepository = InMemoryStudyRepository()
 }
