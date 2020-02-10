@@ -16,18 +16,18 @@ abstract class AccountServiceTest
 
 
     @Test
-    fun createAccount_with_username_succeeds() =
-        createAccountTest( AccountIdentity.fromUsername( "User" ) )
+    fun inviteNewAccount_with_username_succeeds() =
+        inviteNewAccountTest( AccountIdentity.fromUsername( "User" ) )
 
     @Test
-    fun createAccount_with_email_succeeds() =
-        createAccountTest( AccountIdentity.fromEmailAddress( "user@user.com" ) )
+    fun inviteNewAccount_with_email_succeeds() =
+        inviteNewAccountTest( AccountIdentity.fromEmailAddress( "user@user.com" ) )
 
-    private fun createAccountTest( identity: AccountIdentity ) = runBlockingTest {
+    private fun inviteNewAccountTest( identity: AccountIdentity ) = runBlockingTest {
         val service = createService()
 
         // Create and verify account.
-        val account = service.createAccount( identity )
+        val account = service.inviteNewAccount( identity )
         assertEquals( identity, account.identity )
 
         // Verify whether account can be retrieved.
@@ -36,19 +36,35 @@ abstract class AccountServiceTest
     }
 
     @Test
-    fun createAccount_with_existing_username_fails() =
-        createExistingAccountTest( AccountIdentity.fromUsername( "User" ) )
+    fun inviteNewAccount_with_existing_username_fails() =
+        inviteNewAccountWithExistingTest( AccountIdentity.fromUsername( "User" ) )
 
     @Test
-    fun createAccount_with_existing_email_fails() =
-        createExistingAccountTest( AccountIdentity.fromEmailAddress( "user@user.com" ) )
+    fun inviteNewAccount_with_existing_email_fails() =
+        inviteNewAccountWithExistingTest( AccountIdentity.fromEmailAddress( "user@user.com" ) )
 
-    private fun createExistingAccountTest( identity: AccountIdentity ) = runBlockingTest {
+    private fun inviteNewAccountWithExistingTest( identity: AccountIdentity ) = runBlockingTest {
         val service = createService()
-        service.createAccount( identity )
+        service.inviteNewAccount( identity )
 
         assertFailsWith<IllegalArgumentException> {
-            service.createAccount( identity )
+            service.inviteNewAccount( identity )
+        }
+    }
+
+    @Test
+    fun inviteExistingAccount_with_new_username_fails() =
+        inviteExistingAccountWithNewTest( AccountIdentity.fromUsername( "User" ) )
+
+    @Test
+    fun inviteExistingAccount_with_new_email_fails() =
+        inviteExistingAccountWithNewTest( AccountIdentity.fromEmailAddress( "user@user.com" ) )
+
+    private fun inviteExistingAccountWithNewTest( identity: AccountIdentity ) = runBlockingTest {
+        val service = createService()
+
+        assertFailsWith<IllegalArgumentException> {
+            service.inviteExistingAccount( identity )
         }
     }
 

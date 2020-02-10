@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Uniquely identifies an account with associated identities and the studies it participates in.
+ * Uniquely identifies an account and its associated identity.
  */
 @Serializable
 data class Account(

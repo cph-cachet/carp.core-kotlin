@@ -9,7 +9,7 @@ class InMemoryAccountService : AccountService
     private val accounts: MutableList<Account> = mutableListOf()
 
 
-    override suspend fun createAccount( identity: AccountIdentity ): Account
+    override suspend fun inviteNewAccount( identity: AccountIdentity ): Account
     {
         require( accounts.none { it.identity == identity } )
 
@@ -17,6 +17,11 @@ class InMemoryAccountService : AccountService
         accounts.add( account )
 
         return account
+    }
+
+    override suspend fun inviteExistingAccount( identity: AccountIdentity )
+    {
+        require( accounts.any { it.identity == identity } )
     }
 
     override suspend fun findAccount( identity: AccountIdentity ): Account? =

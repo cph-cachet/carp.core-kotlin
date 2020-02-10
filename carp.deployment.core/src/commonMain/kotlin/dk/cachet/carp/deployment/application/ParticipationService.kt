@@ -12,8 +12,9 @@ interface ParticipationService
 {
     /**
      * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId].
-     * In case no account is associated to the specified identity, a new account is created.
-     * Account details are sent to the person holding the identity, or made retrievable for the person managing the specified [identity].
+     * In case no account is associated to the specified [identity], a new account is created.
+     * An invitation (including account details) is delivered to the person managing the [identity],
+     * or should be handed out manually by the person managing the specified [identity].
      */
     suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity ): Participation
 
