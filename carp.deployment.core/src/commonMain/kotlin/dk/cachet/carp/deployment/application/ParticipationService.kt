@@ -8,7 +8,7 @@ import dk.cachet.carp.deployment.domain.users.Participation
 /**
  * Application service which allows registering participations for study deployments.
  */
-interface UserService
+interface ParticipationService
 {
     /**
      * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId].

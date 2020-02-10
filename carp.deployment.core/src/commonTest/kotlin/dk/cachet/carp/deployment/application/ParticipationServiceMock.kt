@@ -6,20 +6,20 @@ import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.test.Mock
 
 
-class UserServiceMock(
+class ParticipationServiceMock(
     private val addParticipationResult: Participation = Participation( UUID.randomUUID() ),
     private val getParticipationsForStudyDeploymentResult: List<Participation> = listOf()
-) : Mock<UserService>(), UserService
+) : Mock<ParticipationService>(), ParticipationService
 {
     override suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity ): Participation
     {
-        trackSuspendCall( UserService::addParticipation, studyDeploymentId, identity )
+        trackSuspendCall( ParticipationService::addParticipation, studyDeploymentId, identity )
         return addParticipationResult
     }
 
     override suspend fun getParticipationsForStudyDeployment( studyDeploymentId: UUID ): List<Participation>
     {
-        trackSuspendCall( UserService::getParticipationsForStudyDeployment, studyDeploymentId )
+        trackSuspendCall( ParticipationService::getParticipationsForStudyDeployment, studyDeploymentId )
         return getParticipationsForStudyDeploymentResult
     }
 }

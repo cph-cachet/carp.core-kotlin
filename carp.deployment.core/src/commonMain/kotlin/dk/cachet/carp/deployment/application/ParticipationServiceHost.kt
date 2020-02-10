@@ -9,9 +9,10 @@ import dk.cachet.carp.deployment.domain.users.UserRepository
 
 
 /**
- * Implementation of [UserService] which allows registering participations for study deployments.
+ * Implementation of [ParticipationService] which allows registering participations for study deployments.
  */
-class UserServiceHost( private val repository: UserRepository, private val accountRepository: AccountRepository ) : UserService
+class ParticipationServiceHost( private val repository: UserRepository, private val accountRepository: AccountRepository ) :
+    ParticipationService
 {
     /**
      * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId].

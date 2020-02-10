@@ -10,14 +10,14 @@ import kotlin.test.*
 
 
 /**
- * Tests for implementations of [UserService].
+ * Tests for implementations of [ParticipationService].
  */
-abstract class UserServiceTest
+abstract class ParticipationServiceTest
 {
     /**
      * Create a user service and repositories it depends on to be used in the tests.
      */
-    abstract fun createUserService(): Triple<UserService, UserRepository, AccountRepository>
+    abstract fun createUserService(): Triple<ParticipationService, UserRepository, AccountRepository>
 
 
     @Test

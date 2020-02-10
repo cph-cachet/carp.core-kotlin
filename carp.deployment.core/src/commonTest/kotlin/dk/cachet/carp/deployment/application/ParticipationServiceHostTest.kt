@@ -6,15 +6,15 @@ import dk.cachet.carp.deployment.domain.users.UserRepository
 
 
 /**
- * Tests for [UserServiceHost].
+ * Tests for [ParticipationServiceHost].
  */
-class UserServiceHostTest : UserServiceTest()
+class ParticipationServiceHostTest : ParticipationServiceTest()
 {
-    override fun createUserService(): Triple<UserService, UserRepository, AccountRepository>
+    override fun createUserService(): Triple<ParticipationService, UserRepository, AccountRepository>
     {
         val repo = InMemoryUserRepository()
         val accountRepo = InMemoryAccountRepository()
-        val service = UserServiceHost( repo, accountRepo )
+        val service = ParticipationServiceHost( repo, accountRepo )
 
         return Triple( service, repo, accountRepo )
     }
