@@ -1,8 +1,8 @@
 package dk.cachet.carp.deployment.application
 
-import dk.cachet.carp.common.users.AccountRepository
+import dk.cachet.carp.common.users.AccountService
+import dk.cachet.carp.common.users.InMemoryAccountService
 import dk.cachet.carp.deployment.domain.users.InMemoryParticipationRepository
-import dk.cachet.carp.deployment.domain.users.ParticipationRepository
 
 
 /**
@@ -10,12 +10,12 @@ import dk.cachet.carp.deployment.domain.users.ParticipationRepository
  */
 class ParticipationServiceHostTest : ParticipationServiceTest()
 {
-    override fun createService(): Triple<ParticipationService, ParticipationRepository, AccountRepository>
+    override fun createService(): Pair<ParticipationService, AccountService>
     {
         val repo = InMemoryParticipationRepository()
-        val accountRepo = InMemoryAccountRepository()
-        val service = ParticipationServiceHost( repo, accountRepo )
+        val accountService = InMemoryAccountService()
+        val participationService = ParticipationServiceHost( repo, accountService )
 
-        return Triple( service, repo, accountRepo )
+        return Pair( participationService, accountService )
     }
 }

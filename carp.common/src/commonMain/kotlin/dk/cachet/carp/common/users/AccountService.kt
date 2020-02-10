@@ -1,20 +1,18 @@
 package dk.cachet.carp.common.users
 
-import dk.cachet.carp.common.EmailAddress
-
 
 interface AccountService
 {
     /**
-     * Create an account which is identified by a unique [username].
+     * Create an account which is identified by [identity].
+     * Account details should be sent to the person holding the identity, or made retrievable for the person managing the specified [identity].
      *
-     * @throws IllegalArgumentException when an [Account] with the specified [username] already exists.
+     * @throws IllegalArgumentException when an account with a matching [AccountIdentity] already exists.
      */
-    suspend fun createAccount( username: Username ): Account
+    suspend fun createAccount( identity: AccountIdentity ): Account
 
     /**
-     * Create an account which is identified by an [emailAddress] someone has access to.
-     * In case no [Account] is associated with the specified [emailAddress], send out a confirmation email.
+     * Returns the [Account] which has the specified [identity], or null when no account is found.
      */
-    suspend fun createAccount( emailAddress: EmailAddress )
+    suspend fun findAccount( identity: AccountIdentity ): Account?
 }

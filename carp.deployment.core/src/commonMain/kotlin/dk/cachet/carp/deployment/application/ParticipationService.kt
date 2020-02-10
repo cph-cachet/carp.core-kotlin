@@ -13,7 +13,7 @@ interface ParticipationService
     /**
      * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId].
      * In case no account is associated to the specified identity, a new account is created.
-     * Account details should either be sent when deployment starts, or be retrievable for the person managing the specified [identity].
+     * Account details are sent to the person holding the identity, or made retrievable for the person managing the specified [identity].
      */
     suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity ): Participation
 

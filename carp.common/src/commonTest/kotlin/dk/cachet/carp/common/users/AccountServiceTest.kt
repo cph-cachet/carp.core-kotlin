@@ -1,6 +1,5 @@
 package dk.cachet.carp.common.users
 
-import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -10,76 +9,55 @@ import kotlin.test.*
  */
 abstract class AccountServiceTest
 {
-    val notifyUser: NotifyUserServiceMock = NotifyUserServiceMock()
-
-    @BeforeTest
-    fun initializeTest()
-    {
-        // Initialize/reset mocks which are used in the tests.
-        notifyUser.reset()
-    }
-
     /**
-     * Create an account service and repository it depends on to be used in the tests.
-     *
-     * @param notify The user notification service to be used when initializing the account service.
+     * Create an account service to be used in the tests.
      */
-    abstract fun createService( notify: NotifyUserServiceMock = notifyUser ): Pair<AccountService, AccountRepository>
+    abstract fun createService(): AccountService
 
 
     @Test
-    fun createAccount_with_username_succeeds() = runBlockingTest {
-        val ( service, repo ) = createService()
+    fun createAccount_with_username_succeeds() =
+        createAccountTest( AccountIdentity.fromUsername( "User" ) )
 
-        val username = "User"
-        val account = service.createAccount( Username( username ) )
-        val expectedIdentity = AccountIdentity.fromUsername( username )
-        assertEquals( expectedIdentity, account.identity )
+    @Test
+    fun createAccount_with_email_succeeds() =
+        createAccountTest( AccountIdentity.fromEmailAddress( "user@user.com" ) )
 
-        // Verify whether account was added to the repository.
-        val foundAccount = repo.findAccountWithIdentity( expectedIdentity )
-        assertEquals( account, foundAccount )
+    private fun createAccountTest( identity: AccountIdentity ) = runBlockingTest {
+        val service = createService()
+
+        // Create and verify account.
+        val account = service.createAccount( identity )
+        assertEquals( identity, account.identity )
+
+        // Verify whether account can be retrieved.
+        val foundAccount = service.findAccount( identity )
+        assertEquals( foundAccount, account )
     }
 
     @Test
-    fun createAccount_with_existing_username_fails() = runBlockingTest {
-        val ( service, _ ) = createService()
+    fun createAccount_with_existing_username_fails() =
+        createExistingAccountTest( AccountIdentity.fromUsername( "User" ) )
 
-        val username = Username( "User" )
-        service.createAccount( username )
+    @Test
+    fun createAccount_with_existing_email_fails() =
+        createExistingAccountTest( AccountIdentity.fromEmailAddress( "user@user.com" ) )
+
+    private fun createExistingAccountTest( identity: AccountIdentity ) = runBlockingTest {
+        val service = createService()
+        service.createAccount( identity )
 
         assertFailsWith<IllegalArgumentException> {
-            service.createAccount( username )
+            service.createAccount( identity )
         }
     }
 
     @Test
-    fun createAccount_with_new_email_succeeds() = runBlockingTest {
-        val ( service, repo ) = createService()
+    fun findAccount_null_when_not_found() = runBlockingTest {
+        val service = createService()
 
-        val email = EmailAddress( "user@user.com" )
-        val expectedIdentity = EmailAccountIdentity( email )
-        service.createAccount( email )
-
-        // Verify whether account was added to the repository.
-        val foundAccount = repo.findAccountWithIdentity( expectedIdentity )
-        assertNotNull( foundAccount )
-
-        // Verify whether user was notified of account creation.
-        assertTrue( notifyUser.wasCalled( NotifyUserService::sendAccountVerificationEmail, foundAccount.id, email ) )
-    }
-
-    @Test
-    fun createAccount_with_existing_email_does_not_notify() = runBlockingTest {
-        val ( service, _ ) = createService()
-
-        // Create user, which will get notified, so reset notify mock.
-        val emailAddress = EmailAddress( "user@user.com" )
-        service.createAccount( emailAddress )
-        notifyUser.reset()
-
-        // Create user which already exists, so no notification is sent.
-        service.createAccount( emailAddress )
-        assertTrue( notifyUser.wasNotCalled( NotifyUserService::sendAccountVerificationEmail ) )
+        val unknownIdentity = AccountIdentity.fromUsername( "Unknown" )
+        val foundAccount = service.findAccount( unknownIdentity )
+        assertNull( foundAccount )
     }
 }
