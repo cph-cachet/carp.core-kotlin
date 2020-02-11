@@ -49,9 +49,4 @@ sealed class DeploymentServiceRequest
     data class AddParticipation( val studyDeploymentId: UUID, val identity: AccountIdentity, val invitation: StudyInvitation ) :
         DeploymentServiceRequest(),
         ServiceInvoker<DeploymentService, Participation> by createServiceInvoker( DeploymentService::addParticipation, studyDeploymentId, identity, invitation )
-
-    @Serializable
-    data class GetParticipationsForStudyDeployment( val studyId: UUID ) :
-        DeploymentServiceRequest(),
-        ServiceInvoker<DeploymentService, List<Participation>> by createServiceInvoker( DeploymentService::getParticipationsForStudyDeployment, studyId )
 }

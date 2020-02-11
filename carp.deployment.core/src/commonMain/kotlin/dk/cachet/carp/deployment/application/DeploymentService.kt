@@ -61,9 +61,4 @@ interface DeploymentService
      * or should be handed out manually to the relevant participant by the person managing the specified [identity].
      */
     suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity, invitation: StudyInvitation ): Participation
-
-    /**
-     * Get all participations included in a study deployment for the given [studyDeploymentId].
-     */
-    suspend fun getParticipationsForStudyDeployment( studyDeploymentId: UUID ): List<Participation>
 }

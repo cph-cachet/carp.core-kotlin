@@ -131,12 +131,4 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
 
         return participation
     }
-
-    /**
-     * Get all participations included in a study deployment for the given [studyDeploymentId].
-     */
-    override suspend fun getParticipationsForStudyDeployment( studyDeploymentId: UUID ): List<Participation>
-    {
-        return repository.getParticipationsForStudyDeployment( studyDeploymentId )
-    }
 }

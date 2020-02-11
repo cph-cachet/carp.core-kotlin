@@ -59,17 +59,4 @@ abstract class DeploymentServiceTest
         val p2: Participation = participationService.addParticipation( studyDeploymentId, emailIdentity, invitation )
         assertTrue( p1.id == p2.id )
     }
-
-    @Test
-    fun getParticipationssForStudyDeployment_succeeds() = runBlockingTest {
-        val ( service, _ ) = createService()
-        val studyDeploymentId = UUID.randomUUID()
-        val accountIdentity = AccountIdentity.fromUsername( "test" )
-        val invitation = StudyInvitation.empty()
-        val participation = service.addParticipation( studyDeploymentId, accountIdentity, invitation )
-
-        val participations = service.getParticipationsForStudyDeployment( studyDeploymentId )
-
-        assertEquals( participation, participations.single() )
-    }
 }
