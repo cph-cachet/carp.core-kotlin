@@ -2,9 +2,11 @@ package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.ServiceInvoker
+import dk.cachet.carp.common.users.UsernameAccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceMock
 import dk.cachet.carp.deployment.domain.createEmptyProtocol
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
@@ -21,7 +23,9 @@ class DeploymentServiceRequestsTest
             DeploymentServiceRequest.CreateStudyDeployment( createEmptyProtocol().getSnapshot() ),
             DeploymentServiceRequest.GetStudyDeploymentStatus( UUID.randomUUID() ),
             DeploymentServiceRequest.RegisterDevice( UUID.randomUUID(), "Test role", DefaultDeviceRegistration( "Device ID" ) ),
-            DeploymentServiceRequest.GetDeviceDeploymentFor( UUID.randomUUID(), "Test role" )
+            DeploymentServiceRequest.GetDeviceDeploymentFor( UUID.randomUUID(), "Test role" ),
+            DeploymentServiceRequest.AddParticipation( UUID.randomUUID(), UsernameAccountIdentity( "Test" ), StudyInvitation.empty() ),
+            DeploymentServiceRequest.GetParticipationsForStudyDeployment( UUID.randomUUID() )
         )
     }
 

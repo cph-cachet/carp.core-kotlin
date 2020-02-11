@@ -10,14 +10,14 @@ import kotlin.test.*
 
 
 /**
- * Tests for implementations of [ParticipationService].
+ * Tests for implementations of [DeploymentService].
  */
-abstract class ParticipationServiceTest
+abstract class DeploymentServiceTest
 {
     /**
-     * Create a participation service and account service it depends on to be used in the tests.
+     * Create a deployment service and account service it depends on to be used in the tests.
      */
-    abstract fun createService(): Pair<ParticipationService, AccountService>
+    abstract fun createService(): Pair<DeploymentService, AccountService>
 
 
     @Test
@@ -61,7 +61,7 @@ abstract class ParticipationServiceTest
     }
 
     @Test
-    fun getParticipantsForStudy_succeeds() = runBlockingTest {
+    fun getParticipationssForStudyDeployment_succeeds() = runBlockingTest {
         val ( service, _ ) = createService()
         val studyDeploymentId = UUID.randomUUID()
         val accountIdentity = AccountIdentity.fromUsername( "test" )

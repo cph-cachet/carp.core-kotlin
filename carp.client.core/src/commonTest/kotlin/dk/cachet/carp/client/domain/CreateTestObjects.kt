@@ -2,8 +2,9 @@ package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
-import dk.cachet.carp.deployment.domain.InMemoryDeploymentRepository
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
+import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
@@ -41,7 +42,7 @@ fun createDependentSmartphoneStudy(): StudyProtocol
  */
 suspend fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentService, StudyDeploymentStatus>
 {
-    val deploymentService = DeploymentServiceHost( InMemoryDeploymentRepository() )
+    val deploymentService = DeploymentServiceHost( InMemoryDeploymentRepository(), InMemoryAccountService() )
     val status = deploymentService.createStudyDeployment( protocol.getSnapshot() )
     return Pair( deploymentService, status )
 }

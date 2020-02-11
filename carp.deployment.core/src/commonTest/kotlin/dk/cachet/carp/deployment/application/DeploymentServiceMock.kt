@@ -1,8 +1,11 @@
 package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -13,7 +16,9 @@ class DeploymentServiceMock(
     private val createStudyDeploymentResult: StudyDeploymentStatus = emptyStatus,
     private val getStudyDeploymentStatusResult: StudyDeploymentStatus = emptyStatus,
     private val registerDeviceResult: StudyDeploymentStatus = emptyStatus,
-    private val getDeviceDeploymentForResult: MasterDeviceDeployment = emptyMasterDeviceDeployment
+    private val getDeviceDeploymentForResult: MasterDeviceDeployment = emptyMasterDeviceDeployment,
+    private val addParticipationResult: Participation = Participation( UUID.randomUUID() ),
+    private val getParticipationsForStudyDeploymentResult: List<Participation> = listOf()
 ) : Mock<DeploymentService>(), DeploymentService
 {
     companion object
@@ -49,5 +54,17 @@ class DeploymentServiceMock(
     {
         trackSuspendCall( DeploymentService::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName )
         return getDeviceDeploymentForResult
+    }
+
+    override suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity, invitation: StudyInvitation ): Participation
+    {
+        trackSuspendCall( DeploymentService::addParticipation, studyDeploymentId, identity, invitation )
+        return addParticipationResult
+    }
+
+    override suspend fun getParticipationsForStudyDeployment( studyDeploymentId: UUID ): List<Participation>
+    {
+        trackSuspendCall( DeploymentService::getParticipationsForStudyDeployment, studyDeploymentId )
+        return getParticipationsForStudyDeploymentResult
     }
 }

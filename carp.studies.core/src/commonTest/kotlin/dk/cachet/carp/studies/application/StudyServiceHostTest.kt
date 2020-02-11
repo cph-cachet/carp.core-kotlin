@@ -1,6 +1,6 @@
 package dk.cachet.carp.studies.application
 
-import dk.cachet.carp.studies.domain.InMemoryStudyRepository
+import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
 import dk.cachet.carp.studies.domain.StudyRepository
 
 
