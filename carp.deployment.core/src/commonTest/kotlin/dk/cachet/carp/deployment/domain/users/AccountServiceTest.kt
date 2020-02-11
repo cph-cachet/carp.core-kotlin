@@ -1,5 +1,6 @@
-package dk.cachet.carp.common.users
+package dk.cachet.carp.deployment.domain.users
 
+import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 

@@ -22,7 +22,7 @@ class InMemoryStudyRepository : StudyRepository
 
 
 /**
- * Tests whether the [InMemoryUserRepository] stub is implemented correctly.
+ * Tests whether the [InMemoryStudyRepository] stub is implemented correctly.
  */
 class InMemoryStudyRepositoryTest : StudyRepositoryTest
 {

@@ -1,4 +1,7 @@
-package dk.cachet.carp.common.users
+package dk.cachet.carp.deployment.domain.users
+
+import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.common.users.AccountIdentity
 
 
 /**
@@ -26,4 +29,12 @@ class InMemoryAccountService : AccountService
 
     override suspend fun findAccount( identity: AccountIdentity ): Account? =
         accounts.firstOrNull { it.identity == identity }
+}
+
+/**
+ * Tests whether the [InMemoryAccountService] stub is implemented correctly.
+ */
+class InMemoryAccountServiceTest : AccountServiceTest()
+{
+    override fun createService(): AccountService = InMemoryAccountService()
 }

@@ -2,7 +2,7 @@ package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
-import dk.cachet.carp.common.users.AccountService
+import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.ParticipationRepository
 

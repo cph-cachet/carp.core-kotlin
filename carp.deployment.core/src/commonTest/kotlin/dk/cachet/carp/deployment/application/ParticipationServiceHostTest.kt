@@ -1,7 +1,7 @@
 package dk.cachet.carp.deployment.application
 
-import dk.cachet.carp.common.users.AccountService
-import dk.cachet.carp.common.users.InMemoryAccountService
+import dk.cachet.carp.deployment.domain.users.AccountService
+import dk.cachet.carp.deployment.domain.users.InMemoryAccountService
 import dk.cachet.carp.deployment.domain.users.InMemoryParticipationRepository
 
 
