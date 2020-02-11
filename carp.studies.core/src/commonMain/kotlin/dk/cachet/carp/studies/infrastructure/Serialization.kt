@@ -4,7 +4,6 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.infrastructure.PROTOCOLS_SERIAL_MODULE
-import dk.cachet.carp.studies.domain.StudyDescription
 import dk.cachet.carp.studies.domain.StudyOwner
 import dk.cachet.carp.studies.domain.StudySnapshot
 import dk.cachet.carp.studies.domain.StudyStatus
@@ -42,18 +41,6 @@ fun StudySnapshot.Companion.fromJson( json: String ): StudySnapshot =
  */
 fun StudySnapshot.toJson(): String =
     JSON.stringify( StudySnapshot.serializer(), this )
-
-/**
- * Create a [StudyDescription] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
- */
-fun StudyDescription.Companion.fromJson( json: String ): StudyDescription =
-    JSON.parse( serializer(), json )
-
-/**
- * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
- */
-fun StudyDescription.toJson(): String =
-    JSON.stringify( StudyDescription.serializer(), this )
 
 /**
  * Create a [StudyOwner] from JSON, serialized using the globally set infrastructure serializer ([JSON]).

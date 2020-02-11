@@ -9,6 +9,7 @@ import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.Username
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.PROTOCOLS_SERIAL_MODULE
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.EmptyModule
@@ -68,6 +69,18 @@ fun Participation.Companion.fromJson( json: String ): Participation =
  */
 fun Participation.toJson(): String =
     JSON.stringify( Participation.serializer(), this )
+
+/**
+ * Create a [StudyInvitation] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyInvitation.Companion.fromJson( json: String ): StudyInvitation =
+    JSON.parse( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyInvitation.toJson(): String =
+    JSON.stringify( StudyInvitation.serializer(), this )
 
 /**
  * Create a [StudyDeploymentSnapshot] from JSON, serialized using the globally set infrastructure serializer ([JSON]).

@@ -5,6 +5,7 @@ import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.common.users.UsernameAccountIdentity
 import dk.cachet.carp.deployment.application.ParticipationService
 import dk.cachet.carp.deployment.application.ParticipationServiceMock
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -17,7 +18,7 @@ class ParticipationServiceRequestsTest
     companion object
     {
         val requests: List<ParticipationServiceRequest> = listOf(
-            ParticipationServiceRequest.AddParticipation( UUID.randomUUID(), UsernameAccountIdentity( "Test" ) ),
+            ParticipationServiceRequest.AddParticipation( UUID.randomUUID(), UsernameAccountIdentity( "Test" ), StudyInvitation.empty() ),
             ParticipationServiceRequest.GetParticipationsForStudyDeployment( UUID.randomUUID() )
         )
     }

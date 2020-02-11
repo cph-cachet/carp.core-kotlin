@@ -1,6 +1,7 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 
 
 /**
@@ -16,9 +17,9 @@ class Study(
      */
     val name: String,
     /**
-     * A description of the study, visible to all participants.
+     * A description of the study, shared with participants once they are invited to the study.
      */
-    val description: StudyDescription = StudyDescription.empty(),
+    val invitation: StudyInvitation = StudyInvitation.empty(),
     val id: UUID = UUID.randomUUID()
 )
 {
@@ -26,7 +27,7 @@ class Study(
     {
         fun fromSnapshot( snapshot: StudySnapshot ): Study
         {
-            val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.description, snapshot.studyId )
+            val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.invitation, snapshot.studyId )
 
             // Add participants.
             snapshot.participantIds.forEach { study.includeParticipant( it ) }

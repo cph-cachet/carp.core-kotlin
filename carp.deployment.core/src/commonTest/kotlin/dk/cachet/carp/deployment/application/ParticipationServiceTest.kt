@@ -4,6 +4,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -23,9 +24,10 @@ abstract class ParticipationServiceTest
     fun addParticipation_has_matching_studyDeploymentId() = runBlockingTest {
         val ( participationService, _ ) = createService()
 
-        val accountIdentity = AccountIdentity.fromUsername( "test" )
         val studyDeploymentId = UUID.randomUUID()
-        val participation = participationService.addParticipation( studyDeploymentId, accountIdentity )
+        val accountIdentity = AccountIdentity.fromUsername( "test" )
+        val invitation = StudyInvitation.empty()
+        val participation = participationService.addParticipation( studyDeploymentId, accountIdentity, invitation )
 
         assertEquals( studyDeploymentId, participation.studyDeploymentId )
     }
@@ -36,7 +38,8 @@ abstract class ParticipationServiceTest
 
         val studyDeploymentId = UUID.randomUUID()
         val emailIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
-        participationService.addParticipation( studyDeploymentId, emailIdentity )
+        val invitation = StudyInvitation.empty()
+        participationService.addParticipation( studyDeploymentId, emailIdentity, invitation )
 
         // Verify whether account was added.
         val foundAccount = accountService.findAccount( emailIdentity )
@@ -49,19 +52,21 @@ abstract class ParticipationServiceTest
         val ( participationService, _ ) = createService()
         val studyDeploymentId = UUID.randomUUID()
         val emailIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
+        val invitation = StudyInvitation.empty()
 
         // Adding the same identity to a deployment returns the same participation.
-        val p1: Participation = participationService.addParticipation( studyDeploymentId, emailIdentity )
-        val p2: Participation = participationService.addParticipation( studyDeploymentId, emailIdentity )
+        val p1: Participation = participationService.addParticipation( studyDeploymentId, emailIdentity, invitation )
+        val p2: Participation = participationService.addParticipation( studyDeploymentId, emailIdentity, invitation )
         assertTrue( p1.id == p2.id )
     }
 
     @Test
     fun getParticipantsForStudy_succeeds() = runBlockingTest {
         val ( service, _ ) = createService()
-        val accountIdentity = AccountIdentity.fromUsername( "test" )
         val studyDeploymentId = UUID.randomUUID()
-        val participation = service.addParticipation( studyDeploymentId, accountIdentity )
+        val accountIdentity = AccountIdentity.fromUsername( "test" )
+        val invitation = StudyInvitation.empty()
+        val participation = service.addParticipation( studyDeploymentId, accountIdentity, invitation )
 
         val participations = service.getParticipationsForStudyDeployment( studyDeploymentId )
 

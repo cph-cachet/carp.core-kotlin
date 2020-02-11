@@ -5,6 +5,7 @@ import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.ParticipationRepository
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 
 
 /**
@@ -16,10 +17,10 @@ class ParticipationServiceHost( private val repository: ParticipationRepository,
     /**
      * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId].
      * In case no account is associated to the specified [identity], a new account is created.
-     * An invitation (including account details) is delivered to the person managing the [identity],
-     * or should be handed out manually by the person managing the specified [identity].
+     * An [invitation] (and account details) is delivered to the person managing the [identity],
+     * or should be handed out manually to the relevant participant by the person managing the specified [identity].
      */
-    override suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity ): Participation
+    override suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity, invitation: StudyInvitation ): Participation
     {
         var account = accountService.findAccount( identity )
         val isNewAccount = account == null
@@ -34,11 +35,11 @@ class ParticipationServiceHost( private val repository: ParticipationRepository,
         // Ensure an account exists for the given identity and an invitation has been sent out.
         if ( isNewAccount )
         {
-            account = accountService.inviteNewAccount( identity )
+            account = accountService.inviteNewAccount( identity, invitation, participation )
         }
         else if ( isNewParticipation )
         {
-            accountService.inviteExistingAccount( identity )
+            accountService.inviteExistingAccount( identity, invitation, participation )
         }
 
         // Add participation to repository.

@@ -1,6 +1,7 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import kotlin.test.*
 
 
@@ -17,10 +18,10 @@ interface StudyRepositoryTest
     {
         val repo = createRepository()
         val id = UUID.randomUUID()
-        val study1 = Study( StudyOwner(), "Study 1", StudyDescription.empty(), id )
+        val study1 = Study( StudyOwner(), "Study 1", StudyInvitation.empty(), id )
         repo.add( study1 )
 
-        val studyWithSameId = Study( StudyOwner(), "Study 2", StudyDescription.empty(), id )
+        val studyWithSameId = Study( StudyOwner(), "Study 2", StudyInvitation.empty(), id )
         assertFailsWith<IllegalArgumentException>
         {
             repo.add( studyWithSameId )

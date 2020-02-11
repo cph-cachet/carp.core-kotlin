@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.domain.users
 
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
@@ -28,7 +29,8 @@ abstract class AccountServiceTest
         val service = createService()
 
         // Create and verify account.
-        val account = service.inviteNewAccount( identity )
+        val participation = Participation( UUID.randomUUID() )
+        val account = service.inviteNewAccount( identity, StudyInvitation.empty(), participation )
         assertEquals( identity, account.identity )
 
         // Verify whether account can be retrieved.
@@ -46,10 +48,12 @@ abstract class AccountServiceTest
 
     private fun inviteNewAccountWithExistingTest( identity: AccountIdentity ) = runBlockingTest {
         val service = createService()
-        service.inviteNewAccount( identity )
+        val participation = Participation( UUID.randomUUID() )
+        val invitation = StudyInvitation.empty()
+        service.inviteNewAccount( identity, invitation, participation )
 
         assertFailsWith<IllegalArgumentException> {
-            service.inviteNewAccount( identity )
+            service.inviteNewAccount( identity, invitation, participation )
         }
     }
 
@@ -63,9 +67,11 @@ abstract class AccountServiceTest
 
     private fun inviteExistingAccountWithNewTest( identity: AccountIdentity ) = runBlockingTest {
         val service = createService()
+        val participation = Participation( UUID.randomUUID() )
+        val invitation = StudyInvitation.empty()
 
         assertFailsWith<IllegalArgumentException> {
-            service.inviteExistingAccount( identity )
+            service.inviteExistingAccount( identity, invitation, participation )
         }
     }
 

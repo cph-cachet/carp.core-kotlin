@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.studies.domain.StudyDescription
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.studies.domain.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.test.runBlockingTest
@@ -32,7 +32,7 @@ interface StudyServiceTest
         assertNotNull( foundStudy )
         assertEquals( status.studyId, foundStudy.id )
         assertEquals( name, foundStudy.name )
-        assertEquals( name, foundStudy.description.name ) // Default study description when not specified.
+        assertEquals( name, foundStudy.invitation.name ) // Default study description when not specified.
     }
 
     @Test
@@ -41,13 +41,13 @@ interface StudyServiceTest
 
         val owner = StudyOwner()
         val name = "Test"
-        val description = StudyDescription( "Lorem ipsum" )
-        val status = service.createStudy( owner, name, description )
+        val invitation = StudyInvitation( "Lorem ipsum" )
+        val status = service.createStudy( owner, name, invitation )
 
         val foundStudy = repo.getById( status.studyId )!!
         assertEquals( status.studyId, foundStudy.id )
         assertEquals( name, foundStudy.name )
-        assertEquals( description, foundStudy.description )
+        assertEquals( invitation, foundStudy.invitation )
     }
 
     @Test
