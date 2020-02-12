@@ -71,12 +71,13 @@ class CurlyBracesOnSeparateLine : Rule()
         {
             // 'return' is the topmost expected parent.
             is KtReturnExpression -> parent = precedingKeyword
-            // 'if' might still be preceded by 'return'.
+            // 'if' might still be preceded by 'return' or 'else'.
             is KtIfExpression ->
             {
                 val beforeIf = getPrecedingKeyword( precedingKeyword )
-                parent = if ( beforeIf is KtReturnExpression ) beforeIf
-                else precedingKeyword
+                parent =
+                    if ( beforeIf is KtReturnExpression || beforeIf is KtIfExpression ) beforeIf
+                    else precedingKeyword
             }
         }
 

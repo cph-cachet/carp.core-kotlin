@@ -1,8 +1,7 @@
 package dk.cachet.carp.common
 
+import dk.cachet.carp.common.serialization.createDefaultJSON
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import kotlin.test.*
 
 
@@ -16,7 +15,7 @@ class UUIDTest
     {
         val id = UUID( "00000000-0000-0000-0000-000000000000" )
 
-        val json = Json( JsonConfiguration.Stable )
+        val json = createDefaultJSON()
         val serialized = json.stringify( UUID.serializer(), id )
         val parsed = json.parse( UUID.serializer(), serialized )
 
@@ -29,7 +28,7 @@ class UUIDTest
         @Serializable
         data class Id( val id: UUID? )
 
-        val json = Json( JsonConfiguration.Stable )
+        val json = createDefaultJSON()
 
         val id = Id( UUID( "00000000-0000-0000-0000-000000000000" ) )
         val idSerialized = json.stringify( Id.serializer(), id )
@@ -48,7 +47,7 @@ class UUIDTest
     {
         val id = UUID( "00000000-0000-0000-0000-000000000000" )
 
-        val json = Json( JsonConfiguration.Stable )
+        val json = createDefaultJSON()
         val serialized = json.stringify( UUID.serializer(), id )
 
         assertEquals( "\"${id.stringRepresentation}\"", serialized )

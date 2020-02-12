@@ -9,7 +9,7 @@ buildscript {
         // Version used for all submodule artifacts.
         // Snapshot publishing changes (or adds) the suffix after '-' with 'SNAPSHOT' prior to publishing.
         // The 'publishSigned' task publishes to SonaType's staging repo and 'publishSnapshot' instantly uploads to the snapshots repo.
-        globalVersion = '1.0.0-alpha.10'
+        globalVersion = '1.0.0-alpha.11'
 
         versions = [
             // Kotlin multiplatform versions.
@@ -277,7 +277,7 @@ configure( subprojects - detektModule ) {
     task publishSnapshot {
         doFirst {
             // Since project dependencies trigger publications of other projects, immediately modify versions of all subprojects.
-            (subprojects - detektModule).each { project ->
+            (rootProject.subprojects - detektModule).each { project ->
                 def versionSplit = project.version.split('-')
                 def snapshotVersion = "${versionSplit[0]}-SNAPSHOT"
                 project.version = snapshotVersion

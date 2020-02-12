@@ -1,6 +1,7 @@
-package dk.cachet.carp.studies.domain.users
+package dk.cachet.carp.common.users
 
 import dk.cachet.carp.common.EmailAddress
+import dk.cachet.carp.common.serialization.createDefaultJSON
 import kotlin.test.*
 
 
@@ -9,6 +10,18 @@ import kotlin.test.*
  */
 class AccountTest
 {
+    @Test
+    fun can_serialize_and_deserialize_account_using_JSON()
+    {
+        var account = Account.withUsernameIdentity( "Test" )
+
+        val json = createDefaultJSON()
+        val serialized = json.stringify( Account.serializer(), account )
+        val parsed = json.parse( Account.serializer(), serialized )
+
+        assertEquals( account, parsed )
+    }
+
     @Test
     fun create_account_withEmailIdentity_succeeds()
     {

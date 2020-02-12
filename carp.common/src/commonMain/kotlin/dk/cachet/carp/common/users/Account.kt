@@ -1,4 +1,4 @@
-package dk.cachet.carp.studies.domain.users
+package dk.cachet.carp.common.users
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Uniquely identifies an account with associated identities and the studies it participates in.
+ * Uniquely identifies an account and its associated identity.
  */
 @Serializable
 data class Account(
@@ -14,10 +14,6 @@ data class Account(
      * Identity associated with this account.
      */
     val identity: AccountIdentity,
-    /**
-     * The set of studies this account participates in as a participant.
-     */
-    val studyParticipations: Set<Participant> = setOf(),
     val id: UUID = UUID.randomUUID()
 )
 {

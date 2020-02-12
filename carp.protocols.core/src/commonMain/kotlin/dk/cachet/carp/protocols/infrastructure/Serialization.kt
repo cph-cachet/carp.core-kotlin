@@ -1,6 +1,8 @@
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
+import dk.cachet.carp.protocols.domain.ProtocolOwner
+import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.AltBeacon
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
@@ -71,6 +73,30 @@ fun createProtocolsSerializer( module: SerialModule = EmptyModule ): Json =
  */
 var JSON: Json = createProtocolsSerializer()
 
+
+/**
+ * Create a [ProtocolOwner] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun ProtocolOwner.Companion.fromJson( json: String ): ProtocolOwner =
+    JSON.parse( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun ProtocolOwner.toJson(): String =
+    JSON.stringify( ProtocolOwner.serializer(), this )
+
+/**
+ * Create a [ProtocolVersion] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun ProtocolVersion.Companion.fromJson( json: String ): ProtocolVersion =
+    JSON.parse( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun ProtocolVersion.toJson(): String =
+    JSON.stringify( ProtocolVersion.serializer(), this )
 
 /**
  * Create a [StudyProtocolSnapshot] from JSON, serialized using the globally set infrastructure serializer ([JSON]).

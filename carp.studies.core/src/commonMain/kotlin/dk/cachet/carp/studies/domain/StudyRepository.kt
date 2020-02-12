@@ -13,7 +13,7 @@ interface StudyRepository
     fun add( study: Study )
 
     /**
-     * Returns the [Study] which has the specified [studyId], or null when no account is found.
+     * Returns the [Study] which has the specified [studyId], or null when no study is found.
      */
     fun getById( studyId: UUID ): Study?
 }

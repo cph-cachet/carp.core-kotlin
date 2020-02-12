@@ -89,6 +89,23 @@ class CurlyBracesOnSeparateLineIfTest
     }
 
     @Test
+    fun curly_braces_of_else_if_should_be_on_separate_lines()
+    {
+        val elseIf =
+            """
+            fun answer(): Int
+            {
+                if ( false ) 0
+                else if ( true )
+                {
+                    return 42
+                }
+            }
+            """
+        assertEquals( 0, codeSmells( elseIf ) )
+    }
+
+    @Test
     fun if_may_be_defined_on_one_line()
     {
         val oneLine =

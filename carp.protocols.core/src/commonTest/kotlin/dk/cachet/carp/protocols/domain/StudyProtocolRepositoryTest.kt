@@ -12,13 +12,13 @@ interface StudyProtocolRepositoryTest
     /**
      * Called for each test to create a repository to run tests on.
      */
-    fun createStudyProtocolRepository(): StudyProtocolRepository
+    fun createRepository(): StudyProtocolRepository
 
 
     @Test
     fun adding_study_protocol_and_retrieving_it_succeeds()
     {
-        val repo = createStudyProtocolRepository()
+        val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
 
@@ -30,7 +30,7 @@ interface StudyProtocolRepositoryTest
     @Test
     fun getBy_for_a_specific_protocol_version_succeeds()
     {
-        val repo = createStudyProtocolRepository()
+        val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol1 = StudyProtocol( owner, "Study" )
         repo.add( protocol1, "Initial" )
@@ -50,7 +50,7 @@ interface StudyProtocolRepositoryTest
     @Test
     fun cant_add_study_protocol_which_already_exists()
     {
-        val repo = createStudyProtocolRepository()
+        val repo = createRepository()
         val protocol = StudyProtocol( ProtocolOwner(), "Study" )
         repo.add( protocol, "Initial" )
 
@@ -63,7 +63,7 @@ interface StudyProtocolRepositoryTest
     @Test
     fun cant_getBy_owner_which_does_not_exist()
     {
-        val repo = createStudyProtocolRepository()
+        val repo = createRepository()
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -74,7 +74,7 @@ interface StudyProtocolRepositoryTest
     @Test
     fun cant_getBy_study_which_does_not_exist()
     {
-        val repo = createStudyProtocolRepository()
+        val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
         repo.add( protocol, "Initial" )
@@ -88,7 +88,7 @@ interface StudyProtocolRepositoryTest
     @Test
     fun cant_getBy_version_which_does_not_exist()
     {
-        val repo = createStudyProtocolRepository()
+        val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
         repo.add( protocol, "Initial" )
@@ -103,7 +103,7 @@ interface StudyProtocolRepositoryTest
     @Test
     fun update_study_protocol_succeeds()
     {
-        val repo = createStudyProtocolRepository()
+        val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
         repo.add( protocol, "Initial" )
@@ -117,7 +117,7 @@ interface StudyProtocolRepositoryTest
     @Test
     fun cant_update_study_protocol_which_does_not_yet_exist()
     {
-        val repo = createStudyProtocolRepository()
+        val repo = createRepository()
 
         val protocol = StudyProtocol( ProtocolOwner(), "Study" )
         assertFailsWith<IllegalArgumentException>
@@ -129,7 +129,7 @@ interface StudyProtocolRepositoryTest
     @Test
     fun getAllFor_owner_succeeds()
     {
-        val repo = createStudyProtocolRepository()
+        val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol1 = StudyProtocol( owner, "Study 1" )
         val protocol2 = StudyProtocol( owner, "Study 2" )
@@ -147,7 +147,7 @@ interface StudyProtocolRepositoryTest
     @Test
     fun cant_getAllFor_owner_which_does_not_exist()
     {
-        val repo = createStudyProtocolRepository()
+        val repo = createRepository()
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -158,7 +158,7 @@ interface StudyProtocolRepositoryTest
     @Test
     fun getVersionHistoryFor_succeeds()
     {
-        val repo = createStudyProtocolRepository()
+        val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
         repo.add( protocol, "Initial" )

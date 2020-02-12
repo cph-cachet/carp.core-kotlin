@@ -1,8 +1,8 @@
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.studies.domain.Study
-import dk.cachet.carp.studies.domain.StudyDescription
 import dk.cachet.carp.studies.domain.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudyStatus
@@ -17,12 +17,14 @@ class StudyServiceHost( private val repository: StudyRepository ) : StudyService
      * Create a new study for the specified [owner].
      *
      * @param name A descriptive name for the study, assigned by, and only visible to, the [owner].
-     * @param description A description of the study, visible to all participants.
+     * @param invitation
+     *  An optional description of the study, shared with participants once they are invited.
+     *  In case no description is specified, [name] is used as the name in [invitation].
      */
-    override suspend fun createStudy( owner: StudyOwner, name: String, description: StudyDescription? ): StudyStatus
+    override suspend fun createStudy( owner: StudyOwner, name: String, invitation: StudyInvitation? ): StudyStatus
     {
-        val ensuredDescription = description ?: StudyDescription( name )
-        val study = Study( owner, name, ensuredDescription )
+        val ensuredInvitation = invitation ?: StudyInvitation( name )
+        val study = Study( owner, name, ensuredInvitation )
 
         repository.add( study )
 

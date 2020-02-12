@@ -1,9 +1,15 @@
+@file:Suppress( "TooManyFunctions" )
+
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.common.users.Username
+import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.PROTOCOLS_SERIAL_MODULE
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.EmptyModule
@@ -27,6 +33,54 @@ fun createDeploymentSerializer( module: SerialModule = EmptyModule ): Json
  * [createDeploymentSerializer] can be used to this end, by including all extending types in the [SerialModule] as parameter.
  */
 var JSON: Json = createDeploymentSerializer()
+
+/**
+ * Create a [Account] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun Account.Companion.fromJson( json: String ): Account =
+    JSON.parse( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun Account.toJson(): String =
+    JSON.stringify( Account.serializer(), this )
+
+/**
+ * Create a [Username] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun Username.Companion.fromJson( json: String ): Username =
+    JSON.parse( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun Username.toJson(): String =
+    JSON.stringify( Username.serializer(), this )
+
+/**
+ * Create a [Participation] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun Participation.Companion.fromJson( json: String ): Participation =
+    JSON.parse( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun Participation.toJson(): String =
+    JSON.stringify( Participation.serializer(), this )
+
+/**
+ * Create a [StudyInvitation] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyInvitation.Companion.fromJson( json: String ): StudyInvitation =
+    JSON.parse( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun StudyInvitation.toJson(): String =
+    JSON.stringify( StudyInvitation.serializer(), this )
 
 /**
  * Create a [StudyDeploymentSnapshot] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
