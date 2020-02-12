@@ -1,6 +1,7 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import kotlin.test.*
 
 
@@ -13,7 +14,7 @@ class StudyTest
     {
         val owner = StudyOwner()
         val id = UUID.randomUUID()
-        return Study( owner, "Test study", StudyDescription.empty(), id )
+        return Study( owner, "Test study", StudyInvitation.empty(), id )
     }
 
     @Test
@@ -43,10 +44,10 @@ class StudyTest
     fun creating_study_fromSnapshot_obtained_by_getSnapshot_is_the_same()
     {
         val owner = StudyOwner()
-        val description = StudyDescription( "Test" )
+        val invitation = StudyInvitation( "Test" )
         val studyId = UUID.randomUUID()
         val participantId = UUID.randomUUID()
-        val study = Study( owner, "Test study", description, studyId )
+        val study = Study( owner, "Test study", invitation, studyId )
         study.includeParticipant( participantId )
 
         val snapshot = study.getSnapshot()
@@ -55,7 +56,7 @@ class StudyTest
         assertEquals( studyId, fromSnapshot.id )
         assertEquals( owner, fromSnapshot.owner )
         assertEquals( "Test study", fromSnapshot.name )
-        assertEquals( description, fromSnapshot.description )
+        assertEquals( invitation, fromSnapshot.invitation )
         assertEquals( participantId, fromSnapshot.participantIds.single() )
     }
 }

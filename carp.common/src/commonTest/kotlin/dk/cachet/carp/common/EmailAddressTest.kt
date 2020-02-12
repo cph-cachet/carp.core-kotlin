@@ -1,7 +1,6 @@
 package dk.cachet.carp.common
 
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
+import dk.cachet.carp.common.serialization.createDefaultJSON
 import kotlin.test.*
 
 
@@ -15,7 +14,7 @@ class EmailAddressTest
     {
         val email = EmailAddress( "test@test.com" )
 
-        val json = Json( JsonConfiguration.Stable )
+        val json = createDefaultJSON()
         val serialized: String = json.stringify( EmailAddress.serializer(), email )
         val parsed: EmailAddress = json.parse( EmailAddress.serializer(), serialized )
 

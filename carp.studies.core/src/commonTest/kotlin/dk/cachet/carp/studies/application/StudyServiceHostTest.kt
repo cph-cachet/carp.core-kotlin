@@ -1,6 +1,6 @@
 package dk.cachet.carp.studies.application
 
-import dk.cachet.carp.studies.domain.InMemoryStudyRepository
+import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
 import dk.cachet.carp.studies.domain.StudyRepository
 
 
@@ -9,7 +9,7 @@ import dk.cachet.carp.studies.domain.StudyRepository
  */
 class StudyServiceHostTest : StudyServiceTest
 {
-    override fun createStudyService(): Pair<StudyService, StudyRepository>
+    override fun createService(): Pair<StudyService, StudyRepository>
     {
         val repo = InMemoryStudyRepository()
         val service = StudyServiceHost( repo )

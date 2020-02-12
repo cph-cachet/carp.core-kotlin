@@ -3,9 +3,12 @@ package dk.cachet.carp.deployment.infrastructure
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.createServiceInvoker
 import dk.cachet.carp.common.ddd.ServiceInvoker
+import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
@@ -13,7 +16,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Serializable application service requests to [ProtocolService] which can be executed on demand.
+ * Serializable application service requests to [DeploymentService] which can be executed on demand.
  */
 @Serializable
 sealed class DeploymentServiceRequest
@@ -41,4 +44,9 @@ sealed class DeploymentServiceRequest
     data class GetDeviceDeploymentFor( val studyDeploymentId: UUID, val masterDeviceRoleName: String ) :
         DeploymentServiceRequest(),
         ServiceInvoker<DeploymentService, MasterDeviceDeployment> by createServiceInvoker( DeploymentService::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName )
+
+    @Serializable
+    data class AddParticipation( val studyDeploymentId: UUID, val identity: AccountIdentity, val invitation: StudyInvitation ) :
+        DeploymentServiceRequest(),
+        ServiceInvoker<DeploymentService, Participation> by createServiceInvoker( DeploymentService::addParticipation, studyDeploymentId, identity, invitation )
 }

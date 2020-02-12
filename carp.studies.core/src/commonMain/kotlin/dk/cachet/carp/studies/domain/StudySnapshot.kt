@@ -1,6 +1,7 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import kotlinx.serialization.Serializable
 
 
@@ -9,7 +10,7 @@ data class StudySnapshot(
     val studyId: UUID,
     val ownerId: UUID,
     val name: String,
-    val description: StudyDescription,
+    val invitation: StudyInvitation,
     val participantIds: List<UUID>
 )
 {
@@ -26,7 +27,7 @@ data class StudySnapshot(
                 studyId = study.id,
                 ownerId = study.owner.id,
                 name = study.name,
-                description = study.description,
+                invitation = study.invitation,
                 participantIds = study.participantIds.toList() )
         }
     }
