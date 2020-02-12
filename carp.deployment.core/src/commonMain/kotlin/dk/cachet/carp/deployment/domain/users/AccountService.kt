@@ -11,18 +11,18 @@ interface AccountService
 {
     /**
      * Create a new account identified by [identity] to participate in a study deployment with the given [participation] details.
-     * An invitation and account details should be delivered, or made available, to the user managing the [identity].
+     * The [invitation] and account details should be delivered, or made available, to the user managing the [identity].
      *
      * @throws IllegalArgumentException when an account with a matching [AccountIdentity] already exists.
      */
-    suspend fun inviteNewAccount( identity: AccountIdentity, participation: Participation ): Account
+    suspend fun inviteNewAccount( identity: AccountIdentity, invitation: StudyInvitation, participation: Participation ): Account
 
     /**
-     * Provide [participation] details, or make it available, to the user managing [identity].
+     * Send out a [participation] [invitation] for a study, or make it available, to the user managing [identity].
      *
      * @throws IllegalArgumentException when no account with a matching [identity] exists.
      */
-    suspend fun inviteExistingAccount( identity: AccountIdentity, participation: Participation )
+    suspend fun inviteExistingAccount( identity: AccountIdentity, invitation: StudyInvitation, participation: Participation )
 
     /**
      * Returns the [Account] which has the specified [identity], or null when no account is found.
