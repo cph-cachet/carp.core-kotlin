@@ -59,6 +59,8 @@ interface DeploymentService
      * In case no account is associated to the specified [identity], a new account is created.
      * An [invitation] (and account details) is delivered to the person managing the [identity],
      * or should be handed out manually to the relevant participant by the person managing the specified [identity].
+     *
+     * @throws IllegalArgumentException in case there is no study deployment with [studyDeploymentId].
      */
     suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity, invitation: StudyInvitation ): Participation
 }
