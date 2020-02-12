@@ -16,8 +16,7 @@ class DeploymentServiceMock(
     private val createStudyDeploymentResult: StudyDeploymentStatus = emptyStatus,
     private val getStudyDeploymentStatusResult: StudyDeploymentStatus = emptyStatus,
     private val registerDeviceResult: StudyDeploymentStatus = emptyStatus,
-    private val getDeviceDeploymentForResult: MasterDeviceDeployment = emptyMasterDeviceDeployment,
-    private val addParticipationResult: Participation = Participation( UUID.randomUUID() )
+    private val getDeviceDeploymentForResult: MasterDeviceDeployment = emptyMasterDeviceDeployment
 ) : Mock<DeploymentService>(), DeploymentService
 {
     companion object
@@ -58,6 +57,6 @@ class DeploymentServiceMock(
     override suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity, invitation: StudyInvitation ): Participation
     {
         trackSuspendCall( DeploymentService::addParticipation, studyDeploymentId, identity, invitation )
-        return addParticipationResult
+        return Participation( studyDeploymentId, invitation )
     }
 }

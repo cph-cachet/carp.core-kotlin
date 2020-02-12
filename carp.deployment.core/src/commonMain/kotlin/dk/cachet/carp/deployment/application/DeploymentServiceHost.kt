@@ -116,16 +116,16 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
                 if ( isNewAccount ) null
                 else repository.getParticipations( account!!.id ).firstOrNull { it.studyDeploymentId == studyDeploymentId }
         val isNewParticipation = participation == null
-        participation = participation ?: Participation( studyDeploymentId )
+        participation = participation ?: Participation( studyDeploymentId, invitation )
 
         // Ensure an account exists for the given identity and an invitation has been sent out.
         if ( isNewAccount )
         {
-            account = accountService.inviteNewAccount( identity, invitation, participation )
+            account = accountService.inviteNewAccount( identity, participation )
         }
         else if ( isNewParticipation )
         {
-            accountService.inviteExistingAccount( identity, invitation, participation )
+            accountService.inviteExistingAccount( identity, participation )
         }
 
         // Add participation to repository.

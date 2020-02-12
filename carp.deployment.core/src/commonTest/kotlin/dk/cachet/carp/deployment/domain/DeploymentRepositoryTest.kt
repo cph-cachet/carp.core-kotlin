@@ -3,6 +3,7 @@ package dk.cachet.carp.deployment.domain
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import kotlin.test.*
 
@@ -88,7 +89,8 @@ interface DeploymentRepositoryTest
         val repo = createRepository()
         val account = Account.withUsernameIdentity( "test" )
         val studyDeploymentId = UUID.randomUUID()
-        val participation = Participation( studyDeploymentId )
+        val invitation = StudyInvitation( "Welcome to this study!" )
+        val participation = Participation( studyDeploymentId, invitation )
 
         repo.addParticipation( account.id, participation )
         val participations = repo.getParticipationsForStudyDeployment( studyDeploymentId )
@@ -102,7 +104,7 @@ interface DeploymentRepositoryTest
         val repo = createRepository()
         val account = Account.withUsernameIdentity( "test" )
         val studyDeploymentId = UUID.randomUUID()
-        val participation = Participation( studyDeploymentId )
+        val participation = Participation( studyDeploymentId, StudyInvitation.empty() )
 
         repo.addParticipation( account.id, participation )
         repo.addParticipation( account.id, participation )
@@ -117,8 +119,11 @@ interface DeploymentRepositoryTest
         val repo = createRepository()
         val account = Account.withUsernameIdentity( "test" )
         val studyDeploymentId = UUID.randomUUID()
-        val participations = listOf( Participation( studyDeploymentId ), Participation( studyDeploymentId ) )
-        val otherParticipations = Participation( UUID.randomUUID() ) // Some other study deployment.
+        val participations = listOf(
+            Participation( studyDeploymentId, StudyInvitation.empty() ),
+            Participation( studyDeploymentId, StudyInvitation.empty() )
+        )
+        val otherParticipations = Participation( UUID.randomUUID(), StudyInvitation.empty() ) // Some other study deployment.
 
         (participations + otherParticipations).forEach { repo.addParticipation( account.id, it ) }
         val retrievedParticipations = repo.getParticipationsForStudyDeployment( studyDeploymentId )
