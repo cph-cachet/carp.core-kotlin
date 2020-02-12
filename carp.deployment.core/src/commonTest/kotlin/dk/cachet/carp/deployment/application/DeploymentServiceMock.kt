@@ -57,6 +57,6 @@ class DeploymentServiceMock(
     override suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity, invitation: StudyInvitation ): Participation
     {
         trackSuspendCall( DeploymentService::addParticipation, studyDeploymentId, identity, invitation )
-        return Participation( studyDeploymentId, invitation )
+        return Participation( studyDeploymentId )
     }
 }

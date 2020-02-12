@@ -10,9 +10,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Participation(
     val studyDeploymentId: UUID,
-    /**
-     * The invitation to participate in this study which should be sent to the participant.
-     */
-    val invitation: StudyInvitation,
     val id: UUID = UUID.randomUUID()
 )

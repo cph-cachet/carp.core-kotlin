@@ -29,8 +29,8 @@ abstract class AccountServiceTest
         val service = createService()
 
         // Create and verify account.
-        val participation = Participation( UUID.randomUUID(), StudyInvitation.empty() )
-        val account = service.inviteNewAccount( identity, participation )
+        val participation = Participation( UUID.randomUUID() )
+        val account = service.inviteNewAccount( identity, StudyInvitation.empty(), participation )
         assertEquals( identity, account.identity )
 
         // Verify whether account can be retrieved.
@@ -48,11 +48,11 @@ abstract class AccountServiceTest
 
     private fun inviteNewAccountWithExistingTest( identity: AccountIdentity ) = runBlockingTest {
         val service = createService()
-        val participation = Participation( UUID.randomUUID(), StudyInvitation.empty() )
-        service.inviteNewAccount( identity, participation )
+        val participation = Participation( UUID.randomUUID() )
+        service.inviteNewAccount( identity, StudyInvitation.empty(), participation )
 
         assertFailsWith<IllegalArgumentException> {
-            service.inviteNewAccount( identity, participation )
+            service.inviteNewAccount( identity, StudyInvitation.empty(), participation )
         }
     }
 
@@ -66,10 +66,10 @@ abstract class AccountServiceTest
 
     private fun inviteExistingAccountWithNewTest( identity: AccountIdentity ) = runBlockingTest {
         val service = createService()
-        val participation = Participation( UUID.randomUUID(), StudyInvitation.empty() )
+        val participation = Participation( UUID.randomUUID() )
 
         assertFailsWith<IllegalArgumentException> {
-            service.inviteExistingAccount( identity, participation )
+            service.inviteExistingAccount( identity, StudyInvitation.empty(), participation )
         }
     }
 
