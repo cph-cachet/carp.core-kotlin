@@ -109,17 +109,14 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
         require( studyDeployment != null )
 
         var account = accountService.findAccount( identity )
-        val isNewAccount = account == null
 
         // Retrieve or create participation.
-        var participation =
-                if ( isNewAccount ) null
-                else repository.getParticipations( account!!.id ).firstOrNull { it.studyDeploymentId == studyDeploymentId }
+        var participation = account?.let { studyDeployment.getParticipation( it ) }
         val isNewParticipation = participation == null
         participation = participation ?: Participation( studyDeploymentId )
 
         // Ensure an account exists for the given identity and an invitation has been sent out.
-        if ( isNewAccount )
+        if ( account == null )
         {
             account = accountService.inviteNewAccount( identity, invitation, participation )
         }
@@ -128,10 +125,11 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
             accountService.inviteExistingAccount( identity, invitation, participation )
         }
 
-        // Add participation to repository.
+        // Add participation to study deployment.
         if ( isNewParticipation )
         {
-            repository.addParticipation( account!!.id, participation )
+            studyDeployment.addParticipation( account, participation )
+            repository.update( studyDeployment )
         }
 
         return participation
