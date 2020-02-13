@@ -3,7 +3,6 @@ package dk.cachet.carp.deployment.infrastructure
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.DeploymentRepository
 import dk.cachet.carp.deployment.domain.StudyDeployment
-import dk.cachet.carp.deployment.domain.users.Participation
 
 
 /**
@@ -12,7 +11,7 @@ import dk.cachet.carp.deployment.domain.users.Participation
 class InMemoryDeploymentRepository : DeploymentRepository
 {
     private val studyDeployments: MutableMap<UUID, StudyDeployment> = mutableMapOf()
-    private val participations: MutableMap<UUID, MutableSet<Participation>> = mutableMapOf()
+
 
     /**
      * Adds the specified [studyDeployment] to the repository.
@@ -45,28 +44,4 @@ class InMemoryDeploymentRepository : DeploymentRepository
 
         studyDeployments[ studyDeployment.id ] = studyDeployment
     }
-
-    /**
-     * Add [participation] information for a study deployment that an account with the given [accountId] should participate in.
-     *
-     * @param accountId The ID of the account which acts as a [Participation] in a study.
-     * @param participation The [Participation] information of the study to participate in.
-     */
-    override fun addParticipation( accountId: UUID, participation: Participation )
-    {
-        val accountParticipations = participations.getOrPut( accountId ) { mutableSetOf() }
-        accountParticipations.add( participation )
-    }
-
-    /**
-     * Get [Participation] information for all study deployments an account with the given [accountId] participates in.
-     */
-    override fun getParticipations( accountId: UUID ): List<Participation> =
-        participations[ accountId ]?.toList() ?: listOf()
-
-    /**
-     * Get all participations included in a study deployment for the given [studyDeploymentId].
-     */
-    override fun getParticipationsForStudyDeployment( studyDeploymentId: UUID ): List<Participation> =
-        participations.flatMap { it.component2().filter { p -> p.studyDeploymentId == studyDeploymentId } }
 }
