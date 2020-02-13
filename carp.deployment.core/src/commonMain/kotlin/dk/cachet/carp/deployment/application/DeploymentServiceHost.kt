@@ -8,6 +8,7 @@ import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
@@ -116,13 +117,22 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
         participation = participation ?: Participation( studyDeploymentId )
 
         // Ensure an account exists for the given identity and an invitation has been sent out.
+        var invitationSent = false
         if ( account == null )
         {
             account = accountService.inviteNewAccount( identity, invitation, participation )
+            invitationSent = true
         }
         else if ( isNewParticipation )
         {
             accountService.inviteExistingAccount( identity, invitation, participation )
+            invitationSent = true
+        }
+
+        // Store the invitation so that users can also query for it later.
+        if ( invitationSent )
+        {
+            repository.addInvitation( account.id, ParticipationInvitation( participation, invitation ) )
         }
 
         // Add participation to study deployment.
@@ -134,4 +144,10 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
 
         return participation
     }
+
+    /**
+     * Get all participations to study deployments the account with the given [accountId] has been invited to.
+     */
+    override suspend fun getParticipationInvitations( accountId: UUID ): Set<ParticipationInvitation> =
+        repository.getInvitations( accountId )
 }

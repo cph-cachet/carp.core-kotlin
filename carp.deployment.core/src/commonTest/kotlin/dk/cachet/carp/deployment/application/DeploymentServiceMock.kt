@@ -5,6 +5,7 @@ import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
@@ -16,7 +17,8 @@ class DeploymentServiceMock(
     private val createStudyDeploymentResult: StudyDeploymentStatus = emptyStatus,
     private val getStudyDeploymentStatusResult: StudyDeploymentStatus = emptyStatus,
     private val registerDeviceResult: StudyDeploymentStatus = emptyStatus,
-    private val getDeviceDeploymentForResult: MasterDeviceDeployment = emptyMasterDeviceDeployment
+    private val getDeviceDeploymentForResult: MasterDeviceDeployment = emptyMasterDeviceDeployment,
+    private val getParticipationInvitationResult: Set<ParticipationInvitation> = setOf()
 ) : Mock<DeploymentService>(), DeploymentService
 {
     companion object
@@ -58,5 +60,11 @@ class DeploymentServiceMock(
     {
         trackSuspendCall( DeploymentService::addParticipation, studyDeploymentId, identity, invitation )
         return Participation( studyDeploymentId )
+    }
+
+    override suspend fun getParticipationInvitations( accountId: UUID ): Set<ParticipationInvitation>
+    {
+        trackSuspendCall( DeploymentService::getParticipationInvitations, accountId )
+        return getParticipationInvitationResult
     }
 }

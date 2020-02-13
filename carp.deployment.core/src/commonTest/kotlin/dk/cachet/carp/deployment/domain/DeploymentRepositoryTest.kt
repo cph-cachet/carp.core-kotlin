@@ -1,6 +1,10 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import kotlin.test.*
 
@@ -78,5 +82,27 @@ interface DeploymentRepositoryTest
         {
             repo.update( deployment )
         }
+    }
+
+    @Test
+    fun addInvitation_and_retrieving_it_succeeds()
+    {
+        val repo = createRepository()
+
+        val account = Account.withUsernameIdentity( "test" )
+        val participation = Participation( UUID.randomUUID() )
+        val invitation = ParticipationInvitation( participation, StudyInvitation.empty() )
+        repo.addInvitation( account.id, invitation )
+        val retrievedInvitations = repo.getInvitations( account.id )
+        assertEquals( invitation, retrievedInvitations.single() )
+    }
+
+    @Test
+    fun getInvitations_is_empty_when_no_invitations()
+    {
+        val repo = createRepository()
+
+        val invitations = repo.getInvitations( UUID.randomUUID() )
+        assertEquals( 0, invitations.count() )
     }
 }

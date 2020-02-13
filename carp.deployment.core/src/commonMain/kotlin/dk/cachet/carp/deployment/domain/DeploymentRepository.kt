@@ -1,6 +1,7 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 
 
 interface DeploymentRepository
@@ -26,4 +27,14 @@ interface DeploymentRepository
      * @throws IllegalArgumentException when no previous version of this study deployment is stored in the repository.
      */
     fun update( studyDeployment: StudyDeployment )
+
+    /**
+     * Add a participation [invitation] for an account with the given [accountId].
+     */
+    fun addInvitation( accountId: UUID, invitation: ParticipationInvitation )
+
+    /**
+     * Get all participation invitations for the account with the specified [accountId].
+     */
+    fun getInvitations( accountId: UUID ): Set<ParticipationInvitation>
 }

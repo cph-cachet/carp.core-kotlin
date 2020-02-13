@@ -5,7 +5,9 @@ import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
@@ -63,4 +65,9 @@ interface DeploymentService
      * @throws IllegalArgumentException in case there is no study deployment with [studyDeploymentId].
      */
     suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity, invitation: StudyInvitation ): Participation
+
+    /**
+     * Get all participations to study deployments the account with the given [accountId] has been invited to.
+     */
+    suspend fun getParticipationInvitations( accountId: UUID ): Set<ParticipationInvitation>
 }
