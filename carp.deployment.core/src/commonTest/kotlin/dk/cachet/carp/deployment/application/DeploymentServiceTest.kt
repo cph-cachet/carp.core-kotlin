@@ -5,6 +5,7 @@ import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.createSingleMasterWithConnectedDeviceProtocol
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
@@ -72,6 +73,20 @@ abstract class DeploymentServiceTest
         {
             deploymentService.addParticipation( unknownId, identity, StudyInvitation.empty() )
         }
+    }
+
+    @Test
+    fun addParticipation_and_retrieving_invitation_succeeds() = runBlockingTest {
+        val ( deploymentService, accountService ) = createService()
+        val studyDeploymentId = addTestDeployment( deploymentService )
+        val identity = AccountIdentity.fromEmailAddress( "test@test.com" )
+        val invitation = StudyInvitation.empty()
+
+        val participation = deploymentService.addParticipation( studyDeploymentId, identity, invitation )
+        val account = accountService.findAccount( identity )
+        assertNotNull( account )
+        val retrievedInvitations = deploymentService.getParticipationInvitations( account.id )
+        assertEquals( ParticipationInvitation( participation, invitation ), retrievedInvitations.single() )
     }
 
 

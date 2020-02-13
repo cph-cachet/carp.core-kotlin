@@ -8,6 +8,7 @@ import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -49,4 +50,9 @@ sealed class DeploymentServiceRequest
     data class AddParticipation( val studyDeploymentId: UUID, val identity: AccountIdentity, val invitation: StudyInvitation ) :
         DeploymentServiceRequest(),
         ServiceInvoker<DeploymentService, Participation> by createServiceInvoker( DeploymentService::addParticipation, studyDeploymentId, identity, invitation )
+
+    @Serializable
+    data class GetParticipationInvitations( val accountId: UUID ) :
+        DeploymentServiceRequest(),
+        ServiceInvoker<DeploymentService, Set<ParticipationInvitation>> by createServiceInvoker( DeploymentService::getParticipationInvitations, accountId )
 }
