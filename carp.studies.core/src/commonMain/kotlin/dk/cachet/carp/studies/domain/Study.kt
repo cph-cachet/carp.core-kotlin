@@ -1,5 +1,6 @@
 package dk.cachet.carp.studies.domain
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 
@@ -28,6 +29,7 @@ class Study(
         fun fromSnapshot( snapshot: StudySnapshot ): Study
         {
             val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.invitation, snapshot.studyId )
+            study.creationDate = snapshot.creationDate
 
             // Add participants.
             snapshot.participantIds.forEach { study.includeParticipant( it ) }
@@ -36,6 +38,12 @@ class Study(
         }
     }
 
+
+    /**
+     * The date when this study was created.
+     */
+    var creationDate: DateTime = DateTime.now()
+        private set
 
     private val _participantIds: MutableSet<UUID> = mutableSetOf()
 
