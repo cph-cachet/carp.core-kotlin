@@ -9,7 +9,8 @@ import dk.cachet.carp.test.Mock
 
 class StudyServiceMock(
     private val createStudyResult: StudyStatus = StudyStatus( UUID.randomUUID(), "Test" ),
-    private val getStudyStatusResult: StudyStatus = StudyStatus( UUID.randomUUID(), "Test" )
+    private val getStudyStatusResult: StudyStatus = StudyStatus( UUID.randomUUID(), "Test" ),
+    private val getStudiesOverview: List<StudyStatus> = listOf()
 ) : Mock<StudyService>(), StudyService
 {
     override suspend fun createStudy( owner: StudyOwner, name: String, invitation: StudyInvitation? ): StudyStatus
@@ -22,5 +23,11 @@ class StudyServiceMock(
     {
         trackSuspendCall( StudyService::getStudyStatus, studyId )
         return getStudyStatusResult
+    }
+
+    override suspend fun getStudiesOverview( owner: StudyOwner ): List<StudyStatus>
+    {
+        trackSuspendCall( StudyService::getStudiesOverview, owner )
+        return getStudiesOverview
     }
 }

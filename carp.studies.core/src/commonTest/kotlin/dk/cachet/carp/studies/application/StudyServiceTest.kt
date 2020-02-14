@@ -63,9 +63,19 @@ interface StudyServiceTest
     fun getStudyStatus_fails_for_unknown_study_id() = runBlockingTest {
         val ( service, _ ) = createService()
 
-        assertFailsWith<IllegalArgumentException>
-        {
-            service.getStudyStatus( UUID.randomUUID() )
-        }
+        assertFailsWith<IllegalArgumentException> { service.getStudyStatus( UUID.randomUUID() ) }
+    }
+
+    @Test
+    fun getStudiesOverview_returns_owner_studies() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val owner = StudyOwner()
+        val studyOne = service.createStudy( owner, "One" )
+        val studyTwo = service.createStudy( owner, "Two" )
+        service.createStudy( StudyOwner(), "Three" )
+
+        val studiesOverview = service.getStudiesOverview( owner )
+        val expectedStudies = listOf( studyOne, studyTwo )
+        assertEquals( 2, studiesOverview.intersect( expectedStudies ).count() )
     }
 }

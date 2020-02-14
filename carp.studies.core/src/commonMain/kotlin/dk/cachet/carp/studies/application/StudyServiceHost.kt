@@ -45,4 +45,10 @@ class StudyServiceHost( private val repository: StudyRepository ) : StudyService
 
         return study.getStatus()
     }
+
+    /**
+     * Get status for all studies created by the specified [owner].
+     */
+    override suspend fun getStudiesOverview( owner: StudyOwner ): List<StudyStatus> =
+        repository.getForOwner( owner ).map { it.getStatus() }
 }

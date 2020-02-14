@@ -47,4 +47,18 @@ interface StudyRepositoryTest
         val foundStudy = repo.getById( UUID.randomUUID() )
         assertNull( foundStudy )
     }
+
+    @Test
+    fun getForOwner_returns_owner_studies_only()
+    {
+        val repo = createRepository()
+        val owner = StudyOwner()
+        val ownerStudy = Study( owner, "Test" )
+        val wrongStudy = Study( StudyOwner(), "Test" )
+        repo.add( ownerStudy )
+        repo.add( wrongStudy )
+
+        val ownerStudies = repo.getForOwner( owner )
+        assertEquals( ownerStudy.id, ownerStudies.single().id )
+    }
 }

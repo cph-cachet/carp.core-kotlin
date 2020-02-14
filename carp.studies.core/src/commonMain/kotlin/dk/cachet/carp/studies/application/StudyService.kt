@@ -29,4 +29,9 @@ interface StudyService
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
     suspend fun getStudyStatus( studyId: UUID ): StudyStatus
+
+    /**
+     * Get status for all studies created by the specified [owner].
+     */
+    suspend fun getStudiesOverview( owner: StudyOwner ): List<StudyStatus>
 }

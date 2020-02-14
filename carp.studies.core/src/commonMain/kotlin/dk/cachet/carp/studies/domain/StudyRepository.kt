@@ -16,4 +16,9 @@ interface StudyRepository
      * Returns the [Study] which has the specified [studyId], or null when no study is found.
      */
     fun getById( studyId: UUID ): Study?
+
+    /**
+     * Returns the studies created by the specified [owner].
+     */
+    fun getForOwner( owner: StudyOwner ): List<Study>
 }
