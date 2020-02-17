@@ -56,7 +56,7 @@ class Study(
     /**
      * Get the status (serializable) of this [Study].
      */
-    fun getStatus(): StudyStatus = StudyStatus( id, name )
+    fun getStatus(): StudyStatus = StudyStatus( id, name, creationDate )
 
     /**
      * Include a participant in this [Study].

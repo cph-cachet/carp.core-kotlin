@@ -1,5 +1,6 @@
 package dk.cachet.carp.studies.domain
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import kotlinx.serialization.Serializable
 
@@ -13,5 +14,9 @@ data class StudyStatus(
     /**
      * A descriptive name for the study, as assigned by the [StudyOwner].
      */
-    val name: String
+    val name: String,
+    /**
+     * The date when this study was created.
+     */
+    val creationDate: DateTime
 )
