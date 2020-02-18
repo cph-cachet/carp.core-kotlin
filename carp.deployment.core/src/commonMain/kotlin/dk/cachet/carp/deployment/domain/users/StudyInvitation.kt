@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StudyInvitation(
     /**
-     * A descriptive name for the [Study] to be shown to participants.
+     * A descriptive name for the study to be shown to participants.
      */
     val name: String
 )

@@ -4,6 +4,7 @@ import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 
 
 /**
@@ -16,11 +17,11 @@ class InMemoryAccountService : AccountService
 
     /**
      * Create a new account identified by [identity] to participate in a study deployment with the given [participation] details.
-     * An invitation and account details should be delivered, or made available, to the user managing the [identity].
+     * The [invitation] and account details should be delivered, or made available, to the user managing the [identity].
      *
      * @throws IllegalArgumentException when an account with a matching [AccountIdentity] already exists.
      */
-    override suspend fun inviteNewAccount( identity: AccountIdentity, participation: Participation ): Account
+    override suspend fun inviteNewAccount( identity: AccountIdentity, invitation: StudyInvitation, participation: Participation ): Account
     {
         require( accounts.none { it.identity == identity } )
 
@@ -31,11 +32,11 @@ class InMemoryAccountService : AccountService
     }
 
     /**
-     * Provide [participation] details, or make it available, to the user managing [identity].
+     * Send out a [participation] [invitation] for a study, or make it available, to the user managing [identity].
      *
      * @throws IllegalArgumentException when no account with a matching [identity] exists.
      */
-    override suspend fun inviteExistingAccount( identity: AccountIdentity, participation: Participation )
+    override suspend fun inviteExistingAccount( identity: AccountIdentity, invitation: StudyInvitation, participation: Participation )
     {
         require( accounts.any { it.identity == identity } )
     }

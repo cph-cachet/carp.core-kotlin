@@ -1,6 +1,9 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.createDefaultJSON
+import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.domain.devices.CustomDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
@@ -28,7 +31,7 @@ class StudyDeploymentTest
         // Protocol does not contain a master device, thus contains deployment error and can't be initialized.
         assertFailsWith<IllegalArgumentException>
         {
-            StudyDeployment( snapshot, testId )
+            StudyDeployment( snapshot )
         }
     }
 
@@ -304,5 +307,56 @@ class StudyDeploymentTest
         val deployment = studyDeploymentFor( protocol )
 
         assertFailsWith<IllegalArgumentException>{ deployment.getDeviceDeploymentFor( master ) }
+    }
+
+    @Test
+    fun addParticipation_and_retrieving_it_succeeds()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val deployment = studyDeploymentFor( protocol )
+
+        val account = Account.withUsernameIdentity( "test" )
+        val participation = Participation( deployment.id )
+        deployment.addParticipation( account, participation )
+        val retrievedParticipation = deployment.getParticipation( account )
+
+        assertEquals( participation, retrievedParticipation )
+    }
+
+    @Test
+    fun addParticipation_for_incorrect_study_deployment_fails()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val deployment = studyDeploymentFor( protocol )
+        val account = Account.withUsernameIdentity( "test" )
+        val incorrectDeploymentId = UUID.randomUUID()
+        val participation = Participation( incorrectDeploymentId )
+
+        assertFailsWith<IllegalArgumentException> { deployment.addParticipation( account, participation ) }
+    }
+
+    @Test
+    fun addParticipation_for_existing_account_fails()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val deployment = studyDeploymentFor( protocol )
+        val account = Account.withUsernameIdentity( "test" )
+        deployment.addParticipation( account, Participation( deployment.id ) )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            deployment.addParticipation( account, Participation( deployment.id ) )
+        }
+    }
+
+    @Test
+    fun getParticipation_for_non_participating_account_returns_null()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val deployment = studyDeploymentFor( protocol )
+        val account = Account.withUsernameIdentity( "test" )
+
+        val participation = deployment.getParticipation( account )
+        assertNull( participation )
     }
 }

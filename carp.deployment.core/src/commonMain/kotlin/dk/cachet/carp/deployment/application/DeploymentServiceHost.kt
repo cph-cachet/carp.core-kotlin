@@ -8,6 +8,7 @@ import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
@@ -109,31 +110,44 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
         require( studyDeployment != null )
 
         var account = accountService.findAccount( identity )
-        val isNewAccount = account == null
 
         // Retrieve or create participation.
-        var participation =
-                if ( isNewAccount ) null
-                else repository.getParticipations( account!!.id ).firstOrNull { it.studyDeploymentId == studyDeploymentId }
+        var participation = account?.let { studyDeployment.getParticipation( it ) }
         val isNewParticipation = participation == null
-        participation = participation ?: Participation( studyDeploymentId, invitation )
+        participation = participation ?: Participation( studyDeploymentId )
 
         // Ensure an account exists for the given identity and an invitation has been sent out.
-        if ( isNewAccount )
+        var invitationSent = false
+        if ( account == null )
         {
-            account = accountService.inviteNewAccount( identity, participation )
+            account = accountService.inviteNewAccount( identity, invitation, participation )
+            invitationSent = true
         }
         else if ( isNewParticipation )
         {
-            accountService.inviteExistingAccount( identity, participation )
+            accountService.inviteExistingAccount( identity, invitation, participation )
+            invitationSent = true
         }
 
-        // Add participation to repository.
+        // Store the invitation so that users can also query for it later.
+        if ( invitationSent )
+        {
+            repository.addInvitation( account.id, ParticipationInvitation( participation, invitation ) )
+        }
+
+        // Add participation to study deployment.
         if ( isNewParticipation )
         {
-            repository.addParticipation( account!!.id, participation )
+            studyDeployment.addParticipation( account, participation )
+            repository.update( studyDeployment )
         }
 
         return participation
     }
+
+    /**
+     * Get all participations to study deployments the account with the given [accountId] has been invited to.
+     */
+    override suspend fun getParticipationInvitations( accountId: UUID ): Set<ParticipationInvitation> =
+        repository.getInvitations( accountId )
 }

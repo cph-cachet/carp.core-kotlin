@@ -1,10 +1,10 @@
 package dk.cachet.carp.deployment.infrastructure
 
+import dk.cachet.carp.deployment.domain.createComplexDeployment
 import dk.cachet.carp.deployment.domain.createEmptyProtocol
-import dk.cachet.carp.deployment.domain.createSingleMasterWithConnectedDeviceProtocol
-import dk.cachet.carp.deployment.domain.STUBS_SERIAL_MODULE
 import dk.cachet.carp.deployment.domain.studyDeploymentFor
 import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
+import dk.cachet.carp.deployment.domain.STUBS_SERIAL_MODULE
 import dk.cachet.carp.deployment.domain.UnknownDeviceRegistration
 import dk.cachet.carp.deployment.domain.UnknownMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomDeviceRegistration
@@ -25,10 +25,8 @@ class StudyDeploymentSnapshotTest
     @Test
     fun can_serialize_and_deserialize_snapshot_using_JSON()
     {
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment = studyDeploymentFor( protocol )
+        val deployment = createComplexDeployment()
         val snapshot: StudyDeploymentSnapshot = deployment.getSnapshot()
-
 
         val serialized: String = snapshot.toJson()
         val parsed: StudyDeploymentSnapshot = StudyDeploymentSnapshot.fromJson( serialized )

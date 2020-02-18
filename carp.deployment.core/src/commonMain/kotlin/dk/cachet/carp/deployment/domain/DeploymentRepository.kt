@@ -1,7 +1,7 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 
 
 interface DeploymentRepository
@@ -29,20 +29,12 @@ interface DeploymentRepository
     fun update( studyDeployment: StudyDeployment )
 
     /**
-     * Add [participation] information for a study deployment that an account with the given [accountId] should participate in.
-     *
-     * @param accountId The ID of the account which acts as a [Participation] in a study.
-     * @param participation The [Participation] information of the study to participate in.
+     * Add a participation [invitation] for an account with the given [accountId].
      */
-    fun addParticipation( accountId: UUID, participation: Participation )
+    fun addInvitation( accountId: UUID, invitation: ParticipationInvitation )
 
     /**
-     * Get [Participation] information for all study deployments an account with the given [accountId] participates in.
+     * Get all participation invitations for the account with the specified [accountId].
      */
-    fun getParticipations( accountId: UUID ): List<Participation>
-
-    /**
-     * Get all participations included in a study deployment for the given [studyDeploymentId].
-     */
-    fun getParticipationsForStudyDeployment( studyDeploymentId: UUID ): List<Participation>
+    fun getInvitations( accountId: UUID ): Set<ParticipationInvitation>
 }
