@@ -2,6 +2,7 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.studies.domain.Study
+import dk.cachet.carp.studies.domain.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 
 
@@ -29,4 +30,10 @@ class InMemoryStudyRepository : StudyRepository
      * Returns the [Study] which has the specified [studyId], or null when no study is found.
      */
     override fun getById( studyId: UUID ): Study? = studies.firstOrNull { it.id == studyId }
+
+    /**
+     * Returns the studies created by the specified [owner].
+     */
+    override fun getForOwner( owner: StudyOwner ): List<Study> =
+        studies.filter { it.owner.id == owner.id }
 }

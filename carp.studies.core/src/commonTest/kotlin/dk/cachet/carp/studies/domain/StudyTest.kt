@@ -43,20 +43,17 @@ class StudyTest
     @Test
     fun creating_study_fromSnapshot_obtained_by_getSnapshot_is_the_same()
     {
-        val owner = StudyOwner()
-        val invitation = StudyInvitation( "Test" )
-        val studyId = UUID.randomUUID()
-        val participantId = UUID.randomUUID()
-        val study = Study( owner, "Test study", invitation, studyId )
-        study.includeParticipant( participantId )
+        val study = createComplexStudy()
 
         val snapshot = study.getSnapshot()
         val fromSnapshot = Study.fromSnapshot( snapshot )
 
-        assertEquals( studyId, fromSnapshot.id )
-        assertEquals( owner, fromSnapshot.owner )
-        assertEquals( "Test study", fromSnapshot.name )
-        assertEquals( invitation, fromSnapshot.invitation )
-        assertEquals( participantId, fromSnapshot.participantIds.single() )
+        assertEquals( study.id, fromSnapshot.id )
+        assertEquals( study.owner, fromSnapshot.owner )
+        assertEquals( study.name, fromSnapshot.name )
+        assertEquals( study.invitation, fromSnapshot.invitation )
+        assertEquals( study.creationDate, fromSnapshot.creationDate )
+        val commonParticipants = study.participantIds.intersect( fromSnapshot.participantIds )
+        assertEquals( study.participantIds.count(), commonParticipants.count() )
     }
 }

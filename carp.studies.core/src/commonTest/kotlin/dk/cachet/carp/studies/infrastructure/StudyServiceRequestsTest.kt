@@ -19,7 +19,8 @@ class StudyServiceRequestsTest
     {
         val requests: List<StudyServiceRequest> = listOf(
             StudyServiceRequest.CreateStudy( StudyOwner(), "Test", StudyInvitation.empty() ),
-            StudyServiceRequest.GetStudyStatus( UUID.randomUUID() )
+            StudyServiceRequest.GetStudyStatus( UUID.randomUUID() ),
+            StudyServiceRequest.GetStudiesOverview( StudyOwner() )
         )
     }
 
