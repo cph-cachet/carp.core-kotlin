@@ -1,5 +1,6 @@
 package dk.cachet.carp.studies.infrastructure
 
+import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
@@ -20,7 +21,9 @@ class StudyServiceRequestsTest
         val requests: List<StudyServiceRequest> = listOf(
             StudyServiceRequest.CreateStudy( StudyOwner(), "Test", StudyInvitation.empty() ),
             StudyServiceRequest.GetStudyStatus( UUID.randomUUID() ),
-            StudyServiceRequest.GetStudiesOverview( StudyOwner() )
+            StudyServiceRequest.GetStudiesOverview( StudyOwner() ),
+            StudyServiceRequest.AddParticipant( UUID.randomUUID(), EmailAddress( "test@test.com" ) ),
+            StudyServiceRequest.GetParticipants( UUID.randomUUID() )
         )
     }
 

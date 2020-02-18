@@ -1,17 +1,22 @@
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.DateTime
+import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.studies.domain.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
+import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.test.Mock
 
 
 class StudyServiceMock(
     private val createStudyResult: StudyStatus = studyStatus,
     private val getStudyStatusResult: StudyStatus = studyStatus,
-    private val getStudiesOverview: List<StudyStatus> = listOf()
+    private val getStudiesOverviewResult: List<StudyStatus> = listOf(),
+    private val addParticipantResult: Participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ),
+    private val getParticipantsResult: List<Participant> = listOf()
 ) : Mock<StudyService>(), StudyService
 {
     companion object
@@ -35,6 +40,18 @@ class StudyServiceMock(
     override suspend fun getStudiesOverview( owner: StudyOwner ): List<StudyStatus>
     {
         trackSuspendCall( StudyService::getStudiesOverview, owner )
-        return getStudiesOverview
+        return getStudiesOverviewResult
+    }
+
+    override suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant
+    {
+        trackSuspendCall( StudyService::addParticipant, studyId, email )
+        return addParticipantResult
+    }
+
+    override suspend fun getParticipants( studyId: UUID ): List<Participant>
+    {
+        trackSuspendCall( StudyService::getParticipants, studyId )
+        return getParticipantsResult
     }
 }

@@ -31,9 +31,6 @@ class Study(
             val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.invitation, snapshot.studyId )
             study.creationDate = snapshot.creationDate
 
-            // Add participants.
-            snapshot.participantIds.forEach { study.includeParticipant( it ) }
-
             return study
         }
     }
@@ -45,23 +42,10 @@ class Study(
     var creationDate: DateTime = DateTime.now()
         private set
 
-    private val _participantIds: MutableSet<UUID> = mutableSetOf()
-
-    /**
-     * The set of participants which have been included in this [Study].
-     */
-    val participantIds: Set<UUID>
-        get() = _participantIds
-
     /**
      * Get the status (serializable) of this [Study].
      */
     fun getStatus(): StudyStatus = StudyStatus( id, name, creationDate )
-
-    /**
-     * Include a participant in this [Study].
-     */
-    fun includeParticipant( participantId: UUID ) = _participantIds.add( participantId )
 
 
     /**
