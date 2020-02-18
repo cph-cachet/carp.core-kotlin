@@ -4,7 +4,7 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.infrastructure.PROTOCOLS_SERIAL_MODULE
-import dk.cachet.carp.studies.domain.StudyOwner
+import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudySnapshot
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.Participant

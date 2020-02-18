@@ -3,6 +3,7 @@ package dk.cachet.carp.studies.domain
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.studies.domain.users.StudyOwner
 
 
 /**
