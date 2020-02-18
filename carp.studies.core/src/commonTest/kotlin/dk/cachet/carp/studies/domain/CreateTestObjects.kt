@@ -1,6 +1,7 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.studies.domain.users.StudyOwner
 
 
 /**
