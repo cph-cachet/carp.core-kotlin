@@ -37,7 +37,7 @@ interface StudyServiceTest
     }
 
     @Test
-    fun createStudy_with_description_succeeds() = runBlockingTest {
+    fun createStudy_with_invitation_succeeds() = runBlockingTest {
         val ( service, repo ) = createService()
 
         val owner = StudyOwner()
