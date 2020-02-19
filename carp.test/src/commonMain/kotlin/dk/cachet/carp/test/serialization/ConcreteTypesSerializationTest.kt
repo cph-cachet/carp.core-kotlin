@@ -52,7 +52,7 @@ abstract class ConcreteTypesSerializationTest(
             // Verify whether serializing and deserializing the instance results in the same object.
             val serialized = json.stringify( serializer, toSerialize )
             val parsed = json.parse( serializer, serialized )
-            assertEquals( toSerialize, parsed )
+            assertEquals( toSerialize, parsed, "Serialization of type '$type' failed." )
         }
     }
 
