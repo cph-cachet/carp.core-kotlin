@@ -67,6 +67,7 @@ if (publishPropertiesFile.exists())
 }
 
 // Configure all subprojects as testable, publishable, Kotlin multiplatform projects.
+// A `kotlinx.serialization` dependency is added to serialize domain models.
 configure( subprojects - detektModule ) {
     version = globalVersion
 
@@ -102,6 +103,7 @@ configure( subprojects - detektModule ) {
             commonMain {
                 dependencies {
                     implementation kotlin('stdlib-common')
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${versions.serialization}"
                 }
             }
             commonTest {
@@ -113,6 +115,7 @@ configure( subprojects - detektModule ) {
             jvmMain {
                 dependencies {
                     implementation kotlin('stdlib-jdk8')
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${versions.serialization}"
                 }
             }
             jvmTest {
@@ -126,6 +129,7 @@ configure( subprojects - detektModule ) {
             jsMain {
                 dependencies {
                     implementation kotlin('stdlib-js')
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${versions.serialization}"
                 }
             }
             jsTest {
@@ -301,7 +305,6 @@ nexusStaging {
 
 // Add common dependencies:
 // - `carp.test` for testing
-// - `kotlinx.serialization` to serialize domain models
 // - reflection is used to reinforce correct implementation of domain objects at runtime
 configure( coreModules + commonModule ) {
     buildscript {
@@ -317,11 +320,6 @@ configure( coreModules + commonModule ) {
     apply plugin: 'kotlinx-serialization'
     kotlin {
         sourceSets {
-            commonMain {
-                dependencies {
-                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${versions.serialization}"
-                }
-            }
             commonTest {
                 dependencies {
                     implementation project(':carp.test')
@@ -330,12 +328,6 @@ configure( coreModules + commonModule ) {
             jvmMain {
                 dependencies {
                     implementation kotlin('reflect')
-                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${versions.serialization}"
-                }
-            }
-            jsMain {
-                dependencies {
-                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${versions.serialization}"
                 }
             }
         }
