@@ -12,8 +12,7 @@ data class StudySnapshot(
     val ownerId: UUID,
     val name: String,
     val invitation: StudyInvitation,
-    val creationDate: DateTime,
-    val participantIds: List<UUID>
+    val creationDate: DateTime
 )
 {
     companion object
@@ -30,8 +29,7 @@ data class StudySnapshot(
                 ownerId = study.owner.id,
                 name = study.name,
                 invitation = study.invitation,
-                creationDate = study.creationDate,
-                participantIds = study.participantIds.toList() )
+                creationDate = study.creationDate )
         }
     }
 }

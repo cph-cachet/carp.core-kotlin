@@ -1,9 +1,11 @@
 package dk.cachet.carp.studies.application
 
+import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
-import dk.cachet.carp.studies.domain.StudyOwner
+import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
+import dk.cachet.carp.studies.domain.users.Participant
 
 
 /**
@@ -34,4 +36,19 @@ interface StudyService
      * Get status for all studies created by the specified [owner].
      */
     suspend fun getStudiesOverview( owner: StudyOwner ): List<StudyStatus>
+
+    /**
+     * Add a [Participant] to the study with the specified [studyId], identified by the specified [email] address.
+     * In case the [email] was already added before, the same [Participant] is returned.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant
+
+    /**
+     * Get all [Participant]s for the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    suspend fun getParticipants( studyId: UUID ): List<Participant>
 }

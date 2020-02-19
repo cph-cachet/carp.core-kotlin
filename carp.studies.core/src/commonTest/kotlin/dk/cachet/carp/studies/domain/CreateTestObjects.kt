@@ -1,20 +1,16 @@
 package dk.cachet.carp.studies.domain
 
-import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.studies.domain.users.StudyOwner
 
 
 /**
- * Create a study with a couple of participants added.
+ * Create a 'complex' study for testing purposes.
  */
 fun createComplexStudy(): Study
 {
     val owner = StudyOwner()
     val invitation = StudyInvitation.empty()
-    val study = Study( owner, "Test", invitation )
 
-    study.includeParticipant( UUID.randomUUID() )
-    study.includeParticipant( UUID.randomUUID() )
-
-    return study
+    return Study( owner, "Test", invitation )
 }
