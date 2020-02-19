@@ -45,7 +45,8 @@ data class AltBeaconDeviceRegistration(
 ) : DeviceRegistration()
 {
     // TODO: Serialization seems to fail when deviceId is assigned during initialization as follows.
-    //       This is likely a bug in kotlinx.serialization. Once this is fixed, use this implementation instead.
+    //       This is likely a bug in kotlinx.serialization: https://github.com/Kotlin/kotlinx.serialization/issues/716
+    //       Once this is fixed, use this implementation instead.
     //override val deviceId: String = "$manufacturerId:$organizationId:$majorId:$minorId"
 
     override val deviceId: String
