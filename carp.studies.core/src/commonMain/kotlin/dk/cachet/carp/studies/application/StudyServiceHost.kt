@@ -1,11 +1,14 @@
 package dk.cachet.carp.studies.application
 
+import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.studies.domain.Study
-import dk.cachet.carp.studies.domain.StudyOwner
+import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudyStatus
+import dk.cachet.carp.studies.domain.users.Participant
 
 
 /**
@@ -51,4 +54,34 @@ class StudyServiceHost( private val repository: StudyRepository ) : StudyService
      */
     override suspend fun getStudiesOverview( owner: StudyOwner ): List<StudyStatus> =
         repository.getForOwner( owner ).map { it.getStatus() }
+
+    /**
+     * Add a [Participant] to the study with the specified [studyId], identified by the specified [email] address.
+     * In case the [email] was already added before, the same [Participant] is returned.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    override suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant
+    {
+        // Verify whether participant was already added.
+        val identity = EmailAccountIdentity( email )
+        var participant = repository.getParticipants( studyId ).firstOrNull { it.accountIdentity == identity }
+
+        // Add new participant in case it was not added before.
+        if ( participant == null )
+        {
+            participant = Participant( identity )
+            repository.addParticipant( studyId, participant )
+        }
+
+        return participant
+    }
+
+    /**
+     * Get all [Participant]s for the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    override suspend fun getParticipants( studyId: UUID ): List<Participant> =
+        repository.getParticipants( studyId )
 }

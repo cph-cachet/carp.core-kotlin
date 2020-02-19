@@ -1,8 +1,9 @@
 package dk.cachet.carp.studies.application
 
+import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
-import dk.cachet.carp.studies.domain.StudyOwner
+import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
@@ -36,7 +37,7 @@ interface StudyServiceTest
     }
 
     @Test
-    fun createStudy_with_description_succeeds() = runBlockingTest {
+    fun createStudy_with_invitation_succeeds() = runBlockingTest {
         val ( service, repo ) = createService()
 
         val owner = StudyOwner()
@@ -60,7 +61,7 @@ interface StudyServiceTest
     }
 
     @Test
-    fun getStudyStatus_fails_for_unknown_study_id() = runBlockingTest {
+    fun getStudyStatus_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
 
         assertFailsWith<IllegalArgumentException> { service.getStudyStatus( UUID.randomUUID() ) }
@@ -77,5 +78,47 @@ interface StudyServiceTest
         val studiesOverview = service.getStudiesOverview( owner )
         val expectedStudies = listOf( studyOne, studyTwo )
         assertEquals( 2, studiesOverview.intersect( expectedStudies ).count() )
+    }
+
+    @Test
+    fun adding_and_retrieving_participant_succeeds() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val owner = StudyOwner()
+        val study = service.createStudy( owner, "Test" )
+        val studyId = study.studyId
+
+        val participant = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val studyParticipants = service.getParticipants( studyId )
+        assertEquals( participant, studyParticipants.single() )
+    }
+
+    @Test
+    fun addParticipant_fails_for_unknown_studyId() = runBlockingTest {
+        val ( service, _ ) = createService()
+
+        val unknownId = UUID.randomUUID()
+        val email = EmailAddress( "test@test.com" )
+        assertFailsWith<IllegalArgumentException> { service.addParticipant( unknownId, email ) }
+    }
+
+    @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
+    @Test
+    fun addParticipant_twice_returns_same_participant() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val study = service.createStudy( StudyOwner(), "Test" )
+        val studyId = study.studyId
+
+        val email = EmailAddress( "test@test.com" )
+        val p1 = service.addParticipant( studyId, email )
+        val p2 = service.addParticipant( studyId, email )
+        assertTrue( p1 == p2 )
+    }
+
+    @Test
+    fun getParticipants_fails_for_unknown_studyId() = runBlockingTest {
+        val ( service, _ ) = createService()
+
+        val unknownId = UUID.randomUUID()
+        assertFailsWith<IllegalArgumentException> { service.getParticipants( unknownId ) }
     }
 }

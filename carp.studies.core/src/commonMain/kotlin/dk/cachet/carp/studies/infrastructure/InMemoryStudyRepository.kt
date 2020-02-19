@@ -2,8 +2,9 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.studies.domain.Study
-import dk.cachet.carp.studies.domain.StudyOwner
+import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
+import dk.cachet.carp.studies.domain.users.Participant
 
 
 /**
@@ -12,6 +13,7 @@ import dk.cachet.carp.studies.domain.StudyRepository
 class InMemoryStudyRepository : StudyRepository
 {
     private val studies: MutableList<Study> = mutableListOf()
+    private val participants: MutableMap<UUID, MutableList<Participant>> = mutableMapOf()
 
 
     /**
@@ -36,4 +38,31 @@ class InMemoryStudyRepository : StudyRepository
      */
     override fun getForOwner( owner: StudyOwner ): List<Study> =
         studies.filter { it.owner.id == owner.id }
+
+    /**
+     * Adds a new [participant] for the study with [studyId] to the repository.
+     *
+     * @throws IllegalArgumentException when a study with the specified [studyId] does not exist,
+     * or when a participant with the specified ID already exists within the study.
+     */
+    override fun addParticipant( studyId: UUID, participant: Participant )
+    {
+        require( studies.any { it.id == studyId } )
+
+        val studyParticipants = participants.getOrPut( studyId ) { mutableListOf() }
+        require( studyParticipants.none { it.id == participant.id } )
+        studyParticipants.add( participant )
+    }
+
+    /**
+     * Returns the participants which were added to the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with the specified [studyId] does not exist.
+     */
+    override fun getParticipants( studyId: UUID ): List<Participant>
+    {
+        require( studies.any { it.id == studyId } )
+
+        return participants[ studyId ] ?: listOf()
+    }
 }
