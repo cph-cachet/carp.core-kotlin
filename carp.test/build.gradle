@@ -16,6 +16,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                implementation kotlin('test-common')
                 implementation kotlin('test-annotations-common')
             }
         }
