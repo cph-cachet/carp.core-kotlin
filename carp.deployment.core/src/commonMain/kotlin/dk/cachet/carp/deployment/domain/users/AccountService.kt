@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.domain.users
 
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.AccountIdentity
 
@@ -18,11 +19,11 @@ interface AccountService
     suspend fun inviteNewAccount( identity: AccountIdentity, invitation: StudyInvitation, participation: Participation ): Account
 
     /**
-     * Send out a [participation] [invitation] for a study, or make it available, to the user managing [identity].
+     * Send out a [participation] [invitation] for a study, or make it available, to the account with [accountId].
      *
-     * @throws IllegalArgumentException when no account with a matching [identity] exists.
+     * @throws IllegalArgumentException when account with [accountId] does not exist.
      */
-    suspend fun inviteExistingAccount( identity: AccountIdentity, invitation: StudyInvitation, participation: Participation )
+    suspend fun inviteExistingAccount( accountId: UUID, invitation: StudyInvitation, participation: Participation )
 
     /**
      * Returns the [Account] which has the specified [identity], or null when no account is found.

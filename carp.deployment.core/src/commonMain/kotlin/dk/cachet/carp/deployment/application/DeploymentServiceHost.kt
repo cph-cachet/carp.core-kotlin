@@ -125,7 +125,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
         }
         else if ( isNewParticipation )
         {
-            accountService.inviteExistingAccount( identity, invitation, participation )
+            accountService.inviteExistingAccount( account.id, invitation, participation )
             invitationSent = true
         }
 

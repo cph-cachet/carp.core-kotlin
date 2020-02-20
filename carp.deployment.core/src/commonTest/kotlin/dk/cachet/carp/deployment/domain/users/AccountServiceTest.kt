@@ -2,6 +2,7 @@ package dk.cachet.carp.deployment.domain.users
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
+import dk.cachet.carp.common.users.UsernameAccountIdentity
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -57,19 +58,23 @@ abstract class AccountServiceTest
     }
 
     @Test
-    fun inviteExistingAccount_with_new_username_fails() =
-        inviteExistingAccountWithNewTest( AccountIdentity.fromUsername( "User" ) )
+    fun inviteExistingAccount_succeeds() = runBlockingTest {
+        val service = createService()
+        val identity = UsernameAccountIdentity( "test" )
+        val invitation = StudyInvitation.empty()
+        val account = service.inviteNewAccount( identity, invitation, Participation( UUID.randomUUID() ) )
+
+        service.inviteExistingAccount( account.id, invitation, Participation( UUID.randomUUID() ) )
+    }
 
     @Test
-    fun inviteExistingAccount_with_new_email_fails() =
-        inviteExistingAccountWithNewTest( AccountIdentity.fromEmailAddress( "user@user.com" ) )
-
-    private fun inviteExistingAccountWithNewTest( identity: AccountIdentity ) = runBlockingTest {
+    fun inviteExistingAccount_with_unknown_id_fails() = runBlockingTest {
         val service = createService()
         val participation = Participation( UUID.randomUUID() )
 
+        val unknownId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException> {
-            service.inviteExistingAccount( identity, StudyInvitation.empty(), participation )
+            service.inviteExistingAccount( unknownId, StudyInvitation.empty(), participation )
         }
     }
 
