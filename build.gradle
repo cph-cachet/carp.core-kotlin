@@ -77,6 +77,7 @@ configure( subprojects - detektModule ) {
 
     // Specify platforms and test frameworks to use.
     apply plugin: 'kotlin-multiplatform'
+    apply plugin: 'kotlinx-serialization'
     kotlin {
         jvm {
             compilations.main.kotlinOptions.jvmTarget = versions.jvmTarget
@@ -317,7 +318,6 @@ configure( coreModules + commonModule ) {
         }
     }
 
-    apply plugin: 'kotlinx-serialization'
     kotlin {
         sourceSets {
             commonTest {
