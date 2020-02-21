@@ -3,6 +3,7 @@ package dk.cachet.carp.studies.application
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.Participant
@@ -51,4 +52,13 @@ interface StudyService
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
     suspend fun getParticipants( studyId: UUID ): List<Participant>
+
+    /**
+     * Specify the study [protocol] to use for the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist,
+     * when the provided [protocol] snapshot is invalid,
+     * or when the protocol contains errors preventing it from being used in deployments.
+     */
+    suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
 }

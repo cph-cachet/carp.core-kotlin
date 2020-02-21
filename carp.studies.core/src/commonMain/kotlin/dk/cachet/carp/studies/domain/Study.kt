@@ -3,6 +3,9 @@ package dk.cachet.carp.studies.domain
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.protocols.domain.InvalidConfigurationError
+import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.users.StudyOwner
 
 
@@ -17,7 +20,7 @@ class Study(
     /**
      * A descriptive name for the study, assigned by, and only visible to, the [StudyOwner].
      */
-    val name: String,
+    var name: String,
     /**
      * A description of the study, shared with participants once they are invited to the study.
      */
@@ -31,6 +34,7 @@ class Study(
         {
             val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.invitation, snapshot.studyId )
             study.creationDate = snapshot.creationDate
+            study.protocolSnapshot = snapshot.protocolSnapshot
 
             return study
         }
@@ -48,6 +52,28 @@ class Study(
      */
     fun getStatus(): StudyStatus = StudyStatus( id, name, creationDate )
 
+    /**
+     * A snapshot of the protocol to use in this study, or null when not yet defined.
+     */
+    var protocolSnapshot: StudyProtocolSnapshot? = null
+        /**
+         * Set the protocol to use in this study as defined by an immutable snapshot.
+         * Passing 'null' removes the assigned protocol.
+         *
+         * @throws InvalidConfigurationError when an invalid protocol snapshot is specified.
+         * @throws IllegalArgumentException when a protocol is specified which cannot be deployed (contains deployment errors).
+         */
+        set( value )
+        {
+            if ( value != null )
+            {
+                val protocol = StudyProtocol.fromSnapshot( value )
+                require( protocol.isDeployable() )
+                    { "The specified protocol contains deployment errors and therefore won't be able to be deployed." }
+            }
+
+            field = value
+        }
 
     /**
      * Get a serializable snapshot of the current state of this [Study].

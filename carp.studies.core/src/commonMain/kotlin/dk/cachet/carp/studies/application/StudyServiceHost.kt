@@ -4,6 +4,8 @@ import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.protocols.domain.InvalidConfigurationError
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
@@ -84,4 +86,25 @@ class StudyServiceHost( private val repository: StudyRepository ) : StudyService
      */
     override suspend fun getParticipants( studyId: UUID ): List<Participant> =
         repository.getParticipants( studyId )
+
+    /**
+     * Specify the study [protocol] to use for the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist,
+     * when the provided [protocol] snapshot is invalid,
+     * or when the protocol contains errors preventing it from being used in deployments.
+     */
+    override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
+    {
+        val study: Study? = repository.getById( studyId )
+        require( study != null )
+
+        // Configure study to use the protocol.
+        try { study.protocolSnapshot = protocol }
+        catch ( e: InvalidConfigurationError ) { throw IllegalArgumentException( e.message ) }
+
+        repository.update( study )
+
+        return study.getStatus()
+    }
 }

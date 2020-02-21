@@ -5,6 +5,7 @@ import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.Participant
@@ -16,7 +17,8 @@ class StudyServiceMock(
     private val getStudyStatusResult: StudyStatus = studyStatus,
     private val getStudiesOverviewResult: List<StudyStatus> = listOf(),
     private val addParticipantResult: Participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ),
-    private val getParticipantsResult: List<Participant> = listOf()
+    private val getParticipantsResult: List<Participant> = listOf(),
+    private val setProtocolResult: StudyStatus = studyStatus
 ) : Mock<StudyService>(), StudyService
 {
     companion object
@@ -53,5 +55,11 @@ class StudyServiceMock(
     {
         trackSuspendCall( StudyService::getParticipants, studyId )
         return getParticipantsResult
+    }
+
+    override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
+    {
+        trackSuspendCall( StudyService::setProtocol, studyId, protocol )
+        return setProtocolResult
     }
 }

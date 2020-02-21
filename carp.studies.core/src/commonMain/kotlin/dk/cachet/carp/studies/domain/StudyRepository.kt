@@ -25,6 +25,13 @@ interface StudyRepository
     fun getForOwner( owner: StudyOwner ): List<Study>
 
     /**
+     * Update a [study] which is already stored in this repository.
+     *
+     * @throws IllegalArgumentException when no previous version of this study is stored in the repository.
+     */
+    fun update( study: Study )
+
+    /**
      * Adds a new [participant] for the study with [studyId] to the repository.
      *
      * @throws IllegalArgumentException when a study with the specified [studyId] does not exist,
