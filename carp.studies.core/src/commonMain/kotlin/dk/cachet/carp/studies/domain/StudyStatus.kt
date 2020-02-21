@@ -18,5 +18,9 @@ data class StudyStatus(
     /**
      * The date when this study was created.
      */
-    val creationDate: DateTime
+    val creationDate: DateTime,
+    /**
+     * Determines whether the study in its current state is ready to be deployed to participants.
+     */
+    val canDeployParticipations: Boolean
 )

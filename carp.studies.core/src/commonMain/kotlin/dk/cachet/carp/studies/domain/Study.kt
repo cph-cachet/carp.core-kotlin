@@ -50,7 +50,7 @@ class Study(
     /**
      * Get the status (serializable) of this [Study].
      */
-    fun getStatus(): StudyStatus = StudyStatus( id, name, creationDate )
+    fun getStatus(): StudyStatus = StudyStatus( id, name, creationDate, canDeployParticipants )
 
     /**
      * A snapshot of the protocol to use in this study, or null when not yet defined.
@@ -74,6 +74,11 @@ class Study(
 
             field = value
         }
+
+    /**
+     * Determines whether the study in its current state is ready to be deployed to participants.
+     */
+    val canDeployParticipants: Boolean get() = protocolSnapshot != null
 
     /**
      * Get a serializable snapshot of the current state of this [Study].
