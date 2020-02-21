@@ -3,6 +3,7 @@ package dk.cachet.carp.studies.domain
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import kotlinx.serialization.Serializable
 
 
@@ -12,7 +13,8 @@ data class StudySnapshot(
     val ownerId: UUID,
     val name: String,
     val invitation: StudyInvitation,
-    val creationDate: DateTime
+    val creationDate: DateTime,
+    val protocolSnapshot: StudyProtocolSnapshot?
 )
 {
     companion object
@@ -29,7 +31,8 @@ data class StudySnapshot(
                 ownerId = study.owner.id,
                 name = study.name,
                 invitation = study.invitation,
-                creationDate = study.creationDate )
+                creationDate = study.creationDate,
+                protocolSnapshot = study.protocolSnapshot )
         }
     }
 }

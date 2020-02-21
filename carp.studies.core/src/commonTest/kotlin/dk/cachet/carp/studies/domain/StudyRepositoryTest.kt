@@ -36,7 +36,7 @@ interface StudyRepositoryTest
         val study = addStudy( repo )
 
         val foundStudy = repo.getById( study.id )
-        assertEquals( study, foundStudy )
+        assertEquals( study.getSnapshot(), foundStudy?.getSnapshot() )
     }
 
     @Test
@@ -60,6 +60,29 @@ interface StudyRepositoryTest
 
         val ownerStudies = repo.getForOwner( owner )
         assertEquals( ownerStudy.id, ownerStudies.single().id )
+    }
+
+    @Test
+    fun update_succeeds()
+    {
+        val repo = createRepository()
+        val study = Study( StudyOwner(), "Test" )
+        repo.add( study )
+
+        study.name = "Changed name"
+        repo.update( study )
+        val updatedStudy = repo.getById( study.id )
+        assertNotNull( updatedStudy )
+        assertEquals( "Changed name", updatedStudy.name )
+    }
+
+    @Test
+    fun update_fails_for_unknown_study()
+    {
+        val repo = createRepository()
+
+        val study = Study( StudyOwner(), "Test" )
+        assertFailsWith<IllegalArgumentException> { repo.update( study ) }
     }
 
     @Test

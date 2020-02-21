@@ -4,6 +4,8 @@ import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.protocols.domain.ProtocolOwner
+import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceMock
 import dk.cachet.carp.studies.domain.users.StudyOwner
@@ -21,9 +23,10 @@ class StudyServiceRequestsTest
         val requests: List<StudyServiceRequest> = listOf(
             StudyServiceRequest.CreateStudy( StudyOwner(), "Test", StudyInvitation.empty() ),
             StudyServiceRequest.GetStudyStatus( UUID.randomUUID() ),
-            StudyServiceRequest.GetStudiesOverview( StudyOwner() ),
+            StudyServiceRequest.GetStudiesOverview(StudyOwner()),
             StudyServiceRequest.AddParticipant( UUID.randomUUID(), EmailAddress( "test@test.com" ) ),
-            StudyServiceRequest.GetParticipants( UUID.randomUUID() )
+            StudyServiceRequest.GetParticipants( UUID.randomUUID() ),
+            StudyServiceRequest.SetProtocol( UUID.randomUUID(), StudyProtocol( ProtocolOwner(), "Test" ).getSnapshot() )
         )
     }
 
