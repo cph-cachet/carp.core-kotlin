@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.infrastructure
 
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.AccountService
@@ -32,13 +33,13 @@ class InMemoryAccountService : AccountService
     }
 
     /**
-     * Send out a [participation] [invitation] for a study, or make it available, to the user managing [identity].
+     * Send out a [participation] [invitation] for a study, or make it available, to the account with [accountId].
      *
-     * @throws IllegalArgumentException when no account with a matching [identity] exists.
+     * @throws IllegalArgumentException when account with [accountId] does not exist.
      */
-    override suspend fun inviteExistingAccount( identity: AccountIdentity, invitation: StudyInvitation, participation: Participation )
+    override suspend fun inviteExistingAccount( accountId: UUID, invitation: StudyInvitation, participation: Participation )
     {
-        require( accounts.any { it.identity == identity } )
+        require( accounts.any { it.id == accountId } )
     }
 
     /**
