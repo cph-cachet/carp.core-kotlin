@@ -54,6 +54,23 @@ class StudyTest
         assertFailsWith<IllegalArgumentException> { study.protocolSnapshot = protocol.getSnapshot() }
     }
 
+    @Test
+    fun canDeployParticipants_false_when_protocol_not_defined()
+    {
+        val study = createStudy()
+        assertFalse( study.canDeployParticipants )
+    }
+
+    @Test
+    fun canDeployParticipants_true_once_protocol_is_defined()
+    {
+        val study = createStudy()
+        val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
+        protocol.addMasterDevice( Smartphone( "User's phone" ) ) // One master device is needed to deploy.
+        study.protocolSnapshot = protocol.getSnapshot()
+        assertTrue( study.canDeployParticipants )
+    }
+
 
     private fun createStudy(): Study = Study( StudyOwner(), "Test study" )
 }

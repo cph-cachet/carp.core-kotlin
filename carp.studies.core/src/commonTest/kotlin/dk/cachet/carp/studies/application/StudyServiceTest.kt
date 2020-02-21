@@ -34,6 +34,7 @@ interface StudyServiceTest
         assertEquals( status.studyId, foundStudy.id )
         assertEquals( name, foundStudy.name )
         assertEquals( name, foundStudy.invitation.name ) // Default study description when not specified.
+        assertFalse( foundStudy.canDeployParticipants )
     }
 
     @Test
@@ -49,6 +50,7 @@ interface StudyServiceTest
         assertEquals( status.studyId, foundStudy.id )
         assertEquals( name, foundStudy.name )
         assertEquals( invitation, foundStudy.invitation )
+        assertFalse( foundStudy.canDeployParticipants )
     }
 
     @Test
