@@ -14,7 +14,8 @@ data class StudySnapshot(
     val name: String,
     val invitation: StudyInvitation,
     val creationDate: DateTime,
-    val protocolSnapshot: StudyProtocolSnapshot?
+    val protocolSnapshot: StudyProtocolSnapshot?,
+    val isLive: Boolean
 )
 {
     companion object
@@ -32,7 +33,8 @@ data class StudySnapshot(
                 name = study.name,
                 invitation = study.invitation,
                 creationDate = study.creationDate,
-                protocolSnapshot = study.protocolSnapshot )
+                protocolSnapshot = study.protocolSnapshot,
+                isLive = study.isLive )
         }
     }
 }

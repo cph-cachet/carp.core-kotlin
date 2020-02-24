@@ -23,7 +23,10 @@ class StudyServiceMock(
 {
     companion object
     {
-        private val studyStatus = StudyStatus( UUID.randomUUID(), "Test", DateTime.now(), false )
+        private val studyStatus = StudyStatus(
+            UUID.randomUUID(), "Test", DateTime.now(),
+            canDeployToParticipants = false,
+            isLive = false )
     }
 
 

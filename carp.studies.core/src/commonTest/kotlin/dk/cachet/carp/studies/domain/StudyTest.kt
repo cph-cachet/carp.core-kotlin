@@ -26,6 +26,7 @@ class StudyTest
         assertEquals( study.invitation, fromSnapshot.invitation )
         assertEquals( study.creationDate, fromSnapshot.creationDate )
         assertEquals( study.protocolSnapshot, fromSnapshot.protocolSnapshot )
+        assertEquals( study.isLive, fromSnapshot.isLive )
     }
 
     @Test
@@ -55,20 +56,39 @@ class StudyTest
     }
 
     @Test
-    fun canDeployParticipants_false_when_protocol_not_defined()
+    fun verify_state_of_new_study()
     {
         val study = createStudy()
-        assertFalse( study.canDeployParticipants )
+        assertFalse( study.canDeployToParticipants )
+        assertFalse( study.isLive )
+
+        val status = study.getStatus()
+        assertEquals( study.canDeployToParticipants, status.canDeployToParticipants )
+        assertEquals( study.isLive, status.isLive )
     }
 
     @Test
-    fun canDeployParticipants_true_once_protocol_is_defined()
+    fun canDeployParticipants_false_until_live()
     {
         val study = createStudy()
+        assertFalse( study.canDeployToParticipants )
+
+        // Define protocol.
         val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
         protocol.addMasterDevice( Smartphone( "User's phone" ) ) // One master device is needed to deploy.
         study.protocolSnapshot = protocol.getSnapshot()
-        assertTrue( study.canDeployParticipants )
+        assertFalse( study.canDeployToParticipants )
+
+        // Go live.
+        study.goLive()
+        assertTrue( study.canDeployToParticipants )
+    }
+
+    @Test
+    fun goLive_fails_when_no_protocol_set()
+    {
+        val study = createStudy()
+        assertFailsWith<IllegalStateException> { study.goLive() }
     }
 
 

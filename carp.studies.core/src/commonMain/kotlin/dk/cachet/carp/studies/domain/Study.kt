@@ -35,6 +35,7 @@ class Study(
             val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.invitation, snapshot.studyId )
             study.creationDate = snapshot.creationDate
             study.protocolSnapshot = snapshot.protocolSnapshot
+            study.isLive = snapshot.isLive
 
             return study
         }
@@ -50,7 +51,7 @@ class Study(
     /**
      * Get the status (serializable) of this [Study].
      */
-    fun getStatus(): StudyStatus = StudyStatus( id, name, creationDate, canDeployParticipants )
+    fun getStatus(): StudyStatus = StudyStatus( id, name, creationDate, canDeployToParticipants, isLive )
 
     /**
      * A snapshot of the protocol to use in this study, or null when not yet defined.
@@ -60,11 +61,14 @@ class Study(
          * Set the protocol to use in this study as defined by an immutable snapshot.
          * Passing 'null' removes the assigned protocol.
          *
+         * @throws IllegalStateException when the study protocol can no longer be set since the study went 'live'.
          * @throws InvalidConfigurationError when an invalid protocol snapshot is specified.
          * @throws IllegalArgumentException when a protocol is specified which cannot be deployed (contains deployment errors).
          */
         set( value )
         {
+            check( !isLive )
+
             if ( value != null )
             {
                 val protocol = StudyProtocol.fromSnapshot( value )
@@ -76,9 +80,26 @@ class Study(
         }
 
     /**
+     * Determines whether a study protocol has been locked in and the study may be deployed to real participants.
+     */
+    var isLive: Boolean = false
+        private set
+
+    /**
+     * Lock in the current study protocol so that the study may be deployed to participants.
+     *
+     * @throws IllegalStateException when no study protocol is set yet.
+     */
+    fun goLive()
+    {
+        check( protocolSnapshot != null ) { "A study protocol needs to be defined for a study to go live." }
+        isLive = true
+    }
+
+    /**
      * Determines whether the study in its current state is ready to be deployed to participants.
      */
-    val canDeployParticipants: Boolean get() = protocolSnapshot != null
+    val canDeployToParticipants: Boolean get() = protocolSnapshot != null && isLive
 
     /**
      * Get a serializable snapshot of the current state of this [Study].
