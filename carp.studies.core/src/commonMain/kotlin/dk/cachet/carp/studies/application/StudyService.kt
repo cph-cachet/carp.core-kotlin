@@ -6,6 +6,7 @@ import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
+import dk.cachet.carp.studies.domain.users.AssignParticipantDevice
 import dk.cachet.carp.studies.domain.users.Participant
 
 
@@ -69,4 +70,14 @@ interface StudyService
      * @throws IllegalStateException when no study protocol for the given study is set yet.
      */
     suspend fun goLive( studyId: UUID ): StudyStatus
+
+    /**
+     * Deploy the study with the given [studyId] to a [group] of previously added participants.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist,
+     * [group] is empty, any of the participants specified in [group] does not exist,
+     * or any of the device roles specified in [group] are not part of the configured study protocol.
+     * @throws IllegalStateException when the study is not yet ready for deployment.
+     */
+    suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevice> ): StudyStatus
 }

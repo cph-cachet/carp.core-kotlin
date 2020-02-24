@@ -8,6 +8,7 @@ import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
+import dk.cachet.carp.studies.domain.users.AssignParticipantDevice
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.test.Mock
 
@@ -19,7 +20,8 @@ class StudyServiceMock(
     private val addParticipantResult: Participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ),
     private val getParticipantsResult: List<Participant> = listOf(),
     private val setProtocolResult: StudyStatus = studyStatus,
-    private val goLiveResult: StudyStatus = studyStatus
+    private val goLiveResult: StudyStatus = studyStatus,
+    private val deployParticipantResult: StudyStatus = studyStatus
 ) : Mock<StudyService>(), StudyService
 {
     companion object
@@ -71,5 +73,11 @@ class StudyServiceMock(
     {
         trackSuspendCall( StudyService::goLive, studyId )
         return goLiveResult
+    }
+
+    override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevice> ): StudyStatus
+    {
+        trackSuspendCall( StudyService::deployParticipantGroup, studyId, group )
+        return deployParticipantResult
     }
 }
