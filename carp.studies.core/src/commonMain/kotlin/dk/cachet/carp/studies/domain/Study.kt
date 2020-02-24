@@ -99,7 +99,7 @@ class Study(
     /**
      * Determines whether the study in its current state is ready to be deployed to participants.
      */
-    val canDeployToParticipants: Boolean get() = protocolSnapshot != null && isLive
+    val canDeployToParticipants: Boolean get() = isLive
 
     /**
      * Get a serializable snapshot of the current state of this [Study].

@@ -68,7 +68,7 @@ class StudyTest
     }
 
     @Test
-    fun canDeployParticipants_false_until_live()
+    fun canDeployToParticipants_false_until_live()
     {
         val study = createStudy()
         assertFalse( study.canDeployToParticipants )
