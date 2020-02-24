@@ -192,7 +192,7 @@ interface StudyServiceTest
     @Test
     fun goLive_fails_when_no_protocol_set_yet() = runBlockingTest {
         val ( service, _ ) = createService()
-        var status = service.createStudy( StudyOwner(), "Test" )
+        val status = service.createStudy( StudyOwner(), "Test" )
 
         assertFailsWith<IllegalStateException> { service.goLive( status.studyId ) }
     }
