@@ -3,6 +3,7 @@ package dk.cachet.carp.studies.application
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.EmailAccountIdentity
+import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
@@ -10,13 +11,17 @@ import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudyStatus
+import dk.cachet.carp.studies.domain.users.AssignParticipantDevice
 import dk.cachet.carp.studies.domain.users.Participant
 
 
 /**
  * Implementation of [StudyService] which allows creating and managing studies.
  */
-class StudyServiceHost( private val repository: StudyRepository ) : StudyService
+class StudyServiceHost(
+    private val repository: StudyRepository,
+    private val deploymentService: DeploymentService
+) : StudyService
 {
     /**
      * Create a new study for the specified [owner].
@@ -120,6 +125,52 @@ class StudyServiceHost( private val repository: StudyRepository ) : StudyService
         require( study != null )
 
         study.goLive()
+
+        return study.getStatus()
+    }
+
+    /**
+     * Deploy the study with the given [studyId] to a [group] of previously added participants.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist,
+     * [group] is empty, any of the participants specified in [group] does not exist,
+     * or any of the device roles specified in [group] are not part of the configured study protocol.
+     * @throws IllegalStateException when the study is not yet ready for deployment.
+     */
+    override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevice> ): StudyStatus
+    {
+        require( group.isNotEmpty() ) { "No participants to deploy specified." }
+
+        // Verify whether the study is ready for deployment.
+        val study: Study? = repository.getById( studyId )
+        require( study != null )
+        check( study.canDeployToParticipants )
+
+        // Verify whether the master device roles to deploy exist in the protocol.
+        val deviceRoles = group.map { it.deviceRole }.toSet()
+        val masterDevices = study.protocolSnapshot!!.masterDevices.map { it.roleName }.toSet()
+        require( deviceRoles.all { masterDevices.contains( it ) } )
+            { "One of the specified device roles is not part of the configured study protocol." }
+
+        // Get participant information.
+        val participantIds = group.map { it.participantId }.toSet()
+        val allParticipants = repository.getParticipants( studyId ).associateBy { it.id }
+        require( participantIds.all { allParticipants.contains( it ) } )
+            { "One of the specified participants is not part of this study." }
+
+        // Create deployment and add participation.
+        val deploymentStatus = deploymentService.createStudyDeployment( study.protocolSnapshot!! )
+        for ( toAssign in group )
+        {
+            val participant = allParticipants.getValue( toAssign.participantId )
+            // TODO: Add role to participation.
+            val participation = deploymentService.addParticipation(
+                deploymentStatus.studyDeploymentId,
+                participant.accountIdentity,
+                study.invitation )
+
+            // TODO: Store participation in `StudyRepository`.
+        }
 
         return study.getStatus()
     }
