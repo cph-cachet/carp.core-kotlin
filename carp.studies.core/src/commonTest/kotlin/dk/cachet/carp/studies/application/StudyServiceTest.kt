@@ -3,6 +3,10 @@ package dk.cachet.carp.studies.application
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.protocols.domain.ProtocolOwner
+import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.domain.devices.Smartphone
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.test.runBlockingTest
@@ -122,5 +126,85 @@ interface StudyServiceTest
 
         val unknownId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException> { service.getParticipants( unknownId ) }
+    }
+
+    @Test
+    fun setProtocol_succeeds() = runBlockingTest {
+        val ( service, _ ) = createService()
+        var status = service.createStudy( StudyOwner(), "Test" )
+
+        status = service.setProtocol( status.studyId, createDeployableProtocol() )
+        assertFalse( status.canDeployToParticipants )
+        assertFalse( status.isLive )
+    }
+
+    @Test
+    fun setProtocol_fails_for_unknown_studyId() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val unknownId = UUID.randomUUID()
+        assertFailsWith<IllegalArgumentException> { service.setProtocol( unknownId, createDeployableProtocol() ) }
+    }
+
+    @Test
+    fun setProtocol_fails_for_invalid_protocol_snapshot() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val status = service.createStudy( StudyOwner(), "Test" )
+
+        val validSnapshot = createDeployableProtocol()
+        val invalidSnapshot = validSnapshot.copy(
+            triggeredTasks = listOf(
+                StudyProtocolSnapshot.TriggeredTask( 0, "Unknown task", "Unknown device" )
+            )
+        )
+        assertFailsWith<IllegalArgumentException> { service.setProtocol( status.studyId, invalidSnapshot ) }
+    }
+
+    @Test
+    fun setProtocol_fails_for_protocol_which_cant_be_deployed() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val status = service.createStudy( StudyOwner(), "Test" )
+
+        val protocol = StudyProtocol( ProtocolOwner(), "Not deployable" )
+        assertFailsWith<IllegalArgumentException> { service.setProtocol( status.studyId, protocol.getSnapshot() ) }
+    }
+
+    @Test
+    fun goLive_succeeds() = runBlockingTest {
+        val ( service, _ ) = createService()
+
+        var status = service.createStudy( StudyOwner(), "Test" )
+        assertFalse( status.isLive )
+
+        // Set protocol and go live.
+        service.setProtocol( status.studyId, createDeployableProtocol() )
+        status = service.goLive( status.studyId )
+        assertTrue( status.canDeployToParticipants )
+        assertTrue( status.isLive )
+    }
+
+    @Test
+    fun goLive_fails_for_unknown_studyId() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val unknownId = UUID.randomUUID()
+        assertFailsWith<IllegalArgumentException> { service.goLive( unknownId ) }
+    }
+
+    @Test
+    fun goLive_fails_when_no_protocol_set_yet() = runBlockingTest {
+        val ( service, _ ) = createService()
+        var status = service.createStudy( StudyOwner(), "Test" )
+
+        assertFailsWith<IllegalStateException> { service.goLive( status.studyId ) }
+    }
+
+
+    private fun createDeployableProtocol(): StudyProtocolSnapshot
+    {
+        val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
+
+        // Add master device, needed for it to be deployable.
+        protocol.addMasterDevice( Smartphone( "User's phone" ) )
+
+        return protocol.getSnapshot()
     }
 }

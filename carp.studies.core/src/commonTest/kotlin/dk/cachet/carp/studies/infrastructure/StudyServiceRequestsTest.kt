@@ -26,7 +26,8 @@ class StudyServiceRequestsTest
             StudyServiceRequest.GetStudiesOverview(StudyOwner()),
             StudyServiceRequest.AddParticipant( UUID.randomUUID(), EmailAddress( "test@test.com" ) ),
             StudyServiceRequest.GetParticipants( UUID.randomUUID() ),
-            StudyServiceRequest.SetProtocol( UUID.randomUUID(), StudyProtocol( ProtocolOwner(), "Test" ).getSnapshot() )
+            StudyServiceRequest.SetProtocol( UUID.randomUUID(), StudyProtocol( ProtocolOwner(), "Test" ).getSnapshot() ),
+            StudyServiceRequest.GoLive( UUID.randomUUID() )
         )
     }
 

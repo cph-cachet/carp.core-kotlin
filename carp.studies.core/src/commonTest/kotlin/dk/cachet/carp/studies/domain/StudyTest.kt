@@ -85,6 +85,19 @@ class StudyTest
     }
 
     @Test
+    fun goLive_can_be_called_more_than_once()
+    {
+        val study = createStudy()
+        val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
+        protocol.addMasterDevice( Smartphone( "User's phone" ) ) // One master device is needed to deploy.
+        study.protocolSnapshot = protocol.getSnapshot()
+        study.goLive()
+
+        // Study already live, but should not fail.
+        study.goLive()
+    }
+
+    @Test
     fun goLive_fails_when_no_protocol_set()
     {
         val study = createStudy()
