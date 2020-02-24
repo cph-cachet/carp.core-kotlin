@@ -61,4 +61,12 @@ interface StudyService
      * or when the protocol contains errors preventing it from being used in deployments.
      */
     suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
+
+    /**
+     * Lock in the current study protocol so that the study may be deployed to participants.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     * @throws IllegalStateException when no study protocol for the given study is set yet.
+     */
+    suspend fun goLive( studyId: UUID ): StudyStatus
 }

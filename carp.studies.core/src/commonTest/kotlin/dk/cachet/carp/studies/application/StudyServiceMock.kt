@@ -18,7 +18,8 @@ class StudyServiceMock(
     private val getStudiesOverviewResult: List<StudyStatus> = listOf(),
     private val addParticipantResult: Participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ),
     private val getParticipantsResult: List<Participant> = listOf(),
-    private val setProtocolResult: StudyStatus = studyStatus
+    private val setProtocolResult: StudyStatus = studyStatus,
+    private val goLiveResult: StudyStatus = studyStatus
 ) : Mock<StudyService>(), StudyService
 {
     companion object
@@ -64,5 +65,11 @@ class StudyServiceMock(
     {
         trackSuspendCall( StudyService::setProtocol, studyId, protocol )
         return setProtocolResult
+    }
+
+    override suspend fun goLive( studyId: UUID ): StudyStatus
+    {
+        trackSuspendCall( StudyService::goLive, studyId )
+        return goLiveResult
     }
 }

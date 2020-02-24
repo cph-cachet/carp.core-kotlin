@@ -107,4 +107,20 @@ class StudyServiceHost( private val repository: StudyRepository ) : StudyService
 
         return study.getStatus()
     }
+
+    /**
+     * Lock in the current study protocol so that the study may be deployed to participants.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     * @throws IllegalStateException when no study protocol for the given study is set yet.
+     */
+    override suspend fun goLive( studyId: UUID ): StudyStatus
+    {
+        val study: Study? = repository.getById( studyId )
+        require( study != null )
+
+        study.goLive()
+
+        return study.getStatus()
+    }
 }
