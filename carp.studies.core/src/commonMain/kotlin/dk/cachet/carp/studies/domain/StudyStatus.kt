@@ -22,5 +22,9 @@ data class StudyStatus(
     /**
      * Determines whether the study in its current state is ready to be deployed to participants.
      */
-    val canDeployParticipations: Boolean
+    val canDeployToParticipants: Boolean,
+    /**
+     * Determines whether a study protocol has been locked in and the study may be deployed to real participants.
+     */
+    val isLive: Boolean
 )

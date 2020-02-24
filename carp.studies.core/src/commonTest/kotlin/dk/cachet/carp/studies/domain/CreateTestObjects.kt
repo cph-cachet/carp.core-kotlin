@@ -21,5 +21,8 @@ fun createComplexStudy(): Study
     protocol.addMasterDevice( Smartphone( "User's phone" ) ) // Needed to make the protocol deployable.
     study.protocolSnapshot = protocol.getSnapshot()
 
+    // Go live.
+    study.goLive()
+
     return study
 }
