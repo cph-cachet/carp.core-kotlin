@@ -9,3 +9,13 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class AssignParticipantDevice( val participantId: UUID, val deviceRole: String )
+
+/**
+ * Get the unique set of participant IDs defined in a collection of [AssignParticipantDevice].
+ */
+fun Collection<AssignParticipantDevice>.participantIds(): Set<UUID> = this.map { it.participantId }.toSet()
+
+/**
+ * Get the unique set of device roles defined in a collection of [AssignParticipantDevice].
+ */
+fun Collection<AssignParticipantDevice>.deviceRoles(): Set<String> = this.map { it.deviceRole }.toSet()

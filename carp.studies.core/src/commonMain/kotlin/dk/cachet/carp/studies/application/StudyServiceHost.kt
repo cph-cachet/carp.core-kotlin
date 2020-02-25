@@ -8,11 +8,13 @@ import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.Study
-import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevice
+import dk.cachet.carp.studies.domain.users.deviceRoles
 import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.participantIds
+import dk.cachet.carp.studies.domain.users.StudyOwner
 
 
 /**
@@ -147,18 +149,16 @@ class StudyServiceHost(
         check( study.canDeployToParticipants )
 
         // Verify whether the master device roles to deploy exist in the protocol.
-        val deviceRoles = group.map { it.deviceRole }.toSet()
         val masterDevices = study.protocolSnapshot!!.masterDevices.map { it.roleName }.toSet()
-        require( deviceRoles.all { masterDevices.contains( it ) } )
+        require( group.deviceRoles().all { masterDevices.contains( it ) } )
             { "One of the specified device roles is not part of the configured study protocol." }
 
         // Get participant information.
-        val participantIds = group.map { it.participantId }.toSet()
         val allParticipants = repository.getParticipants( studyId ).associateBy { it.id }
-        require( participantIds.all { allParticipants.contains( it ) } )
+        require( group.participantIds().all { allParticipants.contains( it ) } )
             { "One of the specified participants is not part of this study." }
 
-        // Create deployment and add participation.
+        // Create deployment and add participations.
         val deploymentStatus = deploymentService.createStudyDeployment( study.protocolSnapshot!! )
         for ( toAssign in group )
         {
