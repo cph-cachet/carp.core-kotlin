@@ -8,7 +8,7 @@ import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
-import dk.cachet.carp.studies.domain.users.AssignParticipantDevice
+import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.test.Mock
 
@@ -75,7 +75,7 @@ class StudyServiceMock(
         return goLiveResult
     }
 
-    override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevice> ): StudyStatus
+    override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): StudyStatus
     {
         trackSuspendCall( StudyService::deployParticipantGroup, studyId, group )
         return deployParticipantResult

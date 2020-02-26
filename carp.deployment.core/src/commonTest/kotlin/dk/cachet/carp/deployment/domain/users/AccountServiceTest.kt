@@ -31,7 +31,7 @@ abstract class AccountServiceTest
 
         // Create and verify account.
         val participation = Participation( UUID.randomUUID() )
-        val account = service.inviteNewAccount( identity, StudyInvitation.empty(), participation )
+        val account = service.inviteNewAccount( identity, StudyInvitation.empty(), participation, listOf() )
         assertEquals( identity, account.identity )
 
         // Verify whether account can be retrieved.
@@ -50,10 +50,10 @@ abstract class AccountServiceTest
     private fun inviteNewAccountWithExistingTest( identity: AccountIdentity ) = runBlockingTest {
         val service = createService()
         val participation = Participation( UUID.randomUUID() )
-        service.inviteNewAccount( identity, StudyInvitation.empty(), participation )
+        service.inviteNewAccount( identity, StudyInvitation.empty(), participation, listOf() )
 
         assertFailsWith<IllegalArgumentException> {
-            service.inviteNewAccount( identity, StudyInvitation.empty(), participation )
+            service.inviteNewAccount( identity, StudyInvitation.empty(), participation, listOf() )
         }
     }
 
@@ -62,9 +62,9 @@ abstract class AccountServiceTest
         val service = createService()
         val identity = UsernameAccountIdentity( "test" )
         val invitation = StudyInvitation.empty()
-        val account = service.inviteNewAccount( identity, invitation, Participation( UUID.randomUUID() ) )
+        val account = service.inviteNewAccount( identity, invitation, Participation( UUID.randomUUID() ), listOf() )
 
-        service.inviteExistingAccount( account.id, invitation, Participation( UUID.randomUUID() ) )
+        service.inviteExistingAccount( account.id, invitation, Participation( UUID.randomUUID() ), listOf() )
     }
 
     @Test
@@ -74,7 +74,7 @@ abstract class AccountServiceTest
 
         val unknownId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException> {
-            service.inviteExistingAccount( unknownId, StudyInvitation.empty(), participation )
+            service.inviteExistingAccount( unknownId, StudyInvitation.empty(), participation, listOf() )
         }
     }
 

@@ -6,7 +6,7 @@ import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
-import dk.cachet.carp.studies.domain.users.AssignParticipantDevice
+import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.Participant
 
 
@@ -79,5 +79,5 @@ interface StudyService
      * or any of the device roles specified in [group] are not part of the configured study protocol.
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevice> ): StudyStatus
+    suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): StudyStatus
 }

@@ -9,7 +9,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
-import dk.cachet.carp.studies.domain.users.AssignParticipantDevice
+import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.Participant
 import kotlinx.serialization.Serializable
 
@@ -56,7 +56,7 @@ sealed class StudyServiceRequest
         ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::goLive, studyId )
 
     @Serializable
-    data class DeployParticipantGroup( val studyId: UUID, val group: Set<AssignParticipantDevice> ) :
+    data class DeployParticipantGroup( val studyId: UUID, val group: Set<AssignParticipantDevices> ) :
         StudyServiceRequest(),
         ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::deployParticipantGroup, studyId, group )
 }

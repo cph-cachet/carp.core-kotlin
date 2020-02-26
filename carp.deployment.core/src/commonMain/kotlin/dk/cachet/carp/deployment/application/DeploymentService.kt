@@ -3,6 +3,7 @@ package dk.cachet.carp.deployment.application
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
+import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
@@ -57,14 +58,16 @@ interface DeploymentService
     suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
 
     /**
-     * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId].
+     * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId],
+     * using the master devices with the specified [deviceRoleNames].
      * In case no account is associated to the specified [identity], a new account is created.
      * An [invitation] (and account details) is delivered to the person managing the [identity],
      * or should be handed out manually to the relevant participant by the person managing the specified [identity].
      *
-     * @throws IllegalArgumentException in case there is no study deployment with [studyDeploymentId].
+     * @throws IllegalArgumentException in case there is no study deployment with [studyDeploymentId],
+     * or when any of the [deviceRoleNames] is not part of the study protocol deployment.
      */
-    suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity, invitation: StudyInvitation ): Participation
+    suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ): Participation
 
     /**
      * Get all participations to study deployments the account with the given [accountId] has been invited to.
