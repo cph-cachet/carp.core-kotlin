@@ -13,7 +13,7 @@ import kotlin.test.*
 /**
  * A base test class to verify whether serialization for all supported types in a specified [serialModule] succeed.
  */
-abstract class ConcreteTypesSerializationTest(
+open class ConcreteTypesSerializationTest(
     /**
      * The JSON serializer to use.
      */

@@ -8,7 +8,7 @@ import kotlin.reflect.jvm.internal.KotlinReflectionInternalError
 
 @Suppress( "LeakingThis" ) // 'this' in init is only used to inspect the derived type, thus incomplete initialization is irrelevant.
 @Serializable
-actual abstract class Immutable
+actual open class Immutable
 {
     actual constructor( exception: Throwable )
     {

@@ -28,7 +28,7 @@ buildscript {
             mocha:'7.0.0',
 
             // DevOps versions.
-            detektPlugin:'1.2.0',
+            detektPlugin:'1.5.1',
             nexusReleasePlugin:'0.21.2'
         ]
     }
@@ -181,7 +181,7 @@ configure( subprojects - detektModule ) {
     // Add code analysis.
     apply plugin: 'io.gitlab.arturbosch.detekt'
     detekt {
-        input = files("$projectDir")
+        input = files("$projectDir/src/")
         config = files("$rootDir/detekt.yml")
         ignoreFailures = true
 
@@ -191,8 +191,8 @@ configure( subprojects - detektModule ) {
         }
     }
     task detektPasses(type: io.gitlab.arturbosch.detekt.Detekt) {
-        input = files("$projectDir")
-        config = files("$rootDir/detekt.yml")
+        source = files("$projectDir/src/")
+        config.from("$rootDir/detekt.yml")
         ignoreFailures = false
     }
     tasks.detekt.dependsOn ":carp.detekt:assemble" // Ensure 'carp.detekt' is build prior to running code analysis.
