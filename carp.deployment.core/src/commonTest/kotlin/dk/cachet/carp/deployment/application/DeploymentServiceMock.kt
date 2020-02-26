@@ -56,9 +56,9 @@ class DeploymentServiceMock(
         return getDeviceDeploymentForResult
     }
 
-    override suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity, invitation: StudyInvitation ): Participation
+    override suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ): Participation
     {
-        trackSuspendCall( DeploymentService::addParticipation, studyDeploymentId, identity, invitation )
+        trackSuspendCall( DeploymentService::addParticipation, studyDeploymentId, deviceRoleNames, identity, invitation )
         return Participation( studyDeploymentId )
     }
 

@@ -47,7 +47,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     }
 
 
-    private val protocol: StudyProtocol =
+    val protocol: StudyProtocol =
         try
         {
             StudyProtocol.fromSnapshot( protocolSnapshot )

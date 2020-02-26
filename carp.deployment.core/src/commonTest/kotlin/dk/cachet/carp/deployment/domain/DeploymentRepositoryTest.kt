@@ -91,7 +91,7 @@ interface DeploymentRepositoryTest
 
         val account = Account.withUsernameIdentity( "test" )
         val participation = Participation( UUID.randomUUID() )
-        val invitation = ParticipationInvitation( participation, StudyInvitation.empty() )
+        val invitation = ParticipationInvitation( participation, StudyInvitation.empty(), setOf( "Test device" ) )
         repo.addInvitation( account.id, invitation )
         val retrievedInvitations = repo.getInvitations( account.id )
         assertEquals( invitation, retrievedInvitations.single() )

@@ -7,7 +7,7 @@ import dk.cachet.carp.protocols.infrastructure.PROTOCOLS_SERIAL_MODULE
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudySnapshot
 import dk.cachet.carp.studies.domain.StudyStatus
-import dk.cachet.carp.studies.domain.users.AssignParticipantDevice
+import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.Participant
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.EmptyModule
@@ -81,13 +81,13 @@ fun StudyStatus.toJson(): String =
     JSON.stringify( StudyStatus.serializer(), this )
 
 /**
- * Create a [AssignParticipantDevice] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ * Create a [AssignParticipantDevices] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
-fun AssignParticipantDevice.Companion.fromJson( json: String ): AssignParticipantDevice =
+fun AssignParticipantDevices.Companion.fromJson( json: String ): AssignParticipantDevices =
     JSON.parse( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
-fun AssignParticipantDevice.toJson(): String =
-    JSON.stringify( AssignParticipantDevice.serializer(), this )
+fun AssignParticipantDevices.toJson(): String =
+    JSON.stringify( AssignParticipantDevices.serializer(), this )

@@ -10,7 +10,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudyStatus
-import dk.cachet.carp.studies.domain.users.AssignParticipantDevice
+import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.deviceRoles
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.participantIds
@@ -139,7 +139,7 @@ class StudyServiceHost(
      * or any of the device roles specified in [group] are not part of the configured study protocol.
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevice> ): StudyStatus
+    override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): StudyStatus
     {
         require( group.isNotEmpty() ) { "No participants to deploy specified." }
 
@@ -163,9 +163,9 @@ class StudyServiceHost(
         for ( toAssign in group )
         {
             val participant = allParticipants.getValue( toAssign.participantId )
-            // TODO: Add role to participation.
             val participation = deploymentService.addParticipation(
                 deploymentStatus.studyDeploymentId,
+                toAssign.deviceRoleNames,
                 participant.accountIdentity,
                 study.invitation )
 
