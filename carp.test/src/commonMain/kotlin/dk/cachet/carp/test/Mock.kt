@@ -9,7 +9,7 @@ import kotlin.reflect.*
  * Base class which can be used to implement a simple mock for the interface [TMock].
  * For now, this is very basic and solely supports tracking the last function call.
  */
-abstract class Mock<TMock>
+open class Mock<TMock>
 {
     private val functionCalls: MutableMap<String, Array<out Any>> = mutableMapOf()
 

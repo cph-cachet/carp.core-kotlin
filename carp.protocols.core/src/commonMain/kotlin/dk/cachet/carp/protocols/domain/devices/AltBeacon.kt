@@ -56,7 +56,7 @@ data class AltBeaconDeviceRegistration(
 
 @Serializable( with = NotSerializable::class )
 @DeviceRegistrationBuilderDsl
-class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>()
+class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>
 {
     /**
      * The beacon's device manufacturer's company identifier code as maintained by the Bluetooth SIG assigned numbers database.

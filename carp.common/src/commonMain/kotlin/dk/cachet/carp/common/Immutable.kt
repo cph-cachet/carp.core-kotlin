@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
  * @param exception The exception to throw in case the implementation is not immutable. [NotImmutableError] should be thrown by default.
  */
 @Serializable
-expect abstract class Immutable
+expect open class Immutable
 {
     constructor( exception: Throwable = NotImmutableError() )
 }

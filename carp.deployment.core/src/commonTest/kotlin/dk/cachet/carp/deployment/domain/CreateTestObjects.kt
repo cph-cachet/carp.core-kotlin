@@ -129,7 +129,7 @@ internal data class UnknownDeviceRegistration( override val deviceId: String ) :
 @Serializable( with = NotSerializable::class )
 @DeviceRegistrationBuilderDsl
 class UnknownDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() ) :
-    DeviceRegistrationBuilder<DeviceRegistration>()
+    DeviceRegistrationBuilder<DeviceRegistration>
 {
     override fun build(): DeviceRegistration = DefaultDeviceRegistration( deviceId )
 }
