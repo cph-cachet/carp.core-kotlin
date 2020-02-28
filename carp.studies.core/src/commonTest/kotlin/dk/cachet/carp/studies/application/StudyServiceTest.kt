@@ -9,6 +9,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.Smartphone
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
+import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -197,6 +198,64 @@ interface StudyServiceTest
         assertFailsWith<IllegalStateException> { service.goLive( status.studyId ) }
     }
 
+    @Test
+    fun deployParticipantGroup_succeeds() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+        val participant = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+
+        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
+        service.deployParticipantGroup( studyId, setOf( assignParticipant ) )
+    }
+
+    @Test
+    fun deployParticipantGroup_fails_for_unknown_studyId() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val unknownId = UUID.randomUUID()
+        val assignParticipant = AssignParticipantDevices( UUID.randomUUID(), setOf( "Test device" ) )
+        assertFailsWith<IllegalArgumentException> { service.deployParticipantGroup( unknownId, setOf( assignParticipant ) ) }
+    }
+
+    @Test
+    fun deployParticipantGroup_fails_for_empty_group() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val ( studyId, _ ) = createLiveStudy( service )
+
+        assertFailsWith<IllegalArgumentException> { service.deployParticipantGroup( studyId, setOf() ) }
+    }
+
+    @Test
+    fun deployParticipantGroup_fails_for_unknown_participants() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+
+        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val unknownParticipantId = UUID.randomUUID()
+        val assignParticipant = AssignParticipantDevices( unknownParticipantId, deviceRoles )
+        assertFailsWith<IllegalArgumentException> { service.deployParticipantGroup( studyId, setOf( assignParticipant ) ) }
+    }
+
+    @Test
+    fun deployParticipantGroup_fails_for_unknown_device_roles() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+        val participant = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+
+        val assignParticipant = AssignParticipantDevices( participant.id, setOf( "Unknown device" ) )
+        assertFailsWith<IllegalArgumentException> { service.deployParticipantGroup( studyId, setOf( assignParticipant ) ) }
+    }
+
+    @Test
+    fun deployParticipantGroup_fails_when_not_all_devices_assigned() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+        val participant = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+
+        val assignParticipant = AssignParticipantDevices( participant.id, setOf() )
+        assertFailsWith<IllegalArgumentException> { service.deployParticipantGroup( studyId, setOf( assignParticipant ) ) }
+    }
+
 
     private fun createDeployableProtocol(): StudyProtocolSnapshot
     {
@@ -206,5 +265,16 @@ interface StudyServiceTest
         protocol.addMasterDevice( Smartphone( "User's phone" ) )
 
         return protocol.getSnapshot()
+    }
+
+    private suspend fun createLiveStudy( service: StudyService ): Pair<UUID, StudyProtocolSnapshot>
+    {
+        val status = service.createStudy( StudyOwner(), "Test" )
+        val studyId = status.studyId
+        val validSnapshot = createDeployableProtocol()
+        service.setProtocol( studyId, validSnapshot )
+        service.goLive( studyId )
+
+        return Pair( studyId, validSnapshot )
     }
 }
