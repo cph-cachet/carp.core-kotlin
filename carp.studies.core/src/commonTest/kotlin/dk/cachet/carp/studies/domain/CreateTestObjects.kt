@@ -1,9 +1,12 @@
 package dk.cachet.carp.studies.domain
 
+import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.Smartphone
+import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.domain.users.StudyOwner
 
 
@@ -23,6 +26,10 @@ fun createComplexStudy(): Study
 
     // Go live.
     study.goLive()
+
+    // Add a participation.
+    val participation = DeanonymizedParticipation( UUID.randomUUID(), Participation( UUID.randomUUID() ) )
+    study.addParticipation( participation )
 
     return study
 }

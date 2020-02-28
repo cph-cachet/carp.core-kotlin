@@ -2,10 +2,13 @@ package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
+import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.StudyOwner
 
 
@@ -36,6 +39,7 @@ class Study(
             study.creationDate = snapshot.creationDate
             study.protocolSnapshot = snapshot.protocolSnapshot
             study.isLive = snapshot.isLive
+            study._participations.addAll( snapshot.participations )
 
             return study
         }
@@ -100,6 +104,26 @@ class Study(
      * Determines whether the study in its current state is ready to be deployed to participants.
      */
     val canDeployToParticipants: Boolean get() = isLive
+
+    /**
+     * The set of participants and the specific study deployments they participate in for this study.
+     */
+    val participations: Set<DeanonymizedParticipation>
+        get() = _participations
+
+    private val _participations: MutableSet<DeanonymizedParticipation> = mutableSetOf()
+
+    /**
+     * Specify that a [Participation] has been created for a [Participant] in this study.
+     *
+     * @throws IllegalStateException when the study is not yet ready for deployment.
+     */
+    fun addParticipation( participation: DeanonymizedParticipation )
+    {
+        check( canDeployToParticipants )
+
+        _participations.add( participation )
+    }
 
     /**
      * Get a serializable snapshot of the current state of this [Study].
