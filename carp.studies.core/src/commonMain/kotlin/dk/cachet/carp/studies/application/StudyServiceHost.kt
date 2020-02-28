@@ -129,6 +129,7 @@ class StudyServiceHost(
         require( study != null )
 
         study.goLive()
+        repository.update( study )
 
         return study.getStatus()
     }
@@ -150,8 +151,8 @@ class StudyServiceHost(
 
         // Verify whether the study is ready for deployment.
         val study: Study? = repository.getById( studyId )
-        require( study != null )
-        check( study.canDeployToParticipants )
+        require( study != null ) { "Study with the specified studyId is not found." }
+        check( study.canDeployToParticipants ) { "Study is not yet ready to be deployed to participants." }
 
         // Verify whether the master device roles to deploy exist in the protocol.
         val masterDevices = study.protocolSnapshot!!.masterDevices.map { it.roleName }.toSet()

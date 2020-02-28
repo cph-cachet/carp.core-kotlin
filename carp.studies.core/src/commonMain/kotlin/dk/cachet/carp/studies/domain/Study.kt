@@ -120,7 +120,7 @@ class Study(
      */
     fun addParticipation( participation: DeanonymizedParticipation )
     {
-        check( canDeployToParticipants )
+        check( canDeployToParticipants ) { "The study is not yet ready for deployment." }
 
         _participations.add( participation )
     }
