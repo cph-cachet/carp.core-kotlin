@@ -13,7 +13,8 @@ import kotlin.test.*
 /**
  * A base test class to verify whether serialization for all supported types in a specified [serialModule] succeed.
  */
-open class ConcreteTypesSerializationTest(
+@Suppress( "UnnecessaryAbstractClass" ) // When turned into an open class, mocha tries to run these tests (on the base class).
+abstract class ConcreteTypesSerializationTest(
     /**
      * The JSON serializer to use.
      */
