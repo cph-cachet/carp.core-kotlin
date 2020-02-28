@@ -66,6 +66,8 @@ interface DeploymentService
      *
      * @throws IllegalArgumentException in case there is no study deployment with [studyDeploymentId],
      * or when any of the [deviceRoleNames] is not part of the study protocol deployment.
+     * @throws IllegalStateException in case the specified [identity] was already invited to participate in this deployment
+     * and a different [invitation] is specified than a previous request.
      */
     suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ): Participation
 
