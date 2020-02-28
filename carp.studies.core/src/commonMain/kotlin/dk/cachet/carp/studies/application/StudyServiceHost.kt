@@ -2,6 +2,7 @@ package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
@@ -11,6 +12,7 @@ import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
+import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.domain.users.deviceRoles
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.participantIds
@@ -134,9 +136,12 @@ class StudyServiceHost(
     /**
      * Deploy the study with the given [studyId] to a [group] of previously added participants.
      *
-     * @throws IllegalArgumentException when a study with [studyId] does not exist,
-     * [group] is empty, any of the participants specified in [group] does not exist,
-     * or any of the device roles specified in [group] are not part of the configured study protocol.
+     * @throws IllegalArgumentException when:
+     *  - a study with [studyId] does not exist
+     *  - [group] is empty
+     *  - any of the participants specified in [group] does not exist
+     *  - any of the device roles specified in [group] are not part of the configured study protocol
+     *  - not all devices part of the study have been assigned a participant
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
     override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): StudyStatus
@@ -153,24 +158,32 @@ class StudyServiceHost(
         require( group.deviceRoles().all { masterDevices.contains( it ) } )
             { "One of the specified device roles is not part of the configured study protocol." }
 
+        // Verify whether all master devices in the study protocol have been assigned to a participant.
+        require( group.deviceRoles().containsAll( masterDevices ) )
+            { "Not all devices required for this study have been assigned to a participant." }
+
         // Get participant information.
         val allParticipants = repository.getParticipants( studyId ).associateBy { it.id }
         require( group.participantIds().all { allParticipants.contains( it ) } )
             { "One of the specified participants is not part of this study." }
 
-        // Create deployment and add participations.
+        // Create deployment and add participations to study.
+        // TODO: How to deal with failing or partially succeeding requests?
+        //       In a distributed setup, deploymentService would be network calls.
         val deploymentStatus = deploymentService.createStudyDeployment( study.protocolSnapshot!! )
         for ( toAssign in group )
         {
-            val participant = allParticipants.getValue( toAssign.participantId )
+            val identity: AccountIdentity = allParticipants.getValue( toAssign.participantId ).accountIdentity
             val participation = deploymentService.addParticipation(
                 deploymentStatus.studyDeploymentId,
                 toAssign.deviceRoleNames,
-                participant.accountIdentity,
+                identity,
                 study.invitation )
 
-            // TODO: Store participation in `StudyRepository`.
+            study.addParticipation( DeanonymizedParticipation( toAssign.participantId, participation ) )
         }
+
+        repository.update( study )
 
         return study.getStatus()
     }
