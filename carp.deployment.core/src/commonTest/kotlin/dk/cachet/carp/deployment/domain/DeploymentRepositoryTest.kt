@@ -3,6 +3,7 @@ package dk.cachet.carp.deployment.domain
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import kotlin.test.*
@@ -84,50 +85,24 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun addStudyParticipation_and_retrieving_it_succeeds()
+    fun addInvitation_and_retrieving_it_succeeds()
     {
         val repo = createRepository()
+
         val account = Account.withUsernameIdentity( "test" )
-        val studyDeploymentId = UUID.randomUUID()
-        val invitation = StudyInvitation( "Welcome to this study!" )
-        val participation = Participation( studyDeploymentId, invitation )
-
-        repo.addParticipation( account.id, participation )
-        val participations = repo.getParticipationsForStudyDeployment( studyDeploymentId )
-
-        assertEquals( participation, participations.single() )
+        val participation = Participation( UUID.randomUUID() )
+        val invitation = ParticipationInvitation( participation, StudyInvitation.empty(), setOf( "Test device" ) )
+        repo.addInvitation( account.id, invitation )
+        val retrievedInvitations = repo.getInvitations( account.id )
+        assertEquals( invitation, retrievedInvitations.single() )
     }
 
     @Test
-    fun addStudyParticipation_with_existing_participation_only_adds_once()
+    fun getInvitations_is_empty_when_no_invitations()
     {
         val repo = createRepository()
-        val account = Account.withUsernameIdentity( "test" )
-        val studyDeploymentId = UUID.randomUUID()
-        val participation = Participation( studyDeploymentId, StudyInvitation.empty() )
 
-        repo.addParticipation( account.id, participation )
-        repo.addParticipation( account.id, participation )
-        val participations = repo.getParticipationsForStudyDeployment( studyDeploymentId )
-
-        assertEquals( participation, participations.single() )
-    }
-
-    @Test
-    fun getParticipationsForStudyDeployment_returns_matching_participations_only()
-    {
-        val repo = createRepository()
-        val account = Account.withUsernameIdentity( "test" )
-        val studyDeploymentId = UUID.randomUUID()
-        val participations = listOf(
-            Participation( studyDeploymentId, StudyInvitation.empty() ),
-            Participation( studyDeploymentId, StudyInvitation.empty() )
-        )
-        val otherParticipations = Participation( UUID.randomUUID(), StudyInvitation.empty() ) // Some other study deployment.
-
-        (participations + otherParticipations).forEach { repo.addParticipation( account.id, it ) }
-        val retrievedParticipations = repo.getParticipationsForStudyDeployment( studyDeploymentId )
-
-        assertEquals( 2, retrievedParticipations.intersect( participations ).count() )
+        val invitations = repo.getInvitations( UUID.randomUUID() )
+        assertEquals( 0, invitations.count() )
     }
 }

@@ -3,7 +3,9 @@ package dk.cachet.carp.deployment.domain
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.NotSerializable
+import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.triggers.StubTrigger
+import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
@@ -21,8 +23,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.reflect.KClass
 
-
-val testId = UUID( "27c56423-b7cd-48dd-8b7f-f819621a34f0" )
 
 /**
  * Stubs for testing extending from types in [dk.cachet.carp.protocols] module which need to be registered when using [Json] serializer.
@@ -83,7 +83,26 @@ fun createSingleMasterWithConnectedDeviceProtocol(
 fun studyDeploymentFor( protocol: StudyProtocol ): StudyDeployment
 {
     val snapshot = protocol.getSnapshot()
-    return StudyDeployment( snapshot, testId )
+    return StudyDeployment( snapshot )
+}
+
+/**
+ * Creates a study deployment with a registered device and participation added.
+ */
+fun createComplexDeployment(): StudyDeployment
+{
+    val protocol = createSingleMasterWithConnectedDeviceProtocol()
+    val deployment = studyDeploymentFor( protocol )
+
+    // Add device registration.
+    deployment.registerDevice( deployment.registrableDevices.first().device, DefaultDeviceRegistration( "test" ) )
+
+    // Add a participation.
+    val account = Account.withUsernameIdentity( "test" )
+    val participation = Participation( deployment.id )
+    deployment.addParticipation( account, participation )
+
+    return deployment
 }
 
 @Serializable
@@ -110,7 +129,7 @@ internal data class UnknownDeviceRegistration( override val deviceId: String ) :
 @Serializable( with = NotSerializable::class )
 @DeviceRegistrationBuilderDsl
 class UnknownDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() ) :
-    DeviceRegistrationBuilder<DeviceRegistration>()
+    DeviceRegistrationBuilder<DeviceRegistration>
 {
     override fun build(): DeviceRegistration = DefaultDeviceRegistration( deviceId )
 }

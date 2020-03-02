@@ -1,5 +1,7 @@
 package dk.cachet.carp.detekt.extensions.rules
 
+import dk.cachet.carp.detekt.extensions.getNextElement
+import dk.cachet.carp.detekt.extensions.getPrecedingElement
 import io.gitlab.arturbosch.detekt.api.CodeSmell
 import io.gitlab.arturbosch.detekt.api.Debt
 import io.gitlab.arturbosch.detekt.api.Entity
@@ -11,6 +13,7 @@ import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtFunctionLiteral
 import org.jetbrains.kotlin.psi.KtFunctionType
 import org.jetbrains.kotlin.psi.KtParameterList
+import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.stubs.elements.KtParameterElementType
 
@@ -26,6 +29,22 @@ class SpacingInParentheses : Rule()
         "Spaces are needed inside parentheses, except for higher-order functions.",
         Debt.FIVE_MINS
     )
+
+    override fun visitPropertyAccessor( accessor: KtPropertyAccessor )
+    {
+        super.visitPropertyAccessor( accessor )
+
+        // Get accessors do not have a parameter list, so need to be validated here.
+        // They are always empty, so should not contains spaces.
+        if ( accessor.isGetter )
+        {
+            val noSpaces = accessor.text.startsWith( "get()" )
+            if ( !noSpaces )
+            {
+                report( CodeSmell( issue, Entity.from( accessor ), "Get accessors should not contain spaces in the parentheses." ) )
+            }
+        }
+    }
 
     override fun visitParameterList( list: KtParameterList )
     {
@@ -67,8 +86,8 @@ class SpacingInParentheses : Rule()
 
     private fun hasSpaces( node: ASTNode ): Boolean
     {
-        val spaceAfter = node.firstChildNode.treeNext
-        val spaceBefore = node.lastChildNode.treePrev
+        val spaceAfter = getNextElement( node.firstChildNode.psi )
+        val spaceBefore = getPrecedingElement( node.lastChildNode.psi )
 
         return spaceAfter is PsiWhiteSpace && spaceBefore is PsiWhiteSpace
     }

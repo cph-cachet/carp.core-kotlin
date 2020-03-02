@@ -210,11 +210,21 @@ class FormattingChecksTest
     @Test
     fun getPrecedingElement_returns_null_for_first_node()
     {
-        val aligned = "package test"
-        val packageDirective = lint( aligned )
+        val first = "package test"
+        val packageDirective = lint( first )
             .children.firstIsInstance<KtPackageDirective>()
 
         assertNull( getPrecedingElement( packageDirective ) )
+    }
+
+    @Test
+    fun getNextElement_returns_null_for_last_node()
+    {
+        val last = "package test"
+        val importList = lint( last )
+            .children.firstIsInstance<KtImportList>()
+
+        assertNull( getNextElement( importList ) )
     }
 
 

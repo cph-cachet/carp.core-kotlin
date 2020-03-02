@@ -44,13 +44,19 @@ data class AltBeaconDeviceRegistration(
     val minorId: Short
 ) : DeviceRegistration()
 {
-    override val deviceId: String = "$manufacturerId:$organizationId:$majorId:$minorId"
+    // TODO: Serialization seems to fail when deviceId is assigned during initialization as follows.
+    //       This is likely a bug in kotlinx.serialization: https://github.com/Kotlin/kotlinx.serialization/issues/716
+    //       Once this is fixed, use this implementation instead.
+    // override val deviceId: String = "$manufacturerId:$organizationId:$majorId:$minorId"
+
+    override val deviceId: String
+        get() = "$manufacturerId:$organizationId:$majorId:$minorId"
 }
 
 
 @Serializable( with = NotSerializable::class )
 @DeviceRegistrationBuilderDsl
-class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>()
+class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>
 {
     /**
      * The beacon's device manufacturer's company identifier code as maintained by the Bluetooth SIG assigned numbers database.

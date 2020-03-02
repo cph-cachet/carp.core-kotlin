@@ -31,12 +31,12 @@ abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegis
  *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceDescriptor].
  */
 @Serializable( NotSerializable::class )
-abstract class DeviceRegistrationBuilder<T : DeviceRegistration>
+interface DeviceRegistrationBuilder<T : DeviceRegistration>
 {
     /**
      * Build the immutable [DeviceRegistration] using the current configuration of this [DeviceRegistrationBuilder].
      */
-    abstract fun build(): T
+    fun build(): T
 }
 
 /**

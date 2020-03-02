@@ -1,12 +1,16 @@
 package dk.cachet.carp.studies.infrastructure
 
+import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.createServiceInvoker
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.StudyService
-import dk.cachet.carp.studies.domain.StudyOwner
+import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
+import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
+import dk.cachet.carp.studies.domain.users.Participant
 import kotlinx.serialization.Serializable
 
 
@@ -25,4 +29,34 @@ sealed class StudyServiceRequest
     data class GetStudyStatus( val studyId: UUID ) :
         StudyServiceRequest(),
         ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::getStudyStatus, studyId )
+
+    @Serializable
+    data class GetStudiesOverview( val owner: StudyOwner ) :
+        StudyServiceRequest(),
+        ServiceInvoker<StudyService, List<StudyStatus>> by createServiceInvoker( StudyService::getStudiesOverview, owner )
+
+    @Serializable
+    data class AddParticipant( val studyId: UUID, val email: EmailAddress ) :
+        StudyServiceRequest(),
+        ServiceInvoker<StudyService, Participant> by createServiceInvoker( StudyService::addParticipant, studyId, email )
+
+    @Serializable
+    data class GetParticipants( val studyId: UUID ) :
+        StudyServiceRequest(),
+        ServiceInvoker<StudyService, List<Participant>> by createServiceInvoker( StudyService::getParticipants, studyId )
+
+    @Serializable
+    data class SetProtocol( val studyId: UUID, val protocol: StudyProtocolSnapshot ) :
+        StudyServiceRequest(),
+        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::setProtocol, studyId, protocol )
+
+    @Serializable
+    data class GoLive( val studyId: UUID ) :
+        StudyServiceRequest(),
+        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::goLive, studyId )
+
+    @Serializable
+    data class DeployParticipantGroup( val studyId: UUID, val group: Set<AssignParticipantDevices> ) :
+        StudyServiceRequest(),
+        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::deployParticipantGroup, studyId, group )
 }

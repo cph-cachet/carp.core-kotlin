@@ -92,3 +92,23 @@ fun getPrecedingElement( element: PsiElement ): PsiElement?
     // No preceding element and no parent with preceding elements. This must be the first element.
     return null
 }
+
+/**
+ * Get the element succeeding the given [element], regardless of whether or not it is owned by a different parent.
+ *
+ * @return The next element, or null when there is no next element.
+ */
+fun getNextElement( element: PsiElement ): PsiElement?
+{
+    // If next element is part of the same parent, no need to start traversing parent.
+    if ( element.nextSibling != null ) return element.nextSibling
+
+    // If no next element exists, search in the parent if available.
+    if ( element.parent != null )
+    {
+        return getNextElement( element.parent )
+    }
+
+    // No next element and no parent with next elements. This must be the last element.
+    return null
+}

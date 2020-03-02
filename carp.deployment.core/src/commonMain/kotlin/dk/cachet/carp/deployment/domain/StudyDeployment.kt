@@ -3,6 +3,9 @@ package dk.cachet.carp.deployment.domain
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.deployment.domain.users.AccountParticipation
+import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
@@ -34,12 +37,17 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
                 deployment.registerDevice( registrable.device, r.value )
             }
 
+            // Add participations.
+            snapshot.participations.forEach { p ->
+                deployment._participations.add( AccountParticipation( p.accountId, p.participationId ) )
+            }
+
             return deployment
         }
     }
 
 
-    private val _protocol: StudyProtocol =
+    val protocol: StudyProtocol =
         try
         {
             StudyProtocol.fromSnapshot( protocolSnapshot )
@@ -65,12 +73,20 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
     private val _registeredDevices: MutableMap<AnyDeviceDescriptor, DeviceRegistration> = mutableMapOf()
 
+    /**
+     * The account IDs participating in this study deployment and the pseudonym IDs assigned to them.
+     */
+    val participations: Set<AccountParticipation>
+        get() = _participations
+
+    private val _participations: MutableSet<AccountParticipation> = mutableSetOf()
+
     init
     {
-        require( _protocol.isDeployable() ) { "The passed protocol snapshot contains deployment errors." }
+        require( protocol.isDeployable() ) { "The passed protocol snapshot contains deployment errors." }
 
         // Initialize information which devices can or should be registered for this deployment.
-        _registrableDevices = _protocol.devices
+        _registrableDevices = protocol.devices
             // Top-level master devices require registration.
             .map { RegistrableDevice( it, isTopLevelMasterDevice( it ) ) }
             .toMutableSet()
@@ -95,7 +111,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     }
 
     private fun isTopLevelMasterDevice( device: AnyDeviceDescriptor ): Boolean =
-        device is AnyMasterDeviceDescriptor && _protocol.masterDevices.contains( device )
+        device is AnyMasterDeviceDescriptor && protocol.masterDevices.contains( device )
 
     /**
      * Determines whether the deployment configuration (to initialize the device environment) for a specific device can be obtained.
@@ -171,7 +187,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val configuration: DeviceRegistration = _registeredDevices[ device ]!! // Must be non-null, otherwise canObtainDeviceDeployment would fail.
 
         // Determine which devices this device needs to connect to and retrieve configuration for preregistered devices.
-        val connectedDevices: Set<AnyDeviceDescriptor> = _protocol.getConnectedDevices( device ).toSet()
+        val connectedDevices: Set<AnyDeviceDescriptor> = protocol.getConnectedDevices( device ).toSet()
         val deviceRegistrations: Map<String, DeviceRegistration> = _registeredDevices
             .filter { connectedDevices.contains( it.key ) }
             .mapKeys { it.key.roleName }
@@ -179,7 +195,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         // Get all tasks which might need to be executed on this or connected devices.
         val relevantDevices = arrayOf( device ).union( connectedDevices )
         val tasks = relevantDevices
-            .flatMap { _protocol.getTasksForDevice( it ) }
+            .flatMap { protocol.getTasksForDevice( it ) }
             .toSet()
 
         // Get all trigger information for this and connected devices.
@@ -188,7 +204,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val usedTriggers = protocolSnapshot.triggers
             .filter { relevantDeviceRoles.contains( it.value.sourceDeviceRoleName ) }
         val triggeredTasks = usedTriggers
-            .map { it to _protocol.getTriggeredTasks( it.value ) }
+            .map { it to protocol.getTriggeredTasks( it.value ) }
             .flatMap { pair -> pair.second.map {
                 MasterDeviceDeployment.TriggeredTask( pair.first.key, it.task.name, it.targetDevice.roleName ) } }
             .toSet()
@@ -201,6 +217,30 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             usedTriggers,
             triggeredTasks )
     }
+
+    /**
+     * Add [participation] details for a given [account] to this study deployment.
+     *
+     * @throws IllegalArgumentException if the specified [account] already participates in this deployment,
+     * or if the [participation] details do not match this study deployment.
+     */
+    fun addParticipation( account: Account, participation: Participation )
+    {
+        require( id == participation.studyDeploymentId ) { "The specified participation details do not match this study deployment." }
+        require( _participations.none { it.accountId == account.id } ) { "The specified account already participates in this study deployment." }
+
+        _participations.add( AccountParticipation( account.id, participation.id ) )
+    }
+
+    /**
+     * Get the participation details for a given [account] in this study deployment,
+     * or null in case the [account] does not participate in this study deployment.
+     */
+    fun getParticipation( account: Account ): Participation? =
+        _participations
+            .filter { it.accountId == account.id }
+            .map { Participation( id, it.participationId ) }
+            .singleOrNull()
 
 
     /**

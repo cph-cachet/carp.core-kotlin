@@ -8,8 +8,10 @@ import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
+import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -96,44 +98,73 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
     }
 
     /**
-     * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId].
+     * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId],
+     * using the master devices with the specified [deviceRoleNames].
      * In case no account is associated to the specified [identity], a new account is created.
      * An [invitation] (and account details) is delivered to the person managing the [identity],
      * or should be handed out manually to the relevant participant by the person managing the specified [identity].
      *
-     * @throws IllegalArgumentException in case there is no study deployment with [studyDeploymentId].
+     * @throws IllegalArgumentException in case there is no study deployment with [studyDeploymentId],
+     * or when any of the [deviceRoleNames] is not part of the study protocol deployment.
+     * @throws IllegalStateException in case the specified [identity] was already invited to participate in this deployment
+     * and a different [invitation] is specified than a previous request.
      */
-    override suspend fun addParticipation( studyDeploymentId: UUID, identity: AccountIdentity, invitation: StudyInvitation ): Participation
+    override suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ): Participation
     {
         val studyDeployment = repository.getStudyDeploymentBy( studyDeploymentId )
         require( studyDeployment != null )
+        val masterDeviceRoleNames = studyDeployment.protocol.masterDevices.map { it.roleName }
+        require( masterDeviceRoleNames.containsAll( deviceRoleNames ) )
 
         var account = accountService.findAccount( identity )
-        val isNewAccount = account == null
 
         // Retrieve or create participation.
-        var participation =
-                if ( isNewAccount ) null
-                else repository.getParticipations( account!!.id ).firstOrNull { it.studyDeploymentId == studyDeploymentId }
+        var participation = account?.let { studyDeployment.getParticipation( it ) }
         val isNewParticipation = participation == null
-        participation = participation ?: Participation( studyDeploymentId, invitation )
+        participation = participation ?: Participation( studyDeploymentId )
 
         // Ensure an account exists for the given identity and an invitation has been sent out.
-        if ( isNewAccount )
+        var invitationSent = false
+        val deviceDescriptors = deviceRoleNames.map { roleToUse ->
+            studyDeployment.protocol.masterDevices.first { it.roleName == roleToUse } }
+        if ( account == null )
         {
-            account = accountService.inviteNewAccount( identity, participation )
+            account = accountService.inviteNewAccount( identity, invitation, participation, deviceDescriptors )
+            invitationSent = true
         }
         else if ( isNewParticipation )
         {
-            accountService.inviteExistingAccount( identity, participation )
+            accountService.inviteExistingAccount( account.id, invitation, participation, deviceDescriptors )
+            invitationSent = true
         }
 
-        // Add participation to repository.
+        // Store the invitation so that users can also query for it later.
+        if ( invitationSent )
+        {
+            repository.addInvitation( account.id, ParticipationInvitation( participation, invitation, deviceRoleNames ) )
+        }
+
+        // Add participation to study deployment.
         if ( isNewParticipation )
         {
-            repository.addParticipation( account!!.id, participation )
+            studyDeployment.addParticipation( account, participation )
+            repository.update( studyDeployment )
+        }
+        else
+        {
+            // This participation was already added and an invitation has been sent.
+            // Ensure the request is the same, otherwise, an 'update' might be expected, which is not supported.
+            val previousInvitation = repository.getInvitations( account.id ).first { it.participation.id == participation.id }
+            check( previousInvitation.invitation == invitation && previousInvitation.deviceRoleNames == deviceRoleNames )
+                { "This person is already invited to participate in this study and the current invite deviates from the previous one." }
         }
 
         return participation
     }
+
+    /**
+     * Get all participations to study deployments the account with the given [accountId] has been invited to.
+     */
+    override suspend fun getParticipationInvitations( accountId: UUID ): Set<ParticipationInvitation> =
+        repository.getInvitations( accountId )
 }

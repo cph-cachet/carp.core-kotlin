@@ -50,6 +50,34 @@ class SpacingInParenthesesTest
     }
 
     @Test
+    fun spaces_are_not_allowed_in_getter()
+    {
+        //val noSpaces = "val answer: Int get() = 42"
+        //assertEquals( 0, codeSmells( noSpaces ) )
+
+        val spaces = "val answer: Int get( ) = 42"
+        assertEquals( 1, codeSmells( spaces ) )
+    }
+
+    @Test
+    fun spaces_are_required_in_setter()
+    {
+        val spaces =
+            """
+            var answer: Int = 42
+                set( value ) { field = 42 }
+            """
+        assertEquals( 0, codeSmells( spaces ) )
+
+        val noSpaces =
+            """
+            var answer: Int = 42
+                set(value) { field = 42 }
+            """
+        assertEquals( 1, codeSmells( noSpaces ) )
+    }
+
+    @Test
     fun multiline_parentheses_are_allowed()
     {
         val multiline =

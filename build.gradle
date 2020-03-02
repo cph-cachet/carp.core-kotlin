@@ -9,7 +9,7 @@ buildscript {
         // Version used for all submodule artifacts.
         // Snapshot publishing changes (or adds) the suffix after '-' with 'SNAPSHOT' prior to publishing.
         // The 'publishSigned' task publishes to SonaType's staging repo and 'publishSnapshot' instantly uploads to the snapshots repo.
-        globalVersion = '1.0.0-alpha.11'
+        globalVersion = '1.0.0-alpha.12'
 
         versions = [
             // Kotlin multiplatform versions.
@@ -28,7 +28,7 @@ buildscript {
             mocha:'7.0.0',
 
             // DevOps versions.
-            detektPlugin:'1.2.0',
+            detektPlugin:'1.5.1',
             nexusReleasePlugin:'0.21.2'
         ]
     }
@@ -67,6 +67,7 @@ if (publishPropertiesFile.exists())
 }
 
 // Configure all subprojects as testable, publishable, Kotlin multiplatform projects.
+// A `kotlinx.serialization` dependency is added to serialize domain models.
 configure( subprojects - detektModule ) {
     version = globalVersion
 
@@ -76,6 +77,7 @@ configure( subprojects - detektModule ) {
 
     // Specify platforms and test frameworks to use.
     apply plugin: 'kotlin-multiplatform'
+    apply plugin: 'kotlinx-serialization'
     kotlin {
         jvm {
             compilations.main.kotlinOptions.jvmTarget = versions.jvmTarget
@@ -102,6 +104,7 @@ configure( subprojects - detektModule ) {
             commonMain {
                 dependencies {
                     implementation kotlin('stdlib-common')
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${versions.serialization}"
                 }
             }
             commonTest {
@@ -113,6 +116,7 @@ configure( subprojects - detektModule ) {
             jvmMain {
                 dependencies {
                     implementation kotlin('stdlib-jdk8')
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${versions.serialization}"
                 }
             }
             jvmTest {
@@ -126,6 +130,7 @@ configure( subprojects - detektModule ) {
             jsMain {
                 dependencies {
                     implementation kotlin('stdlib-js')
+                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${versions.serialization}"
                 }
             }
             jsTest {
@@ -176,7 +181,7 @@ configure( subprojects - detektModule ) {
     // Add code analysis.
     apply plugin: 'io.gitlab.arturbosch.detekt'
     detekt {
-        input = files("$projectDir")
+        input = files("$projectDir/src/")
         config = files("$rootDir/detekt.yml")
         ignoreFailures = true
 
@@ -186,8 +191,8 @@ configure( subprojects - detektModule ) {
         }
     }
     task detektPasses(type: io.gitlab.arturbosch.detekt.Detekt) {
-        input = files("$projectDir")
-        config = files("$rootDir/detekt.yml")
+        source = files("$projectDir/src/")
+        config.from("$rootDir/detekt.yml")
         ignoreFailures = false
     }
     tasks.detekt.dependsOn ":carp.detekt:assemble" // Ensure 'carp.detekt' is build prior to running code analysis.
@@ -301,7 +306,6 @@ nexusStaging {
 
 // Add common dependencies:
 // - `carp.test` for testing
-// - `kotlinx.serialization` to serialize domain models
 // - reflection is used to reinforce correct implementation of domain objects at runtime
 configure( coreModules + commonModule ) {
     buildscript {
@@ -314,14 +318,8 @@ configure( coreModules + commonModule ) {
         }
     }
 
-    apply plugin: 'kotlinx-serialization'
     kotlin {
         sourceSets {
-            commonMain {
-                dependencies {
-                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${versions.serialization}"
-                }
-            }
             commonTest {
                 dependencies {
                     implementation project(':carp.test')
@@ -330,12 +328,6 @@ configure( coreModules + commonModule ) {
             jvmMain {
                 dependencies {
                     implementation kotlin('reflect')
-                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${versions.serialization}"
-                }
-            }
-            jsMain {
-                dependencies {
-                    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${versions.serialization}"
                 }
             }
         }

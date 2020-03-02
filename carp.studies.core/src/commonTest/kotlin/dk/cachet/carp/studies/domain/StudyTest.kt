@@ -1,7 +1,12 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.protocols.domain.ProtocolOwner
+import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.devices.Smartphone
+import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
+import dk.cachet.carp.studies.domain.users.StudyOwner
 import kotlin.test.*
 
 
@@ -10,53 +15,120 @@ import kotlin.test.*
  */
 class StudyTest
 {
-    private fun createTestStudy(): Study
-    {
-        val owner = StudyOwner()
-        val id = UUID.randomUUID()
-        return Study( owner, "Test study", StudyInvitation.empty(), id )
-    }
-
-    @Test
-    fun includeParticipant_succeeds()
-    {
-        val study: Study = createTestStudy()
-        val participantId = UUID.randomUUID()
-
-        study.includeParticipant( participantId )
-
-        assertEquals( participantId, study.participantIds.single() )
-    }
-
-    @Test
-    fun includeParticipant_multiple_times_only_adds_once()
-    {
-        val study: Study = createTestStudy()
-        val participantId = UUID.randomUUID()
-
-        study.includeParticipant( participantId )
-        study.includeParticipant( participantId )
-
-        assertEquals( participantId, study.participantIds.single() )
-    }
-
     @Test
     fun creating_study_fromSnapshot_obtained_by_getSnapshot_is_the_same()
     {
-        val owner = StudyOwner()
-        val invitation = StudyInvitation( "Test" )
-        val studyId = UUID.randomUUID()
-        val participantId = UUID.randomUUID()
-        val study = Study( owner, "Test study", invitation, studyId )
-        study.includeParticipant( participantId )
+        val study = createComplexStudy()
 
         val snapshot = study.getSnapshot()
         val fromSnapshot = Study.fromSnapshot( snapshot )
 
-        assertEquals( studyId, fromSnapshot.id )
-        assertEquals( owner, fromSnapshot.owner )
-        assertEquals( "Test study", fromSnapshot.name )
-        assertEquals( invitation, fromSnapshot.invitation )
-        assertEquals( participantId, fromSnapshot.participantIds.single() )
+        assertEquals( study.id, fromSnapshot.id )
+        assertEquals( study.owner, fromSnapshot.owner )
+        assertEquals( study.name, fromSnapshot.name )
+        assertEquals( study.invitation, fromSnapshot.invitation )
+        assertEquals( study.creationDate, fromSnapshot.creationDate )
+        assertEquals( study.protocolSnapshot, fromSnapshot.protocolSnapshot )
+        assertEquals( study.isLive, fromSnapshot.isLive )
+        assertEquals( study.participations, fromSnapshot.participations )
+    }
+
+    @Test
+    fun set_protocol_succeeds()
+    {
+        val study = createStudy()
+
+        setDeployableProtocol( study )
+    }
+
+    @Test
+    fun set_protocol_to_null_succeeds()
+    {
+        val study = createStudy()
+        study.protocolSnapshot = null
+    }
+
+    @Test
+    fun set_protocol_fails_for_protocol_with_deployment_errors()
+    {
+        val study = createStudy()
+
+        val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
+        assertFailsWith<IllegalArgumentException> { study.protocolSnapshot = protocol.getSnapshot() }
+    }
+
+    @Test
+    fun verify_state_of_new_study()
+    {
+        val study = createStudy()
+        assertFalse( study.canDeployToParticipants )
+        assertFalse( study.isLive )
+
+        val status = study.getStatus()
+        assertEquals( study.canDeployToParticipants, status.canDeployToParticipants )
+        assertEquals( study.isLive, status.isLive )
+    }
+
+    @Test
+    fun canDeployToParticipants_false_until_live()
+    {
+        val study = createStudy()
+        assertFalse( study.canDeployToParticipants )
+
+        // Define protocol.
+        setDeployableProtocol( study )
+        assertFalse( study.canDeployToParticipants )
+
+        // Go live.
+        study.goLive()
+        assertTrue( study.canDeployToParticipants )
+    }
+
+    @Test
+    fun goLive_can_be_called_more_than_once()
+    {
+        val study = createStudy()
+        setDeployableProtocol( study )
+        study.goLive()
+
+        // Study already live, but should not fail.
+        study.goLive()
+    }
+
+    @Test
+    fun goLive_fails_when_no_protocol_set()
+    {
+        val study = createStudy()
+        assertFailsWith<IllegalStateException> { study.goLive() }
+    }
+
+    @Test
+    fun addParticipation_succeeds()
+    {
+        val study = createStudy()
+        setDeployableProtocol( study )
+        study.goLive()
+
+        val participation = DeanonymizedParticipation( UUID.randomUUID(), Participation( UUID.randomUUID() ) )
+        study.addParticipation( participation )
+    }
+
+    @Test
+    fun addParticipation_fails_when_study_not_live()
+    {
+        val study = createStudy()
+        setDeployableProtocol( study )
+
+        val participation = DeanonymizedParticipation( UUID.randomUUID(), Participation( UUID.randomUUID() ) )
+        assertFailsWith<IllegalStateException> { study.addParticipation( participation ) }
+    }
+
+    private fun createStudy(): Study = Study( StudyOwner(), "Test study" )
+
+    private fun setDeployableProtocol( study: Study )
+    {
+        val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
+        protocol.addMasterDevice( Smartphone( "User's phone" ) ) // One master device is needed to deploy.
+        study.protocolSnapshot = protocol.getSnapshot()
     }
 }
