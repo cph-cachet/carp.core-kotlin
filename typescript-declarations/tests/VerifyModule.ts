@@ -28,7 +28,7 @@ export default class VerifyModule
 
     async verify(): Promise<void>
     {
-        const declarationFile = `./typings/${this.moduleName}/index.d.ts`
+        const declarationFile = `./@types/${this.moduleName}/index.d.ts`
         const source = fs.readFileSync( declarationFile ).toString()
         const ast = parse( source )
     
