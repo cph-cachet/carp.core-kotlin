@@ -304,6 +304,43 @@ nexusStaging {
     password = publishProperties['repository.password']
 }
 
+// TypeScript ambient declaration verification.
+def typescriptFolder = 'typescript-declarations'
+apply plugin: 'com.github.node-gradle.node'
+task setupTsProject(type: NpmTask) {
+    workingDir = file(typescriptFolder)
+    args = ['install']
+}
+task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
+    // First compile all subprojects for which TypeScript declarations are defined.
+    def projects = coreModules + commonModule
+    projects.each { dependsOn("${it.name}:compileKotlinJs") }
+
+    projects.each {
+        // Copy JS sources into ...
+        def configuration = it.configurations.jsTestRuntimeClasspath
+        from(files {
+            configuration.collect { File file ->
+                file.name.endsWith(".jar")
+                        ? zipTree(file.absolutePath).matching {
+                    include '*.js'
+                    include '*.js.map' }
+                        : files()
+            }
+        }.builtBy(configuration))
+
+        // ... 'node_modules' so that test can retrieve dependencies.
+        into "./${typescriptFolder}/node_modules"
+    }
+}
+task verifyTsDeclarations(type: NodeTask, dependsOn: copyTestJsSources) {
+    script = file("${typescriptFolder}/node_modules/mocha/bin/mocha")
+    execOverrides {
+        it.workingDir = typescriptFolder
+    }
+    args = ['--require', 'ts-node/register', './tests/**/*.ts']
+}
+
 // Add common dependencies:
 // - `carp.test` for testing
 // - reflection is used to reinforce correct implementation of domain objects at runtime
