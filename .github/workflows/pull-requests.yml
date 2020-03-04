@@ -19,6 +19,16 @@ jobs:
       - name: Build and test
         run: ./gradlew build 
 
+  verify-typescript-declarations:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+         
+      - name: Build and test
+        run: ./gradlew verifyTsDeclarations 
         
   code-analysis:
     runs-on: ubuntu-latest
