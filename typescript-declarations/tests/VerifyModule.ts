@@ -61,10 +61,12 @@ export default class VerifyModule
                 break;
             }
             case AST_NODE_TYPES.TSInterfaceDeclaration:
+            {
                 const interfaceName = statement.id.name
                 const instance = this.getInstance( interfaceName )
                 this.verifyBody( statement.body, instance )
                 break;
+            }
             case AST_NODE_TYPES.ImportDeclaration:
             case AST_NODE_TYPES.TSImportEqualsDeclaration:
                 // Skip.
