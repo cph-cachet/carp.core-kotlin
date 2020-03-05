@@ -10,7 +10,9 @@ import {
     Literal,
     Statement,
     TSModuleBlock, 
-    TSModuleDeclaration }
+    TSModuleDeclaration, 
+    TSInterfaceBody,
+    TypeElement }
     from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree'
 import * as fs from 'fs'
 
@@ -58,8 +60,13 @@ export default class VerifyModule
                 this.verifyIdentifier( statement.id, scope )
                 break;
             }
-            case AST_NODE_TYPES.ImportDeclaration:
             case AST_NODE_TYPES.TSInterfaceDeclaration:
+                const interfaceName = statement.id.name
+                const instance = this.getInstance( interfaceName )
+                this.verifyBody( statement.body, instance )
+                break;
+            case AST_NODE_TYPES.ImportDeclaration:
+            case AST_NODE_TYPES.TSImportEqualsDeclaration:
                 // Skip.
                 break;
             default:
@@ -67,7 +74,7 @@ export default class VerifyModule
         }
     }
     
-    verifyBody( item: TSModuleDeclaration | TSModuleBlock | ClassBody, scope: any ): void
+    verifyBody( item: TSModuleDeclaration | TSModuleBlock | ClassBody | TSInterfaceBody, scope: any ): void
     {
         switch ( item.type )
         {
@@ -92,6 +99,12 @@ export default class VerifyModule
                     this.verifyClassElement( classElement, scope )
                 }
                 break;
+            case AST_NODE_TYPES.TSInterfaceBody:
+                for ( const interfaceElement of item.body )
+                {
+                    this.verifyTypeElement( interfaceElement, scope )
+                }
+                break;
         }
     }
     
@@ -103,7 +116,11 @@ export default class VerifyModule
                 if ( element.key.type == AST_NODE_TYPES.Identifier )
                 {
                     const identifier = element.key as Identifier
-                    const scopeToCheck = element.static ? scope : scope.prototype
+                    const scopeToCheck = element.static
+                        ? scope
+                        : element.kind == 'get'
+                            ? this.getInstance( scope.$metadata$.simpleName )
+                            : scope.prototype
                     this.verifyIdentifier( identifier, scopeToCheck )
                 }
                 else
@@ -119,6 +136,19 @@ export default class VerifyModule
             }
             default:
                 throw( Error( `verifyClassElement: Verifying valid declaration of '${element.type}' is not implemented.` ) )
+        }
+    }
+
+    verifyTypeElement( element: TypeElement, scope: any ): void
+    {
+        switch ( element.type )
+        {
+            case AST_NODE_TYPES.TSMethodSignature:
+            case AST_NODE_TYPES.TSPropertySignature:
+                this.verifyIdentifier( element.key as Identifier, scope )
+                break;
+            default:
+                throw( Error( `verifyTypeElement: Verifying valid declaration of '${element.type}' is not implemented.` ) )    
         }
     }
     

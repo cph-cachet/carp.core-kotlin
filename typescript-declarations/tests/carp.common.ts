@@ -7,6 +7,7 @@ import Json = kotlinx.serialization.json.Json
 import { dk } from "carp.common"
 import DateTime = dk.cachet.carp.common.DateTime
 import EmailAddress = dk.cachet.carp.common.EmailAddress
+import TimeSpan = dk.cachet.carp.common.TimeSpan
 import createDefaultJSON = dk.cachet.carp.common.serialization.createDefaultJSON_stpyu4$
 
 
@@ -14,7 +15,11 @@ describe( "carp.common", () => {
     it( "verify module declarations", async () => {
         const instances = new Map<string, any>( [
             [ "DateTime", DateTime.Companion.now() ],
-            [ "EmailAddress", new EmailAddress( "test@test.com" ) ]
+            [ "DateTime$Companion", DateTime.Companion ],
+            [ "EmailAddress", new EmailAddress( "test@test.com" ) ],
+            [ "EmailAddress$Companion", EmailAddress.Companion ],
+            [ "TimeSpan", TimeSpan.Companion.INFINITE ],
+            [ "TimeSpan$Companion", TimeSpan.Companion ]
         ] )
 
         const moduleVerifier = new VerifyModule( 'carp.common', instances )
@@ -37,6 +42,15 @@ describe( "carp.common", () => {
             const now = DateTime.Companion.now()
     
             expect( now.msSinceUTC ).instanceOf( Long )
+        } )
+    } )
+
+
+    describe( "TimeSpan", () => {
+        it( "totalMilliseconds works", () => {
+            const second = new TimeSpan( Long.fromNumber( 1000000 ) )
+            const ms = second.totalMilliseconds
+            expect( ms ).equals( 1000 )
         } )
     } )
 } )
