@@ -48,6 +48,16 @@ declare module 'carp.common'
             serializer(): any;
             fromMilliseconds_14dthe$( ms: number ): TimeSpan
         }
+
+
+        class Trilean
+        {
+            static readonly TRUE: Trilean
+            static readonly FALSE: Trilean
+            static readonly UNKNOWN: Trilean
+            static values(): Array<Trilean>
+        }
+        function toTrilean_1v8dcc$( bool: boolean ): Trilean
     }
 
 

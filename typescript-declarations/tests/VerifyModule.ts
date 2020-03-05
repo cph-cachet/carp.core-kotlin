@@ -130,8 +130,10 @@ export default class VerifyModule
                 break;
             case AST_NODE_TYPES.ClassProperty:
             {
-                const instance = this.getInstance( scope.$metadata$.simpleName )
-                this.verifyIdentifier( element.key as Identifier, instance )
+                const scopeToCheck = element.static
+                    ? scope 
+                    : this.getInstance( scope.$metadata$.simpleName )
+                this.verifyIdentifier( element.key as Identifier, scopeToCheck )
                 break;
             }
             default:

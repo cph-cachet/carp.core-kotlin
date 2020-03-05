@@ -8,6 +8,8 @@ import { dk } from "carp.common"
 import DateTime = dk.cachet.carp.common.DateTime
 import EmailAddress = dk.cachet.carp.common.EmailAddress
 import TimeSpan = dk.cachet.carp.common.TimeSpan
+import Trilean = dk.cachet.carp.common.Trilean
+import toTrilean = dk.cachet.carp.common.toTrilean_1v8dcc$
 import createDefaultJSON = dk.cachet.carp.common.serialization.createDefaultJSON_stpyu4$
 
 
@@ -51,6 +53,19 @@ describe( "carp.common", () => {
             const second = new TimeSpan( Long.fromNumber( 1000000 ) )
             const ms = second.totalMilliseconds
             expect( ms ).equals( 1000 )
+        } )
+    } )
+
+
+    describe( "Trilean", () => {
+        it( "has values TRUE, FALSE, UNKNOWN", () => {
+            const values = Trilean.values()
+            expect( values ).to.have.members( [ Trilean.TRUE, Trilean.FALSE, Trilean.UNKNOWN ] )
+        } )
+
+        it ( "toTrilean works", () => {
+            expect( toTrilean( true ) ).equals( Trilean.TRUE )
+            expect( toTrilean( false ) ).equals( Trilean.FALSE )
         } )
     } )
 } )
