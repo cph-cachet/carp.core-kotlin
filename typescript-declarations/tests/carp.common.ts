@@ -16,15 +16,15 @@ import createDefaultJSON = dk.cachet.carp.common.serialization.createDefaultJSON
 
 describe( "carp.common", () => {
     it( "verify module declarations", async () => {
-        const instances = new Map<string, any>( [
-            [ "DateTime", DateTime.Companion.now() ],
-            [ "DateTime$Companion", DateTime.Companion ],
-            [ "EmailAddress", new EmailAddress( "test@test.com" ) ],
-            [ "EmailAddress$Companion", EmailAddress.Companion ],
-            [ "TimeSpan", TimeSpan.Companion.INFINITE ],
-            [ "TimeSpan$Companion", TimeSpan.Companion ],
-            [ "UUID$Companion", UUID.Companion ]
-        ] )
+        const instances = [
+            DateTime.Companion.now(),
+            DateTime.Companion,
+            new EmailAddress( "test@test.com" ),
+            EmailAddress.Companion,
+            TimeSpan.Companion.INFINITE,
+            TimeSpan.Companion,
+            UUID.Companion
+        ]
 
         const moduleVerifier = new VerifyModule( 'carp.common', instances )
         await moduleVerifier.verify()

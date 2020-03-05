@@ -6,7 +6,7 @@ import { Long } from 'kotlin'
 
 describe( "kotlin", () => {
     it( "verify module declarations", async () => {
-        const instances = new Map<string, any>()
+        const instances = new Array<any>()
 
         const moduleVerifier = new VerifyModule( 'kotlin', instances )
         await moduleVerifier.verify()

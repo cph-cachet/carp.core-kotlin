@@ -22,10 +22,10 @@ export default class VerifyModule
     private moduleName: string
     private instances: Map<string, any>
 
-    constructor( moduleName: string, instances: Map<string, any> )
+    constructor( moduleName: string, instances: Array<any> )
     {
         this.moduleName = moduleName
-        this.instances = instances
+        this.instances = new Map( instances.map( i => [ i.constructor.name, i ] ) )
     }
 
     async verify(): Promise<void>

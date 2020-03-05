@@ -9,10 +9,10 @@ import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
 
 describe( "carp.studies.core", () => {
     it( "verify module declarations", async () => {
-        const instances = new Map<string, any>( [
-            [ "StudyOwner", new StudyOwner() ],
-            [ "StudyOwner$Companion", StudyOwner.Companion ]
-        ] )
+        const instances = [
+            new StudyOwner(),
+            StudyOwner.Companion
+        ]
 
         const moduleVerifier = new VerifyModule( 'carp.studies.core', instances )
         await moduleVerifier.verify()
