@@ -46,7 +46,7 @@ declare module 'carp.common'
         {
             readonly INFINITE: TimeSpan;
             serializer(): any;
-            fromMilliseconds_14dthe$( ms: number ): TimeSpan
+            fromMilliseconds_14dthe$( ms: number ): TimeSpan;
         }
 
 
@@ -58,6 +58,19 @@ declare module 'carp.common'
             static values(): Array<Trilean>
         }
         function toTrilean_1v8dcc$( bool: boolean ): Trilean
+
+
+        class UUID
+        {
+            constructor( stringRepresentation: string )
+
+            static get Companion(): UUID$Companion
+        }
+        interface UUID$Companion
+        {
+            serializer(): any;
+            randomUUID(): UUID;
+        }
     }
 
 

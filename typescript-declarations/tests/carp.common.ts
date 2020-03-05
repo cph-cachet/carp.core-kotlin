@@ -10,6 +10,7 @@ import EmailAddress = dk.cachet.carp.common.EmailAddress
 import TimeSpan = dk.cachet.carp.common.TimeSpan
 import Trilean = dk.cachet.carp.common.Trilean
 import toTrilean = dk.cachet.carp.common.toTrilean_1v8dcc$
+import UUID = dk.cachet.carp.common.UUID
 import createDefaultJSON = dk.cachet.carp.common.serialization.createDefaultJSON_stpyu4$
 
 
@@ -21,7 +22,8 @@ describe( "carp.common", () => {
             [ "EmailAddress", new EmailAddress( "test@test.com" ) ],
             [ "EmailAddress$Companion", EmailAddress.Companion ],
             [ "TimeSpan", TimeSpan.Companion.INFINITE ],
-            [ "TimeSpan$Companion", TimeSpan.Companion ]
+            [ "TimeSpan$Companion", TimeSpan.Companion ],
+            [ "UUID$Companion", UUID.Companion ]
         ] )
 
         const moduleVerifier = new VerifyModule( 'carp.common', instances )
