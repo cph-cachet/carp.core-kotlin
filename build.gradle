@@ -318,6 +318,7 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
 
     projects.each {
         // Copy JS sources into ...
+        from it.compileKotlinJs.destinationDir
         def configuration = it.configurations.jsTestRuntimeClasspath
         from(files {
             configuration.collect { File file ->
