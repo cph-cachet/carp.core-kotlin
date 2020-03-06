@@ -1,9 +1,13 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.DeploymentRepository
 import dk.cachet.carp.deployment.domain.StudyDeployment
+import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
 
 /**
@@ -32,7 +36,8 @@ class InMemoryDeploymentRepository : DeploymentRepository
      *
      * @param id The id of the [StudyDeployment] to search for.
      */
-    override fun getStudyDeploymentBy( id: UUID ): StudyDeployment? = studyDeployments[ id ]
+    override fun getStudyDeploymentBy( id: UUID ): StudyDeployment? =
+        studyDeployments[ id ]?.getSnapshot()?.let { StudyDeployment.fromSnapshot(it) }
 
     /**
      * Update a [studyDeployment] which is already stored in this repository.
@@ -61,4 +66,18 @@ class InMemoryDeploymentRepository : DeploymentRepository
      */
     override fun getInvitations( accountId: UUID ): Set<ParticipationInvitation> =
         participationInvitations.getOrElse( accountId ) { setOf() }
+
+    override fun addAccountParticipation( studyDeploymentId: UUID, account: Account, participation: Participation )
+    {
+        require( studyDeployments.contains( studyDeploymentId ) )
+
+        studyDeployments[studyDeploymentId]!!.addParticipation(account, participation)
+    }
+
+    override fun registerDevice( studyDeploymentId: UUID, descriptor: AnyDeviceDescriptor, registration: DeviceRegistration )
+    {
+        require( studyDeployments.contains( studyDeploymentId ) )
+
+        studyDeployments[studyDeploymentId]!!.registerDevice( descriptor, registration )
+    }
 }

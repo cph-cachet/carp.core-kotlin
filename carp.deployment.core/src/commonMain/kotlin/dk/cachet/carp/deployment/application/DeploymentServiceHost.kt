@@ -73,7 +73,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
             ?: throw IllegalArgumentException( "The specified device role name could not be found in the study deployment." )
         deployment.registerDevice( device.device, registration )
 
-        repository.update( deployment )
+        repository.registerDevice( studyDeploymentId, device.device, registration )
 
         return deployment.getStatus()
     }
@@ -148,7 +148,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
         if ( isNewParticipation )
         {
             studyDeployment.addParticipation( account, participation )
-            repository.update( studyDeployment )
+            repository.addAccountParticipation( studyDeploymentId, account, participation )
         }
         else
         {

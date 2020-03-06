@@ -1,7 +1,11 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
 
 interface DeploymentRepository
@@ -37,4 +41,15 @@ interface DeploymentRepository
      * Get all participation invitations for the account with the specified [accountId].
      */
     fun getInvitations( accountId: UUID ): Set<ParticipationInvitation>
+
+    /**
+     * Add [Participation] for [Account] to study deployment with id [studyDeploymentId]
+     */
+    fun addAccountParticipation( studyDeploymentId: UUID, account: Account, participation: Participation )
+
+    /**
+     * Register device with descriptor [descriptor] and registration [registration]
+     * on study deployment with id [studyDeploymentId]
+     */
+    fun registerDevice( studyDeploymentId: UUID, descriptor: AnyDeviceDescriptor, registration: DeviceRegistration )
 }
