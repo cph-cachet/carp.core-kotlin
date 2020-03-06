@@ -1,10 +1,12 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudySnapshot
+import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.domain.users.Participant
 
 
@@ -79,5 +81,29 @@ class InMemoryStudyRepository : StudyRepository
         require( studies.contains( studyId ) )
 
         return participants[ studyId ] ?: listOf()
+    }
+
+    override fun updateLiveStatus( studyId: UUID, isLive: Boolean )
+    {
+        require( studies.contains( studyId ) )
+
+        studies[ studyId ] = studies[ studyId ]!!.copy(isLive = isLive)
+    }
+
+    override fun updateProtocol( studyId: UUID, protocol: StudyProtocolSnapshot )
+    {
+        require( studies.contains( studyId ) )
+
+        studies[ studyId ] = studies[ studyId ]!!.copy(protocolSnapshot = protocol)
+    }
+
+    override fun addParticipations( studyId: UUID, participations: Set<DeanonymizedParticipation> )
+    {
+        require( studies.contains( studyId ) )
+
+        val study = Study.fromSnapshot(studies[ studyId ]!!)
+        participations.forEach { study.addParticipation(it) }
+
+        studies[ studyId ] = study.getSnapshot()
     }
 }

@@ -112,7 +112,7 @@ class StudyServiceHost(
         try { study.protocolSnapshot = protocol }
         catch ( e: InvalidConfigurationError ) { throw IllegalArgumentException( e.message ) }
 
-        repository.update( study )
+        repository.updateProtocol( study.id, protocol )
 
         return study.getStatus()
     }
@@ -129,7 +129,7 @@ class StudyServiceHost(
         require( study != null )
 
         study.goLive()
-        repository.update( study )
+        repository.updateLiveStatus( study.id, study.isLive )
 
         return study.getStatus()
     }
@@ -184,7 +184,7 @@ class StudyServiceHost(
             study.addParticipation( DeanonymizedParticipation( toAssign.participantId, participation ) )
         }
 
-        repository.update( study )
+        repository.addParticipations( study.id, study.participations )
 
         return study.getStatus()
     }
