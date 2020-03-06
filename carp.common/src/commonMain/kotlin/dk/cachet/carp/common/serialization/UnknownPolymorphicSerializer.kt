@@ -4,23 +4,19 @@ import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicKind
+import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.SerialDescriptor
-import kotlinx.serialization.SerialKind
-import kotlinx.serialization.internal.SerialClassDescImpl
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlin.reflect.KClass
 
 
-internal object UnknownPolymorphicClassDesc : SerialClassDescImpl( "kotlin.Any" )
-{
-    override val kind: SerialKind = PolymorphicKind.OPEN
-
-    init
+internal val UnknownPolymorphicClassDesc =
+    SerialDescriptor( "kotlin.Any", PolymorphicKind.OPEN )
     {
-        addElement( "klass" )
-        addElement( "object" )
+        element( "klass", String.serializer().descriptor )
+        element( "object", PolymorphicSerializer( Any::class ).descriptor )
     }
-}
 
 
 /**
@@ -39,7 +35,7 @@ expect abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
 ) : KSerializer<P>
 {
     override val descriptor: SerialDescriptor
-    override fun serialize( encoder: Encoder, obj: P )
+    override fun serialize( encoder: Encoder, value: P )
     override fun deserialize( decoder: Decoder ): P
 
     /**

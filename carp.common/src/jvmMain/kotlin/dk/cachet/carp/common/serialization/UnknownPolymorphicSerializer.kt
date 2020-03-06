@@ -42,7 +42,7 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
     actual override val descriptor: SerialDescriptor
         get() = UnknownPolymorphicClassDesc
 
-    actual override fun serialize( encoder: Encoder, obj: P )
+    actual override fun serialize( encoder: Encoder, value: P )
     {
         if ( encoder !is JsonOutput )
         {
@@ -52,9 +52,9 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
         @Suppress( "NAME_SHADOWING" )
         val encoder = encoder.beginStructure( descriptor )
 
-        if ( obj is UnknownPolymorphicWrapper )
+        if ( value is UnknownPolymorphicWrapper )
         {
-            encoder.encodeStringElement( descriptor, 0, obj.className )
+            encoder.encodeStringElement( descriptor, 0, value.className )
 
             // Output raw JSON as originally wrapped.
             // TODO: This relies on reflection since no raw JSON can be output using KOutput.
@@ -66,17 +66,17 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
                 member.parameters.any { it.type.classifier == String::class }
             }
             printMethod.isAccessible = true
-            printMethod.call( composer, "," + obj.jsonSource ) // The ',' is needed since it is normally added by the Encoder which is not called here.
+            printMethod.call( composer, "," + value.jsonSource ) // The ',' is needed since it is normally added by the Encoder which is not called here.
         }
         else
         {
-            val registeredSerializer = encoder.context.getPolymorphic( baseClass, obj )
-                ?: throw SerializationException( "${obj.javaClass.typeName} is not registered for polymorph serialization." )
+            val registeredSerializer = encoder.context.getPolymorphic( baseClass, value )
+                ?: throw SerializationException( "${value.javaClass.typeName} is not registered for polymorph serialization." )
 
             @Suppress( "UNCHECKED_CAST" )
             val saver = registeredSerializer as KSerializer<P>
-            encoder.encodeStringElement( descriptor, 0, saver.descriptor.name )
-            encoder.encodeSerializableElement( descriptor, 1, saver, obj )
+            encoder.encodeStringElement( descriptor, 0, saver.descriptor.serialName )
+            encoder.encodeSerializableElement( descriptor, 1, saver, value )
         }
 
         encoder.endStructure( descriptor )
