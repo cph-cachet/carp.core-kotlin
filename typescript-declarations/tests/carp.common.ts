@@ -11,6 +11,10 @@ import TimeSpan = dk.cachet.carp.common.TimeSpan
 import Trilean = dk.cachet.carp.common.Trilean
 import toTrilean = dk.cachet.carp.common.toTrilean_1v8dcc$
 import UUID = dk.cachet.carp.common.UUID
+import AccountIdentity = dk.cachet.carp.common.users.AccountIdentity
+import EmailAccountIdentity = dk.cachet.carp.common.users.EmailAccountIdentity
+import emailAccountIdentityFromString = dk.cachet.carp.common.users.EmailAccountIdentity_init_61zpoe$
+import UsernameAccountIdentity = dk.cachet.carp.common.users.UsernameAccountIdentity
 import createDefaultJSON = dk.cachet.carp.common.serialization.createDefaultJSON_stpyu4$
 
 
@@ -23,7 +27,12 @@ describe( "carp.common", () => {
             EmailAddress.Companion,
             TimeSpan.Companion.INFINITE,
             TimeSpan.Companion,
-            UUID.Companion
+            UUID.Companion,
+            AccountIdentity.Factory,
+            new EmailAccountIdentity( new EmailAddress( "test@test.com" ) ),
+            EmailAccountIdentity.Companion,
+            new UsernameAccountIdentity( "Test" ),
+            UsernameAccountIdentity.Companion
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.common', instances )
@@ -68,6 +77,14 @@ describe( "carp.common", () => {
         it ( "toTrilean works", () => {
             expect( toTrilean( true ) ).equals( Trilean.TRUE )
             expect( toTrilean( false ) ).equals( Trilean.FALSE )
+        } )
+    } )
+
+
+    describe( "EmailAccountIdentity", () => {
+        it( "can initialize from string", () => {
+            const identity = emailAccountIdentityFromString( "test@test.com" )
+            expect( identity.emailAddress ).instanceOf( EmailAddress )
         } )
     } )
 } )
