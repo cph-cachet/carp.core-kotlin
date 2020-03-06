@@ -92,7 +92,7 @@ interface StudyRepositoryTest
         val study = addStudy( repo )
 
         val participant = Participant( AccountIdentity.fromUsername( "user" ) )
-        repo.addParticipant( study.id, participant )
+        repo.updateParticipants( study.id, setOf( participant ), setOf() )
         val studyParticipants = repo.getParticipants( study.id )
         assertEquals( participant, studyParticipants.single() )
     }
@@ -104,7 +104,7 @@ interface StudyRepositoryTest
 
         val unknownId = UUID.randomUUID()
         val participant = Participant( AccountIdentity.fromUsername( "user" ) )
-        assertFailsWith<IllegalArgumentException> { repo.addParticipant( unknownId, participant ) }
+        assertFailsWith<IllegalArgumentException> { repo.updateParticipants( unknownId, setOf( participant ), setOf() ) }
     }
 
     @Test
@@ -113,9 +113,9 @@ interface StudyRepositoryTest
         val repo = createRepository()
         val study = addStudy( repo )
         val participant = Participant( AccountIdentity.fromUsername( "user" ) )
-        repo.addParticipant( study.id, participant )
+        repo.updateParticipants( study.id, setOf( participant ), setOf() )
 
-        assertFailsWith<IllegalArgumentException> { repo.addParticipant( study.id, participant ) }
+        assertFailsWith<IllegalArgumentException> { repo.updateParticipants( study.id, setOf( participant ), setOf() ) }
     }
 
     @Test

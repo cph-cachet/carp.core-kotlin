@@ -82,7 +82,7 @@ class StudyServiceHost(
         if ( participant == null )
         {
             participant = Participant( identity )
-            repository.addParticipant( studyId, participant )
+            repository.updateParticipants( studyId, setOf(participant), setOf() )
         }
 
         return participant
@@ -184,7 +184,7 @@ class StudyServiceHost(
             study.addParticipation( DeanonymizedParticipation( toAssign.participantId, participation ) )
         }
 
-        repository.addParticipations( study.id, study.participations )
+        repository.updateParticipations( study.id, study.participations, setOf() )
 
         return study.getStatus()
     }

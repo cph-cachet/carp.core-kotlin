@@ -57,18 +57,27 @@ class InMemoryStudyRepository : StudyRepository
     }
 
     /**
-     * Adds a new [participant] for the study with [studyId] to the repository.
+     * Adds or removes participants for the study with [studyId] to the repository.
      *
      * @throws IllegalArgumentException when a study with the specified [studyId] does not exist,
      * or when a participant with the specified ID already exists within the study.
      */
-    override fun addParticipant( studyId: UUID, participant: Participant )
+    override fun updateParticipants(
+        studyId: UUID,
+        addParticipants: Set<Participant>,
+        removeParticipants: Set<Participant>
+    )
     {
         require( studies.contains( studyId ) )
 
         val studyParticipants = participants.getOrPut( studyId ) { mutableListOf() }
-        require( studyParticipants.none { it.id == participant.id } )
-        studyParticipants.add( participant )
+
+        require( addParticipants.intersect(studyParticipants).isEmpty() )
+
+        participants[studyId] = studyParticipants
+            .union( addParticipants )
+            .minus( removeParticipants )
+            .toMutableList()
     }
 
     /**
@@ -97,13 +106,18 @@ class InMemoryStudyRepository : StudyRepository
         studies[ studyId ] = studies[ studyId ]!!.copy(protocolSnapshot = protocol)
     }
 
-    override fun addParticipations( studyId: UUID, participations: Set<DeanonymizedParticipation> )
+    override fun updateParticipations(
+        studyId: UUID,
+        addParticipations: Set<DeanonymizedParticipation>,
+        removeParticipations: Set<DeanonymizedParticipation>
+    )
     {
         require( studies.contains( studyId ) )
 
-        val study = Study.fromSnapshot(studies[ studyId ]!!)
-        participations.forEach { study.addParticipation(it) }
+        val updatedParticipations = studies[ studyId ]!!.participations
+            .union( addParticipations )
+            .minus( removeParticipations )
 
-        studies[ studyId ] = study.getSnapshot()
+        studies[ studyId ] = studies[ studyId ]!!.copy( participations = updatedParticipations )
     }
 }

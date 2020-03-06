@@ -34,12 +34,11 @@ interface StudyRepository
     fun update( study: Study )
 
     /**
-     * Adds a new [participant] for the study with [studyId] to the repository.
+     * Adds or removes participants for the study with [studyId] in the repository.
      *
-     * @throws IllegalArgumentException when a study with the specified [studyId] does not exist,
-     * or when a participant with the specified ID already exists within the study.
+     * @throws IllegalArgumentException when a study with the specified [studyId] does not exist
      */
-    fun addParticipant( studyId: UUID, participant: Participant )
+    fun updateParticipants( studyId: UUID, addParticipants: Set<Participant>, removeParticipants: Set<Participant> )
 
     /**
      * Returns the participants which were added to the study with the specified [studyId].
@@ -63,9 +62,14 @@ interface StudyRepository
     fun updateProtocol( studyId: UUID, protocol: StudyProtocolSnapshot )
 
     /**
-     * Add collection of [DeanonymizedParticipation] [participations] to the study with id [studyId]
+     * Adds or removes participations in the study with id [studyId]
      *
-     * @throws IllegalArgumentException when a study with the specified [studyId] does not exist
+     * @throws IllegalArgumentException when a study with the specified [studyId] does not exist, or
+     * if any added participations already exists.
      */
-    fun addParticipations( studyId: UUID, participations: Set<DeanonymizedParticipation> )
+    fun updateParticipations(
+        studyId: UUID,
+        addParticipations: Set<DeanonymizedParticipation>,
+        removeParticipations: Set<DeanonymizedParticipation>
+    )
 }
