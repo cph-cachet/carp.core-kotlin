@@ -5,7 +5,6 @@ import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.internal.SerialClassDescImpl
 
 
 /**
@@ -20,7 +19,7 @@ object NotSerializable : KSerializer<Any>
         "Types annotated as `@Serializable( with = NotSerializable::class )` are never expected to be serialized. " +
         "The serializer is only defined since the compiler does not know this, causing a compilation error." )
 
-    override val descriptor: SerialDescriptor = SerialClassDescImpl( "This should never be serialized." )
+    override val descriptor: SerialDescriptor = SerialDescriptor( "This should never be serialized." )
     override fun deserialize( decoder: Decoder ): Any = throw exception
-    override fun serialize( encoder: Encoder, obj: Any ) = throw exception
+    override fun serialize( encoder: Encoder, value: Any ) = throw exception
 }

@@ -5,7 +5,7 @@ import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.protocols.domain.data.DataType
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.internal.ArrayListSerializer
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.content
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -72,4 +72,4 @@ object MeasureSerializer : KSerializer<Measure>
 /**
  * Custom serializer for a list of [Measure]s which enables deserializing types that are unknown at runtime, yet extend from [Measure].
  */
-object MeasuresSerializer : KSerializer<List<Measure>> by ArrayListSerializer( MeasureSerializer )
+object MeasuresSerializer : KSerializer<List<Measure>> by ListSerializer( MeasureSerializer )

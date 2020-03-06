@@ -18,8 +18,8 @@ class CustomSerializerWrapper internal constructor( val inner: Any, val serializ
     @Serializer( forClass = CustomSerializerWrapper::class )
     companion object : KSerializer<CustomSerializerWrapper>
     {
-        override fun serialize( encoder: Encoder, obj: CustomSerializerWrapper ) =
-            encoder.encode( obj.serializer, obj.inner )
+        override fun serialize( encoder: Encoder, value: CustomSerializerWrapper ) =
+            encoder.encode( value.serializer, value.inner )
 
         override fun deserialize( decoder: Decoder ): CustomSerializerWrapper =
             throw UnsupportedOperationException( "${CustomSerializerWrapper::class.simpleName} only supports serialization." )
