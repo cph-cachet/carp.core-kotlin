@@ -74,6 +74,41 @@ declare module 'carp.common'
     }
 
 
+    namespace dk.cachet.carp.common.users
+    {
+        abstract class AccountIdentity
+        {
+            static get Factory(): AccountIdentity$Factory
+        }
+        interface AccountIdentity$Factory
+        {
+            fromEmailAddress_61zpoe$( emailAddress: string ): EmailAccountIdentity;
+            fromUsername_61zpoe$( username: string ): UsernameAccountIdentity;
+        }
+
+        class EmailAccountIdentity extends AccountIdentity
+        {
+            constructor( emailAddress: EmailAddress )
+
+            static get Companion(): EmailAccountIdentity$Companion
+
+            readonly emailAddress: EmailAddress
+        }
+        function EmailAccountIdentity_init_61zpoe$( emailAddress: string ): EmailAccountIdentity
+        interface EmailAccountIdentity$Companion { serializer(): any }
+
+        class UsernameAccountIdentity extends AccountIdentity
+        {
+            constructor( username: string )
+
+            static get Companion(): UsernameAccountIdentity$Companion
+
+            readonly username: string
+        } 
+        interface UsernameAccountIdentity$Companion { serializer(): any }
+    }
+
+
     namespace dk.cachet.carp.common.serialization
     {
         function createDefaultJSON_stpyu4$(): Json
