@@ -65,6 +65,8 @@ declare module 'carp.common'
             constructor( stringRepresentation: string )
 
             static get Companion(): UUID$Companion
+
+            readonly stringRepresentation: string
         }
         interface UUID$Companion
         {

@@ -27,6 +27,7 @@ describe( "carp.common", () => {
             EmailAddress.Companion,
             TimeSpan.Companion.INFINITE,
             TimeSpan.Companion,
+            UUID.Companion.randomUUID(),
             UUID.Companion,
             AccountIdentity.Factory,
             new EmailAccountIdentity( new EmailAddress( "test@test.com" ) ),
