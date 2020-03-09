@@ -3,10 +3,18 @@ declare module 'carp.studies.core'
     import { kotlin } from 'kotlin'
     import ArrayList = kotlin.collections.ArrayList
     import HashSet = kotlin.collections.HashSet
+    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-runtime'
+    import Json = kotlinx.serialization.json.Json
     import { dk as cdk } from 'carp.common'
     import DateTime = cdk.cachet.carp.common.DateTime
+    import EmailAddress = cdk.cachet.carp.common.EmailAddress
     import UUID = cdk.cachet.carp.common.UUID
     import AccountIdentity = cdk.cachet.carp.common.users.AccountIdentity
+    import { dk as pdk } from 'carp.protocols.core'
+    import StudyProtocolSnapshot = pdk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+    import { dk as ddk } from 'carp.deployment.core'
+    import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
+
 
 
     namespace dk.cachet.carp.studies.domain
@@ -36,7 +44,7 @@ declare module 'carp.studies.core'
             static get Companion(): AssignParticipantDevices$Companion
 
             readonly participantId: UUID
-            readonly deviceRoleNames: Set<string>
+            readonly deviceRoleNames: HashSet<string>
         }
         function participantIds_nvx6bb$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<UUID>
         function deviceRoles_nvx6bb$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<string>
@@ -64,5 +72,57 @@ declare module 'carp.studies.core'
             readonly id: UUID
         }
         interface StudyOwner$Companion { serializer(): any }
+    }
+
+
+    namespace dk.cachet.carp.studies.infrastructure
+    {
+        import AssignParticipantDevices = dk.cachet.carp.studies.domain.users.AssignParticipantDevices
+        import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
+
+
+        abstract class StudyServiceRequest
+        {
+            static get Companion(): StudyServiceRequest$Companion
+        }
+        interface StudyServiceRequest$Companion { serializer(): any }
+
+        namespace StudyServiceRequest
+        {
+            class CreateStudy extends StudyServiceRequest
+            {
+                constructor( owner: StudyOwner, name: string, invitation: StudyInvitation )
+            }
+            class GetStudyStatus extends StudyServiceRequest
+            {
+                constructor( studyId: UUID )
+            }
+            class GetStudiesOverview extends StudyServiceRequest
+            {
+                constructor( owner: StudyOwner )
+            }
+            class AddParticipant extends StudyServiceRequest
+            {
+                constructor( studyId: UUID, email: EmailAddress )
+            }
+            class GetParticipants extends StudyServiceRequest
+            {
+                constructor( studyId: UUID )
+            }
+            class SetProtocol extends StudyServiceRequest
+            {
+                constructor( studyId: UUID, protocol: StudyProtocolSnapshot )
+            }
+            class GoLive extends StudyServiceRequest
+            {
+                constructor( studyId: UUID )
+            }
+            class DeployParticipantGroup extends StudyServiceRequest
+            {
+                constructor( studyId: UUID, group: HashSet<AssignParticipantDevices> )
+            }
+        }
+
+        function createStudiesSerializer_stpyu4$(): Json
     }
 }
