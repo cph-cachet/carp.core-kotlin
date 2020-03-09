@@ -92,8 +92,8 @@ interface DeploymentRepositoryTest
         val account = Account.withUsernameIdentity( "test" )
         val participation = Participation( UUID.randomUUID() )
         val invitation = ParticipationInvitation( participation, StudyInvitation.empty(), setOf( "Test device" ) )
-        repo.invitations.addSingle( account.id, invitation )
-        val retrievedInvitations = repo.invitations.getAll( account.id )
+        repo.addInvitation( account.id, invitation )
+        val retrievedInvitations = repo.getInvitations( account.id )
         assertEquals( invitation, retrievedInvitations.single() )
     }
 
@@ -102,7 +102,7 @@ interface DeploymentRepositoryTest
     {
         val repo = createRepository()
 
-        val invitations = repo.invitations.getAll( UUID.randomUUID() )
+        val invitations = repo.getInvitations( UUID.randomUUID() )
         assertEquals( 0, invitations.count() )
     }
 }

@@ -76,13 +76,13 @@ class StudyServiceHost(
     {
         // Verify whether participant was already added.
         val identity = EmailAccountIdentity( email )
-        var participant = repository.participants.getAll( studyId ).firstOrNull { it.accountIdentity == identity }
+        var participant = repository.getParticipants( studyId ).firstOrNull { it.accountIdentity == identity }
 
         // Add new participant in case it was not added before.
         if ( participant == null )
         {
             participant = Participant( identity )
-            repository.participants.addRemove( studyId, setOf(participant), setOf() )
+            repository.addParticipant( studyId, participant )
         }
 
         return participant
@@ -94,7 +94,7 @@ class StudyServiceHost(
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
     override suspend fun getParticipants( studyId: UUID ): List<Participant> =
-        repository.participants.getAll( studyId )
+        repository.getParticipants( studyId )
 
     /**
      * Specify the study [protocol] to use for the study with the specified [studyId].
@@ -164,7 +164,7 @@ class StudyServiceHost(
             { "Not all devices required for this study have been assigned to a participant." }
 
         // Get participant information.
-        val allParticipants = repository.participants.getAll( studyId ).associateBy { it.id }
+        val allParticipants = repository.getParticipants( studyId ).associateBy { it.id }
         require( group.participantIds().all { allParticipants.contains( it ) } )
             { "One of the specified participants is not part of this study." }
 
@@ -184,7 +184,7 @@ class StudyServiceHost(
             study.addParticipation( DeanonymizedParticipation( toAssign.participantId, participation ) )
         }
 
-        repository.participations.addRemove( study.id, study.participations, setOf() )
+        repository.addParticipations( study.id, study.participations )
 
         return study.getStatus()
     }

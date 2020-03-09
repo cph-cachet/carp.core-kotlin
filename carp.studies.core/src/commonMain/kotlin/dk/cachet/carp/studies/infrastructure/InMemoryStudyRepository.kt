@@ -1,15 +1,15 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.repository.InMemoryRepositorySubCollection
-import dk.cachet.carp.common.repository.RepositorySubCollection
+import dk.cachet.carp.common.infrastructure.InMemoryRepositoryKeyCollection
+import dk.cachet.carp.common.infrastructure.RepositoryKeyCollection
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.Study
-import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudySnapshot
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.StudyOwner
 
 
 /**
@@ -19,9 +19,10 @@ class InMemoryStudyRepository : StudyRepository
 {
     private val studies: MutableMap<UUID, StudySnapshot> = mutableMapOf()
 
-    override val participants: RepositorySubCollection<UUID, Participant> = InMemoryRepositorySubCollection( studies )
-    override val participations: RepositorySubCollection<UUID, DeanonymizedParticipation> =
-        InMemoryRepositorySubCollection( studies )
+    private val participants: RepositoryKeyCollection<UUID, Participant> =
+        InMemoryRepositoryKeyCollection { it in studies}
+    private val participations: RepositoryKeyCollection<UUID, DeanonymizedParticipation> =
+        InMemoryRepositoryKeyCollection { it in studies }
 
     /**
      * Adds a new [study] to the repository.
@@ -72,5 +73,18 @@ class InMemoryStudyRepository : StudyRepository
         require( studies.contains( studyId ) )
 
         studies[ studyId ] = studies[ studyId ]!!.copy(protocolSnapshot = protocol)
+    }
+
+    override fun addParticipant( studyId: UUID, participant: Participant )
+    {
+        participants.addSingle( studyId, participant )
+    }
+
+    override fun getParticipants( studyId: UUID ): List<Participant> =
+        participants.getAll( studyId )
+
+    override fun addParticipations( id: UUID, participations: Set<DeanonymizedParticipation> )
+    {
+        this.participations.addRemove( id, participations, emptySet() )
     }
 }

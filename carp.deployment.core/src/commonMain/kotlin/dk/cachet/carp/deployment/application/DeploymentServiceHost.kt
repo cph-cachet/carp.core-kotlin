@@ -142,22 +142,20 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
         // Store the invitation so that users can also query for it later.
         if ( invitationSent )
         {
-            repository.invitations
-                .addSingle( account.id, ParticipationInvitation( participation, invitation, deviceRoleNames ) )
+            repository.addInvitation( account.id, ParticipationInvitation( participation, invitation, deviceRoleNames ) )
         }
 
         // Add participation to study deployment.
         if ( isNewParticipation )
         {
             studyDeployment.addParticipation( account, participation )
-            repository.participations
-                .addSingle( studyDeploymentId, AccountParticipation( account.id, participation.id ) )
+            repository.addParticipation( studyDeploymentId, AccountParticipation( account.id, participation.id ) )
         }
         else
         {
             // This participation was already added and an invitation has been sent.
             // Ensure the request is the same, otherwise, an 'update' might be expected, which is not supported.
-            val previousInvitation = repository.invitations.getAll( account.id ).first { it.participation.id == participation.id }
+            val previousInvitation = repository.getInvitations( account.id ).first { it.participation.id == participation.id }
             check( previousInvitation.invitation == invitation && previousInvitation.deviceRoleNames == deviceRoleNames )
                 { "This person is already invited to participate in this study and the current invite deviates from the previous one." }
         }
@@ -169,5 +167,5 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
      * Get all participations to study deployments the account with the given [accountId] has been invited to.
      */
     override suspend fun getParticipationInvitations( accountId: UUID ): Set<ParticipationInvitation> =
-        repository.invitations.getAll( accountId ).toSet()
+        repository.getInvitations( accountId ).toSet()
 }

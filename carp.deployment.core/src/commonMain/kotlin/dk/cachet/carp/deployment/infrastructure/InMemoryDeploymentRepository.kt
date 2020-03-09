@@ -1,8 +1,8 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.repository.InMemoryRepositorySubCollection
-import dk.cachet.carp.common.repository.RepositorySubCollection
+import dk.cachet.carp.common.infrastructure.InMemoryRepositoryKeyCollection
+import dk.cachet.carp.common.infrastructure.RepositoryKeyCollection
 import dk.cachet.carp.deployment.domain.DeploymentRepository
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
@@ -17,10 +17,10 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 class InMemoryDeploymentRepository : DeploymentRepository
 {
     private val studyDeployments: MutableMap<UUID, StudyDeployment> = mutableMapOf()
-    override val invitations: RepositorySubCollection<UUID, ParticipationInvitation> =
-        InMemoryRepositorySubCollection()
-    override val participations: RepositorySubCollection<UUID, AccountParticipation> =
-        InMemoryRepositorySubCollection( studyDeployments )
+    private val invitations: RepositoryKeyCollection<UUID, ParticipationInvitation> =
+        InMemoryRepositoryKeyCollection()
+    private val participations: RepositoryKeyCollection<UUID, AccountParticipation> =
+        InMemoryRepositoryKeyCollection { it in studyDeployments }
 
 
     /**
@@ -56,10 +56,24 @@ class InMemoryDeploymentRepository : DeploymentRepository
         studyDeployments[ studyDeployment.id ] = studyDeployment
     }
 
+    override fun addInvitation( accountId: UUID, invitation: ParticipationInvitation )
+    {
+        invitations.addSingle( accountId, invitation )
+    }
+
+    override fun getInvitations( accountId: UUID ): Set<ParticipationInvitation> =
+        invitations.getAll( accountId ).toSet()
+
+
     override fun registerDevice( studyDeploymentId: UUID, descriptor: AnyDeviceDescriptor, registration: DeviceRegistration )
     {
         require( studyDeployments.contains( studyDeploymentId ) )
 
         studyDeployments[studyDeploymentId]!!.registerDevice( descriptor, registration )
+    }
+
+    override fun addParticipation( studyDeploymentId: UUID, accountParticipation: AccountParticipation )
+    {
+        participations.addSingle( studyDeploymentId, accountParticipation )
     }
 }

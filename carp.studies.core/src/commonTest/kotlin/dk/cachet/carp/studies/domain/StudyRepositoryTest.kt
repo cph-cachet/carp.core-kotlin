@@ -96,8 +96,8 @@ interface StudyRepositoryTest
         val study = addStudy( repo )
 
         val participant = Participant( AccountIdentity.fromUsername( "user" ) )
-        repo.participants.addRemove( study.id, setOf( participant ), setOf() )
-        val studyParticipants = repo.participants.getAll( study.id )
+        repo.addParticipant( study.id, participant )
+        val studyParticipants = repo.getParticipants( study.id )
         assertEquals( participant, studyParticipants.single() )
     }
 
@@ -108,7 +108,7 @@ interface StudyRepositoryTest
 
         val unknownId = UUID.randomUUID()
         val participant = Participant( AccountIdentity.fromUsername( "user" ) )
-        assertFailsWith<IllegalArgumentException> { repo.participants.addRemove( unknownId, setOf( participant ), setOf() ) }
+        assertFailsWith<IllegalArgumentException> { repo.addParticipant( unknownId, participant ) }
     }
 
     @Test
@@ -117,9 +117,9 @@ interface StudyRepositoryTest
         val repo = createRepository()
         val study = addStudy( repo )
         val participant = Participant( AccountIdentity.fromUsername( "user" ) )
-        repo.participants.addRemove( study.id, setOf( participant ), setOf() )
+        repo.addParticipant( study.id, participant )
 
-        assertFailsWith<IllegalArgumentException> { repo.participants.addRemove( study.id, setOf( participant ), setOf() ) }
+        assertFailsWith<IllegalArgumentException> { repo.addParticipant( study.id, participant ) }
     }
 
     @Test
@@ -128,7 +128,7 @@ interface StudyRepositoryTest
         val repo = createRepository()
 
         val unknownId = UUID.randomUUID()
-        assertFailsWith<IllegalArgumentException> { repo.participants.getAll( unknownId ) }
+        assertFailsWith<IllegalArgumentException> { repo.getParticipants( unknownId ) }
     }
 
 
