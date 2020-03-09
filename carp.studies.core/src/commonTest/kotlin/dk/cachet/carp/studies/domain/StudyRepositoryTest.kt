@@ -5,7 +5,11 @@ import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.StudyOwner
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 
 /**
@@ -92,8 +96,8 @@ interface StudyRepositoryTest
         val study = addStudy( repo )
 
         val participant = Participant( AccountIdentity.fromUsername( "user" ) )
-        repo.updateParticipants( study.id, setOf( participant ), setOf() )
-        val studyParticipants = repo.getParticipants( study.id )
+        repo.participants.addRemove( study.id, setOf( participant ), setOf() )
+        val studyParticipants = repo.participants.getAll( study.id )
         assertEquals( participant, studyParticipants.single() )
     }
 
@@ -104,7 +108,7 @@ interface StudyRepositoryTest
 
         val unknownId = UUID.randomUUID()
         val participant = Participant( AccountIdentity.fromUsername( "user" ) )
-        assertFailsWith<IllegalArgumentException> { repo.updateParticipants( unknownId, setOf( participant ), setOf() ) }
+        assertFailsWith<IllegalArgumentException> { repo.participants.addRemove( unknownId, setOf( participant ), setOf() ) }
     }
 
     @Test
@@ -113,9 +117,9 @@ interface StudyRepositoryTest
         val repo = createRepository()
         val study = addStudy( repo )
         val participant = Participant( AccountIdentity.fromUsername( "user" ) )
-        repo.updateParticipants( study.id, setOf( participant ), setOf() )
+        repo.participants.addRemove( study.id, setOf( participant ), setOf() )
 
-        assertFailsWith<IllegalArgumentException> { repo.updateParticipants( study.id, setOf( participant ), setOf() ) }
+        assertFailsWith<IllegalArgumentException> { repo.participants.addRemove( study.id, setOf( participant ), setOf() ) }
     }
 
     @Test
@@ -124,7 +128,7 @@ interface StudyRepositoryTest
         val repo = createRepository()
 
         val unknownId = UUID.randomUUID()
-        assertFailsWith<IllegalArgumentException> { repo.getParticipants( unknownId ) }
+        assertFailsWith<IllegalArgumentException> { repo.participants.getAll( unknownId ) }
     }
 
 

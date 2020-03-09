@@ -1,6 +1,8 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.repository.InMemoryRepositorySubCollection
+import dk.cachet.carp.common.repository.RepositorySubCollection
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.users.StudyOwner
@@ -16,8 +18,10 @@ import dk.cachet.carp.studies.domain.users.Participant
 class InMemoryStudyRepository : StudyRepository
 {
     private val studies: MutableMap<UUID, StudySnapshot> = mutableMapOf()
-    private val participants: MutableMap<UUID, MutableList<Participant>> = mutableMapOf()
 
+    override val participants: RepositorySubCollection<UUID, Participant> = InMemoryRepositorySubCollection( studies )
+    override val participations: RepositorySubCollection<UUID, DeanonymizedParticipation> =
+        InMemoryRepositorySubCollection( studies )
 
     /**
      * Adds a new [study] to the repository.
@@ -56,42 +60,6 @@ class InMemoryStudyRepository : StudyRepository
         studies[ study.id ] = study.getSnapshot()
     }
 
-    /**
-     * Adds or removes participants for the study with [studyId] to the repository.
-     *
-     * @throws IllegalArgumentException when a study with the specified [studyId] does not exist,
-     * or when a participant with the specified ID already exists within the study.
-     */
-    override fun updateParticipants(
-        studyId: UUID,
-        addParticipants: Set<Participant>,
-        removeParticipants: Set<Participant>
-    )
-    {
-        require( studies.contains( studyId ) )
-
-        val studyParticipants = participants.getOrPut( studyId ) { mutableListOf() }
-
-        require( addParticipants.intersect(studyParticipants).isEmpty() )
-
-        participants[studyId] = studyParticipants
-            .union( addParticipants )
-            .minus( removeParticipants )
-            .toMutableList()
-    }
-
-    /**
-     * Returns the participants which were added to the study with the specified [studyId].
-     *
-     * @throws IllegalArgumentException when a study with the specified [studyId] does not exist.
-     */
-    override fun getParticipants( studyId: UUID ): List<Participant>
-    {
-        require( studies.contains( studyId ) )
-
-        return participants[ studyId ] ?: listOf()
-    }
-
     override fun updateLiveStatus( studyId: UUID, isLive: Boolean )
     {
         require( studies.contains( studyId ) )
@@ -104,20 +72,5 @@ class InMemoryStudyRepository : StudyRepository
         require( studies.contains( studyId ) )
 
         studies[ studyId ] = studies[ studyId ]!!.copy(protocolSnapshot = protocol)
-    }
-
-    override fun updateParticipations(
-        studyId: UUID,
-        addParticipations: Set<DeanonymizedParticipation>,
-        removeParticipations: Set<DeanonymizedParticipation>
-    )
-    {
-        require( studies.contains( studyId ) )
-
-        val updatedParticipations = studies[ studyId ]!!.participations
-            .union( addParticipations )
-            .minus( removeParticipations )
-
-        studies[ studyId ] = studies[ studyId ]!!.copy( participations = updatedParticipations )
     }
 }

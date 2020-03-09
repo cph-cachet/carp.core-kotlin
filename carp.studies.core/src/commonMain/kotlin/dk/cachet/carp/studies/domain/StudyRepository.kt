@@ -1,6 +1,7 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.repository.RepositorySubCollection
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.domain.users.Participant
@@ -9,6 +10,9 @@ import dk.cachet.carp.studies.domain.users.StudyOwner
 
 interface StudyRepository
 {
+    val participants: RepositorySubCollection<UUID, Participant>
+    val participations: RepositorySubCollection<UUID, DeanonymizedParticipation>
+
     /**
      * Adds a new [study] to the repository.
      *
@@ -34,20 +38,6 @@ interface StudyRepository
     fun update( study: Study )
 
     /**
-     * Adds or removes participants for the study with [studyId] in the repository.
-     *
-     * @throws IllegalArgumentException when a study with the specified [studyId] does not exist
-     */
-    fun updateParticipants( studyId: UUID, addParticipants: Set<Participant>, removeParticipants: Set<Participant> )
-
-    /**
-     * Returns the participants which were added to the study with the specified [studyId].
-     *
-     * @throws IllegalArgumentException when a study with the specified [studyId] does not exist.
-     */
-    fun getParticipants( studyId: UUID ): List<Participant>
-
-    /**
      * Update the study live status for study with id [studyId]
      *
      * @throws IllegalArgumentException when a study with the specified [studyId] does not exist
@@ -60,16 +50,4 @@ interface StudyRepository
      * @throws IllegalArgumentException when a study with the specified [studyId] does not exist
      */
     fun updateProtocol( studyId: UUID, protocol: StudyProtocolSnapshot )
-
-    /**
-     * Adds or removes participations in the study with id [studyId]
-     *
-     * @throws IllegalArgumentException when a study with the specified [studyId] does not exist, or
-     * if any added participations already exists.
-     */
-    fun updateParticipations(
-        studyId: UUID,
-        addParticipations: Set<DeanonymizedParticipation>,
-        removeParticipations: Set<DeanonymizedParticipation>
-    )
 }
