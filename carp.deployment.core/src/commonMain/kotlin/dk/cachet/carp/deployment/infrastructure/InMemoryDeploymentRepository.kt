@@ -1,10 +1,11 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.common.repository.InMemoryRepositorySubCollection
+import dk.cachet.carp.common.repository.RepositorySubCollection
 import dk.cachet.carp.deployment.domain.DeploymentRepository
 import dk.cachet.carp.deployment.domain.StudyDeployment
-import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.AccountParticipation
 import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -16,7 +17,10 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 class InMemoryDeploymentRepository : DeploymentRepository
 {
     private val studyDeployments: MutableMap<UUID, StudyDeployment> = mutableMapOf()
-    private val participationInvitations: MutableMap<UUID, MutableSet<ParticipationInvitation>> = mutableMapOf()
+    override val invitations: RepositorySubCollection<UUID, ParticipationInvitation> =
+        InMemoryRepositorySubCollection()
+    override val participations: RepositorySubCollection<UUID, AccountParticipation> =
+        InMemoryRepositorySubCollection( studyDeployments )
 
 
     /**
@@ -37,7 +41,7 @@ class InMemoryDeploymentRepository : DeploymentRepository
      * @param id The id of the [StudyDeployment] to search for.
      */
     override fun getStudyDeploymentBy( id: UUID ): StudyDeployment? =
-        studyDeployments[ id ]?.getSnapshot()?.let { StudyDeployment.fromSnapshot(it) }
+        studyDeployments[ id ]?.getSnapshot()?.copy(participations = participations.getAll( id ).toSet())?.let { StudyDeployment.fromSnapshot(it) }
 
     /**
      * Update a [studyDeployment] which is already stored in this repository.
@@ -50,28 +54,6 @@ class InMemoryDeploymentRepository : DeploymentRepository
         require( studyDeployments.contains( studyDeployment.id ) ) { "The repository does not contain an existing study deployment with ID '${studyDeployment.id}'." }
 
         studyDeployments[ studyDeployment.id ] = studyDeployment
-    }
-
-    /**
-     * Add a participation [invitation] for an account with the given [accountId].
-     */
-    override fun addInvitation( accountId: UUID, invitation: ParticipationInvitation )
-    {
-        val invitations = participationInvitations.getOrPut( accountId ) { mutableSetOf() }
-        invitations.add( invitation )
-    }
-
-    /**
-     * Get all participation invitations for the account with the specified [accountId].
-     */
-    override fun getInvitations( accountId: UUID ): Set<ParticipationInvitation> =
-        participationInvitations.getOrElse( accountId ) { setOf() }
-
-    override fun addAccountParticipation( studyDeploymentId: UUID, account: Account, participation: Participation )
-    {
-        require( studyDeployments.contains( studyDeploymentId ) )
-
-        studyDeployments[studyDeploymentId]!!.addParticipation(account, participation)
     }
 
     override fun registerDevice( studyDeploymentId: UUID, descriptor: AnyDeviceDescriptor, registration: DeviceRegistration )

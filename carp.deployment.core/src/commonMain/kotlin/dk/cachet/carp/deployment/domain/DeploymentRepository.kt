@@ -1,8 +1,8 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.users.Account
-import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.common.repository.RepositorySubCollection
+import dk.cachet.carp.deployment.domain.users.AccountParticipation
 import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -10,6 +10,9 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
 interface DeploymentRepository
 {
+    val invitations: RepositorySubCollection<UUID, ParticipationInvitation>
+    val participations: RepositorySubCollection<UUID, AccountParticipation>
+
     /**
      * Adds the specified [studyDeployment] to the repository.
      *
@@ -31,21 +34,6 @@ interface DeploymentRepository
      * @throws IllegalArgumentException when no previous version of this study deployment is stored in the repository.
      */
     fun update( studyDeployment: StudyDeployment )
-
-    /**
-     * Add a participation [invitation] for an account with the given [accountId].
-     */
-    fun addInvitation( accountId: UUID, invitation: ParticipationInvitation )
-
-    /**
-     * Get all participation invitations for the account with the specified [accountId].
-     */
-    fun getInvitations( accountId: UUID ): Set<ParticipationInvitation>
-
-    /**
-     * Add [Participation] for [Account] to study deployment with id [studyDeploymentId]
-     */
-    fun addAccountParticipation( studyDeploymentId: UUID, account: Account, participation: Participation )
 
     /**
      * Register device with descriptor [descriptor] and registration [registration]
