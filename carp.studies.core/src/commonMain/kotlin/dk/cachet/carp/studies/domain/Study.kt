@@ -1,7 +1,9 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.DateTime
+import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.AggregateRoot
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
@@ -23,14 +25,23 @@ class Study(
     /**
      * A descriptive name for the study, assigned by, and only visible to, the [StudyOwner].
      */
-    var name: String,
+    name: String,
     /**
      * A description of the study, shared with participants once they are invited to the study.
      */
     val invitation: StudyInvitation = StudyInvitation.empty(),
     val id: UUID = UUID.randomUUID()
-)
+) : AggregateRoot<Study, StudySnapshot, Study.Event>()
 {
+    sealed class Event : Immutable()
+    {
+        data class NameChanged( val name: String ) : Event()
+        data class ProtocolSnapshotChanged( val protocolSnapshot: StudyProtocolSnapshot? ) : Event()
+        data class StateChanged( val isLive: Boolean ) : Event()
+        data class ParticipationAdded( val participation: DeanonymizedParticipation ) : Event()
+    }
+
+
     companion object Factory
     {
         fun fromSnapshot( snapshot: StudySnapshot ): Study
@@ -45,6 +56,13 @@ class Study(
         }
     }
 
+
+    var name: String = name
+        set( value )
+        {
+            field = value
+            event( Event.NameChanged( name ) )
+        }
 
     /**
      * The date when this study was created.
@@ -72,7 +90,6 @@ class Study(
         set( value )
         {
             check( !isLive )
-
             if ( value != null )
             {
                 val protocol = StudyProtocol.fromSnapshot( value )
@@ -81,6 +98,7 @@ class Study(
             }
 
             field = value
+            event( Event.ProtocolSnapshotChanged( value ) )
         }
 
     /**
@@ -97,7 +115,9 @@ class Study(
     fun goLive()
     {
         check( protocolSnapshot != null ) { "A study protocol needs to be defined for a study to go live." }
+
         isLive = true
+        event( Event.StateChanged( isLive ) )
     }
 
     /**
@@ -123,13 +143,11 @@ class Study(
         check( canDeployToParticipants ) { "The study is not yet ready for deployment." }
 
         _participations.add( participation )
+        event( Event.ParticipationAdded( participation ) )
     }
 
     /**
      * Get a serializable snapshot of the current state of this [Study].
      */
-    fun getSnapshot(): StudySnapshot
-    {
-        return StudySnapshot.fromStudy( this )
-    }
+    override fun getSnapshot(): StudySnapshot = StudySnapshot.fromStudy( this )
 }
