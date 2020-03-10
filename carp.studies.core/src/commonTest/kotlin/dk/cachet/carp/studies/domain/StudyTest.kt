@@ -39,6 +39,7 @@ class StudyTest
         val study = createStudy()
 
         setDeployableProtocol( study )
+        assertEquals( Study.Event.ProtocolSnapshotChanged( study.protocolSnapshot ), study.consumeEvents().single() )
     }
 
     @Test
@@ -46,6 +47,7 @@ class StudyTest
     {
         val study = createStudy()
         study.protocolSnapshot = null
+        assertEquals( Study.Event.ProtocolSnapshotChanged( null ), study.consumeEvents().single() )
     }
 
     @Test
@@ -55,6 +57,7 @@ class StudyTest
 
         val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
         assertFailsWith<IllegalArgumentException> { study.protocolSnapshot = protocol.getSnapshot() }
+        assertEquals( 0, study.consumeEvents().count() )
     }
 
     @Test
@@ -82,6 +85,7 @@ class StudyTest
         // Go live.
         study.goLive()
         assertTrue( study.canDeployToParticipants )
+        assertEquals( Study.Event.StateChanged( true ), study.consumeEvents().last() )
     }
 
     @Test
@@ -93,6 +97,8 @@ class StudyTest
 
         // Study already live, but should not fail.
         study.goLive()
+        val stateEvents = study.consumeEvents().filterIsInstance<Study.Event.StateChanged>()
+        assertEquals( 1, stateEvents.count() )
     }
 
     @Test
@@ -100,6 +106,7 @@ class StudyTest
     {
         val study = createStudy()
         assertFailsWith<IllegalStateException> { study.goLive() }
+        assertEquals( 0, study.consumeEvents().count() )
     }
 
     @Test
@@ -111,6 +118,7 @@ class StudyTest
 
         val participation = DeanonymizedParticipation( UUID.randomUUID(), Participation( UUID.randomUUID() ) )
         study.addParticipation( participation )
+        assertEquals( Study.Event.ParticipationAdded( participation ), study.consumeEvents().last() )
     }
 
     @Test
@@ -121,6 +129,8 @@ class StudyTest
 
         val participation = DeanonymizedParticipation( UUID.randomUUID(), Participation( UUID.randomUUID() ) )
         assertFailsWith<IllegalStateException> { study.addParticipation( participation ) }
+        val participationEvents = study.consumeEvents().filterIsInstance<Study.Event.ParticipationAdded>()
+        assertEquals( 0, participationEvents.count() )
     }
 
     private fun createStudy(): Study = Study( StudyOwner(), "Test study" )

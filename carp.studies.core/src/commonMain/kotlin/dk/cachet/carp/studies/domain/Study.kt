@@ -116,8 +116,11 @@ class Study(
     {
         check( protocolSnapshot != null ) { "A study protocol needs to be defined for a study to go live." }
 
-        isLive = true
-        event( Event.StateChanged( isLive ) )
+        if ( !isLive )
+        {
+            isLive = true
+            event( Event.StateChanged( isLive ) )
+        }
     }
 
     /**
