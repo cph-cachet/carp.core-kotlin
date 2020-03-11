@@ -13,10 +13,10 @@ import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
-import dk.cachet.carp.studies.domain.users.deviceRoles
 import dk.cachet.carp.studies.domain.users.Participant
-import dk.cachet.carp.studies.domain.users.participantIds
 import dk.cachet.carp.studies.domain.users.StudyOwner
+import dk.cachet.carp.studies.domain.users.deviceRoles
+import dk.cachet.carp.studies.domain.users.participantIds
 
 
 /**
@@ -40,7 +40,7 @@ class StudyServiceHost(
         val ensuredInvitation = invitation ?: StudyInvitation( name )
         val study = Study( owner, name, ensuredInvitation )
 
-        repository.add( study )
+        repository.store( study )
 
         return study.getStatus()
     }
@@ -112,7 +112,7 @@ class StudyServiceHost(
         try { study.protocolSnapshot = protocol }
         catch ( e: InvalidConfigurationError ) { throw IllegalArgumentException( e.message ) }
 
-        repository.update( study )
+        repository.store( study )
 
         return study.getStatus()
     }
@@ -129,7 +129,7 @@ class StudyServiceHost(
         require( study != null )
 
         study.goLive()
-        repository.update( study )
+        repository.store( study )
 
         return study.getStatus()
     }
@@ -184,7 +184,7 @@ class StudyServiceHost(
             study.addParticipation( DeanonymizedParticipation( toAssign.participantId, participation ) )
         }
 
-        repository.update( study )
+        repository.store( study )
 
         return study.getStatus()
     }

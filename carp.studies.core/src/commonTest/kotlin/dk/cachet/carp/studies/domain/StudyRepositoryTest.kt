@@ -5,7 +5,11 @@ import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.StudyOwner
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 
 /**
@@ -25,7 +29,7 @@ interface StudyRepositoryTest
         val studyWithSameId = Study( StudyOwner(), "Study 2", StudyInvitation.empty(), study.id )
         assertFailsWith<IllegalArgumentException>
         {
-            repo.add( studyWithSameId )
+            repo.store( studyWithSameId )
         }
     }
 
@@ -55,8 +59,8 @@ interface StudyRepositoryTest
         val owner = StudyOwner()
         val ownerStudy = Study( owner, "Test" )
         val wrongStudy = Study( StudyOwner(), "Test" )
-        repo.add( ownerStudy )
-        repo.add( wrongStudy )
+        repo.store( ownerStudy )
+        repo.store( wrongStudy )
 
         val ownerStudies = repo.getForOwner( owner )
         assertEquals( ownerStudy.id, ownerStudies.single().id )
@@ -67,22 +71,13 @@ interface StudyRepositoryTest
     {
         val repo = createRepository()
         val study = Study( StudyOwner(), "Test" )
-        repo.add( study )
+        repo.store( study )
 
         study.name = "Changed name"
-        repo.update( study )
+        repo.store( study )
         val updatedStudy = repo.getById( study.id )
         assertNotNull( updatedStudy )
         assertEquals( "Changed name", updatedStudy.name )
-    }
-
-    @Test
-    fun update_fails_for_unknown_study()
-    {
-        val repo = createRepository()
-
-        val study = Study( StudyOwner(), "Test" )
-        assertFailsWith<IllegalArgumentException> { repo.update( study ) }
     }
 
     @Test
@@ -131,7 +126,7 @@ interface StudyRepositoryTest
     private fun addStudy( repo: StudyRepository ): Study
     {
         val study = Study( StudyOwner(), "Test")
-        repo.add( study )
+        repo.store( study )
         return study
     }
 }

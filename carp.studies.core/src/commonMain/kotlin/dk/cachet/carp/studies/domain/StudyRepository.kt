@@ -8,11 +8,12 @@ import dk.cachet.carp.studies.domain.users.StudyOwner
 interface StudyRepository
 {
     /**
-     * Adds a new [study] to the repository.
+     * Add or update a [study] in the repository.
      *
-     * @throws IllegalArgumentException when a study with the same id already exists.
+     * @throws IllegalArgumentException when no previous version of this study is stored in the repository on update
+     * or if the study exists already on adding as new.
      */
-    fun add( study: Study )
+    fun store( study: Study )
 
     /**
      * Returns the [Study] which has the specified [studyId], or null when no study is found.
@@ -23,13 +24,6 @@ interface StudyRepository
      * Returns the studies created by the specified [owner].
      */
     fun getForOwner( owner: StudyOwner ): List<Study>
-
-    /**
-     * Update a [study] which is already stored in this repository.
-     *
-     * @throws IllegalArgumentException when no previous version of this study is stored in the repository.
-     */
-    fun update( study: Study )
 
     /**
      * Adds a new [participant] for the study with [studyId] to the repository.

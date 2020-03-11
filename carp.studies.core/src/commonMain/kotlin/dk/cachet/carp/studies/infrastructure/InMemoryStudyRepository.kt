@@ -2,10 +2,10 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.studies.domain.Study
-import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudySnapshot
 import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.StudyOwner
 
 
 /**
@@ -15,19 +15,6 @@ class InMemoryStudyRepository : StudyRepository
 {
     private val studies: MutableMap<UUID, StudySnapshot> = mutableMapOf()
     private val participants: MutableMap<UUID, MutableList<Participant>> = mutableMapOf()
-
-
-    /**
-     * Adds a new [study] to the repository.
-     *
-     * @throws IllegalArgumentException when a study with the same id already exists.
-     */
-    override fun add( study: Study )
-    {
-        require( !studies.contains( study.id ) )
-
-        studies[ study.id ] = study.getSnapshot()
-    }
 
     /**
      * Returns the [Study] which has the specified [studyId], or null when no study is found.
@@ -47,9 +34,15 @@ class InMemoryStudyRepository : StudyRepository
      *
      * @throws IllegalArgumentException when no previous version of this study is stored in the repository.
      */
-    override fun update( study: Study )
+    override fun store( study: Study )
     {
-        require( studies.contains( study.id ) )
+        if ( study.consumeEvents().isEmpty() )
+        {
+            require( !studies.containsKey( study.id ) )
+        } else
+        {
+            require( studies.contains( study.id ) )
+        }
 
         studies[ study.id ] = study.getSnapshot()
     }
