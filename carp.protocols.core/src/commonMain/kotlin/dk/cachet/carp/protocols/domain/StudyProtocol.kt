@@ -9,7 +9,9 @@ import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
 import dk.cachet.carp.protocols.domain.deployment.UseCompositeTaskWarning
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.EmptyDeviceConfiguration
+import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.tasks.EmptyTaskConfiguration
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.triggers.Trigger
@@ -83,7 +85,14 @@ class StudyProtocol(
         }
     }
 
-
+    /**
+     * Add a master device which is responsible for aggregating and synchronizing incoming data.
+     *
+     * Throws an [InvalidConfigurationError] in case a device with the specified role name already exists.
+     *
+     * @param masterDevice A description of the master device to add. Its role name should be unique in the protocol.
+     * @return True if the device has been added; false if the specified [MasterDeviceDescriptor] is already set as a master device.
+     */
     override fun addMasterDevice( masterDevice: AnyMasterDeviceDescriptor ): Boolean
     {
         val added = super.addMasterDevice( masterDevice )
@@ -94,6 +103,15 @@ class StudyProtocol(
         return added
     }
 
+    /**
+     * Add a device which is connected to a master device within this configuration.
+     *
+     * Throws an [InvalidConfigurationError] in case a device with the specified role name already exists.
+     *
+     * @param device The device to be connected to a master device. Its role name should be unique in the protocol.
+     * @param masterDevice The master device to connect to.
+     * @return True if the device has been added; false if the specified [DeviceDescriptor] is already connected to the specified [MasterDeviceDescriptor].
+     */
     override fun addConnectedDevice( device: AnyDeviceDescriptor, masterDevice: AnyMasterDeviceDescriptor ): Boolean
     {
         val added = super.addConnectedDevice(device, masterDevice)
@@ -199,6 +217,14 @@ class StudyProtocol(
             .toSet()
     }
 
+    /**
+     * Add a task to this configuration.
+     *
+     * Throws an [InvalidConfigurationError] in case a task with the specified name already exists.
+     *
+     * @param task The task to add.
+     * @return True if the task has been added; false if the specified [TaskDescriptor] is already included in this configuration.
+     */
     override fun addTask( task: TaskDescriptor ): Boolean
     {
         val added = super.addTask( task )
