@@ -30,20 +30,10 @@ class InMemoryStudyRepository : StudyRepository
             .map { Study.fromSnapshot( it ) }
 
     /**
-     * Update a [study] which is already stored in this repository.
-     *
-     * @throws IllegalArgumentException when no previous version of this study is stored in the repository.
+     * Add or update a [study] in the repository.
      */
     override fun store( study: Study )
     {
-        if ( study.consumeEvents().isEmpty() )
-        {
-            require( !studies.containsKey( study.id ) )
-        } else
-        {
-            require( studies.contains( study.id ) )
-        }
-
         studies[ study.id ] = study.getSnapshot()
     }
 

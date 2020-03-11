@@ -21,19 +21,6 @@ interface StudyRepositoryTest
 
 
     @Test
-    fun cant_add_study_with_id_that_already_exists()
-    {
-        val repo = createRepository()
-        val study = addStudy( repo )
-
-        val studyWithSameId = Study( StudyOwner(), "Study 2", StudyInvitation.empty(), study.id )
-        assertFailsWith<IllegalArgumentException>
-        {
-            repo.store( studyWithSameId )
-        }
-    }
-
-    @Test
     fun getById_succeeds()
     {
         val repo = createRepository()
@@ -67,11 +54,20 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun update_succeeds()
+    fun store_new_study_succeeds()
     {
         val repo = createRepository()
         val study = Study( StudyOwner(), "Test" )
         repo.store( study )
+
+        assertNotNull( repo.getById( study.id ) )
+    }
+
+    @Test
+    fun store_existing_study_updates_it()
+    {
+        val repo = createRepository()
+        val study = addStudy( repo )
 
         study.name = "Changed name"
         repo.store( study )
@@ -125,7 +121,7 @@ interface StudyRepositoryTest
 
     private fun addStudy( repo: StudyRepository ): Study
     {
-        val study = Study( StudyOwner(), "Test")
+        val study = Study( StudyOwner(), "Test" )
         repo.store( study )
         return study
     }

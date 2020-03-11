@@ -9,9 +9,6 @@ interface StudyRepository
 {
     /**
      * Add or update a [study] in the repository.
-     *
-     * @throws IllegalArgumentException when no previous version of this study is stored in the repository on update
-     * or if the study exists already on adding as new.
      */
     fun store( study: Study )
 
