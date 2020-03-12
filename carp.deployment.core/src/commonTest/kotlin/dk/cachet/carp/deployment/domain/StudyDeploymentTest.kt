@@ -3,6 +3,7 @@ package dk.cachet.carp.deployment.domain
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.deployment.domain.users.AccountParticipation
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.domain.devices.CustomDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
@@ -65,6 +66,7 @@ class StudyDeploymentTest
         assertEquals( 1, deployment.registeredDevices.size )
         val registered = deployment.registeredDevices.values.single()
         assertEquals( registration, registered )
+        assertEquals( StudyDeployment.Event.DeviceRegistered( device, registration ), deployment.consumeEvents().last() )
     }
 
     @Test
@@ -80,6 +82,7 @@ class StudyDeploymentTest
         {
             deployment.registerDevice( invalidDevice, registration )
         }
+        assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceRegistered>().count() )
     }
 
     @Test
@@ -96,6 +99,7 @@ class StudyDeploymentTest
         {
             deployment.registerDevice( device, DefaultDeviceRegistration( "1" ))
         }
+        assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceRegistered>().count() )
     }
 
     /**
@@ -175,6 +179,7 @@ class StudyDeploymentTest
         {
             deployment.registerDevice( master, wrongRegistration )
         }
+        assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceRegistered>().count() )
     }
 
     @Test
@@ -321,6 +326,8 @@ class StudyDeploymentTest
         val retrievedParticipation = deployment.getParticipation( account )
 
         assertEquals( participation, retrievedParticipation )
+        val expectedParticipation = AccountParticipation( account.id, participation.id )
+        assertEquals( StudyDeployment.Event.ParticipationAdded( expectedParticipation ), deployment.consumeEvents().last() )
     }
 
     @Test
@@ -333,6 +340,7 @@ class StudyDeploymentTest
         val participation = Participation( incorrectDeploymentId )
 
         assertFailsWith<IllegalArgumentException> { deployment.addParticipation( account, participation ) }
+        assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.ParticipationAdded>().count() )
     }
 
     @Test
@@ -347,6 +355,7 @@ class StudyDeploymentTest
         {
             deployment.addParticipation( account, Participation( deployment.id ) )
         }
+        assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.ParticipationAdded>().count() )
     }
 
     @Test

@@ -1,6 +1,7 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.Snapshot
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -17,7 +18,7 @@ data class StudyDeploymentSnapshot(
     val studyProtocolSnapshot: StudyProtocolSnapshot,
     val registeredDevices: Map<String, @Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration>,
     val participations: Set<AccountParticipation>
-)
+) : Snapshot<StudyDeployment>()
 {
     companion object
     {
@@ -35,4 +36,7 @@ data class StudyDeploymentSnapshot(
                 studyDeployment.participations )
         }
     }
+
+
+    override fun toObject(): StudyDeployment = StudyDeployment.fromSnapshot( this )
 }

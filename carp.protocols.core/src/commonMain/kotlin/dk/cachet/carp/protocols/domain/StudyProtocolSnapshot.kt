@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.Snapshot
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
@@ -25,7 +26,7 @@ data class StudyProtocolSnapshot(
     val tasks: List<@Serializable( TaskDescriptorSerializer::class ) TaskDescriptor>,
     val triggers: Map<Int, @Serializable( TriggerSerializer::class ) Trigger>,
     val triggeredTasks: List<TriggeredTask>
-)
+) : Snapshot<StudyProtocol>()
 {
     @Serializable
     data class DeviceConnection( val roleName: String, val connectedToRoleName: String )
@@ -122,4 +123,6 @@ data class StudyProtocolSnapshot(
 
         return result
     }
+
+    override fun toObject(): StudyProtocol = StudyProtocol.fromSnapshot( this )
 }

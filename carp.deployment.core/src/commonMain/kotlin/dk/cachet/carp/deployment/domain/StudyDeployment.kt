@@ -1,7 +1,9 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.AggregateRoot
 import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
@@ -22,8 +24,16 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
  * enabling a connection between them, tracking device connection issues, assessing data quality,
  * and registering participant consent.
  */
-class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() )
+class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() ) :
+    AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>()
 {
+    sealed class Event : Immutable()
+    {
+        data class DeviceRegistered( val device: AnyDeviceDescriptor, val registration: DeviceRegistration ) : Event()
+        data class ParticipationAdded( val accountParticipation: AccountParticipation ) : Event()
+    }
+
+
     companion object Factory
     {
         fun fromSnapshot( snapshot: StudyDeploymentSnapshot ): StudyDeployment
@@ -167,6 +177,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             "Cannot register the same device for different device roles within a deployment." }
 
         _registeredDevices[ device ] = registration
+        event( Event.DeviceRegistered( device, registration ) )
     }
 
     /**
@@ -229,7 +240,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         require( id == participation.studyDeploymentId ) { "The specified participation details do not match this study deployment." }
         require( _participations.none { it.accountId == account.id } ) { "The specified account already participates in this study deployment." }
 
-        _participations.add( AccountParticipation( account.id, participation.id ) )
+        val accountParticipation = AccountParticipation( account.id, participation.id )
+        _participations.add( accountParticipation )
+        event( Event.ParticipationAdded( accountParticipation ) )
     }
 
     /**
@@ -246,8 +259,5 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * Get a serializable snapshot of the current state of this [StudyDeployment].
      */
-    fun getSnapshot(): StudyDeploymentSnapshot
-    {
-        return StudyDeploymentSnapshot.fromDeployment( this )
-    }
+    override fun getSnapshot(): StudyDeploymentSnapshot = StudyDeploymentSnapshot.fromDeployment( this )
 }
