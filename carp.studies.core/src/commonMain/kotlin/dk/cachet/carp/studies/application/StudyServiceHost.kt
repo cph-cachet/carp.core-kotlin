@@ -13,10 +13,10 @@ import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
-import dk.cachet.carp.studies.domain.users.deviceRoles
 import dk.cachet.carp.studies.domain.users.Participant
-import dk.cachet.carp.studies.domain.users.participantIds
 import dk.cachet.carp.studies.domain.users.StudyOwner
+import dk.cachet.carp.studies.domain.users.deviceRoles
+import dk.cachet.carp.studies.domain.users.participantIds
 
 
 /**

@@ -5,7 +5,11 @@ import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.StudyOwner
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 
 /**
@@ -15,14 +19,13 @@ interface StudyRepositoryTest
 {
     fun createRepository(): StudyRepository
 
-
     @Test
     fun cant_add_study_with_id_that_already_exists()
     {
         val repo = createRepository()
         val study = addStudy( repo )
 
-        val studyWithSameId = Study( StudyOwner(), "Study 2", StudyInvitation.empty(), study.id )
+        val studyWithSameId = Study( StudyOwner(), "Study 2", StudyInvitation("test"), study.id )
         assertFailsWith<IllegalArgumentException>
         {
             repo.add( studyWithSameId )
@@ -63,26 +66,26 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun update_succeeds()
+    fun store_new_study_succeeds()
     {
         val repo = createRepository()
         val study = Study( StudyOwner(), "Test" )
         repo.add( study )
+
+        assertNotNull( repo.getById( study.id ) )
+    }
+
+    @Test
+    fun store_existing_study_updates_it()
+    {
+        val repo = createRepository()
+        val study = addStudy( repo )
 
         study.name = "Changed name"
         repo.update( study )
         val updatedStudy = repo.getById( study.id )
         assertNotNull( updatedStudy )
         assertEquals( "Changed name", updatedStudy.name )
-    }
-
-    @Test
-    fun update_fails_for_unknown_study()
-    {
-        val repo = createRepository()
-
-        val study = Study( StudyOwner(), "Test" )
-        assertFailsWith<IllegalArgumentException> { repo.update( study ) }
     }
 
     @Test
@@ -130,7 +133,7 @@ interface StudyRepositoryTest
 
     private fun addStudy( repo: StudyRepository ): Study
     {
-        val study = Study( StudyOwner(), "Test")
+        val study = Study( StudyOwner(), "Test" )
         repo.add( study )
         return study
     }
