@@ -32,8 +32,17 @@ class InMemoryStudyRepository : StudyRepository
     /**
      * Add or update a [study] in the repository.
      */
-    override fun store( study: Study )
+    override fun update( study: Study )
     {
+        require( study.id in studies )
+
+        studies[ study.id ] = study.getSnapshot()
+    }
+
+    override fun add( study: Study )
+    {
+        require( !studies.containsKey( study.id ) )
+
         studies[ study.id ] = study.getSnapshot()
     }
 

@@ -40,7 +40,7 @@ class StudyServiceHost(
         val ensuredInvitation = invitation ?: StudyInvitation( name )
         val study = Study( owner, name, ensuredInvitation )
 
-        repository.store( study )
+        repository.add( study )
 
         return study.getStatus()
     }
@@ -112,7 +112,7 @@ class StudyServiceHost(
         try { study.protocolSnapshot = protocol }
         catch ( e: InvalidConfigurationError ) { throw IllegalArgumentException( e.message ) }
 
-        repository.store( study )
+        repository.update( study )
 
         return study.getStatus()
     }
@@ -129,7 +129,7 @@ class StudyServiceHost(
         require( study != null )
 
         study.goLive()
-        repository.store( study )
+        repository.update( study )
 
         return study.getStatus()
     }
@@ -184,7 +184,7 @@ class StudyServiceHost(
             study.addParticipation( DeanonymizedParticipation( toAssign.participantId, participation ) )
         }
 
-        repository.store( study )
+        repository.update( study )
 
         return study.getStatus()
     }

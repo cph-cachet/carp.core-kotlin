@@ -2,6 +2,7 @@ package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import kotlin.test.Test
@@ -18,6 +19,18 @@ interface StudyRepositoryTest
 {
     fun createRepository(): StudyRepository
 
+    @Test
+    fun cant_add_study_with_id_that_already_exists()
+    {
+        val repo = createRepository()
+        val study = addStudy( repo )
+
+        val studyWithSameId = Study( StudyOwner(), "Study 2", StudyInvitation("test"), study.id )
+        assertFailsWith<IllegalArgumentException>
+        {
+            repo.add( studyWithSameId )
+        }
+    }
 
     @Test
     fun getById_succeeds()
@@ -45,8 +58,8 @@ interface StudyRepositoryTest
         val owner = StudyOwner()
         val ownerStudy = Study( owner, "Test" )
         val wrongStudy = Study( StudyOwner(), "Test" )
-        repo.store( ownerStudy )
-        repo.store( wrongStudy )
+        repo.add( ownerStudy )
+        repo.add( wrongStudy )
 
         val ownerStudies = repo.getForOwner( owner )
         assertEquals( ownerStudy.id, ownerStudies.single().id )
@@ -57,7 +70,7 @@ interface StudyRepositoryTest
     {
         val repo = createRepository()
         val study = Study( StudyOwner(), "Test" )
-        repo.store( study )
+        repo.add( study )
 
         assertNotNull( repo.getById( study.id ) )
     }
@@ -69,7 +82,7 @@ interface StudyRepositoryTest
         val study = addStudy( repo )
 
         study.name = "Changed name"
-        repo.store( study )
+        repo.update( study )
         val updatedStudy = repo.getById( study.id )
         assertNotNull( updatedStudy )
         assertEquals( "Changed name", updatedStudy.name )
@@ -121,7 +134,7 @@ interface StudyRepositoryTest
     private fun addStudy( repo: StudyRepository ): Study
     {
         val study = Study( StudyOwner(), "Test" )
-        repo.store( study )
+        repo.add( study )
         return study
     }
 }

@@ -239,7 +239,7 @@ interface StudyServiceTest
     @Test
     fun deployParticipantGroup_fails_for_unknown_device_roles() = runBlockingTest {
         val ( service, _ ) = createService()
-        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+        val ( studyId, _ ) = createLiveStudy( service )
         val participant = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
         val assignParticipant = AssignParticipantDevices( participant.id, setOf( "Unknown device" ) )
@@ -249,7 +249,7 @@ interface StudyServiceTest
     @Test
     fun deployParticipantGroup_fails_when_not_all_devices_assigned() = runBlockingTest {
         val ( service, _ ) = createService()
-        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+        val ( studyId, _ ) = createLiveStudy( service )
         val participant = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
         val assignParticipant = AssignParticipantDevices( participant.id, setOf() )

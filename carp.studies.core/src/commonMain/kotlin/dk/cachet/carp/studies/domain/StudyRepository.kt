@@ -8,9 +8,14 @@ import dk.cachet.carp.studies.domain.users.StudyOwner
 interface StudyRepository
 {
     /**
-     * Add or update a [study] in the repository.
+     * Add new [study] to the repository
      */
-    fun store( study: Study )
+    fun add( study: Study )
+
+    /**
+     * Update a [study] in the repository.
+     */
+    fun update( study: Study )
 
     /**
      * Returns the [Study] which has the specified [studyId], or null when no study is found.
