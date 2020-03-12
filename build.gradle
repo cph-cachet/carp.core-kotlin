@@ -9,26 +9,26 @@ buildscript {
         // Version used for all submodule artifacts.
         // Snapshot publishing changes (or adds) the suffix after '-' with 'SNAPSHOT' prior to publishing.
         // The 'publishSigned' task publishes to SonaType's staging repo and 'publishSnapshot' instantly uploads to the snapshots repo.
-        globalVersion = '1.0.0-alpha.12'
+        globalVersion = '1.0.0-alpha.13'
 
         versions = [
             // Kotlin multiplatform versions.
-            kotlin:'1.3.61',
-            serialization:'0.14.0',
-            coroutines:'1.3.3',
+            kotlin:'1.3.70',
+            serialization:'0.20.0',
+            coroutines:'1.3.4',
 
             // JVM versions.
             jvmTarget:'1.6',
-            jUnit5:'5.5.2',
+            jUnit5:'5.6.0',
             dokkaPlugin:'0.9.18',
 
             // JS versions.
-            nodePlugin:'2.2.0',
-            node:'13.6.0',
-            mocha:'7.0.0',
+            nodePlugin:'2.2.3',
+            node:'13.10.1',
+            mocha:'7.1.0',
 
             // DevOps versions.
-            detektPlugin:'1.5.1',
+            detektPlugin:'1.7.0-beta1',
             nexusReleasePlugin:'0.21.2'
         ]
     }
@@ -302,6 +302,44 @@ nexusStaging {
     numberOfRetries = 30
     username = publishProperties['repository.username']
     password = publishProperties['repository.password']
+}
+
+// TypeScript ambient declaration verification.
+def typescriptFolder = 'typescript-declarations'
+apply plugin: 'com.github.node-gradle.node'
+task setupTsProject(type: NpmTask) {
+    workingDir = file(typescriptFolder)
+    args = ['install']
+}
+task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
+    // First compile all subprojects for which TypeScript declarations are defined.
+    def projects = coreModules + commonModule
+    projects.each { dependsOn("${it.name}:compileKotlinJs") }
+
+    projects.each {
+        // Copy JS sources into ...
+        from it.compileKotlinJs.destinationDir
+        def configuration = it.configurations.jsTestRuntimeClasspath
+        from(files {
+            configuration.collect { File file ->
+                file.name.endsWith(".jar")
+                        ? zipTree(file.absolutePath).matching {
+                    include '*.js'
+                    include '*.js.map' }
+                        : files()
+            }
+        }.builtBy(configuration))
+
+        // ... 'node_modules' so that test can retrieve dependencies.
+        into "./${typescriptFolder}/node_modules"
+    }
+}
+task verifyTsDeclarations(type: NodeTask, dependsOn: copyTestJsSources) {
+    script = file("${typescriptFolder}/node_modules/mocha/bin/mocha")
+    execOverrides {
+        it.workingDir = typescriptFolder
+    }
+    args = ['--require', 'ts-node/register', './tests/**/*.ts']
 }
 
 // Add common dependencies:

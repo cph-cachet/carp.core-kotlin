@@ -65,6 +65,7 @@ class StudyProtocolTest
         val isAdded: Boolean = protocol.addTrigger( trigger )
         assertTrue( isAdded )
         assertTrue( protocol.triggers.contains( trigger ) )
+        assertEquals( StudyProtocol.Event.TriggerAdded( trigger ), protocol.consumeEvents().last() )
     }
 
     @Test
@@ -79,6 +80,8 @@ class StudyProtocolTest
         val isAdded: Boolean = protocol.addTrigger( trigger )
         assertFalse( isAdded )
         assertEquals( 1, protocol.triggers.count() )
+        val triggerEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggerAdded>()
+        assertEquals( 1, triggerEvents.count() )
     }
 
     @Test
@@ -91,6 +94,8 @@ class StudyProtocolTest
         {
             protocol.addTrigger( trigger )
         }
+        val triggerEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggerAdded>()
+        assertEquals( 0, triggerEvents.count() )
     }
 
     @Test
@@ -107,6 +112,8 @@ class StudyProtocolTest
         {
             protocol.addTrigger( trigger )
         }
+        val triggerEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggerAdded>()
+        assertEquals( 0, triggerEvents.count() )
     }
 
     @Test
@@ -122,6 +129,7 @@ class StudyProtocolTest
         val isAdded: Boolean = protocol.addTriggeredTask( trigger, task, device )
         assertTrue( isAdded )
         assertTrue( protocol.getTriggeredTasks( trigger ).contains( TriggeredTask( task, device ) ) )
+        assertEquals( StudyProtocol.Event.TriggeredTaskAdded( TriggeredTask( task, device ) ), protocol.consumeEvents().last() )
     }
 
     @Test
@@ -137,6 +145,8 @@ class StudyProtocolTest
         val isAdded = protocol.addTriggeredTask( trigger, task, device )
         assertFalse( isAdded )
         assertEquals( 1, protocol.getTriggeredTasks( trigger ).count() )
+        val triggeredTaskEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggeredTaskAdded>()
+        assertEquals( 1, triggeredTaskEvents.count() )
     }
 
     @Test
@@ -151,6 +161,8 @@ class StudyProtocolTest
         val trigger = StubTrigger( device )
         protocol.addTriggeredTask( trigger, task, device )
         assertTrue( protocol.triggers.contains( trigger ) )
+        val triggerEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggerAdded>()
+        assertEquals( StudyProtocol.Event.TriggerAdded( trigger ), triggerEvents.single() )
     }
 
     @Test
@@ -165,6 +177,8 @@ class StudyProtocolTest
         val task = StubTaskDescriptor()
         protocol.addTriggeredTask( trigger, task, device )
         assertTrue( protocol.tasks.contains( task ) )
+        val taskEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TaskAdded>()
+        assertEquals( StudyProtocol.Event.TaskAdded( task ), taskEvents.single() )
     }
 
     @Test
@@ -185,6 +199,7 @@ class StudyProtocolTest
         {
             protocol.addTriggeredTask( trigger, task, StubDeviceDescriptor() )
         }
+        assertEquals( 0, protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggeredTaskAdded>().count() )
     }
 
     @Test
@@ -289,6 +304,7 @@ class StudyProtocolTest
         protocol.removeTask( task )
         assertEquals( 0, protocol.getTriggeredTasks( trigger1 ).count() )
         assertEquals( 0, protocol.getTriggeredTasks( trigger2 ).count() )
+        assertEquals( 2, protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggeredTaskRemoved>().count() )
     }
 
     @Test

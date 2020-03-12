@@ -23,6 +23,10 @@ jobs:
           
       - name: Build and test
         run: ./gradlew build 
+        
+      - name: Verify typescript declarations
+        if: success()
+        run: ./gradlew verifyTsDeclarations
 
       - name: Publish to staging repo
         if: success()

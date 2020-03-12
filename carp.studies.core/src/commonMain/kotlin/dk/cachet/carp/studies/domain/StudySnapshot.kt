@@ -2,6 +2,7 @@ package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.Snapshot
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
@@ -18,7 +19,7 @@ data class StudySnapshot(
     val protocolSnapshot: StudyProtocolSnapshot?,
     val isLive: Boolean,
     val participations: Set<DeanonymizedParticipation>
-)
+) : Snapshot<Study>()
 {
     companion object
     {
@@ -40,4 +41,6 @@ data class StudySnapshot(
                 participations = study.participations.toSet() )
         }
     }
+
+    override fun toObject(): Study = Study.fromSnapshot( this )
 }

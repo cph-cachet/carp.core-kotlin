@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.protocols.domain.deployment.DeploymentError
 import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
 import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
@@ -8,7 +9,9 @@ import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
 import dk.cachet.carp.protocols.domain.deployment.UseCompositeTaskWarning
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.EmptyDeviceConfiguration
+import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.tasks.EmptyTaskConfiguration
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.triggers.Trigger
@@ -19,6 +22,7 @@ import dk.cachet.carp.protocols.domain.triggers.TriggeredTask
  * A description of how a study is to be executed, defining the type(s) of master device(s) ([AnyMasterDeviceDescriptor]) responsible for aggregating data,
  * the optional devices ([AnyDeviceDescriptor]) connected to them, and the [Trigger]'s which lead to data collection on said devices.
  */
+@Suppress( "TooManyFunctions" ) // TODO: some of the device and task configuration methods are overridden solely to add events. Can this be refactored?
 class StudyProtocol(
     /**
      * The person or group that created this [StudyProtocol].
@@ -30,6 +34,18 @@ class StudyProtocol(
     val name: String
 ) : StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration() )
 {
+    sealed class Event : Immutable()
+    {
+        data class MasterDeviceAdded( val device: AnyMasterDeviceDescriptor ) : Event()
+        data class ConnectedDeviceAdded( val connected: AnyDeviceDescriptor, val master: AnyMasterDeviceDescriptor ) : Event()
+        data class TriggerAdded( val trigger: Trigger ) : Event()
+        data class TaskAdded( val task: TaskDescriptor ) : Event()
+        data class TaskRemoved( val task: TaskDescriptor ) : Event()
+        data class TriggeredTaskAdded( val triggeredTask: TriggeredTask ) : Event()
+        data class TriggeredTaskRemoved( val triggeredTask: TriggeredTask ) : Event()
+    }
+
+
     companion object Factory
     {
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
@@ -69,6 +85,42 @@ class StudyProtocol(
         }
     }
 
+    /**
+     * Add a master device which is responsible for aggregating and synchronizing incoming data.
+     *
+     * Throws an [InvalidConfigurationError] in case a device with the specified role name already exists.
+     *
+     * @param masterDevice A description of the master device to add. Its role name should be unique in the protocol.
+     * @return True if the device has been added; false if the specified [MasterDeviceDescriptor] is already set as a master device.
+     */
+    override fun addMasterDevice( masterDevice: AnyMasterDeviceDescriptor ): Boolean
+    {
+        val added = super.addMasterDevice( masterDevice )
+        if ( added )
+        {
+            event( Event.MasterDeviceAdded( masterDevice ) )
+        }
+        return added
+    }
+
+    /**
+     * Add a device which is connected to a master device within this configuration.
+     *
+     * Throws an [InvalidConfigurationError] in case a device with the specified role name already exists.
+     *
+     * @param device The device to be connected to a master device. Its role name should be unique in the protocol.
+     * @param masterDevice The master device to connect to.
+     * @return True if the device has been added; false if the specified [DeviceDescriptor] is already connected to the specified [MasterDeviceDescriptor].
+     */
+    override fun addConnectedDevice( device: AnyDeviceDescriptor, masterDevice: AnyMasterDeviceDescriptor ): Boolean
+    {
+        val added = super.addConnectedDevice(device, masterDevice)
+        if ( added )
+        {
+            event( Event.ConnectedDeviceAdded( device, masterDevice ) )
+        }
+        return added
+    }
 
     private val _triggers: MutableSet<Trigger> = mutableSetOf()
 
@@ -100,6 +152,7 @@ class StudyProtocol(
         if ( isAdded )
         {
             triggeredTasks[ trigger ] = mutableSetOf()
+            event( Event.TriggerAdded( trigger ) )
         }
         return isAdded
     }
@@ -124,9 +177,17 @@ class StudyProtocol(
 
         // Add trigger and task to ensure they are included in the protocol.
         addTrigger( trigger )
-        taskConfiguration.addTask( task )
+        addTask( task )
 
-        return triggeredTasks[ trigger ]!!.add( TriggeredTask( task, targetDevice ) )
+        // Add triggered task.
+        val triggeredTask = TriggeredTask( task, targetDevice )
+        val triggeredTaskAdded = triggeredTasks[ trigger ]!!.add( triggeredTask )
+        if ( triggeredTaskAdded )
+        {
+            event( Event.TriggeredTaskAdded( triggeredTask ) )
+        }
+
+        return triggeredTaskAdded
     }
 
     /**
@@ -157,6 +218,24 @@ class StudyProtocol(
     }
 
     /**
+     * Add a task to this configuration.
+     *
+     * Throws an [InvalidConfigurationError] in case a task with the specified name already exists.
+     *
+     * @param task The task to add.
+     * @return True if the task has been added; false if the specified [TaskDescriptor] is already included in this configuration.
+     */
+    override fun addTask( task: TaskDescriptor ): Boolean
+    {
+        val added = super.addTask( task )
+        if ( added )
+        {
+            event( Event.TaskAdded( task ) )
+        }
+        return added
+    }
+
+    /**
      * Remove a task currently present in the study protocol, including removing it from any [Trigger]'s which initiate it.
      *
      * @param task The task to remove.
@@ -164,15 +243,18 @@ class StudyProtocol(
      */
     override fun removeTask( task: TaskDescriptor ): Boolean
     {
-        val isRemoved = taskConfiguration.removeTask( task )
+        // Remove task from triggers.
+        triggeredTasks.map { it.value }.forEach {
+            val triggeredTasks = it.filter { triggered -> triggered.task == task }
+            it.removeAll( triggeredTasks )
+            triggeredTasks.forEach { event( Event.TriggeredTaskRemoved( it ) ) }
+        }
 
-        // Also remove task from triggers.
+        // Remove task itself.
+        val isRemoved = taskConfiguration.removeTask( task )
         if ( isRemoved )
         {
-            triggeredTasks.map { it.value }.forEach {
-                val triggeredTasks = it.filter { triggered -> triggered.task == task }
-                it.removeAll( triggeredTasks )
-            }
+            event( Event.TaskRemoved( task ) )
         }
 
         return isRemoved
@@ -212,8 +294,5 @@ class StudyProtocol(
     /**
      * Get a serializable snapshot of the current state of this [StudyProtocol].
      */
-    fun getSnapshot(): StudyProtocolSnapshot
-    {
-        return StudyProtocolSnapshot.fromProtocol( this )
-    }
+    override fun getSnapshot(): StudyProtocolSnapshot = StudyProtocolSnapshot.fromProtocol( this )
 }

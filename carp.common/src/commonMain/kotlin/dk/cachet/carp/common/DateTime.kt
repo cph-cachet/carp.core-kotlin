@@ -34,9 +34,9 @@ expect class DateTime( msSinceUTC: Long )
 @Serializer( forClass = DateTime::class )
 object DateTimeSerializer : KSerializer<DateTime>
 {
-    override fun serialize( encoder: Encoder, obj: DateTime )
+    override fun serialize( encoder: Encoder, value: DateTime )
     {
-        encoder.encodeLong( obj.msSinceUTC )
+        encoder.encodeLong( value.msSinceUTC )
     }
 
     override fun deserialize( decoder: Decoder ): DateTime
