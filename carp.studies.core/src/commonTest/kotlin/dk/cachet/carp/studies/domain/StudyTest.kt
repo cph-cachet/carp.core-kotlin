@@ -38,6 +38,8 @@ class StudyTest
     {
         val study = createStudy()
 
+        assertTrue( study.canSetStudyProtocol )
+
         setDeployableProtocol( study )
         assertEquals( Study.Event.ProtocolSnapshotChanged( study.protocolSnapshot ), study.consumeEvents().single() )
     }
@@ -69,7 +71,9 @@ class StudyTest
 
         val status = study.getStatus()
         assertEquals( study.canDeployToParticipants, status.canDeployToParticipants )
-        assertEquals( study.isLive, status.isLive )
+        assertEquals( study.canSetStudyProtocol, status.canSetStudyProtocol )
+        assertTrue( status is ConfiguringStudyStatus )
+        assertFalse( status.canGoLive )
     }
 
     @Test
@@ -105,6 +109,11 @@ class StudyTest
     fun goLive_fails_when_no_protocol_set()
     {
         val study = createStudy()
+        val status = study.getStatus()
+
+        assertTrue( status is ConfiguringStudyStatus )
+        assertFalse( status.canGoLive )
+
         assertFailsWith<IllegalStateException> { study.goLive() }
         assertEquals( 0, study.consumeEvents().count() )
     }
@@ -116,6 +125,8 @@ class StudyTest
         setDeployableProtocol( study )
         study.goLive()
 
+        assertTrue( study.canDeployToParticipants )
+
         val participation = DeanonymizedParticipation( UUID.randomUUID(), Participation( UUID.randomUUID() ) )
         study.addParticipation( participation )
         assertEquals( Study.Event.ParticipationAdded( participation ), study.consumeEvents().last() )
@@ -126,6 +137,8 @@ class StudyTest
     {
         val study = createStudy()
         setDeployableProtocol( study )
+
+        assertFalse( study.canDeployToParticipants )
 
         val participation = DeanonymizedParticipation( UUID.randomUUID(), Participation( UUID.randomUUID() ) )
         assertFailsWith<IllegalStateException> { study.addParticipation( participation ) }

@@ -7,6 +7,8 @@ import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.Smartphone
+import dk.cachet.carp.studies.domain.ConfiguringStudyStatus
+import dk.cachet.carp.studies.domain.LiveStudyStatus
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
@@ -136,7 +138,7 @@ interface StudyServiceTest
 
         status = service.setProtocol( status.studyId, createDeployableProtocol() )
         assertFalse( status.canDeployToParticipants )
-        assertFalse( status.isLive )
+        assertTrue( status is ConfiguringStudyStatus )
     }
 
     @Test
@@ -174,13 +176,13 @@ interface StudyServiceTest
         val ( service, _ ) = createService()
 
         var status = service.createStudy( StudyOwner(), "Test" )
-        assertFalse( status.isLive )
+        assertTrue( status is ConfiguringStudyStatus )
 
         // Set protocol and go live.
         service.setProtocol( status.studyId, createDeployableProtocol() )
         status = service.goLive( status.studyId )
         assertTrue( status.canDeployToParticipants )
-        assertTrue( status.isLive )
+        assertTrue( status is LiveStudyStatus )
     }
 
     @Test
@@ -239,7 +241,7 @@ interface StudyServiceTest
     @Test
     fun deployParticipantGroup_fails_for_unknown_device_roles() = runBlockingTest {
         val ( service, _ ) = createService()
-        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+        val ( studyId, _ ) = createLiveStudy( service )
         val participant = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
         val assignParticipant = AssignParticipantDevices( participant.id, setOf( "Unknown device" ) )
@@ -249,7 +251,7 @@ interface StudyServiceTest
     @Test
     fun deployParticipantGroup_fails_when_not_all_devices_assigned() = runBlockingTest {
         val ( service, _ ) = createService()
-        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+        val ( studyId, _ ) = createLiveStudy( service )
         val participant = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
         val assignParticipant = AssignParticipantDevices( participant.id, setOf() )

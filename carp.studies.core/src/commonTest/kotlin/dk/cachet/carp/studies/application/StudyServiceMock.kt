@@ -6,6 +6,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.studies.domain.ConfiguringStudyStatus
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
@@ -26,10 +27,11 @@ class StudyServiceMock(
 {
     companion object
     {
-        private val studyStatus = StudyStatus(
+        private val studyStatus = ConfiguringStudyStatus(
             UUID.randomUUID(), "Test", DateTime.now(),
             canDeployToParticipants = false,
-            isLive = false )
+            canSetStudyProtocol = false,
+            canGoLive = true )
     }
 
 

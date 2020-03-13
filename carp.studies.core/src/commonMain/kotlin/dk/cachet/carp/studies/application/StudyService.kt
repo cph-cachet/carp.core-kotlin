@@ -60,6 +60,7 @@ interface StudyService
      * @throws IllegalArgumentException when a study with [studyId] does not exist,
      * when the provided [protocol] snapshot is invalid,
      * or when the protocol contains errors preventing it from being used in deployments.
+     * @throws IllegalStateException when the study protocol can no longer be set since the study went 'live'.
      */
     suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
 
