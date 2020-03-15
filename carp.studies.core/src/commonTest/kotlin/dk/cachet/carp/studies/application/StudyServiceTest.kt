@@ -8,7 +8,6 @@ import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.Smartphone
 import dk.cachet.carp.studies.domain.ConfiguringStudyStatus
-import dk.cachet.carp.studies.domain.LiveStudyStatus
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
@@ -138,7 +137,7 @@ interface StudyServiceTest
 
         status = service.setProtocol( status.studyId, createDeployableProtocol() )
         assertFalse( status.canDeployToParticipants )
-        assertTrue( status is ConfiguringStudyStatus )
+        assertTrue( status.isConfiguring )
     }
 
     @Test
@@ -176,13 +175,13 @@ interface StudyServiceTest
         val ( service, _ ) = createService()
 
         var status = service.createStudy( StudyOwner(), "Test" )
-        assertTrue( status is ConfiguringStudyStatus )
+        assertTrue( status.isConfiguring )
 
         // Set protocol and go live.
         service.setProtocol( status.studyId, createDeployableProtocol() )
         status = service.goLive( status.studyId )
         assertTrue( status.canDeployToParticipants )
-        assertTrue( status is LiveStudyStatus )
+        assertTrue( status.isLive )
     }
 
     @Test

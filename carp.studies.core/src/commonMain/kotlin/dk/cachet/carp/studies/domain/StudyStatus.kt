@@ -28,10 +28,20 @@ sealed class StudyStatus
      * Determines whether a study protocol can be set/changed for the study.
      */
     abstract val canSetStudyProtocol: Boolean
+
+    /**
+     * Determines whether the study is currently in the 'configuring' state.
+     */
+    val isConfiguring: Boolean get() = this is ConfiguringStudyStatus
+    /**
+     * Determines whether the study is currently in the 'live' state.
+     */
+    val isLive: Boolean get() = this is LiveStudyStatus
 }
 
+
 /**
- * Study state for when a study is being configured.
+ * Study status for when a study is being configured.
  */
 @Serializable
 data class ConfiguringStudyStatus(
@@ -48,7 +58,7 @@ data class ConfiguringStudyStatus(
 
 
 /**
- * Study state for when a study is 'live'.
+ * Study status for when a study is 'live'.
  */
 @Serializable
 data class LiveStudyStatus(
