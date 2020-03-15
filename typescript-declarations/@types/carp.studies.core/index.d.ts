@@ -19,19 +19,50 @@ declare module 'carp.studies.core'
 
     namespace dk.cachet.carp.studies.domain
     {
-        class StudyStatus
+        abstract class StudyStatus
         {
-            constructor( studyId: UUID, name: string, creationDate: DateTime, canDeployToParticipants: boolean, isLive: boolean )
-
             static get Companion(): StudyStatus$Companion
+
+            isConfiguring(): boolean
+            isLive(): boolean
+        }
+        interface StudyStatus$Companion { serializer(): any }
+
+        class ConfiguringStudyStatus
+        {
+            constructor(
+                studyId: UUID, name: string, creationDate: DateTime,
+                canDeployToParticipants: boolean,
+                canSetStudyProtocol: boolean,
+                canGoLive: boolean )
 
             readonly studyId: UUID
             readonly name: string
             readonly creationDate: DateTime
             readonly canDeployToParticipants: boolean
-            readonly isLive: boolean
+            readonly canSetStudyProtocol: boolean
+            readonly canGoLive: boolean
+
+            isConfiguring(): boolean
+            isLive(): boolean
         }
-        interface StudyStatus$Companion { serializer(): any }
+
+        class LiveStudyStatus
+        {
+            constructor(
+                studyId: UUID, name: string, creationDate: DateTime,
+                canDeployToParticipants: boolean,
+                canSetStudyProtocol: boolean )
+
+            readonly studyId: UUID
+            readonly name: string
+            readonly creationDate: DateTime
+            readonly canDeployToParticipants: boolean
+            readonly canSetStudyProtocol: boolean
+
+            isConfiguring(): boolean
+            isLive(): boolean
+        }
     }
 
 
