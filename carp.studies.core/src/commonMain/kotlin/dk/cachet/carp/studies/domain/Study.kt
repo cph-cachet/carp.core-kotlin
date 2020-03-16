@@ -74,8 +74,8 @@ class Study(
      * Get the status (serializable) of this [Study].
      */
     fun getStatus(): StudyStatus =
-        if ( isLive ) LiveStudyStatus( id, name, creationDate, canDeployToParticipants, canSetStudyProtocol )
-        else ConfiguringStudyStatus( id, name, creationDate, canDeployToParticipants, canSetStudyProtocol, canGoLive )
+        if ( isLive ) StudyStatus.Live( id, name, creationDate, canDeployToParticipants, canSetStudyProtocol )
+        else StudyStatus.Configuring( id, name, creationDate, canDeployToParticipants, canSetStudyProtocol, canGoLive )
 
     val canSetStudyProtocol: Boolean get() = !isLive
 

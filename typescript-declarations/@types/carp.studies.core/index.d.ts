@@ -16,52 +16,44 @@ declare module 'carp.studies.core'
     import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
 
 
-
     namespace dk.cachet.carp.studies.domain
     {
         abstract class StudyStatus
         {
             static get Companion(): StudyStatus$Companion
-
-            isConfiguring(): boolean
-            isLive(): boolean
         }
         interface StudyStatus$Companion { serializer(): any }
 
-        class ConfiguringStudyStatus
+        namespace StudyStatus
         {
-            constructor(
-                studyId: UUID, name: string, creationDate: DateTime,
-                canDeployToParticipants: boolean,
-                canSetStudyProtocol: boolean,
-                canGoLive: boolean )
-
-            readonly studyId: UUID
-            readonly name: string
-            readonly creationDate: DateTime
-            readonly canDeployToParticipants: boolean
-            readonly canSetStudyProtocol: boolean
-            readonly canGoLive: boolean
-
-            isConfiguring(): boolean
-            isLive(): boolean
-        }
-
-        class LiveStudyStatus
-        {
-            constructor(
-                studyId: UUID, name: string, creationDate: DateTime,
-                canDeployToParticipants: boolean,
-                canSetStudyProtocol: boolean )
-
-            readonly studyId: UUID
-            readonly name: string
-            readonly creationDate: DateTime
-            readonly canDeployToParticipants: boolean
-            readonly canSetStudyProtocol: boolean
-
-            isConfiguring(): boolean
-            isLive(): boolean
+            class Configuring
+            {
+                constructor(
+                    studyId: UUID, name: string, creationDate: DateTime,
+                    canDeployToParticipants: boolean,
+                    canSetStudyProtocol: boolean,
+                    canGoLive: boolean )
+    
+                readonly studyId: UUID
+                readonly name: string
+                readonly creationDate: DateTime
+                readonly canDeployToParticipants: boolean
+                readonly canSetStudyProtocol: boolean
+                readonly canGoLive: boolean
+            }
+            class Live
+            {
+                constructor(
+                    studyId: UUID, name: string, creationDate: DateTime,
+                    canDeployToParticipants: boolean,
+                    canSetStudyProtocol: boolean )
+    
+                readonly studyId: UUID
+                readonly name: string
+                readonly creationDate: DateTime
+                readonly canDeployToParticipants: boolean
+                readonly canSetStudyProtocol: boolean
+            }
         }
     }
 

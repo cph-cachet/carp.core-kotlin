@@ -72,7 +72,7 @@ class StudyTest
         val status = study.getStatus()
         assertEquals( study.canDeployToParticipants, status.canDeployToParticipants )
         assertEquals( study.canSetStudyProtocol, status.canSetStudyProtocol )
-        assertTrue( status is ConfiguringStudyStatus )
+        assertTrue( status is StudyStatus.Configuring )
         assertFalse( status.canGoLive )
     }
 
@@ -111,7 +111,7 @@ class StudyTest
         val study = createStudy()
         val status = study.getStatus()
 
-        assertTrue( status is ConfiguringStudyStatus )
+        assertTrue( status is StudyStatus.Configuring )
         assertFalse( status.canGoLive )
 
         assertFailsWith<IllegalStateException> { study.goLive() }

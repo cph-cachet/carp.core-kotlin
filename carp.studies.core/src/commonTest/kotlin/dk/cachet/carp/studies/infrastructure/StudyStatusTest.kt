@@ -2,7 +2,6 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.studies.domain.ConfiguringStudyStatus
 import dk.cachet.carp.studies.domain.StudyStatus
 import kotlin.test.*
 
@@ -15,7 +14,7 @@ class StudyStatusTest
     @Test
     fun can_serialize_and_deserialize_study_status_using_JSON()
     {
-        val status = ConfiguringStudyStatus(
+        val status = StudyStatus.Configuring(
             UUID.randomUUID(), "Test", DateTime.now(),
             canDeployToParticipants = false,
             canSetStudyProtocol = true,

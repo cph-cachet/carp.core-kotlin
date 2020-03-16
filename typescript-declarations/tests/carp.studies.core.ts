@@ -21,8 +21,6 @@ import getAssignedDeviceRoles = dk.cachet.carp.studies.domain.users.deviceRoles_
 import Participant = dk.cachet.carp.studies.domain.users.Participant
 import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
 import StudyStatus = dk.cachet.carp.studies.domain.StudyStatus
-import ConfiguringStudyStatus = dk.cachet.carp.studies.domain.ConfiguringStudyStatus
-import LiveStudyStatus = dk.cachet.carp.studies.domain.LiveStudyStatus
 import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
 import createStudiesSerializer = dk.cachet.carp.studies.infrastructure.createStudiesSerializer_stpyu4$
 
@@ -36,8 +34,8 @@ describe( "carp.studies.core", () => {
             Participant.Companion,
             new StudyOwner(),
             StudyOwner.Companion,
-            new ConfiguringStudyStatus( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true, false ),
-            new LiveStudyStatus( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, false ),
+            new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true, false ),
+            new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, false ),
             StudyStatus.Companion,
             StudyServiceRequest.Companion
         ]
@@ -77,15 +75,15 @@ describe( "carp.studies.core", () => {
 
     describe( "StudyStatus", () => {
         it ( "can typecheck StudyStatus", () => {
-            const configuring = new ConfiguringStudyStatus( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true, false )
+            const configuring = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true, false )
             const configuringStatus: StudyStatus = configuring
-            expect( configuringStatus instanceof ConfiguringStudyStatus ).is.true
-            expect( configuringStatus instanceof LiveStudyStatus ).is.false
+            expect( configuringStatus instanceof StudyStatus.Configuring ).is.true
+            expect( configuringStatus instanceof StudyStatus.Live ).is.false
 
-            const live = new LiveStudyStatus( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true )
+            const live = new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true )
             const liveStatus: StudyStatus = live
-            expect( liveStatus instanceof LiveStudyStatus ).is.true
-            expect( liveStatus instanceof ConfiguringStudyStatus ).is.false
+            expect( liveStatus instanceof StudyStatus.Live ).is.true
+            expect( liveStatus instanceof StudyStatus.Configuring ).is.false
         } )
     } )
 
@@ -119,7 +117,7 @@ describe( "carp.studies.core", () => {
         } )
 
         it( "can serialize getStudiesOverview response", () => {
-            const status = new ConfiguringStudyStatus( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true, false )
+            const status = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true, false )
             const statusList = new ArrayList( [ status ] )
 
             const json: Json = createStudiesSerializer()

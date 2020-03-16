@@ -29,42 +29,33 @@ sealed class StudyStatus
      */
     abstract val canSetStudyProtocol: Boolean
 
+
     /**
-     * Determines whether the study is currently in the 'configuring' state.
+     * Study status for when a study is being configured.
      */
-    val isConfiguring: Boolean get() = this is ConfiguringStudyStatus
+    @Serializable
+    data class Configuring(
+        override val studyId: UUID,
+        override val name: String,
+        override val creationDate: DateTime,
+        override val canDeployToParticipants: Boolean,
+        override val canSetStudyProtocol: Boolean,
+        /**
+         * Determines whether a study is fully configured and can 'go live'.
+         */
+        val canGoLive: Boolean
+    ) : StudyStatus()
+
+
     /**
-     * Determines whether the study is currently in the 'live' state.
+     * Study status for when a study is 'live'.
      */
-    val isLive: Boolean get() = this is LiveStudyStatus
+    @Serializable
+    data class Live(
+        override val studyId: UUID,
+        override val name: String,
+        override val creationDate: DateTime,
+        override val canDeployToParticipants: Boolean,
+        override val canSetStudyProtocol: Boolean
+    ) : StudyStatus()
 }
-
-
-/**
- * Study status for when a study is being configured.
- */
-@Serializable
-data class ConfiguringStudyStatus(
-    override val studyId: UUID,
-    override val name: String,
-    override val creationDate: DateTime,
-    override val canDeployToParticipants: Boolean,
-    override val canSetStudyProtocol: Boolean,
-    /**
-     * Determines whether a study is fully configured and can 'go live'.
-     */
-    val canGoLive: Boolean
-) : StudyStatus()
-
-
-/**
- * Study status for when a study is 'live'.
- */
-@Serializable
-data class LiveStudyStatus(
-    override val studyId: UUID,
-    override val name: String,
-    override val creationDate: DateTime,
-    override val canDeployToParticipants: Boolean,
-    override val canSetStudyProtocol: Boolean
-) : StudyStatus()
