@@ -73,7 +73,11 @@ class Study(
     /**
      * Get the status (serializable) of this [Study].
      */
-    fun getStatus(): StudyStatus = StudyStatus( id, name, creationDate, canDeployToParticipants, isLive )
+    fun getStatus(): StudyStatus =
+        if ( isLive ) StudyStatus.Live( id, name, creationDate, canDeployToParticipants, canSetStudyProtocol )
+        else StudyStatus.Configuring( id, name, creationDate, canDeployToParticipants, canSetStudyProtocol, canGoLive )
+
+    val canSetStudyProtocol: Boolean get() = !isLive
 
     /**
      * A snapshot of the protocol to use in this study, or null when not yet defined.
@@ -89,7 +93,7 @@ class Study(
          */
         set( value )
         {
-            check( !isLive )
+            check( !isLive ) { "Can't set protocol since this study already went live." }
             if ( value != null )
             {
                 val protocol = StudyProtocol.fromSnapshot( value )
@@ -106,6 +110,8 @@ class Study(
      */
     var isLive: Boolean = false
         private set
+
+    private val canGoLive: Boolean get() = protocolSnapshot != null
 
     /**
      * Lock in the current study protocol so that the study may be deployed to participants.

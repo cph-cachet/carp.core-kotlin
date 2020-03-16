@@ -7,6 +7,7 @@ import HashSet = kotlin.collections.HashSet
 import toSet = kotlin.collections.toSet_us0mfu$
 import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-runtime'
 import Json = kotlinx.serialization.json.Json
+import getListSerializer = kotlinx.serialization.get_list_gekvwj$
 import { dk as cdk } from 'carp.common'
 import DateTime = cdk.cachet.carp.common.DateTime
 import UUID = cdk.cachet.carp.common.UUID
@@ -33,7 +34,8 @@ describe( "carp.studies.core", () => {
             Participant.Companion,
             new StudyOwner(),
             StudyOwner.Companion,
-            new StudyStatus( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, false ),
+            new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true, false ),
+            new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, false ),
             StudyStatus.Companion,
             StudyServiceRequest.Companion
         ]
@@ -71,6 +73,21 @@ describe( "carp.studies.core", () => {
     } )
 
 
+    describe( "StudyStatus", () => {
+        it ( "can typecheck StudyStatus", () => {
+            const configuring = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true, false )
+            const configuringStatus: StudyStatus = configuring
+            expect( configuringStatus instanceof StudyStatus.Configuring ).is.true
+            expect( configuringStatus instanceof StudyStatus.Live ).is.false
+
+            const live = new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true )
+            const liveStatus: StudyStatus = live
+            expect( liveStatus instanceof StudyStatus.Live ).is.true
+            expect( liveStatus instanceof StudyStatus.Configuring ).is.false
+        } )
+    } )
+
+
     describe( "StudyServiceRequest", () => {
         it( "can serialize requests with polymorphic serializer", () => {
             const createStudy = new StudyServiceRequest.CreateStudy(
@@ -97,6 +114,17 @@ describe( "carp.studies.core", () => {
             const serializer = StudyServiceRequest.Companion.serializer()
             const serialized = json.stringify_tf03ej$( serializer, deployGroup )
             expect( serialized ).is.not.undefined
+        } )
+
+        it( "can serialize getStudiesOverview response", () => {
+            const status = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true, false )
+            const statusList = new ArrayList( [ status ] )
+
+            const json: Json = createStudiesSerializer()
+            const serializer = getListSerializer( StudyStatus.Companion.serializer() )
+            expect( serializer ).is.not.undefined
+            const serialized = json.stringify_tf03ej$( serializer, statusList )
+            expect( serialized ).is.not.not.undefined
         } )
     } )
 } )
