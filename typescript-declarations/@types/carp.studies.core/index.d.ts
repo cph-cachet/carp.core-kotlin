@@ -136,6 +136,10 @@ declare module 'carp.studies.core'
             {
                 constructor( studyId: UUID, protocol: StudyProtocolSnapshot )
             }
+            class GetProtocol extends StudyServiceRequest
+            {
+                constructor( studyId: UUID )
+            }
             class GoLive extends StudyServiceRequest
             {
                 constructor( studyId: UUID )

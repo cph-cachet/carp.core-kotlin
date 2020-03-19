@@ -65,6 +65,13 @@ interface StudyService
     suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
 
     /**
+     * Get the currently specified [StudyProtocolSnapshot] for the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    suspend fun getProtocol( studyId: UUID ): StudyProtocolSnapshot?
+
+    /**
      * Lock in the current study protocol so that the study may be deployed to participants.
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
