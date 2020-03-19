@@ -22,6 +22,7 @@ class StudyServiceRequestsTest
     {
         val requests: List<StudyServiceRequest> = listOf(
             StudyServiceRequest.CreateStudy( StudyOwner(), "Test", StudyInvitation.empty() ),
+            StudyServiceRequest.UpdateInternalDescription( UUID.randomUUID(), "New name" ),
             StudyServiceRequest.GetStudyStatus( UUID.randomUUID() ),
             StudyServiceRequest.GetStudiesOverview(StudyOwner()),
             StudyServiceRequest.AddParticipant( UUID.randomUUID(), EmailAddress( "test@test.com" ) ),

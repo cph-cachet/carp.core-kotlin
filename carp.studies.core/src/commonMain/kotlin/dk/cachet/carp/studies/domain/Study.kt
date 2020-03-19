@@ -57,6 +57,9 @@ class Study(
     }
 
 
+    /**
+     * A descriptive name for the study, assigned by, and only visible to, the [StudyOwner].
+     */
     var name: String = name
         set( value )
         {
