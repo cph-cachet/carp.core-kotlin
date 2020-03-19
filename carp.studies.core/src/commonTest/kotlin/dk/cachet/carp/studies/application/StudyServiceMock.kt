@@ -16,6 +16,7 @@ import dk.cachet.carp.test.Mock
 
 class StudyServiceMock(
     private val createStudyResult: StudyStatus = studyStatus,
+    private val updateInternalDescriptionResult: StudyStatus = studyStatus,
     private val getStudyStatusResult: StudyStatus = studyStatus,
     private val getStudiesOverviewResult: List<StudyStatus> = listOf(),
     private val addParticipantResult: Participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ),
@@ -40,6 +41,12 @@ class StudyServiceMock(
     {
         trackSuspendCall( StudyService::createStudy, owner, name, invitation )
         return createStudyResult
+    }
+
+    override suspend fun updateInternalDescription( studyId: UUID, name: String ): StudyStatus
+    {
+        trackSuspendCall( StudyService::updateInternalDescription, studyId, name )
+        return updateInternalDescriptionResult
     }
 
     override suspend fun getStudyStatus( studyId: UUID ): StudyStatus

@@ -46,6 +46,25 @@ class StudyServiceHost(
     }
 
     /**
+     * Update study details which are visible only to the [StudyOwner].
+     *
+     * @param studyId The id of the study to update the study details for.
+     * @param name A descriptive name for the study.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    override suspend fun updateInternalDescription( studyId: UUID, name: String ): StudyStatus
+    {
+        val study = repository.getById( studyId )
+        require( study != null )
+
+        study.name = name
+        repository.update( study )
+
+        return study.getStatus()
+    }
+
+    /**
      * Get the status for a study with the given [studyId].
      *
      * @param studyId The id of the study to return [StudyStatus] for.

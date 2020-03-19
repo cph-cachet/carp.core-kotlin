@@ -26,6 +26,16 @@ interface StudyService
     suspend fun createStudy( owner: StudyOwner, name: String, invitation: StudyInvitation? = null ): StudyStatus
 
     /**
+     * Update study details which are visible only to the [StudyOwner].
+     *
+     * @param studyId The id of the study to update the study details for.
+     * @param name A descriptive name for the study.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    suspend fun updateInternalDescription( studyId: UUID, name: String ): StudyStatus
+
+    /**
      * Get the status for a study with the given [studyId].
      *
      * @param studyId The id of the study to return [StudyStatus] for.
