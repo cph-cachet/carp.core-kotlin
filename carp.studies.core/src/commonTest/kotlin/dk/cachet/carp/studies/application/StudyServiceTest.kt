@@ -171,6 +171,25 @@ interface StudyServiceTest
     }
 
     @Test
+    fun getProtocol_succeeds() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val status = service.createStudy( StudyOwner(), "Test" )
+
+        assertEquals( null, service.getProtocol( status.studyId ) )
+        val protocol = createDeployableProtocol()
+        service.setProtocol( status.studyId, protocol )
+        assertEquals( protocol, service.getProtocol( status.studyId ) )
+    }
+
+    @Test
+    fun getProtocol_fails_for_unknown_studyId() = runBlockingTest {
+        val ( service, _ ) = createService()
+
+        val unknownId = UUID.randomUUID()
+        assertFailsWith<IllegalArgumentException> { service.getProtocol( unknownId ) }
+    }
+
+    @Test
     fun goLive_succeeds() = runBlockingTest {
         val ( service, _ ) = createService()
 
