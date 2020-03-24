@@ -70,9 +70,9 @@ interface StudyServiceTest
         val newDescription = "New description"
         val updatedStatus = service.updateInternalDescription( status.studyId, newName, newDescription )
         assertEquals( newName, updatedStatus.name )
-        fail( "Cannot retrieve description." )
-        val retrievedStatus = service.getStudyStatus( status.studyId )
-        assertEquals( newName, retrievedStatus.name )
+        val studyDetails = service.getStudyDetails( status.studyId )
+        assertEquals( newName, studyDetails.name )
+        assertEquals( newDescription, studyDetails.description )
     }
 
     @Test
@@ -80,6 +80,14 @@ interface StudyServiceTest
         val ( service, _ ) = createService()
 
         assertFailsWith<IllegalArgumentException> { service.updateInternalDescription( UUID.randomUUID(), "New name", "New description" ) }
+    }
+
+    @Test
+    fun getStudyDetails_fails_for_unknown_studyId() = runBlockingTest {
+        val ( service, _ ) = createService()
+
+        val unknownId = UUID.randomUUID()
+        assertFailsWith<IllegalArgumentException> { service.getStudyDetails( unknownId ) }
     }
 
     @Test
@@ -158,9 +166,13 @@ interface StudyServiceTest
         val ( service, _ ) = createService()
         var status = service.createStudy( StudyOwner(), "Test" )
 
-        status = service.setProtocol( status.studyId, createDeployableProtocol() )
+        val protocol = createDeployableProtocol()
+        status = service.setProtocol( status.studyId, protocol )
         assertFalse( status.canDeployToParticipants )
         assertTrue( status is StudyStatus.Configuring )
+
+        val details = service.getStudyDetails( status.studyId )
+        assertEquals( protocol, details.protocolSnapshot )
     }
 
     @Test
@@ -191,25 +203,6 @@ interface StudyServiceTest
 
         val protocol = StudyProtocol( ProtocolOwner(), "Not deployable" )
         assertFailsWith<IllegalArgumentException> { service.setProtocol( status.studyId, protocol.getSnapshot() ) }
-    }
-
-    @Test
-    fun getProtocol_succeeds() = runBlockingTest {
-        val ( service, _ ) = createService()
-        val status = service.createStudy( StudyOwner(), "Test" )
-
-        assertEquals( null, service.getProtocol( status.studyId ) )
-        val protocol = createDeployableProtocol()
-        service.setProtocol( status.studyId, protocol )
-        assertEquals( protocol, service.getProtocol( status.studyId ) )
-    }
-
-    @Test
-    fun getProtocol_fails_for_unknown_studyId() = runBlockingTest {
-        val ( service, _ ) = createService()
-
-        val unknownId = UUID.randomUUID()
-        assertFailsWith<IllegalArgumentException> { service.getProtocol( unknownId ) }
     }
 
     @Test

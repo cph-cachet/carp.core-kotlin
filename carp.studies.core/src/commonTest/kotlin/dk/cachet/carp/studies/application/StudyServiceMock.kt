@@ -6,6 +6,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.studies.domain.StudyDetails
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.createComplexStudy
@@ -17,12 +18,15 @@ import dk.cachet.carp.test.Mock
 class StudyServiceMock(
     private val createStudyResult: StudyStatus = studyStatus,
     private val updateInternalDescriptionResult: StudyStatus = studyStatus,
+    private val getStudyDetailsResult: StudyDetails = StudyDetails(
+        UUID.randomUUID(), StudyOwner(), "Name", DateTime.now(),
+        "Description", StudyInvitation.empty(), createComplexStudy().protocolSnapshot
+    ),
     private val getStudyStatusResult: StudyStatus = studyStatus,
     private val getStudiesOverviewResult: List<StudyStatus> = listOf(),
     private val addParticipantResult: Participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ),
     private val getParticipantsResult: List<Participant> = listOf(),
     private val setProtocolResult: StudyStatus = studyStatus,
-    private val getProtocolResult: StudyProtocolSnapshot? = createComplexStudy().protocolSnapshot,
     private val goLiveResult: StudyStatus = studyStatus,
     private val deployParticipantResult: StudyStatus = studyStatus
 ) : Mock<StudyService>(), StudyService
@@ -47,6 +51,12 @@ class StudyServiceMock(
     {
         trackSuspendCall( StudyService::updateInternalDescription, studyId, name, description )
         return updateInternalDescriptionResult
+    }
+
+    override suspend fun getStudyDetails( studyId: UUID ): StudyDetails
+    {
+        trackSuspendCall( StudyService::getStudyDetails, studyId )
+        return getStudyDetailsResult
     }
 
     override suspend fun getStudyStatus( studyId: UUID ): StudyStatus
@@ -77,12 +87,6 @@ class StudyServiceMock(
     {
         trackSuspendCall( StudyService::setProtocol, studyId, protocol )
         return setProtocolResult
-    }
-
-    override suspend fun getProtocol( studyId: UUID ): StudyProtocolSnapshot?
-    {
-        trackSuspendCall( StudyService::getProtocol, studyId )
-        return getProtocolResult
     }
 
     override suspend fun goLive( studyId: UUID ): StudyStatus

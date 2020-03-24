@@ -9,6 +9,7 @@ import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.Study
+import dk.cachet.carp.studies.domain.StudyDetails
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
@@ -65,6 +66,27 @@ class StudyServiceHost(
         repository.update( study )
 
         return study.getStatus()
+    }
+
+    /**
+     * Gets detailed information about the study with the specified [studyId], including which study protocol is set.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    override suspend fun getStudyDetails( studyId: UUID ): StudyDetails
+    {
+        val study: Study? = repository.getById( studyId )
+        require( study != null )
+
+        return StudyDetails(
+            study.id,
+            study.owner,
+            study.name,
+            study.creationDate,
+            study.description,
+            study.invitation,
+            study.protocolSnapshot
+        )
     }
 
     /**
@@ -137,19 +159,6 @@ class StudyServiceHost(
         repository.update( study )
 
         return study.getStatus()
-    }
-
-    /**
-     * Get the currently specified [StudyProtocolSnapshot] for the study with the specified [studyId].
-     *
-     * @throws IllegalArgumentException when a study with [studyId] does not exist.
-     */
-    override suspend fun getProtocol( studyId: UUID ): StudyProtocolSnapshot?
-    {
-        val study: Study? = repository.getById( studyId )
-        require( study != null )
-
-        return study.protocolSnapshot
     }
 
     /**

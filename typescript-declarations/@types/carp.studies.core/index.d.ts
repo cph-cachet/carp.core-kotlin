@@ -18,6 +18,28 @@ declare module 'carp.studies.core'
 
     namespace dk.cachet.carp.studies.domain
     {
+        import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
+
+        class StudyDetails
+        {
+            constructor(
+                studyId: UUID, studyOwner: StudyOwner, name: string, creationDate: DateTime,
+                description: string,
+                invitation: StudyInvitation,
+                protocolSnapshot: StudyProtocolSnapshot | null )
+
+            static get Companion(): StudyDetails$Companion
+
+            readonly studyId: UUID
+            readonly studyOwner: StudyOwner
+            readonly name: string
+            readonly creationDate: DateTime
+            readonly description: string
+            readonly invitation: StudyInvitation
+            readonly protocolSnapshot: StudyProtocolSnapshot | null
+        }
+        interface StudyDetails$Companion { serializer(): any }
+
         abstract class StudyStatus
         {
             static get Companion(): StudyStatus$Companion
@@ -120,6 +142,10 @@ declare module 'carp.studies.core'
             {
                 constructor( studyId: UUID, name: string, description: string )
             }
+            class GetStudyDetails extends StudyServiceRequest
+            {
+                constructor( studyId: UUID )
+            }
             class GetStudyStatus extends StudyServiceRequest
             {
                 constructor( studyId: UUID )
@@ -139,10 +165,6 @@ declare module 'carp.studies.core'
             class SetProtocol extends StudyServiceRequest
             {
                 constructor( studyId: UUID, protocol: StudyProtocolSnapshot )
-            }
-            class GetProtocol extends StudyServiceRequest
-            {
-                constructor( studyId: UUID )
             }
             class GoLive extends StudyServiceRequest
             {

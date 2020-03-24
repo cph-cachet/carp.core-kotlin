@@ -23,12 +23,12 @@ class StudyServiceRequestsTest
         val requests: List<StudyServiceRequest> = listOf(
             StudyServiceRequest.CreateStudy( StudyOwner(), "Test", "Description", StudyInvitation.empty() ),
             StudyServiceRequest.UpdateInternalDescription( UUID.randomUUID(), "New name", "New description" ),
+            StudyServiceRequest.GetStudyDetails( UUID.randomUUID() ),
             StudyServiceRequest.GetStudyStatus( UUID.randomUUID() ),
             StudyServiceRequest.GetStudiesOverview(StudyOwner()),
             StudyServiceRequest.AddParticipant( UUID.randomUUID(), EmailAddress( "test@test.com" ) ),
             StudyServiceRequest.GetParticipants( UUID.randomUUID() ),
             StudyServiceRequest.SetProtocol( UUID.randomUUID(), StudyProtocol( ProtocolOwner(), "Test" ).getSnapshot() ),
-            StudyServiceRequest.GetProtocol( UUID.randomUUID() ),
             StudyServiceRequest.GoLive( UUID.randomUUID() ),
             StudyServiceRequest.DeployParticipantGroup( UUID.randomUUID(), setOf() )
         )

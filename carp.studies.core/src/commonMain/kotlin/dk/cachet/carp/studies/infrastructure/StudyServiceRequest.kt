@@ -7,6 +7,7 @@ import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.StudyService
+import dk.cachet.carp.studies.domain.StudyDetails
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
@@ -29,6 +30,11 @@ sealed class StudyServiceRequest
     data class UpdateInternalDescription( val studyId: UUID, val name: String, val description: String ) :
         StudyServiceRequest(),
         ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::updateInternalDescription, studyId, name, description )
+
+    @Serializable
+    data class GetStudyDetails( val studyId: UUID ) :
+        StudyServiceRequest(),
+        ServiceInvoker<StudyService, StudyDetails> by createServiceInvoker( StudyService::getStudyDetails, studyId )
 
     @Serializable
     data class GetStudyStatus( val studyId: UUID ) :
@@ -54,11 +60,6 @@ sealed class StudyServiceRequest
     data class SetProtocol( val studyId: UUID, val protocol: StudyProtocolSnapshot ) :
         StudyServiceRequest(),
         ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::setProtocol, studyId, protocol )
-
-    @Serializable
-    data class GetProtocol( val studyId: UUID ) :
-        StudyServiceRequest(),
-        ServiceInvoker<StudyService, StudyProtocolSnapshot?> by createServiceInvoker( StudyService::getProtocol, studyId )
 
     @Serializable
     data class GoLive( val studyId: UUID ) :
