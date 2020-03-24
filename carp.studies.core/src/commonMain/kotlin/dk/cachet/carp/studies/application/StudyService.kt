@@ -4,6 +4,7 @@ import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.studies.domain.StudyDetails
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
@@ -36,6 +37,13 @@ interface StudyService
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
     suspend fun updateInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus
+
+    /**
+     * Gets detailed information about the study with the specified [studyId], including which study protocol is set.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    suspend fun getStudyDetails( studyId: UUID ): StudyDetails
 
     /**
      * Get the status for a study with the given [studyId].
@@ -75,13 +83,6 @@ interface StudyService
      * @throws IllegalStateException when the study protocol can no longer be set since the study went 'live'.
      */
     suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
-
-    /**
-     * Get the currently specified [StudyProtocolSnapshot] for the study with the specified [studyId].
-     *
-     * @throws IllegalArgumentException when a study with [studyId] does not exist.
-     */
-    suspend fun getProtocol( studyId: UUID ): StudyProtocolSnapshot?
 
     /**
      * Lock in the current study protocol so that the study may be deployed to participants.

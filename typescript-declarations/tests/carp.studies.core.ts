@@ -20,6 +20,7 @@ import getAssignedParticipantIds = dk.cachet.carp.studies.domain.users.participa
 import getAssignedDeviceRoles = dk.cachet.carp.studies.domain.users.deviceRoles_nvx6bb$
 import Participant = dk.cachet.carp.studies.domain.users.Participant
 import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
+import StudyDetails = dk.cachet.carp.studies.domain.StudyDetails
 import StudyStatus = dk.cachet.carp.studies.domain.StudyStatus
 import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
 import createStudiesSerializer = dk.cachet.carp.studies.infrastructure.createStudiesSerializer_stpyu4$
@@ -34,6 +35,8 @@ describe( "carp.studies.core", () => {
             Participant.Companion,
             new StudyOwner(),
             StudyOwner.Companion,
+            new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", DateTime.Companion.now(), "Description", StudyInvitation.Companion.empty(), null ),
+            StudyDetails.Companion,
             new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true, false ),
             new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, false ),
             StudyStatus.Companion,
