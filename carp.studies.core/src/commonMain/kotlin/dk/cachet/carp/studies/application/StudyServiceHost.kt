@@ -31,14 +31,15 @@ class StudyServiceHost(
      * Create a new study for the specified [owner].
      *
      * @param name A descriptive name for the study, assigned by, and only visible to, the [owner].
+     * @param description An optional description of the study, assigned by, and only visible to, the [owner].
      * @param invitation
      *  An optional description of the study, shared with participants once they are invited.
      *  In case no description is specified, [name] is used as the name in [invitation].
      */
-    override suspend fun createStudy( owner: StudyOwner, name: String, invitation: StudyInvitation? ): StudyStatus
+    override suspend fun createStudy( owner: StudyOwner, name: String, description: String, invitation: StudyInvitation? ): StudyStatus
     {
         val ensuredInvitation = invitation ?: StudyInvitation( name )
-        val study = Study( owner, name, ensuredInvitation )
+        val study = Study( owner, name, description, ensuredInvitation )
 
         repository.add( study )
 
@@ -50,15 +51,17 @@ class StudyServiceHost(
      *
      * @param studyId The id of the study to update the study details for.
      * @param name A descriptive name for the study.
+     * @param description A description of the study.
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
-    override suspend fun updateInternalDescription( studyId: UUID, name: String ): StudyStatus
+    override suspend fun updateInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus
     {
         val study = repository.getById( studyId )
         require( study != null )
 
         study.name = name
+        study.description = description
         repository.update( study )
 
         return study.getStatus()

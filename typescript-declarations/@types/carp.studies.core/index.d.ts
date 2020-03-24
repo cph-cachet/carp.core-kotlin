@@ -114,11 +114,11 @@ declare module 'carp.studies.core'
         {
             class CreateStudy extends StudyServiceRequest
             {
-                constructor( owner: StudyOwner, name: string, invitation: StudyInvitation )
+                constructor( owner: StudyOwner, name: string, description: string, invitation: StudyInvitation )
             }
             class UpdateInternalDescription extends StudyServiceRequest
             {
-                constructor( studyId: UUID, name: string )
+                constructor( studyId: UUID, name: string, description: string )
             }
             class GetStudyStatus extends StudyServiceRequest
             {

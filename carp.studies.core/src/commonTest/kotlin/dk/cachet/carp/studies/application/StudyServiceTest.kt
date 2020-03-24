@@ -49,12 +49,14 @@ interface StudyServiceTest
 
         val owner = StudyOwner()
         val name = "Test"
+        val description = "Description"
         val invitation = StudyInvitation( "Lorem ipsum" )
-        val status = service.createStudy( owner, name, invitation )
+        val status = service.createStudy( owner, name, description, invitation )
 
         val foundStudy = repo.getById( status.studyId )!!
         assertEquals( status.studyId, foundStudy.id )
         assertEquals( name, foundStudy.name )
+        assertEquals( description, foundStudy.description )
         assertEquals( invitation, foundStudy.invitation )
         assertFalse( foundStudy.canDeployToParticipants )
     }
@@ -65,8 +67,10 @@ interface StudyServiceTest
         val status = service.createStudy( StudyOwner(), "Test" )
 
         val newName = "New name"
-        val updatedStatus = service.updateInternalDescription( status.studyId, newName )
+        val newDescription = "New description"
+        val updatedStatus = service.updateInternalDescription( status.studyId, newName, newDescription )
         assertEquals( newName, updatedStatus.name )
+        fail( "Cannot retrieve description." )
         val retrievedStatus = service.getStudyStatus( status.studyId )
         assertEquals( newName, retrievedStatus.name )
     }
@@ -75,7 +79,7 @@ interface StudyServiceTest
     fun updateInternalDescription_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
 
-        assertFailsWith<IllegalArgumentException> { service.updateInternalDescription( UUID.randomUUID(), "New name" ) }
+        assertFailsWith<IllegalArgumentException> { service.updateInternalDescription( UUID.randomUUID(), "New name", "New description" ) }
     }
 
     @Test

@@ -26,6 +26,7 @@ class StudyTest
         assertEquals( study.id, fromSnapshot.id )
         assertEquals( study.owner, fromSnapshot.owner )
         assertEquals( study.name, fromSnapshot.name )
+        assertEquals( study.description, fromSnapshot.description )
         assertEquals( study.invitation, fromSnapshot.invitation )
         assertEquals( study.creationDate, fromSnapshot.creationDate )
         assertEquals( study.protocolSnapshot, fromSnapshot.protocolSnapshot )
