@@ -17,7 +17,7 @@ fun createComplexStudy(): Study
 {
     val owner = StudyOwner()
     val invitation = StudyInvitation.empty()
-    val study = Study( owner, "Test", invitation )
+    val study = Study( owner, "Test", "Description", invitation )
 
     // Specify protocol.
     val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )

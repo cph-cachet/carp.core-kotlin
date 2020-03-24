@@ -27,6 +27,10 @@ class Study(
      */
     name: String,
     /**
+     * A description for the study, assigned by, and only visible to, the [StudyOwner].
+     */
+    description: String = "",
+    /**
      * A description of the study, shared with participants once they are invited to the study.
      */
     val invitation: StudyInvitation = StudyInvitation.empty(),
@@ -35,7 +39,7 @@ class Study(
 {
     sealed class Event : Immutable()
     {
-        data class NameChanged( val name: String ) : Event()
+        data class InternalDescriptionChanged( val name: String, val description: String ) : Event()
         data class ProtocolSnapshotChanged( val protocolSnapshot: StudyProtocolSnapshot? ) : Event()
         data class StateChanged( val isLive: Boolean ) : Event()
         data class ParticipationAdded( val participation: DeanonymizedParticipation ) : Event()
@@ -46,7 +50,7 @@ class Study(
     {
         fun fromSnapshot( snapshot: StudySnapshot ): Study
         {
-            val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.invitation, snapshot.studyId )
+            val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.description, snapshot.invitation, snapshot.studyId )
             study.creationDate = snapshot.creationDate
             study.protocolSnapshot = snapshot.protocolSnapshot
             study.isLive = snapshot.isLive
@@ -64,7 +68,17 @@ class Study(
         set( value )
         {
             field = value
-            event( Event.NameChanged( name ) )
+            event( Event.InternalDescriptionChanged( name, description ) )
+        }
+
+    /**
+     * A description for the study, assigned by, and only visible to, the [StudyOwner].
+     */
+    var description: String = description
+        set( value )
+        {
+            field = value
+            event( Event.InternalDescriptionChanged( name, description ) )
         }
 
     /**

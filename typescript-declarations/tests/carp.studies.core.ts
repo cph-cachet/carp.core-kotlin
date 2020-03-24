@@ -93,6 +93,7 @@ describe( "carp.studies.core", () => {
             const createStudy = new StudyServiceRequest.CreateStudy(
                 new StudyOwner(),
                 "Test study",
+                "This is a study description",
                 StudyInvitation.Companion.empty()
             )
 

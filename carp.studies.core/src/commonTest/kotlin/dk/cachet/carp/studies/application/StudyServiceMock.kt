@@ -37,15 +37,15 @@ class StudyServiceMock(
     }
 
 
-    override suspend fun createStudy( owner: StudyOwner, name: String, invitation: StudyInvitation? ): StudyStatus
+    override suspend fun createStudy( owner: StudyOwner, name: String, description: String, invitation: StudyInvitation? ): StudyStatus
     {
-        trackSuspendCall( StudyService::createStudy, owner, name, invitation )
+        trackSuspendCall( StudyService::createStudy, owner, name, description, invitation )
         return createStudyResult
     }
 
-    override suspend fun updateInternalDescription( studyId: UUID, name: String ): StudyStatus
+    override suspend fun updateInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus
     {
-        trackSuspendCall( StudyService::updateInternalDescription, studyId, name )
+        trackSuspendCall( StudyService::updateInternalDescription, studyId, name, description )
         return updateInternalDescriptionResult
     }
 

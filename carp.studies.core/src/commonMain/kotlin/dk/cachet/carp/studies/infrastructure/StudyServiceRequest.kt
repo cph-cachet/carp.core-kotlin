@@ -21,14 +21,14 @@ import kotlinx.serialization.Serializable
 sealed class StudyServiceRequest
 {
     @Serializable
-    data class CreateStudy( val owner: StudyOwner, val name: String, val invitation: StudyInvitation? = null ) :
+    data class CreateStudy( val owner: StudyOwner, val name: String, val description: String = "", val invitation: StudyInvitation? = null ) :
         StudyServiceRequest(),
-        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::createStudy, owner, name, invitation )
+        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::createStudy, owner, name, description, invitation )
 
     @Serializable
-    data class UpdateInternalDescription( val studyId: UUID, val name: String ) :
+    data class UpdateInternalDescription( val studyId: UUID, val name: String, val description: String ) :
         StudyServiceRequest(),
-        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::updateInternalDescription, studyId, name )
+        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::updateInternalDescription, studyId, name, description )
 
     @Serializable
     data class GetStudyStatus( val studyId: UUID ) :
