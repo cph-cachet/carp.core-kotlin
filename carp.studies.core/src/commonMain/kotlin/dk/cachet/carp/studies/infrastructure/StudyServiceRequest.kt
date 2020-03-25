@@ -27,9 +27,9 @@ sealed class StudyServiceRequest
         ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::createStudy, owner, name, description, invitation )
 
     @Serializable
-    data class UpdateInternalDescription( val studyId: UUID, val name: String, val description: String ) :
+    data class SetInternalDescription( val studyId: UUID, val name: String, val description: String ) :
         StudyServiceRequest(),
-        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::updateInternalDescription, studyId, name, description )
+        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::setInternalDescription, studyId, name, description )
 
     @Serializable
     data class GetStudyDetails( val studyId: UUID ) :

@@ -142,7 +142,7 @@ declare module 'carp.studies.core'
             {
                 constructor( owner: StudyOwner, name: string, description: string, invitation: StudyInvitation )
             }
-            class UpdateInternalDescription extends StudyServiceRequest
+            class SetInternalDescription extends StudyServiceRequest
             {
                 constructor( studyId: UUID, name: string, description: string )
             }
