@@ -75,7 +75,7 @@ abstract class DeploymentServiceTest
         val invitation = StudyInvitation.empty()
         deploymentService.addParticipation( studyDeploymentId, setOf( deviceRoleName ), emailIdentity, invitation )
 
-        val differentInvitation = StudyInvitation( "Different" )
+        val differentInvitation = StudyInvitation( "Different", "New description" )
         assertFailsWith<IllegalStateException>
         {
             deploymentService.addParticipation( studyDeploymentId, setOf( deviceRoleName ), emailIdentity, differentInvitation )

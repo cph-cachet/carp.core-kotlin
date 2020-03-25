@@ -40,7 +40,7 @@ class StudyServiceHost(
      */
     override suspend fun createStudy( owner: StudyOwner, name: String, description: String, invitation: StudyInvitation? ): StudyStatus
     {
-        val ensuredInvitation = invitation ?: StudyInvitation( name )
+        val ensuredInvitation = invitation ?: StudyInvitation( name, "" )
         val study = Study( owner, name, description, ensuredInvitation )
 
         repository.add( study )

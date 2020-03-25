@@ -8,11 +8,12 @@ declare module 'carp.deployment.core'
     {
         class StudyInvitation
         {
-            constructor( name: string )
+            constructor( name: string, description: string )
 
             static get Companion(): StudyInvitation$Companion
 
-            readonly name: UUID
+            readonly name: string
+            readonly description: string
         }
         interface StudyInvitation$Companion
         {

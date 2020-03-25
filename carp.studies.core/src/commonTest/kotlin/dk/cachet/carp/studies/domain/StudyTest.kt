@@ -42,7 +42,7 @@ class StudyTest
 
         assertTrue( study.canSetInvitation )
 
-        val invitation = StudyInvitation( "Test study" )
+        val invitation = StudyInvitation( "Test study", "This is a test." )
         study.invitation = invitation
         assertEquals( invitation, study.invitation )
     }
