@@ -71,7 +71,7 @@ interface StudyRepositoryTest
 
         study.name = "Changed name"
         study.description = "Changed description"
-        val newInvitation = StudyInvitation( "Test name" )
+        val newInvitation = StudyInvitation( "Test name", "Test description" )
         study.invitation = newInvitation
         repo.update( study )
         val updatedStudy = repo.getById( study.id )

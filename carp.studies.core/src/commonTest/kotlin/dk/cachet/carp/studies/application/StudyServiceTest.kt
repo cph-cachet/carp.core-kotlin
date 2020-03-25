@@ -39,7 +39,11 @@ interface StudyServiceTest
         assertNotNull( foundStudy )
         assertEquals( status.studyId, foundStudy.id )
         assertEquals( name, foundStudy.name )
-        assertEquals( name, foundStudy.invitation.name ) // Default study description when not specified.
+
+        // Default study description when not specified.
+        assertEquals( name, foundStudy.invitation.name )
+        assertEquals( "", foundStudy.invitation.description )
+
         assertFalse( foundStudy.canDeployToParticipants )
     }
 
@@ -50,7 +54,7 @@ interface StudyServiceTest
         val owner = StudyOwner()
         val name = "Test"
         val description = "Description"
-        val invitation = StudyInvitation( "Lorem ipsum" )
+        val invitation = StudyInvitation( "Lorem ipsum", "Some description" )
         val status = service.createStudy( owner, name, description, invitation )
 
         val foundStudy = repo.getById( status.studyId )!!
@@ -167,7 +171,7 @@ interface StudyServiceTest
         val status = service.createStudy( StudyOwner(), "Test" )
 
         assertTrue( status.canSetInvitation )
-        val invitation = StudyInvitation( "Study name" )
+        val invitation = StudyInvitation( "Study name", "Description" )
         service.setInvitation( status.studyId, invitation )
         val studyDetails = service.getStudyDetails( status.studyId )
         assertEquals( invitation, studyDetails.invitation )
