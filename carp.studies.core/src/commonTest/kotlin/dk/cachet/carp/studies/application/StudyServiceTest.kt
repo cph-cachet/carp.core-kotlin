@@ -162,10 +162,30 @@ interface StudyServiceTest
     }
 
     @Test
+    fun setInvitation_succeeds() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val status = service.createStudy( StudyOwner(), "Test" )
+
+        assertTrue( status.canSetInvitation )
+        val invitation = StudyInvitation( "Study name" )
+        service.setInvitation( status.studyId, invitation )
+        val studyDetails = service.getStudyDetails( status.studyId )
+        assertEquals( invitation, studyDetails.invitation )
+    }
+
+    @Test
+    fun setInvitation_fails_for_unknown_studyId() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val unknownId = UUID.randomUUID()
+        assertFailsWith<IllegalArgumentException> { service.setInvitation( unknownId, StudyInvitation.empty() ) }
+    }
+
+    @Test
     fun setProtocol_succeeds() = runBlockingTest {
         val ( service, _ ) = createService()
         var status = service.createStudy( StudyOwner(), "Test" )
 
+        assertTrue( status.canSetStudyProtocol )
         val protocol = createDeployableProtocol()
         status = service.setProtocol( status.studyId, protocol )
         assertFalse( status.canDeployToParticipants )
@@ -203,6 +223,21 @@ interface StudyServiceTest
 
         val protocol = StudyProtocol( ProtocolOwner(), "Not deployable" )
         assertFailsWith<IllegalArgumentException> { service.setProtocol( status.studyId, protocol.getSnapshot() ) }
+    }
+
+    @Test
+    fun setInvitation_and_setProtocol_fails_after_study_gone_live() = runBlockingTest {
+        val ( service, _ ) = createService()
+        var status = service.createStudy( StudyOwner(), "Test" )
+
+        val protocol = createDeployableProtocol()
+        service.setProtocol( status.studyId, protocol )
+        status = service.goLive( status.studyId )
+        assertFalse( status.canSetInvitation )
+        assertFalse( status.canSetStudyProtocol )
+
+        assertFailsWith<IllegalStateException> { service.setInvitation( status.studyId, StudyInvitation.empty() ) }
+        assertFailsWith<IllegalStateException> { service.setProtocol( status.studyId, protocol ) }
     }
 
     @Test

@@ -52,29 +52,33 @@ declare module 'carp.studies.core'
             {
                 constructor(
                     studyId: UUID, name: string, creationDate: DateTime,
-                    canDeployToParticipants: boolean,
+                    canSetInvitation: boolean,
                     canSetStudyProtocol: boolean,
+                    canDeployToParticipants: boolean,
                     canGoLive: boolean )
     
                 readonly studyId: UUID
                 readonly name: string
                 readonly creationDate: DateTime
-                readonly canDeployToParticipants: boolean
+                readonly canSetInvitation: boolean
                 readonly canSetStudyProtocol: boolean
+                readonly canDeployToParticipants: boolean
                 readonly canGoLive: boolean
             }
             class Live
             {
                 constructor(
                     studyId: UUID, name: string, creationDate: DateTime,
-                    canDeployToParticipants: boolean,
-                    canSetStudyProtocol: boolean )
+                    canSetInvitation: boolean,
+                    canSetStudyProtocol: boolean,
+                    canDeployToParticipants: boolean )
     
                 readonly studyId: UUID
                 readonly name: string
                 readonly creationDate: DateTime
-                readonly canDeployToParticipants: boolean
+                readonly canSetInvitation: boolean
                 readonly canSetStudyProtocol: boolean
+                readonly canDeployToParticipants: boolean
             }
         }
     }
@@ -161,6 +165,10 @@ declare module 'carp.studies.core'
             class GetParticipants extends StudyServiceRequest
             {
                 constructor( studyId: UUID )
+            }
+            class SetInvitation extends StudyServiceRequest
+            {
+                constructor( studyId: UUID, invitation: StudyInvitation )
             }
             class SetProtocol extends StudyServiceRequest
             {

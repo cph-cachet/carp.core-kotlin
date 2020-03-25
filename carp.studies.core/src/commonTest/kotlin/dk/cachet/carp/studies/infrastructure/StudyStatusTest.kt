@@ -16,8 +16,9 @@ class StudyStatusTest
     {
         val status = StudyStatus.Configuring(
             UUID.randomUUID(), "Test", DateTime.now(),
-            canDeployToParticipants = false,
+            canSetInvitation = false,
             canSetStudyProtocol = true,
+            canDeployToParticipants = false,
             canGoLive = false )
 
         val serialized = status.toJson()

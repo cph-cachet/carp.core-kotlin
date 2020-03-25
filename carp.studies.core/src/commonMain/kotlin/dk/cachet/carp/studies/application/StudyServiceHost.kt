@@ -23,6 +23,7 @@ import dk.cachet.carp.studies.domain.users.StudyOwner
 /**
  * Implementation of [StudyService] which allows creating and managing studies.
  */
+@Suppress( "TooManyFunctions" ) // TODO: Perhaps split up participation management from main interface.
 class StudyServiceHost(
     private val repository: StudyRepository,
     private val deploymentService: DeploymentService
@@ -141,11 +142,28 @@ class StudyServiceHost(
         repository.getParticipants( studyId )
 
     /**
+     * Specify an [invitation], shared with participants once they are invited to the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    override suspend fun setInvitation( studyId: UUID, invitation: StudyInvitation ): StudyStatus
+    {
+        val study: Study? = repository.getById( studyId )
+        require( study != null )
+
+        study.invitation = invitation
+        repository.update( study )
+
+        return study.getStatus()
+    }
+
+    /**
      * Specify the study [protocol] to use for the study with the specified [studyId].
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist,
      * when the provided [protocol] snapshot is invalid,
      * or when the protocol contains errors preventing it from being used in deployments.
+     * @throws IllegalStateException when the study protocol can no longer be set since the study went 'live'.
      */
     override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
     {

@@ -26,6 +26,7 @@ class StudyServiceMock(
     private val getStudiesOverviewResult: List<StudyStatus> = listOf(),
     private val addParticipantResult: Participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ),
     private val getParticipantsResult: List<Participant> = listOf(),
+    private val setInvitationResult: StudyStatus = studyStatus,
     private val setProtocolResult: StudyStatus = studyStatus,
     private val goLiveResult: StudyStatus = studyStatus,
     private val deployParticipantResult: StudyStatus = studyStatus
@@ -35,8 +36,9 @@ class StudyServiceMock(
     {
         private val studyStatus = StudyStatus.Configuring(
             UUID.randomUUID(), "Test", DateTime.now(),
-            canDeployToParticipants = false,
+            canSetInvitation = true,
             canSetStudyProtocol = false,
+            canDeployToParticipants = false,
             canGoLive = true )
     }
 
@@ -81,6 +83,12 @@ class StudyServiceMock(
     {
         trackSuspendCall( StudyService::getParticipants, studyId )
         return getParticipantsResult
+    }
+
+    override suspend fun setInvitation( studyId: UUID, invitation: StudyInvitation ): StudyStatus
+    {
+        trackSuspendCall( StudyService::setInvitation, studyId, invitation )
+        return setInvitationResult
     }
 
     override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus

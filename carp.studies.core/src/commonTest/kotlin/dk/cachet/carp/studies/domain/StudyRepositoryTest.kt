@@ -71,11 +71,14 @@ interface StudyRepositoryTest
 
         study.name = "Changed name"
         study.description = "Changed description"
+        val newInvitation = StudyInvitation( "Test name" )
+        study.invitation = newInvitation
         repo.update( study )
         val updatedStudy = repo.getById( study.id )
         assertNotNull( updatedStudy )
         assertEquals( "Changed name", updatedStudy.name )
         assertEquals( "Changed description", updatedStudy.description )
+        assertEquals( newInvitation, updatedStudy.invitation )
     }
 
     @Test

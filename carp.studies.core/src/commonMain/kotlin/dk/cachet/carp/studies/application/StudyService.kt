@@ -14,6 +14,7 @@ import dk.cachet.carp.studies.domain.users.Participant
 /**
  * Application service which allows creating and managing studies.
  */
+@Suppress( "TooManyFunctions" ) // TODO: Perhaps split up participation management from main interface.
 interface StudyService
 {
     /**
@@ -73,6 +74,13 @@ interface StudyService
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
     suspend fun getParticipants( studyId: UUID ): List<Participant>
+
+    /**
+     * Specify an [invitation], shared with participants once they are invited to the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    suspend fun setInvitation( studyId: UUID, invitation: StudyInvitation ): StudyStatus
 
     /**
      * Specify the study [protocol] to use for the study with the specified [studyId].

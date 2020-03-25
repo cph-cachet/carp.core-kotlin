@@ -2,6 +2,7 @@ package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.Smartphone
@@ -32,6 +33,28 @@ class StudyTest
         assertEquals( study.protocolSnapshot, fromSnapshot.protocolSnapshot )
         assertEquals( study.isLive, fromSnapshot.isLive )
         assertEquals( study.participations, fromSnapshot.participations )
+    }
+
+    @Test
+    fun set_invitation_succeeds()
+    {
+        val study = createStudy()
+
+        assertTrue( study.canSetInvitation )
+
+        val invitation = StudyInvitation( "Test study" )
+        study.invitation = invitation
+        assertEquals( invitation, study.invitation )
+    }
+
+    @Test
+    fun set_invitation_fails_for_live_study()
+    {
+        val study = createStudy()
+        setDeployableProtocol( study )
+        study.goLive()
+
+        assertFailsWith<IllegalStateException> { study.invitation = StudyInvitation.empty() }
     }
 
     @Test
@@ -71,8 +94,9 @@ class StudyTest
         assertFalse( study.isLive )
 
         val status = study.getStatus()
-        assertEquals( study.canDeployToParticipants, status.canDeployToParticipants )
+        assertEquals( study.canSetInvitation, status.canSetInvitation )
         assertEquals( study.canSetStudyProtocol, status.canSetStudyProtocol )
+        assertEquals( study.canDeployToParticipants, status.canDeployToParticipants )
         assertTrue( status is StudyStatus.Configuring )
         assertFalse( status.canGoLive )
     }
@@ -91,6 +115,20 @@ class StudyTest
         study.goLive()
         assertTrue( study.canDeployToParticipants )
         assertEquals( Study.Event.StateChanged( true ), study.consumeEvents().last() )
+    }
+
+    @Test
+    fun canSetInvitation_and_canSetStudyProtocol_true_until_live()
+    {
+        val study = createStudy()
+        assertTrue( study.canSetInvitation )
+        assertTrue( study.canSetStudyProtocol )
+
+        // Go live.
+        setDeployableProtocol( study )
+        study.goLive()
+        assertFalse( study.canSetInvitation )
+        assertFalse( study.canSetStudyProtocol )
     }
 
     @Test
