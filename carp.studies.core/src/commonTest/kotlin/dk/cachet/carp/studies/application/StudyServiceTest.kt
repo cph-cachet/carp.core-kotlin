@@ -66,13 +66,13 @@ interface StudyServiceTest
     }
 
     @Test
-    fun updateInternalDescription_succeeds() = runBlockingTest {
+    fun setInternalDescription_succeeds() = runBlockingTest {
         val ( service, _ ) = createService()
         val status = service.createStudy( StudyOwner(), "Test" )
 
         val newName = "New name"
         val newDescription = "New description"
-        val updatedStatus = service.updateInternalDescription( status.studyId, newName, newDescription )
+        val updatedStatus = service.setInternalDescription( status.studyId, newName, newDescription )
         assertEquals( newName, updatedStatus.name )
         val studyDetails = service.getStudyDetails( status.studyId )
         assertEquals( newName, studyDetails.name )
@@ -80,10 +80,10 @@ interface StudyServiceTest
     }
 
     @Test
-    fun updateInternalDescription_fails_for_unknown_studyId() = runBlockingTest {
+    fun setInternalDescription_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
 
-        assertFailsWith<IllegalArgumentException> { service.updateInternalDescription( UUID.randomUUID(), "New name", "New description" ) }
+        assertFailsWith<IllegalArgumentException> { service.setInternalDescription( UUID.randomUUID(), "New name", "New description" ) }
     }
 
     @Test

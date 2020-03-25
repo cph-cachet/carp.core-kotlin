@@ -49,9 +49,9 @@ class StudyServiceMock(
         return createStudyResult
     }
 
-    override suspend fun updateInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus
+    override suspend fun setInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus
     {
-        trackSuspendCall( StudyService::updateInternalDescription, studyId, name, description )
+        trackSuspendCall( StudyService::setInternalDescription, studyId, name, description )
         return updateInternalDescriptionResult
     }
 

@@ -24,7 +24,7 @@ class StudyServiceRequestsTest
 
         val requests: List<StudyServiceRequest> = listOf(
             StudyServiceRequest.CreateStudy( StudyOwner(), "Test", "Description", StudyInvitation.empty() ),
-            StudyServiceRequest.UpdateInternalDescription( studyId, "New name", "New description" ),
+            StudyServiceRequest.SetInternalDescription( studyId, "New name", "New description" ),
             StudyServiceRequest.GetStudyDetails( studyId ),
             StudyServiceRequest.GetStudyStatus( studyId ),
             StudyServiceRequest.GetStudiesOverview( StudyOwner() ),
