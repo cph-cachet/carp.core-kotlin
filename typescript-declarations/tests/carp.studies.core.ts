@@ -37,8 +37,8 @@ describe( "carp.studies.core", () => {
             StudyOwner.Companion,
             new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", DateTime.Companion.now(), "Description", StudyInvitation.Companion.empty(), null ),
             StudyDetails.Companion,
-            new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true, false ),
-            new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, false ),
+            new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, true, false, true ),
+            new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, false, true ),
             StudyStatus.Companion,
             StudyServiceRequest.Companion
         ]
@@ -78,12 +78,12 @@ describe( "carp.studies.core", () => {
 
     describe( "StudyStatus", () => {
         it ( "can typecheck StudyStatus", () => {
-            const configuring = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true, false )
+            const configuring = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, true, false, true )
             const configuringStatus: StudyStatus = configuring
             expect( configuringStatus instanceof StudyStatus.Configuring ).is.true
             expect( configuringStatus instanceof StudyStatus.Live ).is.false
 
-            const live = new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true )
+            const live = new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, false, true )
             const liveStatus: StudyStatus = live
             expect( liveStatus instanceof StudyStatus.Live ).is.true
             expect( liveStatus instanceof StudyStatus.Configuring ).is.false
@@ -121,7 +121,7 @@ describe( "carp.studies.core", () => {
         } )
 
         it( "can serialize getStudiesOverview response", () => {
-            const status = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, true, false )
+            const status = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, true, false, true )
             const statusList = new ArrayList( [ status ] )
 
             const json: Json = createStudiesSerializer()

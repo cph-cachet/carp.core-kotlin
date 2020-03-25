@@ -33,13 +33,14 @@ class Study(
     /**
      * A description of the study, shared with participants once they are invited to the study.
      */
-    val invitation: StudyInvitation = StudyInvitation.empty(),
+    invitation: StudyInvitation = StudyInvitation.empty(),
     val id: UUID = UUID.randomUUID()
 ) : AggregateRoot<Study, StudySnapshot, Study.Event>()
 {
     sealed class Event : Immutable()
     {
         data class InternalDescriptionChanged( val name: String, val description: String ) : Event()
+        data class InvitationChanged( val invitation: StudyInvitation ) : Event()
         data class ProtocolSnapshotChanged( val protocolSnapshot: StudyProtocolSnapshot? ) : Event()
         data class StateChanged( val isLive: Boolean ) : Event()
         data class ParticipationAdded( val participation: DeanonymizedParticipation ) : Event()
@@ -81,6 +82,25 @@ class Study(
             event( Event.InternalDescriptionChanged( name, description ) )
         }
 
+    val canSetInvitation: Boolean get() = !isLive
+
+    /**
+     * A description of the study, shared with participants once they are invited to the study.
+     */
+    var invitation: StudyInvitation = invitation
+        /**
+         * Set a new description of the study, to be shared with participants once they are invited to the study.
+         *
+         * @throws IllegalStateException when the invitation can no longer be changed since the study went 'live'.
+         */
+        set( value )
+        {
+            check( !isLive ) { "Can't change invitation since this study already went live." }
+
+            field = value
+            event( Event.InvitationChanged( invitation ) )
+        }
+
     /**
      * The date when this study was created.
      */
@@ -91,8 +111,8 @@ class Study(
      * Get the status (serializable) of this [Study].
      */
     fun getStatus(): StudyStatus =
-        if ( isLive ) StudyStatus.Live( id, name, creationDate, canDeployToParticipants, canSetStudyProtocol )
-        else StudyStatus.Configuring( id, name, creationDate, canDeployToParticipants, canSetStudyProtocol, canGoLive )
+        if ( isLive ) StudyStatus.Live( id, name, creationDate, canSetInvitation, canSetStudyProtocol, canDeployToParticipants )
+        else StudyStatus.Configuring( id, name, creationDate, canSetInvitation, canSetStudyProtocol, canDeployToParticipants, canGoLive )
 
     val canSetStudyProtocol: Boolean get() = !isLive
 

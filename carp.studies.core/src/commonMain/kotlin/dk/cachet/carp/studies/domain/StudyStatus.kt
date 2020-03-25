@@ -21,13 +21,17 @@ sealed class StudyStatus
      */
     abstract val creationDate: DateTime
     /**
-     * Determines whether the study in its current state is ready to be deployed to participants.
+     * Determines whether the invitation which is shared with participants can be changed for the study.
      */
-    abstract val canDeployToParticipants: Boolean
+    abstract val canSetInvitation: Boolean
     /**
      * Determines whether a study protocol can be set/changed for the study.
      */
     abstract val canSetStudyProtocol: Boolean
+    /**
+     * Determines whether the study in its current state is ready to be deployed to participants.
+     */
+    abstract val canDeployToParticipants: Boolean
 
 
     /**
@@ -38,8 +42,9 @@ sealed class StudyStatus
         override val studyId: UUID,
         override val name: String,
         override val creationDate: DateTime,
-        override val canDeployToParticipants: Boolean,
+        override val canSetInvitation: Boolean,
         override val canSetStudyProtocol: Boolean,
+        override val canDeployToParticipants: Boolean,
         /**
          * Determines whether a study is fully configured and can 'go live'.
          */
@@ -55,7 +60,8 @@ sealed class StudyStatus
         override val studyId: UUID,
         override val name: String,
         override val creationDate: DateTime,
-        override val canDeployToParticipants: Boolean,
-        override val canSetStudyProtocol: Boolean
+        override val canSetInvitation: Boolean,
+        override val canSetStudyProtocol: Boolean,
+        override val canDeployToParticipants: Boolean
     ) : StudyStatus()
 }

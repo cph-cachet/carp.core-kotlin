@@ -57,6 +57,11 @@ sealed class StudyServiceRequest
         ServiceInvoker<StudyService, List<Participant>> by createServiceInvoker( StudyService::getParticipants, studyId )
 
     @Serializable
+    data class SetInvitation( val studyId: UUID, val invitation: StudyInvitation ) :
+        StudyServiceRequest(),
+        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::setInvitation, studyId, invitation )
+
+    @Serializable
     data class SetProtocol( val studyId: UUID, val protocol: StudyProtocolSnapshot ) :
         StudyServiceRequest(),
         ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::setProtocol, studyId, protocol )
