@@ -27,15 +27,20 @@ class Study(
      */
     name: String,
     /**
+     * A description for the study, assigned by, and only visible to, the [StudyOwner].
+     */
+    description: String = "",
+    /**
      * A description of the study, shared with participants once they are invited to the study.
      */
-    val invitation: StudyInvitation = StudyInvitation.empty(),
+    invitation: StudyInvitation = StudyInvitation.empty(),
     val id: UUID = UUID.randomUUID()
 ) : AggregateRoot<Study, StudySnapshot, Study.Event>()
 {
     sealed class Event : Immutable()
     {
-        data class NameChanged( val name: String ) : Event()
+        data class InternalDescriptionChanged( val name: String, val description: String ) : Event()
+        data class InvitationChanged( val invitation: StudyInvitation ) : Event()
         data class ProtocolSnapshotChanged( val protocolSnapshot: StudyProtocolSnapshot? ) : Event()
         data class StateChanged( val isLive: Boolean ) : Event()
         data class ParticipationAdded( val participation: DeanonymizedParticipation ) : Event()
@@ -46,7 +51,7 @@ class Study(
     {
         fun fromSnapshot( snapshot: StudySnapshot ): Study
         {
-            val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.invitation, snapshot.studyId )
+            val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.description, snapshot.invitation, snapshot.studyId )
             study.creationDate = snapshot.creationDate
             study.protocolSnapshot = snapshot.protocolSnapshot
             study.isLive = snapshot.isLive
@@ -57,11 +62,43 @@ class Study(
     }
 
 
+    /**
+     * A descriptive name for the study, assigned by, and only visible to, the [StudyOwner].
+     */
     var name: String = name
         set( value )
         {
             field = value
-            event( Event.NameChanged( name ) )
+            event( Event.InternalDescriptionChanged( name, description ) )
+        }
+
+    /**
+     * A description for the study, assigned by, and only visible to, the [StudyOwner].
+     */
+    var description: String = description
+        set( value )
+        {
+            field = value
+            event( Event.InternalDescriptionChanged( name, description ) )
+        }
+
+    val canSetInvitation: Boolean get() = !isLive
+
+    /**
+     * A description of the study, shared with participants once they are invited to the study.
+     */
+    var invitation: StudyInvitation = invitation
+        /**
+         * Set a new description of the study, to be shared with participants once they are invited to the study.
+         *
+         * @throws IllegalStateException when the invitation can no longer be changed since the study went 'live'.
+         */
+        set( value )
+        {
+            check( !isLive ) { "Can't change invitation since this study already went live." }
+
+            field = value
+            event( Event.InvitationChanged( invitation ) )
         }
 
     /**
@@ -73,7 +110,11 @@ class Study(
     /**
      * Get the status (serializable) of this [Study].
      */
-    fun getStatus(): StudyStatus = StudyStatus( id, name, creationDate, canDeployToParticipants, isLive )
+    fun getStatus(): StudyStatus =
+        if ( isLive ) StudyStatus.Live( id, name, creationDate, canSetInvitation, canSetStudyProtocol, canDeployToParticipants )
+        else StudyStatus.Configuring( id, name, creationDate, canSetInvitation, canSetStudyProtocol, canDeployToParticipants, canGoLive )
+
+    val canSetStudyProtocol: Boolean get() = !isLive
 
     /**
      * A snapshot of the protocol to use in this study, or null when not yet defined.
@@ -89,7 +130,7 @@ class Study(
          */
         set( value )
         {
-            check( !isLive )
+            check( !isLive ) { "Can't set protocol since this study already went live." }
             if ( value != null )
             {
                 val protocol = StudyProtocol.fromSnapshot( value )
@@ -106,6 +147,8 @@ class Study(
      */
     var isLive: Boolean = false
         private set
+
+    private val canGoLive: Boolean get() = protocolSnapshot != null
 
     /**
      * Lock in the current study protocol so that the study may be deployed to participants.

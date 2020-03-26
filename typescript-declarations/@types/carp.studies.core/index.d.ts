@@ -16,22 +16,71 @@ declare module 'carp.studies.core'
     import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
 
 
-
     namespace dk.cachet.carp.studies.domain
     {
-        class StudyStatus
-        {
-            constructor( studyId: UUID, name: string, creationDate: DateTime, canDeployToParticipants: boolean, isLive: boolean )
+        import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
 
-            static get Companion(): StudyStatus$Companion
+        class StudyDetails
+        {
+            constructor(
+                studyId: UUID, studyOwner: StudyOwner, name: string, creationDate: DateTime,
+                description: string,
+                invitation: StudyInvitation,
+                protocolSnapshot: StudyProtocolSnapshot | null )
+
+            static get Companion(): StudyDetails$Companion
 
             readonly studyId: UUID
+            readonly studyOwner: StudyOwner
             readonly name: string
             readonly creationDate: DateTime
-            readonly canDeployToParticipants: boolean
-            readonly isLive: boolean
+            readonly description: string
+            readonly invitation: StudyInvitation
+            readonly protocolSnapshot: StudyProtocolSnapshot | null
+        }
+        interface StudyDetails$Companion { serializer(): any }
+
+        abstract class StudyStatus
+        {
+            static get Companion(): StudyStatus$Companion
         }
         interface StudyStatus$Companion { serializer(): any }
+
+        namespace StudyStatus
+        {
+            class Configuring
+            {
+                constructor(
+                    studyId: UUID, name: string, creationDate: DateTime,
+                    canSetInvitation: boolean,
+                    canSetStudyProtocol: boolean,
+                    canDeployToParticipants: boolean,
+                    canGoLive: boolean )
+    
+                readonly studyId: UUID
+                readonly name: string
+                readonly creationDate: DateTime
+                readonly canSetInvitation: boolean
+                readonly canSetStudyProtocol: boolean
+                readonly canDeployToParticipants: boolean
+                readonly canGoLive: boolean
+            }
+            class Live
+            {
+                constructor(
+                    studyId: UUID, name: string, creationDate: DateTime,
+                    canSetInvitation: boolean,
+                    canSetStudyProtocol: boolean,
+                    canDeployToParticipants: boolean )
+    
+                readonly studyId: UUID
+                readonly name: string
+                readonly creationDate: DateTime
+                readonly canSetInvitation: boolean
+                readonly canSetStudyProtocol: boolean
+                readonly canDeployToParticipants: boolean
+            }
+        }
     }
 
 
@@ -91,7 +140,15 @@ declare module 'carp.studies.core'
         {
             class CreateStudy extends StudyServiceRequest
             {
-                constructor( owner: StudyOwner, name: string, invitation: StudyInvitation )
+                constructor( owner: StudyOwner, name: string, description: string, invitation: StudyInvitation )
+            }
+            class SetInternalDescription extends StudyServiceRequest
+            {
+                constructor( studyId: UUID, name: string, description: string )
+            }
+            class GetStudyDetails extends StudyServiceRequest
+            {
+                constructor( studyId: UUID )
             }
             class GetStudyStatus extends StudyServiceRequest
             {
@@ -108,6 +165,10 @@ declare module 'carp.studies.core'
             class GetParticipants extends StudyServiceRequest
             {
                 constructor( studyId: UUID )
+            }
+            class SetInvitation extends StudyServiceRequest
+            {
+                constructor( studyId: UUID, invitation: StudyInvitation )
             }
             class SetProtocol extends StudyServiceRequest
             {

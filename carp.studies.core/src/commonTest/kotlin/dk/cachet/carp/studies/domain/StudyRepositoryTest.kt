@@ -22,7 +22,7 @@ interface StudyRepositoryTest
         val repo = createRepository()
         val study = addStudy( repo )
 
-        val studyWithSameId = Study( StudyOwner(), "Study 2", StudyInvitation.empty(), study.id )
+        val studyWithSameId = Study( StudyOwner(), "Study 2", "Description", StudyInvitation.empty(), study.id )
         assertFailsWith<IllegalArgumentException>
         {
             repo.add( studyWithSameId )
@@ -70,10 +70,15 @@ interface StudyRepositoryTest
         repo.add( study )
 
         study.name = "Changed name"
+        study.description = "Changed description"
+        val newInvitation = StudyInvitation( "Test name", "Test description" )
+        study.invitation = newInvitation
         repo.update( study )
         val updatedStudy = repo.getById( study.id )
         assertNotNull( updatedStudy )
         assertEquals( "Changed name", updatedStudy.name )
+        assertEquals( "Changed description", updatedStudy.description )
+        assertEquals( newInvitation, updatedStudy.invitation )
     }
 
     @Test

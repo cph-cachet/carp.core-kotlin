@@ -20,15 +20,20 @@ class StudyServiceRequestsTest
 {
     companion object
     {
+        private val studyId = UUID.randomUUID()
+
         val requests: List<StudyServiceRequest> = listOf(
-            StudyServiceRequest.CreateStudy( StudyOwner(), "Test", StudyInvitation.empty() ),
-            StudyServiceRequest.GetStudyStatus( UUID.randomUUID() ),
-            StudyServiceRequest.GetStudiesOverview(StudyOwner()),
-            StudyServiceRequest.AddParticipant( UUID.randomUUID(), EmailAddress( "test@test.com" ) ),
-            StudyServiceRequest.GetParticipants( UUID.randomUUID() ),
-            StudyServiceRequest.SetProtocol( UUID.randomUUID(), StudyProtocol( ProtocolOwner(), "Test" ).getSnapshot() ),
-            StudyServiceRequest.GoLive( UUID.randomUUID() ),
-            StudyServiceRequest.DeployParticipantGroup( UUID.randomUUID(), setOf() )
+            StudyServiceRequest.CreateStudy( StudyOwner(), "Test", "Description", StudyInvitation.empty() ),
+            StudyServiceRequest.SetInternalDescription( studyId, "New name", "New description" ),
+            StudyServiceRequest.GetStudyDetails( studyId ),
+            StudyServiceRequest.GetStudyStatus( studyId ),
+            StudyServiceRequest.GetStudiesOverview( StudyOwner() ),
+            StudyServiceRequest.AddParticipant( studyId, EmailAddress( "test@test.com" ) ),
+            StudyServiceRequest.GetParticipants( studyId ),
+            StudyServiceRequest.SetInvitation( studyId, StudyInvitation.empty() ),
+            StudyServiceRequest.SetProtocol( studyId, StudyProtocol( ProtocolOwner(), "Test" ).getSnapshot() ),
+            StudyServiceRequest.GoLive( studyId ),
+            StudyServiceRequest.DeployParticipantGroup( studyId, setOf() )
         )
     }
 

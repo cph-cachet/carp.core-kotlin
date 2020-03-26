@@ -9,6 +9,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.Smartphone
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
+import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
@@ -38,7 +39,11 @@ interface StudyServiceTest
         assertNotNull( foundStudy )
         assertEquals( status.studyId, foundStudy.id )
         assertEquals( name, foundStudy.name )
-        assertEquals( name, foundStudy.invitation.name ) // Default study description when not specified.
+
+        // Default study description when not specified.
+        assertEquals( name, foundStudy.invitation.name )
+        assertEquals( "", foundStudy.invitation.description )
+
         assertFalse( foundStudy.canDeployToParticipants )
     }
 
@@ -48,14 +53,45 @@ interface StudyServiceTest
 
         val owner = StudyOwner()
         val name = "Test"
-        val invitation = StudyInvitation( "Lorem ipsum" )
-        val status = service.createStudy( owner, name, invitation )
+        val description = "Description"
+        val invitation = StudyInvitation( "Lorem ipsum", "Some description" )
+        val status = service.createStudy( owner, name, description, invitation )
 
         val foundStudy = repo.getById( status.studyId )!!
         assertEquals( status.studyId, foundStudy.id )
         assertEquals( name, foundStudy.name )
+        assertEquals( description, foundStudy.description )
         assertEquals( invitation, foundStudy.invitation )
         assertFalse( foundStudy.canDeployToParticipants )
+    }
+
+    @Test
+    fun setInternalDescription_succeeds() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val status = service.createStudy( StudyOwner(), "Test" )
+
+        val newName = "New name"
+        val newDescription = "New description"
+        val updatedStatus = service.setInternalDescription( status.studyId, newName, newDescription )
+        assertEquals( newName, updatedStatus.name )
+        val studyDetails = service.getStudyDetails( status.studyId )
+        assertEquals( newName, studyDetails.name )
+        assertEquals( newDescription, studyDetails.description )
+    }
+
+    @Test
+    fun setInternalDescription_fails_for_unknown_studyId() = runBlockingTest {
+        val ( service, _ ) = createService()
+
+        assertFailsWith<IllegalArgumentException> { service.setInternalDescription( UUID.randomUUID(), "New name", "New description" ) }
+    }
+
+    @Test
+    fun getStudyDetails_fails_for_unknown_studyId() = runBlockingTest {
+        val ( service, _ ) = createService()
+
+        val unknownId = UUID.randomUUID()
+        assertFailsWith<IllegalArgumentException> { service.getStudyDetails( unknownId ) }
     }
 
     @Test
@@ -130,13 +166,37 @@ interface StudyServiceTest
     }
 
     @Test
+    fun setInvitation_succeeds() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val status = service.createStudy( StudyOwner(), "Test" )
+
+        assertTrue( status.canSetInvitation )
+        val invitation = StudyInvitation( "Study name", "Description" )
+        service.setInvitation( status.studyId, invitation )
+        val studyDetails = service.getStudyDetails( status.studyId )
+        assertEquals( invitation, studyDetails.invitation )
+    }
+
+    @Test
+    fun setInvitation_fails_for_unknown_studyId() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val unknownId = UUID.randomUUID()
+        assertFailsWith<IllegalArgumentException> { service.setInvitation( unknownId, StudyInvitation.empty() ) }
+    }
+
+    @Test
     fun setProtocol_succeeds() = runBlockingTest {
         val ( service, _ ) = createService()
         var status = service.createStudy( StudyOwner(), "Test" )
 
-        status = service.setProtocol( status.studyId, createDeployableProtocol() )
+        assertTrue( status.canSetStudyProtocol )
+        val protocol = createDeployableProtocol()
+        status = service.setProtocol( status.studyId, protocol )
         assertFalse( status.canDeployToParticipants )
-        assertFalse( status.isLive )
+        assertTrue( status is StudyStatus.Configuring )
+
+        val details = service.getStudyDetails( status.studyId )
+        assertEquals( protocol, details.protocolSnapshot )
     }
 
     @Test
@@ -170,17 +230,32 @@ interface StudyServiceTest
     }
 
     @Test
+    fun setInvitation_and_setProtocol_fails_after_study_gone_live() = runBlockingTest {
+        val ( service, _ ) = createService()
+        var status = service.createStudy( StudyOwner(), "Test" )
+
+        val protocol = createDeployableProtocol()
+        service.setProtocol( status.studyId, protocol )
+        status = service.goLive( status.studyId )
+        assertFalse( status.canSetInvitation )
+        assertFalse( status.canSetStudyProtocol )
+
+        assertFailsWith<IllegalStateException> { service.setInvitation( status.studyId, StudyInvitation.empty() ) }
+        assertFailsWith<IllegalStateException> { service.setProtocol( status.studyId, protocol ) }
+    }
+
+    @Test
     fun goLive_succeeds() = runBlockingTest {
         val ( service, _ ) = createService()
 
         var status = service.createStudy( StudyOwner(), "Test" )
-        assertFalse( status.isLive )
+        assertTrue( status is StudyStatus.Configuring )
 
         // Set protocol and go live.
         service.setProtocol( status.studyId, createDeployableProtocol() )
         status = service.goLive( status.studyId )
         assertTrue( status.canDeployToParticipants )
-        assertTrue( status.isLive )
+        assertTrue( status is StudyStatus.Live )
     }
 
     @Test
@@ -239,7 +314,7 @@ interface StudyServiceTest
     @Test
     fun deployParticipantGroup_fails_for_unknown_device_roles() = runBlockingTest {
         val ( service, _ ) = createService()
-        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+        val ( studyId, _ ) = createLiveStudy( service )
         val participant = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
         val assignParticipant = AssignParticipantDevices( participant.id, setOf( "Unknown device" ) )
@@ -249,7 +324,7 @@ interface StudyServiceTest
     @Test
     fun deployParticipantGroup_fails_when_not_all_devices_assigned() = runBlockingTest {
         val ( service, _ ) = createService()
-        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+        val ( studyId, _ ) = createLiveStudy( service )
         val participant = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
         val assignParticipant = AssignParticipantDevices( participant.id, setOf() )

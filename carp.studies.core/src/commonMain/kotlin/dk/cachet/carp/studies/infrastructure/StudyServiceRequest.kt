@@ -7,6 +7,7 @@ import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.StudyService
+import dk.cachet.carp.studies.domain.StudyDetails
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
@@ -21,9 +22,19 @@ import kotlinx.serialization.Serializable
 sealed class StudyServiceRequest
 {
     @Serializable
-    data class CreateStudy( val owner: StudyOwner, val name: String, val invitation: StudyInvitation? = null ) :
+    data class CreateStudy( val owner: StudyOwner, val name: String, val description: String = "", val invitation: StudyInvitation? = null ) :
         StudyServiceRequest(),
-        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::createStudy, owner, name, invitation )
+        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::createStudy, owner, name, description, invitation )
+
+    @Serializable
+    data class SetInternalDescription( val studyId: UUID, val name: String, val description: String ) :
+        StudyServiceRequest(),
+        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::setInternalDescription, studyId, name, description )
+
+    @Serializable
+    data class GetStudyDetails( val studyId: UUID ) :
+        StudyServiceRequest(),
+        ServiceInvoker<StudyService, StudyDetails> by createServiceInvoker( StudyService::getStudyDetails, studyId )
 
     @Serializable
     data class GetStudyStatus( val studyId: UUID ) :
@@ -44,6 +55,11 @@ sealed class StudyServiceRequest
     data class GetParticipants( val studyId: UUID ) :
         StudyServiceRequest(),
         ServiceInvoker<StudyService, List<Participant>> by createServiceInvoker( StudyService::getParticipants, studyId )
+
+    @Serializable
+    data class SetInvitation( val studyId: UUID, val invitation: StudyInvitation ) :
+        StudyServiceRequest(),
+        ServiceInvoker<StudyService, StudyStatus> by createServiceInvoker( StudyService::setInvitation, studyId, invitation )
 
     @Serializable
     data class SetProtocol( val studyId: UUID, val protocol: StudyProtocolSnapshot ) :

@@ -14,10 +14,12 @@ class StudyStatusTest
     @Test
     fun can_serialize_and_deserialize_study_status_using_JSON()
     {
-        val status = StudyStatus(
+        val status = StudyStatus.Configuring(
             UUID.randomUUID(), "Test", DateTime.now(),
+            canSetInvitation = false,
+            canSetStudyProtocol = true,
             canDeployToParticipants = false,
-            isLive = false )
+            canGoLive = false )
 
         val serialized = status.toJson()
         val parsed = StudyStatus.fromJson( serialized )

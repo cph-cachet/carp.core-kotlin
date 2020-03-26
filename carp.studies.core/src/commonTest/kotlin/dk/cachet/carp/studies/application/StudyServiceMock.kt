@@ -6,8 +6,10 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.studies.domain.StudyDetails
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
+import dk.cachet.carp.studies.domain.createComplexStudy
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.test.Mock
@@ -15,10 +17,16 @@ import dk.cachet.carp.test.Mock
 
 class StudyServiceMock(
     private val createStudyResult: StudyStatus = studyStatus,
+    private val updateInternalDescriptionResult: StudyStatus = studyStatus,
+    private val getStudyDetailsResult: StudyDetails = StudyDetails(
+        UUID.randomUUID(), StudyOwner(), "Name", DateTime.now(),
+        "Description", StudyInvitation.empty(), createComplexStudy().protocolSnapshot
+    ),
     private val getStudyStatusResult: StudyStatus = studyStatus,
     private val getStudiesOverviewResult: List<StudyStatus> = listOf(),
     private val addParticipantResult: Participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ),
     private val getParticipantsResult: List<Participant> = listOf(),
+    private val setInvitationResult: StudyStatus = studyStatus,
     private val setProtocolResult: StudyStatus = studyStatus,
     private val goLiveResult: StudyStatus = studyStatus,
     private val deployParticipantResult: StudyStatus = studyStatus
@@ -26,17 +34,31 @@ class StudyServiceMock(
 {
     companion object
     {
-        private val studyStatus = StudyStatus(
+        private val studyStatus = StudyStatus.Configuring(
             UUID.randomUUID(), "Test", DateTime.now(),
+            canSetInvitation = true,
+            canSetStudyProtocol = false,
             canDeployToParticipants = false,
-            isLive = false )
+            canGoLive = true )
     }
 
 
-    override suspend fun createStudy( owner: StudyOwner, name: String, invitation: StudyInvitation? ): StudyStatus
+    override suspend fun createStudy( owner: StudyOwner, name: String, description: String, invitation: StudyInvitation? ): StudyStatus
     {
-        trackSuspendCall( StudyService::createStudy, owner, name, invitation )
+        trackSuspendCall( StudyService::createStudy, owner, name, description, invitation )
         return createStudyResult
+    }
+
+    override suspend fun setInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus
+    {
+        trackSuspendCall( StudyService::setInternalDescription, studyId, name, description )
+        return updateInternalDescriptionResult
+    }
+
+    override suspend fun getStudyDetails( studyId: UUID ): StudyDetails
+    {
+        trackSuspendCall( StudyService::getStudyDetails, studyId )
+        return getStudyDetailsResult
     }
 
     override suspend fun getStudyStatus( studyId: UUID ): StudyStatus
@@ -61,6 +83,12 @@ class StudyServiceMock(
     {
         trackSuspendCall( StudyService::getParticipants, studyId )
         return getParticipantsResult
+    }
+
+    override suspend fun setInvitation( studyId: UUID, invitation: StudyInvitation ): StudyStatus
+    {
+        trackSuspendCall( StudyService::setInvitation, studyId, invitation )
+        return setInvitationResult
     }
 
     override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus

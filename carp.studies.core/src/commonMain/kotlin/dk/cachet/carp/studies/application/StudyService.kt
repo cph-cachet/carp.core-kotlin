@@ -4,6 +4,7 @@ import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.studies.domain.StudyDetails
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
@@ -13,17 +14,46 @@ import dk.cachet.carp.studies.domain.users.Participant
 /**
  * Application service which allows creating and managing studies.
  */
+@Suppress( "TooManyFunctions" ) // TODO: Perhaps split up participation management from main interface.
 interface StudyService
 {
     /**
      * Create a new study for the specified [owner].
-     *
-     * @param name A descriptive name for the study, assigned by, and only visible to, the [owner].
-     * @param invitation
-     *  An optional description of the study, shared with participants once they are invited.
-     *  In case no description is specified, [name] is used as the name in [invitation].
      */
-    suspend fun createStudy( owner: StudyOwner, name: String, invitation: StudyInvitation? = null ): StudyStatus
+    suspend fun createStudy(
+        owner: StudyOwner,
+        /**
+         * A descriptive name for the study, assigned by, and only visible to, the [owner].
+         */
+        name: String,
+        /**
+         * An optional description of the study, assigned by, and only visible to, the [owner].
+         */
+        description: String = "",
+        /**
+         * An optional description of the study, shared with participants once they are invited.
+         * In case no description is specified, [name] is used as the name in [invitation].
+         */
+        invitation: StudyInvitation? = null
+    ): StudyStatus
+
+    /**
+     * Set study details which are visible only to the [StudyOwner].
+     *
+     * @param studyId The id of the study to update the study details for.
+     * @param name A descriptive name for the study.
+     * @param description A description of the study.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    suspend fun setInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus
+
+    /**
+     * Gets detailed information about the study with the specified [studyId], including which study protocol is set.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    suspend fun getStudyDetails( studyId: UUID ): StudyDetails
 
     /**
      * Get the status for a study with the given [studyId].
@@ -55,11 +85,19 @@ interface StudyService
     suspend fun getParticipants( studyId: UUID ): List<Participant>
 
     /**
+     * Specify an [invitation], shared with participants once they are invited to the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    suspend fun setInvitation( studyId: UUID, invitation: StudyInvitation ): StudyStatus
+
+    /**
      * Specify the study [protocol] to use for the study with the specified [studyId].
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist,
      * when the provided [protocol] snapshot is invalid,
      * or when the protocol contains errors preventing it from being used in deployments.
+     * @throws IllegalStateException when the study protocol can no longer be set since the study went 'live'.
      */
     suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
 

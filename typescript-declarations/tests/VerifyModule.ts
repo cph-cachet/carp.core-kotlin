@@ -133,8 +133,8 @@ export default class VerifyModule
             case AST_NODE_TYPES.ClassProperty:
             {
                 const scopeToCheck = element.static
-                    ? scope 
-                    : this.getInstance( scope.$metadata$.simpleName )
+                    ? scope
+                    : this.getInstance( scope.name )
                 this.verifyIdentifier( element.key as Identifier, scopeToCheck )
                 break;
             }
