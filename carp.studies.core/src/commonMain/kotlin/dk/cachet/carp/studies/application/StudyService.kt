@@ -19,14 +19,23 @@ interface StudyService
 {
     /**
      * Create a new study for the specified [owner].
-     *
-     * @param name A descriptive name for the study, assigned by, and only visible to, the [owner].
-     * @param description An optional description of the study, assigned by, and only visible to, the [owner].
-     * @param invitation
-     *  An optional description of the study, shared with participants once they are invited.
-     *  In case no description is specified, [name] is used as the name in [invitation].
      */
-    suspend fun createStudy( owner: StudyOwner, name: String, description: String = "", invitation: StudyInvitation? = null ): StudyStatus
+    suspend fun createStudy(
+        owner: StudyOwner,
+        /**
+         * A descriptive name for the study, assigned by, and only visible to, the [owner].
+         */
+        name: String,
+        /**
+         * An optional description of the study, assigned by, and only visible to, the [owner].
+         */
+        description: String = "",
+        /**
+         * An optional description of the study, shared with participants once they are invited.
+         * In case no description is specified, [name] is used as the name in [invitation].
+         */
+        invitation: StudyInvitation? = null
+    ): StudyStatus
 
     /**
      * Set study details which are visible only to the [StudyOwner].
