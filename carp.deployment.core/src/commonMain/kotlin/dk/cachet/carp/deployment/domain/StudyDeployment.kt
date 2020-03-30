@@ -110,11 +110,17 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     {
         val devicesStatus: List<DeviceDeploymentStatus> =
             _registrableDevices.map {
-                val isRegistered = _registeredDevices.contains( it.device )
                 val requiresDeployment = isTopLevelMasterDevice( it.device )
+
+                val isRegistered = _registeredDevices.contains( it.device )
                 val isReadyForDeployment = canObtainDeviceDeployment( it.device )
                 val isDeployed = false // TODO: For now, deployment manager is not yet notified of successful deployment.
-                DeviceDeploymentStatus( it.device, it.requiresRegistration, isRegistered, requiresDeployment, isReadyForDeployment, isDeployed )
+
+                when {
+                    isDeployed -> DeviceDeploymentStatus.Deployed( it.device, it.requiresRegistration, requiresDeployment )
+                    isRegistered -> DeviceDeploymentStatus.Registered( it.device, it.requiresRegistration, requiresDeployment, isReadyForDeployment )
+                    else -> DeviceDeploymentStatus.Unregistered( it.device, it.requiresRegistration, requiresDeployment, isReadyForDeployment )
+                }
             }
 
         return StudyDeploymentStatus( id, devicesStatus )

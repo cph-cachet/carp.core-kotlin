@@ -9,31 +9,68 @@ import kotlinx.serialization.Serializable
  * Describes the status of a device, part of a study deployment.
  */
 @Serializable
-data class DeviceDeploymentStatus(
+sealed class DeviceDeploymentStatus
+{
     /**
      * The description of the device.
      */
     @Serializable( DeviceDescriptorSerializer::class )
-    val device: AnyDeviceDescriptor,
+    abstract val device: AnyDeviceDescriptor
     /**
      * Determines whether registering the device is required for the deployment to start running.
      */
-    val requiresRegistration: Boolean,
-    /**
-     * Determines whether the device is currently registered.
-     */
-    val isRegistered: Boolean,
+    abstract val requiresRegistration: Boolean
     /**
      * Determines whether the device requires a device deployment by retrieving [MasterDeviceDeployment].
      * Not all master devices necessarily need deployment; chained master devices do not.
      */
-    val requiresDeployment: Boolean,
+    abstract val requiresDeployment: Boolean
+
+
     /**
-     * Determines whether the device has been registered successfully and is ready for deployment.
+     * A device deployment status which has not been deployed yet.
      */
-    val isReadyForDeployment: Boolean,
+    interface NotDeployed
+    {
+        /**
+         * Determines whether the device has been registered successfully and is ready for deployment.
+         */
+        val isReadyForDeployment: Boolean
+    }
+
+
     /**
-     * True if the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
+     * Device deployment status for when a device has not been registered.
      */
-    val isDeployed: Boolean
-)
+    @Serializable
+    data class Unregistered(
+        @Serializable( DeviceDescriptorSerializer::class )
+        override val device: AnyDeviceDescriptor,
+        override val requiresRegistration: Boolean,
+        override val requiresDeployment: Boolean,
+        override val isReadyForDeployment: Boolean
+    ) : DeviceDeploymentStatus(), NotDeployed
+
+    /**
+     * Device deployment status for when a device has been registered.
+     */
+    @Serializable
+    data class Registered(
+        @Serializable( DeviceDescriptorSerializer::class )
+        override val device: AnyDeviceDescriptor,
+        override val requiresRegistration: Boolean,
+        override val requiresDeployment: Boolean,
+        override val isReadyForDeployment: Boolean
+    ) : DeviceDeploymentStatus(), NotDeployed
+
+    /**
+     * Device deployment status when the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
+     */
+    @Serializable
+    data class Deployed(
+        @Serializable( DeviceDescriptorSerializer::class )
+        override val device: AnyDeviceDescriptor,
+        override val requiresRegistration: Boolean,
+        override val requiresDeployment: Boolean
+    ) : DeviceDeploymentStatus()
+}

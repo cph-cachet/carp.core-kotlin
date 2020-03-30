@@ -2,6 +2,7 @@ package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentService
+import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -76,7 +77,7 @@ class StudyRuntime private constructor(
             val runtime = StudyRuntime( deploymentService, studyDeploymentId, clientDeviceStatus.device as AnyMasterDeviceDescriptor )
 
             // After registration, deployment information might immediately be available for this client device.
-            if ( clientDeviceStatus.isReadyForDeployment )
+            if ( clientDeviceStatus is DeviceDeploymentStatus.NotDeployed && clientDeviceStatus.isReadyForDeployment )
             {
                 runtime.deploymentInformation = deploymentService.getDeviceDeploymentFor( studyDeploymentId, deviceRoleName )
                 runtime.deploy( runtime.deploymentInformation!! )
@@ -120,13 +121,16 @@ class StudyRuntime private constructor(
         val deploymentStatus = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
         val clientDeviceStatus = deploymentStatus.devicesStatus.first { it.device == device }
 
-        if ( clientDeviceStatus.isReadyForDeployment )
+        if ( clientDeviceStatus is DeviceDeploymentStatus.NotDeployed && clientDeviceStatus.isReadyForDeployment )
         {
             deploymentInformation = deploymentService.getDeviceDeploymentFor( studyDeploymentId, device.roleName )
             deploy( deploymentInformation!! )
         }
 
-        return DeploymentState( clientDeviceStatus.isReadyForDeployment, isDeployed )
+        return DeploymentState(
+            clientDeviceStatus is DeviceDeploymentStatus.NotDeployed && clientDeviceStatus.isReadyForDeployment,
+            isDeployed
+        )
     }
 
     private fun deploy( deploymentInformation: MasterDeviceDeployment )
