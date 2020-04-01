@@ -6,7 +6,6 @@ import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
-import kotlinx.serialization.Serializable
 
 
 /**
@@ -24,22 +23,6 @@ class StudyRuntime private constructor(
     val device: AnyMasterDeviceDescriptor
 )
 {
-    /**
-     * Determines whether a study runtime is ready for deployment, and once it is, whether it has been deployed successfully.
-     */
-    @Serializable
-    data class DeploymentState(
-        /**
-         * True if all dependent devices have been registered and this device is ready for deployment.
-         */
-        val isReadyForDeployment: Boolean,
-        /**
-         * True if the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
-         */
-        val isDeployed: Boolean
-    )
-
-
     companion object Factory
     {
         /**
@@ -114,9 +97,10 @@ class StudyRuntime private constructor(
     /**
      * Verifies whether the device is ready for deployment and in case it is, deploys.
      *
+     * @return True in case deployment succeeded; false in case device could not yet be deployed (e.g., awaiting registration of other devices).
      * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
      */
-    suspend fun tryDeployment(): DeploymentState
+    suspend fun tryDeployment(): Boolean
     {
         val deploymentStatus = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
         val clientDeviceStatus = deploymentStatus.devicesStatus.first { it.device == device }
@@ -127,10 +111,7 @@ class StudyRuntime private constructor(
             deploy( deploymentInformation!! )
         }
 
-        return DeploymentState(
-            clientDeviceStatus is DeviceDeploymentStatus.NotDeployed && clientDeviceStatus.isReadyForDeployment,
-            isDeployed
-        )
+        return isDeployed
     }
 
     private fun deploy( deploymentInformation: MasterDeviceDeployment )

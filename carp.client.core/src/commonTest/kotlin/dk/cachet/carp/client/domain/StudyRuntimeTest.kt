@@ -53,15 +53,13 @@ class StudyRuntimeTest
         val runtime = StudyRuntime.initialize( deploymentService, deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
 
         // Dependent devices are not yet registered.
-        val status = runtime.tryDeployment()
-        assertFalse( status.isReadyForDeployment )
-        assertFalse( status.isDeployed )
+        var wasDeployed = runtime.tryDeployment()
+        assertFalse( wasDeployed )
 
         // Once dependent devices are registered, deployment succeeds.
         deploymentService.registerDevice( deploymentStatus.studyDeploymentId, deviceSmartphoneDependsOn.roleName, deviceSmartphoneDependsOn.createRegistration() )
-        val succeededStatus = runtime.tryDeployment()
-        assertTrue( succeededStatus.isReadyForDeployment )
-        assertTrue( succeededStatus.isDeployed )
+        wasDeployed = runtime.tryDeployment()
+        assertTrue( wasDeployed )
     }
 
     @Test
