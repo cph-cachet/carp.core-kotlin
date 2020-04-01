@@ -61,7 +61,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
      * @param registration A matching configuration for the device with [deviceRoleName].
      *
      * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist,
-     * [deviceRoleName] is not present in the deployment or is already registered,
+     * [deviceRoleName] is not present in the deployment or is already registered and a different [registration] is specified than a previous request,
      * or [registration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device.
      */
     override suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
@@ -71,8 +71,20 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
 
         val device = deployment.registrableDevices.firstOrNull { it.device.roleName == deviceRoleName }
             ?: throw IllegalArgumentException( "The specified device role name could not be found in the study deployment." )
-        deployment.registerDevice( device.device, registration )
 
+        // Early out when the device is already registered.
+        val priorRegistration = deployment.registeredDevices[ device.device ]
+        if ( priorRegistration == registration )
+        {
+            return deployment.getStatus()
+        }
+        else if ( priorRegistration != null )
+        {
+            throw IllegalArgumentException( "The device with role name '$deviceRoleName' is already registered with differing registration options." )
+        }
+
+        // Register device and save changes.
+        deployment.registerDevice( device.device, registration )
         repository.update( deployment )
 
         return deployment.getStatus()

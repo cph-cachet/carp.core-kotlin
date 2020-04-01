@@ -44,7 +44,7 @@ interface DeploymentService
      * @param registration A matching configuration for the device with [deviceRoleName].
      *
      * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist,
-     * [deviceRoleName] is not present in the deployment or is already registered,
+     * [deviceRoleName] is not present in the deployment or is already registered and a different [registration] is specified than a previous request,
      * or [registration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device.
      */
     suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
