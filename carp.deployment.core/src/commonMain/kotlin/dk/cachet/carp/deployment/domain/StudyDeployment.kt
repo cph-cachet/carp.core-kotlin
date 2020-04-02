@@ -119,7 +119,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
                 when {
                     isDeployed -> DeviceDeploymentStatus.Deployed( it.device, it.requiresRegistration, requiresDeployment )
                     isRegistered -> DeviceDeploymentStatus.Registered( it.device, it.requiresRegistration, requiresDeployment, isReadyForDeployment )
-                    else -> DeviceDeploymentStatus.Unregistered( it.device, it.requiresRegistration, requiresDeployment, isReadyForDeployment )
+                    else -> DeviceDeploymentStatus.Unregistered( it.device, it.requiresRegistration, requiresDeployment )
                 }
             }
 

@@ -47,9 +47,11 @@ sealed class DeviceDeploymentStatus
         @Serializable( DeviceDescriptorSerializer::class )
         override val device: AnyDeviceDescriptor,
         override val requiresRegistration: Boolean,
-        override val requiresDeployment: Boolean,
-        override val isReadyForDeployment: Boolean
+        override val requiresDeployment: Boolean
     ) : DeviceDeploymentStatus(), NotDeployed
+    {
+        override val isReadyForDeployment = false
+    }
 
     /**
      * Device deployment status for when a device has been registered.
