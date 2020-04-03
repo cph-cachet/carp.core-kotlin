@@ -5,6 +5,7 @@ import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
@@ -205,7 +206,7 @@ class StudyDeploymentTest
     fun getStatus_lifecycle_master_and_connected()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
-        val master = protocol.devices.first { it.roleName == "Master" }
+        val master = protocol.devices.first { it.roleName == "Master" } as AnyMasterDeviceDescriptor
         val connected = protocol.devices.first { it.roleName == "Connected" }
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
@@ -223,6 +224,12 @@ class StudyDeploymentTest
         val readyStatus = deployment.getStatus()
         assertTrue { readyStatus.getRemainingDevicesToRegister().isEmpty() }
         assertEquals( setOf( master ), readyStatus.getRemainingDevicesReadyToDeploy() )
+
+        // Notify of successful master device deployment.
+        deployment.deviceDeployed( master )
+        val studyStatus = deployment.getStatus()
+        val deviceStatus = studyStatus.devicesStatus.first { it.device == master }
+        assertTrue( deviceStatus is DeviceDeploymentStatus.Deployed )
     }
 
     @Test
@@ -311,7 +318,54 @@ class StudyDeploymentTest
         val master = protocol.masterDevices.first { it.roleName == "Master" }
         val deployment = studyDeploymentFor( protocol )
 
-        assertFailsWith<IllegalArgumentException>{ deployment.getDeviceDeploymentFor( master ) }
+        assertFailsWith<IllegalArgumentException> { deployment.getDeviceDeploymentFor( master ) }
+    }
+
+    @Test
+    fun deviceDeployed_succeeds()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        protocol.addMasterDevice( device )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( device, device.createRegistration { } )
+
+        deployment.deviceDeployed( device )
+        assertTrue( deployment.deployedDevices.contains( device ) )
+    }
+
+    @Test
+    fun deviceDeployed_can_be_called_multiple_times()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        protocol.addMasterDevice( device )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( device, device.createRegistration { } )
+
+        deployment.deviceDeployed( device )
+        deployment.deviceDeployed( device )
+        assertEquals( 1, deployment.deployedDevices.count() )
+    }
+
+    @Test
+    fun deviceDeployed_fails_for_device_not_part_of_deployment()
+    {
+        val deployment = createComplexDeployment()
+
+        val invalidDevice = StubMasterDeviceDescriptor( "Not in deployment" )
+        assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( invalidDevice ) }
+    }
+
+    @Test
+    fun deviceDeployed_fails_for_device_not_ready_for_deployment()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        protocol.addMasterDevice( device )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+
+        assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( device ) }
     }
 
     @Test

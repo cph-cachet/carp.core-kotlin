@@ -78,10 +78,8 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
         {
             return deployment.getStatus()
         }
-        else if ( priorRegistration != null )
-        {
-            throw IllegalArgumentException( "The device with role name '$deviceRoleName' is already registered with differing registration options." )
-        }
+        else require ( priorRegistration == null )
+            { "The device with role name '$deviceRoleName' is already registered with differing registration options." }
 
         // Register device and save changes.
         deployment.registerDevice( device.device, registration )
@@ -101,12 +99,38 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
         val deployment: StudyDeployment? = repository.getStudyDeploymentBy( studyDeploymentId )
         require( deployment != null )
 
-        val device = deployment.registeredDevices.keys.firstOrNull { it.roleName == masterDeviceRoleName }
-            ?: throw IllegalArgumentException( "The specified device role name is not part of this study deployment or is not yet registered." )
-        val masterDevice = device as? AnyMasterDeviceDescriptor
-            ?: throw IllegalArgumentException( "The specified device is not a master device and therefore does not have a deployment configuration." )
+        val device = getRegisteredMasterDevice( deployment, masterDeviceRoleName )
 
-        return deployment.getDeviceDeploymentFor( masterDevice )
+        return deployment.getDeviceDeploymentFor( device )
+    }
+
+    /**
+     * Indicate to stakeholders in the study deployment with [studyDeploymentId] that the device with [masterDeviceRoleName] was deployed successfully,
+     * i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it.
+     *
+     * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist,
+     * or [masterDeviceRoleName] is not present in the deployment or cannot be deployed yet.
+     */
+    override suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String ): StudyDeploymentStatus
+    {
+        val deployment: StudyDeployment? = repository.getStudyDeploymentBy( studyDeploymentId )
+        require( deployment != null )
+
+        val device = getRegisteredMasterDevice( deployment, masterDeviceRoleName )
+
+        deployment.deviceDeployed( device )
+        repository.update( deployment )
+
+        return deployment.getStatus()
+    }
+
+    private fun getRegisteredMasterDevice( deployment: StudyDeployment, masterDeviceRoleName: String ): AnyMasterDeviceDescriptor
+    {
+        val registeredDevice = deployment.registeredDevices.entries.firstOrNull { it.key.roleName == masterDeviceRoleName }?.toPair()
+            ?: throw IllegalArgumentException( "The specified device role name is not part of this study deployment or is not yet registered." )
+
+        return registeredDevice.first as? AnyMasterDeviceDescriptor
+            ?: throw IllegalArgumentException( "The specified device is not a master device and therefore does not have a deployment configuration." )
     }
 
     /**
