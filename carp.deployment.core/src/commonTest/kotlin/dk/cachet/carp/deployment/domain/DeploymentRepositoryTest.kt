@@ -63,12 +63,19 @@ interface DeploymentRepositoryTest
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         repo.add( deployment )
+        val masterDevice = protocol.masterDevices.first()
 
-        deployment.registerDevice( protocol.masterDevices.first(), DefaultDeviceRegistration( "0" ) )
+        // Verify whether registering a device is updated.
+        deployment.registerDevice( masterDevice, DefaultDeviceRegistration( "0" ) )
         repo.update( deployment )
-        val retrieved = repo.getStudyDeploymentBy( deployment.id )
-        assertNotNull( retrieved )
-        assertEquals( deployment.getSnapshot(), retrieved.getSnapshot() ) // StudyDeployment does not implement equals, but snapshot does.
+        var retrieved = repo.getStudyDeploymentBy( deployment.id )
+        assertEquals( deployment.getSnapshot(), retrieved?.getSnapshot() ) // StudyDeployment does not implement equals, but snapshot does.
+
+        // Verify whether deploying a device is updated.
+        deployment.deviceDeployed( masterDevice )
+        repo.update( deployment )
+        retrieved = repo.getStudyDeploymentBy( deployment.id )
+        assertEquals( deployment.getSnapshot(), retrieved?.getSnapshot() )
     }
 
     @Test

@@ -58,6 +58,15 @@ interface DeploymentService
     suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
 
     /**
+     * Indicate to stakeholders in the study deployment with [studyDeploymentId] that the device with [masterDeviceRoleName] was deployed successfully,
+     * i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it.
+     *
+     * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist,
+     * or [masterDeviceRoleName] is not present in the deployment or cannot be deployed yet.
+     */
+    suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String ): StudyDeploymentStatus
+
+    /**
      * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId],
      * using the master devices with the specified [deviceRoleNames].
      * In case no account is associated to the specified [identity], a new account is created.

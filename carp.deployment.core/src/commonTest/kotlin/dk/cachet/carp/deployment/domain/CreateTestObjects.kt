@@ -8,6 +8,7 @@ import dk.cachet.carp.deployment.domain.triggers.StubTrigger
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -95,12 +96,16 @@ fun createComplexDeployment(): StudyDeployment
     val deployment = studyDeploymentFor( protocol )
 
     // Add device registration.
-    deployment.registerDevice( deployment.registrableDevices.first().device, DefaultDeviceRegistration( "test" ) )
+    val master = deployment.registrableDevices.first().device as AnyMasterDeviceDescriptor
+    deployment.registerDevice( master, DefaultDeviceRegistration( "test" ) )
 
     // Add a participation.
     val account = Account.withUsernameIdentity( "test" )
     val participation = Participation( deployment.id )
     deployment.addParticipation( account, participation )
+
+    // Deploy a device.
+    deployment.deviceDeployed( master )
 
     return deployment
 }

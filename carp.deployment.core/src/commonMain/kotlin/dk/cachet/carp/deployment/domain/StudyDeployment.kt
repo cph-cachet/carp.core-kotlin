@@ -30,6 +30,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     sealed class Event : Immutable()
     {
         data class DeviceRegistered( val device: AnyDeviceDescriptor, val registration: DeviceRegistration ) : Event()
+        data class DeviceDeployed( val device: AnyMasterDeviceDescriptor ) : Event()
         data class ParticipationAdded( val accountParticipation: AccountParticipation ) : Event()
     }
 
@@ -47,10 +48,20 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
                 deployment.registerDevice( registrable.device, r.value )
             }
 
+            // Add deployed devices.
+            snapshot.deployedDevices.forEach { roleName ->
+                val deployedDevice = deployment.protocolSnapshot.masterDevices.firstOrNull { it.roleName == roleName }
+                    ?: throw IllegalArgumentException( "Can't find deployed device with role name '$roleName' in snapshot." )
+                deployment.deviceDeployed( deployedDevice )
+            }
+
             // Add participations.
             snapshot.participations.forEach { p ->
                 deployment._participations.add( AccountParticipation( p.accountId, p.participationId ) )
             }
+
+            // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
+            deployment.consumeEvents()
 
             return deployment
         }
@@ -84,6 +95,14 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     private val _registeredDevices: MutableMap<AnyDeviceDescriptor, DeviceRegistration> = mutableMapOf()
 
     /**
+     * The set of devices which have been deployed successfully.
+     */
+    val deployedDevices: Set<AnyMasterDeviceDescriptor>
+        get() = _deployedDevices
+
+    private val _deployedDevices: MutableSet<AnyMasterDeviceDescriptor> = mutableSetOf()
+
+    /**
      * The account IDs participating in this study deployment and the pseudonym IDs assigned to them.
      */
     val participations: Set<AccountParticipation>
@@ -114,7 +133,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
                 val isRegistered = _registeredDevices.contains( it.device )
                 val isReadyForDeployment = canObtainDeviceDeployment( it.device )
-                val isDeployed = false // TODO: For now, deployment manager is not yet notified of successful deployment.
+                val isDeployed = deployedDevices.contains( it.device )
 
                 when {
                     isDeployed -> DeviceDeploymentStatus.Deployed( it.device, it.requiresRegistration, requiresDeployment )
@@ -233,6 +252,27 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             tasks,
             usedTriggers,
             triggeredTasks )
+    }
+
+    /**
+     * Indicate that the specified [device] was deployed successfully.
+     *
+     * @throws IllegalArgumentException when the passed [device] is not part of the protocol of this study deployment.
+     * @throws IllegalArgumentException when the passed [device] could not have possibly received a [MasterDeviceDeployment] yet.
+     */
+    fun deviceDeployed( device: AnyMasterDeviceDescriptor )
+    {
+        // Verify whether the specified device is part of the protocol of this deployment.
+        require( protocolSnapshot.masterDevices.contains( device ) ) { "The specified master device is not part of the protocol of this deployment." }
+
+        // Verify whether the specified device is ready to be deployed.
+        val canDeploy = canObtainDeviceDeployment( device )
+        require( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
+
+        if ( _deployedDevices.add( device ) )
+        {
+            event( Event.DeviceDeployed( device ) )
+        }
     }
 
     /**

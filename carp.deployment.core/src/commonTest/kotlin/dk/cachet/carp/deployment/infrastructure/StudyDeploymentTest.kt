@@ -42,6 +42,9 @@ class StudyDeploymentTest
         val commonParticipations =
             deployment.participations.intersect( fromSnapshot.participations )
         assertEquals( deployment.participations.count(), commonParticipations.count() )
+        val commonDeployedDevices =
+            deployment.deployedDevices.intersect( fromSnapshot.deployedDevices )
+        assertEquals( deployment.deployedDevices.count(), commonDeployedDevices.count() )
     }
 
     @Test
