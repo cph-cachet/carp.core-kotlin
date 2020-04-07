@@ -61,8 +61,10 @@ interface DeploymentService
     /**
      * Get the deployment configuration for the master device with [masterDeviceRoleName] in the study deployment with [studyDeploymentId].
      *
-     * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist,
-     * or [masterDeviceRoleName] is not present in the deployment, or not yet registered.
+     * @throws IllegalArgumentException when:
+     * - a deployment with [studyDeploymentId] does not exist
+     * - [masterDeviceRoleName] is not present in the deployment
+     * @throws IllegalStateException when the deployment for the requested master device is not yet available.
      */
     suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
 
@@ -70,8 +72,10 @@ interface DeploymentService
      * Indicate to stakeholders in the study deployment with [studyDeploymentId] that the device with [masterDeviceRoleName] was deployed successfully,
      * i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it.
      *
-     * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist,
-     * or [masterDeviceRoleName] is not present in the deployment or cannot be deployed yet.
+     * @throws IllegalArgumentException when:
+     * - a deployment with [studyDeploymentId] does not exist
+     * - [masterDeviceRoleName] is not present in the deployment
+     * @throws IllegalStateException when the deployment cannot be deployed yet.
      */
     suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String ): StudyDeploymentStatus
 
