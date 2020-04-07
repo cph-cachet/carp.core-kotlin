@@ -23,6 +23,7 @@ class DeploymentServiceRequestsTest
             DeploymentServiceRequest.CreateStudyDeployment( createEmptyProtocol().getSnapshot() ),
             DeploymentServiceRequest.GetStudyDeploymentStatus( UUID.randomUUID() ),
             DeploymentServiceRequest.RegisterDevice( UUID.randomUUID(), "Test role", DefaultDeviceRegistration( "Device ID" ) ),
+            DeploymentServiceRequest.UnregisterDevice( UUID.randomUUID(), "Test role" ),
             DeploymentServiceRequest.GetDeviceDeploymentFor( UUID.randomUUID(), "Test role" ),
             DeploymentServiceRequest.DeploymentSuccessful( UUID.randomUUID(), "Test role" ),
             DeploymentServiceRequest.AddParticipation( UUID.randomUUID(), setOf( "Phone" ), UsernameAccountIdentity( "Test" ), StudyInvitation.empty() ),

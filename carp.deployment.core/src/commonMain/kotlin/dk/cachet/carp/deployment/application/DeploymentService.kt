@@ -50,6 +50,15 @@ interface DeploymentService
     suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
 
     /**
+     * Unregister the device with the specified [deviceRoleName] for the study deployment with [studyDeploymentId].
+     *
+     * @throws IllegalArgumentException when:
+     * - a deployment with [studyDeploymentId] does not exist
+     * - [deviceRoleName] is not present in the deployment
+     */
+    suspend fun unregisterDevice( studyDeploymentId: UUID, deviceRoleName: String ): StudyDeploymentStatus
+
+    /**
      * Get the deployment configuration for the master device with [masterDeviceRoleName] in the study deployment with [studyDeploymentId].
      *
      * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist,

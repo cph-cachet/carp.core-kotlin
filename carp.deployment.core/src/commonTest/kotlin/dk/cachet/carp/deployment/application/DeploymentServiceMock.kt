@@ -17,6 +17,7 @@ class DeploymentServiceMock(
     private val createStudyDeploymentResult: StudyDeploymentStatus = emptyStatus,
     private val getStudyDeploymentStatusResult: StudyDeploymentStatus = emptyStatus,
     private val registerDeviceResult: StudyDeploymentStatus = emptyStatus,
+    private val unregisterDeviceResult: StudyDeploymentStatus = emptyStatus,
     private val getDeviceDeploymentForResult: MasterDeviceDeployment = emptyMasterDeviceDeployment,
     private val deploymentSuccessfulResult: StudyDeploymentStatus = emptyStatus,
     private val getParticipationInvitationResult: Set<ParticipationInvitation> = setOf()
@@ -49,6 +50,12 @@ class DeploymentServiceMock(
     {
         trackSuspendCall( DeploymentService::registerDevice, studyDeploymentId, deviceRoleName, registration )
         return registerDeviceResult
+    }
+
+    override suspend fun unregisterDevice( studyDeploymentId: UUID, deviceRoleName: String ): StudyDeploymentStatus
+    {
+        trackSuspendCall( DeploymentService::unregisterDevice, studyDeploymentId, deviceRoleName )
+        return unregisterDeviceResult
     }
 
     override suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment

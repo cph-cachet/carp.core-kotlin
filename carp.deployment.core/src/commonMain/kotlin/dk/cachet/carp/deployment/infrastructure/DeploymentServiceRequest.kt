@@ -42,6 +42,11 @@ sealed class DeploymentServiceRequest
         ServiceInvoker<DeploymentService, StudyDeploymentStatus> by createServiceInvoker( DeploymentService::registerDevice, studyDeploymentId, deviceRoleName, registration )
 
     @Serializable
+    data class UnregisterDevice( val studyDeploymentId: UUID, val deviceRoleName: String ) :
+        DeploymentServiceRequest(),
+        ServiceInvoker<DeploymentService, StudyDeploymentStatus> by createServiceInvoker( DeploymentService::unregisterDevice, studyDeploymentId, deviceRoleName )
+
+    @Serializable
     data class GetDeviceDeploymentFor( val studyDeploymentId: UUID, val masterDeviceRoleName: String ) :
         DeploymentServiceRequest(),
         ServiceInvoker<DeploymentService, MasterDeviceDeployment> by createServiceInvoker( DeploymentService::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName )
