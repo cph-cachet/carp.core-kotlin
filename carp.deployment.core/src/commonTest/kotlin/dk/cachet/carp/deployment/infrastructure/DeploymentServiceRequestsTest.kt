@@ -25,7 +25,7 @@ class DeploymentServiceRequestsTest
             DeploymentServiceRequest.RegisterDevice( UUID.randomUUID(), "Test role", DefaultDeviceRegistration( "Device ID" ) ),
             DeploymentServiceRequest.UnregisterDevice( UUID.randomUUID(), "Test role" ),
             DeploymentServiceRequest.GetDeviceDeploymentFor( UUID.randomUUID(), "Test role" ),
-            DeploymentServiceRequest.DeploymentSuccessful( UUID.randomUUID(), "Test role" ),
+            DeploymentServiceRequest.DeploymentSuccessful( UUID.randomUUID(), "Test role", 0 ),
             DeploymentServiceRequest.AddParticipation( UUID.randomUUID(), setOf( "Phone" ), UsernameAccountIdentity( "Test" ), StudyInvitation.empty() ),
             DeploymentServiceRequest.GetParticipationInvitations( UUID.randomUUID() )
         )

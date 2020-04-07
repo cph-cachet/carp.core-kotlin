@@ -216,7 +216,8 @@ class StudyDeploymentTest
         val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( master1, master1.createRegistration { } )
         deployment.registerDevice( master2, master2.createRegistration { } )
-        deployment.deviceDeployed( master1 )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( master1 )
+        deployment.deviceDeployed( master1, deviceDeployment.getChecksum() )
 
         deployment.unregisterDevice( master2 )
         assertEquals( 0, deployment.deployedDevices.count() )
@@ -301,7 +302,8 @@ class StudyDeploymentTest
         assertEquals( setOf( master ), readyStatus.getRemainingDevicesReadyToDeploy() )
 
         // Notify of successful master device deployment.
-        deployment.deviceDeployed( master )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( master )
+        deployment.deviceDeployed( master, deviceDeployment.getChecksum() )
         val studyStatus = deployment.getStatus()
         val deviceStatus = studyStatus.devicesStatus.first { it.device == master }
         assertTrue( deviceStatus is DeviceDeploymentStatus.Deployed )
@@ -405,7 +407,8 @@ class StudyDeploymentTest
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
         deployment.registerDevice( device, device.createRegistration { } )
 
-        deployment.deviceDeployed( device )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( device )
+        deployment.deviceDeployed( device, deviceDeployment.getChecksum() )
         assertTrue( deployment.deployedDevices.contains( device ) )
         assertEquals( StudyDeployment.Event.DeviceDeployed( device ), deployment.consumeEvents().last() )
     }
@@ -419,8 +422,10 @@ class StudyDeploymentTest
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
         deployment.registerDevice( device, device.createRegistration { } )
 
-        deployment.deviceDeployed( device )
-        deployment.deviceDeployed( device )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( device )
+        val deploymentChecksum = deviceDeployment.getChecksum()
+        deployment.deviceDeployed( device, deploymentChecksum )
+        deployment.deviceDeployed( device, deploymentChecksum )
         assertEquals( 1, deployment.deployedDevices.count() )
         assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
     }
@@ -431,7 +436,7 @@ class StudyDeploymentTest
         val deployment = createComplexDeployment()
 
         val invalidDevice = StubMasterDeviceDescriptor( "Not in deployment" )
-        assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( invalidDevice ) }
+        assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( invalidDevice, 0 ) }
         assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
     }
 
@@ -443,8 +448,23 @@ class StudyDeploymentTest
         protocol.addMasterDevice( device )
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
-        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( device ) }
+        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( device, 0 ) }
         assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
+    }
+
+    @Test
+    fun deviceDeployed_fails_with_outdated_deployment_checksum()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        protocol.addMasterDevice( device )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( device, device.createRegistration { } )
+
+        val deviceDeployment = deployment.getDeviceDeploymentFor( device )
+        deployment.unregisterDevice( device )
+        deployment.registerDevice( device, device.createRegistration { } )
+        assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( device, deviceDeployment.getChecksum() ) }
     }
 
     @Test

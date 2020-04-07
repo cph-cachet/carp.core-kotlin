@@ -105,7 +105,8 @@ fun createComplexDeployment(): StudyDeployment
     deployment.addParticipation( account, participation )
 
     // Deploy a device.
-    deployment.deviceDeployed( master )
+    val deviceDeployment = deployment.getDeviceDeploymentFor( master )
+    deployment.deviceDeployed( master, deviceDeployment.getChecksum() )
 
     // Remove events since tests building on top of this are not interested in how this object was constructed.
     deployment.consumeEvents()
