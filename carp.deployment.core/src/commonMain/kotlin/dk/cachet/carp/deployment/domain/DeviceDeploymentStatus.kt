@@ -28,7 +28,7 @@ sealed class DeviceDeploymentStatus
 
 
     /**
-     * A device deployment status which has not been deployed yet.
+     * A device deployment status which indicates the correct deployment has not been deployed yet.
      */
     interface NotDeployed
     {
@@ -75,4 +75,16 @@ sealed class DeviceDeploymentStatus
         override val requiresRegistration: Boolean,
         override val requiresDeployment: Boolean
     ) : DeviceDeploymentStatus()
+
+    /**
+     * Device deployment status when the device has previously been deployed correctly, but due to changes in device registrations needs to be redeployed.
+     */
+    @Serializable
+    data class NeedsRedeployment(
+        @Serializable( DeviceDescriptorSerializer::class )
+        override val device: AnyDeviceDescriptor,
+        override val requiresRegistration: Boolean,
+        override val requiresDeployment: Boolean,
+        override val isReadyForDeployment: Boolean
+    ) : DeviceDeploymentStatus(), NotDeployed
 }
