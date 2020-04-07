@@ -67,6 +67,8 @@ class StudyDeploymentTest
         assertEquals( 1, deployment.registeredDevices.size )
         val registered = deployment.registeredDevices.values.single()
         assertEquals( registration, registered )
+        assertEquals( 1, deployment.deviceRegistrationHistory[ device ]?.count() )
+        assertEquals( registration, deployment.deviceRegistrationHistory[ device ]?.last() )
         assertEquals( StudyDeployment.Event.DeviceRegistered( device, registration ), deployment.consumeEvents().last() )
     }
 
@@ -184,10 +186,71 @@ class StudyDeploymentTest
     }
 
     @Test
-    fun creating_deployment_fromSnapshot_obtained_by_getSnapshot_is_the_same()
+    fun unregisterDevice_with_single_device_succeeds()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        protocol.addMasterDevice( device )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+        val registration = DefaultDeviceRegistration( "0" )
+        deployment.registerDevice( device, registration )
+
+        deployment.unregisterDevice( device )
+        assertEquals( 0, deployment.registeredDevices.size )
+        assertEquals( 1, deployment.deviceRegistrationHistory[ device ]?.count() )
+        assertEquals( registration, deployment.deviceRegistrationHistory[ device ]?.last() )
+        assertEquals( StudyDeployment.Event.DeviceUnregistered( device ), deployment.consumeEvents().last() )
+        assertTrue( deployment.getStatus().devicesStatus.single() is DeviceDeploymentStatus.Unregistered )
+    }
+
+    @Test
+    fun unregisterDevice_invalidates_dependent_deployments()
+    {
+        val protocol = createEmptyProtocol()
+        val master1 = StubMasterDeviceDescriptor( "Master 1" )
+        protocol.addMasterDevice( master1 )
+        val master2 = StubMasterDeviceDescriptor( "Master 2" )
+        protocol.addMasterDevice( master2 )
+        // TODO: For now, there is no dependency between these two devices, it is simply assumed in the current implementation.
+        //       This test will fail once this implementation is improved.
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( master1, master1.createRegistration { } )
+        deployment.registerDevice( master2, master2.createRegistration { } )
+        deployment.deviceDeployed( master1 )
+
+        deployment.unregisterDevice( master2 )
+        assertEquals( 0, deployment.deployedDevices.count() )
+        assertEquals( setOf( master1 ), deployment.invalidatedDeployedDevices )
+        val studyStatus = deployment.getStatus()
+        val master1Status = studyStatus.devicesStatus.first { it.device == master1 }
+        assertTrue( master1Status is DeviceDeploymentStatus.NeedsRedeployment )
+        assertEquals( StudyDeployment.Event.DeploymentInvalidated( master1 ), deployment.consumeEvents().last() )
+    }
+
+    @Test
+    fun unregisterDevice_fails_for_device_not_part_of_deployment()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment = studyDeploymentFor( protocol )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+        val master = protocol.devices.first { it is AnyMasterDeviceDescriptor }
+
+        assertFailsWith<IllegalArgumentException> { deployment.unregisterDevice( master ) }
+    }
+
+    @Test
+    fun unregisterDevice_fails_for_device_which_is_not_registered()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+
+        val invalidDevice = StubMasterDeviceDescriptor( "Not part of deployment" )
+        assertFailsWith<IllegalArgumentException> { deployment.unregisterDevice( invalidDevice ) }
+    }
+
+    @Test
+    fun creating_deployment_fromSnapshot_obtained_by_getSnapshot_is_the_same()
+    {
+        val deployment = createComplexDeployment()
 
         val snapshot: StudyDeploymentSnapshot = deployment.getSnapshot()
         val fromSnapshot = StudyDeployment.fromSnapshot( snapshot )
@@ -200,6 +263,18 @@ class StudyDeploymentTest
         assertEquals(
             deployment.registeredDevices.count(),
             deployment.registeredDevices.entries.intersect( fromSnapshot.registeredDevices.entries ).count() )
+        assertEquals(
+            deployment.deviceRegistrationHistory.count(),
+            deployment.deviceRegistrationHistory.entries.intersect( fromSnapshot.deviceRegistrationHistory.entries ).count() )
+        assertEquals(
+            deployment.deployedDevices.count(),
+            deployment.deployedDevices.intersect( fromSnapshot.deployedDevices ).count() )
+        assertEquals(
+            deployment.invalidatedDeployedDevices.count(),
+            deployment.invalidatedDeployedDevices.intersect( fromSnapshot.invalidatedDeployedDevices ).count() )
+        assertEquals(
+            deployment.participations.count(),
+            deployment.participations.intersect( fromSnapshot.participations ).count() )
     }
 
     @Test
@@ -332,6 +407,7 @@ class StudyDeploymentTest
 
         deployment.deviceDeployed( device )
         assertTrue( deployment.deployedDevices.contains( device ) )
+        assertEquals( StudyDeployment.Event.DeviceDeployed( device ), deployment.consumeEvents().last() )
     }
 
     @Test
@@ -346,6 +422,7 @@ class StudyDeploymentTest
         deployment.deviceDeployed( device )
         deployment.deviceDeployed( device )
         assertEquals( 1, deployment.deployedDevices.count() )
+        assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
     }
 
     @Test
@@ -355,6 +432,7 @@ class StudyDeploymentTest
 
         val invalidDevice = StubMasterDeviceDescriptor( "Not in deployment" )
         assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( invalidDevice ) }
+        assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
     }
 
     @Test
@@ -366,6 +444,7 @@ class StudyDeploymentTest
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( device ) }
+        assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
     }
 
     @Test

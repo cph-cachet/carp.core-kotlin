@@ -25,7 +25,7 @@ data class StudyDeploymentStatus(
         devicesStatus.filter { it.requiresRegistration && it is DeviceDeploymentStatus.Unregistered }.map { it.device }.toSet()
 
     /**
-     * Returns all [AnyMasterDeviceDescriptor] which are ready for deployment and have not yet been deployed.
+     * Returns all [AnyMasterDeviceDescriptor] which are ready for deployment and are not deployed with the correct deployment yet.
      */
     fun getRemainingDevicesReadyToDeploy(): Set<AnyMasterDeviceDescriptor> =
         devicesStatus

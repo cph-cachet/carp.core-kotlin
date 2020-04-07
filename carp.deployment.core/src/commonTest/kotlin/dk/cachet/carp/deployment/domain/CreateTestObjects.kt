@@ -107,6 +107,9 @@ fun createComplexDeployment(): StudyDeployment
     // Deploy a device.
     deployment.deviceDeployed( master )
 
+    // Remove events since tests building on top of this are not interested in how this object was constructed.
+    deployment.consumeEvents()
+
     return deployment
 }
 

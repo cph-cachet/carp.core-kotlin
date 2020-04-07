@@ -1,6 +1,5 @@
 package dk.cachet.carp.deployment.infrastructure
 
-import dk.cachet.carp.deployment.domain.createComplexDeployment
 import dk.cachet.carp.deployment.domain.createEmptyProtocol
 import dk.cachet.carp.deployment.domain.StubMasterDeviceDescriptor
 import dk.cachet.carp.deployment.domain.STUBS_SERIAL_MODULE
@@ -26,26 +25,6 @@ class StudyDeploymentTest
         JSON = createDeploymentSerializer( STUBS_SERIAL_MODULE )
     }
 
-    @Test
-    fun creating_study_deployment_fromSnapshot_obtained_by_getSnapshot_is_the_same()
-    {
-        val deployment = createComplexDeployment()
-
-        val snapshot = deployment.getSnapshot()
-        val fromSnapshot = StudyDeployment.fromSnapshot( snapshot )
-
-        assertEquals( deployment.id, fromSnapshot.id )
-        assertEquals( deployment.protocolSnapshot, fromSnapshot.protocolSnapshot )
-        val commonRegisteredDevices =
-            deployment.registeredDevices.asIterable().intersect( fromSnapshot.registeredDevices.asIterable() )
-        assertEquals( deployment.registeredDevices.count(), commonRegisteredDevices.count() )
-        val commonParticipations =
-            deployment.participations.intersect( fromSnapshot.participations )
-        assertEquals( deployment.participations.count(), commonParticipations.count() )
-        val commonDeployedDevices =
-            deployment.deployedDevices.intersect( fromSnapshot.deployedDevices )
-        assertEquals( deployment.deployedDevices.count(), commonDeployedDevices.count() )
-    }
 
     @Test
     fun cant_initialize_deployment_with_invalid_snapshot()
