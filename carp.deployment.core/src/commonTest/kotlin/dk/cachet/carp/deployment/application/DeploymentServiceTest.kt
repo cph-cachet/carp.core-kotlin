@@ -23,6 +23,19 @@ abstract class DeploymentServiceTest
 
 
     @Test
+    fun unregisterDevice_succeeds() = runBlockingTest {
+        val ( deploymentService, _ ) = createService()
+        val deviceRolename = "Test device"
+        val studyDeploymentId = addTestDeployment( deploymentService, deviceRolename )
+        var status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
+        val device = status.getRemainingDevicesToRegister().first()
+        deploymentService.registerDevice( studyDeploymentId, deviceRolename, device.createRegistration { } )
+
+        status = deploymentService.unregisterDevice( studyDeploymentId, deviceRolename )
+        assertEquals( device, status.getRemainingDevicesToRegister().single() )
+    }
+
+    @Test
     fun addParticipation_has_matching_studyDeploymentId() = runBlockingTest {
         val ( deploymentService, _ ) = createService()
         val deviceRoleName = "Test device"
