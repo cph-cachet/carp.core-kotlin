@@ -61,7 +61,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             snapshot.deployedDevices.forEach { roleName ->
                 val deployedDevice = deployment.protocolSnapshot.masterDevices.firstOrNull { it.roleName == roleName }
                     ?: throw IllegalArgumentException( "Can't find deployed device with role name '$roleName' in snapshot." )
-                deployment.deviceDeployed( deployedDevice )
+                val deviceDeployment = deployment.getDeviceDeploymentFor( deployedDevice )
+                deployment.deviceDeployed( deployedDevice, deviceDeployment.getChecksum() )
             }
 
             // Add invalidated deployed devices.
@@ -329,15 +330,21 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     }
 
     /**
-     * Indicate that the specified [device] was deployed successfully.
+     * Indicate that the specified [device] was deployed successfully using the deployment with the specified [deploymentChecksum].
      *
-     * @throws IllegalArgumentException when the passed [device] is not part of the protocol of this study deployment.
+     * @throws IllegalArgumentException when:
+     * - the passed [device] is not part of the protocol of this study deployment
+     * - the [deploymentChecksum] does not match the checksum of the expected deployment. The deployment might be outdated.
      * @throws IllegalStateException when the passed [device] cannot be deployed yet.
      */
-    fun deviceDeployed( device: AnyMasterDeviceDescriptor )
+    fun deviceDeployed( device: AnyMasterDeviceDescriptor, deploymentChecksum: Int )
     {
         // Verify whether the specified device is part of the protocol of this deployment.
         require( device in protocolSnapshot.masterDevices ) { "The specified master device is not part of the protocol of this deployment." }
+
+        // Verify whether deployment matches the expected deployment.
+        val latestDeployment = getDeviceDeploymentFor( device )
+        require( latestDeployment.getChecksum() == deploymentChecksum )
 
         // Verify whether the specified device is ready to be deployed.
         val canDeploy = canObtainDeviceDeployment( device )

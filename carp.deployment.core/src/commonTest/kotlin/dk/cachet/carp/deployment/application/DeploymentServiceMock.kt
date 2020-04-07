@@ -64,9 +64,9 @@ class DeploymentServiceMock(
         return getDeviceDeploymentForResult
     }
 
-    override suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String ): StudyDeploymentStatus
+    override suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String, deploymentChecksum: Int ): StudyDeploymentStatus
     {
-        trackSuspendCall( DeploymentService::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName )
+        trackSuspendCall( DeploymentService::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deploymentChecksum )
         return deploymentSuccessfulResult
     }
 

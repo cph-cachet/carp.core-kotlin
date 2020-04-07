@@ -72,7 +72,8 @@ interface DeploymentRepositoryTest
         assertEquals( deployment.getSnapshot(), retrieved?.getSnapshot() ) // StudyDeployment does not implement equals, but snapshot does.
 
         // Verify whether deploying a device is updated.
-        deployment.deviceDeployed( masterDevice )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( masterDevice )
+        deployment.deviceDeployed( masterDevice, deviceDeployment.getChecksum() )
         repo.update( deployment )
         retrieved = repo.getStudyDeploymentBy( deployment.id )
         assertEquals( deployment.getSnapshot(), retrieved?.getSnapshot() )

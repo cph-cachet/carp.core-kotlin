@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -61,4 +62,9 @@ data class MasterDeviceDeployment(
          */
         val destinationDeviceRoleName: String
     )
+
+    /**
+     * Get the checksum which needs to be passed to [DeploymentService] to identify this device deployment.
+     */
+    fun getChecksum(): Int = hashCode()
 }

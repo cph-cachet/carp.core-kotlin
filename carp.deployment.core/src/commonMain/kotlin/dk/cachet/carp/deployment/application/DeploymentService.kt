@@ -70,14 +70,16 @@ interface DeploymentService
 
     /**
      * Indicate to stakeholders in the study deployment with [studyDeploymentId] that the device with [masterDeviceRoleName] was deployed successfully,
+     * using the deployment with the specified [deploymentChecksum],
      * i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it.
      *
      * @throws IllegalArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
      * - [masterDeviceRoleName] is not present in the deployment
+     * - the [deploymentChecksum] does not match the checksum of the expected deployment. The deployment might be outdated.
      * @throws IllegalStateException when the deployment cannot be deployed yet.
      */
-    suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String ): StudyDeploymentStatus
+    suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String, deploymentChecksum: Int ): StudyDeploymentStatus
 
     /**
      * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId],
