@@ -283,7 +283,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
      * Get the deployment configuration for the specified [device] in this study deployment.
      *
      * @throws IllegalArgumentException when the passed [device] is not part of the protocol of this study deployment.
-     * @throws IllegalArgumentException when the passed [device] is not ready to receive a [MasterDeviceDeployment] yet.
+     * @throws IllegalStateException when a [MasterDeviceDeployment] for the passed [device] is not yet available.
      */
     fun getDeviceDeploymentFor( device: AnyMasterDeviceDescriptor ): MasterDeviceDeployment
     {
@@ -292,7 +292,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
         // Verify whether the specified device is ready to be deployed.
         val canDeploy = canObtainDeviceDeployment( device )
-        require( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
+        check( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
         val configuration: DeviceRegistration = _registeredDevices[ device ]!! // Must be non-null, otherwise canObtainDeviceDeployment would fail.
 
@@ -331,9 +331,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * Indicate that the specified [device] was deployed successfully.
      *
-     * @throws IllegalArgumentException when the passed [device]:
-     * - is not part of the protocol of this study deployment
-     * - could not have possibly received a [MasterDeviceDeployment] yet.
+     * @throws IllegalArgumentException when the passed [device] is not part of the protocol of this study deployment.
+     * @throws IllegalStateException when the passed [device] cannot be deployed yet.
      */
     fun deviceDeployed( device: AnyMasterDeviceDescriptor )
     {
@@ -342,7 +341,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
         // Verify whether the specified device is ready to be deployed.
         val canDeploy = canObtainDeviceDeployment( device )
-        require( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
+        check( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
         if ( _deployedDevices.add( device ) )
         {

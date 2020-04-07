@@ -393,7 +393,7 @@ class StudyDeploymentTest
         val master = protocol.masterDevices.first { it.roleName == "Master" }
         val deployment = studyDeploymentFor( protocol )
 
-        assertFailsWith<IllegalArgumentException> { deployment.getDeviceDeploymentFor( master ) }
+        assertFailsWith<IllegalStateException> { deployment.getDeviceDeploymentFor( master ) }
     }
 
     @Test
@@ -443,7 +443,7 @@ class StudyDeploymentTest
         protocol.addMasterDevice( device )
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
-        assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( device ) }
+        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( device ) }
         assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
     }
 
