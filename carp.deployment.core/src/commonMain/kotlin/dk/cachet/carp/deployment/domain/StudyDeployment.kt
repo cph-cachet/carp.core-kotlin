@@ -167,8 +167,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
                 val needsRedeployment = it.device in invalidatedDeployedDevices
 
                 when {
-                    needsRedeployment -> DeviceDeploymentStatus.NeedsRedeployment( it.device, it.requiresDeployment, isReadyForDeployment )
-                    isDeployed -> DeviceDeploymentStatus.Deployed( it.device, it.requiresDeployment )
+                    needsRedeployment -> DeviceDeploymentStatus.NeedsRedeployment( it.device, isReadyForDeployment )
+                    isDeployed -> DeviceDeploymentStatus.Deployed( it.device )
                     isRegistered -> DeviceDeploymentStatus.Registered( it.device, it.requiresDeployment, isReadyForDeployment )
                     else -> DeviceDeploymentStatus.Unregistered( it.device, it.requiresDeployment )
                 }
