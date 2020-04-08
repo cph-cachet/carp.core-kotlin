@@ -17,10 +17,6 @@ sealed class DeviceDeploymentStatus
     @Serializable( DeviceDescriptorSerializer::class )
     abstract val device: AnyDeviceDescriptor
     /**
-     * Determines whether registering the device is required for the deployment to start running.
-     */
-    abstract val requiresRegistration: Boolean
-    /**
      * Determines whether the device requires a device deployment by retrieving [MasterDeviceDeployment].
      * Not all master devices necessarily need deployment; chained master devices do not.
      */
@@ -46,7 +42,6 @@ sealed class DeviceDeploymentStatus
     data class Unregistered(
         @Serializable( DeviceDescriptorSerializer::class )
         override val device: AnyDeviceDescriptor,
-        override val requiresRegistration: Boolean,
         override val requiresDeployment: Boolean
     ) : DeviceDeploymentStatus(), NotDeployed
     {
@@ -60,7 +55,6 @@ sealed class DeviceDeploymentStatus
     data class Registered(
         @Serializable( DeviceDescriptorSerializer::class )
         override val device: AnyDeviceDescriptor,
-        override val requiresRegistration: Boolean,
         override val requiresDeployment: Boolean,
         override val isReadyForDeployment: Boolean
     ) : DeviceDeploymentStatus(), NotDeployed
@@ -72,7 +66,6 @@ sealed class DeviceDeploymentStatus
     data class Deployed(
         @Serializable( DeviceDescriptorSerializer::class )
         override val device: AnyDeviceDescriptor,
-        override val requiresRegistration: Boolean,
         override val requiresDeployment: Boolean
     ) : DeviceDeploymentStatus()
 
@@ -83,7 +76,6 @@ sealed class DeviceDeploymentStatus
     data class NeedsRedeployment(
         @Serializable( DeviceDescriptorSerializer::class )
         override val device: AnyDeviceDescriptor,
-        override val requiresRegistration: Boolean,
         override val requiresDeployment: Boolean,
         override val isReadyForDeployment: Boolean
     ) : DeviceDeploymentStatus(), NotDeployed

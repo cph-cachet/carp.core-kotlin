@@ -19,10 +19,10 @@ data class StudyDeploymentStatus(
 )
 {
     /**
-     * Returns all [AnyDeviceDescriptor]'s in [devicesStatus] which require registration.
+     * Returns all [AnyDeviceDescriptor]'s in [devicesStatus] which still require registration.
      */
     fun getRemainingDevicesToRegister(): Set<AnyDeviceDescriptor> =
-        devicesStatus.filter { it.requiresRegistration && it is DeviceDeploymentStatus.Unregistered }.map { it.device }.toSet()
+        devicesStatus.filterIsInstance<DeviceDeploymentStatus.Unregistered>().map { it.device }.toSet()
 
     /**
      * Returns all [AnyMasterDeviceDescriptor] which are ready for deployment and are not deployed with the correct deployment yet.

@@ -24,7 +24,6 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
  * enabling a connection between them, tracking device connection issues, assessing data quality,
  * and registering participant consent.
  */
-@Suppress( "TooManyFunctions" ) // TODO: The private functions could potentially be moved to outside helpers.
 class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() ) :
     AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>()
 {
@@ -149,8 +148,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
         // Initialize information which devices can or should be registered for this deployment.
         _registrableDevices = protocol.devices
-            // Top-level master devices require registration.
-            .map { RegistrableDevice( it, isTopLevelMasterDevice( it ) ) }
+            // Top-level master devices require deployment.
+            .map { RegistrableDevice( it, it in protocol.masterDevices ) }
             .toMutableSet()
     }
 
@@ -162,26 +161,21 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     {
         val devicesStatus: List<DeviceDeploymentStatus> =
             _registrableDevices.map {
-                val requiresDeployment = isTopLevelMasterDevice( it.device )
-
                 val isRegistered = it.device in _registeredDevices
                 val isReadyForDeployment = canObtainDeviceDeployment( it.device )
                 val isDeployed = it.device in deployedDevices
                 val needsRedeployment = it.device in invalidatedDeployedDevices
 
                 when {
-                    needsRedeployment -> DeviceDeploymentStatus.NeedsRedeployment( it.device, it.requiresRegistration, requiresDeployment, isReadyForDeployment )
-                    isDeployed -> DeviceDeploymentStatus.Deployed( it.device, it.requiresRegistration, requiresDeployment )
-                    isRegistered -> DeviceDeploymentStatus.Registered( it.device, it.requiresRegistration, requiresDeployment, isReadyForDeployment )
-                    else -> DeviceDeploymentStatus.Unregistered( it.device, it.requiresRegistration, requiresDeployment )
+                    needsRedeployment -> DeviceDeploymentStatus.NeedsRedeployment( it.device, it.requiresDeployment, isReadyForDeployment )
+                    isDeployed -> DeviceDeploymentStatus.Deployed( it.device, it.requiresDeployment )
+                    isRegistered -> DeviceDeploymentStatus.Registered( it.device, it.requiresDeployment, isReadyForDeployment )
+                    else -> DeviceDeploymentStatus.Unregistered( it.device, it.requiresDeployment )
                 }
             }
 
         return StudyDeploymentStatus( id, devicesStatus )
     }
-
-    private fun isTopLevelMasterDevice( device: AnyDeviceDescriptor ): Boolean =
-        device is AnyMasterDeviceDescriptor && device in protocol.masterDevices
 
     /**
      * Determines whether the deployment configuration (to initialize the device environment) for a specific device can be obtained.
@@ -190,8 +184,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     private fun canObtainDeviceDeployment( device: AnyDeviceDescriptor ): Boolean
     {
         // Early out in case the device never needs to be deployed.
-        val requiresDeployment = isTopLevelMasterDevice( device )
-        if ( !requiresDeployment ) return false
+        val registrableDevice = registrableDevices.first { it.device == device }
+        if ( !registrableDevice.requiresDeployment ) return false
 
         // Verify whether device itself and all dependent devices are registered.
         return getDependentDevices( device as AnyMasterDeviceDescriptor )
@@ -203,12 +197,12 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * Get all devices which need to be registered before the passed [device] can be deployed.
      *
-     * TODO: For now, presume all devices which require registration may depend on one another.
+     * TODO: For now, presume all devices which require deployment may depend on one another.
      *       This can be optimized by looking at the triggers which determine actual dependencies between devices.
      */
     private fun getDependentDevices( device: AnyMasterDeviceDescriptor ): List<AnyDeviceDescriptor> =
         _registrableDevices
-            .filter { it.requiresRegistration }
+            .filter { it.requiresDeployment }
             .map { it.device }
             .minus( device )
 

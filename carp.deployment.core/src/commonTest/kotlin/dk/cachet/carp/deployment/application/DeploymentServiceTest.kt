@@ -28,11 +28,11 @@ abstract class DeploymentServiceTest
         val deviceRolename = "Test device"
         val studyDeploymentId = addTestDeployment( deploymentService, deviceRolename )
         var status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
-        val device = status.getRemainingDevicesToRegister().first()
+        val device = status.getRemainingDevicesToRegister().first { it.roleName == deviceRolename }
         deploymentService.registerDevice( studyDeploymentId, deviceRolename, device.createRegistration { } )
 
         status = deploymentService.unregisterDevice( studyDeploymentId, deviceRolename )
-        assertEquals( device, status.getRemainingDevicesToRegister().single() )
+        assertTrue( device in status.getRemainingDevicesToRegister() )
     }
 
     @Test
@@ -138,7 +138,7 @@ abstract class DeploymentServiceTest
 
     /**
      * Create a deployment to be used in tests in the given [deploymentService]
-     * with a protocol containing a single master device with the specified [deviceRoleName].
+     * with a protocol containing a single master device with the specified [deviceRoleName] and a connected device.
      */
     private suspend fun addTestDeployment( deploymentService: DeploymentService, deviceRoleName: String ): UUID
     {

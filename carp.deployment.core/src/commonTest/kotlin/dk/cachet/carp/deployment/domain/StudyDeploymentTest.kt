@@ -48,9 +48,9 @@ class StudyDeploymentTest
         assertTrue { deployment.registrableDevices.map { it.device }.containsAll( protocol.devices ) }
         assertEquals( 0, deployment.registeredDevices.size )
 
-        // Only the master device requires registration.
-        val requiredRegistration = deployment.registrableDevices.single { it.requiresRegistration }
-        assertEquals( protocol.masterDevices.single(), requiredRegistration.device )
+        // Only the master device requires deployment.
+        val requiredDeployment = deployment.registrableDevices.single { it.requiresDeployment }
+        assertEquals( protocol.masterDevices.single(), requiredDeployment.device )
     }
 
     @Test
@@ -292,13 +292,16 @@ class StudyDeploymentTest
         assertEquals( 2, status.devicesStatus.count() )
         assertTrue { status.devicesStatus.any { it.device == master } }
         assertTrue { status.devicesStatus.any { it.device == connected } }
-        assertEquals( setOf( master ), status.getRemainingDevicesToRegister() )
-        assertTrue { status.getRemainingDevicesReadyToDeploy().isEmpty() }
+        val toRegister = status.getRemainingDevicesToRegister()
+        val expectedToRegister = setOf( master, connected )
+        assertEquals( expectedToRegister.count(), toRegister.count() )
+        assertTrue( toRegister.containsAll( expectedToRegister ) )
+        assertTrue( status.getRemainingDevicesReadyToDeploy().isEmpty() )
 
         // After registering master device, master device is ready for deployment.
         deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
         val readyStatus = deployment.getStatus()
-        assertTrue { readyStatus.getRemainingDevicesToRegister().isEmpty() }
+        assertEquals( 1, readyStatus.getRemainingDevicesToRegister().count() ) // Connected device is still unregistered.
         assertEquals( setOf( master ), readyStatus.getRemainingDevicesReadyToDeploy() )
 
         // Notify of successful master device deployment.
@@ -310,7 +313,7 @@ class StudyDeploymentTest
     }
 
     @Test
-    fun chained_master_devices_do_not_require_registration_or_deployment()
+    fun chained_master_devices_do_not_require_deployment()
     {
         val protocol = createEmptyProtocol()
         val master = StubMasterDeviceDescriptor( "Master" )
@@ -322,7 +325,6 @@ class StudyDeploymentTest
         val status: StudyDeploymentStatus = deployment.getStatus()
         val chainedStatus = status.devicesStatus.first { it.device == chained }
         assertFalse { chainedStatus.requiresDeployment }
-        assertFalse { chainedStatus.requiresRegistration }
     }
 
     @Test
