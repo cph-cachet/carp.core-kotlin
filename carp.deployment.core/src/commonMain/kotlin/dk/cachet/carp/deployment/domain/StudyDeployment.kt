@@ -159,39 +159,34 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
      */
     fun getStatus(): StudyDeploymentStatus
     {
-        val devicesStatus: List<DeviceDeploymentStatus> =
-            _registrableDevices.map {
-                val isRegistered = it.device in _registeredDevices
-                val isReadyForDeployment = canObtainDeviceDeployment( it.device )
-                val isDeployed = it.device in deployedDevices
-                val needsRedeployment = it.device in invalidatedDeployedDevices
-
-                when {
-                    needsRedeployment -> DeviceDeploymentStatus.NeedsRedeployment( it.device, isReadyForDeployment )
-                    isDeployed -> DeviceDeploymentStatus.Deployed( it.device )
-                    isRegistered -> DeviceDeploymentStatus.Registered( it.device, it.requiresDeployment, isReadyForDeployment )
-                    else -> DeviceDeploymentStatus.Unregistered( it.device, it.requiresDeployment )
-                }
-            }
+        val devicesStatus: List<DeviceDeploymentStatus> = _registrableDevices.map { getDeviceStatus( it.device ) }
 
         return StudyDeploymentStatus( id, devicesStatus )
     }
 
     /**
-     * Determines whether the deployment configuration (to initialize the device environment) for a specific device can be obtained.
-     * This requires the specified device and all other master devices it depends on to be registered.
+     * Get the status of a device in this [StudyDeployment].
      */
-    private fun canObtainDeviceDeployment( device: AnyDeviceDescriptor ): Boolean
+    private fun getDeviceStatus( device: AnyDeviceDescriptor ): DeviceDeploymentStatus
     {
-        // Early out in case the device never needs to be deployed.
-        val registrableDevice = registrableDevices.first { it.device == device }
-        if ( !registrableDevice.requiresDeployment ) return false
+        val registrableDevice = registrableDevices.first{ it.device == device }
 
-        // Verify whether device itself and all dependent devices are registered.
-        return getDependentDevices( device as AnyMasterDeviceDescriptor )
-            .plus( device )
-            .minus( registeredDevices.keys )
-            .isEmpty()
+        val isRegistered = device in _registeredDevices
+        val toRegisterBeforeDeployment = getDependentDevices( device ).plus( device )
+            .map { d -> d.roleName }
+            .minus( registeredDevices.keys.map { r -> r.roleName } )
+            .toSet()
+        val requiresDeployment = registrableDevice.requiresDeployment
+        val isDeployed = device in deployedDevices
+        val needsRedeployment = device in invalidatedDeployedDevices
+
+        return when
+        {
+            needsRedeployment -> DeviceDeploymentStatus.NeedsRedeployment( device, toRegisterBeforeDeployment )
+            isDeployed -> DeviceDeploymentStatus.Deployed( device )
+            isRegistered -> DeviceDeploymentStatus.Registered( device, requiresDeployment, toRegisterBeforeDeployment )
+            else -> DeviceDeploymentStatus.Unregistered( device, requiresDeployment, toRegisterBeforeDeployment )
+        }
     }
 
     /**
@@ -200,11 +195,16 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
      * TODO: For now, presume all devices which require deployment may depend on one another.
      *       This can be optimized by looking at the triggers which determine actual dependencies between devices.
      */
-    private fun getDependentDevices( device: AnyMasterDeviceDescriptor ): List<AnyDeviceDescriptor> =
-        _registrableDevices
-            .filter { it.requiresDeployment }
-            .map { it.device }
-            .minus( device )
+    private fun getDependentDevices( device: AnyDeviceDescriptor ): List<AnyDeviceDescriptor> =
+        when ( device )
+        {
+            is AnyMasterDeviceDescriptor ->
+                _registrableDevices
+                    .filter { it.requiresDeployment }
+                    .map { it.device }
+                    .minus( device )
+            else -> emptyList() // Only master devices can be deployed. Other devices have no 'dependent' devices.
+        }
 
     /**
      * Register the specified [device] for this deployment using the passed [registration] options.
@@ -262,8 +262,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
         event( Event.DeviceUnregistered( device ) )
 
-        // Invalidate deployed devices which depend on this device that are deployed.
-        val dependentMasterDevices = getDependentDevices( device as AnyMasterDeviceDescriptor )
+        // Invalidate deployed master devices which depend on this device that are deployed.
+        val dependentMasterDevices = getDependentDevices( device )
             .filterIsInstance<AnyMasterDeviceDescriptor>()
         dependentMasterDevices.forEach {
             if ( _deployedDevices.remove( it ) )
@@ -286,7 +286,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         require( device in protocolSnapshot.masterDevices ) { "The specified master device is not part of the protocol of this deployment." }
 
         // Verify whether the specified device is ready to be deployed.
-        val canDeploy = canObtainDeviceDeployment( device )
+        val canDeploy = getDeviceStatus( device ).canObtainDeviceDeployment
         check( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
         val configuration: DeviceRegistration = _registeredDevices[ device ]!! // Must be non-null, otherwise canObtainDeviceDeployment would fail.
@@ -341,7 +341,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         require( latestDeployment.getChecksum() == deploymentChecksum )
 
         // Verify whether the specified device is ready to be deployed.
-        val canDeploy = canObtainDeviceDeployment( device )
+        val canDeploy = getDeviceStatus( device ).canObtainDeviceDeployment
         check( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
         if ( _deployedDevices.add( device ) )
