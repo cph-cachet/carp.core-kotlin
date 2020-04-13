@@ -120,8 +120,8 @@ class StudyRuntime private constructor(
             isDeployed = true
         }
         // Handle race conditions with competing clients modifying device registrations, invalidating this deployment.
-        catch ( arg: IllegalArgumentException ) { }
-        catch ( arg: IllegalStateException ) { }
+        catch ( ignore: IllegalArgumentException ) { }
+        catch ( ignore: IllegalStateException ) { }
 
         return isDeployed
     }

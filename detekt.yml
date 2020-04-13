@@ -116,7 +116,7 @@ coroutines:
 empty-blocks:
   active: true
   EmptyCatchBlock:
-    active: false
+    active: true
     allowedExceptionNameRegex: "^(_|(ignore|expected).*)"
   EmptyClassBlock:
     active: true
