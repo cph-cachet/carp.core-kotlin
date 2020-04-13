@@ -33,4 +33,11 @@ data class StudyDeploymentStatus(
             .map { it.device }
             .filterIsInstance<AnyMasterDeviceDescriptor>()
             .toSet()
+
+    /**
+     * Get the status of a [device] in this study deployment.
+     */
+    fun getDeviceStatus( device: AnyDeviceDescriptor ): DeviceDeploymentStatus =
+        devicesStatus.firstOrNull { it.device == device }
+            ?: throw IllegalArgumentException( "The given device was not found in this study deployment." )
 }

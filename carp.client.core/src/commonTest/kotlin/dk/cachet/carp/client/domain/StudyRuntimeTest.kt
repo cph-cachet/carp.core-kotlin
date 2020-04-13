@@ -2,6 +2,9 @@ package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.client.infrastructure.fromJson
 import dk.cachet.carp.client.infrastructure.toJson
+import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
+import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -30,8 +33,10 @@ class StudyRuntimeTest
 
         val deviceRegistration = smartphone.createRegistration()
         val runtime = StudyRuntime.initialize( deploymentService, deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
+        val updatedStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
 
         assertTrue( runtime.isDeployed )
+        assertTrue( updatedStatus.getDeviceStatus( smartphone ) is DeviceDeploymentStatus.Deployed )
     }
 
     @Test
@@ -41,8 +46,39 @@ class StudyRuntimeTest
 
         val deviceRegistration = smartphone.createRegistration()
         val runtime = StudyRuntime.initialize( deploymentService, deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
+        val updatedStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
 
         assertFalse( runtime.isDeployed )
+        assertTrue( updatedStatus.getDeviceStatus( smartphone ) is DeviceDeploymentStatus.NotDeployed )
+    }
+
+    @Test
+    fun initialize_fails_for_unknown_studyDeploymentId() = runBlockingTest {
+        // Create a deployment service which contains a 'smartphone study'.
+        val ( deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
+
+        val unknownId = UUID.randomUUID()
+        val deviceRegistration = smartphone.createRegistration()
+        assertFailsWith<IllegalArgumentException>
+            { StudyRuntime.initialize( deploymentService, unknownId, smartphone.roleName, deviceRegistration ) }
+    }
+
+    @Test
+    fun initialize_fails_for_unknown_deviceRoleName() = runBlockingTest {
+        val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+
+        val deviceRegistration = smartphone.createRegistration()
+        assertFailsWith<IllegalArgumentException>
+            { StudyRuntime.initialize( deploymentService, deploymentStatus.studyDeploymentId, "Unknown role", deviceRegistration ) }
+    }
+
+    @Test
+    fun initialize_fails_for_incorrect_deviceRegistration() = runBlockingTest {
+        val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+
+        val incorrectRegistration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 )
+        assertFailsWith<IllegalArgumentException>
+            { StudyRuntime.initialize( deploymentService, deploymentStatus.studyDeploymentId, smartphone.roleName, incorrectRegistration ) }
     }
 
     @Test

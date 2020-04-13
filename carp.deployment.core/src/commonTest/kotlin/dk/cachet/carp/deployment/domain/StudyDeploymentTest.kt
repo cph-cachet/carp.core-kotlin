@@ -200,7 +200,7 @@ class StudyDeploymentTest
         assertEquals( 1, deployment.deviceRegistrationHistory[ device ]?.count() )
         assertEquals( registration, deployment.deviceRegistrationHistory[ device ]?.last() )
         assertEquals( StudyDeployment.Event.DeviceUnregistered( device ), deployment.consumeEvents().last() )
-        assertTrue( deployment.getStatus().devicesStatus.single() is DeviceDeploymentStatus.Unregistered )
+        assertTrue( deployment.getStatus().getDeviceStatus( device ) is DeviceDeploymentStatus.Unregistered )
     }
 
     @Test
@@ -223,7 +223,7 @@ class StudyDeploymentTest
         assertEquals( 0, deployment.deployedDevices.count() )
         assertEquals( setOf( master1 ), deployment.invalidatedDeployedDevices )
         val studyStatus = deployment.getStatus()
-        val master1Status = studyStatus.devicesStatus.first { it.device == master1 }
+        val master1Status = studyStatus.getDeviceStatus( master1 )
         assertTrue( master1Status is DeviceDeploymentStatus.NeedsRedeployment )
         assertEquals( StudyDeployment.Event.DeploymentInvalidated( master1 ), deployment.consumeEvents().last() )
     }
@@ -308,7 +308,7 @@ class StudyDeploymentTest
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
         deployment.deviceDeployed( master, deviceDeployment.getChecksum() )
         val studyStatus = deployment.getStatus()
-        val deviceStatus = studyStatus.devicesStatus.first { it.device == master }
+        val deviceStatus = studyStatus.getDeviceStatus( master )
         assertTrue( deviceStatus is DeviceDeploymentStatus.Deployed )
     }
 
@@ -323,7 +323,7 @@ class StudyDeploymentTest
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         val status: StudyDeploymentStatus = deployment.getStatus()
-        val chainedStatus = status.devicesStatus.first { it.device == chained }
+        val chainedStatus = status.getDeviceStatus( chained )
         assertFalse { chainedStatus.requiresDeployment }
     }
 
