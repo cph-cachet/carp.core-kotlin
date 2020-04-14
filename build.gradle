@@ -183,6 +183,7 @@ configure( subprojects - detektModule ) {
     detekt {
         input = files("$projectDir/src/")
         config = files("$rootDir/detekt.yml")
+        buildUponDefaultConfig = true
         ignoreFailures = true
 
         dependencies {
@@ -193,6 +194,7 @@ configure( subprojects - detektModule ) {
     task detektPasses(type: io.gitlab.arturbosch.detekt.Detekt) {
         source = files("$projectDir/src/")
         config.from("$rootDir/detekt.yml")
+        buildUponDefaultConfig = true
         ignoreFailures = false
     }
     tasks.detekt.dependsOn ":carp.detekt:assemble" // Ensure 'carp.detekt' is build prior to running code analysis.
