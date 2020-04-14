@@ -10,14 +10,34 @@ import kotlinx.serialization.Serializable
  * Describes the status of a [StudyDeployment]: registered devices, last received data, whether consent has been given, etc.
  */
 @Serializable
-data class StudyDeploymentStatus(
-    val studyDeploymentId: UUID,
+sealed class StudyDeploymentStatus
+{
+    abstract val studyDeploymentId: UUID
     /**
      * The list of all devices part of this study deployment and their status.
      */
-    val devicesStatus: List<DeviceDeploymentStatus>
-)
-{
+    abstract val devicesStatus: List<DeviceDeploymentStatus>
+
+
+    /**
+     * Study deployment status for as long as there are remaining master devices to deploy.
+     */
+    @Serializable
+    data class DeployingDevices(
+        override val studyDeploymentId: UUID,
+        override val devicesStatus: List<DeviceDeploymentStatus>
+    ) : StudyDeploymentStatus()
+
+    /**
+     * Study deployment status once all master devices have been successfully deployed.
+     */
+    @Serializable
+    data class DeploymentReady(
+        override val studyDeploymentId: UUID,
+        override val devicesStatus: List<DeviceDeploymentStatus>
+    ) : StudyDeploymentStatus()
+
+
     /**
      * Returns all [AnyDeviceDescriptor]'s in [devicesStatus] which still require registration.
      */

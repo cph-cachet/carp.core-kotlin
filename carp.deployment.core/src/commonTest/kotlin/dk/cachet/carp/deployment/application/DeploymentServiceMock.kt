@@ -25,7 +25,7 @@ class DeploymentServiceMock(
 {
     companion object
     {
-        private val emptyStatus: StudyDeploymentStatus = StudyDeploymentStatus(
+        private val emptyStatus: StudyDeploymentStatus = StudyDeploymentStatus.DeployingDevices(
             UUID( "00000000-0000-0000-0000-000000000000"),
             listOf() )
         private val emptyMasterDeviceDeployment: MasterDeviceDeployment = MasterDeviceDeployment(

@@ -223,6 +223,7 @@ class StudyDeploymentTest
         assertEquals( 0, deployment.deployedDevices.count() )
         assertEquals( setOf( master1 ), deployment.invalidatedDeployedDevices )
         val studyStatus = deployment.getStatus()
+        assertTrue( studyStatus is StudyDeploymentStatus.DeployingDevices )
         val master1Status = studyStatus.getDeviceStatus( master1 )
         assertTrue( master1Status is DeviceDeploymentStatus.NeedsRedeployment )
         assertEquals( StudyDeployment.Event.DeploymentInvalidated( master1 ), deployment.consumeEvents().last() )
@@ -292,6 +293,7 @@ class StudyDeploymentTest
         assertEquals( 2, status.devicesStatus.count() )
         assertTrue { status.devicesStatus.any { it.device == master } }
         assertTrue { status.devicesStatus.any { it.device == connected } }
+        assertTrue( status is StudyDeploymentStatus.DeployingDevices )
         val toRegister = status.getRemainingDevicesToRegister()
         val expectedToRegister = setOf( master, connected )
         assertEquals( expectedToRegister.count(), toRegister.count() )
@@ -301,6 +303,7 @@ class StudyDeploymentTest
         // After registering master device, master device is ready for deployment.
         deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
         val readyStatus = deployment.getStatus()
+        assertTrue( readyStatus is StudyDeploymentStatus.DeployingDevices )
         assertEquals( 1, readyStatus.getRemainingDevicesToRegister().count() ) // Connected device is still unregistered.
         assertEquals( setOf( master ), readyStatus.getRemainingDevicesReadyToDeploy() )
 
@@ -308,6 +311,7 @@ class StudyDeploymentTest
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
         deployment.deviceDeployed( master, deviceDeployment.getChecksum() )
         val studyStatus = deployment.getStatus()
+        assertTrue( studyStatus is StudyDeploymentStatus.DeployingDevices )
         val deviceStatus = studyStatus.getDeviceStatus( master )
         assertTrue( deviceStatus is DeviceDeploymentStatus.Deployed )
     }
