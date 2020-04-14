@@ -28,7 +28,7 @@ buildscript {
             mocha:'7.1.1',
 
             // DevOps versions.
-            detektPlugin:'1.7.0',
+            detektPlugin:'1.7.4',
             nexusReleasePlugin:'0.21.2'
         ]
     }
