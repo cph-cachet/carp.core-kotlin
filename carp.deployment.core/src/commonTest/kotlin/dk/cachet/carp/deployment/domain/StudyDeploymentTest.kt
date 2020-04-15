@@ -293,7 +293,7 @@ class StudyDeploymentTest
         assertEquals( 2, status.devicesStatus.count() )
         assertTrue { status.devicesStatus.any { it.device == master } }
         assertTrue { status.devicesStatus.any { it.device == connected } }
-        assertTrue( status is StudyDeploymentStatus.DeployingDevices )
+        assertTrue( status is StudyDeploymentStatus.Invited )
         val toRegister = status.getRemainingDevicesToRegister()
         val expectedToRegister = setOf( master, connected )
         assertEquals( expectedToRegister.count(), toRegister.count() )

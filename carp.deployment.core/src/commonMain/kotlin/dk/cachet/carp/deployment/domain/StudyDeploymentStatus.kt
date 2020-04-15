@@ -20,7 +20,17 @@ sealed class StudyDeploymentStatus
 
 
     /**
-     * Study deployment status for as long as there are remaining master devices to deploy.
+     * Initial study deployment status, indicating the invited participants have not yet acted on the invitation.
+     */
+    @Serializable
+    data class Invited(
+        override val studyDeploymentId: UUID,
+        override val devicesStatus: List<DeviceDeploymentStatus>
+    ) : StudyDeploymentStatus()
+
+    /**
+     * Study deployment status once participants have started registering devices,
+     * but remaining master devices still need to be deployed.
      */
     @Serializable
     data class DeployingDevices(
