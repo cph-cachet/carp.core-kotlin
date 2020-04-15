@@ -274,6 +274,7 @@ class StudyDeploymentTest
         assertEquals(
             deployment.invalidatedDeployedDevices.count(),
             deployment.invalidatedDeployedDevices.intersect( fromSnapshot.invalidatedDeployedDevices ).count() )
+        assertEquals( deployment.hasStopped, fromSnapshot.hasStopped )
         assertEquals(
             deployment.participations.count(),
             deployment.participations.intersect( fromSnapshot.participations ).count() )
@@ -471,6 +472,61 @@ class StudyDeploymentTest
         deployment.unregisterDevice( device )
         deployment.registerDevice( device, device.createRegistration { } )
         assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( device, deviceDeployment.getChecksum() ) }
+    }
+
+    @Test
+    fun stop_after_ready_succeeds()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        protocol.addMasterDevice( device )
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( device, device.createRegistration() )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( device )
+        deployment.deviceDeployed( device, deviceDeployment.getChecksum() )
+
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
+
+        deployment.stop()
+        assertTrue( deployment.hasStopped )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.Stopped )
+        assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Stopped>().count() )
+    }
+
+    @Test
+    fun stop_while_deploying_succeeds()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        protocol.addMasterDevice( device )
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( device, device.createRegistration() )
+
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeployingDevices )
+
+        deployment.stop()
+        assertTrue( deployment.hasStopped )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.Stopped )
+        assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Stopped>().count() )
+    }
+
+    @Test
+    fun modifications_after_stop_not_allowed()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
+        val master = protocol.masterDevices.first { it.roleName == "Master" }
+        val connected = protocol.devices.first { it.roleName == "Connected" }
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( master, master.createRegistration() )
+        deployment.stop()
+
+        assertFailsWith<IllegalStateException> { deployment.registerDevice( connected, connected.createRegistration() ) }
+        assertFailsWith<IllegalStateException> { deployment.unregisterDevice( master ) }
+        val deviceDeployment = deployment.getDeviceDeploymentFor( master )
+        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( master, deviceDeployment.getChecksum() ) }
+        val account = Account.withUsernameIdentity( "Test" )
+        val participation = Participation( deployment.id )
+        assertFailsWith<IllegalStateException> { deployment.addParticipation( account, participation ) }
     }
 
     @Test

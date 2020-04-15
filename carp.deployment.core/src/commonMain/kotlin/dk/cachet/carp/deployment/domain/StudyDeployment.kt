@@ -24,6 +24,7 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
  * enabling a connection between them, tracking device connection issues, assessing data quality,
  * and registering participant consent.
  */
+@Suppress( "TooManyFunctions" ) // TODO: Can this be decomposed a bit?
 class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() ) :
     AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>()
 {
@@ -33,6 +34,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         data class DeviceUnregistered( val device: AnyDeviceDescriptor ) : Event()
         data class DeviceDeployed( val device: AnyMasterDeviceDescriptor ) : Event()
         data class DeploymentInvalidated( val device: AnyMasterDeviceDescriptor ) : Event()
+        // TODO: Immutable base class does not allow this to be defined as `object Stopped : Event()`.
+        //       It requires a data class, but that does not make sense since an object would still be immutable.
+        data class Stopped( val ignoreThis: Unit = Unit ) : Event()
         data class ParticipationAdded( val accountParticipation: AccountParticipation ) : Event()
     }
 
@@ -75,6 +79,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             snapshot.participations.forEach { p ->
                 deployment._participations.add( AccountParticipation( p.accountId, p.participationId ) )
             }
+
+            // In case the deployment has been stopped, stop it.
+            if ( snapshot.hasStopped ) deployment.stop()
 
             // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
             deployment.consumeEvents()
@@ -135,6 +142,12 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     private val _invalidatedDeployedDevices: MutableSet<AnyMasterDeviceDescriptor> = mutableSetOf()
 
     /**
+     * Determines whether the study deployment has been stopped and no further modifications are allowed.
+     */
+    var hasStopped: Boolean = false
+        private set
+
+    /**
      * The account IDs participating in this study deployment and the pseudonym IDs assigned to them.
      */
     val participations: Set<AccountParticipation>
@@ -164,6 +177,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
         return when {
+            hasStopped -> StudyDeploymentStatus.Stopped( id, devicesStatus )
             allDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus )
             anyRegistration -> StudyDeploymentStatus.DeployingDevices( id, devicesStatus )
             else -> StudyDeploymentStatus.Invited( id, devicesStatus )
@@ -214,6 +228,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
     /**
      * Register the specified [device] for this deployment using the passed [registration] options.
+     *
+     * @throws IllegalArgumentException when the passed device is not part of this deployment or is already registered.
+     * @throws IllegalStateException when this deployment has stopped.
      */
     fun registerDevice( device: AnyDeviceDescriptor, registration: DeviceRegistration )
     {
@@ -222,6 +239,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
         val isAlreadyRegistered = device in _registeredDevices.keys
         require( !isAlreadyRegistered ) { "The passed device is already registered." }
+
+        check( !hasStopped ) { "Cannot register devices after a study deployment has stopped." }
 
         // Verify whether the passed registration is known to be invalid for the given device.
         // This may be 'UNKNOWN' when the device type is not known at runtime.
@@ -256,12 +275,17 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * Remove the current device registration for the [device] in this deployment.
      * This will invalidate the deployment of any devices which depend on the this [device].
+     *
+     * @throws IllegalArgumentException when the passed device is not part of this deployment or is not registered.
+     * @throws IllegalStateException when this deployment has stopped.
      */
     fun unregisterDevice( device: AnyDeviceDescriptor )
     {
         val containsDevice: Boolean = _registrableDevices.any { it.device == device }
         require( containsDevice ) { "The passed device is not part of this deployment." }
         require( device in _registeredDevices ) { "The passed device is not registered for this deployment." }
+
+        check( !hasStopped ) { "Cannot unregister devices after a study deployment has stopped." }
 
         _registeredDevices.remove( device )
         _deployedDevices.remove( device )
@@ -335,7 +359,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
      * @throws IllegalArgumentException when:
      * - the passed [device] is not part of the protocol of this study deployment
      * - the [deploymentChecksum] does not match the checksum of the expected deployment. The deployment might be outdated.
-     * @throws IllegalStateException when the passed [device] cannot be deployed yet.
+     * @throws IllegalStateException when the passed [device] cannot be deployed yet, or the deployment has stopped.
      */
     fun deviceDeployed( device: AnyMasterDeviceDescriptor, deploymentChecksum: Int )
     {
@@ -345,6 +369,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         // Verify whether deployment matches the expected deployment.
         val latestDeployment = getDeviceDeploymentFor( device )
         require( latestDeployment.getChecksum() == deploymentChecksum )
+
+        check( !hasStopped ) { "Cannot deploy devices after a study deployment has stopped." }
 
         // Verify whether the specified device is ready to be deployed.
         val canDeploy = getDeviceStatus( device ).canObtainDeviceDeployment
@@ -357,15 +383,30 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     }
 
     /**
+     * Stop this study deployment.
+     * No further changes to this deployment are allowed and no more data should be collected.
+     */
+    fun stop()
+    {
+        if ( !hasStopped )
+        {
+            hasStopped = true
+            event( Event.Stopped() )
+        }
+    }
+
+    /**
      * Add [participation] details for a given [account] to this study deployment.
      *
      * @throws IllegalArgumentException if the specified [account] already participates in this deployment,
      * or if the [participation] details do not match this study deployment.
+     * @throws IllegalStateException when this deployment has stopped.
      */
     fun addParticipation( account: Account, participation: Participation )
     {
         require( id == participation.studyDeploymentId ) { "The specified participation details do not match this study deployment." }
         require( _participations.none { it.accountId == account.id } ) { "The specified account already participates in this study deployment." }
+        check( !hasStopped ) { "Cannot add participations after a study deployment has stopped." }
 
         val accountParticipation = AccountParticipation( account.id, participation.id )
         _participations.add( accountParticipation )

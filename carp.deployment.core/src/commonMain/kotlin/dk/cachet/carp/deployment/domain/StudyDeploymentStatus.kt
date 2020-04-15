@@ -29,8 +29,7 @@ sealed class StudyDeploymentStatus
     ) : StudyDeploymentStatus()
 
     /**
-     * Study deployment status once participants have started registering devices,
-     * but remaining master devices still need to be deployed.
+     * Participants have started registering devices, but remaining master devices still need to be deployed.
      */
     @Serializable
     data class DeployingDevices(
@@ -39,10 +38,19 @@ sealed class StudyDeploymentStatus
     ) : StudyDeploymentStatus()
 
     /**
-     * Study deployment status once all master devices have been successfully deployed.
+     * All master devices have been successfully deployed.
      */
     @Serializable
     data class DeploymentReady(
+        override val studyDeploymentId: UUID,
+        override val devicesStatus: List<DeviceDeploymentStatus>
+    ) : StudyDeploymentStatus()
+
+    /**
+     * The study deployment has been stopped and no more data should be collected.
+     */
+    @Serializable
+    data class Stopped(
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>
     ) : StudyDeploymentStatus()
