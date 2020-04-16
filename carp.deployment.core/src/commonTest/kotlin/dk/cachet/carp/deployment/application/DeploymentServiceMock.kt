@@ -12,6 +12,8 @@ import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.test.Mock
 
+private typealias Service = DeploymentService
+
 
 class DeploymentServiceMock(
     private val createStudyDeploymentResult: StudyDeploymentStatus = emptyStatus,
@@ -20,8 +22,9 @@ class DeploymentServiceMock(
     private val unregisterDeviceResult: StudyDeploymentStatus = emptyStatus,
     private val getDeviceDeploymentForResult: MasterDeviceDeployment = emptyMasterDeviceDeployment,
     private val deploymentSuccessfulResult: StudyDeploymentStatus = emptyStatus,
+    private val stopResult: StudyDeploymentStatus = emptyStatus,
     private val getParticipationInvitationResult: Set<ParticipationInvitation> = setOf()
-) : Mock<DeploymentService>(), DeploymentService
+) : Mock<Service>(), Service
 {
     companion object
     {
@@ -34,51 +37,39 @@ class DeploymentServiceMock(
     }
 
 
-    override suspend fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus
-    {
-        trackSuspendCall( DeploymentService::createStudyDeployment, protocol )
-        return createStudyDeploymentResult
-    }
+    override suspend fun createStudyDeployment( protocol: StudyProtocolSnapshot ) =
+        createStudyDeploymentResult
+        .also { trackSuspendCall( Service::createStudyDeployment, protocol ) }
 
-    override suspend fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus
-    {
-        trackSuspendCall( DeploymentService::getStudyDeploymentStatus, studyDeploymentId )
-        return getStudyDeploymentStatusResult
-    }
+    override suspend fun getStudyDeploymentStatus( studyDeploymentId: UUID ) =
+        getStudyDeploymentStatusResult
+        .also { trackSuspendCall( Service::getStudyDeploymentStatus, studyDeploymentId ) }
 
-    override suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
-    {
-        trackSuspendCall( DeploymentService::registerDevice, studyDeploymentId, deviceRoleName, registration )
-        return registerDeviceResult
-    }
+    override suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ) =
+        registerDeviceResult
+        .also { trackSuspendCall( Service::registerDevice, studyDeploymentId, deviceRoleName, registration ) }
 
-    override suspend fun unregisterDevice( studyDeploymentId: UUID, deviceRoleName: String ): StudyDeploymentStatus
-    {
-        trackSuspendCall( DeploymentService::unregisterDevice, studyDeploymentId, deviceRoleName )
-        return unregisterDeviceResult
-    }
+    override suspend fun unregisterDevice( studyDeploymentId: UUID, deviceRoleName: String ) =
+        unregisterDeviceResult
+        .also { trackSuspendCall( Service::unregisterDevice, studyDeploymentId, deviceRoleName ) }
 
-    override suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
-    {
-        trackSuspendCall( DeploymentService::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName )
-        return getDeviceDeploymentForResult
-    }
+    override suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ) =
+        getDeviceDeploymentForResult
+        .also { trackSuspendCall( Service::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName ) }
 
-    override suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String, deploymentChecksum: Int ): StudyDeploymentStatus
-    {
-        trackSuspendCall( DeploymentService::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deploymentChecksum )
-        return deploymentSuccessfulResult
-    }
+    override suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String, deploymentChecksum: Int ) =
+        deploymentSuccessfulResult
+        .also { trackSuspendCall( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deploymentChecksum ) }
 
-    override suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ): Participation
-    {
-        trackSuspendCall( DeploymentService::addParticipation, studyDeploymentId, deviceRoleNames, identity, invitation )
-        return Participation( studyDeploymentId )
-    }
+    override suspend fun stop( studyDeploymentId: UUID ) =
+        stopResult
+        .also { trackSuspendCall( Service::stop, studyDeploymentId ) }
 
-    override suspend fun getParticipationInvitations( accountId: UUID ): Set<ParticipationInvitation>
-    {
-        trackSuspendCall( DeploymentService::getParticipationInvitations, accountId )
-        return getParticipationInvitationResult
-    }
+    override suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ) =
+        Participation( studyDeploymentId )
+        .also { trackSuspendCall( Service::addParticipation, studyDeploymentId, deviceRoleNames, identity, invitation ) }
+
+    override suspend fun getParticipationInvitations( accountId: UUID ) =
+        getParticipationInvitationResult
+        .also { trackSuspendCall( Service::getParticipationInvitations, accountId ) }
 }

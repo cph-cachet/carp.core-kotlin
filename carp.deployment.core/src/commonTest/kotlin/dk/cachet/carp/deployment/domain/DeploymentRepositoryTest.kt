@@ -30,6 +30,7 @@ interface DeploymentRepositoryTest
         repo.add( deployment )
         val retrieved = repo.getStudyDeploymentBy( deployment.id )
         assertNotNull( retrieved )
+        assertNotSame( deployment, retrieved ) // Should be new object instance.
         assertEquals( deployment.getSnapshot(), retrieved.getSnapshot() ) // StudyDeployment does not implement equals, but snapshot does.
     }
 
@@ -65,18 +66,24 @@ interface DeploymentRepositoryTest
         repo.add( deployment )
         val masterDevice = protocol.masterDevices.first()
 
-        // Verify whether registering a device is updated.
-        deployment.registerDevice( masterDevice, DefaultDeviceRegistration( "0" ) )
+        // Perform various actions on deployment, modifying it.
+        // TODO: This does not verify whether registration history and invalidated devices are updated.
+        with ( deployment )
+        {
+            registerDevice( masterDevice, DefaultDeviceRegistration( "0" ) )
+
+            val deviceDeployment = deployment.getDeviceDeploymentFor( masterDevice )
+            deviceDeployed( masterDevice, deviceDeployment.getChecksum() )
+
+            addParticipation( Account.withUsernameIdentity( "Test" ), Participation( deployment.id ) )
+
+            stop()
+        }
+
+        // Update and verify whether retrieved deployment is the same.
         repo.update( deployment )
         var retrieved = repo.getStudyDeploymentBy( deployment.id )
         assertEquals( deployment.getSnapshot(), retrieved?.getSnapshot() ) // StudyDeployment does not implement equals, but snapshot does.
-
-        // Verify whether deploying a device is updated.
-        val deviceDeployment = deployment.getDeviceDeploymentFor( masterDevice )
-        deployment.deviceDeployed( masterDevice, deviceDeployment.getChecksum() )
-        repo.update( deployment )
-        retrieved = repo.getStudyDeploymentBy( deployment.id )
-        assertEquals( deployment.getSnapshot(), retrieved?.getSnapshot() )
     }
 
     @Test

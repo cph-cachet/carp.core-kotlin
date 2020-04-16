@@ -39,13 +39,13 @@ interface DeploymentService
     /**
      * Register the device with the specified [deviceRoleName] for the study deployment with [studyDeploymentId].
      *
-     * @param studyDeploymentId The id of the [StudyDeployment] to register the device for.
-     * @param deviceRoleName The role name of the device in the deployment to register.
      * @param registration A matching configuration for the device with [deviceRoleName].
      *
-     * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist,
-     * [deviceRoleName] is not present in the deployment or is already registered and a different [registration] is specified than a previous request,
-     * or [registration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device.
+     * @throws IllegalArgumentException when:
+     * - a deployment with [studyDeploymentId] does not exist
+     * - [deviceRoleName] is not present in the deployment or is already registered and a different [registration] is specified than a previous request
+     * - [registration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device
+     * @throws IllegalStateException when this deployment has stopped.
      */
     suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
 
@@ -55,6 +55,7 @@ interface DeploymentService
      * @throws IllegalArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
      * - [deviceRoleName] is not present in the deployment
+     * @throws IllegalStateException when this deployment has stopped.
      */
     suspend fun unregisterDevice( studyDeploymentId: UUID, deviceRoleName: String ): StudyDeploymentStatus
 
@@ -77,9 +78,17 @@ interface DeploymentService
      * - a deployment with [studyDeploymentId] does not exist
      * - [masterDeviceRoleName] is not present in the deployment
      * - the [deploymentChecksum] does not match the checksum of the expected deployment. The deployment might be outdated.
-     * @throws IllegalStateException when the deployment cannot be deployed yet.
+     * @throws IllegalStateException when the deployment cannot be deployed yet, or the deployment has stopped.
      */
     suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String, deploymentChecksum: Int ): StudyDeploymentStatus
+
+    /**
+     * Stop the study deployment with the specified [studyDeploymentId].
+     * No further changes to this deployment will be allowed and no more data will be collected.
+     *
+     * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist.
+     */
+    suspend fun stop( studyDeploymentId: UUID ): StudyDeploymentStatus
 
     /**
      * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId],
@@ -88,10 +97,12 @@ interface DeploymentService
      * An [invitation] (and account details) is delivered to the person managing the [identity],
      * or should be handed out manually to the relevant participant by the person managing the specified [identity].
      *
-     * @throws IllegalArgumentException in case there is no study deployment with [studyDeploymentId],
-     * or when any of the [deviceRoleNames] is not part of the study protocol deployment.
-     * @throws IllegalStateException in case the specified [identity] was already invited to participate in this deployment
-     * and a different [invitation] is specified than a previous request.
+     * @throws IllegalArgumentException when:
+     * - there is no study deployment with [studyDeploymentId]
+     * - any of the [deviceRoleNames] are not part of the study protocol deployment
+     * @throws IllegalStateException when:
+     * - the specified [identity] was already invited to participate in this deployment and a different [invitation] is specified than a previous request
+     * - this deployment has stopped
      */
     suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ): Participation
 

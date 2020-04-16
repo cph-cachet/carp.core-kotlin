@@ -2,6 +2,7 @@ package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
+import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.createSingleMasterWithConnectedDeviceProtocol
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.Participation
@@ -33,6 +34,46 @@ abstract class DeploymentServiceTest
 
         status = deploymentService.unregisterDevice( studyDeploymentId, deviceRolename )
         assertTrue( device in status.getRemainingDevicesToRegister() )
+    }
+
+    @Test
+    fun stop_succeeds() = runBlockingTest {
+        val ( deploymentService, _ ) = createService()
+        val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
+
+        val status = deploymentService.stop( studyDeploymentId )
+        assertTrue( status is StudyDeploymentStatus.Stopped )
+    }
+
+    @Test
+    fun stop_fails_for_unknown_studyDeploymentId() = runBlockingTest {
+        val ( deploymentService, _ ) = createService()
+
+        val unknownId = UUID.randomUUID()
+        assertFailsWith<IllegalArgumentException> { deploymentService.stop( unknownId ) }
+    }
+
+    @Test
+    fun modifications_after_stop_not_allowed() = runBlockingTest {
+        val ( deploymentService, _ ) = createService()
+        val studyDeploymentId = addTestDeployment( deploymentService, "Master", "Connected" )
+        val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
+        val master = status.getRemainingDevicesToRegister().first { it.roleName == "Master" }
+        val connected = status.getRemainingDevicesToRegister().first { it.roleName == "Connected" }
+        deploymentService.registerDevice( studyDeploymentId, master.roleName, master.createRegistration() )
+        deploymentService.stop( studyDeploymentId )
+
+        assertFailsWith<IllegalStateException>
+            { deploymentService.registerDevice( studyDeploymentId, connected.roleName, connected.createRegistration() ) }
+        assertFailsWith<IllegalStateException>
+            { deploymentService.unregisterDevice( studyDeploymentId, master.roleName ) }
+        val deviceDeployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, master.roleName )
+        assertFailsWith<IllegalStateException>
+            { deploymentService.deploymentSuccessful( studyDeploymentId, master.roleName, deviceDeployment.getChecksum() ) }
+        val accountId = AccountIdentity.fromUsername( "Test" )
+        val invitation = StudyInvitation.empty()
+        assertFailsWith<IllegalStateException>
+            { deploymentService.addParticipation( studyDeploymentId, setOf( "Master" ), accountId, invitation ) }
     }
 
     @Test
@@ -137,12 +178,17 @@ abstract class DeploymentServiceTest
 
 
     /**
-     * Create a deployment to be used in tests in the given [deploymentService]
-     * with a protocol containing a single master device with the specified [deviceRoleName] and a connected device.
+     * Create a deployment to be used in tests in the given [deploymentService] with a protocol
+     * containing a single master device with the specified [masterDeviceRoleName]
+     * and a connected device, of which the [connectedDeviceRoleName] can optionally be defined.
      */
-    private suspend fun addTestDeployment( deploymentService: DeploymentService, deviceRoleName: String ): UUID
+    private suspend fun addTestDeployment(
+        deploymentService: DeploymentService,
+        masterDeviceRoleName: String,
+        connectedDeviceRoleName: String = "Connected"
+    ): UUID
     {
-        val protocol = createSingleMasterWithConnectedDeviceProtocol( deviceRoleName )
+        val protocol = createSingleMasterWithConnectedDeviceProtocol( masterDeviceRoleName, connectedDeviceRoleName )
         val snapshot = protocol.getSnapshot()
         val status = deploymentService.createStudyDeployment( snapshot )
 

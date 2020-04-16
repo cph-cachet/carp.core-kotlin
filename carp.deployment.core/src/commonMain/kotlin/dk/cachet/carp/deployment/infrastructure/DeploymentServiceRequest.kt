@@ -15,6 +15,9 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
 import kotlinx.serialization.Serializable
 
+private typealias Service = DeploymentService
+private typealias Invoker<T> = ServiceInvoker<DeploymentService, T>
+
 
 /**
  * Serializable application service requests to [DeploymentService] which can be executed on demand.
@@ -25,12 +28,12 @@ sealed class DeploymentServiceRequest
     @Serializable
     data class CreateStudyDeployment( val protocol: StudyProtocolSnapshot ) :
         DeploymentServiceRequest(),
-        ServiceInvoker<DeploymentService, StudyDeploymentStatus> by createServiceInvoker( DeploymentService::createStudyDeployment, protocol )
+        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::createStudyDeployment, protocol )
 
     @Serializable
     data class GetStudyDeploymentStatus( val studyDeploymentId: UUID ) :
         DeploymentServiceRequest(),
-        ServiceInvoker<DeploymentService, StudyDeploymentStatus> by createServiceInvoker( DeploymentService::getStudyDeploymentStatus, studyDeploymentId )
+        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::getStudyDeploymentStatus, studyDeploymentId )
 
     @Serializable
     data class RegisterDevice(
@@ -39,30 +42,35 @@ sealed class DeploymentServiceRequest
         @Serializable( DeviceRegistrationSerializer::class )
         val registration: DeviceRegistration
     ) : DeploymentServiceRequest(),
-        ServiceInvoker<DeploymentService, StudyDeploymentStatus> by createServiceInvoker( DeploymentService::registerDevice, studyDeploymentId, deviceRoleName, registration )
+        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::registerDevice, studyDeploymentId, deviceRoleName, registration )
 
     @Serializable
     data class UnregisterDevice( val studyDeploymentId: UUID, val deviceRoleName: String ) :
         DeploymentServiceRequest(),
-        ServiceInvoker<DeploymentService, StudyDeploymentStatus> by createServiceInvoker( DeploymentService::unregisterDevice, studyDeploymentId, deviceRoleName )
+        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::unregisterDevice, studyDeploymentId, deviceRoleName )
 
     @Serializable
     data class GetDeviceDeploymentFor( val studyDeploymentId: UUID, val masterDeviceRoleName: String ) :
         DeploymentServiceRequest(),
-        ServiceInvoker<DeploymentService, MasterDeviceDeployment> by createServiceInvoker( DeploymentService::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName )
+        Invoker<MasterDeviceDeployment> by createServiceInvoker( Service::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName )
 
     @Serializable
     data class DeploymentSuccessful( val studyDeploymentId: UUID, val masterDeviceRoleName: String, val deploymentChecksum: Int ) :
         DeploymentServiceRequest(),
-        ServiceInvoker<DeploymentService, StudyDeploymentStatus> by createServiceInvoker( DeploymentService::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deploymentChecksum )
+        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deploymentChecksum )
+
+    @Serializable
+    data class Stop( val studyDeploymentId: UUID ) :
+        DeploymentServiceRequest(),
+        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::stop, studyDeploymentId )
 
     @Serializable
     data class AddParticipation( val studyDeploymentId: UUID, val deviceRoleNames: Set<String>, val identity: AccountIdentity, val invitation: StudyInvitation ) :
         DeploymentServiceRequest(),
-        ServiceInvoker<DeploymentService, Participation> by createServiceInvoker( DeploymentService::addParticipation, studyDeploymentId, deviceRoleNames, identity, invitation )
+        Invoker<Participation> by createServiceInvoker( Service::addParticipation, studyDeploymentId, deviceRoleNames, identity, invitation )
 
     @Serializable
     data class GetParticipationInvitations( val accountId: UUID ) :
         DeploymentServiceRequest(),
-        ServiceInvoker<DeploymentService, Set<ParticipationInvitation>> by createServiceInvoker( DeploymentService::getParticipationInvitations, accountId )
+        Invoker<Set<ParticipationInvitation>> by createServiceInvoker( Service::getParticipationInvitations, accountId )
 }

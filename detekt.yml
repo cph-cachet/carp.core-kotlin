@@ -79,6 +79,7 @@ complexity:
     threshold: 60
   LongParameterList:
     active: true
+    excludes: '**/commonTest/**,**/jvmTest/**,**/jsTest/**,**/test/**'
     threshold: 6
     ignoreDefaultParameters: false
   MethodOverloading:
