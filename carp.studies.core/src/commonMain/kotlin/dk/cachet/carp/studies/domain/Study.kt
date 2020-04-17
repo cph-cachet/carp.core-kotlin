@@ -193,6 +193,19 @@ class Study(
     }
 
     /**
+     * Get all [DeanonymizedParticipation]s for a specific [studyDeploymentId].
+     *
+     * @throws IllegalArgumentException when the given [studyDeploymentId] is not part of this study.
+     */
+    fun getParticipations( studyDeploymentId: UUID ): Set<DeanonymizedParticipation>
+    {
+        val participations = _participations.filter { it.participation.studyDeploymentId == studyDeploymentId }.toSet()
+        require( participations.isNotEmpty() ) { "The specified study deployment ID is not part of this study." }
+
+        return participations
+    }
+
+    /**
      * Get a serializable snapshot of the current state of this [Study].
      */
     override fun getSnapshot(): StudySnapshot = StudySnapshot.fromStudy( this )

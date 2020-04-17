@@ -281,7 +281,8 @@ interface StudyServiceTest
 
         val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
-        service.deployParticipantGroup( studyId, setOf( assignParticipant ) )
+        val groupStatus = service.deployParticipantGroup( studyId, setOf( assignParticipant ) )
+        assertEquals( participant.id, groupStatus.participants.single().participantId )
     }
 
     @Test

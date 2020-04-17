@@ -8,6 +8,7 @@ import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.studies.domain.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.StudyDetails
 import dk.cachet.carp.studies.domain.StudyRepository
@@ -216,7 +217,7 @@ class StudyServiceHost(
      *  - not all devices part of the study have been assigned a participant
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): StudyStatus
+    override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus
     {
         require( group.isNotEmpty() ) { "No participants to deploy specified." }
 
@@ -224,10 +225,11 @@ class StudyServiceHost(
         val study: Study? = repository.getById( studyId )
         require( study != null ) { "Study with the specified studyId is not found." }
         check( study.canDeployToParticipants ) { "Study is not yet ready to be deployed to participants." }
+        val protocolSnapshot = study.protocolSnapshot!!
 
         // Verify whether the master device roles to deploy exist in the protocol.
-        val masterDevices = study.protocolSnapshot!!.masterDevices.map { it.roleName }.toSet()
-        require( group.deviceRoles().all { masterDevices.contains( it ) } )
+        val masterDevices = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        require( group.deviceRoles().all { it in masterDevices } )
             { "One of the specified device roles is not part of the configured study protocol." }
 
         // Verify whether all master devices in the study protocol have been assigned to a participant.
@@ -236,13 +238,13 @@ class StudyServiceHost(
 
         // Get participant information.
         val allParticipants = repository.getParticipants( studyId ).associateBy { it.id }
-        require( group.participantIds().all { allParticipants.contains( it ) } )
+        require( group.participantIds().all { it in allParticipants } )
             { "One of the specified participants is not part of this study." }
 
         // Create deployment and add participations to study.
         // TODO: How to deal with failing or partially succeeding requests?
         //       In a distributed setup, deploymentService would be network calls.
-        val deploymentStatus = deploymentService.createStudyDeployment( study.protocolSnapshot!! )
+        val deploymentStatus = deploymentService.createStudyDeployment( protocolSnapshot )
         for ( toAssign in group )
         {
             val identity: AccountIdentity = allParticipants.getValue( toAssign.participantId ).accountIdentity
@@ -257,6 +259,7 @@ class StudyServiceHost(
 
         repository.update( study )
 
-        return study.getStatus()
+        val participants = study.getParticipations( deploymentStatus.studyDeploymentId )
+        return ParticipantGroupStatus( deploymentStatus, participants )
     }
 }

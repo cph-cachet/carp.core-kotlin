@@ -166,9 +166,11 @@ class StudyTest
 
         assertTrue( study.canDeployToParticipants )
 
-        val participation = DeanonymizedParticipation( UUID.randomUUID(), Participation( UUID.randomUUID() ) )
+        val studyDeploymentId = UUID.randomUUID()
+        val participation = DeanonymizedParticipation( UUID.randomUUID(), Participation( studyDeploymentId ) )
         study.addParticipation( participation )
         assertEquals( Study.Event.ParticipationAdded( participation ), study.consumeEvents().last() )
+        assertEquals( participation, study.getParticipations( studyDeploymentId ).single() )
     }
 
     @Test
@@ -183,6 +185,16 @@ class StudyTest
         assertFailsWith<IllegalStateException> { study.addParticipation( participation ) }
         val participationEvents = study.consumeEvents().filterIsInstance<Study.Event.ParticipationAdded>()
         assertEquals( 0, participationEvents.count() )
+    }
+
+    @Test
+    fun getParticipations_fails_for_unknown_studyDeploymentId()
+    {
+        val study = createStudy()
+        setDeployableProtocol( study )
+
+        val unknownId = UUID.randomUUID()
+        assertFailsWith<IllegalArgumentException> { study.getParticipations( unknownId ) }
     }
 
     private fun createStudy(): Study = Study( StudyOwner(), "Test study" )

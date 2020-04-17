@@ -13,13 +13,17 @@ import DateTime = cdk.cachet.carp.common.DateTime
 import UUID = cdk.cachet.carp.common.UUID
 import UsernameIdentity = cdk.cachet.carp.common.users.UsernameAccountIdentity
 import { dk as ddk } from 'carp.deployment.core'
+import Participation = ddk.cachet.carp.deployment.domain.users.Participation
 import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
+import StudyDeploymentStatus = ddk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import { dk } from 'carp.studies.core'
 import AssignParticipantDevices = dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import getAssignedParticipantIds = dk.cachet.carp.studies.domain.users.participantIds_nvx6bb$
 import getAssignedDeviceRoles = dk.cachet.carp.studies.domain.users.deviceRoles_nvx6bb$
+import DeanonymizedParticipant = dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import Participant = dk.cachet.carp.studies.domain.users.Participant
 import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
+import ParticipantGroupStatus = dk.cachet.carp.studies.domain.ParticipantGroupStatus
 import StudyDetails = dk.cachet.carp.studies.domain.StudyDetails
 import StudyStatus = dk.cachet.carp.studies.domain.StudyStatus
 import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
@@ -31,10 +35,14 @@ describe( "carp.studies.core", () => {
         const instances = [
             new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Test" ] ) ),
             AssignParticipantDevices.Companion,
+            new DeanonymizedParticipant( UUID.Companion.randomUUID(), new Participation( UUID.Companion.randomUUID() ) ),
+            DeanonymizedParticipant.Companion,
             new Participant( new UsernameIdentity( "Test" ) ),
             Participant.Companion,
             new StudyOwner(),
             StudyOwner.Companion,
+            new ParticipantGroupStatus( new StudyDeploymentStatus(), new HashSet<DeanonymizedParticipant>() ),
+            ParticipantGroupStatus.Companion,
             new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", DateTime.Companion.now(), "Description", StudyInvitation.Companion.empty(), null ),
             StudyDetails.Companion,
             new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, true, false, true ),
