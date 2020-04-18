@@ -13,7 +13,7 @@ buildscript {
 
         versions = [
             // Kotlin multiplatform versions.
-            kotlin:'1.3.71',
+            kotlin:'1.3.72',
             serialization:'0.20.0',
             coroutines:'1.3.5',
 
@@ -28,7 +28,7 @@ buildscript {
             mocha:'7.1.1',
 
             // DevOps versions.
-            detektPlugin:'1.7.0',
+            detektPlugin:'1.7.4',
             nexusReleasePlugin:'0.21.2'
         ]
     }
@@ -183,6 +183,7 @@ configure( subprojects - detektModule ) {
     detekt {
         input = files("$projectDir/src/")
         config = files("$rootDir/detekt.yml")
+        buildUponDefaultConfig = true
         ignoreFailures = true
 
         dependencies {
@@ -193,6 +194,7 @@ configure( subprojects - detektModule ) {
     task detektPasses(type: io.gitlab.arturbosch.detekt.Detekt) {
         source = files("$projectDir/src/")
         config.from("$rootDir/detekt.yml")
+        buildUponDefaultConfig = true
         ignoreFailures = false
     }
     tasks.detekt.dependsOn ":carp.detekt:assemble" // Ensure 'carp.detekt' is build prior to running code analysis.
