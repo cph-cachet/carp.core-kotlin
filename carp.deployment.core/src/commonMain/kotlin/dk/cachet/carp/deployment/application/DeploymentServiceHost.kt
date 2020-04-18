@@ -172,8 +172,11 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
     {
         val deployment: StudyDeployment = getStudyDeployment( studyDeploymentId )
 
-        deployment.stop()
-        repository.update( deployment )
+        if ( !deployment.hasStopped )
+        {
+            deployment.stop()
+            repository.update( deployment )
+        }
 
         return deployment.getStatus()
     }

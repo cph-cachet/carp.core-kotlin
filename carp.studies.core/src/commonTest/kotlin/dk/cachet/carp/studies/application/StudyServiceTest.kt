@@ -2,6 +2,7 @@ package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -339,6 +340,34 @@ interface StudyServiceTest
         val ( service, _ ) = createService()
 
         assertFailsWith<IllegalArgumentException> { service.getParticipantGroupStatuses( unknownId ) }
+    }
+
+    @Test
+    fun stopParticipantGroup_succeeds() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+        val participant = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
+        val groupStatus = service.deployParticipantGroup( studyId, setOf( assignParticipant ) )
+
+        val stoppedGroupStatus = service.stopParticipantGroup( studyId, groupStatus.id )
+        assertTrue( stoppedGroupStatus.studyDeploymentStatus is StudyDeploymentStatus.Stopped )
+    }
+
+    @Test
+    fun stopParticipantGroup_fails_with_unknown_studyId() = runBlockingTest {
+        val ( service, _ ) = createService()
+
+        assertFailsWith<IllegalArgumentException> { service.stopParticipantGroup( unknownId, UUID.randomUUID() ) }
+    }
+
+    @Test
+    fun stopParticipantGroup_fails_with_unknown_groupId() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val ( studyId, _ ) = createLiveStudy( service )
+
+        assertFailsWith<IllegalArgumentException> { service.stopParticipantGroup( studyId, unknownId ) }
     }
 
 

@@ -215,6 +215,10 @@ declare module 'carp.studies.core'
             {
                 constructor( studyId: UUID )
             }
+            class StopParticipantGroup extends StudyServiceRequest
+            {
+                constructor( studyId: UUID, groupId: UUID )
+            }
         }
 
         function createStudiesSerializer_stpyu4$(): Json

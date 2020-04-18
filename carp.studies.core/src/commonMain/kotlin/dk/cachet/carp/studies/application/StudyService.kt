@@ -129,4 +129,13 @@ interface StudyService
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
     suspend fun getParticipantGroupStatuses( studyId: UUID ): List<ParticipantGroupStatus>
+
+    /**
+     * Stop the study deployment in the study with the given [studyId]
+     * of the participant group with the specified [groupId] (equivalent to the studyDeploymentId).
+     * No further changes to this deployment will be allowed and no more data will be collected.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] or participant group with [groupId] does not exist.
+     */
+    suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ): ParticipantGroupStatus
 }

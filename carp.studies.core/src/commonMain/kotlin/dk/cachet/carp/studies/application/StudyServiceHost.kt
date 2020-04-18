@@ -284,4 +284,24 @@ class StudyServiceHost(
             ParticipantGroupStatus( it, participants )
         }
     }
+
+    /**
+     * Stop the study deployment in the study with the given [studyId]
+     * of the participant group with the specified [groupId] (equivalent to the studyDeploymentId).
+     * No further changes to this deployment will be allowed and no more data will be collected.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] or participant group with [groupId] does not exist.
+     */
+    override suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ): ParticipantGroupStatus
+    {
+        // We don't really need to verify whether the study exists since groupId is equivalent to studyDeploymentId.
+        // However, for future-proofing, if they were to differ, it is good to already enforce the dependence on studyId.
+        val study: Study? = repository.getById( studyId )
+        require( study != null ) { "Study with the specified studyId is not found." }
+        val participations = study.participations.filter { it.participation.studyDeploymentId == groupId }
+        require( participations.count() > 0 ) { "Study deployment with the specified groupId not found." }
+
+        val deploymentStatus = deploymentService.stop( groupId )
+        return ParticipantGroupStatus( deploymentStatus, participations.toSet() )
+    }
 }

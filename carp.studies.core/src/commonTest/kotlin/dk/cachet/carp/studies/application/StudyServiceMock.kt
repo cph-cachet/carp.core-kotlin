@@ -33,9 +33,9 @@ class StudyServiceMock(
     private val setInvitationResult: StudyStatus = studyStatus,
     private val setProtocolResult: StudyStatus = studyStatus,
     private val goLiveResult: StudyStatus = studyStatus,
-    private val deployParticipantResult: ParticipantGroupStatus =
-        ParticipantGroupStatus( StudyDeploymentStatus.Invited( UUID.randomUUID(), emptyList() ), emptySet() ),
-    private val getParticipantGroupStatusesResult: List<ParticipantGroupStatus> = emptyList()
+    private val deployParticipantResult: ParticipantGroupStatus = groupStatus,
+    private val getParticipantGroupStatusesResult: List<ParticipantGroupStatus> = emptyList(),
+    private val stopParticipantGroupResult: ParticipantGroupStatus = groupStatus
 ) : Mock<Service>(), Service
 {
     companion object
@@ -46,6 +46,10 @@ class StudyServiceMock(
             canSetStudyProtocol = false,
             canDeployToParticipants = false,
             canGoLive = true )
+
+        private val groupStatus = ParticipantGroupStatus(
+            StudyDeploymentStatus.Invited( UUID.randomUUID(), emptyList() ),
+            emptySet() )
     }
 
 
@@ -96,4 +100,8 @@ class StudyServiceMock(
     override suspend fun getParticipantGroupStatuses( studyId: UUID ) =
         getParticipantGroupStatusesResult
         .also { trackSuspendCall( Service::getParticipantGroupStatuses, studyId ) }
+
+    override suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ) =
+        stopParticipantGroupResult
+        .also { trackSuspendCall( Service::stopParticipantGroup, studyId, groupId ) }
 }
