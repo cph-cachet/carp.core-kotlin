@@ -12,6 +12,9 @@ import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
 
+private val unknownId: UUID = UUID.randomUUID()
+
+
 /**
  * Tests for implementations of [DeploymentService].
  */
@@ -22,6 +25,42 @@ abstract class DeploymentServiceTest
      */
     abstract fun createService(): Pair<DeploymentService, AccountService>
 
+
+    @Test
+    fun getStudyDeploymentStatus_succeeds() = runBlockingTest {
+        val ( deploymentService, _ ) = createService()
+        val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
+
+        // Actual testing of the status responses should already be covered adequately in StudyDeployment tests.
+        deploymentService.getStudyDeploymentStatus( studyDeploymentId )
+    }
+
+    @Test
+    fun getStudyDeploymentStatus_fails_for_unknown_studyDeploymentId() = runBlockingTest {
+        val ( deploymentService, _ ) = createService()
+
+        assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatus( unknownId ) }
+    }
+
+    @Test
+    fun getStudyDeploymentStatuses_succeeds() = runBlockingTest {
+        val ( deploymentService, _ ) = createService()
+        val snapshot = createSingleMasterWithConnectedDeviceProtocol().getSnapshot()
+        val status1 = deploymentService.createStudyDeployment( snapshot )
+        val status2 = deploymentService.createStudyDeployment( snapshot )
+
+        // Actual testing of the status responses should already be covered adequately in StudyDeployment tests.
+        deploymentService.getStudyDeploymentStatuses( setOf( status1.studyDeploymentId, status2.studyDeploymentId ) )
+    }
+
+    @Test
+    fun getStudyDeploymentStatuses_fails_when_containing_an_unknown_studyDeploymentId() = runBlockingTest {
+        val ( deploymentService, _ ) = createService()
+        val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
+
+        val deploymentIds = setOf( studyDeploymentId, unknownId )
+        assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatuses( deploymentIds ) }
+    }
 
     @Test
     fun unregisterDevice_succeeds() = runBlockingTest {
@@ -49,7 +88,6 @@ abstract class DeploymentServiceTest
     fun stop_fails_for_unknown_studyDeploymentId() = runBlockingTest {
         val ( deploymentService, _ ) = createService()
 
-        val unknownId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException> { deploymentService.stop( unknownId ) }
     }
 
@@ -140,7 +178,6 @@ abstract class DeploymentServiceTest
     fun addParticipation_fails_for_unknown_studyDeploymentId() = runBlockingTest {
         val ( deploymentService, _ ) = createService()
 
-        val unknownId = UUID.randomUUID()
         val identity = AccountIdentity.fromUsername( "test" )
         assertFailsWith<IllegalArgumentException>
         {

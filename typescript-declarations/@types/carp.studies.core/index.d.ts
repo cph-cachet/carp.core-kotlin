@@ -211,6 +211,10 @@ declare module 'carp.studies.core'
             {
                 constructor( studyId: UUID, group: HashSet<AssignParticipantDevices> )
             }
+            class GetParticipantGroupStatuses extends StudyServiceRequest
+            {
+                constructor( studyId: UUID )
+            }
         }
 
         function createStudiesSerializer_stpyu4$(): Json

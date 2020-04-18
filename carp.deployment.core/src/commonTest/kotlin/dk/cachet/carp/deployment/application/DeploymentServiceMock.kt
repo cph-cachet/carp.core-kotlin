@@ -18,12 +18,13 @@ private typealias Service = DeploymentService
 class DeploymentServiceMock(
     private val createStudyDeploymentResult: StudyDeploymentStatus = emptyStatus,
     private val getStudyDeploymentStatusResult: StudyDeploymentStatus = emptyStatus,
+    private val getStudyDeploymentStatusesResult: List<StudyDeploymentStatus> = emptyList(),
     private val registerDeviceResult: StudyDeploymentStatus = emptyStatus,
     private val unregisterDeviceResult: StudyDeploymentStatus = emptyStatus,
     private val getDeviceDeploymentForResult: MasterDeviceDeployment = emptyMasterDeviceDeployment,
     private val deploymentSuccessfulResult: StudyDeploymentStatus = emptyStatus,
     private val stopResult: StudyDeploymentStatus = emptyStatus,
-    private val getParticipationInvitationResult: Set<ParticipationInvitation> = setOf()
+    private val getParticipationInvitationResult: Set<ParticipationInvitation> = emptySet()
 ) : Mock<Service>(), Service
 {
     companion object
@@ -44,6 +45,10 @@ class DeploymentServiceMock(
     override suspend fun getStudyDeploymentStatus( studyDeploymentId: UUID ) =
         getStudyDeploymentStatusResult
         .also { trackSuspendCall( Service::getStudyDeploymentStatus, studyDeploymentId ) }
+
+    override suspend fun getStudyDeploymentStatuses( studyDeploymentIds: Set<UUID> ) =
+        getStudyDeploymentStatusesResult
+        .also { trackSuspendCall( Service::getStudyDeploymentStatuses, studyDeploymentIds ) }
 
     override suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ) =
         registerDeviceResult

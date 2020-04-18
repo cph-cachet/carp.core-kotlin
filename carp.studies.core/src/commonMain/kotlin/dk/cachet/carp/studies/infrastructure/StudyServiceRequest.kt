@@ -79,4 +79,9 @@ sealed class StudyServiceRequest
     data class DeployParticipantGroup( val studyId: UUID, val group: Set<AssignParticipantDevices> ) :
         StudyServiceRequest(),
         Invoker<ParticipantGroupStatus> by createServiceInvoker( Service::deployParticipantGroup, studyId, group )
+
+    @Serializable
+    data class GetParticipantGroupStatuses( val studyId: UUID ) :
+        StudyServiceRequest(),
+        Invoker<List<ParticipantGroupStatus>> by createServiceInvoker( Service::getParticipantGroupStatuses, studyId )
 }

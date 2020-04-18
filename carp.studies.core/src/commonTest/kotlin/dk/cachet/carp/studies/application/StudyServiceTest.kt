@@ -15,6 +15,9 @@ import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
 
+private val unknownId: UUID = UUID.randomUUID()
+
+
 /**
  * Tests for implementations of [StudyService].
  */
@@ -90,7 +93,6 @@ interface StudyServiceTest
     fun getStudyDetails_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
 
-        val unknownId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException> { service.getStudyDetails( unknownId ) }
     }
 
@@ -107,7 +109,7 @@ interface StudyServiceTest
     fun getStudyStatus_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
 
-        assertFailsWith<IllegalArgumentException> { service.getStudyStatus( UUID.randomUUID() ) }
+        assertFailsWith<IllegalArgumentException> { service.getStudyStatus( unknownId ) }
     }
 
     @Test
@@ -139,7 +141,6 @@ interface StudyServiceTest
     fun addParticipant_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
 
-        val unknownId = UUID.randomUUID()
         val email = EmailAddress( "test@test.com" )
         assertFailsWith<IllegalArgumentException> { service.addParticipant( unknownId, email ) }
     }
@@ -161,7 +162,6 @@ interface StudyServiceTest
     fun getParticipants_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
 
-        val unknownId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException> { service.getParticipants( unknownId ) }
     }
 
@@ -180,7 +180,7 @@ interface StudyServiceTest
     @Test
     fun setInvitation_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
-        val unknownId = UUID.randomUUID()
+
         assertFailsWith<IllegalArgumentException> { service.setInvitation( unknownId, StudyInvitation.empty() ) }
     }
 
@@ -202,7 +202,7 @@ interface StudyServiceTest
     @Test
     fun setProtocol_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
-        val unknownId = UUID.randomUUID()
+
         assertFailsWith<IllegalArgumentException> { service.setProtocol( unknownId, createDeployableProtocol() ) }
     }
 
@@ -261,7 +261,7 @@ interface StudyServiceTest
     @Test
     fun goLive_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
-        val unknownId = UUID.randomUUID()
+
         assertFailsWith<IllegalArgumentException> { service.goLive( unknownId ) }
     }
 
@@ -283,13 +283,16 @@ interface StudyServiceTest
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
         val groupStatus = service.deployParticipantGroup( studyId, setOf( assignParticipant ) )
         assertEquals( participant.id, groupStatus.participants.single().participantId )
+        val participantGroups = service.getParticipantGroupStatuses( studyId )
+        val participantIdInGroup = participantGroups.single().participants.single().participantId
+        assertEquals( participant.id, participantIdInGroup )
     }
 
     @Test
     fun deployParticipantGroup_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
-        val unknownId = UUID.randomUUID()
         val assignParticipant = AssignParticipantDevices( UUID.randomUUID(), setOf( "Test device" ) )
+
         assertFailsWith<IllegalArgumentException> { service.deployParticipantGroup( unknownId, setOf( assignParticipant ) ) }
     }
 
@@ -307,8 +310,7 @@ interface StudyServiceTest
         val ( studyId, protocolSnapshot ) = createLiveStudy( service )
 
         val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
-        val unknownParticipantId = UUID.randomUUID()
-        val assignParticipant = AssignParticipantDevices( unknownParticipantId, deviceRoles )
+        val assignParticipant = AssignParticipantDevices( unknownId, deviceRoles )
         assertFailsWith<IllegalArgumentException> { service.deployParticipantGroup( studyId, setOf( assignParticipant ) ) }
     }
 
@@ -330,6 +332,13 @@ interface StudyServiceTest
 
         val assignParticipant = AssignParticipantDevices( participant.id, setOf() )
         assertFailsWith<IllegalArgumentException> { service.deployParticipantGroup( studyId, setOf( assignParticipant ) ) }
+    }
+
+    @Test
+    fun getParticipantGroupStatuses_fails_for_unknown_studyId() = runBlockingTest {
+        val ( service, _ ) = createService()
+
+        assertFailsWith<IllegalArgumentException> { service.getParticipantGroupStatuses( unknownId ) }
     }
 
 

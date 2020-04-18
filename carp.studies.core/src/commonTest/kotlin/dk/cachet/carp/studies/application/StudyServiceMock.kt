@@ -27,14 +27,15 @@ class StudyServiceMock(
         "Description", StudyInvitation.empty(), createComplexStudy().protocolSnapshot
     ),
     private val getStudyStatusResult: StudyStatus = studyStatus,
-    private val getStudiesOverviewResult: List<StudyStatus> = listOf(),
+    private val getStudiesOverviewResult: List<StudyStatus> = emptyList(),
     private val addParticipantResult: Participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ),
-    private val getParticipantsResult: List<Participant> = listOf(),
+    private val getParticipantsResult: List<Participant> = emptyList(),
     private val setInvitationResult: StudyStatus = studyStatus,
     private val setProtocolResult: StudyStatus = studyStatus,
     private val goLiveResult: StudyStatus = studyStatus,
     private val deployParticipantResult: ParticipantGroupStatus =
-        ParticipantGroupStatus( StudyDeploymentStatus.Invited( UUID.randomUUID(), listOf() ), setOf() )
+        ParticipantGroupStatus( StudyDeploymentStatus.Invited( UUID.randomUUID(), emptyList() ), emptySet() ),
+    private val getParticipantGroupStatusesResult: List<ParticipantGroupStatus> = emptyList()
 ) : Mock<Service>(), Service
 {
     companion object
@@ -91,4 +92,8 @@ class StudyServiceMock(
     override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ) =
         deployParticipantResult
         .also { trackSuspendCall( Service::deployParticipantGroup, studyId, group ) }
+
+    override suspend fun getParticipantGroupStatuses( studyId: UUID ) =
+        getParticipantGroupStatusesResult
+        .also { trackSuspendCall( Service::getParticipantGroupStatuses, studyId ) }
 }

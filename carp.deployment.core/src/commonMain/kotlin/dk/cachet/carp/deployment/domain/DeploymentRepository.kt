@@ -15,10 +15,14 @@ interface DeploymentRepository
 
     /**
      * Return the [StudyDeployment] with the specified [id], or null when no study deployment is found.
-     *
-     * @param id The id of the [StudyDeployment] to search for.
      */
     fun getStudyDeploymentBy( id: UUID ): StudyDeployment?
+
+    /**
+     * Return all [StudyDeployment]s matching any of the specified [ids].
+     * Ids that are not found are ignored.
+     */
+    fun getStudyDeploymentsBy( ids: Set<UUID> ): List<StudyDeployment>
 
     /**
      * Update a [studyDeployment] which is already stored in this repository.

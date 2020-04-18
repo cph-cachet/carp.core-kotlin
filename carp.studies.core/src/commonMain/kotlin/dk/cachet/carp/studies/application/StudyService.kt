@@ -122,4 +122,11 @@ interface StudyService
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
     suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus
+
+    /**
+     * Get the status of all deployed participant groups in the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    suspend fun getParticipantGroupStatuses( studyId: UUID ): List<ParticipantGroupStatus>
 }

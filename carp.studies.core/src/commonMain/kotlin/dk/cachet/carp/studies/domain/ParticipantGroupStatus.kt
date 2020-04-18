@@ -1,12 +1,17 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
+import dk.cachet.carp.studies.domain.users.Participant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 
+/**
+ * A group of one or more [Participant]s participating in a [StudyDeployment].
+ */
 @Serializable
 data class ParticipantGroupStatus(
     /**

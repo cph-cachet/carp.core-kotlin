@@ -37,6 +37,16 @@ class InMemoryDeploymentRepository : DeploymentRepository
         studyDeployments[ id ]?.let { StudyDeployment.fromSnapshot( it ) }
 
     /**
+     * Return all [StudyDeployment]s matching any of the specified [ids].
+     * Ids that are not found are ignored.
+     */
+    override fun getStudyDeploymentsBy( ids: Set<UUID> ): List<StudyDeployment> =
+        studyDeployments
+            .filterKeys { it in ids }
+            .map { StudyDeployment.fromSnapshot( it.value ) }
+            .toList()
+
+    /**
      * Update a [studyDeployment] which is already stored in this repository.
      *
      * @param studyDeployment The updated version of the study deployment to store.

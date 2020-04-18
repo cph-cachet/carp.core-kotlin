@@ -3,7 +3,6 @@ package dk.cachet.carp.deployment.application
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
-import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
@@ -30,11 +29,16 @@ interface DeploymentService
     /**
      * Get the status for a study deployment with the given [studyDeploymentId].
      *
-     * @param studyDeploymentId The id of the [StudyDeployment] to return [StudyDeploymentStatus] for.
-     *
      * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist.
      */
     suspend fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus
+
+    /**
+     * Get the statuses for a set of deployments with the specified [studyDeploymentIds].
+     *
+     * @throws IllegalArgumentException when [studyDeploymentIds] contains an ID for which no deployment exists.
+     */
+    suspend fun getStudyDeploymentStatuses( studyDeploymentIds: Set<UUID> ): List<StudyDeploymentStatus>
 
     /**
      * Register the device with the specified [deviceRoleName] for the study deployment with [studyDeploymentId].
