@@ -3,6 +3,7 @@ import VerifyModule from './VerifyModule'
 import { kotlin } from 'kotlin'
 import ArrayList = kotlin.collections.ArrayList
 import HashSet = kotlin.collections.HashSet
+import toSet = kotlin.collections.toSet_us0mfu$
 import { dk as dkc } from 'carp.common'
 import UUID = dkc.cachet.carp.common.UUID
 import { dk } from 'carp.deployment.core'
@@ -20,10 +21,11 @@ describe( "carp.deployment.core", () => {
             StudyInvitation.Companion.empty(),
             StudyInvitation.Companion,
             DeviceDeploymentStatus.Companion,
-            new DeviceDeploymentStatus.Unregistered( null, true, new HashSet<String>() ),
-            new DeviceDeploymentStatus.Registered( null, true, new HashSet<String>() ),
+            new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ) ),
+            new DeviceDeploymentStatus.Registered( null, true, toSet( [] ) ),
             new DeviceDeploymentStatus.Deployed( null ),
-            new DeviceDeploymentStatus.NeedsRedeployment( null, new HashSet<String>() ),
+            new DeviceDeploymentStatus.NeedsRedeployment( null, toSet( [] ) ),
+            [ "NotDeployed", new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ) ) ],
             StudyDeploymentStatus.Companion,
             new StudyDeploymentStatus.Invited( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ) ),
             new StudyDeploymentStatus.DeployingDevices( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ) ),

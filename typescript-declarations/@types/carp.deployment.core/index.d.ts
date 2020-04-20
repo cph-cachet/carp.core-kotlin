@@ -17,7 +17,14 @@ declare module 'carp.deployment.core'
 
         namespace DeviceDeploymentStatus
         {
-            class Unregistered
+            interface NotDeployed
+            {
+                readonly requiresDeployment: Boolean
+                readonly isReadyForDeployment: Boolean
+                readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
+
+            }
+            class Unregistered implements NotDeployed
             {
                 constructor(
                     device: any,
@@ -26,9 +33,11 @@ declare module 'carp.deployment.core'
 
                 readonly device: any
                 readonly requiresDeployment: Boolean
+                readonly canObtainDeviceDeployment: Boolean
+                readonly isReadyForDeployment: Boolean
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
-            class Registered
+            class Registered implements NotDeployed
             {
                 constructor(
                     device: any,
@@ -37,6 +46,8 @@ declare module 'carp.deployment.core'
 
                 readonly device: any
                 readonly requiresDeployment: Boolean
+                readonly canObtainDeviceDeployment: Boolean
+                readonly isReadyForDeployment: Boolean
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
             class Deployed
@@ -45,8 +56,9 @@ declare module 'carp.deployment.core'
 
                 readonly device: any
                 readonly requiresDeployment: Boolean
+                readonly canObtainDeviceDeployment: Boolean
             }
-            class NeedsRedeployment
+            class NeedsRedeployment implements NotDeployed
             {
                 constructor(
                     device: any,
@@ -54,6 +66,8 @@ declare module 'carp.deployment.core'
 
                 readonly device: any
                 readonly requiresDeployment: Boolean
+                readonly canObtainDeviceDeployment: Boolean
+                readonly isReadyForDeployment: Boolean
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
         }
