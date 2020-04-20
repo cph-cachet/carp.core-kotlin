@@ -211,7 +211,7 @@ declare module 'carp.studies.core'
             {
                 constructor( studyId: UUID, group: HashSet<AssignParticipantDevices> )
             }
-            class GetParticipantGroupStatuses extends StudyServiceRequest
+            class GetParticipantGroupStatusList extends StudyServiceRequest
             {
                 constructor( studyId: UUID )
             }

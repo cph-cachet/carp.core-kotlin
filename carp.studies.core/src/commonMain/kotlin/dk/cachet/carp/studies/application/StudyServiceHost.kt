@@ -268,7 +268,7 @@ class StudyServiceHost(
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
-    override suspend fun getParticipantGroupStatuses( studyId: UUID ): List<ParticipantGroupStatus>
+    override suspend fun getParticipantGroupStatusList( studyId: UUID ): List<ParticipantGroupStatus>
     {
         val study: Study? = repository.getById( studyId )
         requireNotNull( study ) { "Study with the specified studyId is not found." }
@@ -276,7 +276,7 @@ class StudyServiceHost(
         // Get study deployment statuses.
         // TODO: Participations are more logically stored per `studyDeploymentId`, rather than having to filter like this.
         val studyDeploymentIds = study.participations.map { it.participation.studyDeploymentId }.toSet()
-        val studyDeploymentStatuses = deploymentService.getStudyDeploymentStatuses( studyDeploymentIds )
+        val studyDeploymentStatuses = deploymentService.getStudyDeploymentStatusList( studyDeploymentIds )
 
         // Map each study deployment status to a deanonymized participant group status.
         return studyDeploymentStatuses.map {

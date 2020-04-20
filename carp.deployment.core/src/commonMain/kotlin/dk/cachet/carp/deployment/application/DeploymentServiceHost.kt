@@ -60,7 +60,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
      *
      * @throws IllegalArgumentException when [studyDeploymentIds] contains an ID for which no deployment exists.
      */
-    override suspend fun getStudyDeploymentStatuses( studyDeploymentIds: Set<UUID> ): List<StudyDeploymentStatus>
+    override suspend fun getStudyDeploymentStatusList( studyDeploymentIds: Set<UUID> ): List<StudyDeploymentStatus>
     {
         val deployments = repository.getStudyDeploymentsBy( studyDeploymentIds )
         require( deployments.count() == studyDeploymentIds.count() )

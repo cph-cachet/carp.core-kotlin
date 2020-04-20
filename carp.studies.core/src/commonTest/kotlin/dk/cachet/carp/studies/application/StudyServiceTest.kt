@@ -284,7 +284,7 @@ interface StudyServiceTest
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
         val groupStatus = service.deployParticipantGroup( studyId, setOf( assignParticipant ) )
         assertEquals( participant.id, groupStatus.participants.single().participantId )
-        val participantGroups = service.getParticipantGroupStatuses( studyId )
+        val participantGroups = service.getParticipantGroupStatusList( studyId )
         val participantIdInGroup = participantGroups.single().participants.single().participantId
         assertEquals( participant.id, participantIdInGroup )
     }
@@ -339,7 +339,7 @@ interface StudyServiceTest
     fun getParticipantGroupStatuses_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
 
-        assertFailsWith<IllegalArgumentException> { service.getParticipantGroupStatuses( unknownId ) }
+        assertFailsWith<IllegalArgumentException> { service.getParticipantGroupStatusList( unknownId ) }
     }
 
     @Test

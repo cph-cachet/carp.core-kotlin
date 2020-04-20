@@ -22,7 +22,7 @@ class DeploymentServiceRequestsTest
         val requests: List<DeploymentServiceRequest> = listOf(
             DeploymentServiceRequest.CreateStudyDeployment( createEmptyProtocol().getSnapshot() ),
             DeploymentServiceRequest.GetStudyDeploymentStatus( UUID.randomUUID() ),
-            DeploymentServiceRequest.GetStudyDeploymentStatuses( setOf( UUID.randomUUID() ) ),
+            DeploymentServiceRequest.GetStudyDeploymentStatusList( setOf( UUID.randomUUID() ) ),
             DeploymentServiceRequest.RegisterDevice( UUID.randomUUID(), "Test role", DefaultDeviceRegistration( "Device ID" ) ),
             DeploymentServiceRequest.UnregisterDevice( UUID.randomUUID(), "Test role" ),
             DeploymentServiceRequest.GetDeviceDeploymentFor( UUID.randomUUID(), "Test role" ),

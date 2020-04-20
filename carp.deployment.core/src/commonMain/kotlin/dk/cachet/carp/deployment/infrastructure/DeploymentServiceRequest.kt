@@ -36,9 +36,9 @@ sealed class DeploymentServiceRequest
         Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::getStudyDeploymentStatus, studyDeploymentId )
 
     @Serializable
-    data class GetStudyDeploymentStatuses( val studyDeploymentIds: Set<UUID> ) :
+    data class GetStudyDeploymentStatusList( val studyDeploymentIds: Set<UUID> ) :
         DeploymentServiceRequest(),
-        Invoker<List<StudyDeploymentStatus>> by createServiceInvoker( Service::getStudyDeploymentStatuses, studyDeploymentIds )
+        Invoker<List<StudyDeploymentStatus>> by createServiceInvoker( Service::getStudyDeploymentStatusList, studyDeploymentIds )
 
     @Serializable
     data class RegisterDevice(

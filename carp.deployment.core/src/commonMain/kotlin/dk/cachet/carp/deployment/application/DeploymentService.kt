@@ -38,7 +38,7 @@ interface DeploymentService
      *
      * @throws IllegalArgumentException when [studyDeploymentIds] contains an ID for which no deployment exists.
      */
-    suspend fun getStudyDeploymentStatuses( studyDeploymentIds: Set<UUID> ): List<StudyDeploymentStatus>
+    suspend fun getStudyDeploymentStatusList( studyDeploymentIds: Set<UUID> ): List<StudyDeploymentStatus>
 
     /**
      * Register the device with the specified [deviceRoleName] for the study deployment with [studyDeploymentId].

@@ -128,7 +128,7 @@ interface StudyService
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
-    suspend fun getParticipantGroupStatuses( studyId: UUID ): List<ParticipantGroupStatus>
+    suspend fun getParticipantGroupStatusList( studyId: UUID ): List<ParticipantGroupStatus>
 
     /**
      * Stop the study deployment in the study with the given [studyId]

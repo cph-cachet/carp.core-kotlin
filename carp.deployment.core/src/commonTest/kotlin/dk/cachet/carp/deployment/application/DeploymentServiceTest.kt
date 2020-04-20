@@ -43,23 +43,23 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun getStudyDeploymentStatuses_succeeds() = runBlockingTest {
+    fun getStudyDeploymentStatusList_succeeds() = runBlockingTest {
         val ( deploymentService, _ ) = createService()
         val snapshot = createSingleMasterWithConnectedDeviceProtocol().getSnapshot()
         val status1 = deploymentService.createStudyDeployment( snapshot )
         val status2 = deploymentService.createStudyDeployment( snapshot )
 
         // Actual testing of the status responses should already be covered adequately in StudyDeployment tests.
-        deploymentService.getStudyDeploymentStatuses( setOf( status1.studyDeploymentId, status2.studyDeploymentId ) )
+        deploymentService.getStudyDeploymentStatusList( setOf( status1.studyDeploymentId, status2.studyDeploymentId ) )
     }
 
     @Test
-    fun getStudyDeploymentStatuses_fails_when_containing_an_unknown_studyDeploymentId() = runBlockingTest {
+    fun getStudyDeploymentStatusList_fails_when_containing_an_unknown_studyDeploymentId() = runBlockingTest {
         val ( deploymentService, _ ) = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
 
         val deploymentIds = setOf( studyDeploymentId, unknownId )
-        assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatuses( deploymentIds ) }
+        assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatusList( deploymentIds ) }
     }
 
     @Test

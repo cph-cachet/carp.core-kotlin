@@ -18,7 +18,7 @@ private typealias Service = DeploymentService
 class DeploymentServiceMock(
     private val createStudyDeploymentResult: StudyDeploymentStatus = emptyStatus,
     private val getStudyDeploymentStatusResult: StudyDeploymentStatus = emptyStatus,
-    private val getStudyDeploymentStatusesResult: List<StudyDeploymentStatus> = emptyList(),
+    private val getStudyDeploymentStatusListResult: List<StudyDeploymentStatus> = emptyList(),
     private val registerDeviceResult: StudyDeploymentStatus = emptyStatus,
     private val unregisterDeviceResult: StudyDeploymentStatus = emptyStatus,
     private val getDeviceDeploymentForResult: MasterDeviceDeployment = emptyMasterDeviceDeployment,
@@ -46,9 +46,9 @@ class DeploymentServiceMock(
         getStudyDeploymentStatusResult
         .also { trackSuspendCall( Service::getStudyDeploymentStatus, studyDeploymentId ) }
 
-    override suspend fun getStudyDeploymentStatuses( studyDeploymentIds: Set<UUID> ) =
-        getStudyDeploymentStatusesResult
-        .also { trackSuspendCall( Service::getStudyDeploymentStatuses, studyDeploymentIds ) }
+    override suspend fun getStudyDeploymentStatusList( studyDeploymentIds: Set<UUID> ) =
+        getStudyDeploymentStatusListResult
+        .also { trackSuspendCall( Service::getStudyDeploymentStatusList, studyDeploymentIds ) }
 
     override suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ) =
         registerDeviceResult
