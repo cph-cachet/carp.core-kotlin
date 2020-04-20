@@ -20,7 +20,7 @@ data class StudyDeploymentSnapshot(
     val deviceRegistrationHistory: Map<String, List<@Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration>>,
     val deployedDevices: Set<String>,
     val invalidatedDeployedDevices: Set<String>,
-    val hasStopped: Boolean,
+    val isStopped: Boolean,
     val participations: Set<AccountParticipation>
 ) : Snapshot<StudyDeployment>()
 {
@@ -40,7 +40,7 @@ data class StudyDeploymentSnapshot(
                 studyDeployment.deviceRegistrationHistory.mapKeys { it.key.roleName },
                 studyDeployment.deployedDevices.map { it.roleName }.toSet(),
                 studyDeployment.invalidatedDeployedDevices.map { it.roleName }.toSet(),
-                studyDeployment.hasStopped,
+                studyDeployment.isStopped,
                 studyDeployment.participations )
         }
     }

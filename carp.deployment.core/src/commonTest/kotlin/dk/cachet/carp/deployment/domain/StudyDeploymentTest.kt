@@ -274,7 +274,7 @@ class StudyDeploymentTest
         assertEquals(
             deployment.invalidatedDeployedDevices.count(),
             deployment.invalidatedDeployedDevices.intersect( fromSnapshot.invalidatedDeployedDevices ).count() )
-        assertEquals( deployment.hasStopped, fromSnapshot.hasStopped )
+        assertEquals( deployment.isStopped, fromSnapshot.isStopped )
         assertEquals(
             deployment.participations.count(),
             deployment.participations.intersect( fromSnapshot.participations ).count() )
@@ -488,7 +488,7 @@ class StudyDeploymentTest
         assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
 
         deployment.stop()
-        assertTrue( deployment.hasStopped )
+        assertTrue( deployment.isStopped )
         assertTrue( deployment.getStatus() is StudyDeploymentStatus.Stopped )
         assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Stopped>().count() )
     }
@@ -505,7 +505,7 @@ class StudyDeploymentTest
         assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeployingDevices )
 
         deployment.stop()
-        assertTrue( deployment.hasStopped )
+        assertTrue( deployment.isStopped )
         assertTrue( deployment.getStatus() is StudyDeploymentStatus.Stopped )
         assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Stopped>().count() )
     }

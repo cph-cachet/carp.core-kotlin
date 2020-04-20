@@ -81,7 +81,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             }
 
             // In case the deployment has been stopped, stop it.
-            if ( snapshot.hasStopped ) deployment.stop()
+            if ( snapshot.isStopped ) deployment.stop()
 
             // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
             deployment.consumeEvents()
@@ -144,7 +144,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * Determines whether the study deployment has been stopped and no further modifications are allowed.
      */
-    var hasStopped: Boolean = false
+    var isStopped: Boolean = false
         private set
 
     /**
@@ -177,7 +177,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
         return when {
-            hasStopped -> StudyDeploymentStatus.Stopped( id, devicesStatus )
+            isStopped -> StudyDeploymentStatus.Stopped( id, devicesStatus )
             allDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus )
             anyRegistration -> StudyDeploymentStatus.DeployingDevices( id, devicesStatus )
             else -> StudyDeploymentStatus.Invited( id, devicesStatus )
@@ -240,7 +240,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val isAlreadyRegistered = device in _registeredDevices.keys
         require( !isAlreadyRegistered ) { "The passed device is already registered." }
 
-        check( !hasStopped ) { "Cannot register devices after a study deployment has stopped." }
+        check( !isStopped ) { "Cannot register devices after a study deployment has stopped." }
 
         // Verify whether the passed registration is known to be invalid for the given device.
         // This may be 'UNKNOWN' when the device type is not known at runtime.
@@ -285,7 +285,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         require( containsDevice ) { "The passed device is not part of this deployment." }
         require( device in _registeredDevices ) { "The passed device is not registered for this deployment." }
 
-        check( !hasStopped ) { "Cannot unregister devices after a study deployment has stopped." }
+        check( !isStopped ) { "Cannot unregister devices after a study deployment has stopped." }
 
         _registeredDevices.remove( device )
         _deployedDevices.remove( device )
@@ -370,7 +370,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val latestDeployment = getDeviceDeploymentFor( device )
         require( latestDeployment.getChecksum() == deploymentChecksum )
 
-        check( !hasStopped ) { "Cannot deploy devices after a study deployment has stopped." }
+        check( !isStopped ) { "Cannot deploy devices after a study deployment has stopped." }
 
         // Verify whether the specified device is ready to be deployed.
         val canDeploy = getDeviceStatus( device ).canObtainDeviceDeployment
@@ -388,9 +388,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
      */
     fun stop()
     {
-        if ( !hasStopped )
+        if ( !isStopped )
         {
-            hasStopped = true
+            isStopped = true
             event( Event.Stopped() )
         }
     }
@@ -406,7 +406,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     {
         require( id == participation.studyDeploymentId ) { "The specified participation details do not match this study deployment." }
         require( _participations.none { it.accountId == account.id } ) { "The specified account already participates in this study deployment." }
-        check( !hasStopped ) { "Cannot add participations after a study deployment has stopped." }
+        check( !isStopped ) { "Cannot add participations after a study deployment has stopped." }
 
         val accountParticipation = AccountParticipation( account.id, participation.id )
         _participations.add( accountParticipation )
