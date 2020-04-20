@@ -24,7 +24,7 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
  * enabling a connection between them, tracking device connection issues, assessing data quality,
  * and registering participant consent.
  */
-@Suppress( "TooManyFunctions" ) // TODO: The private functions could potentially be moved to outside helpers.
+@Suppress( "TooManyFunctions" ) // TODO: Can this be decomposed a bit?
 class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() ) :
     AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>()
 {
@@ -34,6 +34,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         data class DeviceUnregistered( val device: AnyDeviceDescriptor ) : Event()
         data class DeviceDeployed( val device: AnyMasterDeviceDescriptor ) : Event()
         data class DeploymentInvalidated( val device: AnyMasterDeviceDescriptor ) : Event()
+        // TODO: Immutable base class does not allow this to be defined as `object Stopped : Event()`.
+        //       It requires a data class, but that does not make sense since an object would still be immutable.
+        data class Stopped( private val ignoreThis: Unit = Unit ) : Event()
         data class ParticipationAdded( val accountParticipation: AccountParticipation ) : Event()
     }
 
@@ -76,6 +79,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             snapshot.participations.forEach { p ->
                 deployment._participations.add( AccountParticipation( p.accountId, p.participationId ) )
             }
+
+            // In case the deployment has been stopped, stop it.
+            if ( snapshot.isStopped ) deployment.stop()
 
             // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
             deployment.consumeEvents()
@@ -136,6 +142,12 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     private val _invalidatedDeployedDevices: MutableSet<AnyMasterDeviceDescriptor> = mutableSetOf()
 
     /**
+     * Determines whether the study deployment has been stopped and no further modifications are allowed.
+     */
+    var isStopped: Boolean = false
+        private set
+
+    /**
      * The account IDs participating in this study deployment and the pseudonym IDs assigned to them.
      */
     val participations: Set<AccountParticipation>
@@ -149,8 +161,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
         // Initialize information which devices can or should be registered for this deployment.
         _registrableDevices = protocol.devices
-            // Top-level master devices require registration.
-            .map { RegistrableDevice( it, isTopLevelMasterDevice( it ) ) }
+            // Top-level master devices require deployment.
+            .map { RegistrableDevice( it, it in protocol.masterDevices ) }
             .toMutableSet()
     }
 
@@ -160,60 +172,65 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
      */
     fun getStatus(): StudyDeploymentStatus
     {
-        val devicesStatus: List<DeviceDeploymentStatus> =
-            _registrableDevices.map {
-                val requiresDeployment = isTopLevelMasterDevice( it.device )
+        val devicesStatus: List<DeviceDeploymentStatus> = _registrableDevices.map { getDeviceStatus( it.device ) }
+        val allDevicesDeployed: Boolean = devicesStatus.all { it is DeviceDeploymentStatus.Deployed }
+        val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
-                val isRegistered = it.device in _registeredDevices
-                val isReadyForDeployment = canObtainDeviceDeployment( it.device )
-                val isDeployed = it.device in deployedDevices
-                val needsRedeployment = it.device in invalidatedDeployedDevices
-
-                when {
-                    needsRedeployment -> DeviceDeploymentStatus.NeedsRedeployment( it.device, it.requiresRegistration, requiresDeployment, isReadyForDeployment )
-                    isDeployed -> DeviceDeploymentStatus.Deployed( it.device, it.requiresRegistration, requiresDeployment )
-                    isRegistered -> DeviceDeploymentStatus.Registered( it.device, it.requiresRegistration, requiresDeployment, isReadyForDeployment )
-                    else -> DeviceDeploymentStatus.Unregistered( it.device, it.requiresRegistration, requiresDeployment )
-                }
-            }
-
-        return StudyDeploymentStatus( id, devicesStatus )
+        return when {
+            isStopped -> StudyDeploymentStatus.Stopped( id, devicesStatus )
+            allDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus )
+            anyRegistration -> StudyDeploymentStatus.DeployingDevices( id, devicesStatus )
+            else -> StudyDeploymentStatus.Invited( id, devicesStatus )
+        }
     }
 
-    private fun isTopLevelMasterDevice( device: AnyDeviceDescriptor ): Boolean =
-        device is AnyMasterDeviceDescriptor && device in protocol.masterDevices
-
     /**
-     * Determines whether the deployment configuration (to initialize the device environment) for a specific device can be obtained.
-     * This requires the specified device and all other master devices it depends on to be registered.
+     * Get the status of a device in this [StudyDeployment].
      */
-    private fun canObtainDeviceDeployment( device: AnyDeviceDescriptor ): Boolean
+    private fun getDeviceStatus( device: AnyDeviceDescriptor ): DeviceDeploymentStatus
     {
-        // Early out in case the device never needs to be deployed.
-        val requiresDeployment = isTopLevelMasterDevice( device )
-        if ( !requiresDeployment ) return false
+        val registrableDevice = registrableDevices.first{ it.device == device }
 
-        // Verify whether device itself and all dependent devices are registered.
-        return getDependentDevices( device as AnyMasterDeviceDescriptor )
-            .plus( device )
-            .minus( registeredDevices.keys )
-            .isEmpty()
+        val isRegistered = device in _registeredDevices
+        val toRegisterBeforeDeployment = getDependentDevices( device ).plus( device )
+            .map { d -> d.roleName }
+            .minus( registeredDevices.keys.map { r -> r.roleName } )
+            .toSet()
+        val requiresDeployment = registrableDevice.requiresDeployment
+        val isDeployed = device in deployedDevices
+        val needsRedeployment = device in invalidatedDeployedDevices
+
+        return when
+        {
+            needsRedeployment -> DeviceDeploymentStatus.NeedsRedeployment( device, toRegisterBeforeDeployment )
+            isDeployed -> DeviceDeploymentStatus.Deployed( device )
+            isRegistered -> DeviceDeploymentStatus.Registered( device, requiresDeployment, toRegisterBeforeDeployment )
+            else -> DeviceDeploymentStatus.Unregistered( device, requiresDeployment, toRegisterBeforeDeployment )
+        }
     }
 
     /**
      * Get all devices which need to be registered before the passed [device] can be deployed.
      *
-     * TODO: For now, presume all devices which require registration may depend on one another.
+     * TODO: For now, presume all devices which require deployment may depend on one another.
      *       This can be optimized by looking at the triggers which determine actual dependencies between devices.
      */
-    private fun getDependentDevices( device: AnyMasterDeviceDescriptor ): List<AnyDeviceDescriptor> =
-        _registrableDevices
-            .filter { it.requiresRegistration }
-            .map { it.device }
-            .minus( device )
+    private fun getDependentDevices( device: AnyDeviceDescriptor ): List<AnyDeviceDescriptor> =
+        when ( device )
+        {
+            is AnyMasterDeviceDescriptor ->
+                _registrableDevices
+                    .filter { it.requiresDeployment }
+                    .map { it.device }
+                    .minus( device )
+            else -> emptyList() // Only master devices can be deployed. Other devices have no 'dependent' devices.
+        }
 
     /**
      * Register the specified [device] for this deployment using the passed [registration] options.
+     *
+     * @throws IllegalArgumentException when the passed device is not part of this deployment or is already registered.
+     * @throws IllegalStateException when this deployment has stopped.
      */
     fun registerDevice( device: AnyDeviceDescriptor, registration: DeviceRegistration )
     {
@@ -222,6 +239,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
         val isAlreadyRegistered = device in _registeredDevices.keys
         require( !isAlreadyRegistered ) { "The passed device is already registered." }
+
+        check( !isStopped ) { "Cannot register devices after a study deployment has stopped." }
 
         // Verify whether the passed registration is known to be invalid for the given device.
         // This may be 'UNKNOWN' when the device type is not known at runtime.
@@ -256,6 +275,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * Remove the current device registration for the [device] in this deployment.
      * This will invalidate the deployment of any devices which depend on the this [device].
+     *
+     * @throws IllegalArgumentException when the passed device is not part of this deployment or is not registered.
+     * @throws IllegalStateException when this deployment has stopped.
      */
     fun unregisterDevice( device: AnyDeviceDescriptor )
     {
@@ -263,13 +285,15 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         require( containsDevice ) { "The passed device is not part of this deployment." }
         require( device in _registeredDevices ) { "The passed device is not registered for this deployment." }
 
+        check( !isStopped ) { "Cannot unregister devices after a study deployment has stopped." }
+
         _registeredDevices.remove( device )
         _deployedDevices.remove( device )
 
         event( Event.DeviceUnregistered( device ) )
 
-        // Invalidate deployed devices which depend on this device that are deployed.
-        val dependentMasterDevices = getDependentDevices( device as AnyMasterDeviceDescriptor )
+        // Invalidate deployed master devices which depend on this device that are deployed.
+        val dependentMasterDevices = getDependentDevices( device )
             .filterIsInstance<AnyMasterDeviceDescriptor>()
         dependentMasterDevices.forEach {
             if ( _deployedDevices.remove( it ) )
@@ -292,7 +316,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         require( device in protocolSnapshot.masterDevices ) { "The specified master device is not part of the protocol of this deployment." }
 
         // Verify whether the specified device is ready to be deployed.
-        val canDeploy = canObtainDeviceDeployment( device )
+        val canDeploy = getDeviceStatus( device ).canObtainDeviceDeployment
         check( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
         val configuration: DeviceRegistration = _registeredDevices[ device ]!! // Must be non-null, otherwise canObtainDeviceDeployment would fail.
@@ -335,7 +359,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
      * @throws IllegalArgumentException when:
      * - the passed [device] is not part of the protocol of this study deployment
      * - the [deploymentChecksum] does not match the checksum of the expected deployment. The deployment might be outdated.
-     * @throws IllegalStateException when the passed [device] cannot be deployed yet.
+     * @throws IllegalStateException when the passed [device] cannot be deployed yet, or the deployment has stopped.
      */
     fun deviceDeployed( device: AnyMasterDeviceDescriptor, deploymentChecksum: Int )
     {
@@ -346,8 +370,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val latestDeployment = getDeviceDeploymentFor( device )
         require( latestDeployment.getChecksum() == deploymentChecksum )
 
+        check( !isStopped ) { "Cannot deploy devices after a study deployment has stopped." }
+
         // Verify whether the specified device is ready to be deployed.
-        val canDeploy = canObtainDeviceDeployment( device )
+        val canDeploy = getDeviceStatus( device ).canObtainDeviceDeployment
         check( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
         if ( _deployedDevices.add( device ) )
@@ -357,15 +383,30 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     }
 
     /**
+     * Stop this study deployment.
+     * No further changes to this deployment are allowed and no more data should be collected.
+     */
+    fun stop()
+    {
+        if ( !isStopped )
+        {
+            isStopped = true
+            event( Event.Stopped() )
+        }
+    }
+
+    /**
      * Add [participation] details for a given [account] to this study deployment.
      *
      * @throws IllegalArgumentException if the specified [account] already participates in this deployment,
      * or if the [participation] details do not match this study deployment.
+     * @throws IllegalStateException when this deployment has stopped.
      */
     fun addParticipation( account: Account, participation: Participation )
     {
         require( id == participation.studyDeploymentId ) { "The specified participation details do not match this study deployment." }
         require( _participations.none { it.accountId == account.id } ) { "The specified account already participates in this study deployment." }
+        check( !isStopped ) { "Cannot add participations after a study deployment has stopped." }
 
         val accountParticipation = AccountParticipation( account.id, participation.id )
         _participations.add( accountParticipation )

@@ -3,6 +3,7 @@ package dk.cachet.carp.deployment.infrastructure
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.DeploymentRepository
 import dk.cachet.carp.deployment.domain.StudyDeployment
+import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 
 
@@ -11,7 +12,7 @@ import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
  */
 class InMemoryDeploymentRepository : DeploymentRepository
 {
-    private val studyDeployments: MutableMap<UUID, StudyDeployment> = mutableMapOf()
+    private val studyDeployments: MutableMap<UUID, StudyDeploymentSnapshot> = mutableMapOf()
     private val participationInvitations: MutableMap<UUID, MutableSet<ParticipationInvitation>> = mutableMapOf()
 
 
@@ -24,15 +25,18 @@ class InMemoryDeploymentRepository : DeploymentRepository
     {
         require( !studyDeployments.contains( studyDeployment.id ) ) { "The repository already contains a study deployment with ID '${studyDeployment.id}'." }
 
-        studyDeployments[ studyDeployment.id ] = studyDeployment
+        studyDeployments[ studyDeployment.id ] = studyDeployment.getSnapshot()
     }
 
     /**
-     * Return the [StudyDeployment] with the specified [id], or null when no study deployment is found.
-     *
-     * @param id The id of the [StudyDeployment] to search for.
+     * Return all [StudyDeployment]s matching any of the specified [ids].
+     * Ids that are not found are ignored.
      */
-    override fun getStudyDeploymentBy( id: UUID ): StudyDeployment? = studyDeployments[ id ]
+    override fun getStudyDeploymentsBy( ids: Set<UUID> ): List<StudyDeployment> =
+        studyDeployments
+            .filterKeys { it in ids }
+            .map { StudyDeployment.fromSnapshot( it.value ) }
+            .toList()
 
     /**
      * Update a [studyDeployment] which is already stored in this repository.
@@ -44,7 +48,7 @@ class InMemoryDeploymentRepository : DeploymentRepository
     {
         require( studyDeployments.contains( studyDeployment.id ) ) { "The repository does not contain an existing study deployment with ID '${studyDeployment.id}'." }
 
-        studyDeployments[ studyDeployment.id ] = studyDeployment
+        studyDeployments[ studyDeployment.id ] = studyDeployment.getSnapshot()
     }
 
     /**

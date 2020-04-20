@@ -25,7 +25,10 @@ export default class VerifyModule
     constructor( moduleName: string, instances: Array<any> )
     {
         this.moduleName = moduleName
-        this.instances = new Map( instances.map( i => [ i.constructor.name, i ] ) )
+        this.instances = new Map( instances.map( i => {
+            if ( i instanceof Array ) return [ i[0], i[1] ] // Type name specified manually.
+            else return [ i.constructor.name, i ] // Type name inferred from constructor.
+        } ) )
     }
 
     async verify(): Promise<void>
@@ -121,7 +124,7 @@ export default class VerifyModule
                     const scopeToCheck = element.static
                         ? scope
                         : element.kind == 'get'
-                            ? this.getInstance( scope.$metadata$.simpleName )
+                            ? this.getInstance( scope.name )
                             : scope.prototype
                     this.verifyIdentifier( identifier, scopeToCheck )
                 }

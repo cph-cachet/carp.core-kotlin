@@ -48,9 +48,9 @@ class StudyDeploymentTest
         assertTrue { deployment.registrableDevices.map { it.device }.containsAll( protocol.devices ) }
         assertEquals( 0, deployment.registeredDevices.size )
 
-        // Only the master device requires registration.
-        val requiredRegistration = deployment.registrableDevices.single { it.requiresRegistration }
-        assertEquals( protocol.masterDevices.single(), requiredRegistration.device )
+        // Only the master device requires deployment.
+        val requiredDeployment = deployment.registrableDevices.single { it.requiresDeployment }
+        assertEquals( protocol.masterDevices.single(), requiredDeployment.device )
     }
 
     @Test
@@ -200,7 +200,7 @@ class StudyDeploymentTest
         assertEquals( 1, deployment.deviceRegistrationHistory[ device ]?.count() )
         assertEquals( registration, deployment.deviceRegistrationHistory[ device ]?.last() )
         assertEquals( StudyDeployment.Event.DeviceUnregistered( device ), deployment.consumeEvents().last() )
-        assertTrue( deployment.getStatus().devicesStatus.single() is DeviceDeploymentStatus.Unregistered )
+        assertTrue( deployment.getStatus().getDeviceStatus( device ) is DeviceDeploymentStatus.Unregistered )
     }
 
     @Test
@@ -223,7 +223,8 @@ class StudyDeploymentTest
         assertEquals( 0, deployment.deployedDevices.count() )
         assertEquals( setOf( master1 ), deployment.invalidatedDeployedDevices )
         val studyStatus = deployment.getStatus()
-        val master1Status = studyStatus.devicesStatus.first { it.device == master1 }
+        assertTrue( studyStatus is StudyDeploymentStatus.DeployingDevices )
+        val master1Status = studyStatus.getDeviceStatus( master1 )
         assertTrue( master1Status is DeviceDeploymentStatus.NeedsRedeployment )
         assertEquals( StudyDeployment.Event.DeploymentInvalidated( master1 ), deployment.consumeEvents().last() )
     }
@@ -273,6 +274,7 @@ class StudyDeploymentTest
         assertEquals(
             deployment.invalidatedDeployedDevices.count(),
             deployment.invalidatedDeployedDevices.intersect( fromSnapshot.invalidatedDeployedDevices ).count() )
+        assertEquals( deployment.isStopped, fromSnapshot.isStopped )
         assertEquals(
             deployment.participations.count(),
             deployment.participations.intersect( fromSnapshot.participations ).count() )
@@ -292,25 +294,31 @@ class StudyDeploymentTest
         assertEquals( 2, status.devicesStatus.count() )
         assertTrue { status.devicesStatus.any { it.device == master } }
         assertTrue { status.devicesStatus.any { it.device == connected } }
-        assertEquals( setOf( master ), status.getRemainingDevicesToRegister() )
-        assertTrue { status.getRemainingDevicesReadyToDeploy().isEmpty() }
+        assertTrue( status is StudyDeploymentStatus.Invited )
+        val toRegister = status.getRemainingDevicesToRegister()
+        val expectedToRegister = setOf( master, connected )
+        assertEquals( expectedToRegister.count(), toRegister.count() )
+        assertTrue( toRegister.containsAll( expectedToRegister ) )
+        assertTrue( status.getRemainingDevicesReadyToDeploy().isEmpty() )
 
         // After registering master device, master device is ready for deployment.
         deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
         val readyStatus = deployment.getStatus()
-        assertTrue { readyStatus.getRemainingDevicesToRegister().isEmpty() }
+        assertTrue( readyStatus is StudyDeploymentStatus.DeployingDevices )
+        assertEquals( 1, readyStatus.getRemainingDevicesToRegister().count() ) // Connected device is still unregistered.
         assertEquals( setOf( master ), readyStatus.getRemainingDevicesReadyToDeploy() )
 
         // Notify of successful master device deployment.
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
         deployment.deviceDeployed( master, deviceDeployment.getChecksum() )
         val studyStatus = deployment.getStatus()
-        val deviceStatus = studyStatus.devicesStatus.first { it.device == master }
+        assertTrue( studyStatus is StudyDeploymentStatus.DeployingDevices )
+        val deviceStatus = studyStatus.getDeviceStatus( master )
         assertTrue( deviceStatus is DeviceDeploymentStatus.Deployed )
     }
 
     @Test
-    fun chained_master_devices_do_not_require_registration_or_deployment()
+    fun chained_master_devices_do_not_require_deployment()
     {
         val protocol = createEmptyProtocol()
         val master = StubMasterDeviceDescriptor( "Master" )
@@ -320,9 +328,8 @@ class StudyDeploymentTest
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         val status: StudyDeploymentStatus = deployment.getStatus()
-        val chainedStatus = status.devicesStatus.first { it.device == chained }
+        val chainedStatus = status.getDeviceStatus( chained )
         assertFalse { chainedStatus.requiresDeployment }
-        assertFalse { chainedStatus.requiresRegistration }
     }
 
     @Test
@@ -465,6 +472,61 @@ class StudyDeploymentTest
         deployment.unregisterDevice( device )
         deployment.registerDevice( device, device.createRegistration { } )
         assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( device, deviceDeployment.getChecksum() ) }
+    }
+
+    @Test
+    fun stop_after_ready_succeeds()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        protocol.addMasterDevice( device )
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( device, device.createRegistration() )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( device )
+        deployment.deviceDeployed( device, deviceDeployment.getChecksum() )
+
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
+
+        deployment.stop()
+        assertTrue( deployment.isStopped )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.Stopped )
+        assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Stopped>().count() )
+    }
+
+    @Test
+    fun stop_while_deploying_succeeds()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubMasterDeviceDescriptor()
+        protocol.addMasterDevice( device )
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( device, device.createRegistration() )
+
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeployingDevices )
+
+        deployment.stop()
+        assertTrue( deployment.isStopped )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.Stopped )
+        assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Stopped>().count() )
+    }
+
+    @Test
+    fun modifications_after_stop_not_allowed()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
+        val master = protocol.masterDevices.first { it.roleName == "Master" }
+        val connected = protocol.devices.first { it.roleName == "Connected" }
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( master, master.createRegistration() )
+        deployment.stop()
+
+        assertFailsWith<IllegalStateException> { deployment.registerDevice( connected, connected.createRegistration() ) }
+        assertFailsWith<IllegalStateException> { deployment.unregisterDevice( master ) }
+        val deviceDeployment = deployment.getDeviceDeploymentFor( master )
+        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( master, deviceDeployment.getChecksum() ) }
+        val account = Account.withUsernameIdentity( "Test" )
+        val participation = Participation( deployment.id )
+        assertFailsWith<IllegalStateException> { deployment.addParticipation( account, participation ) }
     }
 
     @Test

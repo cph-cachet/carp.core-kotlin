@@ -8,6 +8,7 @@ import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.studies.domain.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.StudyDetails
 import dk.cachet.carp.studies.domain.StudyRepository
@@ -69,7 +70,7 @@ class StudyServiceHost(
     override suspend fun setInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus
     {
         val study = repository.getById( studyId )
-        require( study != null )
+        requireNotNull( study )
 
         study.name = name
         study.description = description
@@ -86,7 +87,7 @@ class StudyServiceHost(
     override suspend fun getStudyDetails( studyId: UUID ): StudyDetails
     {
         val study: Study? = repository.getById( studyId )
-        require( study != null )
+        requireNotNull( study )
 
         return StudyDetails(
             study.id,
@@ -109,7 +110,7 @@ class StudyServiceHost(
     override suspend fun getStudyStatus( studyId: UUID ): StudyStatus
     {
         val study = repository.getById( studyId )
-        require( study != null )
+        requireNotNull( study )
 
         return study.getStatus()
     }
@@ -158,7 +159,7 @@ class StudyServiceHost(
     override suspend fun setInvitation( studyId: UUID, invitation: StudyInvitation ): StudyStatus
     {
         val study: Study? = repository.getById( studyId )
-        require( study != null )
+        requireNotNull( study )
 
         study.invitation = invitation
         repository.update( study )
@@ -177,7 +178,7 @@ class StudyServiceHost(
     override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
     {
         val study: Study? = repository.getById( studyId )
-        require( study != null )
+        requireNotNull( study )
 
         // Configure study to use the protocol.
         try { study.protocolSnapshot = protocol }
@@ -197,7 +198,7 @@ class StudyServiceHost(
     override suspend fun goLive( studyId: UUID ): StudyStatus
     {
         val study: Study? = repository.getById( studyId )
-        require( study != null )
+        requireNotNull( study )
 
         study.goLive()
         repository.update( study )
@@ -216,18 +217,19 @@ class StudyServiceHost(
      *  - not all devices part of the study have been assigned a participant
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): StudyStatus
+    override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus
     {
         require( group.isNotEmpty() ) { "No participants to deploy specified." }
 
         // Verify whether the study is ready for deployment.
         val study: Study? = repository.getById( studyId )
-        require( study != null ) { "Study with the specified studyId is not found." }
+        requireNotNull( study ) { "Study with the specified studyId is not found." }
         check( study.canDeployToParticipants ) { "Study is not yet ready to be deployed to participants." }
+        val protocolSnapshot = study.protocolSnapshot!!
 
         // Verify whether the master device roles to deploy exist in the protocol.
-        val masterDevices = study.protocolSnapshot!!.masterDevices.map { it.roleName }.toSet()
-        require( group.deviceRoles().all { masterDevices.contains( it ) } )
+        val masterDevices = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        require( group.deviceRoles().all { it in masterDevices } )
             { "One of the specified device roles is not part of the configured study protocol." }
 
         // Verify whether all master devices in the study protocol have been assigned to a participant.
@@ -236,13 +238,13 @@ class StudyServiceHost(
 
         // Get participant information.
         val allParticipants = repository.getParticipants( studyId ).associateBy { it.id }
-        require( group.participantIds().all { allParticipants.contains( it ) } )
+        require( group.participantIds().all { it in allParticipants } )
             { "One of the specified participants is not part of this study." }
 
         // Create deployment and add participations to study.
         // TODO: How to deal with failing or partially succeeding requests?
         //       In a distributed setup, deploymentService would be network calls.
-        val deploymentStatus = deploymentService.createStudyDeployment( study.protocolSnapshot!! )
+        val deploymentStatus = deploymentService.createStudyDeployment( protocolSnapshot )
         for ( toAssign in group )
         {
             val identity: AccountIdentity = allParticipants.getValue( toAssign.participantId ).accountIdentity
@@ -252,11 +254,55 @@ class StudyServiceHost(
                 identity,
                 study.invitation )
 
-            study.addParticipation( DeanonymizedParticipation( toAssign.participantId, participation ) )
+            study.addParticipation(
+                deploymentStatus.studyDeploymentId,
+                DeanonymizedParticipation( toAssign.participantId, participation.id ) )
         }
 
         repository.update( study )
 
-        return study.getStatus()
+        val participants = study.getParticipations( deploymentStatus.studyDeploymentId )
+        return ParticipantGroupStatus( deploymentStatus, participants )
+    }
+
+    /**
+     * Get the status of all deployed participant groups in the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    override suspend fun getParticipantGroupStatusList( studyId: UUID ): List<ParticipantGroupStatus>
+    {
+        val study: Study? = repository.getById( studyId )
+        requireNotNull( study ) { "Study with the specified studyId is not found." }
+
+        // Get study deployment statuses.
+        val studyDeploymentIds = study.participations.keys
+        val studyDeploymentStatuses = deploymentService.getStudyDeploymentStatusList( studyDeploymentIds )
+
+        // Map each study deployment status to a deanonymized participant group status.
+        return studyDeploymentStatuses.map {
+            val participants = study.getParticipations( it.studyDeploymentId )
+            ParticipantGroupStatus( it, participants )
+        }
+    }
+
+    /**
+     * Stop the study deployment in the study with the given [studyId]
+     * of the participant group with the specified [groupId] (equivalent to the studyDeploymentId).
+     * No further changes to this deployment will be allowed and no more data will be collected.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] or participant group with [groupId] does not exist.
+     */
+    override suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ): ParticipantGroupStatus
+    {
+        // We don't really need to verify whether the study exists since groupId is equivalent to studyDeploymentId.
+        // However, for future-proofing, if they were to differ, it is good to already enforce the dependence on studyId.
+        val study: Study? = repository.getById( studyId )
+        requireNotNull( study ) { "Study with the specified studyId is not found." }
+        val participations = study.participations.getOrElse( groupId ) { emptySet() }
+        require( participations.count() > 0 ) { "Study deployment with the specified groupId not found." }
+
+        val deploymentStatus = deploymentService.stop( groupId )
+        return ParticipantGroupStatus( deploymentStatus, participations )
     }
 }

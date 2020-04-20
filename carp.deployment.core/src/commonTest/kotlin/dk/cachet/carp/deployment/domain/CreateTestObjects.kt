@@ -108,6 +108,8 @@ fun createComplexDeployment(): StudyDeployment
     val deviceDeployment = deployment.getDeviceDeploymentFor( master )
     deployment.deviceDeployed( master, deviceDeployment.getChecksum() )
 
+    deployment.stop()
+
     // Remove events since tests building on top of this are not interested in how this object was constructed.
     deployment.consumeEvents()
 

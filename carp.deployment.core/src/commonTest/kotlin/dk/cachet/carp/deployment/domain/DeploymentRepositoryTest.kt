@@ -9,6 +9,9 @@ import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import kotlin.test.*
 
 
+private val unknownId: UUID = UUID.randomUUID()
+
+
 /**
  * Tests for implementations of [DeploymentRepository].
  */
@@ -30,6 +33,7 @@ interface DeploymentRepositoryTest
         repo.add( deployment )
         val retrieved = repo.getStudyDeploymentBy( deployment.id )
         assertNotNull( retrieved )
+        assertNotSame( deployment, retrieved ) // Should be new object instance.
         assertEquals( deployment.getSnapshot(), retrieved.getSnapshot() ) // StudyDeployment does not implement equals, but snapshot does.
     }
 
@@ -48,12 +52,54 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getStudyDeploymentById_returns_null_for_unknown_id()
+    fun getStudyDeploymentBy_succeeds()
+    {
+        val repo = createRepository()
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val deployment = studyDeploymentFor( protocol )
+        repo.add( deployment )
+
+        val retrievedDeployment = repo.getStudyDeploymentBy( deployment.id )
+        assertNotSame( deployment, retrievedDeployment ) // Should be new object instance.
+        assertEquals( deployment.getSnapshot(), retrievedDeployment?.getSnapshot() )
+    }
+
+    @Test
+    fun getStudyDeploymentBy_returns_null_for_unknown_id()
     {
         val repo = createRepository()
 
-        val deployment = repo.getStudyDeploymentBy( UUID.randomUUID() )
+        val deployment = repo.getStudyDeploymentBy( unknownId )
         assertNull( deployment )
+    }
+
+    @Test
+    fun getStudyDeploymentsBy_succeeds()
+    {
+        val repo = createRepository()
+        val protocolSnapshot = createSingleMasterWithConnectedDeviceProtocol().getSnapshot()
+        val deployment1 = StudyDeployment( protocolSnapshot )
+        val deployment2 = StudyDeployment( protocolSnapshot )
+        repo.add( deployment1 )
+        repo.add( deployment2 )
+
+        val ids = setOf( deployment1.id, deployment2.id )
+        val retrievedDeployments = repo.getStudyDeploymentsBy( ids )
+        assertEquals( 2, retrievedDeployments.count() )
+        assertTrue( retrievedDeployments.map{ it.id }.containsAll( ids ) )
+    }
+
+    @Test
+    fun getStudyDeploymentsBy_ignores_unknown_ids()
+    {
+        val repo = createRepository()
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val deployment = studyDeploymentFor( protocol )
+        repo.add( deployment )
+
+        val ids = setOf( deployment.id, unknownId )
+        val retrievedDeployments = repo.getStudyDeploymentsBy( ids )
+        assertEquals( deployment.id, retrievedDeployments.single().id )
     }
 
     @Test
@@ -65,18 +111,24 @@ interface DeploymentRepositoryTest
         repo.add( deployment )
         val masterDevice = protocol.masterDevices.first()
 
-        // Verify whether registering a device is updated.
-        deployment.registerDevice( masterDevice, DefaultDeviceRegistration( "0" ) )
+        // Perform various actions on deployment, modifying it.
+        // TODO: This does not verify whether registration history and invalidated devices are updated.
+        with ( deployment )
+        {
+            registerDevice( masterDevice, DefaultDeviceRegistration( "0" ) )
+
+            val deviceDeployment = deployment.getDeviceDeploymentFor( masterDevice )
+            deviceDeployed( masterDevice, deviceDeployment.getChecksum() )
+
+            addParticipation( Account.withUsernameIdentity( "Test" ), Participation( deployment.id ) )
+
+            stop()
+        }
+
+        // Update and verify whether retrieved deployment is the same.
         repo.update( deployment )
         var retrieved = repo.getStudyDeploymentBy( deployment.id )
         assertEquals( deployment.getSnapshot(), retrieved?.getSnapshot() ) // StudyDeployment does not implement equals, but snapshot does.
-
-        // Verify whether deploying a device is updated.
-        val deviceDeployment = deployment.getDeviceDeploymentFor( masterDevice )
-        deployment.deviceDeployed( masterDevice, deviceDeployment.getChecksum() )
-        repo.update( deployment )
-        retrieved = repo.getStudyDeploymentBy( deployment.id )
-        assertEquals( deployment.getSnapshot(), retrieved?.getSnapshot() )
     }
 
     @Test

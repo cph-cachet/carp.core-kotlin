@@ -19,7 +19,7 @@ data class StudySnapshot(
     val creationDate: DateTime,
     val protocolSnapshot: StudyProtocolSnapshot?,
     val isLive: Boolean,
-    val participations: Set<DeanonymizedParticipation>
+    val participations: Map<UUID, Set<DeanonymizedParticipation>>
 ) : Snapshot<Study>()
 {
     companion object
@@ -31,6 +31,12 @@ data class StudySnapshot(
          */
         fun fromStudy( study: Study ): StudySnapshot
         {
+            val clonedParticipations: MutableMap<UUID, Set<DeanonymizedParticipation>> = mutableMapOf()
+            for ( p in study.participations )
+            {
+                clonedParticipations[ p.key ] = p.value.toSet()
+            }
+
             return StudySnapshot(
                 studyId = study.id,
                 ownerId = study.owner.id,
@@ -40,7 +46,7 @@ data class StudySnapshot(
                 creationDate = study.creationDate,
                 protocolSnapshot = study.protocolSnapshot,
                 isLive = study.isLive,
-                participations = study.participations.toSet() )
+                participations = clonedParticipations )
         }
     }
 
