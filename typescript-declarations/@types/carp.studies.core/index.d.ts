@@ -119,12 +119,12 @@ declare module 'carp.studies.core'
 
         class DeanonymizedParticipation
         {
-            constructor( participantId: UUID, participation: Participation )
+            constructor( participantId: UUID, participationId: UUID )
 
             static get Companion(): DeanonymizedParticipation$Companion
 
             readonly participantId: UUID
-            readonly participation: Participation
+            readonly participationId: UUID
         }
         interface DeanonymizedParticipation$Companion { serializer(): any }
 

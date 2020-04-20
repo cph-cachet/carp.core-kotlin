@@ -35,7 +35,7 @@ describe( "carp.studies.core", () => {
         const instances = [
             new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Test" ] ) ),
             AssignParticipantDevices.Companion,
-            new DeanonymizedParticipant( UUID.Companion.randomUUID(), new Participation( UUID.Companion.randomUUID() ) ),
+            new DeanonymizedParticipant( UUID.Companion.randomUUID(), UUID.Companion.randomUUID() ),
             DeanonymizedParticipant.Companion,
             new Participant( new UsernameIdentity( "Test" ) ),
             Participant.Companion,

@@ -1,7 +1,6 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -167,8 +166,8 @@ class StudyTest
         assertTrue( study.canDeployToParticipants )
 
         val studyDeploymentId = UUID.randomUUID()
-        val participation = DeanonymizedParticipation( UUID.randomUUID(), Participation( studyDeploymentId ) )
-        study.addParticipation( participation )
+        val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
+        study.addParticipation( studyDeploymentId, participation )
         assertEquals( Study.Event.ParticipationAdded( participation ), study.consumeEvents().last() )
         assertEquals( participation, study.getParticipations( studyDeploymentId ).single() )
     }
@@ -181,8 +180,9 @@ class StudyTest
 
         assertFalse( study.canDeployToParticipants )
 
-        val participation = DeanonymizedParticipation( UUID.randomUUID(), Participation( UUID.randomUUID() ) )
-        assertFailsWith<IllegalStateException> { study.addParticipation( participation ) }
+        val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
+        val studyDeploymentId = UUID.randomUUID()
+        assertFailsWith<IllegalStateException> { study.addParticipation( studyDeploymentId, participation ) }
         val participationEvents = study.consumeEvents().filterIsInstance<Study.Event.ParticipationAdded>()
         assertEquals( 0, participationEvents.count() )
     }

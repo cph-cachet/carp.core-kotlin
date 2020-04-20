@@ -254,7 +254,9 @@ class StudyServiceHost(
                 identity,
                 study.invitation )
 
-            study.addParticipation( DeanonymizedParticipation( toAssign.participantId, participation ) )
+            study.addParticipation(
+                deploymentStatus.studyDeploymentId,
+                DeanonymizedParticipation( toAssign.participantId, participation.id ) )
         }
 
         repository.update( study )
@@ -274,8 +276,7 @@ class StudyServiceHost(
         requireNotNull( study ) { "Study with the specified studyId is not found." }
 
         // Get study deployment statuses.
-        // TODO: Participations are more logically stored per `studyDeploymentId`, rather than having to filter like this.
-        val studyDeploymentIds = study.participations.map { it.participation.studyDeploymentId }.toSet()
+        val studyDeploymentIds = study.participations.keys
         val studyDeploymentStatuses = deploymentService.getStudyDeploymentStatusList( studyDeploymentIds )
 
         // Map each study deployment status to a deanonymized participant group status.
@@ -298,10 +299,10 @@ class StudyServiceHost(
         // However, for future-proofing, if they were to differ, it is good to already enforce the dependence on studyId.
         val study: Study? = repository.getById( studyId )
         requireNotNull( study ) { "Study with the specified studyId is not found." }
-        val participations = study.participations.filter { it.participation.studyDeploymentId == groupId }
+        val participations = study.participations.getOrElse( groupId ) { emptySet() }
         require( participations.count() > 0 ) { "Study deployment with the specified groupId not found." }
 
         val deploymentStatus = deploymentService.stop( groupId )
-        return ParticipantGroupStatus( deploymentStatus, participations.toSet() )
+        return ParticipantGroupStatus( deploymentStatus, participations )
     }
 }
