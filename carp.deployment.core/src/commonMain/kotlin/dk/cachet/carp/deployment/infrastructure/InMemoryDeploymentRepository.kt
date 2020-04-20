@@ -29,14 +29,6 @@ class InMemoryDeploymentRepository : DeploymentRepository
     }
 
     /**
-     * Return the [StudyDeployment] with the specified [id], or null when no study deployment is found.
-     *
-     * @param id The id of the [StudyDeployment] to search for.
-     */
-    override fun getStudyDeploymentBy( id: UUID ): StudyDeployment? =
-        studyDeployments[ id ]?.let { StudyDeployment.fromSnapshot( it ) }
-
-    /**
      * Return all [StudyDeployment]s matching any of the specified [ids].
      * Ids that are not found are ignored.
      */

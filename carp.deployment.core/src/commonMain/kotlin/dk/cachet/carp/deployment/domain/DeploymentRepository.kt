@@ -16,7 +16,7 @@ interface DeploymentRepository
     /**
      * Return the [StudyDeployment] with the specified [id], or null when no study deployment is found.
      */
-    fun getStudyDeploymentBy( id: UUID ): StudyDeployment?
+    fun getStudyDeploymentBy( id: UUID ): StudyDeployment? = getStudyDeploymentsBy( setOf( id ) ).firstOrNull()
 
     /**
      * Return all [StudyDeployment]s matching any of the specified [ids].
