@@ -96,9 +96,9 @@ This is a [multiplatform Kotlin library](https://kotlinlang.org/docs/reference/m
 
 As this project progresses, we intend to include [native targets](https://kotlinlang.org/docs/reference/native-overview.html) as well, starting with iOS.
 
-# Setting up using IntelliJ IDEA 2019
-- Open the project folder in IntelliJ 2019.
-- Install the Kotlin plugin (1.3.61-release-IJ2019.3-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
+# Setting up using IntelliJ IDEA 2020
+- Open the project folder in IntelliJ 2020.
+- Install the Kotlin plugin (1.3.72-release-IJ2020.1-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
 - To build/test/publish, click "Edit Configurations" to add configurations for [the included Gradle tasks](#gradle-tasks), or run them from the Gradle tool window.
 
 # Gradle tasks

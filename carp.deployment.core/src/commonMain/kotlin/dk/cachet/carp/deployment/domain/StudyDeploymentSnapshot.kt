@@ -16,7 +16,11 @@ import kotlinx.serialization.Serializable
 data class StudyDeploymentSnapshot(
     val studyDeploymentId: UUID,
     val studyProtocolSnapshot: StudyProtocolSnapshot,
-    val registeredDevices: Map<String, @Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration>,
+    val registeredDevices: Set<String>,
+    val deviceRegistrationHistory: Map<String, List<@Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration>>,
+    val deployedDevices: Set<String>,
+    val invalidatedDeployedDevices: Set<String>,
+    val isStopped: Boolean,
     val participations: Set<AccountParticipation>
 ) : Snapshot<StudyDeployment>()
 {
@@ -32,7 +36,11 @@ data class StudyDeploymentSnapshot(
             return StudyDeploymentSnapshot(
                 studyDeployment.id,
                 studyDeployment.protocolSnapshot,
-                studyDeployment.registeredDevices.mapKeys { it.key.roleName },
+                studyDeployment.registeredDevices.map { it.key.roleName }.toSet(),
+                studyDeployment.deviceRegistrationHistory.mapKeys { it.key.roleName },
+                studyDeployment.deployedDevices.map { it.roleName }.toSet(),
+                studyDeployment.invalidatedDeployedDevices.map { it.roleName }.toSet(),
+                studyDeployment.isStopped,
                 studyDeployment.participations )
         }
     }

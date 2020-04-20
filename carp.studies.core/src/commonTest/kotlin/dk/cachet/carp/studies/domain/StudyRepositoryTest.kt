@@ -36,6 +36,7 @@ interface StudyRepositoryTest
         val study = addStudy( repo )
 
         val foundStudy = repo.getById( study.id )
+        assertNotSame( study, foundStudy ) // Should be new object instance.
         assertEquals( study.getSnapshot(), foundStudy?.getSnapshot() )
     }
 

@@ -55,7 +55,10 @@ class Study(
             study.creationDate = snapshot.creationDate
             study.protocolSnapshot = snapshot.protocolSnapshot
             study.isLive = snapshot.isLive
-            study._participations.addAll( snapshot.participations )
+            for ( p in snapshot.participations )
+            {
+                study._participations[ p.key ] = p.value.toMutableSet()
+            }
 
             return study
         }
@@ -172,24 +175,41 @@ class Study(
     val canDeployToParticipants: Boolean get() = isLive
 
     /**
-     * The set of participants and the specific study deployments they participate in for this study.
+     * Per study deployment ID, the set of participants that participate in it.
+     * TODO: Maybe this should be kept private and be replaced with clearer helper functions (e.g., getStudyDeploymentIds).
      */
-    val participations: Set<DeanonymizedParticipation>
+    val participations: Map<UUID, Set<DeanonymizedParticipation>>
         get() = _participations
 
-    private val _participations: MutableSet<DeanonymizedParticipation> = mutableSetOf()
+    private val _participations: MutableMap<UUID, MutableSet<DeanonymizedParticipation>> = mutableMapOf()
 
     /**
      * Specify that a [Participation] has been created for a [Participant] in this study.
      *
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    fun addParticipation( participation: DeanonymizedParticipation )
+    fun addParticipation( studyDeploymentId: UUID, participation: DeanonymizedParticipation )
     {
         check( canDeployToParticipants ) { "The study is not yet ready for deployment." }
 
-        _participations.add( participation )
-        event( Event.ParticipationAdded( participation ) )
+        val participations = _participations.getOrPut( studyDeploymentId ) { mutableSetOf() }
+        if ( participations.add( participation ) )
+        {
+            event( Event.ParticipationAdded( participation ) )
+        }
+    }
+
+    /**
+     * Get all [DeanonymizedParticipation]s for a specific [studyDeploymentId].
+     *
+     * @throws IllegalArgumentException when the given [studyDeploymentId] is not part of this study.
+     */
+    fun getParticipations( studyDeploymentId: UUID ): Set<DeanonymizedParticipation>
+    {
+        val participations: Set<DeanonymizedParticipation> = _participations.getOrElse( studyDeploymentId ) { emptySet() }
+        require( participations.isNotEmpty() ) { "The specified study deployment ID is not part of this study." }
+
+        return participations
     }
 
     /**

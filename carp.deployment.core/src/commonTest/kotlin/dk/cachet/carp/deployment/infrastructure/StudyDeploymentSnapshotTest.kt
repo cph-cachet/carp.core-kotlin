@@ -43,7 +43,8 @@ class StudyDeploymentSnapshotTest
         val serialized = serializeDeploymentSnapshotIncludingUnknownRegistration()
         val parsed = StudyDeploymentSnapshot.fromJson( serialized )
 
-        assertEquals( 1, parsed.registeredDevices.values.filterIsInstance<CustomDeviceRegistration>().count() )
+        val allRegistrations = parsed.deviceRegistrationHistory.values.flatten()
+        assertEquals( 1, allRegistrations.filterIsInstance<CustomDeviceRegistration>().count() )
     }
 
     /**

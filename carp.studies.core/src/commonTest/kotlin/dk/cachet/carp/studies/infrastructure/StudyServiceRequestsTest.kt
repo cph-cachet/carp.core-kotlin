@@ -33,7 +33,9 @@ class StudyServiceRequestsTest
             StudyServiceRequest.SetInvitation( studyId, StudyInvitation.empty() ),
             StudyServiceRequest.SetProtocol( studyId, StudyProtocol( ProtocolOwner(), "Test" ).getSnapshot() ),
             StudyServiceRequest.GoLive( studyId ),
-            StudyServiceRequest.DeployParticipantGroup( studyId, setOf() )
+            StudyServiceRequest.DeployParticipantGroup( studyId, setOf() ),
+            StudyServiceRequest.GetParticipantGroupStatusList( studyId ),
+            StudyServiceRequest.StopParticipantGroup( studyId, UUID.randomUUID() )
         )
     }
 

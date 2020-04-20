@@ -13,12 +13,28 @@ declare module 'carp.studies.core'
     import { dk as pdk } from 'carp.protocols.core'
     import StudyProtocolSnapshot = pdk.cachet.carp.protocols.domain.StudyProtocolSnapshot
     import { dk as ddk } from 'carp.deployment.core'
+    import Participation = ddk.cachet.carp.deployment.domain.users.Participation
+    import StudyDeploymentStatus = ddk.cachet.carp.deployment.domain.StudyDeploymentStatus
     import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
 
 
     namespace dk.cachet.carp.studies.domain
     {
         import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
+        import DeanonymizedParticipation = dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
+
+
+        class ParticipantGroupStatus
+        {
+            constructor( studyDeploymentStatus: StudyDeploymentStatus, participants: HashSet<DeanonymizedParticipation> )
+
+            static get Companion(): ParticipantGroupStatus$Companion
+
+            readonly studyDeploymentStatus: StudyDeploymentStatus
+            readonly participants: HashSet<DeanonymizedParticipation>
+        }
+        interface ParticipantGroupStatus$Companion { serializer(): any }
+
 
         class StudyDetails
         {
@@ -39,6 +55,7 @@ declare module 'carp.studies.core'
             readonly protocolSnapshot: StudyProtocolSnapshot | null
         }
         interface StudyDetails$Companion { serializer(): any }
+
 
         abstract class StudyStatus
         {
@@ -98,6 +115,18 @@ declare module 'carp.studies.core'
         function participantIds_nvx6bb$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<UUID>
         function deviceRoles_nvx6bb$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<string>
         interface AssignParticipantDevices$Companion { serializer(): any }
+
+
+        class DeanonymizedParticipation
+        {
+            constructor( participantId: UUID, participationId: UUID )
+
+            static get Companion(): DeanonymizedParticipation$Companion
+
+            readonly participantId: UUID
+            readonly participationId: UUID
+        }
+        interface DeanonymizedParticipation$Companion { serializer(): any }
 
 
         class Participant
@@ -181,6 +210,14 @@ declare module 'carp.studies.core'
             class DeployParticipantGroup extends StudyServiceRequest
             {
                 constructor( studyId: UUID, group: HashSet<AssignParticipantDevices> )
+            }
+            class GetParticipantGroupStatusList extends StudyServiceRequest
+            {
+                constructor( studyId: UUID )
+            }
+            class StopParticipantGroup extends StudyServiceRequest
+            {
+                constructor( studyId: UUID, groupId: UUID )
             }
         }
 

@@ -45,7 +45,7 @@ class ClientManagerTest
     }
 
     @Test
-    fun add_study_fails_for_device_role_name_already_in_use() = runBlockingTest {
+    fun add_study_fails_for_study_which_was_already_added() = runBlockingTest {
         // Create deployment service and client manager.
         val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val clientManager = createSmartphoneManager( deploymentService )

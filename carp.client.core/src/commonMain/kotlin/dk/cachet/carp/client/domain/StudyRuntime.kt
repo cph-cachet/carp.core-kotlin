@@ -2,10 +2,10 @@ package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentService
+import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
-import kotlinx.serialization.Serializable
 
 
 /**
@@ -23,28 +23,16 @@ class StudyRuntime private constructor(
     val device: AnyMasterDeviceDescriptor
 )
 {
-    /**
-     * Determines whether a study runtime is ready for deployment, and once it is, whether it has been deployed successfully.
-     */
-    @Serializable
-    data class DeploymentState(
-        /**
-         * True if all dependent devices have been registered and this device is ready for deployment.
-         */
-        val isReadyForDeployment: Boolean,
-        /**
-         * True if the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
-         */
-        val isDeployed: Boolean
-    )
-
-
     companion object Factory
     {
         /**
          * Instantiate a [StudyRuntime] by registering the client device in the [deploymentService].
          * In case the device is immediately ready for deployment, also deploy.
          *
+         * @throws IllegalArgumentException when:
+         * - a deployment with [studyDeploymentId] does not exist
+         * - [deviceRoleName] is not present in the deployment or is already registered and a different [deviceRegistration] is specified than a previous request
+         * - [deviceRegistration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device
          * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
          */
         internal suspend fun initialize(
@@ -68,7 +56,6 @@ class StudyRuntime private constructor(
         ): StudyRuntime
         {
             // Register the client device this study runs on for the given study deployment.
-            // TODO: What if registration succeeds, but deployment fails since not all required plugins are available? Registering again is not allowed right now.
             val deploymentStatus = deploymentService.registerDevice( studyDeploymentId, deviceRoleName, deviceRegistration )
 
             // Initialize runtime.
@@ -76,23 +63,16 @@ class StudyRuntime private constructor(
             val runtime = StudyRuntime( deploymentService, studyDeploymentId, clientDeviceStatus.device as AnyMasterDeviceDescriptor )
 
             // After registration, deployment information might immediately be available for this client device.
-            if ( clientDeviceStatus.isReadyForDeployment )
-            {
-                runtime.deploymentInformation = deploymentService.getDeviceDeploymentFor( studyDeploymentId, deviceRoleName )
-                runtime.deploy( runtime.deploymentInformation!! )
+            runtime.tryDeployment( clientDeviceStatus )
+
+            return runtime
+        }
+
+        internal fun fromSnapshot( snapshot: StudyRuntimeSnapshot, deploymentService: DeploymentService ): StudyRuntime =
+            StudyRuntime( deploymentService, snapshot.studyDeploymentId, snapshot.device ).apply {
+                isDeployed = snapshot.isDeployed
+                deploymentInformation = snapshot.deploymentInformation
             }
-
-            return runtime
-        }
-
-        internal fun fromSnapshot( snapshot: StudyRuntimeSnapshot, deploymentService: DeploymentService ): StudyRuntime
-        {
-            val runtime = StudyRuntime( deploymentService, snapshot.studyDeploymentId, snapshot.device )
-            runtime.isDeployed = snapshot.isDeployed
-            runtime.deploymentInformation = snapshot.deploymentInformation
-
-            return runtime
-        }
     }
 
 
@@ -103,7 +83,7 @@ class StudyRuntime private constructor(
         private set
 
     /**
-     * In case deployment succeeded ([isDeployed] is true), this contains all the information on the study the run.
+     * In case deployment succeeded ([isDeployed] is true), this contains all the information on the study to run.
      * TODO: This should be consumed within this domain model and not be public.
      *       Currently, it is in order to work towards a first MVP which includes server/client communication through the domain model.
      */
@@ -113,26 +93,36 @@ class StudyRuntime private constructor(
     /**
      * Verifies whether the device is ready for deployment and in case it is, deploys.
      *
+     * @return True in case deployment succeeded; false in case device could not yet be deployed (e.g., awaiting registration of other devices).
      * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
      */
-    suspend fun tryDeployment(): DeploymentState
+    suspend fun tryDeployment(): Boolean
     {
         val deploymentStatus = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
-        val clientDeviceStatus = deploymentStatus.devicesStatus.first { it.device == device }
+        val clientDeviceStatus = deploymentStatus.getDeviceStatus( device )
 
-        if ( clientDeviceStatus.isReadyForDeployment )
-        {
-            deploymentInformation = deploymentService.getDeviceDeploymentFor( studyDeploymentId, device.roleName )
-            deploy( deploymentInformation!! )
-        }
-
-        return DeploymentState( clientDeviceStatus.isReadyForDeployment, isDeployed )
+        return tryDeployment( clientDeviceStatus )
     }
 
-    private fun deploy( deploymentInformation: MasterDeviceDeployment )
+    private suspend fun tryDeployment( deviceStatus: DeviceDeploymentStatus ): Boolean
     {
-        // TODO: Throw exception in case there are missing plugins to perform the operations (e.g., measurements) specified in the deployment.
+        // Early out in case state indicates the device is not yet ready to deploy.
+        if ( deviceStatus !is DeviceDeploymentStatus.NotDeployed || !deviceStatus.isReadyForDeployment ) return false
 
-        isDeployed = true
+        // TODO: Get deployment and throw exception in case there are missing plugins to perform the operations (e.g., measurements).
+        val deployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, device.roleName )
+        deploymentInformation = deployment
+
+        // Notify deployment service of successful deployment.
+        try
+        {
+            deploymentService.deploymentSuccessful( studyDeploymentId, device.roleName, deployment.getChecksum() )
+            isDeployed = true
+        }
+        // Handle race conditions with competing clients modifying device registrations, invalidating this deployment.
+        catch ( ignore: IllegalArgumentException ) { }
+        catch ( ignore: IllegalStateException ) { }
+
+        return isDeployed
     }
 }
