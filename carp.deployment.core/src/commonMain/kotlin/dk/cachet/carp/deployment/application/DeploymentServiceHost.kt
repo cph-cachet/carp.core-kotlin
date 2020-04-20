@@ -257,7 +257,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
     private fun getStudyDeployment( studyDeploymentId: UUID ): StudyDeployment
     {
         val deployment: StudyDeployment? = repository.getStudyDeploymentBy( studyDeploymentId )
-        require( deployment != null ) { "A deployment with ID '$studyDeploymentId' does not exist." }
+        requireNotNull( deployment ) { "A deployment with ID '$studyDeploymentId' does not exist." }
 
         return deployment
     }

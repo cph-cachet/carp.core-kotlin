@@ -70,7 +70,7 @@ class StudyServiceHost(
     override suspend fun setInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus
     {
         val study = repository.getById( studyId )
-        require( study != null )
+        requireNotNull( study )
 
         study.name = name
         study.description = description
@@ -87,7 +87,7 @@ class StudyServiceHost(
     override suspend fun getStudyDetails( studyId: UUID ): StudyDetails
     {
         val study: Study? = repository.getById( studyId )
-        require( study != null )
+        requireNotNull( study )
 
         return StudyDetails(
             study.id,
@@ -110,7 +110,7 @@ class StudyServiceHost(
     override suspend fun getStudyStatus( studyId: UUID ): StudyStatus
     {
         val study = repository.getById( studyId )
-        require( study != null )
+        requireNotNull( study )
 
         return study.getStatus()
     }
@@ -159,7 +159,7 @@ class StudyServiceHost(
     override suspend fun setInvitation( studyId: UUID, invitation: StudyInvitation ): StudyStatus
     {
         val study: Study? = repository.getById( studyId )
-        require( study != null )
+        requireNotNull( study )
 
         study.invitation = invitation
         repository.update( study )
@@ -178,7 +178,7 @@ class StudyServiceHost(
     override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
     {
         val study: Study? = repository.getById( studyId )
-        require( study != null )
+        requireNotNull( study )
 
         // Configure study to use the protocol.
         try { study.protocolSnapshot = protocol }
@@ -198,7 +198,7 @@ class StudyServiceHost(
     override suspend fun goLive( studyId: UUID ): StudyStatus
     {
         val study: Study? = repository.getById( studyId )
-        require( study != null )
+        requireNotNull( study )
 
         study.goLive()
         repository.update( study )
@@ -223,7 +223,7 @@ class StudyServiceHost(
 
         // Verify whether the study is ready for deployment.
         val study: Study? = repository.getById( studyId )
-        require( study != null ) { "Study with the specified studyId is not found." }
+        requireNotNull( study ) { "Study with the specified studyId is not found." }
         check( study.canDeployToParticipants ) { "Study is not yet ready to be deployed to participants." }
         val protocolSnapshot = study.protocolSnapshot!!
 
@@ -271,7 +271,7 @@ class StudyServiceHost(
     override suspend fun getParticipantGroupStatuses( studyId: UUID ): List<ParticipantGroupStatus>
     {
         val study: Study? = repository.getById( studyId )
-        require( study != null ) { "Study with the specified studyId is not found." }
+        requireNotNull( study ) { "Study with the specified studyId is not found." }
 
         // Get study deployment statuses.
         // TODO: Participations are more logically stored per `studyDeploymentId`, rather than having to filter like this.
@@ -297,7 +297,7 @@ class StudyServiceHost(
         // We don't really need to verify whether the study exists since groupId is equivalent to studyDeploymentId.
         // However, for future-proofing, if they were to differ, it is good to already enforce the dependence on studyId.
         val study: Study? = repository.getById( studyId )
-        require( study != null ) { "Study with the specified studyId is not found." }
+        requireNotNull( study ) { "Study with the specified studyId is not found." }
         val participations = study.participations.filter { it.participation.studyDeploymentId == groupId }
         require( participations.count() > 0 ) { "Study deployment with the specified groupId not found." }
 
