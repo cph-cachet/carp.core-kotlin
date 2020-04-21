@@ -168,7 +168,7 @@ class StudyTest
         val studyDeploymentId = UUID.randomUUID()
         val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
         study.addParticipation( studyDeploymentId, participation )
-        assertEquals( Study.Event.ParticipationAdded( participation ), study.consumeEvents().last() )
+        assertEquals( Study.Event.ParticipationAdded( studyDeploymentId, participation ), study.consumeEvents().last() )
         assertEquals( participation, study.getParticipations( studyDeploymentId ).single() )
     }
 
