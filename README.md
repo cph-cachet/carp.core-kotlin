@@ -2,7 +2,7 @@
 
 [![Publish snapshots status](https://github.com/cph-cachet/carp.core-kotlin/workflows/Publish%20snapshots/badge.svg?branch=develop)](https://github.com/cph-cachet/carp.core-kotlin/actions?query=workflow%3A%22Publish+snapshots%22) 
 
-This project is part of the [CACHET Research Platform (CARP)](https://github.com/cph-cachet/carp.documentation)—an infrastructure supporting researchers in defining, deploying, and monitoring research studies involving distributed data collection. Following [domain-driven design](https://en.wikipedia.org/wiki/Domain-driven_design), this project contains all domain models and application services for all CARP subsystems (depicted below), not having any dependencies on concrete infrastructure. As such, this project defines an open standard for distributed data collection, [available for Kotlin, the Java runtime, and JavaScript](#multiplatform).
+This project is part of the [CACHET Research Platform (CARP)](http://carp.cachet.dk/)—an infrastructure supporting researchers in defining, deploying, and monitoring research studies involving distributed data collection. Following [domain-driven design](https://en.wikipedia.org/wiki/Domain-driven_design), this project contains all domain models and application services for all CARP subsystems (depicted below), not having any dependencies on concrete infrastructure. As such, this project defines an open standard for distributed data collection, [available for Kotlin, the Java runtime, and JavaScript](#multiplatform).
 
 ![Subsystem decomposition](https://i.imgur.com/qexzTej.png) 
 
@@ -10,76 +10,128 @@ Currently this project contains an unstable (not backwards compatible) alpha ver
 
 In case you want to contribute, please follow our [contribution guidelines](https://github.com/cph-cachet/carp.core-kotlin/blob/develop/CONTRIBUTING.md). 
 
-## carp.protocols [![Maven Central](https://img.shields.io/maven-central/v/dk.cachet.carp.protocols/carp.protocols.core)](https://mvnrepository.com/artifact/dk.cachet.carp.protocols) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.protocols/carp.protocols.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/protocols/)
+## carp.protocols [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.protocols/carp.protocols.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.protocols) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.protocols/carp.protocols.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/protocols/)
 
 Specify study protocols which can be deployed to one or more stationary or mobile devices. Using this library, CARP-compatible studies can be defined:
+
 ```
 // Create a new study protocol.
 val owner = ProtocolOwner()
-val protocol = StudyProtocol( owner, "Example study" )
+val protocol = StudyProtocol( owner, "Track patient movement" )
 
 // Define which devices are used for data collection.
 val phone = Smartphone( "Patient's phone" )
 protocol.addMasterDevice( phone )
 
 // Define what needs to be measured, on which device, when.
-val measures = listOf( Smartphone.geolocation(), Smartphone.stepcount() )
+val measures: List<Measure> = listOf( Smartphone.geolocation(), Smartphone.stepcount() )
 val startMeasures = ConcurrentTask( "Start measures", measures )
 protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
 // JSON output of the study protocol, compatible with the rest of the CARP infrastructure.
-val json = protocol.getSnapshot().toJson()
+val json: String = protocol.getSnapshot().toJson()
 ```
 
-## carp.studies [![Maven Central](https://img.shields.io/maven-central/v/dk.cachet.carp.studies/carp.studies.core)](https://mvnrepository.com/artifact/dk.cachet.carp.studies) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.studies/carp.studies.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/studies/)
+## carp.studies [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.studies/carp.studies.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.studies) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.studies/carp.studies.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/studies/)
 
-Manage the recruitment for and lifetime of study deployments, instantiated using a study protocol from `carp.protocols`.
+Manage the recruitment for and lifetime of study deployments, instantiated using a study protocol from `carp.protocols`. Studies are managed through the `StudyService` application service:
 
-## carp.deployment [![Maven Central](https://img.shields.io/maven-central/v/dk.cachet.carp.deployment/carp.deployment.core)](https://mvnrepository.com/artifact/dk.cachet.carp.deployment) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.deployment/carp.deployment.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/deployment/)
-
-The deployment subsystem contains common concerns to 'running' a study, i.e., instantiating a study protocol with a specific set of devices and users as specified in the study protocol. A study deployment is responsible for managing registration of participant consent, tracking device connection issues, assessing data quality, and negotiating the connection between separate devices. Study deployments are managed through the `DeploymentService` application service:
 ```
-val protocol: StudyProtocol = createSmartphoneStudy()
+val studyService: StudyService = createStudiesEndpoint()
+
+// Create a new study.
+val studyOwner = StudyOwner()
+var studyStatus: StudyStatus = studyService.createStudy( studyOwner, "Example study" )
+val studyId: UUID = studyStatus.studyId
+
+// Let the study use the protocol from the 'carp.protocols' example above.
+val trackPatientStudy: StudyProtocol = createExampleProtocol()
+val patientPhone: AnyMasterDeviceDescriptor = trackPatientStudy.masterDevices.first() // "Patient's phone"
+val protocolSnapshot: StudyProtocolSnapshot = trackPatientStudy.getSnapshot()
+studyStatus = studyService.setProtocol( studyId, protocolSnapshot )
+
+// Add a participant.
+val email = EmailAddress( "participant@email.com" )
+val participant: Participant = studyService.addParticipant( studyId, email )
+
+// Once the study is fully configured, you can 'deploy' it to participant's devices. They will be invited.
+if ( studyStatus.canDeployToParticipants )
+{
+    // Create a 'participant group' with a single participant, using the "Patient's phone".
+    val participation = AssignParticipantDevices( participant.id, setOf( patientPhone.roleName ) )
+    val participantGroup = setOf( participation )
+
+    val groupStatus: ParticipantGroupStatus = studyService.deployParticipantGroup( studyId, participantGroup )
+    val isInvited = groupStatus.studyDeploymentStatus is StudyDeploymentStatus.Invited // True.
+}
+```
+
+## carp.deployment [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.deployment/carp.deployment.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.deployment) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.deployment/carp.deployment.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/deployment/)
+
+The deployment subsystem contains common concerns to 'running' a study. A study deployment is responsible for managing registration of participant consent, tracking device connection issues, assessing data quality, and negotiating the connection between separate devices. Most calls to this subsystem are abstracted away by `carp.studies` and `carp.client`, so usually you won't call its endpoints directly. Study deployments are managed through the `DeploymentService` application service:
+
+```
 val deploymentService: DeploymentService = createDeploymentEndpoint()
-val status: StudyDeploymentStatus = deploymentService.createStudyDeployment( protocol.getSnapshot() )
-val smartphone = status.devicesStatus.first().device as Smartphone
-val registration = smartphone.createRegistration {
+val trackPatientStudy: StudyProtocol = createExampleProtocol()
+val patientPhone: Smartphone = trackPatientStudy.masterDevices.first() as Smartphone // "Patient's phone"
+
+// This is called by `StudyService` when deploying a participant group.
+var status: StudyDeploymentStatus = deploymentService.createStudyDeployment( trackPatientStudy.getSnapshot() )
+val studyDeploymentId = status.studyDeploymentId
+
+// What comes after is called by `ClientManager` in `carp.client`:
+// - Register the device to be deployed.
+val registration = patientPhone.createRegistration {
     // Device-specific registration options can be accessed from here.
     // Depending on the device type, different options are available.
     // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
     deviceId = "xxxxxxxxx"
 }
-deploymentService.registerDevice( status.studyDeploymentId, smartphone.roleName, registration )
+status = deploymentService.registerDevice( studyDeploymentId, patientPhone.roleName, registration )
 
-// Call from the smartphone to retrieve all the necessary information to start running the study on this device.
-val deviceDeployment: MasterDeviceDeployment
-    = deploymentService.getDeviceDeploymentFor( status.studyDeploymentId, smartphone.roleName )
+// - Retrieve information on what to run and indicate the device is ready to collect the requested data.
+val patientPhoneStatus: DeviceDeploymentStatus = status.getDeviceStatus( patientPhone )
+if ( patientPhoneStatus.canObtainDeviceDeployment ) // True since there are no dependent devices.
+{
+    val deploymentInformation: MasterDeviceDeployment =
+        deploymentService.getDeviceDeploymentFor( studyDeploymentId, patientPhone.roleName )
+    val deploymentChecksum: Int = deploymentInformation.getChecksum() // To verify correct deployment.
+    deploymentService.deploymentSuccessful( studyDeploymentId, patientPhone.roleName, deploymentChecksum )
+}
+
+// Now that all devices have been registered and deployed, the deployment is ready.
+status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
+val isReady = status is StudyDeploymentStatus.DeploymentReady // True.
 ```
 
-## carp.client [![Maven Central](https://img.shields.io/maven-central/v/dk.cachet.carp.client/carp.client.core)](https://mvnrepository.com/artifact/dk.cachet.carp.client) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.client/carp.client.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/client/)
+## carp.client [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.client/carp.client.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.client) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.client/carp.client.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/client/)
 
-Manage the runtime logic for studies on client devices. For example, the following initializes a smartphone client:
+Manage the runtime logic for studies on client devices. For example, the following initializes a the smartphone client of a participant that got invited to the example study above:
 
 ```
 val deploymentService = createDeploymentEndpoint()
+
+// Retrieve invitation to participate in the study using a specific device.
+val account: Account = getLoggedInUser()
+val invitation: ParticipationInvitation = deploymentService.getParticipationInvitations( account.id ).first()
+val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
+val deviceToUse: String = invitation.deviceRoleNames.first() // This matches "Patient's phone".
+
+// Create a study runtime for the study.
 val clientManager: SmartphoneManager = createSmartphoneManager( deploymentService )
-// Parameters to pass to 'addStudy' are provided by the study service (carp.studies).
-val runtime: StudyRuntime = clientManager.addStudy( studyDeploymentId, "Patient's phone" )
+val runtime: StudyRuntime = clientManager.addStudy( studyDeploymentId, deviceToUse )
+var isDeployed = runtime.isDeployed // True, because there are no dependent devices.
 
-// Suppose a deployment also depends on incoming data from a "Clinician's phone"; deployment cannot complete yet.
-var isDeployed = runtime.isDeployed // False, since awaiting initialization of clinician's phone.
-
-// After the clinician's phone has been initialized, attempt deployment again.
-val status: StudyRuntime.DeploymentState = runtime.tryDeployment()
-isDeployed = status.isDeployed // True once dependent clients have been registered.
+// Suppose a deployment also depends on a "Clinician's phone" to be registered; deployment cannot complete yet.
+// After the clinician's phone has been registered, attempt deployment again.
+isDeployed = runtime.tryDeployment() // True once dependent clients have been registered.
 ```
 
-## carp.common [![Maven Central](https://img.shields.io/maven-central/v/dk.cachet.carp.common/carp.common)](https://mvnrepository.com/artifact/dk.cachet.carp.common) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.common/carp.common?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/common/)
-
+## carp.common [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.common/carp.common/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.common) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.common/carp.common?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/common/)
 
 Helper classes and base types relied upon by all subsystems. This library does not contain any domain logic.
 
-## carp.test [![Maven Central](https://img.shields.io/maven-central/v/dk.cachet.carp.test/carp.test)](https://mvnrepository.com/artifact/dk.cachet.carp.test) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.test/carp.test?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/test/)
+## carp.test [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.test/carp.test/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.test) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.test/carp.test?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/test/)
 
 Helper classes relied upon by test projects of all subsystems. E.g., to disable tests specified in common part of projects for the JavaScript runtime only.
 
