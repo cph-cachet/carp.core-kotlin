@@ -54,7 +54,13 @@ studyStatus = studyService.setProtocol( studyId, protocolSnapshot )
 val email = EmailAddress( "participant@email.com" )
 val participant: Participant = studyService.addParticipant( studyId, email )
 
-// Once the study is fully configured, you can 'deploy' it to participant's devices. They will be invited.
+// Once all necessary study options have been configured, the study can go live.
+if ( studyStatus is StudyStatus.Configuring && studyStatus.canGoLive )
+{
+    studyStatus = studyService.goLive( studyId )
+}
+
+// Once the study is live, you can 'deploy' it to participant's devices. They will be invited.
 if ( studyStatus.canDeployToParticipants )
 {
     // Create a 'participant group' with a single participant, using the "Patient's phone".
