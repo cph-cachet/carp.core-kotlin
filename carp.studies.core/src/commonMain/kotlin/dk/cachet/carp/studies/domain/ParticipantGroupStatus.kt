@@ -20,9 +20,6 @@ data class ParticipantGroupStatus(
     val studyDeploymentStatus: StudyDeploymentStatus,
     /**
      * The participants and assigned anonymized participation IDs that are part of this deployment.
-     * TODO: This redundantly stores `studyDeploymentId` inside of the Participation.
-     *       Rather than adding another class, e.g., `ParticipantGroupMember`,
-     *       I think we should simply remove the ID and store participations per `studyDeploymentId` in `Study`.
      */
     val participants: Set<DeanonymizedParticipation>
 )
