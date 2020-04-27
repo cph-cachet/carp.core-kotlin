@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.protocols.domain.deployment.DeploymentError
 import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
@@ -31,7 +32,11 @@ class StudyProtocol(
     /**
      * A unique descriptive name for the protocol assigned by the [ProtocolOwner].
      */
-    val name: String
+    val name: String,
+    /**
+     * An optional description for the study protocol.
+     */
+    val description: String = ""
 ) : StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration() )
 {
     sealed class Event : Immutable()
@@ -52,6 +57,7 @@ class StudyProtocol(
         {
             val owner = ProtocolOwner( snapshot.ownerId )
             val protocol = StudyProtocol( owner, snapshot.name )
+            protocol.creationDate = snapshot.creationDate
 
             // Add master devices.
             snapshot.masterDevices.forEach { protocol.addMasterDevice( it ) }
@@ -84,6 +90,13 @@ class StudyProtocol(
             return protocol
         }
     }
+
+
+    /**
+     * The date when this protocol was created.
+     */
+    var creationDate: DateTime = DateTime.now()
+        private set
 
     /**
      * Add a master device which is responsible for aggregating and synchronizing incoming data.

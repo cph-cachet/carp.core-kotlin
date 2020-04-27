@@ -328,6 +328,8 @@ class StudyProtocolTest
 
         assertEquals( protocol.owner, fromSnapshot.owner )
         assertEquals( protocol.name, fromSnapshot.name )
+        assertEquals( protocol.description, fromSnapshot.description )
+        assertEquals( protocol.creationDate, fromSnapshot.creationDate )
         assertEquals( protocol.devices.count(), protocol.devices.intersect( fromSnapshot.devices ).count() )
         protocol.masterDevices.forEach { assertTrue( connectedDevicesAreSame( protocol, fromSnapshot, it ) ) }
         assertEquals( protocol.triggers.count(), protocol.triggers.intersect( fromSnapshot.triggers ).count() )

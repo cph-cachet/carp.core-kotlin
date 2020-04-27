@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.Snapshot
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
@@ -20,6 +21,8 @@ import kotlinx.serialization.Serializable
 data class StudyProtocolSnapshot(
     val ownerId: UUID,
     val name: String,
+    val description: String,
+    val creationDate: DateTime,
     val masterDevices: List<@Serializable( MasterDeviceDescriptorSerializer::class ) AnyMasterDeviceDescriptor>,
     val connectedDevices: List<@Serializable( DeviceDescriptorSerializer::class ) AnyDeviceDescriptor>,
     val connections: List<DeviceConnection>,
@@ -52,6 +55,8 @@ data class StudyProtocolSnapshot(
             return StudyProtocolSnapshot(
                 ownerId = protocol.owner.id,
                 name = protocol.name,
+                description = protocol.description,
+                creationDate = protocol.creationDate,
                 masterDevices = protocol.masterDevices.toList(),
                 connectedDevices = protocol.devices.minus( protocol.masterDevices ).toList(),
                 connections = protocol.masterDevices.flatMap { getConnections( protocol, it ) }.toList(),
@@ -89,6 +94,8 @@ data class StudyProtocolSnapshot(
 
         if ( ownerId != other.ownerId ) return false
         if ( name != other.name ) return false
+        if ( description != other.description ) return false
+        if ( creationDate != other.creationDate ) return false
 
         val listsToCompare = listOf(
             masterDevices to other.masterDevices,
@@ -114,6 +121,8 @@ data class StudyProtocolSnapshot(
     {
         var result = ownerId.hashCode()
         result = 31 * result + name.hashCode()
+        result = 31 * result + description.hashCode()
+        result = 31 * result + creationDate.hashCode()
         result = 31 * result + masterDevices.sortedWith( compareBy { it.roleName } ).toTypedArray().contentDeepHashCode()
         result = 31 * result + connectedDevices.sortedWith( compareBy { it.roleName } ).toTypedArray().contentDeepHashCode()
         result = 31 * result + connections.sortedWith( compareBy( { it.roleName }, { it.connectedToRoleName } ) ).toTypedArray().contentDeepHashCode()
