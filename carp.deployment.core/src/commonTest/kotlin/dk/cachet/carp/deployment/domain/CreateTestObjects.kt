@@ -13,7 +13,6 @@ import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilder
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilderDsl
 import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.triggers.Trigger
@@ -138,7 +137,6 @@ internal data class UnknownMasterDeviceDescriptor( override val roleName: String
 internal data class UnknownDeviceRegistration( override val deviceId: String ) : DeviceRegistration()
 
 @Serializable( with = NotSerializable::class )
-@DeviceRegistrationBuilderDsl
 class UnknownDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() ) :
     DeviceRegistrationBuilder<DeviceRegistration>
 {

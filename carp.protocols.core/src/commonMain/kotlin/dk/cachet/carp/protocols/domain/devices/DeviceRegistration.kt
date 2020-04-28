@@ -31,6 +31,7 @@ abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegis
  *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceDescriptor].
  */
 @Serializable( NotSerializable::class )
+@DeviceRegistrationBuilderDsl
 interface DeviceRegistrationBuilder<T : DeviceRegistration>
 {
     /**
@@ -40,7 +41,7 @@ interface DeviceRegistrationBuilder<T : DeviceRegistration>
 }
 
 /**
- * Should be applied to all [DeviceRegistrationBuilder] implementations to ensure misuse of internal DSL.
+ * Should be applied to all builders participating in building [DeviceRegistration]s to prevent misuse of internal DSL.
  * For more information: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-dsl-marker/index.html
  */
 @DslMarker
