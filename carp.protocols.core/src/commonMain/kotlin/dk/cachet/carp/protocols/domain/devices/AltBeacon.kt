@@ -55,7 +55,6 @@ data class AltBeaconDeviceRegistration(
 
 
 @Serializable( with = NotSerializable::class )
-@DeviceRegistrationBuilderDsl
 class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>
 {
     /**
