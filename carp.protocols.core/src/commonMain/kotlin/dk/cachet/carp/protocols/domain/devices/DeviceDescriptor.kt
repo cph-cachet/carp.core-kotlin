@@ -2,6 +2,8 @@ package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.Trilean
+import dk.cachet.carp.protocols.domain.data.DataType
+import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
@@ -25,6 +27,13 @@ abstract class DeviceDescriptor<TRegistration : DeviceRegistration, out TBuilder
      * E.g., "Patient's phone"
      */
     abstract val roleName: String
+
+    /**
+     * Sampling configurations for data types available on this device which override the default configuration.
+     * TODO: Verify whether all configured data types are supported by this device (supported data streams), probably in init.
+     *       We might also want to check whether the sampling configuration instances are valid.
+     */
+    abstract val samplingConfiguration: Map<DataType, SamplingConfiguration>
 
     protected abstract fun createDeviceRegistrationBuilder(): TBuilder
 

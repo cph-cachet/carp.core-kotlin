@@ -4,6 +4,7 @@ import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.NotSerializable
 import dk.cachet.carp.protocols.domain.data.DataType
+import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -102,6 +103,8 @@ fun createComplexProtocol(): StudyProtocol
 internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) :
     MasterDeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
+    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
+
     override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
@@ -111,6 +114,8 @@ internal data class UnknownMasterDeviceDescriptor( override val roleName: String
 internal data class UnknownDeviceDescriptor( override val roleName: String ) :
     DeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
+    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
+
     override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE

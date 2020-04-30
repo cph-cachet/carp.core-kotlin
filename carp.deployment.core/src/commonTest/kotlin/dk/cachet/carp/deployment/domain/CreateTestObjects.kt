@@ -8,6 +8,8 @@ import dk.cachet.carp.deployment.domain.triggers.StubTrigger
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.data.DataType
+import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
@@ -119,6 +121,8 @@ fun createComplexDeployment(): StudyDeployment
 internal data class UnknownDeviceDescriptor( override val roleName: String ) :
     DeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
+    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
+
     override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
@@ -128,6 +132,8 @@ internal data class UnknownDeviceDescriptor( override val roleName: String ) :
 internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) :
     MasterDeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
+    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
+
     override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
