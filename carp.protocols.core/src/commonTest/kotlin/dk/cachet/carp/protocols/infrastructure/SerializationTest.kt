@@ -1,6 +1,8 @@
 package dk.cachet.carp.protocols.infrastructure
 
+import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.protocols.domain.data.IntervalSamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.AltBeacon
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
@@ -16,6 +18,9 @@ private val protocolInstances = listOf(
     // Devices.
     Smartphone( "User's phone" ),
     AltBeacon( "Kitchen" ),
+
+    // Sampling configurations.
+    IntervalSamplingConfiguration( TimeSpan.fromMilliseconds( 1000.0 ) ),
 
     // Device registrations.
     AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 ),
