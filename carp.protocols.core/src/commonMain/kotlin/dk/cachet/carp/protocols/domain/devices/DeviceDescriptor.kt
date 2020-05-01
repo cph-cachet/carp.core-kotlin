@@ -57,3 +57,11 @@ abstract class DeviceDescriptor<TRegistration : DeviceRegistration, out TBuilder
 }
 
 typealias AnyDeviceDescriptor = DeviceDescriptor<*, *>
+
+
+/**
+ * Should be applied to all builders participating in building [DeviceDescriptor]s to prevent misuse of internal DSL.
+ * For more information: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-dsl-marker/index.html
+ */
+@DslMarker
+annotation class DeviceDescriptorBuilderDsl

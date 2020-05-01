@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols
 
+import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.Smartphone
@@ -20,10 +21,16 @@ class ProtocolsCodeSamples
 
         // Define which devices are used for data collection.
         val phone = Smartphone( "Patient's phone" )
+        {
+            // Configure device-specific options, e.g., frequency to collect data at.
+            samplingConfiguration {
+                stepcount { interval = TimeSpan.fromMinutes( 15.0 ) }
+            }
+        }
         protocol.addMasterDevice( phone )
 
         // Define what needs to be measured, on which device, when.
-        val measures: List<Measure> = listOf( Smartphone.geolocation(), Smartphone.stepcount() )
+        val measures: List<Measure> = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepcount() )
         val startMeasures = ConcurrentTask( "Start measures", measures )
         protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 

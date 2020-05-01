@@ -82,7 +82,7 @@ class StudiesCodeSamples
         val phone = Smartphone( "Patient's phone" )
         protocol.addMasterDevice( phone )
 
-        val measures = listOf( Smartphone.geolocation(), Smartphone.stepcount() )
+        val measures = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepcount() )
         val startMeasures = ConcurrentTask( "Start measures", measures )
         protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
