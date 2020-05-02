@@ -4,6 +4,7 @@ import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.protocols.domain.data.DataType
 import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
+import dk.cachet.carp.protocols.domain.data.SamplingConfigurationMapBuilder
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
@@ -58,6 +59,28 @@ abstract class DeviceDescriptor<TRegistration : DeviceRegistration, out TBuilder
 
 typealias AnyDeviceDescriptor = DeviceDescriptor<*, *>
 
+
+/**
+ * A helper class to configure and construct immutable [DeviceDescriptor] classes.
+ */
+@DeviceDescriptorBuilderDsl
+abstract class DeviceDescriptorBuilder<TSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilder>
+{
+    private var samplingConfigurationBuilder: TSamplingConfigurationMapBuilder.() -> Unit = { }
+
+    /**
+     * Override default sampling configurations for data types available on this device.
+     */
+    fun samplingConfiguration( builder: TSamplingConfigurationMapBuilder.() -> Unit )
+    {
+        samplingConfigurationBuilder = builder
+    }
+
+    protected abstract fun createSamplingConfigurationMapBuilder(): TSamplingConfigurationMapBuilder
+
+    fun buildSamplingConfiguration(): Map<DataType, SamplingConfiguration> =
+        createSamplingConfigurationMapBuilder().apply( samplingConfigurationBuilder ).build()
+}
 
 /**
  * Should be applied to all builders participating in building [DeviceDescriptor]s to prevent misuse of internal DSL.
