@@ -4,7 +4,7 @@ import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.protocols.domain.data.DataType
 import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure
-import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorSamplingConfigurationBuilder
+import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorSamplingConfigurationMapBuilder
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -37,21 +37,11 @@ data class Smartphone(
 
 /**
  * A helper class to configure and construct immutable [Smartphone] classes.
+ *
+ * TODO: Once `Smartphone` supports additional measures (e.g., surveys), we will need to aggregate multiple builders.
  */
-@DeviceDescriptorBuilderDsl
-class SmartphoneBuilder
+class SmartphoneBuilder : DeviceDescriptorBuilder<PhoneSensorSamplingConfigurationMapBuilder>()
 {
-    private var samplingConfigurationBuilder: PhoneSensorSamplingConfigurationBuilder.() -> Unit = { }
-
-    fun samplingConfiguration( builder: PhoneSensorSamplingConfigurationBuilder.() -> Unit )
-    {
-        samplingConfigurationBuilder = builder
-    }
-
-    /**
-     * Build the immutable [SamplingConfiguration] using the current configuration of this [SmartphoneBuilder].
-     * TODO: Once `Smartphone` supports additional measures (e.g., surveys), we will need to aggregate multiple builders.
-     */
-    fun buildSamplingConfiguration(): Map<DataType, SamplingConfiguration> =
-        Smartphone.Sensors.createSamplingConfiguration( samplingConfigurationBuilder )
+    override fun createSamplingConfigurationMapBuilder(): PhoneSensorSamplingConfigurationMapBuilder =
+        PhoneSensorSamplingConfigurationMapBuilder()
 }

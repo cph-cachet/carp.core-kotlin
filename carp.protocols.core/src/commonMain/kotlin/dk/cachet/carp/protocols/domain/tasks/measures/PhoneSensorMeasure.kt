@@ -2,12 +2,13 @@ package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.protocols.domain.data.DataType
-import dk.cachet.carp.protocols.domain.data.IntervalSamplingConfigurationBuilder
 import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
+import dk.cachet.carp.protocols.domain.data.SamplingConfigurationMapBuilder
+import dk.cachet.carp.protocols.domain.data.carp.Geolocation
+import dk.cachet.carp.protocols.domain.data.carp.GeolocationSamplingConfigurationBuilder
+import dk.cachet.carp.protocols.domain.data.carp.Stepcount
+import dk.cachet.carp.protocols.domain.data.carp.StepcountSamplingConfigurationBuilder
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
-import dk.cachet.carp.protocols.domain.data.carp.GEO_LOCATION as GEOLOCATION
-import dk.cachet.carp.protocols.domain.data.carp.STEPCOUNT as STEPCOUNT
-import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorBuilderDsl
 import kotlinx.serialization.Serializable
 
 
@@ -31,30 +32,17 @@ data class PhoneSensorMeasure private constructor(
         /**
          * Measure geographic location data (longitude and latitude).
          */
-        fun geolocation( duration: TimeSpan = TimeSpan.INFINITE ) = PhoneSensorMeasure( GEOLOCATION, duration )
+        fun geolocation( duration: TimeSpan = TimeSpan.INFINITE ) = PhoneSensorMeasure( Geolocation.TYPE, duration )
 
-        val DEFAULT_STEPCOUNT_INTERVAL: TimeSpan = TimeSpan.fromMinutes( 1.0 )
         /**
-         * Measure amount of steps a participant has taken (measured per time interval).
-         *
-         * TODO: Android can both 'listen' for steps (delay of about 2 s), and poll for steps (latency of about 10 s, but more accurate).
-         *       Should we add a separate data type (STEPCOUNT_LISTENER) for the listener, or choose one or the other option in configuration?
-         *       How does this align with iPhone?
-         * Android (https://developer.android.com/guide/topics/sensors/sensors_motion#sensors-motion-stepcounter):
-         * - There is a latency of up to 10 s.
+         * Measure amount of steps a participant has taken in a specified time interval.
          */
-        fun stepcount( duration: TimeSpan = TimeSpan.INFINITE ) = PhoneSensorMeasure( STEPCOUNT, duration )
+        fun stepcount( duration: TimeSpan = TimeSpan.INFINITE ) = PhoneSensorMeasure( Stepcount.TYPE, duration )
 
         /**
          * All the data types of sensor measures commonly supported on smartphones supported by this factory.
          */
-        val supportedDataTypes get() = arrayOf( GEOLOCATION, STEPCOUNT )
-
-        /**
-         * A builder function to configure and construct [SamplingConfiguration]s for all [PhoneSensorMeasure]s.
-         */
-        fun createSamplingConfiguration( builder: PhoneSensorSamplingConfigurationBuilder.() -> Unit ): Map<DataType, SamplingConfiguration> =
-            PhoneSensorSamplingConfigurationBuilder().apply( builder ).build()
+        val supportedDataTypes = arrayOf( Geolocation, Stepcount ).map { it.TYPE }
     }
 
 
@@ -72,17 +60,17 @@ data class PhoneSensorMeasure private constructor(
  * A helper class to configure and construct immutable [SamplingConfiguration] classes for [PhoneSensorMeasure]s
  * as part of setting up a [DeviceDescriptor].
  */
-@DeviceDescriptorBuilderDsl
-class PhoneSensorSamplingConfigurationBuilder
+class PhoneSensorSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilder()
 {
-    private val samplingConfigurations: MutableMap<DataType, SamplingConfiguration> = mutableMapOf()
+    /**
+     * Configure sampling configuration for [Geolocation].
+     */
+    fun geolocation( builder: GeolocationSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
+        addConfiguration( Geolocation, builder )
 
-    fun stepcount( builder: IntervalSamplingConfigurationBuilder.() -> Unit )
-    {
-        val configuration = IntervalSamplingConfigurationBuilder( PhoneSensorMeasure.DEFAULT_STEPCOUNT_INTERVAL )
-            .apply( builder ).build()
-        samplingConfigurations[ STEPCOUNT ] = configuration
-    }
-
-    fun build(): Map<DataType, SamplingConfiguration> = samplingConfigurations.toMap()
+    /**
+     * Configure sampling configuration for [Stepcount].
+     */
+    fun stepcount( builder: StepcountSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
+        addConfiguration( Stepcount, builder )
 }
