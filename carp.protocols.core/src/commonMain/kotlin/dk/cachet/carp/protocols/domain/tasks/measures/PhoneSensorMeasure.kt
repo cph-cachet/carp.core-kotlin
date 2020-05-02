@@ -2,6 +2,7 @@ package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.protocols.domain.data.DataType
+import dk.cachet.carp.protocols.domain.data.DataTypeMetadata
 import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.data.SamplingConfigurationMapBuilder
 import dk.cachet.carp.protocols.domain.data.carp.Geolocation
@@ -29,20 +30,22 @@ data class PhoneSensorMeasure private constructor(
 {
     companion object Factory
     {
+        private fun <T : DataTypeMetadata<*>> measureOf( type: T, duration: TimeSpan ) = PhoneSensorMeasure( type.TYPE, duration )
+
         /**
          * Measure geographic location data (longitude and latitude).
          */
-        fun geolocation( duration: TimeSpan = TimeSpan.INFINITE ) = PhoneSensorMeasure( Geolocation.TYPE, duration )
+        fun geolocation( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( Geolocation, duration )
 
         /**
          * Measure amount of steps a participant has taken in a specified time interval.
          */
-        fun stepcount( duration: TimeSpan = TimeSpan.INFINITE ) = PhoneSensorMeasure( Stepcount.TYPE, duration )
+        fun stepcount( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( Stepcount, duration )
 
         /**
          * All the data types of sensor measures commonly supported on smartphones supported by this factory.
          */
-        val supportedDataTypes = arrayOf( Geolocation, Stepcount ).map { it.TYPE }
+        val supportedDataTypes = arrayOf( Geolocation, Stepcount )
     }
 
 
@@ -51,7 +54,7 @@ data class PhoneSensorMeasure private constructor(
         // Since supported sensors by CARP should co-evolve across the platform (measure definitions and matching probe implementations),
         // only data types that are supported are allowed. If new probes are implemented for PhoneSensorMeasure, this class should be updated correspondingly.
         // TODO: This is currently 'somewhat' enforced using a private constructor. But, 'copy' can still be used.
-        require( supportedDataTypes.contains( type ) ) { "Invalid data type passed to ${PhoneSensorMeasure::class.simpleName}." }
+        require( type in supportedDataTypes.map { it.TYPE } ) { "Invalid data type passed to ${PhoneSensorMeasure::class.simpleName}." }
     }
 }
 
