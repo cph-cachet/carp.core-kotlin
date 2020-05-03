@@ -2,7 +2,8 @@ package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.protocols.domain.data.DataType
-import dk.cachet.carp.protocols.domain.data.DataTypeMetadata
+import dk.cachet.carp.protocols.domain.data.DataTypeSamplingScheme
+import dk.cachet.carp.protocols.domain.data.DataTypeSamplingSchemeList
 import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.data.SamplingConfigurationMapBuilder
 import dk.cachet.carp.protocols.domain.data.carp.Geolocation
@@ -28,24 +29,29 @@ data class PhoneSensorMeasure private constructor(
     val duration: TimeSpan = TimeSpan.INFINITE
 ) : Measure()
 {
+    /**
+     * All the data types and sampling schemes of sensor measures commonly supported on smartphones, supported by [PhoneSensorMeasure].
+     */
+    object SamplingSchemes : DataTypeSamplingSchemeList()
+    {
+        val GEOLOCATION = add( Geolocation( TimeSpan.fromMinutes( 1.0 ) ) )
+        val STEPCOUNT = add( Stepcount( TimeSpan.fromMinutes( 1.0 ) ) )
+    }
+
     companion object Factory
     {
-        private fun <T : DataTypeMetadata<*>> measureOf( type: T, duration: TimeSpan ) = PhoneSensorMeasure( type.TYPE, duration )
+        private fun <T : DataTypeSamplingScheme<*>> measureOf( samplingScheme: T, duration: TimeSpan ) =
+            PhoneSensorMeasure( samplingScheme.type, duration )
 
         /**
          * Measure geographic location data (longitude and latitude).
          */
-        fun geolocation( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( Geolocation, duration )
+        fun geolocation( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( SamplingSchemes.GEOLOCATION, duration )
 
         /**
          * Measure amount of steps a participant has taken in a specified time interval.
          */
-        fun stepcount( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( Stepcount, duration )
-
-        /**
-         * All the data types of sensor measures commonly supported on smartphones supported by this factory.
-         */
-        val supportedDataTypes = arrayOf( Geolocation, Stepcount )
+        fun stepcount( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( SamplingSchemes.STEPCOUNT, duration )
     }
 
 
@@ -54,7 +60,7 @@ data class PhoneSensorMeasure private constructor(
         // Since supported sensors by CARP should co-evolve across the platform (measure definitions and matching probe implementations),
         // only data types that are supported are allowed. If new probes are implemented for PhoneSensorMeasure, this class should be updated correspondingly.
         // TODO: This is currently 'somewhat' enforced using a private constructor. But, 'copy' can still be used.
-        require( type in supportedDataTypes.map { it.TYPE } ) { "Invalid data type passed to ${PhoneSensorMeasure::class.simpleName}." }
+        require( type in SamplingSchemes.map { it.type } ) { "Invalid data type passed to ${PhoneSensorMeasure::class.simpleName}." }
     }
 }
 
@@ -69,11 +75,17 @@ class PhoneSensorSamplingConfigurationMapBuilder : SamplingConfigurationMapBuild
      * Configure sampling configuration for [Geolocation].
      */
     fun geolocation( builder: GeolocationSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
-        addConfiguration( Geolocation, builder )
+        addConfiguration( PhoneSensorMeasure.SamplingSchemes.GEOLOCATION, builder )
 
     /**
      * Configure sampling configuration for [Stepcount].
+     *
+     * TODO: Android can both 'listen' for steps (delay of about 2 s), and poll for steps (latency of about 10 s, but more accurate).
+     *       Should we add a separate data type (STEPCOUNT_LISTENER) for the listener, or choose one or the other option in configuration?
+     *       How does this align with iPhone?
+     * Android (https://developer.android.com/guide/topics/sensors/sensors_motion#sensors-motion-stepcounter):
+     * - There is a latency of up to 10 s.
      */
     fun stepcount( builder: StepcountSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
-        addConfiguration( Stepcount, builder )
+        addConfiguration( PhoneSensorMeasure.SamplingSchemes.STEPCOUNT, builder )
 }

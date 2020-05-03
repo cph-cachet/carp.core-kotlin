@@ -27,6 +27,11 @@ data class Smartphone(
          * A factory to create measures for sensors commonly available on smartphones.
          */
         val Sensors: PhoneSensorMeasure.Factory = PhoneSensorMeasure.Factory
+
+        /**
+         * All the data types and sampling schemes of sensor commonly available on smartphones.
+         */
+        val SensorsSamplingSchemes = PhoneSensorMeasure.SamplingSchemes
     }
 
     override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
