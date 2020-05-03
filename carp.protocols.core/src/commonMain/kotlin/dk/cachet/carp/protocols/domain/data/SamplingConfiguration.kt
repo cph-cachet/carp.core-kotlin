@@ -40,12 +40,12 @@ open class SamplingConfigurationMapBuilder
     private val samplingConfigurations: MutableMap<DataType, SamplingConfiguration> = mutableMapOf()
 
     protected fun <TBuilder : SamplingConfigurationBuilder> addConfiguration(
-        dataType: DataTypeMetadata<TBuilder>,
+        samplingScheme: DataTypeSamplingScheme<TBuilder>,
         builder: TBuilder.() -> Unit
     ): SamplingConfiguration
     {
-        val configuration = dataType.samplingConfiguration( builder )
-        samplingConfigurations[ dataType.TYPE ] = configuration
+        val configuration = samplingScheme.samplingConfiguration( builder )
+        samplingConfigurations[ samplingScheme.type ] = configuration
         return configuration
     }
 

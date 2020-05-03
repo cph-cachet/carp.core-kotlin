@@ -1,19 +1,19 @@
 package dk.cachet.carp.protocols.domain.data.carp
 
 import dk.cachet.carp.common.TimeSpan
-import dk.cachet.carp.protocols.domain.data.DataTypeMetadata
+import dk.cachet.carp.protocols.domain.data.DataTypeSamplingScheme
 import dk.cachet.carp.protocols.domain.data.IntervalSamplingConfigurationBuilder
 
 
 /**
- * Geographic location data: longitude and latitude.
+ * Sampling scheme for geographic location data, representing longitude and latitude.
  */
-object Geolocation : DataTypeMetadata<GeolocationSamplingConfigurationBuilder>( carpDataType( "geolocation" ) )
+class Geolocation(
+    val defaultMeasureInterval: TimeSpan
+) : DataTypeSamplingScheme<GeolocationSamplingConfigurationBuilder>( carpDataType( "geolocation" ) )
 {
-    val DEFAULT_MEASURE_INTERVAL: TimeSpan = TimeSpan.fromMinutes( 1.0 )
-
     override fun createSamplingConfigurationBuilder(): GeolocationSamplingConfigurationBuilder =
-        GeolocationSamplingConfigurationBuilder( DEFAULT_MEASURE_INTERVAL )
+        GeolocationSamplingConfigurationBuilder( defaultMeasureInterval )
 }
 
 typealias GeolocationSamplingConfigurationBuilder = IntervalSamplingConfigurationBuilder
