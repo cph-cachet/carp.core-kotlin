@@ -9,7 +9,6 @@ import dk.cachet.carp.protocols.domain.data.SamplingConfigurationMapBuilder
 import dk.cachet.carp.protocols.domain.data.carp.Geolocation
 import dk.cachet.carp.protocols.domain.data.carp.GeolocationSamplingConfigurationBuilder
 import dk.cachet.carp.protocols.domain.data.carp.Stepcount
-import dk.cachet.carp.protocols.domain.data.carp.StepcountSamplingConfigurationBuilder
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import kotlinx.serialization.Serializable
 
@@ -35,7 +34,20 @@ data class PhoneSensorMeasure private constructor(
     object SamplingSchemes : DataTypeSamplingSchemeList()
     {
         val GEOLOCATION = add( Geolocation( TimeSpan.fromMinutes( 1.0 ) ) )
-        val STEPCOUNT = add( Stepcount( TimeSpan.fromMinutes( 1.0 ) ) )
+
+        /**
+         * Steps within recorded time intervals as reported by a phone's dedicated hardware sensor.
+         * Data rate is determined by the sensor.
+         *
+         * Android (https://developer.android.com/guide/topics/sensors/sensors_motion#sensors-motion-stepcounter):
+         * - There is a latency of up to 10 s.
+         * - Only available starting from Android 4.4.
+         *
+         * TODO: Android can also 'listen' for steps, which has a delay of about 2 s but is less accurate.
+         *       Each 'step' is reported as an event, so this would map to a different DataType (e.g. `Step`).
+         *       Not certain this is available on iPhone.
+         */
+        val STEPCOUNT = add( Stepcount ) // No configuration options available.
     }
 
     companion object Factory
@@ -49,7 +61,7 @@ data class PhoneSensorMeasure private constructor(
         fun geolocation( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( SamplingSchemes.GEOLOCATION, duration )
 
         /**
-         * Measure amount of steps a participant has taken in a specified time interval.
+         * Measure number of steps a participant has taken in a recorded time interval.
          */
         fun stepcount( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( SamplingSchemes.STEPCOUNT, duration )
     }
@@ -76,16 +88,4 @@ class PhoneSensorSamplingConfigurationMapBuilder : SamplingConfigurationMapBuild
      */
     fun geolocation( builder: GeolocationSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
         addConfiguration( PhoneSensorMeasure.SamplingSchemes.GEOLOCATION, builder )
-
-    /**
-     * Configure sampling configuration for [Stepcount].
-     *
-     * TODO: Android can both 'listen' for steps (delay of about 2 s), and poll for steps (latency of about 10 s, but more accurate).
-     *       Should we add a separate data type (STEPCOUNT_LISTENER) for the listener, or choose one or the other option in configuration?
-     *       How does this align with iPhone?
-     * Android (https://developer.android.com/guide/topics/sensors/sensors_motion#sensors-motion-stepcounter):
-     * - There is a latency of up to 10 s.
-     */
-    fun stepcount( builder: StepcountSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
-        addConfiguration( PhoneSensorMeasure.SamplingSchemes.STEPCOUNT, builder )
 }
