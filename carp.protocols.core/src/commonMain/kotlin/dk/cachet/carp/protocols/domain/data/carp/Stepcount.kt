@@ -1,19 +1,16 @@
 package dk.cachet.carp.protocols.domain.data.carp
 
-import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.protocols.domain.data.DataTypeSamplingScheme
-import dk.cachet.carp.protocols.domain.data.IntervalSamplingConfigurationBuilder
+import dk.cachet.carp.protocols.domain.data.NoOptionsSamplingConfigurationBuilder
 
 
 /**
  * Sampling scheme for stepcount data, representing the amount of steps a participant has taken in a specified time interval.
  */
-class Stepcount(
-    val defaultMeasureInterval: TimeSpan
-) : DataTypeSamplingScheme<StepcountSamplingConfigurationBuilder>( carpDataType( "stepcount" ) )
+object Stepcount : DataTypeSamplingScheme<StepcountSamplingConfigurationBuilder>( carpDataType( "stepcount" ) )
 {
     override fun createSamplingConfigurationBuilder(): StepcountSamplingConfigurationBuilder =
-        StepcountSamplingConfigurationBuilder( defaultMeasureInterval )
+        StepcountSamplingConfigurationBuilder
 }
 
-typealias StepcountSamplingConfigurationBuilder = IntervalSamplingConfigurationBuilder
+typealias StepcountSamplingConfigurationBuilder = NoOptionsSamplingConfigurationBuilder
