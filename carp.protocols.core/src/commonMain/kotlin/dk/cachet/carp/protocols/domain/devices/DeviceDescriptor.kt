@@ -20,7 +20,7 @@ import kotlin.reflect.KClass
  */
 @Serializable
 @Polymorphic
-abstract class DeviceDescriptor<TRegistration : DeviceRegistration, out TBuilder : DeviceRegistrationBuilder<TRegistration>> :
+abstract class DeviceDescriptor<TRegistration : DeviceRegistration, out TRegistrationBuilder : DeviceRegistrationBuilder<TRegistration>> :
     Immutable( notImmutableErrorFor( DeviceDescriptor::class ) )
 {
     /**
@@ -36,13 +36,13 @@ abstract class DeviceDescriptor<TRegistration : DeviceRegistration, out TBuilder
      */
     abstract val samplingConfiguration: Map<DataType, SamplingConfiguration>
 
-    protected abstract fun createDeviceRegistrationBuilder(): TBuilder
+    protected abstract fun createDeviceRegistrationBuilder(): TRegistrationBuilder
 
     /**
      * Create a [DeviceRegistration] which can be used to configure this device for deployment.
      * Use [builder] to configure device-specific registration options, if any.
      */
-    fun createRegistration( builder: TBuilder.() -> Unit = {} ): TRegistration =
+    fun createRegistration( builder: TRegistrationBuilder.() -> Unit = {} ): TRegistration =
         createDeviceRegistrationBuilder().apply( builder ).build()
 
     /**

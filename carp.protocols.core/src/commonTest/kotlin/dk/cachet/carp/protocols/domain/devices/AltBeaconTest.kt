@@ -23,7 +23,7 @@ class AltBeaconTest
     }
 
     @Test
-    fun builder_sets_properties()
+    fun registration_builder_sets_properties()
     {
         val registration = AltBeaconDeviceRegistrationBuilder().apply {
             manufacturerId = 1
