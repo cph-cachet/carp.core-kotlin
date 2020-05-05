@@ -6,6 +6,7 @@ import dk.cachet.carp.common.serialization.UnknownPolymorphicSerializer
 import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.protocols.domain.data.DataType
 import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
+import dk.cachet.carp.protocols.domain.data.SamplingConfigurationSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.json.content
@@ -36,8 +37,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
             if ( samplingConfigurationField in json.keys )
             {
                 val configurationJson: String = json[ samplingConfigurationField ]!!.jsonArray.toString()
-                // TODO: Support unknown SamplingConfiguration types?
-                val configurationSerializer = MapSerializer( DataType.serializer(), SamplingConfiguration.serializer() )
+                val configurationSerializer = MapSerializer( DataType.serializer(), SamplingConfigurationSerializer )
                 serializer.parse( configurationSerializer, configurationJson )
             }
             else emptyMap()
@@ -76,8 +76,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
             if ( samplingConfigurationField in json.keys )
             {
                 val configurationJson: String = json[ samplingConfigurationField ]!!.jsonArray.toString()
-                // TODO: Support unknown SamplingConfiguration types?
-                val configurationSerializer = MapSerializer( DataType.serializer(), SamplingConfiguration.serializer() )
+                val configurationSerializer = MapSerializer( DataType.serializer(), SamplingConfigurationSerializer )
                 serializer.parse( configurationSerializer, configurationJson )
             }
             else emptyMap()

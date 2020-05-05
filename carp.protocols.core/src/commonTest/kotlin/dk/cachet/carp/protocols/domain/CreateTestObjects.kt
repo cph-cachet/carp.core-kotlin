@@ -40,6 +40,10 @@ internal val STUBS_SERIAL_MODULE = SerializersModule {
         StubMasterDeviceDescriptor::class with StubMasterDeviceDescriptor.serializer()
         UnknownMasterDeviceDescriptor::class with UnknownMasterDeviceDescriptor.serializer()
     }
+    polymorphic( SamplingConfiguration::class )
+    {
+        UnknownSamplingConfiguration::class with UnknownSamplingConfiguration.serializer()
+    }
     polymorphic ( DeviceRegistration::class )
     {
         UnknownDeviceRegistration::class with UnknownDeviceRegistration.serializer()
@@ -100,11 +104,12 @@ fun createComplexProtocol(): StudyProtocol
 }
 
 @Serializable
-internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) :
+internal data class UnknownMasterDeviceDescriptor(
+    override val roleName: String,
+    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
+) :
     MasterDeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
-    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
-
     override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
@@ -120,6 +125,9 @@ internal data class UnknownDeviceDescriptor( override val roleName: String ) :
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
 }
+
+@Serializable
+internal data class UnknownSamplingConfiguration( val someUnknownProperty: String ) : SamplingConfiguration()
 
 @Serializable( with = NotSerializable::class )
 class UnknownDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() ) :
