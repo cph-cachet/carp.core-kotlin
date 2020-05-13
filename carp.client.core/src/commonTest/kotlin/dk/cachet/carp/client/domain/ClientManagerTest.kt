@@ -1,6 +1,8 @@
 package dk.cachet.carp.client.domain
 
+import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -10,25 +12,55 @@ import kotlin.test.*
  */
 class ClientManagerTest
 {
+    private fun initializeSmartphoneClient( deploymentService: DeploymentService ): SmartphoneClient =
+        SmartphoneClient( InMemoryClientRepository( deploymentService ), deploymentService ).apply {
+            configure()
+        }
+
+
+    @Test
+    fun configure_succeeds() = runBlockingTest {
+        val ( deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
+
+        // Initially not configured.
+        val client = SmartphoneClient( InMemoryClientRepository( deploymentService ), deploymentService )
+        assertFalse( client.isConfigured )
+
+        // Configuration succeeds.
+        client.configure()
+        assertTrue( client.isConfigured )
+    }
+
+    @Test
+    fun add_study_fails_when_not_yet_configured() = runBlockingTest {
+        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
+        val client = SmartphoneClient( InMemoryClientRepository( deploymentService ), deploymentService )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            client.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
+        }
+    }
+
     @Test
     fun add_study_succeeds() = runBlockingTest {
         // Create deployment service and client manager.
         val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = createSmartphoneManager( deploymentService )
+        val client = initializeSmartphoneClient( deploymentService )
 
-        clientManager.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
+        client.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
     }
 
     @Test
     fun add_study_fails_for_invalid_deployment() = runBlockingTest {
         // Create deployment service and client manager.
         val ( deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = createSmartphoneManager( deploymentService )
+        val client = initializeSmartphoneClient( deploymentService )
 
         val invalidId = UUID( "00000000-0000-0000-0000-000000000000" )
         assertFailsWith<IllegalArgumentException>
         {
-            clientManager.addStudy( invalidId, smartphone.roleName )
+            client.addStudy( invalidId, smartphone.roleName )
         }
     }
 
@@ -36,11 +68,11 @@ class ClientManagerTest
     fun add_study_fails_for_nonexisting_device_role() = runBlockingTest {
         // Create deployment service and client manager.
         val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = createSmartphoneManager( deploymentService )
+        val client = initializeSmartphoneClient( deploymentService )
 
         assertFailsWith<IllegalArgumentException>
         {
-            clientManager.addStudy( deploymentStatus.studyDeploymentId, "Invalid role" )
+            client.addStudy( deploymentStatus.studyDeploymentId, "Invalid role" )
         }
     }
 
@@ -48,26 +80,12 @@ class ClientManagerTest
     fun add_study_fails_for_study_which_was_already_added() = runBlockingTest {
         // Create deployment service and client manager.
         val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = createSmartphoneManager( deploymentService )
+        val client = initializeSmartphoneClient( deploymentService )
 
-        clientManager.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
+        client.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
         assertFailsWith<IllegalArgumentException>
         {
-            clientManager.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
+            client.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
         }
-    }
-
-    @Test
-    fun creating_manager_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runBlockingTest {
-        // Create deployment service and client manager with one study.
-        val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val clientManager = createSmartphoneManager( deploymentService )
-        clientManager.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
-
-        val snapshot = clientManager.getSnapshot()
-        val parsed = SmartphoneManager.fromSnapshot( snapshot, deploymentService ) // Optionally, this can be cast back to `SmartphoneManager`.
-
-        assertEquals( clientManager.deviceRegistration, parsed.deviceRegistration )
-        assertTrue { parsed.studies.count() == 1 } // Whether study runtime matches is tested in StudyRuntimeTest since this logic is simply delegated.
     }
 }

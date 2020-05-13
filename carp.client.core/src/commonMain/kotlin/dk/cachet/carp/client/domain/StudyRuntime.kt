@@ -125,4 +125,9 @@ class StudyRuntime private constructor(
 
         return isDeployed
     }
+
+    /**
+     * Get a serializable snapshot of the current state of this [StudyRuntime].
+     */
+    fun getSnapshot(): StudyRuntimeSnapshot = StudyRuntimeSnapshot.fromStudyRuntime( this )
 }
