@@ -1,8 +1,8 @@
 package dk.cachet.carp.client
 
-import dk.cachet.carp.client.domain.SmartphoneManager
+import dk.cachet.carp.client.domain.SmartphoneClient
 import dk.cachet.carp.client.domain.StudyRuntime
-import dk.cachet.carp.client.domain.createSmartphoneManager
+import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.AccountIdentity
@@ -33,8 +33,15 @@ class ClientCodeSamples
         val deviceToUse: String = invitation.deviceRoleNames.first() // This matches "Patient's phone".
 
         // Create a study runtime for the study.
-        val clientManager: SmartphoneManager = createSmartphoneManager( deploymentService )
-        val runtime: StudyRuntime = clientManager.addStudy( studyDeploymentId, deviceToUse )
+        val clientRepository = createRepository( deploymentService )
+        val client = SmartphoneClient( clientRepository, deploymentService )
+        client.configure {
+            // Device-specific registration options can be accessed from here.
+            // Depending on the device type, different options are available.
+            // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
+            deviceId = "xxxxxxxxx"
+        }
+        val runtime: StudyRuntime = client.addStudy( studyDeploymentId, deviceToUse )
         var isDeployed = runtime.isDeployed // True, because there are no dependent devices.
 
         // Suppose a deployment also depends on a "Clinician's phone" to be registered; deployment cannot complete yet.
@@ -59,6 +66,8 @@ class ClientCodeSamples
 
         return service
     }
+
+    private fun createRepository( deploymentService: DeploymentService ) = InMemoryClientRepository( deploymentService )
 
     /**
      * This is the protocol created in ProtocolsCodeSamples.readme().
