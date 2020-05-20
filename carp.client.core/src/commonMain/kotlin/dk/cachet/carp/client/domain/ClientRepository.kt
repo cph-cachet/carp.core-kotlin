@@ -30,4 +30,11 @@ interface ClientRepository
      * Return all [StudyRuntime]s for the client.
      */
     fun getStudyRuntimeList(): List<StudyRuntime>
+
+    /**
+     * Update a [StudyRuntime] which is already stored in the repository.
+     *
+     * @throws IllegalArgumentException when no previous version of this study runtime is stored in the repository.
+     */
+    fun updateStudyRuntime( runtime: StudyRuntime )
 }
