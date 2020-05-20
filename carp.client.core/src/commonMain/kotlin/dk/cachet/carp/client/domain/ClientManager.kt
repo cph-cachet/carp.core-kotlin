@@ -48,7 +48,7 @@ abstract class ClientManager<
     /**
      * The studies which run on this client device.
      */
-    val studies: List<StudyRuntime> get() = repository.getStudyRuntimeList()
+    val studies: List<StudyRuntimeStatus> get() = repository.getStudyRuntimeList()
 
 
     /**
@@ -66,7 +66,7 @@ abstract class ClientManager<
      * - the configured device registration of this client uses a device ID which has already been used as part of registration of a different device
      * @return The [StudyRuntime] through which data collection for the newly added study can be managed.
      */
-    suspend fun addStudy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntime
+    suspend fun addStudy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntimeStatus
     {
         // TODO: Can/should it be reinforced here that only study runtimes for a matching master device type can be created?
         require( isConfigured ) { "The client has not been configured yet." }
@@ -81,5 +81,19 @@ abstract class ClientManager<
 
         repository.addStudyRuntime( runtime )
         return runtime
+    }
+
+    suspend fun tryDeployment( studyRuntime: StudyRuntimeId ): Boolean
+    {
+        val runtime = repository.getStudyRuntimeList().firstOrNull { it == studyRuntime }
+        requireNotNull( runtime ) { "The specified study runtime does not exist." }
+
+        val isDeployed = runtime.tryDeployment( deploymentService )
+        if ( isDeployed )
+        {
+            repository.updateStudyRuntime( runtime )
+        }
+
+        return isDeployed
     }
 }

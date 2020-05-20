@@ -4,19 +4,13 @@ import dk.cachet.carp.client.domain.ClientRepository
 import dk.cachet.carp.client.domain.StudyRuntime
 import dk.cachet.carp.client.domain.StudyRuntimeSnapshot
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
 
 /**
  * A [ClientRepository] which holds [StudyRuntime]s in memory as long as the instance is held in memory.
  */
-class InMemoryClientRepository(
-    /**
-     * The deployment service used to initialize [StudyRuntime] when they are retrieved from the repository.
-     */
-    val deploymentService: DeploymentService
-) : ClientRepository
+class InMemoryClientRepository : ClientRepository
 {
     /**
      * The [DeviceRegistration] used to register the client in deployments.
@@ -34,7 +28,7 @@ class InMemoryClientRepository(
     override fun addStudyRuntime( studyRuntime: StudyRuntime )
     {
         val deploymentId = studyRuntime.studyDeploymentId
-        val deviceRoleName = studyRuntime.device.roleName
+        val deviceRoleName = studyRuntime.deviceRoleName
         require( studyRuntimes.none { it.studyDeploymentId == deploymentId && it.device.roleName == deviceRoleName } )
 
         studyRuntimes.add( studyRuntime.getSnapshot() )
@@ -46,12 +40,28 @@ class InMemoryClientRepository(
     override fun getStudyRuntimeBy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntime? =
         studyRuntimes
             .filter { it.studyDeploymentId == studyDeploymentId && it.device.roleName == deviceRoleName }
-            .map { StudyRuntime.fromSnapshot( it, deploymentService ) }
+            .map { StudyRuntime.fromSnapshot( it ) }
             .firstOrNull()
 
     /**
      * Return all [StudyRuntime]s for the client.
      */
     override fun getStudyRuntimeList(): List<StudyRuntime> =
-        studyRuntimes.map { StudyRuntime.fromSnapshot( it, deploymentService ) }
+        studyRuntimes.map { StudyRuntime.fromSnapshot( it ) }
+
+    /**
+     * Update a [StudyRuntime] which is already stored in the repository.
+     *
+     * @throws IllegalArgumentException when no previous version of this study runtime is stored in the repository.
+     */
+    override fun updateStudyRuntime( runtime: StudyRuntime )
+    {
+        val storedRuntime = studyRuntimes.firstOrNull {
+            it.studyDeploymentId == runtime.studyDeploymentId &&
+            it.device.roleName == runtime.deviceRoleName }
+        requireNotNull( storedRuntime ) { "The repository does not contain an existing study runtime matching the one to update." }
+
+        studyRuntimes.remove( storedRuntime )
+        studyRuntimes.add( runtime.getSnapshot() )
+    }
 }

@@ -3,6 +3,7 @@ package dk.cachet.carp.client.domain
 import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentService
+import dk.cachet.carp.protocols.domain.devices.SmartphoneDeviceRegistration
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -13,7 +14,7 @@ import kotlin.test.*
 class ClientManagerTest
 {
     private fun initializeSmartphoneClient( deploymentService: DeploymentService ): SmartphoneClient =
-        SmartphoneClient( InMemoryClientRepository( deploymentService ), deploymentService ).apply {
+        SmartphoneClient( InMemoryClientRepository(), deploymentService ).apply {
             configure()
         }
 
@@ -23,7 +24,7 @@ class ClientManagerTest
         val ( deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
 
         // Initially not configured.
-        val client = SmartphoneClient( InMemoryClientRepository( deploymentService ), deploymentService )
+        val client = SmartphoneClient( InMemoryClientRepository(), deploymentService )
         assertFalse( client.isConfigured )
 
         // Configuration succeeds.
@@ -34,7 +35,7 @@ class ClientManagerTest
     @Test
     fun add_study_fails_when_not_yet_configured() = runBlockingTest {
         val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
-        val client = SmartphoneClient( InMemoryClientRepository( deploymentService ), deploymentService )
+        val client = SmartphoneClient( InMemoryClientRepository(), deploymentService )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -87,5 +88,20 @@ class ClientManagerTest
         {
             client.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
         }
+    }
+
+    @Test
+    fun tryDeployment_succeeds() = runBlockingTest {
+        val ( deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
+        val client = initializeSmartphoneClient( deploymentService )
+        val deploymentId = deploymentStatus.studyDeploymentId
+        client.addStudy( deploymentId, smartphone.roleName )
+
+        // Dependent device needs to be registered before the intended device can be deployed on this client.
+        val dependentRegistration = SmartphoneDeviceRegistration( "dependent" )
+        deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
+
+        val isDeployed = client.tryDeployment( client.studies.first() )
+        assertTrue( isDeployed )
     }
 }

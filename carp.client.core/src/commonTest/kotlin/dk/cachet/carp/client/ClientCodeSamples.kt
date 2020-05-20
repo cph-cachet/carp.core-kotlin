@@ -1,7 +1,7 @@
 package dk.cachet.carp.client
 
 import dk.cachet.carp.client.domain.SmartphoneClient
-import dk.cachet.carp.client.domain.StudyRuntime
+import dk.cachet.carp.client.domain.StudyRuntimeStatus
 import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.Account
@@ -33,7 +33,7 @@ class ClientCodeSamples
         val deviceToUse: String = invitation.deviceRoleNames.first() // This matches "Patient's phone".
 
         // Create a study runtime for the study.
-        val clientRepository = createRepository( deploymentService )
+        val clientRepository = createRepository()
         val client = SmartphoneClient( clientRepository, deploymentService )
         client.configure {
             // Device-specific registration options can be accessed from here.
@@ -41,12 +41,12 @@ class ClientCodeSamples
             // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
             deviceId = "xxxxxxxxx"
         }
-        val runtime: StudyRuntime = client.addStudy( studyDeploymentId, deviceToUse )
+        val runtime: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
         var isDeployed = runtime.isDeployed // True, because there are no dependent devices.
 
         // Suppose a deployment also depends on a "Clinician's phone" to be registered; deployment cannot complete yet.
         // After the clinician's phone has been registered, attempt deployment again.
-        isDeployed = runtime.tryDeployment() // True once dependent clients have been registered.
+        isDeployed = client.tryDeployment( runtime ) // True once dependent clients have been registered.
     }
 
 
@@ -67,7 +67,7 @@ class ClientCodeSamples
         return service
     }
 
-    private fun createRepository( deploymentService: DeploymentService ) = InMemoryClientRepository( deploymentService )
+    private fun createRepository() = InMemoryClientRepository()
 
     /**
      * This is the protocol created in ProtocolsCodeSamples.readme().
