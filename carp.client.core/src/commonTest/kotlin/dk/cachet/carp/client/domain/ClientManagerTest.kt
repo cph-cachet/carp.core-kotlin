@@ -13,7 +13,7 @@ import kotlin.test.*
  */
 class ClientManagerTest
 {
-    private fun initializeSmartphoneClient( deploymentService: DeploymentService ): SmartphoneClient =
+    private suspend fun initializeSmartphoneClient( deploymentService: DeploymentService ): SmartphoneClient =
         SmartphoneClient( InMemoryClientRepository(), deploymentService ).apply {
             configure()
         }
@@ -25,11 +25,11 @@ class ClientManagerTest
 
         // Initially not configured.
         val client = SmartphoneClient( InMemoryClientRepository(), deploymentService )
-        assertFalse( client.isConfigured )
+        assertFalse( client.isConfigured() )
 
         // Configuration succeeds.
         client.configure()
-        assertTrue( client.isConfigured )
+        assertTrue( client.isConfigured() )
     }
 
     @Test
@@ -101,7 +101,7 @@ class ClientManagerTest
         val dependentRegistration = SmartphoneDeviceRegistration( "dependent" )
         deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
 
-        val isDeployed = client.tryDeployment( client.studies.first() )
+        val isDeployed = client.tryDeployment( client.getStudies().first() )
         assertTrue( isDeployed )
     }
 }

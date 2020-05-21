@@ -11,18 +11,18 @@ interface DeploymentRepository
      *
      * @throws IllegalArgumentException when a study deployment with the same id already exists.
      */
-    fun add( studyDeployment: StudyDeployment )
+    suspend fun add( studyDeployment: StudyDeployment )
 
     /**
      * Return the [StudyDeployment] with the specified [id], or null when no study deployment is found.
      */
-    fun getStudyDeploymentBy( id: UUID ): StudyDeployment? = getStudyDeploymentsBy( setOf( id ) ).firstOrNull()
+    suspend fun getStudyDeploymentBy( id: UUID ): StudyDeployment? = getStudyDeploymentsBy( setOf( id ) ).firstOrNull()
 
     /**
      * Return all [StudyDeployment]s matching any of the specified [ids].
      * Ids that are not found are ignored.
      */
-    fun getStudyDeploymentsBy( ids: Set<UUID> ): List<StudyDeployment>
+    suspend fun getStudyDeploymentsBy( ids: Set<UUID> ): List<StudyDeployment>
 
     /**
      * Update a [studyDeployment] which is already stored in this repository.
@@ -30,15 +30,15 @@ interface DeploymentRepository
      * @param studyDeployment The updated version of the study deployment to store.
      * @throws IllegalArgumentException when no previous version of this study deployment is stored in the repository.
      */
-    fun update( studyDeployment: StudyDeployment )
+    suspend fun update( studyDeployment: StudyDeployment )
 
     /**
      * Add a participation [invitation] for an account with the given [accountId].
      */
-    fun addInvitation( accountId: UUID, invitation: ParticipationInvitation )
+    suspend fun addInvitation( accountId: UUID, invitation: ParticipationInvitation )
 
     /**
      * Get all participation invitations for the account with the specified [accountId].
      */
-    fun getInvitations( accountId: UUID ): Set<ParticipationInvitation>
+    suspend fun getInvitations( accountId: UUID ): Set<ParticipationInvitation>
 }

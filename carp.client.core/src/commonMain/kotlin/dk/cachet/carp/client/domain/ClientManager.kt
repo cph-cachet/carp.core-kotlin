@@ -28,27 +28,27 @@ abstract class ClientManager<
     /**
      * Determines whether a [DeviceRegistration] has been configured for this client, which is necessary to start adding [StudyRuntime]s.
      */
-    val isConfigured: Boolean get() = repository.deviceRegistration != null
+    suspend fun isConfigured(): Boolean = repository.getDeviceRegistration() != null
 
     /**
      * Configure the [DeviceRegistration] used to register this client device in study deployments managed by the [deploymentService].
      * Use [builder] to configure device-specific registration options, if any.
      */
-    fun configure( builder: TRegistrationBuilder.() -> Unit = {} )
+    suspend fun configure( builder: TRegistrationBuilder.() -> Unit = {} )
     {
         // TODO: Support reconfiguring clients, which will require reregistering the client for all study runtimes.
-        require( !isConfigured ) { "Reconfiguring clients is not supported." }
+        require( !isConfigured() ) { "Reconfiguring clients is not supported." }
 
         val deviceRegistration = createDeviceRegistrationBuilder().apply( builder ).build()
-        repository.deviceRegistration = deviceRegistration
+        repository.setDeviceRegistration( deviceRegistration )
     }
 
     protected abstract fun createDeviceRegistrationBuilder(): TRegistrationBuilder
 
     /**
-     * The studies which run on this client device.
+     * Get the status for the studies which run on this client device.
      */
-    val studies: List<StudyRuntimeStatus> get() = repository.getStudyRuntimeList()
+    suspend fun getStudies(): List<StudyRuntimeStatus> = repository.getStudyRuntimeList()
 
 
     /**
@@ -69,14 +69,14 @@ abstract class ClientManager<
     suspend fun addStudy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntimeStatus
     {
         // TODO: Can/should it be reinforced here that only study runtimes for a matching master device type can be created?
-        require( isConfigured ) { "The client has not been configured yet." }
+        require( isConfigured() ) { "The client has not been configured yet." }
 
         val alreadyAdded = repository.getStudyRuntimeBy( studyDeploymentId, deviceRoleName ) != null
         require( !alreadyAdded ) { "A study with the same study deployment ID and device role name has already been added." }
 
         // Create the study runtime.
         // IllegalArgumentException's will be thrown here when deployment or role name does not exist, or device is already registered.
-        val deviceRegistration = repository.deviceRegistration!!
+        val deviceRegistration = repository.getDeviceRegistration()!!
         val runtime = StudyRuntime.initialize( deploymentService, studyDeploymentId, deviceRoleName, deviceRegistration )
 
         repository.addStudyRuntime( runtime )

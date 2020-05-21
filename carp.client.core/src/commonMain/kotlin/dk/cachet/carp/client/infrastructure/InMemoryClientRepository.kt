@@ -12,20 +12,29 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
  */
 class InMemoryClientRepository : ClientRepository
 {
+    private var deviceRegistration: DeviceRegistration? = null
+
     /**
-     * The [DeviceRegistration] used to register the client in deployments.
+     * Get the [DeviceRegistration] used to register the client in deployments.
      */
-    override var deviceRegistration: DeviceRegistration? = null
+    override suspend fun getDeviceRegistration(): DeviceRegistration? = deviceRegistration
+
+    /**
+     * Set the [DeviceRegistration] used to register the client in deployments.
+     */
+    override suspend fun setDeviceRegistration( registration: DeviceRegistration )
+    {
+        deviceRegistration = registration
+    }
 
     private val studyRuntimes: MutableList<StudyRuntimeSnapshot> = mutableListOf()
-
 
     /**
      * Adds the specified [studyRuntime] to the repository.
      *
      * @throws IllegalArgumentException when a [StudyRuntime] which has the same study deployment ID and device role name already exists.
      */
-    override fun addStudyRuntime( studyRuntime: StudyRuntime )
+    override suspend fun addStudyRuntime( studyRuntime: StudyRuntime )
     {
         val deploymentId = studyRuntime.studyDeploymentId
         val deviceRoleName = studyRuntime.deviceRoleName
@@ -37,7 +46,7 @@ class InMemoryClientRepository : ClientRepository
     /**
      * Return the [StudyRuntime] with [studyDeploymentId] and [deviceRoleName], or null when no such [StudyRuntime] is found.
      */
-    override fun getStudyRuntimeBy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntime? =
+    override suspend fun getStudyRuntimeBy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntime? =
         studyRuntimes
             .filter { it.studyDeploymentId == studyDeploymentId && it.device.roleName == deviceRoleName }
             .map { StudyRuntime.fromSnapshot( it ) }
@@ -46,7 +55,7 @@ class InMemoryClientRepository : ClientRepository
     /**
      * Return all [StudyRuntime]s for the client.
      */
-    override fun getStudyRuntimeList(): List<StudyRuntime> =
+    override suspend fun getStudyRuntimeList(): List<StudyRuntime> =
         studyRuntimes.map { StudyRuntime.fromSnapshot( it ) }
 
     /**
@@ -54,7 +63,7 @@ class InMemoryClientRepository : ClientRepository
      *
      * @throws IllegalArgumentException when no previous version of this study runtime is stored in the repository.
      */
-    override fun updateStudyRuntime( runtime: StudyRuntime )
+    override suspend fun updateStudyRuntime( runtime: StudyRuntime )
     {
         val storedRuntime = studyRuntimes.firstOrNull {
             it.studyDeploymentId == runtime.studyDeploymentId &&
