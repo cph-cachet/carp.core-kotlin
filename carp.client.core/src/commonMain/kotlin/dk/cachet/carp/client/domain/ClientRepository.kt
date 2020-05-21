@@ -10,31 +10,36 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 interface ClientRepository
 {
     /**
-     * The [DeviceRegistration] used to register the client in deployments.
+     * Get the [DeviceRegistration] used to register the client in deployments.
      */
-    var deviceRegistration: DeviceRegistration?
+    suspend fun getDeviceRegistration(): DeviceRegistration?
+
+    /**
+     * Set the [DeviceRegistration] used to register the client in deployments.
+     */
+    suspend fun setDeviceRegistration( registration: DeviceRegistration )
 
     /**
      * Adds the specified [studyRuntime] to the repository.
      *
      * @throws IllegalArgumentException when a [StudyRuntime] which has the same study deployment ID and device role name already exists.
      */
-    fun addStudyRuntime( studyRuntime: StudyRuntime )
+    suspend fun addStudyRuntime( studyRuntime: StudyRuntime )
 
     /**
      * Return the [StudyRuntime] with [studyDeploymentId] and [deviceRoleName], or null when no such [StudyRuntime] is found.
      */
-    fun getStudyRuntimeBy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntime?
+    suspend fun getStudyRuntimeBy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntime?
 
     /**
      * Return all [StudyRuntime]s for the client.
      */
-    fun getStudyRuntimeList(): List<StudyRuntime>
+    suspend fun getStudyRuntimeList(): List<StudyRuntime>
 
     /**
      * Update a [StudyRuntime] which is already stored in the repository.
      *
      * @throws IllegalArgumentException when no previous version of this study runtime is stored in the repository.
      */
-    fun updateStudyRuntime( runtime: StudyRuntime )
+    suspend fun updateStudyRuntime( runtime: StudyRuntime )
 }

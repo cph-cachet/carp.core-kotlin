@@ -34,10 +34,9 @@ interface ClientRepositoryTest
 
 
     @Test
-    fun deviceRegistration_is_initially_null()
-    {
+    fun deviceRegistration_is_initially_null() = runBlockingTest {
         val (repo, _) = createDependencies()
-        assertNull( repo.deviceRegistration )
+        assertNull( repo.getDeviceRegistration() )
     }
 
     @Test
@@ -73,8 +72,7 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun getStudyRuntimeBy_is_null_for_unknown_runtime()
-    {
+    fun getStudyRuntimeBy_is_null_for_unknown_runtime() = runBlockingTest {
         val (repo, _) = createDependencies()
 
         val unknownId = UUID.randomUUID()
@@ -82,8 +80,7 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun getStudyRuntimeList_is_empty_initially()
-    {
+    fun getStudyRuntimeList_is_empty_initially() = runBlockingTest {
         val (repo, _) = createDependencies()
 
         assertEquals( 0, repo.getStudyRuntimeList().count() )

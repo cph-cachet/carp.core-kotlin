@@ -22,7 +22,7 @@ class InMemoryStudyRepository : StudyRepository
      *
      * @throws IllegalArgumentException when a study with the same id already exists.
      */
-    override fun add( study: Study )
+    override suspend fun add( study: Study )
     {
         require( !studies.contains( study.id ) )
 
@@ -32,12 +32,12 @@ class InMemoryStudyRepository : StudyRepository
     /**
      * Returns the [Study] which has the specified [studyId], or null when no study is found.
      */
-    override fun getById( studyId: UUID ): Study? = studies[ studyId ]?.let { Study.fromSnapshot( it ) }
+    override suspend fun getById( studyId: UUID ): Study? = studies[ studyId ]?.let { Study.fromSnapshot( it ) }
 
     /**
      * Returns the studies created by the specified [owner].
      */
-    override fun getForOwner( owner: StudyOwner ): List<Study> =
+    override suspend fun getForOwner( owner: StudyOwner ): List<Study> =
         studies.values
             .filter { it.ownerId == owner.id }
             .map { Study.fromSnapshot( it ) }
@@ -47,7 +47,7 @@ class InMemoryStudyRepository : StudyRepository
      *
      * @throws IllegalArgumentException when no previous version of this study is stored in the repository.
      */
-    override fun update( study: Study )
+    override suspend fun update( study: Study )
     {
         require( studies.contains( study.id ) )
 
@@ -60,7 +60,7 @@ class InMemoryStudyRepository : StudyRepository
      * @throws IllegalArgumentException when a study with the specified [studyId] does not exist,
      * or when a participant with the specified ID already exists within the study.
      */
-    override fun addParticipant( studyId: UUID, participant: Participant )
+    override suspend fun addParticipant( studyId: UUID, participant: Participant )
     {
         require( studies.contains( studyId ) )
 
@@ -74,7 +74,7 @@ class InMemoryStudyRepository : StudyRepository
      *
      * @throws IllegalArgumentException when a study with the specified [studyId] does not exist.
      */
-    override fun getParticipants( studyId: UUID ): List<Participant>
+    override suspend fun getParticipants( studyId: UUID ): List<Participant>
     {
         require( studies.contains( studyId ) )
 
