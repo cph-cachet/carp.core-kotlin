@@ -33,6 +33,46 @@ Contains configuration on how to sample data.
 - [`DataTypeSamplingScheme`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/data/DataTypeSamplingScheme.kt):
 Specifies the possible sampling configuration options for a `DataType`, including defaults and constraints.
 
+## Built-in types
+
+### Data types
+
+`DataType`s are identified by a given _name_ within a _namespace_ and prescribe the data contained within each data point when measured.
+When a data type describes data over the course of a time interval, the time interval is stored within the header (shared by all data types) and not in data-type specific data.
+
+All of the built-in data types belong to the namespace: **dk.cachet.carp**.
+
+| Name | Description |
+| --- | --- |
+| [geolocation](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/data/carp/Geolocation.kt) | Geographic location data, representing longitude and latitude. |
+| [stepcount](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/data/carp/Stepcount.kt) | The number of steps a participant has taken in a specified time interval. |
+
+### Device descriptors
+
+| Class | Master | Description |
+| --- | --- | --- |
+| [Smartphone](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/devices/Smartphone.kt) | Yes | An internet-connected phone with built-in sensors. |
+| [AltBeacon](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/devices/AltBeacon.kt) | | A beacon meeting the open AltBeacon standard. |
+
+### Tasks
+
+| Class | Description |
+| --- | --- |
+| [ConcurrentTask](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/tasks/ConcurrentTask.kt) | Specifies that all containing measures should start immediately once triggered and run indefinitely until all containing measures have completed. |
+
+### Measures
+
+| Class | Description |
+| --- | --- |
+| [DataTypeMeasure](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/tasks/measures/DataTypeMeasure.kt) | Defined by nothing else but a `DataType` identifier. It is up to the client to determine how to handle this measure. |
+| [PhoneSensorMeasure](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/tasks/measures/PhoneSensorMeasure.kt) | Measures any of the sensors typically integrated in smartphones (e.g., accelerometer), or data which is derived from them using vendor-specific APIs (e.g., stepcount, or mode of transport). |
+
+### Triggers
+
+| Class | Description |
+| --- | --- |
+| [StartOfStudyTrigger](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/triggers/StartOfStudyTrigger.kt) | A trigger which starts a task immediately at the start of a study. |
+
 ## Extending domain objects
 
 CARP contains default implementations of the [domain objects which make up a study protocol](#domain-objects) which represent common use cases that have currently been implemented.

@@ -5,7 +5,7 @@ import dk.cachet.carp.protocols.domain.data.NoOptionsSamplingConfigurationBuilde
 
 
 /**
- * Sampling scheme for stepcount data, representing the amount of steps a participant has taken in a specified time interval.
+ * Sampling scheme for stepcount data, representing the number of steps a participant has taken in a specified time interval.
  */
 object Stepcount : DataTypeSamplingScheme<StepcountSamplingConfigurationBuilder>( carpDataType( "stepcount" ) )
 {

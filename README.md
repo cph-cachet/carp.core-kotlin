@@ -20,11 +20,12 @@ Two key **design goals** differentiate this project from similar projects:
 - [Architecture](#architecture)
   - [Protocols](docs/carp-protocols.md)
     - [Domain objects](docs/carp-protocols.md#domain-objects)
+    - [Built-in types](docs/carp-protocols.md#built-in-types)
     - [Extending domain objects](docs/carp-protocols.md#extending-domain-objects)
 - [Infrastructure helpers](#infrastructure-helpers)
   - [Serialization](#serialization)
 - [Usage](#usage)
-  - [Example](##example)
+  - [Example](#example)
 - [Building the project](#building-the-project)
   - [Gradle tasks](#gradle-tasks)
 
