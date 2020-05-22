@@ -23,6 +23,8 @@ Two key **design goals** differentiate this project from similar projects:
     - [Built-in types](docs/carp-protocols.md#built-in-types)
     - [Extending domain objects](docs/carp-protocols.md#extending-domain-objects)
     - [Application service](docs/carp-protocols.md#application-service)
+  - [Studies](docs/carp-studies.md)
+    - [Application service](docs/carp-studies.md#application-service)
 - [Infrastructure helpers](#infrastructure-helpers)
   - [Serialization](#serialization)
   - [Authorization](#authorization)
