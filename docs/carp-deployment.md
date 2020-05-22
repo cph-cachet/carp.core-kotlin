@@ -3,6 +3,19 @@
 Maps the information specified in a study protocol to runtime configurations used by the 'client' subystem to run the protocol on concrete devices (e.g., a smartphone) and allow researchers to monitor their state.
 To start collecting data, participants need to be invited, devices need to be registered, and consent needs to be given to collect the requested data.
 
+## Study and device deployment state
+
+Most of the [the `DeploymentService` endpoints](#application-service) return the current status of a study deployment after the requested operation has been executed.
+Depending on the current state of the deployment, different operations are available.
+This is represented by [`StudyDeploymentStatus`](../carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/domain/StudyDeploymentStatus.kt), which reflects the underlying state machine:
+
+![Study deployment state machine](https://i.imgur.com/MDsrrlN.png)
+
+The overall deployment state depends on the aggregate of individual device deployment states.
+Each device within the study deployment has a corresponding [`DeviceDeploymentStatus`](../carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/domain/DeviceDeploymentStatus.kt):
+
+![Device deployment state machine](https://i.imgur.com/VRfD4wL.png)
+
 ## Application service
 
 [DeploymentService](../carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/application/DeploymentService.kt) allows deploying study protocols, registering participations, and retrieving deployment information for participating master devices as defined in the protocol.

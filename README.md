@@ -26,6 +26,7 @@ Two key **design goals** differentiate this project from similar projects:
   - [Studies](docs/carp-studies.md)
     - [Application service](docs/carp-studies.md#application-service)
   - [Deployment](docs/carp-deployment.md)
+    - [Study and device deployment state](docs/carp-deployment.md#study-and-device-deployment-state)
     - [Application service](docs/carp-deployment.md#application-service)
 - [Infrastructure helpers](#infrastructure-helpers)
   - [Serialization](#serialization)
