@@ -22,8 +22,10 @@ Two key **design goals** differentiate this project from similar projects:
     - [Domain objects](docs/carp-protocols.md#domain-objects)
     - [Built-in types](docs/carp-protocols.md#built-in-types)
     - [Extending domain objects](docs/carp-protocols.md#extending-domain-objects)
+    - [Application service](docs/carp-protocols.md#application-service)
 - [Infrastructure helpers](#infrastructure-helpers)
   - [Serialization](#serialization)
+  - [Authorization](#authorization)
 - [Usage](#usage)
   - [Example](#example)
 - [Building the project](#building-the-project)
@@ -85,6 +87,14 @@ Using the built-in serializers thus allows you to handle incoming requests and p
 They are used by default in all objects that need to be serialized for data transfer or snapshot storage.
 It is therefore recommended to use built-in serializers to store and transfer any objects containing study protocol information to get this type of extensibility for free.
 More detailed information on how this works can be found in [the documentation on serialization for CARP developers](docs/serialization.md).
+
+### Authorization
+
+Currently, this library does not contain support for authorization.
+Authorization needs to be implemented by concrete infrastructure.
+However, CARP is designed with claim-based authorization in mind, and the documentation of application services in each of the subsystems describes a recommended implementation.
+ 
+In a future release we might pass authorization as a dependent service to application services.
 
 ## Usage
 

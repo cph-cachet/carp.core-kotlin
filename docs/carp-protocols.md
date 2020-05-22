@@ -50,7 +50,7 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 ### Device descriptors
 
 | Class | Master | Description |
-| --- | --- | --- |
+| --- | :---: | --- |
 | [Smartphone](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/devices/Smartphone.kt) | Yes | An internet-connected phone with built-in sensors. |
 | [AltBeacon](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/devices/AltBeacon.kt) | | A beacon meeting the open AltBeacon standard. |
 
@@ -93,3 +93,20 @@ However, due to (current) limitations of Kotlin, the JS runtime currently does n
 
 Add a `@Serializable` annotation to the class so that it can be serialized by `kotlinx.serialization`.
 In most cases this is sufficient, but for more information, check [the serialization documentation for CARP developers](serialization.md).
+
+## Application service
+
+[ProtocolService](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/application/ProtocolService.kt) allows managing multiple versions of study protocols.
+
+The _'Require'_ and _'Grant'_ column lists claim-based authorization recommendations for implementing infrastructures.
+Respectively, the required claims and claims to grant upon a successful request.
+New users that are allowed to add protocols should be given a 'protocol owner' claim, e.g., their user ID.
+In case you want to support organizations this could be the ID of the organization they belong to.
+
+| Endpoint | Description | Require | Grant |
+| --- | --- | --- | --- |
+| `add` | Add a study protocol. | protocol owner: `protocol.ownerId` |  |
+| `update` | Store an updated version of a specified study protocol. | protocol owner: `protocol.ownerId` | |
+| `getBy` | Find the study protocol with a specified protocol name owned by a specific owner. | protocol owner: `owner.id` | |
+| `getAllFor` | Find all study protocols owned by a specific owner. | protocol owner: `owner.id` | |
+| `getVersionHistoryFor` | Returns all stored versions for the study protocol with a given name owned by a specific owner. |  protocol owner: `owner.id` | |
