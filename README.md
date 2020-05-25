@@ -30,6 +30,7 @@ Two key **design goals** differentiate this project from similar projects:
     - [Application service](docs/carp-deployment.md#application-service)
 - [Infrastructure helpers](#infrastructure-helpers)
   - [Serialization](#serialization)
+  - [Request objects](#request-objects)
   - [Authorization](#authorization)
 - [Usage](#usage)
   - [Example](#example)
@@ -92,6 +93,17 @@ Using the built-in serializers thus allows you to handle incoming requests and p
 They are used by default in all objects that need to be serialized for data transfer or snapshot storage.
 It is therefore recommended to use built-in serializers to store and transfer any objects containing study protocol information to get this type of extensibility for free.
 More detailed information on how this works can be found in [the documentation on serialization for CARP developers](docs/serialization.md).
+
+### Request objects
+
+To help implementing remote procedure calls (RPCs), each application service has matching polymorphic serializable 'request objects'.
+For example, the deployment subsystem has a sealed class [`DeploymentServiceRequest`](carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/infrastructure/DeploymentServiceRequest.kt) and each subclass represents a request to `DeploymentService`.
+Using these objects, all requests to a single application service can be handled by one endpoint using type checking.
+We recommend [using a when expression](https://kotlinlang.org/docs/reference/sealed-classes.html) so that the compiler can verify whether you have handled all requests.
+
+In addition, each request object implements [`ServiceInvoker`](carp.common/src/commonMain/kotlin/dk/cachet/carp/common/ddd/ServiceInvoker.kt) which allows calling the matching application service by passing it as an argument to `invokeOn`.
+This allows a centralized implementation for any incoming request object to an application service.
+However, in practice you might want to perform additional actions depending on specific requests, e.g., [authorization which is currently not part of core](#authorization).
 
 ### Authorization
 
