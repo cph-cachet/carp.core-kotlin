@@ -17,7 +17,7 @@ class StudyRuntime private constructor(
     /**
      * The ID of the deployed study for which to collect data.
      */
-    override val studyDeploymentId: UUID,
+    val studyDeploymentId: UUID,
     /**
      * The description of the device this runtime is intended for within the deployment identified by [studyDeploymentId].
      */
@@ -82,10 +82,11 @@ class StudyRuntime private constructor(
             }
     }
 
+
     /**
-     * The role name of the device in the deployment this study runtime participates in.
+     * Composite ID for this study runtime, comprised of the [studyDeploymentId] and [device] role name.
      */
-    override val deviceRoleName: String get() = device.roleName
+    override val id: StudyRuntimeId get() = StudyRuntimeId( studyDeploymentId, device.roleName )
 
     /**
      * Determines whether the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
@@ -99,7 +100,6 @@ class StudyRuntime private constructor(
      *       Currently, it is in order to work towards a first MVP which includes server/client communication through the domain model.
      */
     override var deploymentInformation: MasterDeviceDeployment? = null
-
         private set
 
     /**
@@ -143,17 +143,4 @@ class StudyRuntime private constructor(
      * Get a serializable snapshot of the current state of this [StudyRuntime].
      */
     override fun getSnapshot(): StudyRuntimeSnapshot = StudyRuntimeSnapshot.fromStudyRuntime( this )
-
-    override fun equals( other: Any? ): Boolean =
-        other is StudyRuntimeId &&
-        studyDeploymentId == other.studyDeploymentId &&
-        other.deviceRoleName == device.roleName
-
-    override fun hashCode(): Int
-    {
-        var result = studyDeploymentId.hashCode()
-        result = 31 * result + device.roleName.hashCode()
-
-        return result
-    }
 }

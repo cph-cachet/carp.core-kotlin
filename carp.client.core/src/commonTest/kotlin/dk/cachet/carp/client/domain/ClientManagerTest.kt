@@ -8,6 +8,8 @@ import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
 
+private val unknownId = UUID( "00000000-0000-0000-0000-000000000000" )
+
 /**
  * Tests for [ClientManager].
  */
@@ -58,10 +60,9 @@ class ClientManagerTest
         val ( deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
 
-        val invalidId = UUID( "00000000-0000-0000-0000-000000000000" )
         assertFailsWith<IllegalArgumentException>
         {
-            client.addStudy( invalidId, smartphone.roleName )
+            client.addStudy( unknownId, smartphone.roleName )
         }
     }
 
@@ -101,7 +102,18 @@ class ClientManagerTest
         val dependentRegistration = SmartphoneDeviceRegistration( "dependent" )
         deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
 
-        val isDeployed = client.tryDeployment( client.getStudies().first() )
+        val isDeployed = client.tryDeployment( client.getStudies().first().id )
         assertTrue( isDeployed )
+    }
+
+    @Test
+    fun tryDeployment_fails_for_unknown_id() = runBlockingTest {
+        val ( deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
+        val client = initializeSmartphoneClient( deploymentService )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            client.tryDeployment( StudyRuntimeId( unknownId, "Unknown device role" ) )
+        }
     }
 }

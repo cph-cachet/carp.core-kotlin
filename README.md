@@ -244,7 +244,7 @@ var isDeployed = runtime.isDeployed // True, because there are no dependent devi
 
 // Suppose a deployment also depends on a "Clinician's phone" to be registered; deployment cannot complete yet.
 // After the clinician's phone has been registered, attempt deployment again.
-isDeployed = client.tryDeployment( runtime ) // True once dependent clients have been registered.
+isDeployed = client.tryDeployment( runtime.id ) // True once dependent clients have been registered.
 ```
 
 ## Building the project
