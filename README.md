@@ -161,7 +161,7 @@ var isDeployed = runtime.isDeployed // True, because there are no dependent devi
 
 // Suppose a deployment also depends on a "Clinician's phone" to be registered; deployment cannot complete yet.
 // After the clinician's phone has been registered, attempt deployment again.
-isDeployed = client.tryDeployment( runtime ) // True once dependent clients have been registered.
+isDeployed = client.tryDeployment( runtime.id ) // True once dependent clients have been registered.
 ```
 
 ## <a name="carp-common">carp.common</a> [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.common/carp.common/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.common) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.common/carp.common?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/common/)

@@ -37,7 +37,7 @@ class InMemoryClientRepository : ClientRepository
     override suspend fun addStudyRuntime( studyRuntime: StudyRuntime )
     {
         val deploymentId = studyRuntime.studyDeploymentId
-        val deviceRoleName = studyRuntime.deviceRoleName
+        val deviceRoleName = studyRuntime.id.deviceRoleName
         require( studyRuntimes.none { it.studyDeploymentId == deploymentId && it.device.roleName == deviceRoleName } )
 
         studyRuntimes.add( studyRuntime.getSnapshot() )
@@ -67,7 +67,7 @@ class InMemoryClientRepository : ClientRepository
     {
         val storedRuntime = studyRuntimes.firstOrNull {
             it.studyDeploymentId == runtime.studyDeploymentId &&
-            it.device.roleName == runtime.deviceRoleName }
+            it.device.roleName == runtime.id.deviceRoleName }
         requireNotNull( storedRuntime ) { "The repository does not contain an existing study runtime matching the one to update." }
 
         studyRuntimes.remove( storedRuntime )
