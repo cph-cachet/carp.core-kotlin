@@ -6,7 +6,7 @@ import kotlinx.serialization.Transient
 
 
 /**
- * A trigger which starts a task immediately at the start of a study and runs indefinitely.
+ * A trigger which starts a task immediately at the start of a study.
  * This trigger needs to be evaluated on a master device since it is time bound and therefore requires a task scheduler.
  */
 @Suppress( "DataClassPrivateConstructor" )

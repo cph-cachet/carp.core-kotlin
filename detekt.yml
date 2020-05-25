@@ -1,18 +1,5 @@
-comments:
-  excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-
 complexity:
   LongParameterList:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  StringLiteralDuplication:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  TooManyFunctions:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-
-exceptions:
-  InstanceOfCheckForException:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  TooGenericExceptionCaught:
     excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
 
 formatting:
@@ -34,50 +21,16 @@ formatting:
     active: false
 
 naming:
-  ClassNaming:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  ConstructorParameterNaming:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  EnumNaming:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  ForbiddenClassName:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  FunctionMaxLength:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  FunctionMinLength:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  FunctionNaming:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  FunctionParameterNaming:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
   MemberNameEqualsClassName:
     active: false
-  ObjectPropertyNaming:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  PackageNaming:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  TopLevelPropertyNaming:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  VariableMaxLength:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  VariableMinLength:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  VariableNaming:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
 
 performance:
   ArrayPrimitive:
     active: false
-  ForEachOnRange:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
-  SpreadOperator:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
 
 potential-bugs:
   EqualsAlwaysReturnsTrueOrFalse:
     active: false
-  LateinitUsage:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
 
 style:
   EqualsNullCall:
@@ -86,8 +39,6 @@ style:
     active: false
   LoopWithTooManyJumpStatements:
     active: false
-  MagicNumber:
-    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
   MaxLineLength:
     active: false
   MayBeConst:
