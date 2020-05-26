@@ -239,10 +239,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val containsDevice: Boolean = _registrableDevices.any { it.device == device }
         require( containsDevice ) { "The passed device is not part of this deployment." }
 
+        check( !isStopped ) { "Cannot register devices after a study deployment has stopped." }
+
         val isAlreadyRegistered = device in _registeredDevices.keys
         require( !isAlreadyRegistered ) { "The passed device is already registered." }
-
-        check( !isStopped ) { "Cannot register devices after a study deployment has stopped." }
 
         // Verify whether the passed registration is known to be invalid for the given device.
         // This may be 'UNKNOWN' when the device type is not known at runtime.
