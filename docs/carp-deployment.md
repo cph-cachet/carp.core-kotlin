@@ -9,7 +9,7 @@ Most of the [the `DeploymentService` endpoints](#application-service) return the
 Depending on the current state of the deployment, different operations are available.
 This is represented by [`StudyDeploymentStatus`](../carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/domain/StudyDeploymentStatus.kt), which reflects the underlying state machine:
 
-![Study deployment state machine](https://i.imgur.com/MDsrrlN.png)
+![Study deployment state machine](https://i.imgur.com/e6u5Om7.png)
 
 The overall deployment state depends on the aggregate of individual device deployment states.
 Each device within the study deployment has a corresponding [`DeviceDeploymentStatus`](../carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/domain/DeviceDeploymentStatus.kt):

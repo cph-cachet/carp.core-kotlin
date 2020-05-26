@@ -128,6 +128,7 @@ abstract class DeploymentServiceTest
         val master = status.getRemainingDevicesToRegister().first { it.roleName == "Master" }
         val connected = status.getRemainingDevicesToRegister().first { it.roleName == "Connected" }
         deploymentService.registerDevice( studyDeploymentId, master.roleName, master.createRegistration() )
+        deploymentService.registerDevice( studyDeploymentId, connected.roleName, connected.createRegistration() )
         deploymentService.stop( studyDeploymentId )
 
         assertFailsWith<IllegalStateException>

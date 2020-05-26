@@ -93,12 +93,14 @@ fun studyDeploymentFor( protocol: StudyProtocol ): StudyDeployment
  */
 fun createComplexDeployment(): StudyDeployment
 {
-    val protocol = createSingleMasterWithConnectedDeviceProtocol()
+    val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
     val deployment = studyDeploymentFor( protocol )
 
-    // Add device registration.
-    val master = deployment.registrableDevices.first().device as AnyMasterDeviceDescriptor
-    deployment.registerDevice( master, DefaultDeviceRegistration( "test" ) )
+    // Add device registrations.
+    val master = deployment.registrableDevices.first { it.device.roleName == "Master" }.device as AnyMasterDeviceDescriptor
+    val connected = deployment.registrableDevices.first { it.device.roleName == "Connected" }.device
+    deployment.registerDevice( master, master.createRegistration() )
+    deployment.registerDevice( connected, connected.createRegistration() )
 
     // Add a participation.
     val account = Account.withUsernameIdentity( "test" )
