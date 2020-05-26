@@ -91,8 +91,6 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
         {
             return deployment.getStatus()
         }
-        else require ( priorRegistration == null )
-            { "The device with role name '$deviceRoleName' is already registered with differing registration options." }
 
         // Register device and save changes.
         deployment.registerDevice( device.device, registration )

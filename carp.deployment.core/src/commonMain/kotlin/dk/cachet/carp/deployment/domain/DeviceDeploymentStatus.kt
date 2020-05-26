@@ -29,7 +29,7 @@ sealed class DeviceDeploymentStatus
      * This requires the specified device and all other master devices it depends on to be registered.
      */
     val canObtainDeviceDeployment: Boolean
-        get() = this is Deployed || (this is NotDeployed && this.isReadyForDeployment)
+        get() = this is Deployed || (this is NotDeployed && this.remainingDevicesToRegisterToObtainDeployment.isEmpty())
 
 
     /**
@@ -46,7 +46,12 @@ sealed class DeviceDeploymentStatus
             get() = requiresDeployment && remainingDevicesToRegisterBeforeDeployment.isEmpty()
 
         /**
-         * The role names of devices which need to be registered before this device can be deployed.
+         * The role names of devices which need to be registered before the deployment information for this device can be obtained.
+         */
+        val remainingDevicesToRegisterToObtainDeployment: Set<String>
+
+        /**
+         * The role names of devices which need to be registered before this device can be declared as successfully deployed.
          */
         val remainingDevicesToRegisterBeforeDeployment: Set<String>
     }
@@ -60,6 +65,7 @@ sealed class DeviceDeploymentStatus
         @Serializable( DeviceDescriptorSerializer::class )
         override val device: AnyDeviceDescriptor,
         override val requiresDeployment: Boolean,
+        override val remainingDevicesToRegisterToObtainDeployment: Set<String>,
         override val remainingDevicesToRegisterBeforeDeployment: Set<String>
     ) : DeviceDeploymentStatus(), NotDeployed
 
@@ -71,6 +77,7 @@ sealed class DeviceDeploymentStatus
         @Serializable( DeviceDescriptorSerializer::class )
         override val device: AnyDeviceDescriptor,
         override val requiresDeployment: Boolean,
+        override val remainingDevicesToRegisterToObtainDeployment: Set<String>,
         override val remainingDevicesToRegisterBeforeDeployment: Set<String>
     ) : DeviceDeploymentStatus(), NotDeployed
 
@@ -94,6 +101,7 @@ sealed class DeviceDeploymentStatus
     data class NeedsRedeployment(
         @Serializable( DeviceDescriptorSerializer::class )
         override val device: AnyDeviceDescriptor,
+        override val remainingDevicesToRegisterToObtainDeployment: Set<String>,
         override val remainingDevicesToRegisterBeforeDeployment: Set<String>
     ) : DeviceDeploymentStatus(), NotDeployed
     {

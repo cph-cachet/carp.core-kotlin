@@ -21,6 +21,7 @@ declare module 'carp.deployment.core'
             {
                 readonly requiresDeployment: Boolean
                 readonly isReadyForDeployment: Boolean
+                readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
 
             }
@@ -29,12 +30,14 @@ declare module 'carp.deployment.core'
                 constructor(
                     device: any,
                     requiresDeployment: Boolean,
+                    remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
                     remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
 
                 readonly device: any
                 readonly requiresDeployment: Boolean
                 readonly canObtainDeviceDeployment: Boolean
                 readonly isReadyForDeployment: Boolean
+                readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
             class Registered implements NotDeployed
@@ -42,12 +45,14 @@ declare module 'carp.deployment.core'
                 constructor(
                     device: any,
                     requiresDeployment: Boolean,
+                    remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
                     remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
 
                 readonly device: any
                 readonly requiresDeployment: Boolean
                 readonly canObtainDeviceDeployment: Boolean
                 readonly isReadyForDeployment: Boolean
+                readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
             class Deployed
@@ -62,12 +67,14 @@ declare module 'carp.deployment.core'
             {
                 constructor(
                     device: any,
+                    remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
                     remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
 
                 readonly device: any
                 readonly requiresDeployment: Boolean
                 readonly canObtainDeviceDeployment: Boolean
                 readonly isReadyForDeployment: Boolean
+                readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
         }
