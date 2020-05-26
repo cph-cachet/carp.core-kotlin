@@ -173,12 +173,14 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     fun getStatus(): StudyDeploymentStatus
     {
         val devicesStatus: List<DeviceDeploymentStatus> = _registrableDevices.map { getDeviceStatus( it.device ) }
-        val allDevicesDeployed: Boolean = devicesStatus.all { it is DeviceDeploymentStatus.Deployed }
+        val allRequiredDevicesDeployed: Boolean = devicesStatus
+            .filter { it.requiresDeployment }
+            .all { it is DeviceDeploymentStatus.Deployed }
         val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
         return when {
             isStopped -> StudyDeploymentStatus.Stopped( id, devicesStatus )
-            allDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus )
+            allRequiredDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus )
             anyRegistration -> StudyDeploymentStatus.DeployingDevices( id, devicesStatus )
             else -> StudyDeploymentStatus.Invited( id, devicesStatus )
         }
