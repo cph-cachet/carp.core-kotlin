@@ -5,6 +5,7 @@ declare module 'carp.deployment.core'
     import HashSet = kotlin.collections.HashSet
     import { dk as cdk } from 'carp.common'
     import UUID = cdk.cachet.carp.common.UUID
+    import DateTime = cdk.cachet.carp.common.DateTime
 
 
     namespace dk.cachet.carp.deployment.domain
@@ -90,31 +91,35 @@ declare module 'carp.deployment.core'
         {
             class Invited
             {
-                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus> )
+                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startTime: DateTime | null )
 
                 readonly studyDeploymentId: UUID
                 readonly devicesStatus: ArrayList<DeviceDeploymentStatus>
+                readonly startTime: DateTime | null
             }
             class DeployingDevices
             {
-                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus> )
+                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startTime: DateTime | null  )
 
                 readonly studyDeploymentId: UUID
                 readonly devicesStatus: ArrayList<DeviceDeploymentStatus>
+                readonly startTime: DateTime | null
             }
             class DeploymentReady
             {
-                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus> )
+                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startTime: DateTime | null  )
 
                 readonly studyDeploymentId: UUID
                 readonly devicesStatus: ArrayList<DeviceDeploymentStatus>
+                readonly startTime: DateTime | null
             }
             class Stopped
             {
-                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus> )
+                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startTime: DateTime | null  )
 
                 readonly studyDeploymentId: UUID
                 readonly devicesStatus: ArrayList<DeviceDeploymentStatus>
+                readonly startTime: DateTime | null
             }
         }
     }

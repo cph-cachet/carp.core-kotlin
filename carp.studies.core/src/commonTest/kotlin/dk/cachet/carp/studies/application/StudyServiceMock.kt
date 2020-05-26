@@ -48,7 +48,7 @@ class StudyServiceMock(
             canGoLive = true )
 
         private val groupStatus = ParticipantGroupStatus(
-            StudyDeploymentStatus.Invited( UUID.randomUUID(), emptyList() ),
+            StudyDeploymentStatus.Invited( UUID.randomUUID(), emptyList(), null ),
             emptySet() )
     }
 

@@ -19,7 +19,7 @@ import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure
-import dk.cachet.carp.protocols.domain.triggers.StartOfStudyTrigger
+import dk.cachet.carp.protocols.domain.triggers.ElapsedTimeTrigger
 import dk.cachet.carp.protocols.domain.triggers.Trigger
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.EmptyModule
@@ -60,7 +60,7 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
     }
     polymorphic( Trigger::class )
     {
-        StartOfStudyTrigger::class with StartOfStudyTrigger.serializer()
+        ElapsedTimeTrigger::class with ElapsedTimeTrigger.serializer()
     }
 }
 

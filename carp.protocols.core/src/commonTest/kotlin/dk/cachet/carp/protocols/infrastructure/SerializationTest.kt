@@ -10,7 +10,7 @@ import dk.cachet.carp.protocols.domain.devices.Smartphone
 import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
 import dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure
 import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure
-import dk.cachet.carp.protocols.domain.triggers.StartOfStudyTrigger
+import dk.cachet.carp.protocols.domain.triggers.ElapsedTimeTrigger
 import dk.cachet.carp.test.serialization.ConcreteTypesSerializationTest
 
 
@@ -34,7 +34,7 @@ private val protocolInstances = listOf(
     PhoneSensorMeasure.geolocation(),
 
     // Triggers.
-    StartOfStudyTrigger( Smartphone( "User's phone" ) )
+    ElapsedTimeTrigger( Smartphone( "User's phone" ), TimeSpan( 0 ) )
 )
 
 /**

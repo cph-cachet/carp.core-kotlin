@@ -71,7 +71,7 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 
 | Class | Description |
 | --- | --- |
-| [StartOfStudyTrigger](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/triggers/StartOfStudyTrigger.kt) | A trigger which starts a task immediately at the start of a study. |
+| [ElapsedTimeTrigger](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/triggers/ElapsedTimeTrigger.kt) | Triggers after a specified amount of time has elapsed since the start of a study deployment. |
 
 ## Extending domain objects
 

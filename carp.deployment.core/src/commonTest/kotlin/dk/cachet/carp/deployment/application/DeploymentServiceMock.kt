@@ -31,7 +31,7 @@ class DeploymentServiceMock(
     {
         private val emptyStatus: StudyDeploymentStatus = StudyDeploymentStatus.DeployingDevices(
             UUID( "00000000-0000-0000-0000-000000000000"),
-            listOf() )
+            listOf(), null )
         private val emptyMasterDeviceDeployment: MasterDeviceDeployment = MasterDeviceDeployment(
             DefaultDeviceRegistration( "Test" ),
             setOf(), mapOf(), setOf(), mapOf(), setOf() )

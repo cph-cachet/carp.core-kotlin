@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
@@ -18,6 +19,11 @@ sealed class StudyDeploymentStatus
      */
     abstract val devicesStatus: List<DeviceDeploymentStatus>
 
+    /**
+     * The time when the study deployment was ready for the first time (all devices deployed); null otherwise.
+     */
+    abstract val startTime: DateTime?
+
 
     /**
      * Initial study deployment status, indicating the invited participants have not yet acted on the invitation.
@@ -25,7 +31,8 @@ sealed class StudyDeploymentStatus
     @Serializable
     data class Invited(
         override val studyDeploymentId: UUID,
-        override val devicesStatus: List<DeviceDeploymentStatus>
+        override val devicesStatus: List<DeviceDeploymentStatus>,
+        override val startTime: DateTime?
     ) : StudyDeploymentStatus()
 
     /**
@@ -34,7 +41,8 @@ sealed class StudyDeploymentStatus
     @Serializable
     data class DeployingDevices(
         override val studyDeploymentId: UUID,
-        override val devicesStatus: List<DeviceDeploymentStatus>
+        override val devicesStatus: List<DeviceDeploymentStatus>,
+        override val startTime: DateTime?
     ) : StudyDeploymentStatus()
 
     /**
@@ -43,7 +51,8 @@ sealed class StudyDeploymentStatus
     @Serializable
     data class DeploymentReady(
         override val studyDeploymentId: UUID,
-        override val devicesStatus: List<DeviceDeploymentStatus>
+        override val devicesStatus: List<DeviceDeploymentStatus>,
+        override val startTime: DateTime?
     ) : StudyDeploymentStatus()
 
     /**
@@ -52,7 +61,8 @@ sealed class StudyDeploymentStatus
     @Serializable
     data class Stopped(
         override val studyDeploymentId: UUID,
-        override val devicesStatus: List<DeviceDeploymentStatus>
+        override val devicesStatus: List<DeviceDeploymentStatus>,
+        override val startTime: DateTime?
     ) : StudyDeploymentStatus()
 
 
