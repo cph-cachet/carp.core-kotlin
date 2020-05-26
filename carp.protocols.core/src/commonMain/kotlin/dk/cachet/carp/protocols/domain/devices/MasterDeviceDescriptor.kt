@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.protocols.domain.triggers.StartOfStudyTrigger
+import dk.cachet.carp.common.TimeSpan
+import dk.cachet.carp.protocols.domain.triggers.ElapsedTimeTrigger
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 
@@ -19,9 +20,9 @@ abstract class MasterDeviceDescriptor<TRegistration : DeviceRegistration, out TB
     internal val isMasterDevice: Boolean = true
 
     /**
-     * Get a trigger which is initialized immediately at the start of a study and runs indefinitely.
+     * Get a trigger which fires immediately at the start of a study deployment.
      */
-    fun atStartOfStudy(): StartOfStudyTrigger = StartOfStudyTrigger( this )
+    fun atStartOfStudy(): ElapsedTimeTrigger = ElapsedTimeTrigger( this, TimeSpan( 0 ) )
 }
 
 typealias AnyMasterDeviceDescriptor = MasterDeviceDescriptor<*, *>

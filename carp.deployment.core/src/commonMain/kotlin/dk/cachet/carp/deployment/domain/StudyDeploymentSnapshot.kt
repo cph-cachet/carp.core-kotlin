@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.Snapshot
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
@@ -20,6 +21,7 @@ data class StudyDeploymentSnapshot(
     val deviceRegistrationHistory: Map<String, List<@Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration>>,
     val deployedDevices: Set<String>,
     val invalidatedDeployedDevices: Set<String>,
+    val startTime: DateTime?,
     val isStopped: Boolean,
     val participations: Set<AccountParticipation>
 ) : Snapshot<StudyDeployment>()
@@ -40,6 +42,7 @@ data class StudyDeploymentSnapshot(
                 studyDeployment.deviceRegistrationHistory.mapKeys { it.key.roleName },
                 studyDeployment.deployedDevices.map { it.roleName }.toSet(),
                 studyDeployment.invalidatedDeployedDevices.map { it.roleName }.toSet(),
+                studyDeployment.startTime,
                 studyDeployment.isStopped,
                 studyDeployment.participations )
         }

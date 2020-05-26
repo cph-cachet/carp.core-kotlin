@@ -275,6 +275,7 @@ class StudyDeploymentTest
         assertEquals(
             deployment.invalidatedDeployedDevices.count(),
             deployment.invalidatedDeployedDevices.intersect( fromSnapshot.invalidatedDeployedDevices ).count() )
+        assertEquals( deployment.startTime, fromSnapshot.startTime )
         assertEquals( deployment.isStopped, fromSnapshot.isStopped )
         assertEquals(
             deployment.participations.count(),
@@ -461,7 +462,36 @@ class StudyDeploymentTest
         val deviceDeployment = deployment.getDeviceDeploymentFor( device )
         deployment.deviceDeployed( device, deviceDeployment.getChecksum() )
         assertTrue( deployment.deployedDevices.contains( device ) )
-        assertEquals( StudyDeployment.Event.DeviceDeployed( device ), deployment.consumeEvents().last() )
+        assertEquals(
+            StudyDeployment.Event.DeviceDeployed( device ),
+            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().singleOrNull() )
+    }
+
+    @Test
+    fun deviceDeployed_for_last_device_sets_startTime()
+    {
+        val protocol = createEmptyProtocol()
+        val master1 = StubMasterDeviceDescriptor( "Master1" )
+        val master2 = StubMasterDeviceDescriptor( "Master2" )
+        protocol.addMasterDevice( master1 )
+        protocol.addMasterDevice( master2 )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( master1, master1.createRegistration() )
+        deployment.registerDevice( master2, master2.createRegistration() )
+
+        // Deploying a device while others still need to be deployed does not set start time.
+        val master1Deployment = deployment.getDeviceDeploymentFor( master1 )
+        deployment.deviceDeployed( master1, master1Deployment.getChecksum() )
+        assertNull( deployment.startTime )
+        assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Started>().count() )
+
+        // Deploying the last device sets start time.
+        val master2Deployment = deployment.getDeviceDeploymentFor( master2 )
+        deployment.deviceDeployed( master2, master2Deployment.getChecksum() )
+        assertNotNull( deployment.startTime )
+        assertEquals(
+            deployment.startTime,
+            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Started>().first().startTime )
     }
 
     @Test

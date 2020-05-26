@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
@@ -33,6 +34,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         data class DeviceRegistered( val device: AnyDeviceDescriptor, val registration: DeviceRegistration ) : Event()
         data class DeviceUnregistered( val device: AnyDeviceDescriptor ) : Event()
         data class DeviceDeployed( val device: AnyMasterDeviceDescriptor ) : Event()
+        data class Started( val startTime: DateTime ) : Event()
         data class DeploymentInvalidated( val device: AnyMasterDeviceDescriptor ) : Event()
         // TODO: Immutable base class does not allow this to be defined as `object Stopped : Event()`.
         //       It requires a data class, but that does not make sense since an object would still be immutable.
@@ -46,6 +48,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         fun fromSnapshot( snapshot: StudyDeploymentSnapshot ): StudyDeployment
         {
             val deployment = StudyDeployment( snapshot.studyProtocolSnapshot, snapshot.studyDeploymentId )
+            deployment.startTime = snapshot.startTime
 
             // Replay device registration history.
             snapshot.deviceRegistrationHistory.forEach { r ->
@@ -142,6 +145,12 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     private val _invalidatedDeployedDevices: MutableSet<AnyMasterDeviceDescriptor> = mutableSetOf()
 
     /**
+     * The time when the study deployment was ready for the first time (all devices deployed); null otherwise.
+     */
+    var startTime: DateTime? = null
+        private set
+
+    /**
      * Determines whether the study deployment has been stopped and no further modifications are allowed.
      */
     var isStopped: Boolean = false
@@ -179,10 +188,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
         return when {
-            isStopped -> StudyDeploymentStatus.Stopped( id, devicesStatus )
-            allRequiredDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus )
-            anyRegistration -> StudyDeploymentStatus.DeployingDevices( id, devicesStatus )
-            else -> StudyDeploymentStatus.Invited( id, devicesStatus )
+            isStopped -> StudyDeploymentStatus.Stopped( id, devicesStatus, startTime )
+            allRequiredDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus, startTime )
+            anyRegistration -> StudyDeploymentStatus.DeployingDevices( id, devicesStatus, startTime )
+            else -> StudyDeploymentStatus.Invited( id, devicesStatus, startTime )
         }
     }
 
@@ -390,6 +399,14 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         if ( _deployedDevices.add( device ) )
         {
             event( Event.DeviceDeployed( device ) )
+        }
+
+        // Set start time first time deployment is ready (last device deployed).
+        if ( startTime == null && getStatus() is StudyDeploymentStatus.DeploymentReady )
+        {
+            val now = DateTime.now()
+            startTime = now
+            event( Event.Started( now ) )
         }
     }
 
