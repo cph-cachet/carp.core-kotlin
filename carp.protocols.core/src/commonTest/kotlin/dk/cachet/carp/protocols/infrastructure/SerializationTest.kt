@@ -13,6 +13,7 @@ import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
 import dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure
 import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure
 import dk.cachet.carp.protocols.domain.triggers.ElapsedTimeTrigger
+import dk.cachet.carp.protocols.domain.triggers.ManualTrigger
 import dk.cachet.carp.protocols.domain.triggers.ScheduledTrigger
 import dk.cachet.carp.test.serialization.ConcreteTypesSerializationTest
 
@@ -41,7 +42,8 @@ private val protocolInstances = listOf(
     ScheduledTrigger(
         Smartphone( "User's phone"),
         TimeOfDay( 12 ), RecurrenceRule( RecurrenceRule.Frequency.DAILY )
-    )
+    ),
+    ManualTrigger( "Mood", "Describe how you are feeling at the moment." )
 )
 
 /**

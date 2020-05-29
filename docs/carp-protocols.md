@@ -73,6 +73,7 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | --- | --- |
 | [ElapsedTimeTrigger](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/triggers/ElapsedTimeTrigger.kt) | Triggers after a specified amount of time has elapsed since the start of a study deployment. |
 | [ScheduledTrigger](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/triggers/ScheduledTrigger.kt) | Trigger using a recurring schedule starting on the date that the study starts, specified using [the iCalendar recurrence rule standard](https://icalendar.org/iCalendar-RFC-5545/3-8-5-3-recurrence-rule.html). |
+| [ManualTrigger](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/triggers/ManualTrigger.kt) | Initiated by a user, i.e., the user decides when to start a task. |
 
 ## Extending domain objects
 
