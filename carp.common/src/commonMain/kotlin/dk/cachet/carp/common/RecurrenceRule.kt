@@ -32,6 +32,17 @@ data class RecurrenceRule(
     val end: End = End.Never
 )
 {
+    companion object
+    {
+        fun secondly( interval: Int = 1, end: End = End.Never ) = RecurrenceRule( Frequency.SECONDLY, interval, end )
+        fun minutely( interval: Int = 1, end: End = End.Never ) = RecurrenceRule( Frequency.MINUTELY, interval, end )
+        fun hourly( interval: Int = 1, end: End = End.Never ) = RecurrenceRule( Frequency.HOURLY, interval, end )
+        fun daily( interval: Int = 1, end: End = End.Never ) = RecurrenceRule( Frequency.DAILY, interval, end )
+        fun weekly( interval: Int = 1, end: End = End.Never ) = RecurrenceRule( Frequency.WEEKLY, interval, end )
+        fun monthly( interval: Int = 1, end: End = End.Never ) = RecurrenceRule( Frequency.MONTHLY, interval, end )
+        fun yearly( interval: Int = 1, end: End = End.Never ) = RecurrenceRule( Frequency.YEARLY, interval, end )
+    }
+
     init
     {
         require( interval >= 1 ) { "Interval needs to be 1 or more." }
