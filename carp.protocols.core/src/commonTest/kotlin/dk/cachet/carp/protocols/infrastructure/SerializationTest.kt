@@ -1,5 +1,7 @@
 package dk.cachet.carp.protocols.infrastructure
 
+import dk.cachet.carp.common.RecurrenceRule
+import dk.cachet.carp.common.TimeOfDay
 import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.data.IntervalSamplingConfiguration
@@ -11,6 +13,7 @@ import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
 import dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure
 import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure
 import dk.cachet.carp.protocols.domain.triggers.ElapsedTimeTrigger
+import dk.cachet.carp.protocols.domain.triggers.ScheduledTrigger
 import dk.cachet.carp.test.serialization.ConcreteTypesSerializationTest
 
 
@@ -34,7 +37,11 @@ private val protocolInstances = listOf(
     PhoneSensorMeasure.geolocation(),
 
     // Triggers.
-    ElapsedTimeTrigger( Smartphone( "User's phone" ), TimeSpan( 0 ) )
+    ElapsedTimeTrigger( Smartphone( "User's phone" ), TimeSpan( 0 ) ),
+    ScheduledTrigger(
+        Smartphone( "User's phone"),
+        TimeOfDay( 12 ), RecurrenceRule( RecurrenceRule.Frequency.DAILY )
+    )
 )
 
 /**
