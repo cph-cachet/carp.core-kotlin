@@ -173,12 +173,14 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     fun getStatus(): StudyDeploymentStatus
     {
         val devicesStatus: List<DeviceDeploymentStatus> = _registrableDevices.map { getDeviceStatus( it.device ) }
-        val allDevicesDeployed: Boolean = devicesStatus.all { it is DeviceDeploymentStatus.Deployed }
+        val allRequiredDevicesDeployed: Boolean = devicesStatus
+            .filter { it.requiresDeployment }
+            .all { it is DeviceDeploymentStatus.Deployed }
         val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
         return when {
             isStopped -> StudyDeploymentStatus.Stopped( id, devicesStatus )
-            allDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus )
+            allRequiredDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus )
             anyRegistration -> StudyDeploymentStatus.DeployingDevices( id, devicesStatus )
             else -> StudyDeploymentStatus.Invited( id, devicesStatus )
         }
@@ -237,10 +239,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val containsDevice: Boolean = _registrableDevices.any { it.device == device }
         require( containsDevice ) { "The passed device is not part of this deployment." }
 
+        check( !isStopped ) { "Cannot register devices after a study deployment has stopped." }
+
         val isAlreadyRegistered = device in _registeredDevices.keys
         require( !isAlreadyRegistered ) { "The passed device is already registered." }
-
-        check( !isStopped ) { "Cannot register devices after a study deployment has stopped." }
 
         // Verify whether the passed registration is known to be invalid for the given device.
         // This may be 'UNKNOWN' when the device type is not known at runtime.

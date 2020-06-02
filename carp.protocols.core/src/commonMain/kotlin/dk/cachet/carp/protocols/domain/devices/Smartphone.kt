@@ -9,6 +9,10 @@ import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
 
+typealias SmartphoneDeviceRegistration = DefaultDeviceRegistration
+typealias SmartphoneDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder
+
+
 /**
  * An internet-connected phone with built-in sensors.
  */
@@ -16,7 +20,7 @@ import kotlin.reflect.KClass
 data class Smartphone(
     override val roleName: String,
     override val samplingConfiguration: Map<DataType, SamplingConfiguration>
-) : MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
+) : MasterDeviceDescriptor<SmartphoneDeviceRegistration, SmartphoneDeviceRegistrationBuilder>()
 {
     constructor( roleName: String, builder: SmartphoneBuilder.() -> Unit = { } ) :
         this( roleName, SmartphoneBuilder().apply( builder ).buildSamplingConfiguration() )
@@ -34,9 +38,9 @@ data class Smartphone(
         val SensorsSamplingSchemes = PhoneSensorMeasure.SamplingSchemes
     }
 
-    override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
-    override fun getRegistrationClass(): KClass<DefaultDeviceRegistration> = DefaultDeviceRegistration::class
-    override fun isValidConfiguration( registration: DefaultDeviceRegistration ) = Trilean.TRUE
+    override fun createDeviceRegistrationBuilder(): SmartphoneDeviceRegistrationBuilder = SmartphoneDeviceRegistrationBuilder()
+    override fun getRegistrationClass(): KClass<SmartphoneDeviceRegistration> = SmartphoneDeviceRegistration::class
+    override fun isValidConfiguration( registration: SmartphoneDeviceRegistration ) = Trilean.TRUE
 }
 
 

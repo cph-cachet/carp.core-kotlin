@@ -5,6 +5,7 @@ import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
@@ -296,9 +297,8 @@ class StudyDeploymentTest
         assertTrue { status.devicesStatus.any { it.device == connected } }
         assertTrue( status is StudyDeploymentStatus.Invited )
         val toRegister = status.getRemainingDevicesToRegister()
-        val expectedToRegister = setOf( master, connected )
-        assertEquals( expectedToRegister.count(), toRegister.count() )
-        assertTrue( toRegister.containsAll( expectedToRegister ) )
+        val expectedToRegister = setOf<AnyDeviceDescriptor>( master, connected )
+        assertEquals( expectedToRegister, toRegister )
         assertTrue( status.getRemainingDevicesReadyToDeploy().isEmpty() )
 
         // After registering master device, master device is ready for deployment.
@@ -312,9 +312,38 @@ class StudyDeploymentTest
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
         deployment.deviceDeployed( master, deviceDeployment.getChecksum() )
         val studyStatus = deployment.getStatus()
-        assertTrue( studyStatus is StudyDeploymentStatus.DeployingDevices )
+        assertTrue( studyStatus is StudyDeploymentStatus.DeploymentReady )
         val deviceStatus = studyStatus.getDeviceStatus( master )
         assertTrue( deviceStatus is DeviceDeploymentStatus.Deployed )
+    }
+
+    @Test
+    fun getStatus_lifecycle_two_dependent_masters()
+    {
+        val protocol = createEmptyProtocol()
+        val master1 = StubMasterDeviceDescriptor( "Master 1" )
+        val master2 = StubMasterDeviceDescriptor( "Master 2" )
+        protocol.addMasterDevice( master1 )
+        protocol.addMasterDevice( master2 )
+        // TODO: For now, there is no dependency between these two devices, it is simply assumed in the current implementation.
+        //       This test will fail once this implementation is improved.
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( master1, master1.createRegistration() )
+        deployment.registerDevice( master2, master2.createRegistration() )
+
+        // Deploy first master device.
+        val master1Deployment = deployment.getDeviceDeploymentFor( master1 )
+        deployment.deviceDeployed( master1, master1Deployment.getChecksum() )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeployingDevices )
+
+        // After deployment of the second master device, deployment is ready.
+        val master2Deployment = deployment.getDeviceDeploymentFor( master2 )
+        deployment.deviceDeployed( master2, master2Deployment.getChecksum() )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
+
+        // Unregistering one device returns deployment to 'deploying'.
+        deployment.unregisterDevice( master1 )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeployingDevices )
     }
 
     @Test

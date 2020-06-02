@@ -27,14 +27,9 @@ class DeploymentCodeSamples
         var status: StudyDeploymentStatus = deploymentService.createStudyDeployment( trackPatientStudy.getSnapshot() )
         val studyDeploymentId = status.studyDeploymentId
 
-        // What comes after is called by `ClientManager` in `carp.client`:
+        // What comes after is similar to what is called by the client in `carp.client`:
         // - Register the device to be deployed.
-        val registration = patientPhone.createRegistration {
-            // Device-specific registration options can be accessed from here.
-            // Depending on the device type, different options are available.
-            // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
-            deviceId = "xxxxxxxxx"
-        }
+        val registration = patientPhone.createRegistration()
         status = deploymentService.registerDevice( studyDeploymentId, patientPhone.roleName, registration )
 
         // - Retrieve information on what to run and indicate the device is ready to collect the requested data.

@@ -87,12 +87,10 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
 
         // Early out when the device is already registered.
         val priorRegistration = deployment.registeredDevices[ device.device ]
-        if ( priorRegistration == registration )
+        if ( !deployment.isStopped && priorRegistration == registration )
         {
             return deployment.getStatus()
         }
-        else require ( priorRegistration == null )
-            { "The device with role name '$deviceRoleName' is already registered with differing registration options." }
 
         // Register device and save changes.
         deployment.registerDevice( device.device, registration )
@@ -254,7 +252,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
         repository.getInvitations( accountId )
 
 
-    private fun getStudyDeployment( studyDeploymentId: UUID ): StudyDeployment
+    private suspend fun getStudyDeployment( studyDeploymentId: UUID ): StudyDeployment
     {
         val deployment: StudyDeployment? = repository.getStudyDeploymentBy( studyDeploymentId )
         requireNotNull( deployment ) { "A deployment with ID '$studyDeploymentId' does not exist." }

@@ -199,14 +199,9 @@ val patientPhone: Smartphone = trackPatientStudy.masterDevices.first() as Smartp
 var status: StudyDeploymentStatus = deploymentService.createStudyDeployment( trackPatientStudy.getSnapshot() )
 val studyDeploymentId = status.studyDeploymentId
 
-// What comes after is called by `ClientManager` in `carp.client`:
+// What comes after is similar to what is called by the client in `carp.client`:
 // - Register the device to be deployed.
-val registration = patientPhone.createRegistration {
-    // Device-specific registration options can be accessed from here.
-    // Depending on the device type, different options are available.
-    // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
-    deviceId = "xxxxxxxxx"
-}
+val registration = patientPhone.createRegistration()
 status = deploymentService.registerDevice( studyDeploymentId, patientPhone.roleName, registration )
 
 // - Retrieve information on what to run and indicate the device is ready to collect the requested data.
@@ -236,13 +231,20 @@ val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
 val deviceToUse: String = invitation.deviceRoleNames.first() // This matches "Patient's phone".
 
 // Create a study runtime for the study.
-val clientManager: SmartphoneManager = createSmartphoneManager( deploymentService )
-val runtime: StudyRuntime = clientManager.addStudy( studyDeploymentId, deviceToUse )
+val clientRepository = createRepository()
+val client = SmartphoneClient( clientRepository, deploymentService )
+client.configure {
+    // Device-specific registration options can be accessed from here.
+    // Depending on the device type, different options are available.
+    // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
+    deviceId = "xxxxxxxxx"
+}
+val runtime: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
 var isDeployed = runtime.isDeployed // True, because there are no dependent devices.
 
 // Suppose a deployment also depends on a "Clinician's phone" to be registered; deployment cannot complete yet.
 // After the clinician's phone has been registered, attempt deployment again.
-isDeployed = runtime.tryDeployment() // True once dependent clients have been registered.
+isDeployed = client.tryDeployment( runtime.id ) // True once dependent clients have been registered.
 ```
 
 ## Building the project
