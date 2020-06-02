@@ -17,6 +17,20 @@ class TimeSpanTest
     }
 
     @Test
+    fun fromSeconds_with_whole_numbers_succeeds()
+    {
+        val six = TimeSpan.fromSeconds( 6.0 )
+        assertEquals( 6.0, six.totalSeconds )
+    }
+
+    @Test
+    fun fromMinutes_with_whole_numbers_succeeds()
+    {
+        val halfHour = TimeSpan.fromMinutes( 30.0 )
+        assertEquals( 30.0, halfHour.totalMinutes )
+    }
+
+    @Test
     fun totalMilliseconds_with_fraction_succeeds()
     {
         val halfMs = TimeSpan( 500 )

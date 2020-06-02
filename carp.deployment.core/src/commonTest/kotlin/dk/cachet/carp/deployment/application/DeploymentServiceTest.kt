@@ -63,6 +63,35 @@ abstract class DeploymentServiceTest
     }
 
     @Test
+    fun registerDevice_can_be_called_multiple_times() = runBlockingTest {
+        val ( deploymentService, _ ) = createService()
+        val studyDeploymentId = addTestDeployment( deploymentService, "Master" )
+        val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
+        val master = status.getRemainingDevicesToRegister().first { it.roleName == "Master" }
+
+        val registration = master.createRegistration()
+        val firstRegisterStatus = deploymentService.registerDevice( studyDeploymentId, master.roleName, registration )
+        val secondRegisterStatus = deploymentService.registerDevice( studyDeploymentId, master.roleName, registration )
+        assertEquals( firstRegisterStatus, secondRegisterStatus )
+    }
+
+    @Test
+    fun registerDevice_cannot_be_called_with_same_registration_when_stopped() = runBlockingTest {
+        val ( deploymentService, _ ) = createService()
+        val studyDeploymentId = addTestDeployment( deploymentService, "Master" )
+        val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
+        val master = status.getRemainingDevicesToRegister().first { it.roleName == "Master" }
+        val registration = master.createRegistration()
+        deploymentService.registerDevice( studyDeploymentId, master.roleName, registration )
+        deploymentService.stop( studyDeploymentId )
+
+        assertFailsWith<IllegalStateException>
+        {
+            deploymentService.registerDevice( studyDeploymentId, master.roleName, registration )
+        }
+    }
+
+    @Test
     fun unregisterDevice_succeeds() = runBlockingTest {
         val ( deploymentService, _ ) = createService()
         val deviceRolename = "Test device"
@@ -99,6 +128,7 @@ abstract class DeploymentServiceTest
         val master = status.getRemainingDevicesToRegister().first { it.roleName == "Master" }
         val connected = status.getRemainingDevicesToRegister().first { it.roleName == "Connected" }
         deploymentService.registerDevice( studyDeploymentId, master.roleName, master.createRegistration() )
+        deploymentService.registerDevice( studyDeploymentId, connected.roleName, connected.createRegistration() )
         deploymentService.stop( studyDeploymentId )
 
         assertFailsWith<IllegalStateException>

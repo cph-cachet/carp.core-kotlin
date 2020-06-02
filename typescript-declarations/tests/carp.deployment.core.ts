@@ -21,16 +21,16 @@ describe( "carp.deployment.core", () => {
             StudyInvitation.Companion.empty(),
             StudyInvitation.Companion,
             DeviceDeploymentStatus.Companion,
-            new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ) ),
-            new DeviceDeploymentStatus.Registered( null, true, toSet( [] ) ),
+            new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ), toSet( [] ) ),
+            new DeviceDeploymentStatus.Registered( null, true, toSet( [] ), toSet( [] ) ),
             new DeviceDeploymentStatus.Deployed( null ),
-            new DeviceDeploymentStatus.NeedsRedeployment( null, toSet( [] ) ),
-            [ "NotDeployed", new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ) ) ],
+            new DeviceDeploymentStatus.NeedsRedeployment( null, toSet( [] ), toSet( [] ) ),
+            [ "NotDeployed", new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ), toSet( [] ) ) ],
             StudyDeploymentStatus.Companion,
-            new StudyDeploymentStatus.Invited( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ) ),
-            new StudyDeploymentStatus.DeployingDevices( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ) ),
-            new StudyDeploymentStatus.DeploymentReady( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ) ),
-            new StudyDeploymentStatus.Stopped( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ) )
+            new StudyDeploymentStatus.Invited( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+            new StudyDeploymentStatus.DeployingDevices( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+            new StudyDeploymentStatus.DeploymentReady( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+            new StudyDeploymentStatus.Stopped( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null )
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.deployment.core', instances )

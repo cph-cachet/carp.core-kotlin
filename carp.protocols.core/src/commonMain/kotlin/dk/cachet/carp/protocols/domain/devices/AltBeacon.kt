@@ -3,6 +3,8 @@ package dk.cachet.carp.protocols.domain.devices
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.NotSerializable
+import dk.cachet.carp.protocols.domain.data.DataType
+import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -13,6 +15,8 @@ import kotlin.reflect.KClass
 @Serializable
 data class AltBeacon( override val roleName: String ) : DeviceDescriptor<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
 {
+    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
+
     override fun createDeviceRegistrationBuilder(): AltBeaconDeviceRegistrationBuilder = AltBeaconDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<AltBeaconDeviceRegistration> = AltBeaconDeviceRegistration::class
     override fun isValidConfiguration( registration: AltBeaconDeviceRegistration ): Trilean = Trilean.TRUE
@@ -44,18 +48,14 @@ data class AltBeaconDeviceRegistration(
     val minorId: Short
 ) : DeviceRegistration()
 {
-    // TODO: Serialization seems to fail when deviceId is assigned during initialization as follows.
-    //       This is likely a bug in kotlinx.serialization: https://github.com/Kotlin/kotlinx.serialization/issues/716
-    //       Once this is fixed, use this implementation instead.
-    // override val deviceId: String = "$manufacturerId:$organizationId:$majorId:$minorId"
-
-    override val deviceId: String
-        get() = "$manufacturerId:$organizationId:$majorId:$minorId"
+    override val deviceId: String =
+        // TODO: Remove this workaround once JS serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/716
+        if ( arrayOf( manufacturerId, organizationId, majorId, minorId ).any { it == null } ) ""
+        else "$manufacturerId:$organizationId:$majorId:$minorId"
 }
 
 
 @Serializable( with = NotSerializable::class )
-@DeviceRegistrationBuilderDsl
 class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>
 {
     /**

@@ -36,6 +36,7 @@ class StudyRuntimeTest
         val updatedStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
 
         assertTrue( runtime.isDeployed )
+        assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.Deployed>().count() )
         assertTrue( updatedStatus.getDeviceStatus( smartphone ) is DeviceDeploymentStatus.Deployed )
     }
 
@@ -49,6 +50,7 @@ class StudyRuntimeTest
         val updatedStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
 
         assertFalse( runtime.isDeployed )
+        assertEquals( 0, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.Deployed>().count() )
         assertTrue( updatedStatus.getDeviceStatus( smartphone ) is DeviceDeploymentStatus.NotDeployed )
     }
 
@@ -89,12 +91,14 @@ class StudyRuntimeTest
         val runtime = StudyRuntime.initialize( deploymentService, deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
 
         // Dependent devices are not yet registered.
-        var wasDeployed = runtime.tryDeployment()
+        var wasDeployed = runtime.tryDeployment( deploymentService )
+        assertEquals( 0, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.Deployed>().count() )
         assertFalse( wasDeployed )
 
         // Once dependent devices are registered, deployment succeeds.
         deploymentService.registerDevice( deploymentStatus.studyDeploymentId, deviceSmartphoneDependsOn.roleName, deviceSmartphoneDependsOn.createRegistration() )
-        wasDeployed = runtime.tryDeployment()
+        wasDeployed = runtime.tryDeployment( deploymentService )
+        assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.Deployed>().count() )
         assertTrue( wasDeployed )
     }
 

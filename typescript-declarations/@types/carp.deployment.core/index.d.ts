@@ -5,6 +5,7 @@ declare module 'carp.deployment.core'
     import HashSet = kotlin.collections.HashSet
     import { dk as cdk } from 'carp.common'
     import UUID = cdk.cachet.carp.common.UUID
+    import DateTime = cdk.cachet.carp.common.DateTime
 
 
     namespace dk.cachet.carp.deployment.domain
@@ -21,6 +22,7 @@ declare module 'carp.deployment.core'
             {
                 readonly requiresDeployment: Boolean
                 readonly isReadyForDeployment: Boolean
+                readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
 
             }
@@ -29,12 +31,14 @@ declare module 'carp.deployment.core'
                 constructor(
                     device: any,
                     requiresDeployment: Boolean,
+                    remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
                     remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
 
                 readonly device: any
                 readonly requiresDeployment: Boolean
                 readonly canObtainDeviceDeployment: Boolean
                 readonly isReadyForDeployment: Boolean
+                readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
             class Registered implements NotDeployed
@@ -42,12 +46,14 @@ declare module 'carp.deployment.core'
                 constructor(
                     device: any,
                     requiresDeployment: Boolean,
+                    remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
                     remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
 
                 readonly device: any
                 readonly requiresDeployment: Boolean
                 readonly canObtainDeviceDeployment: Boolean
                 readonly isReadyForDeployment: Boolean
+                readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
             class Deployed
@@ -62,12 +68,14 @@ declare module 'carp.deployment.core'
             {
                 constructor(
                     device: any,
+                    remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
                     remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
 
                 readonly device: any
                 readonly requiresDeployment: Boolean
                 readonly canObtainDeviceDeployment: Boolean
                 readonly isReadyForDeployment: Boolean
+                readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
         }
@@ -83,31 +91,35 @@ declare module 'carp.deployment.core'
         {
             class Invited
             {
-                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus> )
+                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startTime: DateTime | null )
 
                 readonly studyDeploymentId: UUID
                 readonly devicesStatus: ArrayList<DeviceDeploymentStatus>
+                readonly startTime: DateTime | null
             }
             class DeployingDevices
             {
-                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus> )
+                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startTime: DateTime | null  )
 
                 readonly studyDeploymentId: UUID
                 readonly devicesStatus: ArrayList<DeviceDeploymentStatus>
+                readonly startTime: DateTime | null
             }
             class DeploymentReady
             {
-                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus> )
+                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startTime: DateTime | null  )
 
                 readonly studyDeploymentId: UUID
                 readonly devicesStatus: ArrayList<DeviceDeploymentStatus>
+                readonly startTime: DateTime | null
             }
             class Stopped
             {
-                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus> )
+                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startTime: DateTime | null  )
 
                 readonly studyDeploymentId: UUID
                 readonly devicesStatus: ArrayList<DeviceDeploymentStatus>
+                readonly startTime: DateTime | null
             }
         }
     }

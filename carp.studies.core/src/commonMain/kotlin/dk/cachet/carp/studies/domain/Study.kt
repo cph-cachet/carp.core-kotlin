@@ -43,7 +43,7 @@ class Study(
         data class InvitationChanged( val invitation: StudyInvitation ) : Event()
         data class ProtocolSnapshotChanged( val protocolSnapshot: StudyProtocolSnapshot? ) : Event()
         data class StateChanged( val isLive: Boolean ) : Event()
-        data class ParticipationAdded( val participation: DeanonymizedParticipation ) : Event()
+        data class ParticipationAdded( val studyDeploymentId: UUID, val participation: DeanonymizedParticipation ) : Event()
     }
 
 
@@ -195,7 +195,7 @@ class Study(
         val participations = _participations.getOrPut( studyDeploymentId ) { mutableSetOf() }
         if ( participations.add( participation ) )
         {
-            event( Event.ParticipationAdded( participation ) )
+            event( Event.ParticipationAdded( studyDeploymentId, participation ) )
         }
     }
 

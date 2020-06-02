@@ -1,6 +1,7 @@
 package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.Snapshot
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
@@ -14,7 +15,7 @@ data class StudyRuntimeSnapshot(
     val device: AnyMasterDeviceDescriptor,
     val isDeployed: Boolean,
     val deploymentInformation: MasterDeviceDeployment?
-)
+) : Snapshot<StudyRuntime>()
 {
     companion object
     {
@@ -23,4 +24,6 @@ data class StudyRuntimeSnapshot(
             return StudyRuntimeSnapshot( studyRuntime.studyDeploymentId, studyRuntime.device, studyRuntime.isDeployed, studyRuntime.deploymentInformation )
         }
     }
+
+    override fun toObject(): StudyRuntime = StudyRuntime.fromSnapshot( this )
 }

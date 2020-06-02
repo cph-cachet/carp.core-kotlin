@@ -1,6 +1,8 @@
 package dk.cachet.carp.client.domain
 
+import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.AggregateRoot
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
@@ -12,7 +14,6 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
  * Manage data collection for a particular study on a client device.
  */
 class StudyRuntime private constructor(
-    private val deploymentService: DeploymentService,
     /**
      * The ID of the deployed study for which to collect data.
      */
@@ -21,8 +22,14 @@ class StudyRuntime private constructor(
      * The description of the device this runtime is intended for within the deployment identified by [studyDeploymentId].
      */
     val device: AnyMasterDeviceDescriptor
-)
+) : AggregateRoot<StudyRuntime, StudyRuntimeSnapshot, StudyRuntime.Event>(), StudyRuntimeStatus
 {
+    sealed class Event : Immutable()
+    {
+        data class Deployed( val deploymentInformation: MasterDeviceDeployment ) : Event()
+    }
+
+
     companion object Factory
     {
         /**
@@ -60,16 +67,16 @@ class StudyRuntime private constructor(
 
             // Initialize runtime.
             val clientDeviceStatus = deploymentStatus.devicesStatus.first { it.device.roleName == deviceRoleName }
-            val runtime = StudyRuntime( deploymentService, studyDeploymentId, clientDeviceStatus.device as AnyMasterDeviceDescriptor )
+            val runtime = StudyRuntime( studyDeploymentId, clientDeviceStatus.device as AnyMasterDeviceDescriptor )
 
             // After registration, deployment information might immediately be available for this client device.
-            runtime.tryDeployment( clientDeviceStatus )
+            runtime.tryDeployment( deploymentService, clientDeviceStatus )
 
             return runtime
         }
 
-        internal fun fromSnapshot( snapshot: StudyRuntimeSnapshot, deploymentService: DeploymentService ): StudyRuntime =
-            StudyRuntime( deploymentService, snapshot.studyDeploymentId, snapshot.device ).apply {
+        internal fun fromSnapshot( snapshot: StudyRuntimeSnapshot ): StudyRuntime =
+            StudyRuntime( snapshot.studyDeploymentId, snapshot.device ).apply {
                 isDeployed = snapshot.isDeployed
                 deploymentInformation = snapshot.deploymentInformation
             }
@@ -77,9 +84,14 @@ class StudyRuntime private constructor(
 
 
     /**
+     * Composite ID for this study runtime, comprised of the [studyDeploymentId] and [device] role name.
+     */
+    override val id: StudyRuntimeId get() = StudyRuntimeId( studyDeploymentId, device.roleName )
+
+    /**
      * Determines whether the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
      */
-    var isDeployed: Boolean = false
+    override var isDeployed: Boolean = false
         private set
 
     /**
@@ -87,7 +99,7 @@ class StudyRuntime private constructor(
      * TODO: This should be consumed within this domain model and not be public.
      *       Currently, it is in order to work towards a first MVP which includes server/client communication through the domain model.
      */
-    var deploymentInformation: MasterDeviceDeployment? = null
+    override var deploymentInformation: MasterDeviceDeployment? = null
         private set
 
     /**
@@ -96,15 +108,15 @@ class StudyRuntime private constructor(
      * @return True in case deployment succeeded; false in case device could not yet be deployed (e.g., awaiting registration of other devices).
      * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
      */
-    suspend fun tryDeployment(): Boolean
+    suspend fun tryDeployment( deploymentService: DeploymentService ): Boolean
     {
         val deploymentStatus = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
         val clientDeviceStatus = deploymentStatus.getDeviceStatus( device )
 
-        return tryDeployment( clientDeviceStatus )
+        return tryDeployment( deploymentService, clientDeviceStatus )
     }
 
-    private suspend fun tryDeployment( deviceStatus: DeviceDeploymentStatus ): Boolean
+    private suspend fun tryDeployment( deploymentService: DeploymentService, deviceStatus: DeviceDeploymentStatus ): Boolean
     {
         // Early out in case state indicates the device is not yet ready to deploy.
         if ( deviceStatus !is DeviceDeploymentStatus.NotDeployed || !deviceStatus.isReadyForDeployment ) return false
@@ -118,6 +130,7 @@ class StudyRuntime private constructor(
         {
             deploymentService.deploymentSuccessful( studyDeploymentId, device.roleName, deployment.getChecksum() )
             isDeployed = true
+            event( Event.Deployed( deployment ) )
         }
         // Handle race conditions with competing clients modifying device registrations, invalidating this deployment.
         catch ( ignore: IllegalArgumentException ) { }
@@ -125,4 +138,9 @@ class StudyRuntime private constructor(
 
         return isDeployed
     }
+
+    /**
+     * Get a serializable snapshot of the current state of this [StudyRuntime].
+     */
+    override fun getSnapshot(): StudyRuntimeSnapshot = StudyRuntimeSnapshot.fromStudyRuntime( this )
 }

@@ -5,6 +5,7 @@ import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
@@ -274,6 +275,7 @@ class StudyDeploymentTest
         assertEquals(
             deployment.invalidatedDeployedDevices.count(),
             deployment.invalidatedDeployedDevices.intersect( fromSnapshot.invalidatedDeployedDevices ).count() )
+        assertEquals( deployment.startTime, fromSnapshot.startTime )
         assertEquals( deployment.isStopped, fromSnapshot.isStopped )
         assertEquals(
             deployment.participations.count(),
@@ -296,25 +298,54 @@ class StudyDeploymentTest
         assertTrue { status.devicesStatus.any { it.device == connected } }
         assertTrue( status is StudyDeploymentStatus.Invited )
         val toRegister = status.getRemainingDevicesToRegister()
-        val expectedToRegister = setOf( master, connected )
-        assertEquals( expectedToRegister.count(), toRegister.count() )
-        assertTrue( toRegister.containsAll( expectedToRegister ) )
+        val expectedToRegister = setOf<AnyDeviceDescriptor>( master, connected )
+        assertEquals( expectedToRegister, toRegister )
         assertTrue( status.getRemainingDevicesReadyToDeploy().isEmpty() )
 
-        // After registering master device, master device is ready for deployment.
-        deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
-        val readyStatus = deployment.getStatus()
-        assertTrue( readyStatus is StudyDeploymentStatus.DeployingDevices )
-        assertEquals( 1, readyStatus.getRemainingDevicesToRegister().count() ) // Connected device is still unregistered.
-        assertEquals( setOf( master ), readyStatus.getRemainingDevicesReadyToDeploy() )
+        // After registering master device and connected device, master device is ready for deployment.
+        deployment.registerDevice( master, master.createRegistration() )
+        deployment.registerDevice( connected, connected.createRegistration() )
+        val afterRegisterStatus = deployment.getStatus()
+        assertTrue( afterRegisterStatus is StudyDeploymentStatus.DeployingDevices )
+        assertEquals( 0, afterRegisterStatus.getRemainingDevicesToRegister().count() )
+        assertEquals( setOf( master ), afterRegisterStatus.getRemainingDevicesReadyToDeploy() )
 
         // Notify of successful master device deployment.
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
         deployment.deviceDeployed( master, deviceDeployment.getChecksum() )
-        val studyStatus = deployment.getStatus()
-        assertTrue( studyStatus is StudyDeploymentStatus.DeployingDevices )
-        val deviceStatus = studyStatus.getDeviceStatus( master )
+        val afterDeployStatus = deployment.getStatus()
+        assertTrue( afterDeployStatus is StudyDeploymentStatus.DeploymentReady )
+        val deviceStatus = afterDeployStatus.getDeviceStatus( master )
         assertTrue( deviceStatus is DeviceDeploymentStatus.Deployed )
+    }
+
+    @Test
+    fun getStatus_lifecycle_two_dependent_masters()
+    {
+        val protocol = createEmptyProtocol()
+        val master1 = StubMasterDeviceDescriptor( "Master 1" )
+        val master2 = StubMasterDeviceDescriptor( "Master 2" )
+        protocol.addMasterDevice( master1 )
+        protocol.addMasterDevice( master2 )
+        // TODO: For now, there is no dependency between these two devices, it is simply assumed in the current implementation.
+        //       This test will fail once this implementation is improved.
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( master1, master1.createRegistration() )
+        deployment.registerDevice( master2, master2.createRegistration() )
+
+        // Deploy first master device.
+        val master1Deployment = deployment.getDeviceDeploymentFor( master1 )
+        deployment.deviceDeployed( master1, master1Deployment.getChecksum() )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeployingDevices )
+
+        // After deployment of the second master device, deployment is ready.
+        val master2Deployment = deployment.getDeviceDeploymentFor( master2 )
+        deployment.deviceDeployed( master2, master2Deployment.getChecksum() )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
+
+        // Unregistering one device returns deployment to 'deploying'.
+        deployment.unregisterDevice( master1 )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeployingDevices )
     }
 
     @Test
@@ -345,6 +376,7 @@ class StudyDeploymentTest
         val deployment = studyDeploymentFor( protocol )
         val registration = DefaultDeviceRegistration( "Registered master" )
         deployment.registerDevice( master, registration )
+        deployment.registerDevice( connected, connected.createRegistration() )
 
         // Include an additional master device with a trigger which should not impact the `DeviceDeployment` tested here.
         val ignoredMaster = StubMasterDeviceDescriptor( "Ignored" )
@@ -354,7 +386,7 @@ class StudyDeploymentTest
         val deviceDeployment: MasterDeviceDeployment = deployment.getDeviceDeploymentFor( master )
         assertEquals( "Registered master", deviceDeployment.configuration.deviceId )
         assertEquals( protocol.getConnectedDevices( master ).toSet(), deviceDeployment.connectedDevices )
-        assertEquals( 0, deviceDeployment.connectedDeviceConfigurations.count() ) // No preregistered connected devices.
+        assertEquals( 1, deviceDeployment.connectedDeviceConfigurations.count() ) // One preregistered connected devices.
 
         // Device deployment lists both tasks, even if one is destined for the connected device.
         assertEquals( protocol.tasks.count(), deviceDeployment.tasks.intersect( protocol.tasks ).count() )
@@ -381,6 +413,19 @@ class StudyDeploymentTest
 
         assertEquals( "Connected", deviceDeployment.connectedDeviceConfigurations.keys.single() )
         assertEquals( "42", deviceDeployment.connectedDeviceConfigurations.getValue( "Connected" ).deviceId )
+    }
+
+    @Test
+    fun getDeviceDeploymentFor_without_preregistered_device_succeeds()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
+        val master = protocol.masterDevices.first { it.roleName == "Master" }
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
+
+        val deviceDeployment = deployment.getDeviceDeploymentFor( master )
+
+        assertTrue( deviceDeployment.connectedDeviceConfigurations.isEmpty() )
     }
 
     @Test
@@ -417,7 +462,36 @@ class StudyDeploymentTest
         val deviceDeployment = deployment.getDeviceDeploymentFor( device )
         deployment.deviceDeployed( device, deviceDeployment.getChecksum() )
         assertTrue( deployment.deployedDevices.contains( device ) )
-        assertEquals( StudyDeployment.Event.DeviceDeployed( device ), deployment.consumeEvents().last() )
+        assertEquals(
+            StudyDeployment.Event.DeviceDeployed( device ),
+            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().singleOrNull() )
+    }
+
+    @Test
+    fun deviceDeployed_for_last_device_sets_startTime()
+    {
+        val protocol = createEmptyProtocol()
+        val master1 = StubMasterDeviceDescriptor( "Master1" )
+        val master2 = StubMasterDeviceDescriptor( "Master2" )
+        protocol.addMasterDevice( master1 )
+        protocol.addMasterDevice( master2 )
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( master1, master1.createRegistration() )
+        deployment.registerDevice( master2, master2.createRegistration() )
+
+        // Deploying a device while others still need to be deployed does not set start time.
+        val master1Deployment = deployment.getDeviceDeploymentFor( master1 )
+        deployment.deviceDeployed( master1, master1Deployment.getChecksum() )
+        assertNull( deployment.startTime )
+        assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Started>().count() )
+
+        // Deploying the last device sets start time.
+        val master2Deployment = deployment.getDeviceDeploymentFor( master2 )
+        deployment.deviceDeployed( master2, master2Deployment.getChecksum() )
+        assertNotNull( deployment.startTime )
+        assertEquals(
+            deployment.startTime,
+            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Started>().first().startTime )
     }
 
     @Test
@@ -448,7 +522,7 @@ class StudyDeploymentTest
     }
 
     @Test
-    fun deviceDeployed_fails_for_device_not_ready_for_deployment()
+    fun deviceDeployed_fails_when_device_is_unregistered()
     {
         val protocol = createEmptyProtocol()
         val device = StubMasterDeviceDescriptor()
@@ -457,6 +531,18 @@ class StudyDeploymentTest
 
         assertFailsWith<IllegalStateException> { deployment.deviceDeployed( device, 0 ) }
         assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
+    }
+
+    @Test
+    fun deviceDeployed_fails_when_connected_device_is_unregistered()
+    {
+        val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
+        val master = protocol.masterDevices.first { it.roleName == "Master" }
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( master )
+
+        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( master, deviceDeployment.getChecksum() ) }
     }
 
     @Test
@@ -518,6 +604,7 @@ class StudyDeploymentTest
         val connected = protocol.devices.first { it.roleName == "Connected" }
         val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( master, master.createRegistration() )
+        deployment.registerDevice( connected, connected.createRegistration() )
         deployment.stop()
 
         assertFailsWith<IllegalStateException> { deployment.registerDevice( connected, connected.createRegistration() ) }

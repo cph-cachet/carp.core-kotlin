@@ -21,7 +21,7 @@ class InMemoryDeploymentRepository : DeploymentRepository
      *
      * @throws IllegalArgumentException when a study deployment with the same id already exists.
      */
-    override fun add( studyDeployment: StudyDeployment )
+    override suspend fun add( studyDeployment: StudyDeployment )
     {
         require( !studyDeployments.contains( studyDeployment.id ) ) { "The repository already contains a study deployment with ID '${studyDeployment.id}'." }
 
@@ -32,7 +32,7 @@ class InMemoryDeploymentRepository : DeploymentRepository
      * Return all [StudyDeployment]s matching any of the specified [ids].
      * Ids that are not found are ignored.
      */
-    override fun getStudyDeploymentsBy( ids: Set<UUID> ): List<StudyDeployment> =
+    override suspend fun getStudyDeploymentsBy( ids: Set<UUID> ): List<StudyDeployment> =
         studyDeployments
             .filterKeys { it in ids }
             .map { StudyDeployment.fromSnapshot( it.value ) }
@@ -44,7 +44,7 @@ class InMemoryDeploymentRepository : DeploymentRepository
      * @param studyDeployment The updated version of the study deployment to store.
      * @throws IllegalArgumentException when no previous version of this study deployment is stored in the repository.
      */
-    override fun update( studyDeployment: StudyDeployment )
+    override suspend fun update( studyDeployment: StudyDeployment )
     {
         require( studyDeployments.contains( studyDeployment.id ) ) { "The repository does not contain an existing study deployment with ID '${studyDeployment.id}'." }
 
@@ -54,7 +54,7 @@ class InMemoryDeploymentRepository : DeploymentRepository
     /**
      * Add a participation [invitation] for an account with the given [accountId].
      */
-    override fun addInvitation( accountId: UUID, invitation: ParticipationInvitation )
+    override suspend fun addInvitation( accountId: UUID, invitation: ParticipationInvitation )
     {
         val invitations = participationInvitations.getOrPut( accountId ) { mutableSetOf() }
         invitations.add( invitation )
@@ -63,6 +63,6 @@ class InMemoryDeploymentRepository : DeploymentRepository
     /**
      * Get all participation invitations for the account with the specified [accountId].
      */
-    override fun getInvitations( accountId: UUID ): Set<ParticipationInvitation> =
+    override suspend fun getInvitations( accountId: UUID ): Set<ParticipationInvitation> =
         participationInvitations.getOrElse( accountId ) { setOf() }
 }

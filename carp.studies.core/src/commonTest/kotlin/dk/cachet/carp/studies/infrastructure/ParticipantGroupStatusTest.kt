@@ -16,7 +16,7 @@ class ParticipantGroupStatusTest
     fun can_serialize_and_deserialize_ParticipantGroupStatus_using_JSON()
     {
         val studyDeploymentId = UUID.randomUUID()
-        val deploymentStatus = StudyDeploymentStatus.Invited( studyDeploymentId, listOf() )
+        val deploymentStatus = StudyDeploymentStatus.Invited( studyDeploymentId, listOf(), null )
         val participants = setOf( DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() ) )
         val groupStatus = ParticipantGroupStatus( deploymentStatus, participants )
 

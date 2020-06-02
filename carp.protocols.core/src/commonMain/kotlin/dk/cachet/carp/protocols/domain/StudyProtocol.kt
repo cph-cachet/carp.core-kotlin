@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.protocols.domain.deployment.DeploymentError
 import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
@@ -31,7 +32,11 @@ class StudyProtocol(
     /**
      * A unique descriptive name for the protocol assigned by the [ProtocolOwner].
      */
-    val name: String
+    val name: String,
+    /**
+     * An optional description for the study protocol.
+     */
+    val description: String = ""
 ) : StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration() )
 {
     sealed class Event : Immutable()
@@ -52,6 +57,7 @@ class StudyProtocol(
         {
             val owner = ProtocolOwner( snapshot.ownerId )
             val protocol = StudyProtocol( owner, snapshot.name )
+            protocol.creationDate = snapshot.creationDate
 
             // Add master devices.
             snapshot.masterDevices.forEach { protocol.addMasterDevice( it ) }
@@ -74,9 +80,9 @@ class StudyProtocol(
             snapshot.triggeredTasks.forEach { triggeredTask ->
                 val triggerMatch = snapshot.triggers.entries.singleOrNull { it.key == triggeredTask.triggerId }
                     ?: throw InvalidConfigurationError( "Can't find trigger with id '${triggeredTask.triggerId}' in snapshot." )
-                val task = protocol.tasks.singleOrNull { it.name == triggeredTask.taskName }
+                val task: TaskDescriptor = protocol.tasks.singleOrNull { it.name == triggeredTask.taskName }
                     ?: throw InvalidConfigurationError( "Can't find task with name '${triggeredTask.taskName}' in snapshot." )
-                val device = protocol.devices.singleOrNull { it.roleName == triggeredTask.targetDeviceRoleName }
+                val device: AnyDeviceDescriptor = protocol.devices.singleOrNull { it.roleName == triggeredTask.targetDeviceRoleName }
                     ?: throw InvalidConfigurationError( "Can't find device with role name '${triggeredTask.targetDeviceRoleName}' in snapshot." )
                 protocol.addTriggeredTask( triggerMatch.value, task, device )
             }
@@ -84,6 +90,13 @@ class StudyProtocol(
             return protocol
         }
     }
+
+
+    /**
+     * The date when this protocol was created.
+     */
+    var creationDate: DateTime = DateTime.now()
+        private set
 
     /**
      * Add a master device which is responsible for aggregating and synchronizing incoming data.
@@ -170,7 +183,7 @@ class StudyProtocol(
     fun addTriggeredTask( trigger: Trigger, task: TaskDescriptor, targetDevice: AnyDeviceDescriptor ): Boolean
     {
         // The device needs to be included in the study protocol. We can not add it here since we do not know whether it should be a master or connected device.
-        if ( !devices.contains( targetDevice ) )
+        if ( targetDevice !in devices )
         {
             throw InvalidConfigurationError( "The passed device to which the task needs to be sent is not included in this study protocol." )
         }
@@ -197,7 +210,7 @@ class StudyProtocol(
      */
     fun getTriggeredTasks( trigger: Trigger ): Iterable<TriggeredTask>
     {
-        if ( !triggers.contains( trigger ) )
+        if ( trigger !in triggers )
         {
             throw InvalidConfigurationError( "The passed trigger is not part of this study protocol." )
         }
@@ -274,10 +287,8 @@ class StudyProtocol(
     /**
      * Returns warnings and errors for the current configuration of the study protocol.
      */
-    fun getDeploymentIssues(): Iterable<DeploymentIssue>
-    {
-        return possibleDeploymentIssues.filter { it.isIssuePresent( this ) }
-    }
+    fun getDeploymentIssues(): Iterable<DeploymentIssue> =
+        possibleDeploymentIssues.filter { it.isIssuePresent( this ) }
 
     /**
      * Based on the current configuration, determines whether the study protocol can be deployed.
@@ -285,10 +296,8 @@ class StudyProtocol(
      *
      * In order to retrieve specific deployment issues, call [getDeploymentIssues].
      */
-    fun isDeployable(): Boolean
-    {
-        return !getDeploymentIssues().any { it is DeploymentError }
-    }
+    fun isDeployable(): Boolean =
+        !getDeploymentIssues().any { it is DeploymentError }
 
 
     /**

@@ -4,11 +4,11 @@ import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.NotSerializable
 import dk.cachet.carp.protocols.domain.data.DataType
+import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilder
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilderDsl
 import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.StubDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.StubMasterDeviceDescriptor
@@ -39,6 +39,10 @@ internal val STUBS_SERIAL_MODULE = SerializersModule {
     {
         StubMasterDeviceDescriptor::class with StubMasterDeviceDescriptor.serializer()
         UnknownMasterDeviceDescriptor::class with UnknownMasterDeviceDescriptor.serializer()
+    }
+    polymorphic( SamplingConfiguration::class )
+    {
+        UnknownSamplingConfiguration::class with UnknownSamplingConfiguration.serializer()
     }
     polymorphic ( DeviceRegistration::class )
     {
@@ -100,7 +104,10 @@ fun createComplexProtocol(): StudyProtocol
 }
 
 @Serializable
-internal data class UnknownMasterDeviceDescriptor( override val roleName: String ) :
+internal data class UnknownMasterDeviceDescriptor(
+    override val roleName: String,
+    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
+) :
     MasterDeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
     override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
@@ -112,13 +119,17 @@ internal data class UnknownMasterDeviceDescriptor( override val roleName: String
 internal data class UnknownDeviceDescriptor( override val roleName: String ) :
     DeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
+    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
+
     override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
 }
 
+@Serializable
+internal data class UnknownSamplingConfiguration( val someUnknownProperty: String ) : SamplingConfiguration()
+
 @Serializable( with = NotSerializable::class )
-@DeviceRegistrationBuilderDsl
 class UnknownDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() ) :
     DeviceRegistrationBuilder<DeviceRegistration>
 {

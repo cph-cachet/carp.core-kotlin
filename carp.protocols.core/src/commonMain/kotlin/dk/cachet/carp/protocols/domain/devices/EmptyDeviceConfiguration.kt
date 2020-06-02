@@ -21,11 +21,11 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescripto
     private val _connections: MutableMap<AnyDeviceDescriptor, MutableSet<AnyDeviceDescriptor>> = mutableMapOf()
 
     override val devices: Set<AnyDeviceDescriptor>
-        get() { return _devices.values.toSet() }
+        get() = _devices.values.toSet()
 
     private val _masterDevices: MutableSet<AnyMasterDeviceDescriptor> = mutableSetOf()
     override val masterDevices: Set<AnyMasterDeviceDescriptor>
-        get() { return _masterDevices }
+        get() = _masterDevices
 
     override fun addMasterDevice( masterDevice: AnyMasterDeviceDescriptor ): Boolean
     {
@@ -42,13 +42,10 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescripto
         // Add device when not yet within this configuration.
         _devices.tryAddIfKeyIsNew( device )
 
-        // Add empty 'connections' collection in case it is a master device without any previous connections.
-        if ( !_connections.contains( masterDevice ) )
-        {
-            _connections[ masterDevice ] = mutableSetOf()
-        }
-
-        return _connections[ masterDevice ]!!.add( device )
+        // Add empty 'connections' collection in case it is a master device without any previous connections, and add.
+        return _connections
+            .getOrPut( masterDevice ) { mutableSetOf() }
+            .add( device )
     }
 
     override fun getConnectedDevices( masterDevice: AnyMasterDeviceDescriptor, includeChainedDevices: Boolean ): Iterable<AnyDeviceDescriptor>
@@ -58,7 +55,7 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescripto
         val connectedDevices: MutableList<AnyDeviceDescriptor> = mutableListOf()
 
         // Add all connections of the master device.
-        if ( _connections.contains( masterDevice ) )
+        if ( masterDevice in _connections )
         {
             connectedDevices.addAll( _connections[ masterDevice ]!! )
 
@@ -79,7 +76,7 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescripto
      */
     private fun verifyMasterDevice( device: AnyMasterDeviceDescriptor )
     {
-        if ( !devices.contains( device ) )
+        if ( device !in devices )
         {
             throw InvalidConfigurationError( "The passed master device is not part of this device configuration." )
         }

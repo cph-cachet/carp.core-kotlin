@@ -111,7 +111,7 @@ interface DeploymentService
     suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ): Participation
 
     /**
-     * Get all participations to study deployments the account with the given [accountId] has been invited to.
+     * Get all participations in study deployments the account with the given [accountId] has been invited to.
      */
     suspend fun getParticipationInvitations( accountId: UUID ): Set<ParticipationInvitation>
 }
