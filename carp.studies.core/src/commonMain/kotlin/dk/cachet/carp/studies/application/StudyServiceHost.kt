@@ -5,6 +5,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
+import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
@@ -208,6 +209,8 @@ class StudyServiceHost(
 
     /**
      * Deploy the study with the given [studyId] to a [group] of previously added participants.
+     * In case a group with the same participants has already been deployed and is still running (not stopped),
+     * the latest status for this group is simply returned.
      *
      * @throws IllegalArgumentException when:
      *  - a study with [studyId] does not exist
@@ -235,6 +238,19 @@ class StudyServiceHost(
         // Verify whether all master devices in the study protocol have been assigned to a participant.
         require( group.deviceRoles().containsAll( masterDevices ) )
             { "Not all devices required for this study have been assigned to a participant." }
+
+        // In case the same participants have been invited before,
+        // and that deployment is still running, return the existing group.
+        // TODO: The same participants might be invited for different role names, which we currently cannot differentiate between.
+        val toDeployParticipantIds = group.map { it.participantId }.toSet()
+        val deployedStatus = study.participations.entries
+            .firstOrNull { p -> p.value.map { it.participantId }.toSet() == toDeployParticipantIds }
+            ?.let { deploymentService.getStudyDeploymentStatus( it.key ) }
+        if ( deployedStatus != null && deployedStatus !is StudyDeploymentStatus.Stopped )
+        {
+            val participants = study.getParticipations( deployedStatus.studyDeploymentId )
+            return ParticipantGroupStatus( deployedStatus, participants )
+        }
 
         // Get participant information.
         val allParticipants = repository.getParticipants( studyId ).associateBy { it.id }

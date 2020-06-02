@@ -336,6 +336,35 @@ interface StudyServiceTest
     }
 
     @Test
+    fun deployParticipantGroup_multiple_times_returns_same_group() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+        val participant = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
+        val groupStatus = service.deployParticipantGroup( studyId, setOf( assignParticipant ) )
+
+        // Deploy the same group a second time.
+        val groupStatus2 = service.deployParticipantGroup( studyId, setOf( assignParticipant ) )
+        assertEquals( groupStatus, groupStatus2 )
+    }
+
+    @Test
+    fun deployParticipantGroup_for_previously_stopped_group_returns_new_group() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+        val participant = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
+        val groupStatus = service.deployParticipantGroup( studyId, setOf( assignParticipant ) )
+
+        // Stop previous group. A new deployment with the same participants should be a new participant group.
+        service.stopParticipantGroup( studyId, groupStatus.id )
+        val groupStatus2 = service.deployParticipantGroup( studyId, setOf( assignParticipant ) )
+        assertNotEquals( groupStatus, groupStatus2 )
+    }
+
+    @Test
     fun getParticipantGroupStatuses_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
 

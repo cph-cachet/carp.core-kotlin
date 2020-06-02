@@ -112,6 +112,8 @@ interface StudyService
 
     /**
      * Deploy the study with the given [studyId] to a [group] of previously added participants.
+     * In case a group with the same participants has already been deployed and is still running (not stopped),
+     * the latest status for this group is simply returned.
      *
      * @throws IllegalArgumentException when:
      *  - a study with [studyId] does not exist

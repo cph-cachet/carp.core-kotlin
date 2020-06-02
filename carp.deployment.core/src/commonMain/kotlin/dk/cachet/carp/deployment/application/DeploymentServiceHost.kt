@@ -87,7 +87,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
 
         // Early out when the device is already registered.
         val priorRegistration = deployment.registeredDevices[ device.device ]
-        if ( priorRegistration == registration )
+        if ( !deployment.isStopped && priorRegistration == registration )
         {
             return deployment.getStatus()
         }
