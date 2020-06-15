@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.deployment
 
 import dk.cachet.carp.protocols.domain.createEmptyProtocol
-import dk.cachet.carp.protocols.domain.devices.StubMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import kotlin.test.*
 
 

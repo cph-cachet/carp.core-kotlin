@@ -19,6 +19,8 @@ import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.triggers.Trigger
 import dk.cachet.carp.protocols.infrastructure.JSON
 import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
+import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
 import kotlinx.serialization.Serializable
