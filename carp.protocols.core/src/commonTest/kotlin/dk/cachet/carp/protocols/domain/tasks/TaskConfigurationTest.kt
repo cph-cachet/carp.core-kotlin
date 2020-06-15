@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain.tasks
 
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
+import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
 import kotlin.test.*
 
 
