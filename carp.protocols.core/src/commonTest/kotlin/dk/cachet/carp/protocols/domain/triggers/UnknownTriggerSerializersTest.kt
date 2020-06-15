@@ -3,7 +3,7 @@
 package dk.cachet.carp.protocols.domain.triggers
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
-import dk.cachet.carp.protocols.domain.UnknownTrigger
+import dk.cachet.carp.protocols.infrastructure.test.UnknownTrigger
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.test.*

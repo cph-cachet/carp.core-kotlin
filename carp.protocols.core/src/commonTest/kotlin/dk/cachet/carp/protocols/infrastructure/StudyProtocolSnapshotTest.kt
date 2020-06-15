@@ -2,14 +2,6 @@ package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.UnknownDeviceDescriptor
-import dk.cachet.carp.protocols.domain.UnknownMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.UnknownMeasure
-import dk.cachet.carp.protocols.domain.UnknownSamplingConfiguration
-import dk.cachet.carp.protocols.domain.UnknownTaskDescriptor
-import dk.cachet.carp.protocols.domain.UnknownTrigger
-import dk.cachet.carp.protocols.domain.createComplexProtocol
-import dk.cachet.carp.protocols.domain.createEmptyProtocol
 import dk.cachet.carp.protocols.domain.devices.CustomDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
@@ -21,6 +13,14 @@ import dk.cachet.carp.protocols.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.UnknownDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.UnknownMeasure
+import dk.cachet.carp.protocols.infrastructure.test.UnknownSamplingConfiguration
+import dk.cachet.carp.protocols.infrastructure.test.UnknownTaskDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.UnknownTrigger
+import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlin.test.*
 
 
@@ -70,7 +70,9 @@ class StudyProtocolSnapshotTest
         protocol.addConnectedDevice( unknownMaster, master )
 
         var serialized = protocol.getSnapshot().toJson()
-        serialized = serialized.replace( "dk.cachet.carp.protocols.domain.UnknownMasterDeviceDescriptor", "com.unknown.CustomMasterDevice" )
+        serialized = serialized.replace(
+            "dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor",
+            "com.unknown.CustomMasterDevice" )
 
         val parsed = StudyProtocolSnapshot.fromJson( serialized )
         assertTrue { parsed.connectedDevices.single() is MasterDeviceDescriptor }
@@ -133,12 +135,24 @@ class StudyProtocolSnapshotTest
 
         // Replace the strings which identify the types to load by the PolymorphicSerializer.
         // This will cause the types not to be found while deserializing, hence mimicking 'custom' types.
-        serialized = serialized.replace( "dk.cachet.carp.protocols.domain.UnknownMasterDeviceDescriptor", "com.unknown.CustomMasterDevice" )
-        serialized = serialized.replace( "dk.cachet.carp.protocols.domain.UnknownDeviceDescriptor", "com.unknown.CustomDevice" )
-        serialized = serialized.replace( "dk.cachet.carp.protocols.domain.UnknownSamplingConfiguration", "com.unknown.SamplingConfiguration" )
-        serialized = serialized.replace( "dk.cachet.carp.protocols.domain.UnknownTaskDescriptor", "com.unknown.CustomTask" )
-        serialized = serialized.replace( "dk.cachet.carp.protocols.domain.UnknownMeasure", "com.unknown.CustomMeasure" )
-        serialized = serialized.replace( "dk.cachet.carp.protocols.domain.UnknownTrigger", "com.unknown.CustomTrigger" )
+        serialized = serialized.replace(
+            "dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor",
+            "com.unknown.CustomMasterDevice" )
+        serialized = serialized.replace(
+            "dk.cachet.carp.protocols.infrastructure.test.UnknownDeviceDescriptor",
+            "com.unknown.CustomDevice" )
+        serialized = serialized.replace(
+            "dk.cachet.carp.protocols.infrastructure.test.UnknownSamplingConfiguration",
+            "com.unknown.SamplingConfiguration" )
+        serialized = serialized.replace(
+            "dk.cachet.carp.protocols.infrastructure.test.UnknownTaskDescriptor",
+            "com.unknown.CustomTask" )
+        serialized = serialized.replace(
+            "dk.cachet.carp.protocols.infrastructure.test.UnknownMeasure",
+            "com.unknown.CustomMeasure" )
+        serialized = serialized.replace(
+            "dk.cachet.carp.protocols.infrastructure.test.UnknownTrigger",
+            "com.unknown.CustomTrigger" )
 
         return serialized
     }

@@ -1,8 +1,8 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
-import dk.cachet.carp.deployment.domain.STUBS_SERIAL_MODULE
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
+import dk.cachet.carp.protocols.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
