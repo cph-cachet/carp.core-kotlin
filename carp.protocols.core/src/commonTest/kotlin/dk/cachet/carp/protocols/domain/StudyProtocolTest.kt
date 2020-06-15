@@ -11,9 +11,9 @@ import dk.cachet.carp.protocols.domain.devices.StubDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.tasks.TaskConfiguration
 import dk.cachet.carp.protocols.domain.tasks.TaskConfigurationTest
-import dk.cachet.carp.protocols.domain.triggers.StubTrigger
 import dk.cachet.carp.protocols.domain.triggers.TriggeredTask
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
 import dk.cachet.carp.test.Nested
 import kotlin.test.*
 

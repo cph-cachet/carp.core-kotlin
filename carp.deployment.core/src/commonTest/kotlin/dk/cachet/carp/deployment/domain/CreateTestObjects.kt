@@ -4,7 +4,6 @@ import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.NotSerializable
 import dk.cachet.carp.common.users.Account
-import dk.cachet.carp.deployment.domain.triggers.StubTrigger
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -21,6 +20,7 @@ import dk.cachet.carp.protocols.domain.triggers.Trigger
 import dk.cachet.carp.protocols.infrastructure.JSON
 import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
