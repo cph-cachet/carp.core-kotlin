@@ -15,11 +15,11 @@ import dk.cachet.carp.protocols.domain.devices.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import dk.cachet.carp.protocols.domain.tasks.measures.StubMeasure
-import dk.cachet.carp.protocols.domain.triggers.StubTrigger
 import dk.cachet.carp.protocols.domain.triggers.Trigger
 import dk.cachet.carp.protocols.infrastructure.JSON
 import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
