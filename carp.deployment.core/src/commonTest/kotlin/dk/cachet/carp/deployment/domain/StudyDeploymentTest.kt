@@ -12,6 +12,10 @@ import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.UnknownDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.UnknownDeviceRegistration
+import dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlinx.serialization.json.Json
 import kotlin.test.*
 

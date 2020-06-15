@@ -1,14 +1,14 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.deployment.domain.createEmptyProtocol
-import dk.cachet.carp.deployment.domain.createSingleMasterWithConnectedDeviceProtocol
-import dk.cachet.carp.deployment.domain.STUBS_SERIAL_MODULE
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.deployment.domain.UnknownMasterDeviceDescriptor
+import dk.cachet.carp.deployment.domain.createSingleMasterWithConnectedDeviceProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.infrastructure.fromJson
+import dk.cachet.carp.protocols.infrastructure.test.STUBS_SERIAL_MODULE
+import dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.toJson
 import kotlin.test.*
 
@@ -56,7 +56,9 @@ class StudyDeploymentStatusTest
 
         // Replace the strings which identify the types to load by the PolymorphicSerializer.
         // This will cause the types not to be found while deserializing, hence mimicking 'custom' types.
-        serialized = serialized.replace( "dk.cachet.carp.deployment.domain.UnknownMasterDeviceDescriptor", "com.unknown.CustomMasterDevice" )
+        serialized = serialized.replace(
+            "dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor",
+            "com.unknown.CustomMasterDevice" )
 
         // Create deployment based on protocol with custom types and serialize its status.
         val snapshotWithCustom = StudyProtocolSnapshot.fromJson( serialized )

@@ -1,8 +1,10 @@
-package dk.cachet.carp.protocols.domain
+package dk.cachet.carp.protocols.infrastructure.test
 
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.NotSerializable
+import dk.cachet.carp.protocols.domain.ProtocolOwner
+import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.data.DataType
 import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
@@ -15,11 +17,6 @@ import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import dk.cachet.carp.protocols.domain.triggers.Trigger
 import dk.cachet.carp.protocols.infrastructure.JSON
 import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
-import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
-import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -29,7 +26,7 @@ import kotlin.reflect.KClass
 /**
  * Stubs for testing extending from types in [dk.cachet.carp.protocols] module which need to be registered when using [Json] serializer.
  */
-internal val STUBS_SERIAL_MODULE = SerializersModule {
+val STUBS_SERIAL_MODULE = SerializersModule {
     polymorphic( DeviceDescriptor::class )
     {
         StubDeviceDescriptor::class with StubDeviceDescriptor.serializer()
@@ -103,8 +100,9 @@ fun createComplexProtocol(): StudyProtocol
     return protocol
 }
 
+
 @Serializable
-internal data class UnknownMasterDeviceDescriptor(
+data class UnknownMasterDeviceDescriptor(
     override val roleName: String,
     override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 ) :
@@ -116,7 +114,7 @@ internal data class UnknownMasterDeviceDescriptor(
 }
 
 @Serializable
-internal data class UnknownDeviceDescriptor( override val roleName: String ) :
+data class UnknownDeviceDescriptor( override val roleName: String ) :
     DeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
 {
     override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
@@ -127,7 +125,7 @@ internal data class UnknownDeviceDescriptor( override val roleName: String ) :
 }
 
 @Serializable
-internal data class UnknownSamplingConfiguration( val someUnknownProperty: String ) : SamplingConfiguration()
+data class UnknownSamplingConfiguration( val someUnknownProperty: String ) : SamplingConfiguration()
 
 @Serializable( with = NotSerializable::class )
 class UnknownDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() ) :
@@ -137,7 +135,7 @@ class UnknownDeviceRegistrationBuilder( private var deviceId: String = UUID.rand
 }
 
 @Serializable
-internal data class UnknownDeviceRegistration( override val deviceId: String ) : DeviceRegistration()
+data class UnknownDeviceRegistration( override val deviceId: String ) : DeviceRegistration()
 
 @Serializable
 internal data class UnknownTaskDescriptor(
@@ -146,7 +144,7 @@ internal data class UnknownTaskDescriptor(
 ) : TaskDescriptor()
 
 @Serializable
-internal data class UnknownMeasure( override val type: DataType ) : Measure()
+data class UnknownMeasure( override val type: DataType ) : Measure()
 
 @Serializable
-internal data class UnknownTrigger( override val sourceDeviceRoleName: String ) : Trigger()
+data class UnknownTrigger( override val sourceDeviceRoleName: String ) : Trigger()
