@@ -4,9 +4,9 @@ import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.STUBS_SERIAL_MODULE
 import dk.cachet.carp.protocols.domain.UnknownMeasure
 import dk.cachet.carp.protocols.domain.UnknownTaskDescriptor
-import dk.cachet.carp.protocols.domain.data.STUB_DATA_TYPE
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
-import dk.cachet.carp.protocols.domain.tasks.measures.StubMeasure
+import dk.cachet.carp.protocols.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.test.*

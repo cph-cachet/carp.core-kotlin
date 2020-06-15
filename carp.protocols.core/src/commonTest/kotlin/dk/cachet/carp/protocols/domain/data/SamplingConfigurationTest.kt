@@ -1,6 +1,8 @@
 package dk.cachet.carp.protocols.domain.data
 
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
+import dk.cachet.carp.protocols.infrastructure.test.StubDataTypeSamplingScheme
+import dk.cachet.carp.protocols.infrastructure.test.StubSamplingConfigurationBuilder
 import dk.cachet.carp.test.JsIgnore
 import kotlin.test.*
 

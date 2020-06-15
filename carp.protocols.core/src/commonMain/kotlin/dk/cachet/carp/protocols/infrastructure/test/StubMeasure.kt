@@ -1,7 +1,7 @@
-package dk.cachet.carp.protocols.domain.tasks.measures
+package dk.cachet.carp.protocols.infrastructure.test
 
 import dk.cachet.carp.protocols.domain.data.DataType
-import dk.cachet.carp.protocols.domain.data.STUB_DATA_TYPE
+import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import kotlinx.serialization.Serializable
 
 
