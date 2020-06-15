@@ -1,5 +1,7 @@
-package dk.cachet.carp.protocols.domain.tasks
+package dk.cachet.carp.protocols.infrastructure.test
 
+import dk.cachet.carp.protocols.domain.tasks.MeasuresSerializer
+import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import kotlinx.serialization.Serializable
 

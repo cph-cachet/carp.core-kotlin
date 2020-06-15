@@ -18,8 +18,9 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilder
 import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.triggers.Trigger
-import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
 import dk.cachet.carp.protocols.infrastructure.JSON
+import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
+import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
