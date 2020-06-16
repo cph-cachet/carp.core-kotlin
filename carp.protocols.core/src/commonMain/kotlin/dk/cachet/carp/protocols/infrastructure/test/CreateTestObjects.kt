@@ -76,6 +76,21 @@ fun createEmptyProtocol(): StudyProtocol
 }
 
 /**
+ * Creates a study protocol with a single master device which has a single connected device.
+ */
+fun createSingleMasterWithConnectedDeviceProtocol(
+    masterDeviceName: String = "Master",
+    connectedDeviceName: String = "Connected"
+): StudyProtocol
+{
+    val protocol = createEmptyProtocol()
+    val master = StubMasterDeviceDescriptor( masterDeviceName )
+    protocol.addMasterDevice( master )
+    protocol.addConnectedDevice( StubDeviceDescriptor( connectedDeviceName ), master )
+    return protocol
+}
+
+/**
  * Creates a study protocol with a couple of devices and tasks added.
  */
 fun createComplexProtocol(): StudyProtocol

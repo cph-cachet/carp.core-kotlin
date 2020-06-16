@@ -4,25 +4,8 @@ import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 
-
-/**
- * Creates a study protocol with a single master device which has a single connected device.
- */
-fun createSingleMasterWithConnectedDeviceProtocol(
-    masterDeviceName: String = "Master",
-    connectedDeviceName: String = "Connected"
-): StudyProtocol
-{
-    val protocol = createEmptyProtocol()
-    val master = StubMasterDeviceDescriptor( masterDeviceName )
-    protocol.addMasterDevice( master )
-    protocol.addConnectedDevice( StubDeviceDescriptor( connectedDeviceName ), master )
-    return protocol
-}
 
 fun studyDeploymentFor( protocol: StudyProtocol ): StudyDeployment
 {
