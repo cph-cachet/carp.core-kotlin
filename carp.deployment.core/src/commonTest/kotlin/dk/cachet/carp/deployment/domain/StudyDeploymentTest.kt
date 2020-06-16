@@ -16,6 +16,7 @@ import dk.cachet.carp.protocols.infrastructure.test.UnknownDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.UnknownDeviceRegistration
 import dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import kotlinx.serialization.json.Json
 import kotlin.test.*
 
