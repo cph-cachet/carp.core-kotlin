@@ -5,8 +5,7 @@ import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import dk.cachet.carp.protocols.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.protocols.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
-import dk.cachet.carp.protocols.infrastructure.test.UnknownMeasure
-import dk.cachet.carp.protocols.infrastructure.test.UnknownTaskDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.test.*
@@ -27,8 +26,8 @@ class CustomTaskDescriptorTest
     fun initialization_from_json_extracts_base_TaskDescriptor_properties()
     {
         val measures: List<Measure> = listOf( StubMeasure() )
-        val task = UnknownTaskDescriptor( "Unknown", measures )
-        val serialized: String = JSON.stringify( UnknownTaskDescriptor.serializer(), task )
+        val task = StubTaskDescriptor( "Unknown", measures )
+        val serialized: String = JSON.stringify( StubTaskDescriptor.serializer(), task )
 
         val custom = CustomTaskDescriptor( "Irrelevant", serialized, JSON )
         assertEquals( task.name, custom.name )
@@ -66,8 +65,8 @@ class CustomMeasureTest
     @Test
     fun initialization_from_json_extracts_base_Measure_properties()
     {
-        val measure = UnknownMeasure( STUB_DATA_TYPE )
-        val serialized: String = JSON.stringify( UnknownMeasure.serializer(), measure )
+        val measure = StubMeasure( STUB_DATA_TYPE )
+        val serialized: String = JSON.stringify( StubMeasure.serializer(), measure )
 
         val custom = CustomMeasure( "Irrelevant", serialized, JSON )
         assertEquals( measure.type, custom.type )

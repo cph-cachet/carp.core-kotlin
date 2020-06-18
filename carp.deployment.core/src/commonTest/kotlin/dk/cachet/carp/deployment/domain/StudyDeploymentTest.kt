@@ -5,16 +5,15 @@ import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
+import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.UnknownDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.UnknownDeviceRegistration
-import dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import kotlinx.serialization.json.Json
@@ -121,12 +120,12 @@ class StudyDeploymentTest
     fun can_registerDevice_for_unknown_types()
     {
         val protocol = createEmptyProtocol()
-        val master = UnknownMasterDeviceDescriptor( "Unknown master" )
-        val connected = UnknownDeviceDescriptor( "Unknown connected" )
+        val master = StubMasterDeviceDescriptor( "Unknown master" )
+        val connected = StubDeviceDescriptor( "Unknown connected" )
 
-        // Mimic that the 'Unknown...' types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
-        val masterCustom = CustomMasterDeviceDescriptor( "Irrelevant", JSON.stringify( UnknownMasterDeviceDescriptor.serializer(), master ), JSON )
-        val connectedCustom = CustomDeviceDescriptor( "Irrelevant", JSON.stringify( UnknownDeviceDescriptor.serializer(), connected ), JSON )
+        // Mimic that the types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
+        val masterCustom = CustomMasterDeviceDescriptor( "Irrelevant", JSON.stringify( StubMasterDeviceDescriptor.serializer(), master ), JSON )
+        val connectedCustom = CustomDeviceDescriptor( "Irrelevant", JSON.stringify( StubDeviceDescriptor.serializer(), connected ), JSON )
 
         protocol.addMasterDevice( masterCustom )
         protocol.addConnectedDevice( connectedCustom, masterCustom )
@@ -160,12 +159,12 @@ class StudyDeploymentTest
     {
         val protocol = createEmptyProtocol()
         val master = StubMasterDeviceDescriptor()
-        val device1 = UnknownMasterDeviceDescriptor( "Unknown device 1" )
-        val device2 = UnknownDeviceDescriptor( "Unknown device 2" )
+        val device1 = StubMasterDeviceDescriptor( "Unknown device 1" )
+        val device2 = StubDeviceDescriptor( "Unknown device 2" )
 
-        // Mimic that the 'Unknown...' types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
-        val device1Custom = CustomDeviceDescriptor( "One class", JSON.stringify( UnknownMasterDeviceDescriptor.serializer(), device1 ), JSON )
-        val device2Custom = CustomDeviceDescriptor( "Not the same class", JSON.stringify( UnknownDeviceDescriptor.serializer(), device2 ), JSON )
+        // Mimic that the types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
+        val device1Custom = CustomDeviceDescriptor( "One class", JSON.stringify( StubMasterDeviceDescriptor.serializer(), device1 ), JSON )
+        val device2Custom = CustomDeviceDescriptor( "Not the same class", JSON.stringify( StubDeviceDescriptor.serializer(), device2 ), JSON )
 
         protocol.addMasterDevice( master )
         protocol.addConnectedDevice( device1Custom, master )
@@ -185,7 +184,7 @@ class StudyDeploymentTest
         protocol.addMasterDevice( master )
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
-        val wrongRegistration = UnknownDeviceRegistration( "0" )
+        val wrongRegistration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 )
         assertFailsWith<IllegalArgumentException>
         {
             deployment.registerDevice( master, wrongRegistration )
