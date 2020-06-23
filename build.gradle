@@ -1,6 +1,7 @@
 def commonModule = subprojects.find { it.name == 'carp.common' }
 def coreModules = subprojects.findAll { it.name.endsWith( '.core' ) }
 def detektModule = subprojects.find { it.name == 'carp.detekt' }
+def androidModules = subprojects.findAll { it.name.startsWith('android') }
 
 
 // Load plugin dependencies.
@@ -46,10 +47,17 @@ buildscript {
         // DevOps plugins.
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:${versions.detektPlugin}"
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:${versions.nexusReleasePlugin}"
+
+        // Android plugin
+        classpath "com.android.tools.build:gradle:4.0.0"
     }
 
     repositories {
         jcenter()
+        google()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
         gradlePluginPortal()
     }
 }
@@ -64,7 +72,7 @@ if (publishPropertiesFile.exists())
 
 // Configure all subprojects as testable, publishable, Kotlin multiplatform projects.
 // A `kotlinx.serialization` dependency is added to serialize domain models.
-configure( subprojects - detektModule ) {
+configure( subprojects - detektModule - androidModules ) {
     version = globalVersion
 
     repositories {
@@ -336,7 +344,7 @@ configure( rootProject )
 // HACK: Dokka currently does not work for multiplatform projects.
 // The following configuration is a workaround to configure Dokka for JVM solely:
 // https://discuss.kotlinlang.org/t/how-to-configure-dokka-for-kotlin-multiplatform/9834
-configure( subprojects - detektModule ) {
+configure( subprojects - detektModule - androidModules ) {
     dokka {
         kotlinTasks { [] }
         // Dokka fails to retrieve sources from multiplatform tasks. Setting this as empty avoids exceptions.
