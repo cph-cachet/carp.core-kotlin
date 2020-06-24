@@ -77,7 +77,7 @@ sealed class StudyDeploymentStatus
      */
     fun getRemainingDevicesReadyToDeploy(): Set<AnyMasterDeviceDescriptor> =
         devicesStatus
-            .filter { it is DeviceDeploymentStatus.NotDeployed && it.isReadyForDeployment }
+            .filter { it is DeviceDeploymentStatus.NotDeployed && it.canObtainDeviceDeployment }
             .map { it.device }
             .filterIsInstance<AnyMasterDeviceDescriptor>()
             .toSet()

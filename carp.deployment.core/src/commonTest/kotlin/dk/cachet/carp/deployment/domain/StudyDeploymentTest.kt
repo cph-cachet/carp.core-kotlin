@@ -308,13 +308,19 @@ class StudyDeploymentTest
         assertEquals( expectedToRegister, toRegister )
         assertTrue( status.getRemainingDevicesReadyToDeploy().isEmpty() )
 
-        // After registering master device and connected device, master device is ready for deployment.
+        // After registering master device, master device is ready for deployment.
         deployment.registerDevice( master, master.createRegistration() )
+        val afterMasterRegistered = deployment.getStatus()
+        assertTrue( afterMasterRegistered is StudyDeploymentStatus.DeployingDevices )
+        assertEquals( 1, afterMasterRegistered.getRemainingDevicesToRegister().count() )
+        assertEquals( setOf( master), afterMasterRegistered.getRemainingDevicesReadyToDeploy() )
+
+        // After registering connected device, no more devices need to be registered.
         deployment.registerDevice( connected, connected.createRegistration() )
-        val afterRegisterStatus = deployment.getStatus()
-        assertTrue( afterRegisterStatus is StudyDeploymentStatus.DeployingDevices )
-        assertEquals( 0, afterRegisterStatus.getRemainingDevicesToRegister().count() )
-        assertEquals( setOf( master ), afterRegisterStatus.getRemainingDevicesReadyToDeploy() )
+        val afterAllRegisterSed = deployment.getStatus()
+        assertTrue( afterAllRegisterSed is StudyDeploymentStatus.DeployingDevices )
+        assertEquals( 0, afterAllRegisterSed.getRemainingDevicesToRegister().count() )
+        assertEquals( setOf( master ), afterAllRegisterSed.getRemainingDevicesReadyToDeploy() )
 
         // Notify of successful master device deployment.
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
@@ -323,6 +329,7 @@ class StudyDeploymentTest
         assertTrue( afterDeployStatus is StudyDeploymentStatus.DeploymentReady )
         val deviceStatus = afterDeployStatus.getDeviceStatus( master )
         assertTrue( deviceStatus is DeviceDeploymentStatus.Deployed )
+        assertEquals( 0, afterDeployStatus.getRemainingDevicesReadyToDeploy().count() )
     }
 
     @Test
