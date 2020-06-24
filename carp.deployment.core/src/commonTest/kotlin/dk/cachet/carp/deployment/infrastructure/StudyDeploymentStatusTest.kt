@@ -6,9 +6,10 @@ import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.infrastructure.fromJson
 import dk.cachet.carp.protocols.infrastructure.test.STUBS_SERIAL_MODULE
-import dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
+import dk.cachet.carp.protocols.infrastructure.test.makeUnknown
 import dk.cachet.carp.protocols.infrastructure.toJson
 import kotlin.test.*
 
@@ -50,15 +51,13 @@ class StudyDeploymentStatusTest
     fun serializing_deployment_when_unknown_devices_are_involved()
     {
         val protocol = createEmptyProtocol()
-        protocol.addMasterDevice( UnknownMasterDeviceDescriptor( "Unknown" ) )
+        val master = StubMasterDeviceDescriptor( "Unknown" )
+        protocol.addMasterDevice( master )
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
         var serialized: String = snapshot.toJson()
 
-        // Replace the strings which identify the types to load by the PolymorphicSerializer.
-        // This will cause the types not to be found while deserializing, hence mimicking 'custom' types.
-        serialized = serialized.replace(
-            "dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor",
-            "com.unknown.CustomMasterDevice" )
+        // Mimic an unknown device type.
+        serialized = serialized.makeUnknown( master, "com.unknown.UnknownMasterDevice" )
 
         // Create deployment based on protocol with custom types and serialize its status.
         val snapshotWithCustom = StudyProtocolSnapshot.fromJson( serialized )
@@ -66,6 +65,6 @@ class StudyDeploymentStatusTest
         val status = deployment.getStatus().toJson()
 
         // This verifies whether the 'CustomMasterDeviceDescriptor' wrapper is removed in JSON output.
-        assertTrue { status.contains( """"device":["com.unknown.CustomMasterDevice",{""" ) }
+        assertTrue { status.contains( """"device":["com.unknown.UnknownMasterDevice",{""" ) }
     }
 }

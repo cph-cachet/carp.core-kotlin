@@ -4,12 +4,12 @@ import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployment.domain.studyDeploymentFor
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.infrastructure.fromJson
 import dk.cachet.carp.protocols.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.UnknownDeviceRegistration
-import dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
+import dk.cachet.carp.protocols.infrastructure.test.makeUnknown
 import dk.cachet.carp.protocols.infrastructure.toJson
 import kotlin.test.*
 
@@ -52,18 +52,16 @@ class StudyDeploymentTest
     fun create_deployment_fromSnapshot_with_custom_extending_types_succeeds()
     {
         val protocol = createEmptyProtocol()
-        val master = UnknownMasterDeviceDescriptor( "Unknown" )
+        val master = StubMasterDeviceDescriptor( "Unknown" )
         protocol.addMasterDevice( master )
         val deployment = studyDeploymentFor( protocol )
-        deployment.registerDevice( master, UnknownDeviceRegistration( "0" ) )
+        val registration = DefaultDeviceRegistration( "0" )
+        deployment.registerDevice( master, registration )
 
+        // Mimic unknown device and registration.
         var serialized: String = deployment.getSnapshot().toJson()
-        serialized = serialized.replace(
-            "dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor",
-            "com.unknown.CustomMasterDevice" )
-        serialized = serialized.replace(
-            "dk.cachet.carp.protocols.infrastructure.test.UnknownDeviceRegistration",
-            "com.unknown.CustomDeviceRegistration" )
+        serialized = serialized.makeUnknown( master, "Unknown" )
+        serialized = serialized.makeUnknown( registration )
 
         val snapshot = StudyDeploymentSnapshot.fromJson( serialized )
         StudyDeployment.fromSnapshot( snapshot )
