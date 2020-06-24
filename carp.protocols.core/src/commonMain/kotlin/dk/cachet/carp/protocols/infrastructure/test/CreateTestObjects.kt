@@ -1,25 +1,23 @@
 package dk.cachet.carp.protocols.infrastructure.test
 
-import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.serialization.NotSerializable
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.data.DataType
 import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
-import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilder
 import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import dk.cachet.carp.protocols.domain.triggers.Trigger
 import dk.cachet.carp.protocols.infrastructure.JSON
+import dk.cachet.carp.protocols.infrastructure.PROTOCOLS_SERIAL_MODULE
 import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.plus
 import kotlin.reflect.KClass
 
 
@@ -30,35 +28,26 @@ val STUBS_SERIAL_MODULE = SerializersModule {
     polymorphic( DeviceDescriptor::class )
     {
         StubDeviceDescriptor::class with StubDeviceDescriptor.serializer()
-        UnknownDeviceDescriptor::class with UnknownDeviceDescriptor.serializer()
     }
     polymorphic( MasterDeviceDescriptor::class, DeviceDescriptor::class )
     {
         StubMasterDeviceDescriptor::class with StubMasterDeviceDescriptor.serializer()
-        UnknownMasterDeviceDescriptor::class with UnknownMasterDeviceDescriptor.serializer()
     }
     polymorphic( SamplingConfiguration::class )
     {
-        UnknownSamplingConfiguration::class with UnknownSamplingConfiguration.serializer()
-    }
-    polymorphic ( DeviceRegistration::class )
-    {
-        UnknownDeviceRegistration::class with UnknownDeviceRegistration.serializer()
+        StubSamplingConfiguration::class with StubSamplingConfiguration.serializer()
     }
     polymorphic( TaskDescriptor::class )
     {
         StubTaskDescriptor::class with StubTaskDescriptor.serializer()
-        UnknownTaskDescriptor::class with UnknownTaskDescriptor.serializer()
     }
     polymorphic( Measure::class )
     {
         StubMeasure::class with StubMeasure.serializer()
-        UnknownMeasure::class with UnknownMeasure.serializer()
     }
     polymorphic( Trigger::class )
     {
         StubTrigger::class with StubTrigger.serializer()
-        UnknownTrigger::class with UnknownTrigger.serializer()
     }
 }
 
@@ -115,51 +104,91 @@ fun createComplexProtocol(): StudyProtocol
     return protocol
 }
 
+/**
+ * Replace the type name of [deviceDescriptor] in this JSON string with [unknownTypeName].
+ */
+fun String.makeUnknown(
+    deviceDescriptor: AnyDeviceDescriptor,
+    unknownTypeName: String = "com.unknown.UnknownDeviceDescriptor"
+): String =
+    this.makeUnknown( deviceDescriptor, DeviceDescriptor::class, "roleName", deviceDescriptor.roleName, unknownTypeName )
 
-@Serializable
-data class UnknownMasterDeviceDescriptor(
-    override val roleName: String,
-    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
-) :
-    MasterDeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
+/**
+ * Replace the type name of [masterDeviceDescriptor] in this JSON string with [unknownTypeName].
+ */
+fun String.makeUnknown(
+    masterDeviceDescriptor: AnyMasterDeviceDescriptor,
+    unknownTypeName: String = "com.unknown.UnknownMasterDeviceDescriptor"
+): String =
+    this.makeUnknown( masterDeviceDescriptor, MasterDeviceDescriptor::class, "roleName", masterDeviceDescriptor.roleName, unknownTypeName )
+
+/**
+ * Replace the type name of [registration] in this JSON string with [unknownTypeName].
+ */
+fun String.makeUnknown(
+    registration: DeviceRegistration,
+    unknownTypeName: String = "com.unknown.UnknownDeviceRegistration"
+): String =
+    this.makeUnknown( registration, DeviceRegistration::class, "deviceId", registration.deviceId, unknownTypeName )
+
+/**
+ * Replace the type name of [taskDescriptor] in this JSON string with [unknownTypeName].
+ */
+fun String.makeUnknown(
+    taskDescriptor: TaskDescriptor,
+    unknownTypeName: String = "com.unknown.UnknownTaskDescriptor"
+): String =
+    this.makeUnknown( taskDescriptor, TaskDescriptor::class, "name", taskDescriptor.name, unknownTypeName )
+
+/**
+ * Replace the type name of the [measure] with the specified [key] set to [value] in this JSON string with [unknownTypeName].
+ */
+fun String.makeUnknown(
+    measure: Measure,
+    key: String,
+    value: String,
+    unknownTypeName: String = "com.unknown.UnknownMeasure"
+): String =
+    this.makeUnknown( measure, Measure::class, key, value, unknownTypeName )
+
+/**
+ * Replace the type name of the [samplingConfiguration] with the specified [key] set to [value] in this JSON string with [unknownTypeName].
+ */
+fun String.makeUnknown(
+    samplingConfiguration: SamplingConfiguration,
+    key: String,
+    value: String,
+    unknownTypeName: String = "com.unknown.UnknownSamplingConfiguration"
+): String =
+    this.makeUnknown( samplingConfiguration, SamplingConfiguration::class, key, value, unknownTypeName )
+
+/**
+ * Replace the type name of the [trigger] with the specified [key] set to [value] in this JSON string with [unknownTypeName].
+ */
+fun String.makeUnknown(
+    trigger: Trigger,
+    key: String,
+    value: String,
+    unknownTypeName: String = "com.unknown.UnknownTrigger"
+): String =
+    this.makeUnknown( trigger, Trigger::class, key, value, unknownTypeName )
+
+private fun <T : Any> String.makeUnknown( instance: T, klass: KClass<T>, key: String, value: String, unknownTypeName: String ): String
 {
-    override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
-    override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
-    override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
+    // Get qualified type name.
+    val serialModule = PROTOCOLS_SERIAL_MODULE.plus( STUBS_SERIAL_MODULE )
+    val serializer = serialModule.getPolymorphic( klass, instance )
+    val qualifiedName = serializer!!.descriptor.serialName
+
+    // Construct regex to identify the object with the qualified name, and with the matching key/value pair set.
+    // TODO: This regex uses negative lookahead to filter out JSON which contains multiple types with the same name.
+    //       This is complex, and furthermore not 100% foolproof in rare cases (e.g., if the string is used not as a type name).
+    //       Probably this should be rewritten with a JSON parser.
+    val escapedQualifiedName = qualifiedName.replace( ".", "\\." )
+    val objectRegex = Regex("(\\[\")($escapedQualifiedName)(\",\\{(?!.*?$escapedQualifiedName.*?\"$key\":\"${value}\").*?\"$key\":\"${value}\".*?\\})" )
+
+    // Replace type name with an unknown type name to mimic it is not available at runtime.
+    val match = objectRegex.find( this )
+    require( match != null && match.groups.count() == 4 ) { "Could not find the specified object in the serialized string." }
+    return this.replace( objectRegex, "$1$unknownTypeName$3" )
 }
-
-@Serializable
-data class UnknownDeviceDescriptor( override val roleName: String ) :
-    DeviceDescriptor<DeviceRegistration, UnknownDeviceRegistrationBuilder>()
-{
-    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
-
-    override fun createDeviceRegistrationBuilder(): UnknownDeviceRegistrationBuilder = UnknownDeviceRegistrationBuilder()
-    override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
-    override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.TRUE
-}
-
-@Serializable
-data class UnknownSamplingConfiguration( val someUnknownProperty: String ) : SamplingConfiguration()
-
-@Serializable( with = NotSerializable::class )
-class UnknownDeviceRegistrationBuilder( private var deviceId: String = UUID.randomUUID().toString() ) :
-    DeviceRegistrationBuilder<DeviceRegistration>
-{
-    override fun build(): DeviceRegistration = DefaultDeviceRegistration( deviceId )
-}
-
-@Serializable
-data class UnknownDeviceRegistration( override val deviceId: String ) : DeviceRegistration()
-
-@Serializable
-internal data class UnknownTaskDescriptor(
-    override val name: String,
-    override val measures: List<Measure>
-) : TaskDescriptor()
-
-@Serializable
-data class UnknownMeasure( override val type: DataType ) : Measure()
-
-@Serializable
-data class UnknownTrigger( override val sourceDeviceRoleName: String ) : Trigger()

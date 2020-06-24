@@ -113,6 +113,13 @@ However, CARP is designed with claim-based authorization in mind, and the docume
  
 In a future release we might pass authorization as a dependent service to application services.
 
+### Stub classes
+
+Stub classes are available for the abstract domain objects of the protocols subsystem.
+These can be used to write unit tests in which you are not interested in testing the behavior of specific devices, triggers, etc., but rather how they are referenced from within a study protocol or deployment.
+
+In addition, `String` manipulation functions are available to convert type names of protocol domain objects within a JSON string to 'unknown' type names. This supports testing deserialization of domain objects unknown at runtime, e.g., as defined in an application-specific client. See [the section on serialization](#serialization) for more details.
+
 ## Usage
 
 This is a [multiplatform Kotlin library](https://kotlinlang.org/docs/reference/multiplatform.html) which targets both the **Java Runtime Environment (JRE)** and **JavaScript (JS)**.

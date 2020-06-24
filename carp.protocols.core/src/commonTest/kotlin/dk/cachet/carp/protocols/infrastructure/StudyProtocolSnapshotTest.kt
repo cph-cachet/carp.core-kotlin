@@ -10,17 +10,15 @@ import dk.cachet.carp.protocols.domain.tasks.CustomTaskDescriptor
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import dk.cachet.carp.protocols.domain.triggers.CustomTrigger
 import dk.cachet.carp.protocols.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
+import dk.cachet.carp.protocols.infrastructure.test.StubSamplingConfiguration
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.UnknownDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.UnknownMeasure
-import dk.cachet.carp.protocols.infrastructure.test.UnknownSamplingConfiguration
-import dk.cachet.carp.protocols.infrastructure.test.UnknownTaskDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.UnknownTrigger
+import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
+import dk.cachet.carp.protocols.infrastructure.test.makeUnknown
 import kotlin.test.*
 
 
@@ -66,13 +64,12 @@ class StudyProtocolSnapshotTest
         val protocol = createEmptyProtocol()
         val master = StubMasterDeviceDescriptor( "Master" )
         protocol.addMasterDevice( master )
-        val unknownMaster = UnknownMasterDeviceDescriptor( "Unknown master" )
+        val unknownMaster = StubMasterDeviceDescriptor( "Unknown master" )
         protocol.addConnectedDevice( unknownMaster, master )
 
+        // Mimic unknown connected master device.
         var serialized = protocol.getSnapshot().toJson()
-        serialized = serialized.replace(
-            "dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor",
-            "com.unknown.CustomMasterDevice" )
+        serialized = serialized.makeUnknown( unknownMaster, "Unknown master" )
 
         val parsed = StudyProtocolSnapshot.fromJson( serialized )
         assertTrue { parsed.connectedDevices.single() is MasterDeviceDescriptor }
@@ -112,22 +109,25 @@ class StudyProtocolSnapshotTest
         val protocol = createComplexProtocol()
 
         // (1) Add unknown master with unknown sampling configuration and unknown connected device.
+        val unknownSamplingConfiguration = StubSamplingConfiguration( "Unknown" )
         val samplingConfiguration = mapOf(
-            STUB_DATA_TYPE to UnknownSamplingConfiguration( "Unknown" )
+            STUB_DATA_TYPE to unknownSamplingConfiguration
         )
-        val master = UnknownMasterDeviceDescriptor( "Unknown", samplingConfiguration )
+        val master = StubMasterDeviceDescriptor( "Unknown", samplingConfiguration )
         protocol.addMasterDevice( master )
-        val connected = UnknownDeviceDescriptor( "Unknown 2" )
+        val connected = StubDeviceDescriptor( "Unknown 2" )
         protocol.addConnectedDevice( connected, master )
 
         // (2) Add unknown task with unknown measure.
-        val measures: List<Measure> = listOf( UnknownMeasure( STUB_DATA_TYPE ), StubMeasure( STUB_DATA_TYPE ) )
-        val task = UnknownTaskDescriptor( "Unknown task", measures )
-        val trigger = UnknownTrigger( master.roleName )
+        val unknownMeasure = StubMeasure( STUB_DATA_TYPE, "Unknown" )
+        val measures: List<Measure> = listOf( unknownMeasure, StubMeasure( STUB_DATA_TYPE ) )
+        val task = StubTaskDescriptor( "Unknown task", measures )
+        val trigger = StubTrigger( master.roleName, "Unknown" )
         protocol.addTriggeredTask( trigger, task, master )
 
         // (3) Add known task with unknown measure.
-        val task2 = StubTaskDescriptor( "Known task", listOf( UnknownMeasure( STUB_DATA_TYPE ) ) )
+        val unknownMeasure2 = StubMeasure( STUB_DATA_TYPE, "Unknown 2" )
+        val task2 = StubTaskDescriptor( "Known task", listOf( unknownMeasure2 ) )
         protocol.addTriggeredTask( trigger, task2, master )
 
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
@@ -135,24 +135,13 @@ class StudyProtocolSnapshotTest
 
         // Replace the strings which identify the types to load by the PolymorphicSerializer.
         // This will cause the types not to be found while deserializing, hence mimicking 'custom' types.
-        serialized = serialized.replace(
-            "dk.cachet.carp.protocols.infrastructure.test.UnknownMasterDeviceDescriptor",
-            "com.unknown.CustomMasterDevice" )
-        serialized = serialized.replace(
-            "dk.cachet.carp.protocols.infrastructure.test.UnknownDeviceDescriptor",
-            "com.unknown.CustomDevice" )
-        serialized = serialized.replace(
-            "dk.cachet.carp.protocols.infrastructure.test.UnknownSamplingConfiguration",
-            "com.unknown.SamplingConfiguration" )
-        serialized = serialized.replace(
-            "dk.cachet.carp.protocols.infrastructure.test.UnknownTaskDescriptor",
-            "com.unknown.CustomTask" )
-        serialized = serialized.replace(
-            "dk.cachet.carp.protocols.infrastructure.test.UnknownMeasure",
-            "com.unknown.CustomMeasure" )
-        serialized = serialized.replace(
-            "dk.cachet.carp.protocols.infrastructure.test.UnknownTrigger",
-            "com.unknown.CustomTrigger" )
+        serialized = serialized.makeUnknown( master, "Unknown" )
+        serialized = serialized.makeUnknown( connected )
+        serialized = serialized.makeUnknown( unknownSamplingConfiguration, "configuration", "Unknown" )
+        serialized = serialized.makeUnknown( task )
+        serialized = serialized.makeUnknown( unknownMeasure, "uniqueProperty", "Unknown" )
+        serialized = serialized.makeUnknown( unknownMeasure, "uniqueProperty", "Unknown 2" )
+        serialized = serialized.makeUnknown( trigger, "uniqueProperty", "Unknown" )
 
         return serialized
     }
