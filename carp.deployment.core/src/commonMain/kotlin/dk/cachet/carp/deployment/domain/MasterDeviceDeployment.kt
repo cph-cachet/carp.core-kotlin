@@ -69,8 +69,8 @@ data class MasterDeviceDeployment(
      * This corresponds to the most recent device registration as part of this device deployment.
      */
     val lastUpdateDate: DateTime =
-        // HACK: This is a workaround for a bug in kotlinx.serialization: https://github.com/Kotlin/kotlinx.serialization/issues/716
-        if ( connectedDeviceConfigurations == null ) DateTime.now()
+        // TODO: Remove this workaround once JS serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/716
+        if ( connectedDeviceConfigurations == null || configuration == null ) DateTime.now()
         else connectedDeviceConfigurations.values.plus( configuration )
             .map { it.registrationCreationDate.msSinceUTC }
             .max()
