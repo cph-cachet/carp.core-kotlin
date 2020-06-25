@@ -1,8 +1,10 @@
 package dk.cachet.carp.protocols.domain.devices
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.serialization.NotSerializable
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
+import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 
@@ -21,6 +23,8 @@ abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegis
      * TODO: This might be useful for potential optimizations later (e.g., prevent pulling in data from the same source more than once), but for now is ignored.
      */
     abstract val deviceId: String
+
+    val registrationCreationDate: DateTime = DateTime.now()
 }
 
 

@@ -114,7 +114,7 @@ interface DeploymentRepositoryTest
             registerDevice( connectedDevice, connectedDevice.createRegistration() )
 
             val deviceDeployment = deployment.getDeviceDeploymentFor( masterDevice )
-            deviceDeployed( masterDevice, deviceDeployment.getChecksum() )
+            deviceDeployed( masterDevice, deviceDeployment.lastUpdateDate )
 
             addParticipation( Account.withUsernameIdentity( "Test" ), Participation( deployment.id ) )
 
