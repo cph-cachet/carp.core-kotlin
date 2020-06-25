@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.infrastructure
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.common.users.UsernameAccountIdentity
@@ -26,7 +27,7 @@ class DeploymentServiceRequestsTest
             DeploymentServiceRequest.RegisterDevice( UUID.randomUUID(), "Test role", DefaultDeviceRegistration( "Device ID" ) ),
             DeploymentServiceRequest.UnregisterDevice( UUID.randomUUID(), "Test role" ),
             DeploymentServiceRequest.GetDeviceDeploymentFor( UUID.randomUUID(), "Test role" ),
-            DeploymentServiceRequest.DeploymentSuccessful( UUID.randomUUID(), "Test role", 0 ),
+            DeploymentServiceRequest.DeploymentSuccessful( UUID.randomUUID(), "Test role", DateTime.now() ),
             DeploymentServiceRequest.Stop( UUID.randomUUID() ),
             DeploymentServiceRequest.AddParticipation( UUID.randomUUID(), setOf( "Phone" ), UsernameAccountIdentity( "Test" ), StudyInvitation.empty() ),
             DeploymentServiceRequest.GetParticipationInvitations( UUID.randomUUID() )

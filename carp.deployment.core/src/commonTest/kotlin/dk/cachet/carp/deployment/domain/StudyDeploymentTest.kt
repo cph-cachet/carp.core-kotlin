@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.common.users.Account
@@ -224,7 +225,7 @@ class StudyDeploymentTest
         deployment.registerDevice( master1, master1.createRegistration { } )
         deployment.registerDevice( master2, master2.createRegistration { } )
         val deviceDeployment = deployment.getDeviceDeploymentFor( master1 )
-        deployment.deviceDeployed( master1, deviceDeployment.getChecksum() )
+        deployment.deviceDeployed( master1, deviceDeployment.lastUpdateDate )
 
         deployment.unregisterDevice( master2 )
         assertEquals( 0, deployment.deployedDevices.count() )
@@ -324,7 +325,7 @@ class StudyDeploymentTest
 
         // Notify of successful master device deployment.
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
-        deployment.deviceDeployed( master, deviceDeployment.getChecksum() )
+        deployment.deviceDeployed( master, deviceDeployment.lastUpdateDate )
         val afterDeployStatus = deployment.getStatus()
         assertTrue( afterDeployStatus is StudyDeploymentStatus.DeploymentReady )
         val deviceStatus = afterDeployStatus.getDeviceStatus( master )
@@ -348,12 +349,12 @@ class StudyDeploymentTest
 
         // Deploy first master device.
         val master1Deployment = deployment.getDeviceDeploymentFor( master1 )
-        deployment.deviceDeployed( master1, master1Deployment.getChecksum() )
+        deployment.deviceDeployed( master1, master1Deployment.lastUpdateDate )
         assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeployingDevices )
 
         // After deployment of the second master device, deployment is ready.
         val master2Deployment = deployment.getDeviceDeploymentFor( master2 )
-        deployment.deviceDeployed( master2, master2Deployment.getChecksum() )
+        deployment.deviceDeployed( master2, master2Deployment.lastUpdateDate )
         assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
 
         // Unregistering one device returns deployment to 'deploying'.
@@ -473,7 +474,7 @@ class StudyDeploymentTest
         deployment.registerDevice( device, device.createRegistration { } )
 
         val deviceDeployment = deployment.getDeviceDeploymentFor( device )
-        deployment.deviceDeployed( device, deviceDeployment.getChecksum() )
+        deployment.deviceDeployed( device, deviceDeployment.lastUpdateDate )
         assertTrue( deployment.deployedDevices.contains( device ) )
         assertEquals(
             StudyDeployment.Event.DeviceDeployed( device ),
@@ -494,13 +495,13 @@ class StudyDeploymentTest
 
         // Deploying a device while others still need to be deployed does not set start time.
         val master1Deployment = deployment.getDeviceDeploymentFor( master1 )
-        deployment.deviceDeployed( master1, master1Deployment.getChecksum() )
+        deployment.deviceDeployed( master1, master1Deployment.lastUpdateDate )
         assertNull( deployment.startTime )
         assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Started>().count() )
 
         // Deploying the last device sets start time.
         val master2Deployment = deployment.getDeviceDeploymentFor( master2 )
-        deployment.deviceDeployed( master2, master2Deployment.getChecksum() )
+        deployment.deviceDeployed( master2, master2Deployment.lastUpdateDate )
         assertNotNull( deployment.startTime )
         assertEquals(
             deployment.startTime,
@@ -517,9 +518,9 @@ class StudyDeploymentTest
         deployment.registerDevice( device, device.createRegistration { } )
 
         val deviceDeployment = deployment.getDeviceDeploymentFor( device )
-        val deploymentChecksum = deviceDeployment.getChecksum()
-        deployment.deviceDeployed( device, deploymentChecksum )
-        deployment.deviceDeployed( device, deploymentChecksum )
+        val deploymentDate = deviceDeployment.lastUpdateDate
+        deployment.deviceDeployed( device, deploymentDate )
+        deployment.deviceDeployed( device, deploymentDate )
         assertEquals( 1, deployment.deployedDevices.count() )
         assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
     }
@@ -530,7 +531,7 @@ class StudyDeploymentTest
         val deployment = createComplexDeployment()
 
         val invalidDevice = StubMasterDeviceDescriptor( "Not in deployment" )
-        assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( invalidDevice, 0 ) }
+        assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( invalidDevice, DateTime.now() ) }
         assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
     }
 
@@ -542,7 +543,7 @@ class StudyDeploymentTest
         protocol.addMasterDevice( device )
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
-        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( device, 0 ) }
+        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( device, DateTime.now() ) }
         assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
     }
 
@@ -555,11 +556,11 @@ class StudyDeploymentTest
         deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
 
-        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( master, deviceDeployment.getChecksum() ) }
+        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( master, deviceDeployment.lastUpdateDate ) }
     }
 
     @Test
-    fun deviceDeployed_fails_with_outdated_deployment_checksum()
+    fun deviceDeployed_fails_with_outdated_deployment()
     {
         val protocol = createEmptyProtocol()
         val device = StubMasterDeviceDescriptor()
@@ -569,8 +570,14 @@ class StudyDeploymentTest
 
         val deviceDeployment = deployment.getDeviceDeploymentFor( device )
         deployment.unregisterDevice( device )
+
+        // Ensure new registration is more recent than previous one.
+        // The timer precision on the JS runtime is sometimes not enough to notice a difference.
+        // In practice, in a distributed system, the timestamps of a re-registration will never overlap due to latency.
+        while ( DateTime.now() == deviceDeployment.lastUpdateDate ) { /* Wait. */ }
         deployment.registerDevice( device, device.createRegistration { } )
-        assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( device, deviceDeployment.getChecksum() ) }
+
+        assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( device, deviceDeployment.lastUpdateDate ) }
     }
 
     @Test
@@ -582,7 +589,7 @@ class StudyDeploymentTest
         val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( device, device.createRegistration() )
         val deviceDeployment = deployment.getDeviceDeploymentFor( device )
-        deployment.deviceDeployed( device, deviceDeployment.getChecksum() )
+        deployment.deviceDeployed( device, deviceDeployment.lastUpdateDate )
 
         assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
 
@@ -623,7 +630,7 @@ class StudyDeploymentTest
         assertFailsWith<IllegalStateException> { deployment.registerDevice( connected, connected.createRegistration() ) }
         assertFailsWith<IllegalStateException> { deployment.unregisterDevice( master ) }
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
-        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( master, deviceDeployment.getChecksum() ) }
+        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( master, deviceDeployment.lastUpdateDate ) }
         val account = Account.withUsernameIdentity( "Test" )
         val participation = Participation( deployment.id )
         assertFailsWith<IllegalStateException> { deployment.addParticipation( account, participation ) }
