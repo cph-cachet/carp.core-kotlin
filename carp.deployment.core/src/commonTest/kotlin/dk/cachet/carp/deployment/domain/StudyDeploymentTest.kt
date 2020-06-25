@@ -570,7 +570,13 @@ class StudyDeploymentTest
 
         val deviceDeployment = deployment.getDeviceDeploymentFor( device )
         deployment.unregisterDevice( device )
+
+        // Ensure new registration is more recent than previous one.
+        // The timer precision on the JS runtime is sometimes not enough to notice a difference.
+        // In practice, in a distributed system, the timestamps of a re-registration will never overlap due to latency.
+        while ( DateTime.now() == deviceDeployment.lastUpdateDate ) { /* Wait. */ }
         deployment.registerDevice( device, device.createRegistration { } )
+
         assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( device, deviceDeployment.lastUpdateDate ) }
     }
 
