@@ -3,7 +3,7 @@
 package dk.cachet.carp.protocols.domain.triggers
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
-import dk.cachet.carp.protocols.domain.UnknownTrigger
+import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.test.*
@@ -23,8 +23,8 @@ class CustomTriggerTest
     @Test
     fun initialization_from_json_extracts_base_Trigger_properties()
     {
-        val trigger = UnknownTrigger( "Some device" )
-        val serialized: String = JSON.stringify( UnknownTrigger.serializer(), trigger )
+        val trigger = StubTrigger( "Some device" )
+        val serialized: String = JSON.stringify( StubTrigger.serializer(), trigger )
 
         val custom = CustomTrigger( "Irrelevant", serialized, JSON )
         assertEquals( trigger.sourceDeviceRoleName, custom.sourceDeviceRoleName )

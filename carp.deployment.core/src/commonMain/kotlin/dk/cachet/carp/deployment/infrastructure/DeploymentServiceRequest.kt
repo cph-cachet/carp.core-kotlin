@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.infrastructure
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.createServiceInvoker
 import dk.cachet.carp.common.ddd.ServiceInvoker
@@ -60,9 +61,9 @@ sealed class DeploymentServiceRequest
         Invoker<MasterDeviceDeployment> by createServiceInvoker( Service::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName )
 
     @Serializable
-    data class DeploymentSuccessful( val studyDeploymentId: UUID, val masterDeviceRoleName: String, val deploymentChecksum: Int ) :
+    data class DeploymentSuccessful( val studyDeploymentId: UUID, val masterDeviceRoleName: String, val deviceDeploymentLastUpdateDate: DateTime ) :
         DeploymentServiceRequest(),
-        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deploymentChecksum )
+        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deviceDeploymentLastUpdateDate )
 
     @Serializable
     data class Stop( val studyDeploymentId: UUID ) :

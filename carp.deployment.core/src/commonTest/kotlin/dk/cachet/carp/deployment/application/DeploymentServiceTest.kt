@@ -3,11 +3,11 @@ package dk.cachet.carp.deployment.application
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.deployment.domain.createSingleMasterWithConnectedDeviceProtocol
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -137,7 +137,7 @@ abstract class DeploymentServiceTest
             { deploymentService.unregisterDevice( studyDeploymentId, master.roleName ) }
         val deviceDeployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, master.roleName )
         assertFailsWith<IllegalStateException>
-            { deploymentService.deploymentSuccessful( studyDeploymentId, master.roleName, deviceDeployment.getChecksum() ) }
+            { deploymentService.deploymentSuccessful( studyDeploymentId, master.roleName, deviceDeployment.lastUpdateDate ) }
         val accountId = AccountIdentity.fromUsername( "Test" )
         val invitation = StudyInvitation.empty()
         assertFailsWith<IllegalStateException>

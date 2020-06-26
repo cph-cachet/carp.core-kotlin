@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.application
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
@@ -62,9 +63,9 @@ class DeploymentServiceMock(
         getDeviceDeploymentForResult
         .also { trackSuspendCall( Service::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName ) }
 
-    override suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String, deploymentChecksum: Int ) =
+    override suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String, deviceDeploymentLastUpdateDate: DateTime ) =
         deploymentSuccessfulResult
-        .also { trackSuspendCall( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deploymentChecksum ) }
+        .also { trackSuspendCall( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deviceDeploymentLastUpdateDate ) }
 
     override suspend fun stop( studyDeploymentId: UUID ) =
         stopResult

@@ -3,8 +3,8 @@ package dk.cachet.carp.protocols.infrastructure
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.application.ProtocolServiceMock
-import dk.cachet.carp.protocols.domain.createComplexProtocol
 import dk.cachet.carp.protocols.domain.ProtocolOwner
+import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 

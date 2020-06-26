@@ -3,6 +3,7 @@ import VerifyModule from './VerifyModule'
 
 import { Long } from 'kotlin'
 import { kotlin } from 'kotlin'
+import ArrayList = kotlin.collections.ArrayList
 import HashSet = kotlin.collections.HashSet
 import toSet = kotlin.collections.toSet_us0mfu$
 
@@ -10,7 +11,8 @@ import toSet = kotlin.collections.toSet_us0mfu$
 describe( "kotlin", () => {
     it( "verify module declarations", async () => {
         const instances = [
-            new HashSet()
+            new HashSet(),
+            new ArrayList( [ "One", "Two", "Three" ] )
         ]
 
         const moduleVerifier = new VerifyModule( 'kotlin', instances )
@@ -24,6 +26,22 @@ describe( "kotlin", () => {
             const answerAsNumber = answer.toNumber()
     
             expect( answerAsNumber ).equals( 42 )
+        } )
+    } )
+
+
+    describe( "ArrayList", () => {
+        it( "access internal array", () => {
+            const array = [ 1, 2 ]
+            const list = new ArrayList( array )
+
+            expect( list.array_hd7ov6$_0 ).equals( array )
+        } )
+
+        it( "size returns length of array", () => {
+            const list = new ArrayList( [ 1, 2, 3 ] )
+
+            expect( list.size ).equals( 3 )
         } )
     } )
 

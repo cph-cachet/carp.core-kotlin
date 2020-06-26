@@ -1,6 +1,8 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
+import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import kotlin.test.*
 
 

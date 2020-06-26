@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.application
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
@@ -75,16 +76,20 @@ interface DeploymentService
 
     /**
      * Indicate to stakeholders in the study deployment with [studyDeploymentId] that the device with [masterDeviceRoleName] was deployed successfully,
-     * using the deployment with the specified [deploymentChecksum],
+     * using the deployment with the specified [deviceDeploymentLastUpdateDate],
      * i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it.
      *
      * @throws IllegalArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
      * - [masterDeviceRoleName] is not present in the deployment
-     * - the [deploymentChecksum] does not match the checksum of the expected deployment. The deployment might be outdated.
+     * - the [deviceDeploymentLastUpdateDate] does not match the expected date. The deployment might be outdated.
      * @throws IllegalStateException when the deployment cannot be deployed yet, or the deployment has stopped.
      */
-    suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String, deploymentChecksum: Int ): StudyDeploymentStatus
+    suspend fun deploymentSuccessful(
+        studyDeploymentId: UUID,
+        masterDeviceRoleName: String,
+        deviceDeploymentLastUpdateDate: DateTime
+    ): StudyDeploymentStatus
 
     /**
      * Stop the study deployment with the specified [studyDeploymentId].

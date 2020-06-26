@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.test.Nested
 import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
 import dk.cachet.carp.protocols.domain.deployment.UntriggeredTasksWarning
 import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
@@ -8,13 +7,16 @@ import dk.cachet.carp.protocols.domain.deployment.UseCompositeTaskWarning
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceConfiguration
 import dk.cachet.carp.protocols.domain.devices.DeviceConfigurationTest
-import dk.cachet.carp.protocols.domain.devices.StubDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.tasks.TaskConfiguration
 import dk.cachet.carp.protocols.domain.tasks.TaskConfigurationTest
-import dk.cachet.carp.protocols.domain.tasks.StubTaskDescriptor
-import dk.cachet.carp.protocols.domain.triggers.StubTrigger
 import dk.cachet.carp.protocols.domain.triggers.TriggeredTask
+import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
+import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
+import dk.cachet.carp.test.Nested
 import kotlin.test.*
 
 
