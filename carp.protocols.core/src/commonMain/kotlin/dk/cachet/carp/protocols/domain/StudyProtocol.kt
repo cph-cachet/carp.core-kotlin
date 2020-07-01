@@ -56,7 +56,7 @@ class StudyProtocol(
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
             val owner = ProtocolOwner( snapshot.ownerId )
-            val protocol = StudyProtocol( owner, snapshot.name )
+            val protocol = StudyProtocol( owner, snapshot.name, snapshot.description )
             protocol.creationDate = snapshot.creationDate
 
             // Add master devices.
