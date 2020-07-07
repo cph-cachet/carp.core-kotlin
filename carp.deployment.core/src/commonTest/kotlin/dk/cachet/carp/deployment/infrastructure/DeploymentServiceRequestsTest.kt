@@ -30,7 +30,7 @@ class DeploymentServiceRequestsTest
             DeploymentServiceRequest.DeploymentSuccessful( UUID.randomUUID(), "Test role", DateTime.now() ),
             DeploymentServiceRequest.Stop( UUID.randomUUID() ),
             DeploymentServiceRequest.AddParticipation( UUID.randomUUID(), setOf( "Phone" ), UsernameAccountIdentity( "Test" ), StudyInvitation.empty() ),
-            DeploymentServiceRequest.GetParticipationInvitations( UUID.randomUUID() )
+            DeploymentServiceRequest.GetActiveParticipationInvitations( UUID.randomUUID() )
         )
     }
 

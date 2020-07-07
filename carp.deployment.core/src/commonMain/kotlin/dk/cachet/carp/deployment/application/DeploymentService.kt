@@ -5,8 +5,8 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
@@ -116,7 +116,7 @@ interface DeploymentService
     suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ): Participation
 
     /**
-     * Get all participations in study deployments the account with the given [accountId] has been invited to.
+     * Get all participations of active study deployments the account with the given [accountId] has been invited to.
      */
-    suspend fun getParticipationInvitations( accountId: UUID ): Set<ParticipationInvitation>
+    suspend fun getActiveParticipationInvitations( accountId: UUID ): Set<ActiveParticipationInvitation>
 }
