@@ -12,7 +12,8 @@ object ParticipationService
      * This subset is returned as [ActiveParticipationInvitation]s,
      * appending the current device registration status to the devices the participant was invited to use.
      *
-     * @throws IllegalArgumentException when a deployment for one of the [invitations] is missing in [deployments].
+     * @throws IllegalArgumentException when a deployment for one of the [invitations] is missing in [deployments],
+     * or when the device roles specified in [invitations] do not match the deployment.
      */
     fun filterActiveParticipationInvitations(
         invitations: Set<ParticipationInvitation>,
