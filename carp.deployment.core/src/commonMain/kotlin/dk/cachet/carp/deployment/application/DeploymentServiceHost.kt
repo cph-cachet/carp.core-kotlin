@@ -9,8 +9,10 @@ import dk.cachet.carp.deployment.domain.RegistrableDevice
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.users.AccountService
+import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
+import dk.cachet.carp.deployment.domain.users.ParticipationService
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -251,11 +253,17 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
     }
 
     /**
-     * Get all participations in study deployments the account with the given [accountId] has been invited to.
+     * Get all participations of active study deployments the account with the given [accountId] has been invited to.
      */
-    override suspend fun getParticipationInvitations( accountId: UUID ): Set<ParticipationInvitation> =
-        repository.getInvitations( accountId )
+    override suspend fun getActiveParticipationInvitations( accountId: UUID ): Set<ActiveParticipationInvitation>
+    {
+        // Get deployment status for each of the account's invitations.
+        val invitations = repository.getInvitations( accountId )
+        val deploymentIds = invitations.map { it.participation.studyDeploymentId }.toSet()
+        val deployments = repository.getStudyDeploymentsBy( deploymentIds )
 
+        return ParticipationService.filterActiveParticipationInvitations( invitations, deployments )
+    }
 
     private suspend fun getStudyDeployment( studyDeploymentId: UUID ): StudyDeployment
     {
