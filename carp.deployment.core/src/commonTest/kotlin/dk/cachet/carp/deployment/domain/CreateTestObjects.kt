@@ -4,6 +4,7 @@ import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 
 
@@ -43,3 +44,19 @@ fun createComplexDeployment(): StudyDeployment
 
     return deployment
 }
+
+/**
+ * Creates a study deployment that is active (not stopped) for a study protocol with a single master device.
+ */
+fun createActiveDeployment( masterDeviceRoleName: String ): StudyDeployment
+{
+    val protocol = createSingleMasterDeviceProtocol( masterDeviceRoleName )
+
+    return studyDeploymentFor( protocol )
+}
+
+/**
+ * Creates a stopped study deployment for a study protocol with a single master device.
+ */
+fun createStoppedDeployment( masterDeviceRoleName: String ): StudyDeployment =
+    createActiveDeployment( masterDeviceRoleName ).apply { stop() }

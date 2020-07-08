@@ -11,6 +11,8 @@ object ParticipationService
      * Filter the given [invitations] to only return those that have active study deployments.
      * This subset is returned as [ActiveParticipationInvitation]s,
      * appending the current device registration status to the devices the participant was invited to use.
+     *
+     * @throws IllegalArgumentException when a deployment for one of the [invitations] is missing in [deployments].
      */
     fun filterActiveParticipationInvitations(
         invitations: Set<ParticipationInvitation>,
@@ -21,7 +23,7 @@ object ParticipationService
             .map { it to (
                 deployments.firstOrNull { d -> d.id == it.participation.studyDeploymentId }
                     ?.getStatus()
-                    ?: error( "No deployment is passed to pair with one of the given invitations." )
+                    ?: throw IllegalArgumentException( "No deployment is passed to pair with one of the given invitations." )
             ) }
             .filter { it.second !is StudyDeploymentStatus.Stopped }
             .map {
