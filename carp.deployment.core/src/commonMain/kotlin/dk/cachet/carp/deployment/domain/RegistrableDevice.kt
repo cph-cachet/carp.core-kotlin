@@ -16,7 +16,7 @@ data class RegistrableDevice(
     @Serializable( DeviceDescriptorSerializer::class )
     val device: AnyDeviceDescriptor,
     /**
-     * Determines whether registering the device is required for the deployment to start running.
+     * Determines whether this device requires deployment after it has been registered.
      */
-    val requiresRegistration: Boolean
+    val requiresDeployment: Boolean
 )

@@ -1,14 +1,17 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.StubDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.StubMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.tasks.StubTaskDescriptor
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
-import dk.cachet.carp.protocols.domain.triggers.StubTrigger
 import dk.cachet.carp.protocols.domain.triggers.Trigger
+import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
+import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlin.test.*
 
 
@@ -88,12 +91,15 @@ class StudyProtocolSnapshotTest
         )
 
         val ownerId = UUID( "ef26be3f-2de8-4779-a608-bb6e027e4b75" )
+        val creationDate = DateTime.now()
         val snapshot = StudyProtocolSnapshot(
-            ownerId, "Study",
+            ownerId, "Study", "Description",
+            creationDate,
             masterDevices, connectedDevices, connections,
             tasks, triggers, triggeredTasks )
         val reorganizedSnapshot = StudyProtocolSnapshot(
-            ownerId, "Study",
+            ownerId, "Study", "Description",
+            creationDate,
             masterDevices.reversed(), connectedDevices.reversed(), connections.reversed(),
             tasks.reversed(), triggers, triggeredTasks.reversed() )
 
@@ -110,20 +116,24 @@ class StudyProtocolSnapshotTest
         val trigger1 = StubTrigger( "One" )
         val trigger2 = StubTrigger( "Two" )
 
-        val protocol1: StudyProtocolSnapshot = createEmptyProtocol().apply {
+        // Create two identical base protocols. protocol1 is cloned to make sure `creationDate` is the same.
+        val protocol1 = createEmptyProtocol()
+        val protocol2 = StudyProtocol.fromSnapshot( protocol1.getSnapshot() )
+
+        val snapshot1: StudyProtocolSnapshot = protocol1.apply {
             addMasterDevice( device1 )
             addMasterDevice( device2 )
             addTrigger( trigger1 )
             addTrigger( trigger2 )
         }.getSnapshot()
 
-        val protocol2: StudyProtocolSnapshot = createEmptyProtocol().apply {
+        val snapshot2: StudyProtocolSnapshot = protocol2.apply {
             addMasterDevice( device1 )
             addMasterDevice( device2 )
             addTrigger( trigger2 )
             addTrigger( trigger1 )
         }.getSnapshot()
 
-        assertTrue( protocol1 == protocol2 )
+        assertTrue( snapshot1 == snapshot2 )
     }
 }

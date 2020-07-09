@@ -35,9 +35,9 @@ val UUIDRegex = Regex( "([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9
 @Serializer( forClass = UUID::class )
 object UUIDSerializer : KSerializer<UUID>
 {
-    override fun serialize( encoder: Encoder, obj: UUID )
+    override fun serialize( encoder: Encoder, value: UUID )
     {
-        encoder.encodeString( obj.stringRepresentation )
+        encoder.encodeString( value.stringRepresentation )
     }
 
     override fun deserialize( decoder: Decoder ): UUID

@@ -2,6 +2,7 @@ package dk.cachet.carp.deployment.domain.users
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
+import dk.cachet.carp.common.users.UsernameAccountIdentity
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -29,8 +30,8 @@ abstract class AccountServiceTest
         val service = createService()
 
         // Create and verify account.
-        val participation = Participation( UUID.randomUUID(), StudyInvitation.empty() )
-        val account = service.inviteNewAccount( identity, participation )
+        val participation = Participation( UUID.randomUUID() )
+        val account = service.inviteNewAccount( identity, StudyInvitation.empty(), participation, listOf() )
         assertEquals( identity, account.identity )
 
         // Verify whether account can be retrieved.
@@ -48,28 +49,32 @@ abstract class AccountServiceTest
 
     private fun inviteNewAccountWithExistingTest( identity: AccountIdentity ) = runBlockingTest {
         val service = createService()
-        val participation = Participation( UUID.randomUUID(), StudyInvitation.empty() )
-        service.inviteNewAccount( identity, participation )
+        val participation = Participation( UUID.randomUUID() )
+        service.inviteNewAccount( identity, StudyInvitation.empty(), participation, listOf() )
 
         assertFailsWith<IllegalArgumentException> {
-            service.inviteNewAccount( identity, participation )
+            service.inviteNewAccount( identity, StudyInvitation.empty(), participation, listOf() )
         }
     }
 
     @Test
-    fun inviteExistingAccount_with_new_username_fails() =
-        inviteExistingAccountWithNewTest( AccountIdentity.fromUsername( "User" ) )
+    fun inviteExistingAccount_succeeds() = runBlockingTest {
+        val service = createService()
+        val identity = UsernameAccountIdentity( "test" )
+        val invitation = StudyInvitation.empty()
+        val account = service.inviteNewAccount( identity, invitation, Participation( UUID.randomUUID() ), listOf() )
+
+        service.inviteExistingAccount( account.id, invitation, Participation( UUID.randomUUID() ), listOf() )
+    }
 
     @Test
-    fun inviteExistingAccount_with_new_email_fails() =
-        inviteExistingAccountWithNewTest( AccountIdentity.fromEmailAddress( "user@user.com" ) )
-
-    private fun inviteExistingAccountWithNewTest( identity: AccountIdentity ) = runBlockingTest {
+    fun inviteExistingAccount_with_unknown_id_fails() = runBlockingTest {
         val service = createService()
-        val participation = Participation( UUID.randomUUID(), StudyInvitation.empty() )
+        val participation = Participation( UUID.randomUUID() )
 
+        val unknownId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException> {
-            service.inviteExistingAccount( identity, participation )
+            service.inviteExistingAccount( unknownId, StudyInvitation.empty(), participation, listOf() )
         }
     }
 

@@ -1,13 +1,14 @@
 package dk.cachet.carp.deployment.infrastructure
 
-import dk.cachet.carp.deployment.domain.createEmptyProtocol
-import dk.cachet.carp.deployment.domain.createSingleMasterWithConnectedDeviceProtocol
-import dk.cachet.carp.deployment.domain.STUBS_SERIAL_MODULE
-import dk.cachet.carp.deployment.domain.studyDeploymentFor
 import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
-import dk.cachet.carp.deployment.domain.UnknownDeviceRegistration
-import dk.cachet.carp.deployment.domain.UnknownMasterDeviceDescriptor
+import dk.cachet.carp.deployment.domain.createComplexDeployment
+import dk.cachet.carp.deployment.domain.studyDeploymentFor
 import dk.cachet.carp.protocols.domain.devices.CustomDeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
+import dk.cachet.carp.protocols.infrastructure.test.STUBS_SERIAL_MODULE
+import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
+import dk.cachet.carp.protocols.infrastructure.test.makeUnknown
 import kotlin.test.*
 
 
@@ -25,10 +26,8 @@ class StudyDeploymentSnapshotTest
     @Test
     fun can_serialize_and_deserialize_snapshot_using_JSON()
     {
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment = studyDeploymentFor( protocol )
+        val deployment = createComplexDeployment()
         val snapshot: StudyDeploymentSnapshot = deployment.getSnapshot()
-
 
         val serialized: String = snapshot.toJson()
         val parsed: StudyDeploymentSnapshot = StudyDeploymentSnapshot.fromJson( serialized )
@@ -45,7 +44,8 @@ class StudyDeploymentSnapshotTest
         val serialized = serializeDeploymentSnapshotIncludingUnknownRegistration()
         val parsed = StudyDeploymentSnapshot.fromJson( serialized )
 
-        assertEquals( 1, parsed.registeredDevices.values.filterIsInstance<CustomDeviceRegistration>().count() )
+        val allRegistrations = parsed.deviceRegistrationHistory.values.flatten()
+        assertEquals( 1, allRegistrations.filterIsInstance<CustomDeviceRegistration>().count() )
     }
 
     /**
@@ -62,18 +62,19 @@ class StudyDeploymentSnapshotTest
     }
 
     /**
-     * Create a serialized deployment (snapshot) of a study protocol with exactly one master device which is registered using an [UnknownDeviceRegistration].
+     * Create a serialized deployment (snapshot) of a study protocol with exactly one master device which is registered using an unknown device registration.
      */
     private fun serializeDeploymentSnapshotIncludingUnknownRegistration(): String
     {
         val protocol = createEmptyProtocol()
-        val master = UnknownMasterDeviceDescriptor( "Stub" )
+        val master = StubMasterDeviceDescriptor( "Stub" )
         protocol.addMasterDevice( master )
         val deployment = studyDeploymentFor( protocol )
-        deployment.registerDevice( master, UnknownDeviceRegistration( "0" ) )
+        val registration = DefaultDeviceRegistration( "0" )
+        deployment.registerDevice( master, registration )
 
         var serialized: String = deployment.getSnapshot().toJson()
-        serialized = serialized.replace( "dk.cachet.carp.deployment.domain.UnknownDeviceRegistration", "com.unknown.CustomDeviceRegistration" )
+        serialized = serialized.makeUnknown( registration )
 
         return serialized
     }

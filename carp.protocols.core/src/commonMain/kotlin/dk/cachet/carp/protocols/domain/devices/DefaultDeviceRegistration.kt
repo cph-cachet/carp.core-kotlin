@@ -23,9 +23,8 @@ data class DefaultDeviceRegistration( override val deviceId: String ) : DeviceRe
  *   Make sure this ID is unique for the type of device you are creating a registration for.
  */
 @Serializable( with = NotSerializable::class )
-@DeviceRegistrationBuilderDsl
 class DefaultDeviceRegistrationBuilder( var deviceId: String = UUID.randomUUID().toString() ) :
-    DeviceRegistrationBuilder<DefaultDeviceRegistration>()
+    DeviceRegistrationBuilder<DefaultDeviceRegistration>
 {
     override fun build(): DefaultDeviceRegistration = DefaultDeviceRegistration( deviceId )
 }

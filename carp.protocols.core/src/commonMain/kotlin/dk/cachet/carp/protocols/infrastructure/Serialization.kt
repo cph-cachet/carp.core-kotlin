@@ -4,6 +4,8 @@ import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.domain.data.IntervalSamplingConfiguration
+import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.AltBeacon
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
@@ -17,7 +19,9 @@ import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure
-import dk.cachet.carp.protocols.domain.triggers.StartOfStudyTrigger
+import dk.cachet.carp.protocols.domain.triggers.ElapsedTimeTrigger
+import dk.cachet.carp.protocols.domain.triggers.ManualTrigger
+import dk.cachet.carp.protocols.domain.triggers.ScheduledTrigger
 import dk.cachet.carp.protocols.domain.triggers.Trigger
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.EmptyModule
@@ -38,6 +42,10 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
     {
         Smartphone::class with Smartphone.serializer()
     }
+    polymorphic( SamplingConfiguration::class )
+    {
+        IntervalSamplingConfiguration::class with IntervalSamplingConfiguration.serializer()
+    }
     polymorphic( DeviceRegistration::class )
     {
         DefaultDeviceRegistration::class with DefaultDeviceRegistration.serializer()
@@ -54,7 +62,9 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
     }
     polymorphic( Trigger::class )
     {
-        StartOfStudyTrigger::class with StartOfStudyTrigger.serializer()
+        ElapsedTimeTrigger::class with ElapsedTimeTrigger.serializer()
+        ScheduledTrigger::class with ScheduledTrigger.serializer()
+        ManualTrigger::class with ManualTrigger.serializer()
     }
 }
 

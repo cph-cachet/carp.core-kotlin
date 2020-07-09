@@ -1,4 +1,4 @@
-@file:Suppress( "TooManyFunctions" )
+@file:Suppress( "TooManyFunctions", "LongParameterList" )
 
 package dk.cachet.carp.test
 
@@ -9,7 +9,7 @@ import kotlin.reflect.*
  * Base class which can be used to implement a simple mock for the interface [TMock].
  * For now, this is very basic and solely supports tracking the last function call.
  */
-abstract class Mock<TMock>
+open class Mock<TMock>
 {
     private val functionCalls: MutableMap<String, Array<out Any>> = mutableMapOf()
 
@@ -30,6 +30,8 @@ abstract class Mock<TMock>
         trackCallable( function, arg1 as Any, arg2 as Any, arg3 as Any )
     fun <T1, T2, T3, TReturn> trackSuspendCall( function: KSuspendFunction4<TMock, T1, T2, T3, TReturn>, arg1: T1, arg2: T2, arg3: T3 ) =
         trackCallable( function, arg1 as Any, arg2 as Any, arg3 as Any )
+    fun <T1, T2, T3, T4, TReturn> trackSuspendCall( function: KSuspendFunction5<TMock, T1, T2, T3, T4, TReturn>, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ) =
+        trackCallable( function, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any )
 
     fun <TReturn> trackCallOverloaded( function: KFunction1<TMock, TReturn>, overloadIdentifier: String ) =
         trackCallableOverloaded( function, overloadIdentifier )
@@ -47,6 +49,8 @@ abstract class Mock<TMock>
         trackCallableOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any )
     fun <T1, T2, T3, TReturn> trackSuspendCallOverloaded( function: KSuspendFunction4<TMock, T1, T2, T3, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3 ) =
         trackCallableOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any )
+    fun <T1, T2, T3, T4, TReturn> trackSuspendCallOverloaded( function: KSuspendFunction5<TMock, T1, T2, T3, T4, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ) =
+        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any )
 
     private fun trackCallable( function: KCallable<*>, vararg arguments: Any )
     {
@@ -74,6 +78,8 @@ abstract class Mock<TMock>
         wasCallableCalled( function, arg1 as Any, arg2 as Any, arg3 as Any )
     fun <T1, T2, T3, TReturn> wasSuspendCalled( function: KSuspendFunction4<TMock, T1, T2, T3, TReturn>, arg1: T1, arg2: T2, arg3: T3 ): Boolean =
         wasCallableCalled( function, arg1 as Any, arg2 as Any, arg3 as Any )
+    fun <T1, T2, T3, T4, TReturn> wasSuspendCalled( function: KSuspendFunction5<TMock, T1, T2, T3, T4, TReturn>, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ): Boolean =
+        wasCallableCalled( function, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any )
 
     fun <TReturn> wasCalledOverloaded( function: KFunction1<TMock, TReturn>, overloadIdentifier: String ): Boolean =
         wasCallableCalledOverloaded( function, overloadIdentifier )
@@ -91,6 +97,8 @@ abstract class Mock<TMock>
         wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any )
     fun <T1, T2, T3, TReturn> wasSuspendCalledOverloaded( function: KSuspendFunction4<TMock, T1, T2, T3, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3 ): Boolean =
         wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any )
+    fun <T1, T2, T3, T4, TReturn> wasSuspendCalledOverloaded( function: KSuspendFunction5<TMock, T1, T2, T3, T4, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ): Boolean =
+        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any )
 
     private fun wasCallableCalled( function: KCallable<*>, vararg expectedArguments: Any ): Boolean
     {

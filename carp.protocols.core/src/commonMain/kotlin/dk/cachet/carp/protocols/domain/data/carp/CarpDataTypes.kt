@@ -1,18 +1,17 @@
 /**
- * Namespace which contains CARP supported data type definitions.
+ * Namespace which contains CARP data type definitions.
  */
 package dk.cachet.carp.protocols.domain.data.carp
 
 import dk.cachet.carp.protocols.domain.data.DataType
 
 
+/**
+ * The [DataType] namespace of all CARP data type definitions.
+ */
 const val CARP_NAMESPACE: String = "dk.cachet.carp"
 
 /**
- * Geographic location data: longitude and latitude.
+ * Get a [DataType] definition with the given [name] in the [CARP_NAMESPACE].
  */
-val GEO_LOCATION: DataType = DataType( CARP_NAMESPACE, "geolocation" )
-/**
- * Amount of steps a participant has taken in a specified time interval.
- */
-val STEPCOUNT: DataType = DataType( CARP_NAMESPACE, "stepcount" )
+internal fun carpDataType( name: String ) = DataType( CARP_NAMESPACE, name )

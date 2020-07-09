@@ -1,6 +1,8 @@
 package dk.cachet.carp.protocols.domain.triggers
 
 import dk.cachet.carp.common.Immutable
+import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable

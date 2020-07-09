@@ -12,7 +12,7 @@ class StudyInvitationTest
     @Test
     fun can_serialize_and_deserialize_study_description_using_JSON()
     {
-        val invitation = StudyInvitation( "Test" )
+        val invitation = StudyInvitation( "Test", "Description" )
 
         val serialized = invitation.toJson()
         val parsed = StudyInvitation.fromJson( serialized )

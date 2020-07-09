@@ -1,6 +1,9 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.Snapshot
+import dk.cachet.carp.deployment.domain.users.AccountParticipation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
@@ -14,8 +17,14 @@ import kotlinx.serialization.Serializable
 data class StudyDeploymentSnapshot(
     val studyDeploymentId: UUID,
     val studyProtocolSnapshot: StudyProtocolSnapshot,
-    val registeredDevices: Map<String, @Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration>
-)
+    val registeredDevices: Set<String>,
+    val deviceRegistrationHistory: Map<String, List<@Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration>>,
+    val deployedDevices: Set<String>,
+    val invalidatedDeployedDevices: Set<String>,
+    val startTime: DateTime?,
+    val isStopped: Boolean,
+    val participations: Set<AccountParticipation>
+) : Snapshot<StudyDeployment>()
 {
     companion object
     {
@@ -29,7 +38,16 @@ data class StudyDeploymentSnapshot(
             return StudyDeploymentSnapshot(
                 studyDeployment.id,
                 studyDeployment.protocolSnapshot,
-                studyDeployment.registeredDevices.mapKeys { it.key.roleName } )
+                studyDeployment.registeredDevices.map { it.key.roleName }.toSet(),
+                studyDeployment.deviceRegistrationHistory.mapKeys { it.key.roleName },
+                studyDeployment.deployedDevices.map { it.roleName }.toSet(),
+                studyDeployment.invalidatedDeployedDevices.map { it.roleName }.toSet(),
+                studyDeployment.startTime,
+                studyDeployment.isStopped,
+                studyDeployment.participations )
         }
     }
+
+
+    override fun toObject(): StudyDeployment = StudyDeployment.fromSnapshot( this )
 }

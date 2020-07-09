@@ -20,13 +20,7 @@ class EmptyTaskConfiguration : AbstractMap<String, TaskDescriptor>(), TaskConfig
         get() = _tasks.values.toSet()
 
 
-    override fun addTask( task: TaskDescriptor ): Boolean
-    {
-        return _tasks.tryAddIfKeyIsNew( task )
-    }
+    override fun addTask( task: TaskDescriptor ): Boolean = _tasks.tryAddIfKeyIsNew( task )
 
-    override fun removeTask( task: TaskDescriptor ): Boolean
-    {
-        return _tasks.remove( task )
-    }
+    override fun removeTask( task: TaskDescriptor ): Boolean = _tasks.remove( task )
 }

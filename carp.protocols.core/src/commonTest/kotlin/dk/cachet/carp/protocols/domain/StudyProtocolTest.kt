@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.test.Nested
 import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
 import dk.cachet.carp.protocols.domain.deployment.UntriggeredTasksWarning
 import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
@@ -8,13 +7,16 @@ import dk.cachet.carp.protocols.domain.deployment.UseCompositeTaskWarning
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceConfiguration
 import dk.cachet.carp.protocols.domain.devices.DeviceConfigurationTest
-import dk.cachet.carp.protocols.domain.devices.StubDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.tasks.TaskConfiguration
 import dk.cachet.carp.protocols.domain.tasks.TaskConfigurationTest
-import dk.cachet.carp.protocols.domain.tasks.StubTaskDescriptor
-import dk.cachet.carp.protocols.domain.triggers.StubTrigger
 import dk.cachet.carp.protocols.domain.triggers.TriggeredTask
+import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
+import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
+import dk.cachet.carp.test.Nested
 import kotlin.test.*
 
 
@@ -65,6 +67,7 @@ class StudyProtocolTest
         val isAdded: Boolean = protocol.addTrigger( trigger )
         assertTrue( isAdded )
         assertTrue( protocol.triggers.contains( trigger ) )
+        assertEquals( StudyProtocol.Event.TriggerAdded( trigger ), protocol.consumeEvents().last() )
     }
 
     @Test
@@ -79,6 +82,8 @@ class StudyProtocolTest
         val isAdded: Boolean = protocol.addTrigger( trigger )
         assertFalse( isAdded )
         assertEquals( 1, protocol.triggers.count() )
+        val triggerEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggerAdded>()
+        assertEquals( 1, triggerEvents.count() )
     }
 
     @Test
@@ -91,6 +96,8 @@ class StudyProtocolTest
         {
             protocol.addTrigger( trigger )
         }
+        val triggerEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggerAdded>()
+        assertEquals( 0, triggerEvents.count() )
     }
 
     @Test
@@ -107,6 +114,8 @@ class StudyProtocolTest
         {
             protocol.addTrigger( trigger )
         }
+        val triggerEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggerAdded>()
+        assertEquals( 0, triggerEvents.count() )
     }
 
     @Test
@@ -122,6 +131,7 @@ class StudyProtocolTest
         val isAdded: Boolean = protocol.addTriggeredTask( trigger, task, device )
         assertTrue( isAdded )
         assertTrue( protocol.getTriggeredTasks( trigger ).contains( TriggeredTask( task, device ) ) )
+        assertEquals( StudyProtocol.Event.TriggeredTaskAdded( TriggeredTask( task, device ) ), protocol.consumeEvents().last() )
     }
 
     @Test
@@ -137,6 +147,8 @@ class StudyProtocolTest
         val isAdded = protocol.addTriggeredTask( trigger, task, device )
         assertFalse( isAdded )
         assertEquals( 1, protocol.getTriggeredTasks( trigger ).count() )
+        val triggeredTaskEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggeredTaskAdded>()
+        assertEquals( 1, triggeredTaskEvents.count() )
     }
 
     @Test
@@ -151,6 +163,8 @@ class StudyProtocolTest
         val trigger = StubTrigger( device )
         protocol.addTriggeredTask( trigger, task, device )
         assertTrue( protocol.triggers.contains( trigger ) )
+        val triggerEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggerAdded>()
+        assertEquals( StudyProtocol.Event.TriggerAdded( trigger ), triggerEvents.single() )
     }
 
     @Test
@@ -165,6 +179,8 @@ class StudyProtocolTest
         val task = StubTaskDescriptor()
         protocol.addTriggeredTask( trigger, task, device )
         assertTrue( protocol.tasks.contains( task ) )
+        val taskEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TaskAdded>()
+        assertEquals( StudyProtocol.Event.TaskAdded( task ), taskEvents.single() )
     }
 
     @Test
@@ -185,6 +201,7 @@ class StudyProtocolTest
         {
             protocol.addTriggeredTask( trigger, task, StubDeviceDescriptor() )
         }
+        assertEquals( 0, protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggeredTaskAdded>().count() )
     }
 
     @Test
@@ -289,6 +306,7 @@ class StudyProtocolTest
         protocol.removeTask( task )
         assertEquals( 0, protocol.getTriggeredTasks( trigger1 ).count() )
         assertEquals( 0, protocol.getTriggeredTasks( trigger2 ).count() )
+        assertEquals( 2, protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggeredTaskRemoved>().count() )
     }
 
     @Test
@@ -312,6 +330,8 @@ class StudyProtocolTest
 
         assertEquals( protocol.owner, fromSnapshot.owner )
         assertEquals( protocol.name, fromSnapshot.name )
+        assertEquals( protocol.description, fromSnapshot.description )
+        assertEquals( protocol.creationDate, fromSnapshot.creationDate )
         assertEquals( protocol.devices.count(), protocol.devices.intersect( fromSnapshot.devices ).count() )
         protocol.masterDevices.forEach { assertTrue( connectedDevicesAreSame( protocol, fromSnapshot, it ) ) }
         assertEquals( protocol.triggers.count(), protocol.triggers.intersect( fromSnapshot.triggers ).count() )

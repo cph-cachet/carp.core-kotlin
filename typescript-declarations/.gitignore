@@ -1,0 +1,6 @@
+# There should only be TypeScript sources.
+*.js
+*.js.map
+
+# Visual Studio Code configuration files.
+.vscode

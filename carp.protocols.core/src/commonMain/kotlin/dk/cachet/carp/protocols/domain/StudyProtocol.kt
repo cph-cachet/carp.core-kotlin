@@ -1,5 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.DateTime
+import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.protocols.domain.deployment.DeploymentError
 import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
 import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
@@ -8,7 +10,9 @@ import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
 import dk.cachet.carp.protocols.domain.deployment.UseCompositeTaskWarning
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.EmptyDeviceConfiguration
+import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.tasks.EmptyTaskConfiguration
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.triggers.Trigger
@@ -19,6 +23,7 @@ import dk.cachet.carp.protocols.domain.triggers.TriggeredTask
  * A description of how a study is to be executed, defining the type(s) of master device(s) ([AnyMasterDeviceDescriptor]) responsible for aggregating data,
  * the optional devices ([AnyDeviceDescriptor]) connected to them, and the [Trigger]'s which lead to data collection on said devices.
  */
+@Suppress( "TooManyFunctions" ) // TODO: some of the device and task configuration methods are overridden solely to add events. Can this be refactored?
 class StudyProtocol(
     /**
      * The person or group that created this [StudyProtocol].
@@ -27,15 +32,32 @@ class StudyProtocol(
     /**
      * A unique descriptive name for the protocol assigned by the [ProtocolOwner].
      */
-    val name: String
+    val name: String,
+    /**
+     * An optional description for the study protocol.
+     */
+    val description: String = ""
 ) : StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration() )
 {
+    sealed class Event : Immutable()
+    {
+        data class MasterDeviceAdded( val device: AnyMasterDeviceDescriptor ) : Event()
+        data class ConnectedDeviceAdded( val connected: AnyDeviceDescriptor, val master: AnyMasterDeviceDescriptor ) : Event()
+        data class TriggerAdded( val trigger: Trigger ) : Event()
+        data class TaskAdded( val task: TaskDescriptor ) : Event()
+        data class TaskRemoved( val task: TaskDescriptor ) : Event()
+        data class TriggeredTaskAdded( val triggeredTask: TriggeredTask ) : Event()
+        data class TriggeredTaskRemoved( val triggeredTask: TriggeredTask ) : Event()
+    }
+
+
     companion object Factory
     {
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
             val owner = ProtocolOwner( snapshot.ownerId )
-            val protocol = StudyProtocol( owner, snapshot.name )
+            val protocol = StudyProtocol( owner, snapshot.name, snapshot.description )
+            protocol.creationDate = snapshot.creationDate
 
             // Add master devices.
             snapshot.masterDevices.forEach { protocol.addMasterDevice( it ) }
@@ -58,9 +80,9 @@ class StudyProtocol(
             snapshot.triggeredTasks.forEach { triggeredTask ->
                 val triggerMatch = snapshot.triggers.entries.singleOrNull { it.key == triggeredTask.triggerId }
                     ?: throw InvalidConfigurationError( "Can't find trigger with id '${triggeredTask.triggerId}' in snapshot." )
-                val task = protocol.tasks.singleOrNull { it.name == triggeredTask.taskName }
+                val task: TaskDescriptor = protocol.tasks.singleOrNull { it.name == triggeredTask.taskName }
                     ?: throw InvalidConfigurationError( "Can't find task with name '${triggeredTask.taskName}' in snapshot." )
-                val device = protocol.devices.singleOrNull { it.roleName == triggeredTask.targetDeviceRoleName }
+                val device: AnyDeviceDescriptor = protocol.devices.singleOrNull { it.roleName == triggeredTask.targetDeviceRoleName }
                     ?: throw InvalidConfigurationError( "Can't find device with role name '${triggeredTask.targetDeviceRoleName}' in snapshot." )
                 protocol.addTriggeredTask( triggerMatch.value, task, device )
             }
@@ -69,6 +91,49 @@ class StudyProtocol(
         }
     }
 
+
+    /**
+     * The date when this protocol was created.
+     */
+    var creationDate: DateTime = DateTime.now()
+        private set
+
+    /**
+     * Add a master device which is responsible for aggregating and synchronizing incoming data.
+     *
+     * Throws an [InvalidConfigurationError] in case a device with the specified role name already exists.
+     *
+     * @param masterDevice A description of the master device to add. Its role name should be unique in the protocol.
+     * @return True if the device has been added; false if the specified [MasterDeviceDescriptor] is already set as a master device.
+     */
+    override fun addMasterDevice( masterDevice: AnyMasterDeviceDescriptor ): Boolean
+    {
+        val added = super.addMasterDevice( masterDevice )
+        if ( added )
+        {
+            event( Event.MasterDeviceAdded( masterDevice ) )
+        }
+        return added
+    }
+
+    /**
+     * Add a device which is connected to a master device within this configuration.
+     *
+     * Throws an [InvalidConfigurationError] in case a device with the specified role name already exists.
+     *
+     * @param device The device to be connected to a master device. Its role name should be unique in the protocol.
+     * @param masterDevice The master device to connect to.
+     * @return True if the device has been added; false if the specified [DeviceDescriptor] is already connected to the specified [MasterDeviceDescriptor].
+     */
+    override fun addConnectedDevice( device: AnyDeviceDescriptor, masterDevice: AnyMasterDeviceDescriptor ): Boolean
+    {
+        val added = super.addConnectedDevice(device, masterDevice)
+        if ( added )
+        {
+            event( Event.ConnectedDeviceAdded( device, masterDevice ) )
+        }
+        return added
+    }
 
     private val _triggers: MutableSet<Trigger> = mutableSetOf()
 
@@ -100,6 +165,7 @@ class StudyProtocol(
         if ( isAdded )
         {
             triggeredTasks[ trigger ] = mutableSetOf()
+            event( Event.TriggerAdded( trigger ) )
         }
         return isAdded
     }
@@ -117,16 +183,24 @@ class StudyProtocol(
     fun addTriggeredTask( trigger: Trigger, task: TaskDescriptor, targetDevice: AnyDeviceDescriptor ): Boolean
     {
         // The device needs to be included in the study protocol. We can not add it here since we do not know whether it should be a master or connected device.
-        if ( !devices.contains( targetDevice ) )
+        if ( targetDevice !in devices )
         {
             throw InvalidConfigurationError( "The passed device to which the task needs to be sent is not included in this study protocol." )
         }
 
         // Add trigger and task to ensure they are included in the protocol.
         addTrigger( trigger )
-        taskConfiguration.addTask( task )
+        addTask( task )
 
-        return triggeredTasks[ trigger ]!!.add( TriggeredTask( task, targetDevice ) )
+        // Add triggered task.
+        val triggeredTask = TriggeredTask( task, targetDevice )
+        val triggeredTaskAdded = triggeredTasks[ trigger ]!!.add( triggeredTask )
+        if ( triggeredTaskAdded )
+        {
+            event( Event.TriggeredTaskAdded( triggeredTask ) )
+        }
+
+        return triggeredTaskAdded
     }
 
     /**
@@ -136,7 +210,7 @@ class StudyProtocol(
      */
     fun getTriggeredTasks( trigger: Trigger ): Iterable<TriggeredTask>
     {
-        if ( !triggers.contains( trigger ) )
+        if ( trigger !in triggers )
         {
             throw InvalidConfigurationError( "The passed trigger is not part of this study protocol." )
         }
@@ -157,6 +231,24 @@ class StudyProtocol(
     }
 
     /**
+     * Add a task to this configuration.
+     *
+     * Throws an [InvalidConfigurationError] in case a task with the specified name already exists.
+     *
+     * @param task The task to add.
+     * @return True if the task has been added; false if the specified [TaskDescriptor] is already included in this configuration.
+     */
+    override fun addTask( task: TaskDescriptor ): Boolean
+    {
+        val added = super.addTask( task )
+        if ( added )
+        {
+            event( Event.TaskAdded( task ) )
+        }
+        return added
+    }
+
+    /**
      * Remove a task currently present in the study protocol, including removing it from any [Trigger]'s which initiate it.
      *
      * @param task The task to remove.
@@ -164,15 +256,18 @@ class StudyProtocol(
      */
     override fun removeTask( task: TaskDescriptor ): Boolean
     {
-        val isRemoved = taskConfiguration.removeTask( task )
+        // Remove task from triggers.
+        triggeredTasks.map { it.value }.forEach {
+            val triggeredTasks = it.filter { triggered -> triggered.task == task }
+            it.removeAll( triggeredTasks )
+            triggeredTasks.forEach { event( Event.TriggeredTaskRemoved( it ) ) }
+        }
 
-        // Also remove task from triggers.
+        // Remove task itself.
+        val isRemoved = taskConfiguration.removeTask( task )
         if ( isRemoved )
         {
-            triggeredTasks.map { it.value }.forEach {
-                val triggeredTasks = it.filter { triggered -> triggered.task == task }
-                it.removeAll( triggeredTasks )
-            }
+            event( Event.TaskRemoved( task ) )
         }
 
         return isRemoved
@@ -192,10 +287,8 @@ class StudyProtocol(
     /**
      * Returns warnings and errors for the current configuration of the study protocol.
      */
-    fun getDeploymentIssues(): Iterable<DeploymentIssue>
-    {
-        return possibleDeploymentIssues.filter { it.isIssuePresent( this ) }
-    }
+    fun getDeploymentIssues(): Iterable<DeploymentIssue> =
+        possibleDeploymentIssues.filter { it.isIssuePresent( this ) }
 
     /**
      * Based on the current configuration, determines whether the study protocol can be deployed.
@@ -203,17 +296,12 @@ class StudyProtocol(
      *
      * In order to retrieve specific deployment issues, call [getDeploymentIssues].
      */
-    fun isDeployable(): Boolean
-    {
-        return !getDeploymentIssues().any { it is DeploymentError }
-    }
+    fun isDeployable(): Boolean =
+        !getDeploymentIssues().any { it is DeploymentError }
 
 
     /**
      * Get a serializable snapshot of the current state of this [StudyProtocol].
      */
-    fun getSnapshot(): StudyProtocolSnapshot
-    {
-        return StudyProtocolSnapshot.fromProtocol( this )
-    }
+    override fun getSnapshot(): StudyProtocolSnapshot = StudyProtocolSnapshot.fromProtocol( this )
 }

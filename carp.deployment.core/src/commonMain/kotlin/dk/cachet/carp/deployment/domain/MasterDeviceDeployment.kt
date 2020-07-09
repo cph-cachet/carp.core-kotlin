@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -61,4 +62,17 @@ data class MasterDeviceDeployment(
          */
         val destinationDeviceRoleName: String
     )
+
+
+    /**
+     * The time when this device deployment was last updated.
+     * This corresponds to the most recent device registration as part of this device deployment.
+     */
+    val lastUpdateDate: DateTime =
+        // TODO: Remove this workaround once JS serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/716
+        if ( connectedDeviceConfigurations == null || configuration == null ) DateTime.now()
+        else connectedDeviceConfigurations.values.plus( configuration )
+            .map { it.registrationCreationDate.msSinceUTC }
+            .max()
+            .let { DateTime( it!! ) }
 }

@@ -1,8 +1,10 @@
 package dk.cachet.carp.protocols.domain.devices
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.serialization.NotSerializable
 import dk.cachet.carp.protocols.domain.notImmutableErrorFor
+import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 
@@ -21,6 +23,8 @@ abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegis
      * TODO: This might be useful for potential optimizations later (e.g., prevent pulling in data from the same source more than once), but for now is ignored.
      */
     abstract val deviceId: String
+
+    val registrationCreationDate: DateTime = DateTime.now()
 }
 
 
@@ -31,16 +35,17 @@ abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegis
  *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceDescriptor].
  */
 @Serializable( NotSerializable::class )
-abstract class DeviceRegistrationBuilder<T : DeviceRegistration>
+@DeviceRegistrationBuilderDsl
+interface DeviceRegistrationBuilder<T : DeviceRegistration>
 {
     /**
      * Build the immutable [DeviceRegistration] using the current configuration of this [DeviceRegistrationBuilder].
      */
-    abstract fun build(): T
+    fun build(): T
 }
 
 /**
- * Should be applied to all [DeviceRegistrationBuilder] implementations to ensure misuse of internal DSL.
+ * Should be applied to all builders participating in building [DeviceRegistration]s to prevent misuse of internal DSL.
  * For more information: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-dsl-marker/index.html
  */
 @DslMarker
