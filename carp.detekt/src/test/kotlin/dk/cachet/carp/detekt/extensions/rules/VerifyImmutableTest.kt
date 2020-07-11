@@ -1,6 +1,7 @@
 package dk.cachet.carp.detekt.extensions.rules
 
-import io.gitlab.arturbosch.detekt.test.lint
+import io.gitlab.arturbosch.detekt.test.KtTestCompiler
+import io.gitlab.arturbosch.detekt.test.compileAndLintWithContext
 import kotlin.test.*
 
 
@@ -31,6 +32,23 @@ class VerifyImmutableTest
     }
 
     @Test
+    fun verify_full_inheritance_tree()
+    {
+        val notAllImmutable =
+            """
+            annotation class Immutable
+            
+            @Immutable
+            abstract class LastBase
+            
+            abstract class BaseClass : LastBase()
+             
+            class NotImmutable( var invalidMember: Int = 42 ) : BaseClass()
+            """
+        assertFalse( isImmutable( notAllImmutable ) )
+    }
+
+    @Test
     fun implementations_should_be_data_classes()
     {
         val dataClass = "@Immutable data class ValidImmutable( val validMember: Int = 42 )"
@@ -47,10 +65,31 @@ class VerifyImmutableTest
         assertTrue( isImmutable( abstractClass ) )
     }
 
+    @Test
+    fun constructor_properties_should_be_val()
+    {
+        val valProperty = "@Immutable data class ValidImmutable( val validMember: Int = 42 )"
+        assertTrue( isImmutable( valProperty ) )
+
+        val varProperty = "@Immutable data class ValidImmutable( var invalidMember: Int = 42 )"
+        assertFalse( isImmutable( varProperty ) )
+    }
+
+    @Test
+    fun properties_should_be_val()
+    {
+        val valProperty = "@Immutable data class ValidImmutable( val validMember: Int = 42 ) { val validProperty: Int = 42 } "
+        assertTrue( isImmutable( valProperty ) )
+
+        val varProperty = "@Immutable data class NotImmutable( val validMember: Int = 42 ) { var invalidProperty: Int = 42 }"
+        assertFalse( isImmutable( varProperty ) )
+    }
 
     private fun isImmutable( code: String ): Boolean
     {
         val rule = VerifyImmutable( "Immutable" )
-        return rule.lint( code ).isEmpty()
+        val env = KtTestCompiler.createEnvironment().env
+
+        return rule.compileAndLintWithContext( env, code ).isEmpty()
     }
 }
