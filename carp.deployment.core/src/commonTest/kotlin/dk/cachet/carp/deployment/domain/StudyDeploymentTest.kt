@@ -266,6 +266,7 @@ class StudyDeploymentTest
         val fromSnapshot = StudyDeployment.fromSnapshot( snapshot )
 
         assertEquals( deployment.id, fromSnapshot.id )
+        assertEquals( deployment.creationDate, fromSnapshot.creationDate )
         assertEquals( deployment.protocolSnapshot, fromSnapshot.protocolSnapshot )
         assertEquals(
             deployment.registrableDevices.count(),

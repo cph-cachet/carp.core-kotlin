@@ -77,6 +77,7 @@ class StudyRuntime private constructor(
 
         internal fun fromSnapshot( snapshot: StudyRuntimeSnapshot ): StudyRuntime =
             StudyRuntime( snapshot.studyDeploymentId, snapshot.device ).apply {
+                creationDate = snapshot.creationDate
                 isDeployed = snapshot.isDeployed
                 deploymentInformation = snapshot.deploymentInformation
             }
