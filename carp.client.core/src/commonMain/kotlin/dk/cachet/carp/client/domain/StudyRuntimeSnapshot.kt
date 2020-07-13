@@ -1,5 +1,6 @@
 package dk.cachet.carp.client.domain
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.Snapshot
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
@@ -11,6 +12,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StudyRuntimeSnapshot(
     val studyDeploymentId: UUID,
+    override val creationDate: DateTime,
     @Serializable( DeviceDescriptorSerializer::class )
     val device: AnyMasterDeviceDescriptor,
     val isDeployed: Boolean,
@@ -21,7 +23,12 @@ data class StudyRuntimeSnapshot(
     {
         fun fromStudyRuntime( studyRuntime: StudyRuntime ): StudyRuntimeSnapshot
         {
-            return StudyRuntimeSnapshot( studyRuntime.studyDeploymentId, studyRuntime.device, studyRuntime.isDeployed, studyRuntime.deploymentInformation )
+            return StudyRuntimeSnapshot(
+                studyRuntime.studyDeploymentId,
+                studyRuntime.creationDate,
+                studyRuntime.device,
+                studyRuntime.isDeployed,
+                studyRuntime.deploymentInformation )
         }
     }
 

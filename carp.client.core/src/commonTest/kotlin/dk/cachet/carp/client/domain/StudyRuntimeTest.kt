@@ -114,6 +114,7 @@ class StudyRuntimeTest
         val parsed = StudyRuntimeSnapshot.fromJson( serialized )
 
         assertEquals( runtime.studyDeploymentId, parsed.studyDeploymentId )
+        assertEquals( runtime.creationDate, parsed.creationDate )
         assertEquals( runtime.device, parsed.device )
         assertEquals( runtime.isDeployed, parsed.isDeployed )
         assertEquals( runtime.deploymentInformation, parsed.deploymentInformation )
