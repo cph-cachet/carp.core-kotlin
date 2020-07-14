@@ -77,6 +77,7 @@ class StudyRuntime private constructor(
 
         internal fun fromSnapshot( snapshot: StudyRuntimeSnapshot ): StudyRuntime =
             StudyRuntime( snapshot.studyDeploymentId, snapshot.device ).apply {
+                creationDate = snapshot.creationDate
                 isDeployed = snapshot.isDeployed
                 deploymentInformation = snapshot.deploymentInformation
             }
@@ -128,7 +129,7 @@ class StudyRuntime private constructor(
         // Notify deployment service of successful deployment.
         try
         {
-            deploymentService.deploymentSuccessful( studyDeploymentId, device.roleName, deployment.getChecksum() )
+            deploymentService.deploymentSuccessful( studyDeploymentId, device.roleName, deployment.lastUpdateDate )
             isDeployed = true
             event( Event.Deployed( deployment ) )
         }

@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment.infrastructure
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.createServiceInvoker
 import dk.cachet.carp.common.ddd.ServiceInvoker
@@ -7,8 +8,8 @@ import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -60,9 +61,9 @@ sealed class DeploymentServiceRequest
         Invoker<MasterDeviceDeployment> by createServiceInvoker( Service::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName )
 
     @Serializable
-    data class DeploymentSuccessful( val studyDeploymentId: UUID, val masterDeviceRoleName: String, val deploymentChecksum: Int ) :
+    data class DeploymentSuccessful( val studyDeploymentId: UUID, val masterDeviceRoleName: String, val deviceDeploymentLastUpdateDate: DateTime ) :
         DeploymentServiceRequest(),
-        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deploymentChecksum )
+        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deviceDeploymentLastUpdateDate )
 
     @Serializable
     data class Stop( val studyDeploymentId: UUID ) :
@@ -75,7 +76,7 @@ sealed class DeploymentServiceRequest
         Invoker<Participation> by createServiceInvoker( Service::addParticipation, studyDeploymentId, deviceRoleNames, identity, invitation )
 
     @Serializable
-    data class GetParticipationInvitations( val accountId: UUID ) :
+    data class GetActiveParticipationInvitations( val accountId: UUID ) :
         DeploymentServiceRequest(),
-        Invoker<Set<ParticipationInvitation>> by createServiceInvoker( Service::getParticipationInvitations, accountId )
+        Invoker<Set<ActiveParticipationInvitation>> by createServiceInvoker( Service::getActiveParticipationInvitations, accountId )
 }

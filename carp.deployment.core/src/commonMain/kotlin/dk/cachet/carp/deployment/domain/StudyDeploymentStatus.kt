@@ -77,7 +77,7 @@ sealed class StudyDeploymentStatus
      */
     fun getRemainingDevicesReadyToDeploy(): Set<AnyMasterDeviceDescriptor> =
         devicesStatus
-            .filter { it is DeviceDeploymentStatus.NotDeployed && it.isReadyForDeployment }
+            .filter { it is DeviceDeploymentStatus.NotDeployed && it.canObtainDeviceDeployment }
             .map { it.device }
             .filterIsInstance<AnyMasterDeviceDescriptor>()
             .toSet()
@@ -88,4 +88,11 @@ sealed class StudyDeploymentStatus
     fun getDeviceStatus( device: AnyDeviceDescriptor ): DeviceDeploymentStatus =
         devicesStatus.firstOrNull { it.device == device }
             ?: throw IllegalArgumentException( "The given device was not found in this study deployment." )
+
+    /**
+     * Get the status of a device with the given [deviceRoleName] in this study deployment.
+     */
+    fun getDeviceStatus( deviceRoleName: String ): DeviceDeploymentStatus =
+        devicesStatus.firstOrNull { it.device.roleName == deviceRoleName }
+            ?: throw IllegalArgumentException( "The a device with the given role name was not found in this study deployment." )
 }

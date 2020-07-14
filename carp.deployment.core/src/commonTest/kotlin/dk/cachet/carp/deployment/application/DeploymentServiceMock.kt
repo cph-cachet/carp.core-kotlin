@@ -1,11 +1,12 @@
 package dk.cachet.carp.deployment.application
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
@@ -24,7 +25,7 @@ class DeploymentServiceMock(
     private val getDeviceDeploymentForResult: MasterDeviceDeployment = emptyMasterDeviceDeployment,
     private val deploymentSuccessfulResult: StudyDeploymentStatus = emptyStatus,
     private val stopResult: StudyDeploymentStatus = emptyStatus,
-    private val getParticipationInvitationResult: Set<ParticipationInvitation> = emptySet()
+    private val getActiveParticipationInvitationResult: Set<ActiveParticipationInvitation> = emptySet()
 ) : Mock<Service>(), Service
 {
     companion object
@@ -62,9 +63,9 @@ class DeploymentServiceMock(
         getDeviceDeploymentForResult
         .also { trackSuspendCall( Service::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName ) }
 
-    override suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String, deploymentChecksum: Int ) =
+    override suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String, deviceDeploymentLastUpdateDate: DateTime ) =
         deploymentSuccessfulResult
-        .also { trackSuspendCall( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deploymentChecksum ) }
+        .also { trackSuspendCall( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deviceDeploymentLastUpdateDate ) }
 
     override suspend fun stop( studyDeploymentId: UUID ) =
         stopResult
@@ -74,7 +75,7 @@ class DeploymentServiceMock(
         Participation( studyDeploymentId )
         .also { trackSuspendCall( Service::addParticipation, studyDeploymentId, deviceRoleNames, identity, invitation ) }
 
-    override suspend fun getParticipationInvitations( accountId: UUID ) =
-        getParticipationInvitationResult
-        .also { trackSuspendCall( Service::getParticipationInvitations, accountId ) }
+    override suspend fun getActiveParticipationInvitations( accountId: UUID ) =
+        getActiveParticipationInvitationResult
+        .also { trackSuspendCall( Service::getActiveParticipationInvitations, accountId ) }
 }

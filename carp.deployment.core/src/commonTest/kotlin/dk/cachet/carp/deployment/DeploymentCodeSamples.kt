@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployment
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
@@ -38,8 +39,8 @@ class DeploymentCodeSamples
         {
             val deploymentInformation: MasterDeviceDeployment =
                 deploymentService.getDeviceDeploymentFor( studyDeploymentId, patientPhone.roleName )
-            val deploymentChecksum: Int = deploymentInformation.getChecksum() // To verify correct deployment.
-            deploymentService.deploymentSuccessful( studyDeploymentId, patientPhone.roleName, deploymentChecksum )
+            val deploymentDate: DateTime = deploymentInformation.lastUpdateDate // To verify correct deployment.
+            deploymentService.deploymentSuccessful( studyDeploymentId, patientPhone.roleName, deploymentDate )
         }
 
         // Now that all devices have been registered and deployed, the deployment is ready.

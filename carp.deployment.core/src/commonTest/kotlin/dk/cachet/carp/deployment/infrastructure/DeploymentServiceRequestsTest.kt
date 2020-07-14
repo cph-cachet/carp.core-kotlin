@@ -1,13 +1,14 @@
 package dk.cachet.carp.deployment.infrastructure
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.common.users.UsernameAccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceMock
-import dk.cachet.carp.deployment.domain.createEmptyProtocol
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -26,10 +27,10 @@ class DeploymentServiceRequestsTest
             DeploymentServiceRequest.RegisterDevice( UUID.randomUUID(), "Test role", DefaultDeviceRegistration( "Device ID" ) ),
             DeploymentServiceRequest.UnregisterDevice( UUID.randomUUID(), "Test role" ),
             DeploymentServiceRequest.GetDeviceDeploymentFor( UUID.randomUUID(), "Test role" ),
-            DeploymentServiceRequest.DeploymentSuccessful( UUID.randomUUID(), "Test role", 0 ),
+            DeploymentServiceRequest.DeploymentSuccessful( UUID.randomUUID(), "Test role", DateTime.now() ),
             DeploymentServiceRequest.Stop( UUID.randomUUID() ),
             DeploymentServiceRequest.AddParticipation( UUID.randomUUID(), setOf( "Phone" ), UsernameAccountIdentity( "Test" ), StudyInvitation.empty() ),
-            DeploymentServiceRequest.GetParticipationInvitations( UUID.randomUUID() )
+            DeploymentServiceRequest.GetActiveParticipationInvitations( UUID.randomUUID() )
         )
     }
 

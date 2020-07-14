@@ -2,6 +2,7 @@ package dk.cachet.carp.common
 
 import kotlinx.serialization.Serializable
 import java.time.Instant
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 
@@ -19,7 +20,11 @@ actual class DateTime actual constructor( actual val msSinceUTC: Long )
 
     private val dateTime = Instant.ofEpochMilli( msSinceUTC )
 
-    actual override fun toString(): String = DateTimeFormatter.ISO_INSTANT.format( dateTime )
+    actual override fun toString(): String =
+        DateTimeFormatter
+            .ofPattern( "YYYY-mm-dd'T'HH:mm:ss.SSS'Z'" )
+            .withZone( ZoneId.of( "UTC" ) )
+            .format( dateTime )
 
     override fun equals( other: Any? ): Boolean
     {

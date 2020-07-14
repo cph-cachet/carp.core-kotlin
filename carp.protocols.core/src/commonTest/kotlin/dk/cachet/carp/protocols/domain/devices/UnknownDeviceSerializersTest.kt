@@ -1,9 +1,8 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
-import dk.cachet.carp.protocols.domain.UnknownDeviceDescriptor
-import dk.cachet.carp.protocols.domain.UnknownDeviceRegistration
-import dk.cachet.carp.protocols.domain.UnknownMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.test.*
@@ -23,8 +22,8 @@ class CustomDeviceDescriptorTest
     @Test
     fun initialization_from_json_extracts_base_DeviceDescriptor_properties()
     {
-        val device = UnknownDeviceDescriptor( "Unknown" )
-        val serialized: String = JSON.stringify( UnknownDeviceDescriptor.serializer(), device )
+        val device = StubDeviceDescriptor( "Unknown" )
+        val serialized: String = JSON.stringify( StubDeviceDescriptor.serializer(), device )
 
         val custom = CustomDeviceDescriptor( "Irrelevant", serialized, JSON )
         assertEquals( device.roleName, custom.roleName )
@@ -48,8 +47,8 @@ class CustomDeviceDescriptorTest
     @Test
     fun createRegistration_is_not_supported()
     {
-        val device = UnknownDeviceDescriptor( "Unknown" )
-        val serialized: String = JSON.stringify( UnknownDeviceDescriptor.serializer(), device )
+        val device = StubDeviceDescriptor( "Unknown" )
+        val serialized: String = JSON.stringify( StubDeviceDescriptor.serializer(), device )
 
         val custom = CustomDeviceDescriptor( "Irrelevant", serialized, JSON )
 
@@ -75,8 +74,8 @@ class CustomMasterDeviceDescriptorTest
     @Test
     fun initialization_from_json_extracts_base_MasterDeviceDescriptor_properties()
     {
-        val device = UnknownMasterDeviceDescriptor( "Unknown" )
-        val serialized: String = JSON.stringify( UnknownMasterDeviceDescriptor.serializer(), device )
+        val device = StubMasterDeviceDescriptor( "Unknown" )
+        val serialized: String = JSON.stringify( StubMasterDeviceDescriptor.serializer(), device )
 
         val custom = CustomMasterDeviceDescriptor( "Irrelevant", serialized, JSON )
         assertEquals( device.roleName, custom.roleName )
@@ -100,8 +99,8 @@ class CustomMasterDeviceDescriptorTest
     @Test
     fun createRegistration_is_not_supported()
     {
-        val device = UnknownMasterDeviceDescriptor( "Unknown" )
-        val serialized: String = JSON.stringify( UnknownMasterDeviceDescriptor.serializer(), device )
+        val device = StubMasterDeviceDescriptor( "Unknown" )
+        val serialized: String = JSON.stringify( StubMasterDeviceDescriptor.serializer(), device )
 
         val custom = CustomMasterDeviceDescriptor( "Irrelevant", serialized, JSON )
 
@@ -127,8 +126,8 @@ class CustomDeviceRegistrationTest
     @Test
     fun initialization_from_json_extracts_base_DeviceRegistration_properties()
     {
-        val registration = UnknownDeviceRegistration( "Unknown" )
-        val serialized: String = JSON.stringify( UnknownDeviceRegistration.serializer(), registration )
+        val registration = DefaultDeviceRegistration( "Unknown" )
+        val serialized: String = JSON.stringify( DefaultDeviceRegistration.serializer(), registration )
 
         val custom = CustomDeviceRegistration( "Irrelevant", serialized, JSON )
         assertEquals( registration.deviceId, custom.deviceId )

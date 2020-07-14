@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.protocols.domain.devices.StubMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 

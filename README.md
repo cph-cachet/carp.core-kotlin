@@ -113,6 +113,13 @@ However, CARP is designed with claim-based authorization in mind, and the docume
  
 In a future release we might pass authorization as a dependent service to application services.
 
+### Stub classes
+
+Stub classes are available for the abstract domain objects of the protocols subsystem.
+These can be used to write unit tests in which you are not interested in testing the behavior of specific devices, triggers, etc., but rather how they are referenced from within a study protocol or deployment.
+
+In addition, `String` manipulation functions are available to convert type names of protocol domain objects within a JSON string to 'unknown' type names. This supports testing deserialization of domain objects unknown at runtime, e.g., as defined in an application-specific client. See [the section on serialization](#serialization) for more details.
+
 ## Usage
 
 This is a [multiplatform Kotlin library](https://kotlinlang.org/docs/reference/multiplatform.html) which targets both the **Java Runtime Environment (JRE)** and **JavaScript (JS)**.
@@ -210,8 +217,8 @@ if ( patientPhoneStatus.canObtainDeviceDeployment ) // True since there are no d
 {
     val deploymentInformation: MasterDeviceDeployment =
         deploymentService.getDeviceDeploymentFor( studyDeploymentId, patientPhone.roleName )
-    val deploymentChecksum: Int = deploymentInformation.getChecksum() // To verify correct deployment.
-    deploymentService.deploymentSuccessful( studyDeploymentId, patientPhone.roleName, deploymentChecksum )
+    val deploymentDate: DateTime = deploymentInformation.lastUpdateDate // To verify correct deployment.
+    deploymentService.deploymentSuccessful( studyDeploymentId, patientPhone.roleName, deploymentDate )
 }
 
 // Now that all devices have been registered and deployed, the deployment is ready.
@@ -226,9 +233,10 @@ val deploymentService = createDeploymentEndpoint()
 
 // Retrieve invitation to participate in the study using a specific device.
 val account: Account = getLoggedInUser()
-val invitation: ParticipationInvitation = deploymentService.getParticipationInvitations( account.id ).first()
+val invitation: ActiveParticipationInvitation =
+	deploymentService.getActiveParticipationInvitations( account.id ).first()
 val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
-val deviceToUse: String = invitation.deviceRoleNames.first() // This matches "Patient's phone".
+val deviceToUse: String = invitation.devices.first().deviceRoleName // This matches "Patient's phone".
 
 // Create a study runtime for the study.
 val clientRepository = createRepository()
@@ -254,7 +262,7 @@ In case you want to contribute, please follow our [contribution guidelines](http
 We recommend using IntelliJ IDEA 2020, as this is the development environment we use and is therefore fully tested.
 
 - Open the project folder in IntelliJ 2020.
-- Install the Kotlin plugin (1.3.72-release-IJ2020.1-3) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Install the Kotlin plugin (1.3.72-release-IJ2020.1-5) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
 - To build/test/publish, click "Edit Configurations" to add configurations for [the included Gradle tasks](#gradle-tasks), or run them from the Gradle tool window.
 
 ### Gradle tasks
