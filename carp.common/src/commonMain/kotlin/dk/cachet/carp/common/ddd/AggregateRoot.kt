@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.ddd
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.Immutable
 
 
@@ -9,6 +10,12 @@ import dk.cachet.carp.common.Immutable
  */
 abstract class AggregateRoot<TRoot, TSnapshot : Snapshot<TRoot>, TEvent : Immutable>
 {
+    /**
+     * The date when this object was created.
+     */
+    var creationDate: DateTime = DateTime.now()
+        protected set
+
     private val events: MutableList<TEvent> = mutableListOf()
 
     /**
