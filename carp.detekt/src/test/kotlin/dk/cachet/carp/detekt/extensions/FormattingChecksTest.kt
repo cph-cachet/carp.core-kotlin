@@ -1,6 +1,6 @@
 package dk.cachet.carp.detekt.extensions
 
-import io.gitlab.arturbosch.detekt.test.KtTestCompiler
+import io.github.detekt.test.utils.KtTestCompiler
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtImportList
