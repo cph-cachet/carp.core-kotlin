@@ -8,6 +8,7 @@ import dk.cachet.carp.protocols.domain.data.IntervalSamplingConfiguration
 import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.AltBeacon
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.CustomProtocolDevice
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -15,6 +16,7 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
 import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.Smartphone
 import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
+import dk.cachet.carp.protocols.domain.tasks.CustomProtocolTask
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
@@ -41,6 +43,7 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
     polymorphic( MasterDeviceDescriptor::class, DeviceDescriptor::class )
     {
         Smartphone::class with Smartphone.serializer()
+        CustomProtocolDevice::class with CustomProtocolDevice.serializer()
     }
     polymorphic( SamplingConfiguration::class )
     {
@@ -54,6 +57,7 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
     polymorphic( TaskDescriptor::class )
     {
         ConcurrentTask::class with ConcurrentTask.serializer()
+        CustomProtocolTask::class with CustomProtocolTask.serializer()
     }
     polymorphic( Measure::class )
     {

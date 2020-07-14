@@ -7,9 +7,11 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.data.IntervalSamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.AltBeacon
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.CustomProtocolDevice
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.Smartphone
 import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
+import dk.cachet.carp.protocols.domain.tasks.CustomProtocolTask
 import dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure
 import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure
 import dk.cachet.carp.protocols.domain.triggers.ElapsedTimeTrigger
@@ -22,6 +24,7 @@ private val protocolInstances = listOf(
     // Devices.
     Smartphone( "User's phone" ),
     AltBeacon( "Kitchen" ),
+    CustomProtocolDevice( "User's phone" ),
 
     // Sampling configurations.
     IntervalSamplingConfiguration( TimeSpan.fromMilliseconds( 1000.0 ) ),
@@ -32,6 +35,7 @@ private val protocolInstances = listOf(
 
     // Tasks.
     ConcurrentTask( "Start measures", listOf() ),
+    CustomProtocolTask( "Custom study runtime", "<protocol definition>" ),
 
     // Measures.
     DataTypeMeasure( "dk.cachet.carp", "SomeType" ),

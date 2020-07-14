@@ -16,7 +16,7 @@ data class StudySnapshot(
     val name: String,
     val description: String,
     val invitation: StudyInvitation,
-    val creationDate: DateTime,
+    override val creationDate: DateTime,
     val protocolSnapshot: StudyProtocolSnapshot?,
     val isLive: Boolean,
     val participations: Map<UUID, Set<DeanonymizedParticipation>>

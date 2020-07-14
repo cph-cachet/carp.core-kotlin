@@ -61,7 +61,18 @@ fun createEmptyProtocol(): StudyProtocol
     JSON = createProtocolsSerializer( STUBS_SERIAL_MODULE )
 
     val alwaysSameOwner = ProtocolOwner( UUID( "27879e75-ccc1-4866-9ab3-4ece1b735052" ) )
-    return StudyProtocol( alwaysSameOwner, "Test protocol" )
+    return StudyProtocol( alwaysSameOwner, "Test protocol", "Test description" )
+}
+
+/**
+ * Creates a study protocol with a single master device.
+ */
+fun createSingleMasterDeviceProtocol( masterDeviceName: String = "Master" ): StudyProtocol
+{
+    val protocol = createEmptyProtocol()
+    val master = StubMasterDeviceDescriptor( masterDeviceName )
+    protocol.addMasterDevice( master )
+    return protocol
 }
 
 /**

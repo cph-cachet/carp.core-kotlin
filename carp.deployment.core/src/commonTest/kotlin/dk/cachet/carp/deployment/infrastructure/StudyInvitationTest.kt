@@ -10,13 +10,22 @@ import kotlin.test.*
 class StudyInvitationTest
 {
     @Test
-    fun can_serialize_and_deserialize_study_description_using_JSON()
+    fun can_serialize_and_deserialize_study_invitation_using_JSON()
     {
-        val invitation = StudyInvitation( "Test", "Description" )
+        val applicationData = """{"extraData":"42"}"""
+        val invitation = StudyInvitation( "Test", "Description", applicationData )
 
         val serialized = invitation.toJson()
         val parsed = StudyInvitation.fromJson( serialized )
 
         assertEquals( invitation, parsed )
+    }
+
+    @Test
+    fun can_deserialize_study_invitation_without_applicationData()
+    {
+        val serialized = """{"name":"Test","description":"Description"}"""
+
+        StudyInvitation.fromJson( serialized )
     }
 }

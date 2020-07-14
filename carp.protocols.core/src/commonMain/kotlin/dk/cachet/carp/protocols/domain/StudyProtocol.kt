@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.protocols.domain.deployment.DeploymentError
 import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
@@ -56,7 +55,7 @@ class StudyProtocol(
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
             val owner = ProtocolOwner( snapshot.ownerId )
-            val protocol = StudyProtocol( owner, snapshot.name )
+            val protocol = StudyProtocol( owner, snapshot.name, snapshot.description )
             protocol.creationDate = snapshot.creationDate
 
             // Add master devices.
@@ -91,12 +90,6 @@ class StudyProtocol(
         }
     }
 
-
-    /**
-     * The date when this protocol was created.
-     */
-    var creationDate: DateTime = DateTime.now()
-        private set
 
     /**
      * Add a master device which is responsible for aggregating and synchronizing incoming data.

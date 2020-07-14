@@ -32,6 +32,7 @@ Two key **design goals** differentiate this project from similar projects:
   - [Serialization](#serialization)
   - [Request objects](#request-objects)
   - [Authorization](#authorization)
+  - [Stub classes](#stub-classes)
 - [Usage](#usage)
   - [Example](#example)
 - [Building the project](#building-the-project)
@@ -233,9 +234,10 @@ val deploymentService = createDeploymentEndpoint()
 
 // Retrieve invitation to participate in the study using a specific device.
 val account: Account = getLoggedInUser()
-val invitation: ParticipationInvitation = deploymentService.getParticipationInvitations( account.id ).first()
+val invitation: ActiveParticipationInvitation =
+	deploymentService.getActiveParticipationInvitations( account.id ).first()
 val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
-val deviceToUse: String = invitation.deviceRoleNames.first() // This matches "Patient's phone".
+val deviceToUse: String = invitation.devices.first().deviceRoleName // This matches "Patient's phone".
 
 // Create a study runtime for the study.
 val clientRepository = createRepository()
