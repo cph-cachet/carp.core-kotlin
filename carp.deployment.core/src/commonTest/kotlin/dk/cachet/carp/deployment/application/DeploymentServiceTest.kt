@@ -234,7 +234,7 @@ abstract class DeploymentServiceTest
         val deviceRoleName = "Test device"
         val studyDeploymentId = addTestDeployment( deploymentService, deviceRoleName )
         val identity = AccountIdentity.fromEmailAddress( "test@test.com" )
-        val invitation = StudyInvitation.empty()
+        val invitation = StudyInvitation( "Test study", "description", "Custom data" )
 
         val participation = deploymentService.addParticipation( studyDeploymentId, setOf( deviceRoleName ), identity, invitation )
         val account = accountService.findAccount( identity )
