@@ -1,6 +1,6 @@
 package dk.cachet.carp.detekt.extensions
 
-import io.github.detekt.test.utils.KtTestCompiler
+import io.github.detekt.test.utils.compileContentForTest
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtImportList
@@ -155,12 +155,12 @@ class FormattingChecksTest
     fun getIndentSize_counts_spaces()
     {
         val oneSpaceCode = " package test"
-        val oneSpace = KtTestCompiler.compileFromContent( oneSpaceCode ) // Do not trim indent.
+        val oneSpace = compileContentForTest( oneSpaceCode ) // Do not trim indent.
             .children.firstIsInstance<KtPackageDirective>()
         assertEquals( 1, getIndentSize( oneSpace ) )
 
         val threeSpacesCode = "   package test"
-        val threeSpaces = KtTestCompiler.compileFromContent( threeSpacesCode ) // Do not trim indent.
+        val threeSpaces = compileContentForTest( threeSpacesCode ) // Do not trim indent.
             .children.firstIsInstance<KtPackageDirective>()
         assertEquals( 3, getIndentSize( threeSpaces ) )
     }
@@ -229,5 +229,5 @@ class FormattingChecksTest
 
 
     private fun lint( code: String ): KtFile =
-        KtTestCompiler.compileFromContent( code.trimIndent() )
+        compileContentForTest( code.trimIndent() )
 }
