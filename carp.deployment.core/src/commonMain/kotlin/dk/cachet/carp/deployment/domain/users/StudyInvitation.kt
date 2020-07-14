@@ -15,7 +15,14 @@ data class StudyInvitation(
     /**
      * A description of the study clarifying to participants what it is about.
      */
-    val description: String
+    val description: String,
+    /**
+     * Application-specific data to be shared with clients when they are invited to a study.
+     *
+     * This can be used by infrastructures or concrete applications which require exchanging additional data
+     * between the study and client subsystems, outside of scope or not yet supported by CARP core.
+     */
+    val applicationData: String = ""
 )
 {
     companion object
