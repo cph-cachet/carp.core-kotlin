@@ -103,6 +103,30 @@ class VerifyImmutableTest
         assertFalse( isImmutable( varProperty ) )
     }
 
+    @Test
+    fun properties_should_be_immutable_types()
+    {
+        val immutableProperty =
+            """
+            @Immutable data class ImmutableMember( val number: Int = 42 )
+            @Immutable data class ValidImmutable( val test: Int )
+            {
+                val validMember: ImmutableMember = ImmutableMember( 42 )
+            }
+            """
+        assertTrue( isImmutable( immutableProperty ) )
+
+        val mutableProperty =
+            """
+            data class MutableMember( var number: Int = 42 )
+            @Immutable data class ValidImmutable( val test: Int )
+            {
+                val invalidMember: MutableMember = MutableMember( 42 )
+            }
+            """
+        assertFalse( isImmutable( mutableProperty ) )
+    }
+
     private fun isImmutable( code: String ): Boolean
     {
         val rule = VerifyImmutable( "Immutable" )

@@ -7,6 +7,7 @@ import io.gitlab.arturbosch.detekt.api.Entity
 import io.gitlab.arturbosch.detekt.api.Issue
 import io.gitlab.arturbosch.detekt.api.Rule
 import io.gitlab.arturbosch.detekt.api.Severity
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ClassConstructorDescriptor
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.psi.KtClass
@@ -123,23 +124,7 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
             for ( property in properties )
             {
                 val userType = property.typeReference?.typeElement as KtUserType
-                val descriptor = userType.referenceExpression
-                    ?.getReferenceTargets( bindingContext )
-                    ?.filterIsInstance<ClassDescriptor>()?.first() as ClassDescriptor
-                val name = descriptor.fqNameSafe.asString()
-                val klazz = descriptor.source.getPsi() as KtClassOrObject?
-
-                if ( name !in knownImmutableTypes )
-                {
-                    // In case the type name is not known to be immutable and source cannot be verified, report.
-                    if ( klazz == null )
-                    {
-                        val message = "Could not verify whether property of type '$name' is immutable."
-                        report( CodeSmell( issue, Entity.from( property ), message ) )
-                    }
-                    // Recursively verify the type is immutable.
-                    else klazz.accept( ImmutableImplementationVisitor() )
-                }
+                verifyType( userType, property )
             }
 
             super.visitPrimaryConstructor( constructor )
@@ -154,9 +139,32 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
                 report( CodeSmell( issue, Entity.from( property ), message ) )
             }
 
-            // TODO: Verify whether the property type is immutable.
+            // Verify whether the property type is immutable.
+            val userType = property.typeReference?.typeElement as KtUserType
+            verifyType( userType, property )
 
             super.visitProperty( property )
+        }
+
+        private fun verifyType( type: KtUserType, locationUsed: PsiElement )
+        {
+            val descriptor = type.referenceExpression
+                ?.getReferenceTargets( bindingContext )
+                ?.filterIsInstance<ClassDescriptor>()?.first() as ClassDescriptor
+            val name = descriptor.fqNameSafe.asString()
+            val klazz = descriptor.source.getPsi() as KtClassOrObject?
+
+            if ( name !in knownImmutableTypes )
+            {
+                // In case the type name is not known to be immutable and source cannot be verified, report.
+                if ( klazz == null )
+                {
+                    val message = "Could not verify whether property of type '$name' is immutable."
+                    report( CodeSmell( issue, Entity.from( locationUsed ), message ) )
+                }
+                // Recursively verify the type is immutable.
+                else klazz.accept( ImmutableImplementationVisitor() )
+            }
         }
     }
 }
