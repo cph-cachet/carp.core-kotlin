@@ -8,13 +8,17 @@ import io.gitlab.arturbosch.detekt.api.Issue
 import io.gitlab.arturbosch.detekt.api.Rule
 import io.gitlab.arturbosch.detekt.api.Severity
 import org.jetbrains.kotlin.descriptors.ClassConstructorDescriptor
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.kotlin.psi.psiUtil.isAbstract
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.resolve.bindingContextUtil.getReferenceTargets
 import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
+import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.source.getPsi
 
 
@@ -28,6 +32,10 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
         Debt.TWENTY_MINS
     )
 
+    private val knownImmutableTypes: MutableList<String> = mutableListOf(
+        "kotlin.Int"
+    )
+
 
     override fun visitClassOrObject( classOrObject: KtClassOrObject )
     {
@@ -36,6 +44,9 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
             classOrObject.accept( this )
             if ( shouldBeImmutable )
             {
+                // TODO: Separate reporting of immutability from verifying immutability so that:
+                //  - `knownImmutableTypes` can be populated
+                //  - recursively verified types which are mutable are reported on the initial type
                 classOrObject.accept( ImmutableImplementationVisitor() )
             }
         }
@@ -108,7 +119,28 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
                 report( CodeSmell( issue, Entity.from( constructor ), message ) )
             }
 
-            // TODO: Verify whether any of the property types in the constructor are not immutable.
+            // Verify whether any of the property types in the constructor are not immutable.
+            for ( property in properties )
+            {
+                val userType = property.typeReference?.typeElement as KtUserType
+                val descriptor = userType.referenceExpression
+                    ?.getReferenceTargets( bindingContext )
+                    ?.filterIsInstance<ClassDescriptor>()?.first() as ClassDescriptor
+                val name = descriptor.fqNameSafe.asString()
+                val klazz = descriptor.source.getPsi() as KtClassOrObject?
+
+                if ( name !in knownImmutableTypes )
+                {
+                    // In case the type name is not known to be immutable and source cannot be verified, report.
+                    if ( klazz == null )
+                    {
+                        val message = "Could not verify whether property of type '$name' is immutable."
+                        report( CodeSmell( issue, Entity.from( property ), message ) )
+                    }
+                    // Recursively verify the type is immutable.
+                    else klazz.accept( ImmutableImplementationVisitor() )
+                }
+            }
 
             super.visitPrimaryConstructor( constructor )
         }

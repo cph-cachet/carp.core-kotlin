@@ -76,6 +76,24 @@ class VerifyImmutableTest
     }
 
     @Test
+    fun constructor_properties_should_be_immutable_types()
+    {
+        val immutableProperty =
+            """
+            @Immutable data class ImmutableMember( val number: Int = 42 )
+            @Immutable data class ValidImmutable( val validMember: ImmutableMember )
+            """
+        assertTrue( isImmutable( immutableProperty ) )
+
+        val mutableProperty =
+            """
+            data class MutableMember( var number: Int = 42 )
+            @Immutable data class ValidImmutable( val validMember: MutableMember )
+            """
+        assertFalse( isImmutable( mutableProperty ) )
+    }
+
+    @Test
     fun properties_should_be_val()
     {
         val valProperty = "@Immutable data class ValidImmutable( val validMember: Int = 42 ) { val validProperty: Int = 42 } "
