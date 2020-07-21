@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.source.getPsi
 
 
+// TODO: In case annotation class cannot be found in bindingContext, report an error.
 class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
 {
     override val issue: Issue = Issue(
@@ -70,9 +71,15 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
             super.visitClassOrObject( classOrObject )
 
             // Verify whether the immutable annotation is applied to the base class.
-            // TODO: Use a fully qualified annotation class?
             shouldBeImmutable = classOrObject.annotationEntries
-                .any { it.shortName.toString() == immutableAnnotation }
+                .any {
+                    val type = it.typeReference?.typeElement as KtUserType
+                    val name = type.referenceExpression
+                        ?.getReferenceTargets( bindingContext )
+                        ?.filterIsInstance<ClassConstructorDescriptor>()?.firstOrNull()
+                        ?.constructedClass?.fqNameSafe?.asString()
+                    name == immutableAnnotation
+                }
 
             // Recursively verify whether the next base class might have the immutable annotation.
             if ( !shouldBeImmutable )

@@ -11,6 +11,25 @@ import kotlin.test.*
 class VerifyImmutableTest
 {
     @Test
+    fun use_fully_qualified_annotation_name()
+    {
+        val fullyQualified =
+            """
+            package some.namespace
+            
+            annotation class Immutable
+            
+            @Immutable class Mutable
+            """
+
+        val rule = VerifyImmutable( "some.namespace.Immutable" )
+        val env = KtTestCompiler.createEnvironment().env
+
+        val errorsReported = rule.compileAndLintWithContext( env, fullyQualified ).isNotEmpty()
+        assertTrue( errorsReported )
+    }
+
+    @Test
     fun only_verify_annotated_classes()
     {
         val notAnnotated = "class NotImmutable( var invalidMember: String )"
@@ -129,9 +148,12 @@ class VerifyImmutableTest
 
     private fun isImmutable( code: String ): Boolean
     {
+        // Add immutable annotation.
+        val fullCode = code.plus( "annotation class Immutable" )
+
         val rule = VerifyImmutable( "Immutable" )
         val env = KtTestCompiler.createEnvironment().env
 
-        return rule.compileAndLintWithContext( env, code ).isEmpty()
+        return rule.compileAndLintWithContext( env, fullCode ).isEmpty()
     }
 }
