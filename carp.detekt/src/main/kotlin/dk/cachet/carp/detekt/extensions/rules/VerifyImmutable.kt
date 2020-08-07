@@ -68,8 +68,6 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
 
         override fun visitClassOrObject( classOrObject: KtClassOrObject )
         {
-            super.visitClassOrObject( classOrObject )
-
             // Verify whether the immutable annotation is applied to the base class.
             shouldBeImmutable = classOrObject.annotationEntries
                 .any {

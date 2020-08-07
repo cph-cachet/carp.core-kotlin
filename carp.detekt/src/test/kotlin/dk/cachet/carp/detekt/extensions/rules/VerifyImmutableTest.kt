@@ -68,6 +68,20 @@ class VerifyImmutableTest
     }
 
     @Test
+    fun verify_sealed_classes()
+    {
+        val innerNotImmutable =
+            """
+            @Immutable
+            sealed class Outer
+            {
+                class Inner( var mutable: Int ) : Outer()
+            }
+            """
+        assertFalse( isImmutable( innerNotImmutable ) )
+    }
+
+    @Test
     fun implementations_should_be_data_classes()
     {
         val dataClass = "@Immutable data class ValidImmutable( val validMember: Int = 42 )"
