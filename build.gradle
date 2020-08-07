@@ -178,27 +178,6 @@ configure( subprojects - detektModule ) {
     }
     jsTest.dependsOn runMocha
 
-    // Add code analysis.
-    apply plugin: 'io.gitlab.arturbosch.detekt'
-    detekt {
-        input = files("$projectDir/src/")
-        config = files("$rootDir/detekt.yml")
-        buildUponDefaultConfig = true
-        ignoreFailures = true
-
-        dependencies {
-            detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:${versions.detektPlugin}"
-            detektPlugins project(":carp.detekt") // Add custom project-specific rules.
-        }
-    }
-    task detektPasses(type: io.gitlab.arturbosch.detekt.Detekt) {
-        source = files("$projectDir/src/")
-        config.from("$rootDir/detekt.yml")
-        buildUponDefaultConfig = true
-        ignoreFailures = false
-    }
-    tasks.detekt.dependsOn ":carp.detekt:assemble" // Ensure 'carp.detekt' is build prior to running code analysis.
-
     // Publish configuration.
     // For signing and publishing to work, a 'publish.properties' file needs to be added to the root containing:
     // The OpenPGP credentials to sign all artifacts:
@@ -386,6 +365,36 @@ configure( coreModules ) {
             }
         }
     }
+}
+
+
+// Add code analysis.
+configure( rootProject )
+{
+    repositories {
+        jcenter()
+    }
+
+    apply plugin: 'io.gitlab.arturbosch.detekt'
+    detekt {
+        dependencies {
+            detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:${versions.detektPlugin}"
+            detektPlugins project(":carp.detekt") // Add custom project-specific rules.
+        }
+    }
+    task detektPasses(type: io.gitlab.arturbosch.detekt.Detekt) {
+        source = fileTree("$rootDir")
+        {
+            include('**/src/**')
+            exclude('**/node_modules/**')
+        }
+        config.from("$rootDir/detekt.yml")
+        buildUponDefaultConfig = true
+        ignoreFailures = false
+        classpath.setFrom(project.configurations.getByName("detekt"))
+    }
+    tasks.detekt.jvmTarget = "1.8"
+    tasks.detekt.dependsOn ":carp.detekt:assemble" // Ensure 'carp.detekt' is build prior to running code analysis.
 }
 
 
