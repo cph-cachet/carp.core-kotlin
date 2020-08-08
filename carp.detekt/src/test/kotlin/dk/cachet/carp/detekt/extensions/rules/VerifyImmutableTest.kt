@@ -82,6 +82,20 @@ class VerifyImmutableTest
     }
 
     @Test
+    fun verify_used_typealias()
+    {
+        val immutable =
+            """
+            data class ValidImmutable( val mutable: Int )
+            typealias AliasedValidImmutable = ValidImmutable
+            
+            @Immutable
+            data class UsesTypealias( val mutable: AliasedValidImmutable ) 
+            """
+        assertTrue( isImmutable( immutable ) )
+    }
+
+    @Test
     fun implementations_should_be_data_classes()
     {
         val dataClass = "@Immutable data class ValidImmutable( val validMember: Int = 42 )"

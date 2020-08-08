@@ -9,11 +9,12 @@ import io.gitlab.arturbosch.detekt.api.Rule
 import io.gitlab.arturbosch.detekt.api.Severity
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ClassConstructorDescriptor
-import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptorWithSource
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtTypeAlias
 import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.kotlin.psi.psiUtil.isAbstract
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -153,11 +154,9 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
 
         private fun verifyType( type: KtUserType, locationUsed: PsiElement )
         {
-            val descriptor = type.referenceExpression
-                ?.getReferenceTargets( bindingContext )
-                ?.filterIsInstance<ClassDescriptor>()?.first() as ClassDescriptor
+            val descriptor = getDescriptor( type )
+            val klazz = getKlazz( descriptor )
             val name = descriptor.fqNameSafe.asString()
-            val klazz = descriptor.source.getPsi() as KtClassOrObject?
 
             if ( name !in knownImmutableTypes )
             {
@@ -169,6 +168,29 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
                 }
                 // Recursively verify the type is immutable.
                 else klazz.accept( ImmutableImplementationVisitor() )
+            }
+        }
+
+        private fun getDescriptor( type: KtUserType ): DeclarationDescriptorWithSource
+        {
+            return type.referenceExpression
+                // TODO: What if there are more or no reference targets?
+                ?.getReferenceTargets( bindingContext )?.first() as DeclarationDescriptorWithSource
+        }
+
+        private fun getKlazz( descriptor: DeclarationDescriptorWithSource ): KtClassOrObject?
+        {
+            return when ( val sourceElement = descriptor.source.getPsi() )
+            {
+                null -> null
+                is KtClassOrObject -> sourceElement
+                is KtTypeAlias ->
+                {
+                    val aliasedType = sourceElement.getTypeReference()?.typeElement as KtUserType
+                    val aliasedTypeDescriptor = getDescriptor( aliasedType )
+                    getKlazz( aliasedTypeDescriptor )
+                }
+                else -> throw UnsupportedOperationException( "VerifyImmutable does not support analyzing $sourceElement." )
             }
         }
     }
