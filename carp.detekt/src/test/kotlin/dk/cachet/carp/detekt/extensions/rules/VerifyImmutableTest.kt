@@ -174,6 +174,24 @@ class VerifyImmutableTest
         assertFalse( isImmutable( mutableProperty ) )
     }
 
+    @Test
+    fun report_multiple_mutable_findings()
+    {
+        val twoMutableMembers =
+            """
+            annotation class Immutable
+            @Immutable data class NotImmutable( val immutable: Int )
+            {
+                var one: Int = 42
+                var two: Int = 42
+            }
+            """
+        val rule = VerifyImmutable( "Immutable" )
+        val env = KtTestCompiler.createEnvironment().env
+
+        assertEquals( 2, rule.compileAndLintWithContext( env, twoMutableMembers ).count() )
+    }
+
     private fun isImmutable( code: String ): Boolean
     {
         // Add immutable annotation.

@@ -35,22 +35,26 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
         Debt.TWENTY_MINS
     )
 
-    private val knownImmutableTypes: MutableList<String> = mutableListOf(
-        "kotlin.Int"
+    // TODO: Cache already linted types as mutable or immutable.
+    private val isTypeImmutableCache: MutableMap<String, Boolean> = mutableMapOf(
+        "kotlin.Int" to true
     )
 
 
     override fun visitClassOrObject( classOrObject: KtClassOrObject )
     {
-        with ( ImmutableVisitor( bindingContext ) )
+        val immutableVisitor = ImmutableVisitor( bindingContext )
+        classOrObject.accept( immutableVisitor )
+        if ( immutableVisitor.shouldBeImmutable )
         {
-            classOrObject.accept( this )
-            if ( shouldBeImmutable )
+            val implementationVisitor = ImmutableImplementationVisitor( bindingContext )
+            classOrObject.accept( implementationVisitor )
+            if ( !implementationVisitor.isImmutable )
             {
-                // TODO: Separate reporting of immutability from verifying immutability so that:
-                //  - `knownImmutableTypes` can be populated
-                //  - recursively verified types which are mutable are reported on the initial type
-                classOrObject.accept( ImmutableImplementationVisitor() )
+                implementationVisitor.mutableEntities.forEach {
+                    val message = "${classOrObject.name} is not immutable due to: ${it.second}"
+                    report( CodeSmell( issue, it.first, message ) )
+                }
             }
         }
 
@@ -95,19 +99,29 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
     /**
      * Determines for a class which needs to be immutable whether the implementation is immutable.
      */
-    internal inner class ImmutableImplementationVisitor : DetektVisitor()
+    internal inner class ImmutableImplementationVisitor( private val bindingContext: BindingContext ) : DetektVisitor()
     {
+        private val _mutableEntities: MutableList<Pair<Entity, String>> = mutableListOf()
+        val mutableEntities: List<Pair<Entity, String>> = _mutableEntities
+
+        val isImmutable: Boolean get() = _mutableEntities.isEmpty()
+        var isVisitingInner: Boolean = false
+
         override fun visitClassOrObject( classOrObject: KtClassOrObject )
         {
+            // Do not visit inner classes within the original one that is visited; they are analyzed separately.
+            if ( isVisitingInner ) return
+            isVisitingInner = true
+
             val klass = classOrObject as? KtClass
             if ( klass != null )
             {
                 // Final immutable classes need to be data classes. It does not make sense NOT to make them data classes.
                 if ( !klass.isAbstract() && !klass.isData() )
                 {
-                    val message = "Immutable types need to be data classes."
-                    report( CodeSmell( issue, Entity.from( klass ), message ) )
-                    return
+                    _mutableEntities.add(
+                        Entity.from( klass ) to
+                        "Immutable types need to be data classes." )
                 }
             }
 
@@ -122,8 +136,9 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
             // Verify whether any properties in the constructor are defined as var.
             if ( properties.any { it.isMutable } )
             {
-                val message = "Immutable types may not contain var constructor parameters."
-                report( CodeSmell( issue, Entity.from( constructor ), message ) )
+                _mutableEntities.add(
+                    Entity.from( constructor ) to
+                    "Immutable types may not contain var constructor parameters." )
             }
 
             // Verify whether any of the property types in the constructor are not immutable.
@@ -141,8 +156,9 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
             // Verify whether the property is defined as var.
             if ( property.isVar )
             {
-                val message = "Immutable types may not contain var properties."
-                report( CodeSmell( issue, Entity.from( property ), message ) )
+                _mutableEntities.add(
+                    Entity.from( property ) to
+                    "Immutable types may not contain var properties." )
             }
 
             // Verify whether the property type is immutable.
@@ -158,16 +174,27 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
             val klazz = getKlazz( descriptor )
             val name = descriptor.fqNameSafe.asString()
 
-            if ( name !in knownImmutableTypes )
+            if ( name !in isTypeImmutableCache )
             {
-                // In case the type name is not known to be immutable and source cannot be verified, report.
+                // In case the type name is not known and source cannot be verified, report.
                 if ( klazz == null )
                 {
-                    val message = "Could not verify whether property of type '$name' is immutable."
-                    report( CodeSmell( issue, Entity.from( locationUsed ), message ) )
+                    _mutableEntities.add(
+                        Entity.from( locationUsed ) to
+                        "Could not verify whether property of type '$name' is immutable." )
                 }
                 // Recursively verify the type is immutable.
-                else klazz.accept( ImmutableImplementationVisitor() )
+                else
+                {
+                    val isImmutableVisitor = ImmutableImplementationVisitor( bindingContext )
+                    klazz.accept( isImmutableVisitor )
+                    if ( !isImmutableVisitor.isImmutable )
+                    {
+                        _mutableEntities.add(
+                            Entity.from( locationUsed ) to
+                            "Type '$name' is not immutable." )
+                    }
+                }
             }
         }
 
