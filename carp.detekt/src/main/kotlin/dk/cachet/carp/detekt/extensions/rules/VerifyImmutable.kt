@@ -163,8 +163,15 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
             }
 
             // Verify whether the property type is immutable.
-            val userType = property.typeReference?.typeElement as KtUserType
-            verifyType( userType, property )
+            val userType = property.typeReference?.typeElement as KtUserType?
+            if ( userType == null )
+            {
+                _mutableEntities.add(
+                    Entity.from( property ) to
+                    "Could not verify whether property type is immutable since type inference is used. Specify type explicitly."
+                )
+            }
+            else verifyType( userType, property )
 
             super.visitProperty( property )
         }

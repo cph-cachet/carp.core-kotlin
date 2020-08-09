@@ -96,6 +96,22 @@ class VerifyImmutableTest
     }
 
     @Test
+    fun do_not_allow_type_inference()
+    {
+        val hasTypeInference =
+            """
+            @Immutable data class WithTypeInference { val inferred = 42 }    
+            """
+        assertFalse( isImmutable( hasTypeInference) )
+
+        val noTypeInference =
+            """
+            @Immutable data class WithoutTypeInference { val inferred: Int = 42 }    
+            """
+        assertTrue( isImmutable( noTypeInference ) )
+    }
+
+    @Test
     fun implementations_should_be_data_classes()
     {
         val dataClass = "@Immutable data class ValidImmutable( val validMember: Int = 42 )"
