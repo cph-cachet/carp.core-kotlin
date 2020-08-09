@@ -113,6 +113,13 @@ class VerifyImmutableTest
     }
 
     @Test
+    fun sealed_classes_do_not_need_to_be_data_classes()
+    {
+        val sealedClass = "@Immutable sealed class Sealed"
+        assertTrue( isImmutable( sealedClass ) )
+    }
+
+    @Test
     fun constructor_properties_should_be_val()
     {
         val valProperty = "@Immutable data class ValidImmutable( val validMember: Int = 42 )"

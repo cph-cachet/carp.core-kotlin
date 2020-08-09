@@ -117,7 +117,8 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
             if ( klass != null )
             {
                 // Final immutable classes need to be data classes. It does not make sense NOT to make them data classes.
-                if ( !klass.isAbstract() && !klass.isData() )
+                val isAbstract = klass.isAbstract() || klass.isSealed()
+                if ( !isAbstract && !klass.isData() )
                 {
                     _mutableEntities.add(
                         Entity.from( klass ) to
