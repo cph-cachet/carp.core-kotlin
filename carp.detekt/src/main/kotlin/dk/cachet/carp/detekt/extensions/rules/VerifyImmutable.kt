@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.resolve.source.getPsi
 
 
 // TODO: In case annotation class cannot be found in bindingContext, report an error.
+@Suppress( "VerifyImmutable" )
 class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
 {
     override val issue: Issue = Issue(
@@ -52,7 +53,7 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
             if ( !implementationVisitor.isImmutable )
             {
                 implementationVisitor.mutableEntities.forEach {
-                    val message = "${classOrObject.name} is not immutable due to: ${it.second}"
+                    val message = "`${classOrObject.name}` is not immutable due to: ${it.second}"
                     report( CodeSmell( issue, it.first, message ) )
                 }
             }
@@ -90,7 +91,16 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
                 classOrObject.superTypeListEntries
                     .map { it.typeAsUserType?.referenceExpression?.getResolvedCall( bindingContext )?.resultingDescriptor }
                     .filterIsInstance<ClassConstructorDescriptor>()
-                    .map { it.constructedClass.source.getPsi() as KtClassOrObject }
+                    .mapNotNull {
+                        val superTypeConstructor = it.constructedClass.source.getPsi() as KtClassOrObject?
+                        if ( superTypeConstructor == null )
+                        {
+                            val cantAnalyze = Issue( issue.id, Severity.Warning, issue.description, Debt.FIVE_MINS )
+                            val message = "Cannot verify whether base class `${it.constructedClass.name}` should be immutable since the source is not loaded."
+                            report( CodeSmell( cantAnalyze, Entity.from( classOrObject ), message ) )
+                        }
+                        superTypeConstructor
+                    }
                     .forEach { it.accept( this ) }
             }
         }
@@ -145,6 +155,7 @@ class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
             // Verify whether any of the property types in the constructor are not immutable.
             for ( property in properties )
             {
+                // TODO: KtNullableType cannot be cast to KtUserType. (Example: Study.kt)
                 val userType = property.typeReference?.typeElement as KtUserType
                 verifyType( userType, property )
             }
