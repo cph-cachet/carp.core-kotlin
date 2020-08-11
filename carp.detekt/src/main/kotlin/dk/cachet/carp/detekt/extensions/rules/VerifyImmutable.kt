@@ -11,7 +11,6 @@ import io.gitlab.arturbosch.detekt.api.Severity
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ClassConstructorDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptorWithSource
-import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNullableType
 import org.jetbrains.kotlin.psi.KtPrimaryConstructor
@@ -19,7 +18,6 @@ import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtTypeAlias
 import org.jetbrains.kotlin.psi.KtTypeElement
 import org.jetbrains.kotlin.psi.KtUserType
-import org.jetbrains.kotlin.psi.psiUtil.isAbstract
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.bindingContextUtil.getReferenceTargets
 import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
@@ -28,14 +26,13 @@ import org.jetbrains.kotlin.resolve.source.getPsi
 
 
 // TODO: In case annotation class cannot be found in bindingContext, report an error.
-@Suppress( "VerifyImmutable" )
 class VerifyImmutable( private val immutableAnnotation: String, config: Config = Config.empty ) : Rule( config )
 {
     override val issue: Issue = Issue(
         javaClass.simpleName,
         Severity.Defect,
-        "Classes or classes extending from classes with an @Immutable annotation applied to them should be data classes, " +
-        "may not contain mutable properties, and may only contain basic types and other Immutable properties.",
+        "Classes or classes extending from classes with an @Immutable annotation may not " +
+        "contain mutable properties or properties of mutable types.",
         Debt.TWENTY_MINS
     )
 
@@ -120,24 +117,12 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
         val isImmutable: Boolean get() = _mutableEntities.isEmpty()
         var isVisitingInner: Boolean = false
 
+
         override fun visitClassOrObject( classOrObject: KtClassOrObject )
         {
             // Do not visit inner classes within the original one that is visited; they are analyzed separately.
             if ( isVisitingInner ) return
             isVisitingInner = true
-
-            val klass = classOrObject as? KtClass
-            if ( klass != null )
-            {
-                // Final immutable classes need to be data classes. It does not make sense NOT to make them data classes.
-                val isAbstract = klass.isAbstract() || klass.isSealed()
-                if ( !isAbstract && !klass.isData() )
-                {
-                    _mutableEntities.add(
-                        Entity.from( klass ) to
-                        "Immutable types need to be data classes." )
-                }
-            }
 
             super.visitClassOrObject( classOrObject )
         }

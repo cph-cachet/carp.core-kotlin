@@ -19,7 +19,7 @@ class VerifyImmutableTest
             
             annotation class Immutable
             
-            @Immutable class Mutable
+            @Immutable class Mutable( var hasMutable: Int )
             """
 
         val rule = VerifyImmutable( "some.namespace.Immutable" )
@@ -84,13 +84,13 @@ class VerifyImmutableTest
     @Test
     fun verify_nullable_classes()
     {
-        val immutable = "@Immutable data class ImmutableClass( val immutable: Int? )"
+        val immutable = "@Immutable class ImmutableClass( val immutable: Int? )"
         assertTrue( isImmutable( immutable ) )
 
         val mutable =
             """
             class Mutable( var mutable: Int ) 
-            @Immutable data class( val mutable: Mutable? )
+            @Immutable class( val mutable: Mutable? )
             """
         assertFalse( isImmutable( mutable ) )
     }
@@ -100,11 +100,11 @@ class VerifyImmutableTest
     {
         val immutable =
             """
-            data class ValidImmutable( val mutable: Int )
+            class ValidImmutable( val mutable: Int )
             typealias AliasedValidImmutable = ValidImmutable
             
             @Immutable
-            data class UsesTypealias( val mutable: AliasedValidImmutable ) 
+            class UsesTypealias( val mutable: AliasedValidImmutable ) 
             """
         assertTrue( isImmutable( immutable ) )
     }
@@ -114,48 +114,24 @@ class VerifyImmutableTest
     {
         val hasTypeInference =
             """
-            @Immutable data class WithTypeInference { val inferred = 42 }    
+            @Immutable class WithTypeInference { val inferred = 42 }    
             """
         assertFalse( isImmutable( hasTypeInference) )
 
         val noTypeInference =
             """
-            @Immutable data class WithoutTypeInference { val inferred: Int = 42 }    
+            @Immutable class WithoutTypeInference { val inferred: Int = 42 }    
             """
         assertTrue( isImmutable( noTypeInference ) )
     }
 
     @Test
-    fun implementations_should_be_data_classes()
-    {
-        val dataClass = "@Immutable data class ValidImmutable( val validMember: Int = 42 )"
-        assertTrue( isImmutable( dataClass ) )
-
-        val noDataClass = "@Immutable class NotImmutable( val validMember: Int = 42 )"
-        assertFalse( isImmutable( noDataClass ) )
-    }
-
-    @Test
-    fun abstract_classes_do_not_need_to_be_data_classes()
-    {
-        val abstractClass = "@Immutable abstract class BaseClass"
-        assertTrue( isImmutable( abstractClass ) )
-    }
-
-    @Test
-    fun sealed_classes_do_not_need_to_be_data_classes()
-    {
-        val sealedClass = "@Immutable sealed class Sealed"
-        assertTrue( isImmutable( sealedClass ) )
-    }
-
-    @Test
     fun constructor_properties_should_be_val()
     {
-        val valProperty = "@Immutable data class ValidImmutable( val validMember: Int = 42 )"
+        val valProperty = "@Immutable class ValidImmutable( val validMember: Int = 42 )"
         assertTrue( isImmutable( valProperty ) )
 
-        val varProperty = "@Immutable data class ValidImmutable( var invalidMember: Int = 42 )"
+        val varProperty = "@Immutable class ValidImmutable( var invalidMember: Int = 42 )"
         assertFalse( isImmutable( varProperty ) )
     }
 
@@ -164,15 +140,15 @@ class VerifyImmutableTest
     {
         val immutableProperty =
             """
-            @Immutable data class ImmutableMember( val number: Int = 42 )
-            @Immutable data class ValidImmutable( val validMember: ImmutableMember )
+            @Immutable class ImmutableMember( val number: Int = 42 )
+            @Immutable class ValidImmutable( val validMember: ImmutableMember )
             """
         assertTrue( isImmutable( immutableProperty ) )
 
         val mutableProperty =
             """
-            data class MutableMember( var number: Int = 42 )
-            @Immutable data class ValidImmutable( val validMember: MutableMember )
+            class MutableMember( var number: Int = 42 )
+            @Immutable class ValidImmutable( val validMember: MutableMember )
             """
         assertFalse( isImmutable( mutableProperty ) )
     }
@@ -180,10 +156,10 @@ class VerifyImmutableTest
     @Test
     fun properties_should_be_val()
     {
-        val valProperty = "@Immutable data class ValidImmutable( val validMember: Int = 42 ) { val validProperty: Int = 42 } "
+        val valProperty = "@Immutable class ValidImmutable( val validMember: Int = 42 ) { val validProperty: Int = 42 } "
         assertTrue( isImmutable( valProperty ) )
 
-        val varProperty = "@Immutable data class NotImmutable( val validMember: Int = 42 ) { var invalidProperty: Int = 42 }"
+        val varProperty = "@Immutable class NotImmutable( val validMember: Int = 42 ) { var invalidProperty: Int = 42 }"
         assertFalse( isImmutable( varProperty ) )
     }
 
@@ -192,8 +168,8 @@ class VerifyImmutableTest
     {
         val immutableProperty =
             """
-            @Immutable data class ImmutableMember( val number: Int = 42 )
-            @Immutable data class ValidImmutable( val test: Int )
+            @Immutable class ImmutableMember( val number: Int = 42 )
+            @Immutable class ValidImmutable( val test: Int )
             {
                 val validMember: ImmutableMember = ImmutableMember( 42 )
             }
@@ -202,8 +178,8 @@ class VerifyImmutableTest
 
         val mutableProperty =
             """
-            data class MutableMember( var number: Int = 42 )
-            @Immutable data class ValidImmutable( val test: Int )
+            class MutableMember( var number: Int = 42 )
+            @Immutable class ValidImmutable( val test: Int )
             {
                 val invalidMember: MutableMember = MutableMember( 42 )
             }
@@ -217,7 +193,7 @@ class VerifyImmutableTest
         val twoMutableMembers =
             """
             annotation class Immutable
-            @Immutable data class NotImmutable( val immutable: Int )
+            @Immutable class NotImmutable( val immutable: Int )
             {
                 var one: Int = 42
                 var two: Int = 42
@@ -232,7 +208,7 @@ class VerifyImmutableTest
     @Test
     fun report_types_which_cant_be_verified()
     {
-        val unknownType = "@Immutable data class( val unknown: UnknownType )"
+        val unknownType = "@Immutable class( val unknown: UnknownType )"
         assertFalse( isImmutable( unknownType ) )
     }
 
