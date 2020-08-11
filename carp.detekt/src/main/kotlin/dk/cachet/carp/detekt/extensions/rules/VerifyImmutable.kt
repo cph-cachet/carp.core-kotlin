@@ -1,6 +1,7 @@
 package dk.cachet.carp.detekt.extensions.rules
 
 import io.gitlab.arturbosch.detekt.api.CodeSmell
+import io.gitlab.arturbosch.detekt.api.Config
 import io.gitlab.arturbosch.detekt.api.Debt
 import io.gitlab.arturbosch.detekt.api.DetektVisitor
 import io.gitlab.arturbosch.detekt.api.Entity
@@ -26,7 +27,7 @@ import org.jetbrains.kotlin.resolve.source.getPsi
 
 // TODO: In case annotation class cannot be found in bindingContext, report an error.
 @Suppress( "VerifyImmutable" )
-class VerifyImmutable( private val immutableAnnotation: String ) : Rule()
+class VerifyImmutable( private val immutableAnnotation: String, config: Config = Config.empty ) : Rule( config )
 {
     override val issue: Issue = Issue(
         javaClass.simpleName,
