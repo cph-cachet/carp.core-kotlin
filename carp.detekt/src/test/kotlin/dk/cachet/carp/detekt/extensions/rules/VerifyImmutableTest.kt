@@ -229,6 +229,13 @@ class VerifyImmutableTest
         assertEquals( 2, rule.compileAndLintWithContext( env, twoMutableMembers ).count() )
     }
 
+    @Test
+    fun report_types_which_cant_be_verified()
+    {
+        val unknownType = "@Immutable data class( val unknown: UnknownType )"
+        assertFalse( isImmutable( unknownType ) )
+    }
+
     private fun isImmutable( code: String ): Boolean
     {
         // Add immutable annotation.

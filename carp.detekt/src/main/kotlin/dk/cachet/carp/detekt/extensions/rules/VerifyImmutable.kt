@@ -192,8 +192,8 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
         private fun verifyType( type: KtTypeElement, locationUsed: PsiElement )
         {
             val descriptor = getDescriptor( type )
-            val klazz = getKlazz( descriptor )
-            val name = descriptor?.fqNameSafe?.asString() ?: type.name
+            val klazz = descriptor?.let { getKlazz( it ) }
+            val name = descriptor?.fqNameSafe?.asString() ?: type.text
 
             if ( name !in isTypeImmutableCache )
             {
@@ -202,7 +202,7 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
                 {
                     _mutableEntities.add(
                         Entity.from( locationUsed ) to
-                        "Could not verify whether property of type '$name' is immutable." )
+                        "Could not verify whether property of type `$name` is immutable." )
                 }
                 // Recursively verify the type is immutable.
                 else
@@ -213,7 +213,7 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
                     {
                         _mutableEntities.add(
                             Entity.from( locationUsed ) to
-                            "Type '$name' is not immutable." )
+                            "Type `$name` is not immutable." )
                     }
                 }
             }
@@ -232,10 +232,8 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
             }
         }
 
-        private fun getKlazz( descriptor: DeclarationDescriptorWithSource? ): KtClassOrObject?
+        private fun getKlazz( descriptor: DeclarationDescriptorWithSource ): KtClassOrObject?
         {
-            if ( descriptor == null ) return null
-
             return when ( val sourceElement = descriptor.source.getPsi() )
             {
                 null -> null
@@ -244,7 +242,7 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
                 {
                     val aliasedType = sourceElement.getTypeReference()?.typeElement as KtUserType
                     val aliasedTypeDescriptor = getDescriptor( aliasedType )
-                    getKlazz( aliasedTypeDescriptor )
+                    aliasedTypeDescriptor?.let { getKlazz( it ) }
                 }
                 else -> throw UnsupportedOperationException( "VerifyImmutable does not support `getKlazz` for `$sourceElement`." )
             }
