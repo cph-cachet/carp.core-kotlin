@@ -37,10 +37,20 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
     )
 
     // TODO: Cache already linted types as mutable or immutable.
-    private val isTypeImmutableCache: MutableMap<String, Boolean> = mutableMapOf(
-        "kotlin.Int" to true
-    )
+    private val isTypeImmutableCache: MutableMap<String, Boolean>
 
+    init {
+        val immutableBaseTypes = listOf(
+            Boolean::class, Byte::class, Double::class, Float::class, Int::class, Long::class, Short::class,
+            String::class, Unit::class )
+
+        val configuredImmutableTypes: List<String> = valueOrDefault( "assumeImmutable", emptyList() )
+
+        isTypeImmutableCache =
+            immutableBaseTypes.map { it.qualifiedName!! to true }
+            .plus( configuredImmutableTypes.map { it to true } )
+            .toMap().toMutableMap()
+    }
 
     override fun visitClassOrObject( classOrObject: KtClassOrObject )
     {
