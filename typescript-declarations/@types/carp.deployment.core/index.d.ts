@@ -141,12 +141,13 @@ declare module 'carp.deployment.core'
 
         class StudyInvitation
         {
-            constructor( name: string, description: string )
+            constructor( name: string, description: string, applicationData?: string )
 
             static get Companion(): StudyInvitation$Companion
 
             readonly name: string
             readonly description: string
+            readonly applicationData: string
         }
         interface StudyInvitation$Companion
         {
