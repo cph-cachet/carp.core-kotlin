@@ -82,6 +82,20 @@ class VerifyImmutableTest
     }
 
     @Test
+    fun verify_nullable_classes()
+    {
+        val immutable = "@Immutable data class ImmutableClass( val immutable: Int? )"
+        assertTrue( isImmutable( immutable ) )
+
+        val mutable =
+            """
+            class Mutable( var mutable: Int ) 
+            @Immutable data class( val mutable: Mutable? )
+            """
+        assertFalse( isImmutable( mutable ) )
+    }
+
+    @Test
     fun verify_used_typealias()
     {
         val immutable =

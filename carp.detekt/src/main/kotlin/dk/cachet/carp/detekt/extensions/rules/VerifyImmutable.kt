@@ -13,9 +13,11 @@ import org.jetbrains.kotlin.descriptors.ClassConstructorDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptorWithSource
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassOrObject
+import org.jetbrains.kotlin.psi.KtNullableType
 import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtTypeAlias
+import org.jetbrains.kotlin.psi.KtTypeElement
 import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.kotlin.psi.psiUtil.isAbstract
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -156,8 +158,7 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
             // Verify whether any of the property types in the constructor are not immutable.
             for ( property in properties )
             {
-                // TODO: KtNullableType cannot be cast to KtUserType. (Example: Study.kt)
-                val userType = property.typeReference?.typeElement as KtUserType
+                val userType = property.typeReference?.typeElement as KtTypeElement
                 verifyType( userType, property )
             }
 
@@ -188,11 +189,11 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
             super.visitProperty( property )
         }
 
-        private fun verifyType( type: KtUserType, locationUsed: PsiElement )
+        private fun verifyType( type: KtTypeElement, locationUsed: PsiElement )
         {
             val descriptor = getDescriptor( type )
             val klazz = getKlazz( descriptor )
-            val name = descriptor.fqNameSafe.asString()
+            val name = descriptor?.fqNameSafe?.asString() ?: type.name
 
             if ( name !in isTypeImmutableCache )
             {
@@ -218,15 +219,23 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
             }
         }
 
-        private fun getDescriptor( type: KtUserType ): DeclarationDescriptorWithSource
+        private fun getDescriptor( type: KtTypeElement ): DeclarationDescriptorWithSource?
         {
-            return type.referenceExpression
-                // TODO: What if there are more or no reference targets?
-                ?.getReferenceTargets( bindingContext )?.first() as DeclarationDescriptorWithSource
+            return when ( type )
+            {
+                is KtUserType ->
+                    type.referenceExpression
+                        // TODO: What if there are more reference targets?
+                        ?.getReferenceTargets( bindingContext )?.firstOrNull() as DeclarationDescriptorWithSource?
+                is KtNullableType -> getDescriptor( type.innerType!! )
+                else -> throw UnsupportedOperationException( "VerifyImmutable does not support `getDescriptor` for `$type`.")
+            }
         }
 
-        private fun getKlazz( descriptor: DeclarationDescriptorWithSource ): KtClassOrObject?
+        private fun getKlazz( descriptor: DeclarationDescriptorWithSource? ): KtClassOrObject?
         {
+            if ( descriptor == null ) return null
+
             return when ( val sourceElement = descriptor.source.getPsi() )
             {
                 null -> null
@@ -237,7 +246,7 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
                     val aliasedTypeDescriptor = getDescriptor( aliasedType )
                     getKlazz( aliasedTypeDescriptor )
                 }
-                else -> throw UnsupportedOperationException( "VerifyImmutable does not support analyzing $sourceElement." )
+                else -> throw UnsupportedOperationException( "VerifyImmutable does not support `getKlazz` for `$sourceElement`." )
             }
         }
     }
