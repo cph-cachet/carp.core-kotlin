@@ -325,7 +325,8 @@ task verifyTsDeclarations(type: NodeTask, dependsOn: copyTestJsSources) {
 
 // Add common dependencies:
 // - `carp.test` for testing
-// - reflection is used to reinforce correct implementation of domain objects at runtime
+// - reflection is used by unknown polymorphic serializers.
+// TODO: unknown polymorphic serializers are only expected to be used on the server-side. Can this feature be made optional or refactored?
 configure( coreModules + commonModule ) {
     buildscript {
         repositories {
