@@ -28,6 +28,17 @@ import org.jetbrains.kotlin.resolve.source.getPsi
 // TODO: In case annotation class cannot be found in bindingContext, report an error.
 class VerifyImmutable( private val immutableAnnotation: String, config: Config = Config.empty ) : Rule( config )
 {
+    companion object
+    {
+        private val immutableBaseTypes = listOf(
+            Boolean::class, Byte::class, Double::class, Float::class, Int::class, Long::class, Short::class,
+            String::class, Unit::class )
+            .map { it.qualifiedName!! }
+        private val immutableCollections = listOf( Map::class, Set::class, List::class )
+            .map { it.qualifiedName!! }
+    }
+
+
     override val issue: Issue = Issue(
         javaClass.simpleName,
         Severity.Defect,
@@ -40,14 +51,10 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
     private val isTypeImmutableCache: MutableMap<String, Boolean>
 
     init {
-        val immutableBaseTypes = listOf(
-            Boolean::class, Byte::class, Double::class, Float::class, Int::class, Long::class, Short::class,
-            String::class, Unit::class )
-
         val configuredImmutableTypes: List<String> = valueOrDefault( "assumeImmutable", emptyList() )
 
         isTypeImmutableCache =
-            immutableBaseTypes.map { it.qualifiedName!! to true }
+            immutableBaseTypes.map { it to true }
             .plus( configuredImmutableTypes.map { it to true } )
             .toMap().toMutableMap()
     }
@@ -193,7 +200,19 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
             val klazz = descriptor?.let { getKlazz( it ) }
             val name = descriptor?.fqNameSafe?.asString() ?: type.text
 
-            if ( name !in isTypeImmutableCache )
+            // Early out in case this type is a known immutable type.
+            // TODO: The plan is to also store known mutable types; deal with this.
+            if ( name in isTypeImmutableCache ) return
+
+            // For immutable collections, the types stored within the collection need to be checked.
+            // TODO: Can this be generalized to generics?
+            if ( name in immutableCollections )
+            {
+                // TODO: Implement.
+                return
+            }
+            // Verify a simple type.
+            else
             {
                 // In case the type name is not known and source cannot be verified, report.
                 if ( klazz == null )
