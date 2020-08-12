@@ -1,29 +1,10 @@
+@file:Suppress( "MatchingDeclarationName" )
+
 package dk.cachet.carp.protocols.domain.data
 
-import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.infrastructure.test.StubDataTypeSamplingScheme
 import dk.cachet.carp.protocols.infrastructure.test.StubSamplingConfigurationBuilder
-import dk.cachet.carp.test.JsIgnore
 import kotlin.test.*
-
-
-/**
- * Tests for [SamplingConfiguration].
- */
-class SamplingConfigurationTest
-{
-    @Test
-    @JsIgnore
-    fun mutable_implementation_triggers_exception()
-    {
-        class HasVar( var notImmutable: String = "Mutable" ) : SamplingConfiguration()
-
-        assertFailsWith<InvalidConfigurationError>
-        {
-            HasVar()
-        }
-    }
-}
 
 
 /**

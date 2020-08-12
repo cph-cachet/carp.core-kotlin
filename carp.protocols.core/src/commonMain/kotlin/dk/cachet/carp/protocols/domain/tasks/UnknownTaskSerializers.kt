@@ -15,7 +15,7 @@ import kotlinx.serialization.json.JsonObject
  * A wrapper used to load extending types from [TaskDescriptor] serialized as JSON which are unknown at runtime.
  */
 data class CustomTaskDescriptor( override val className: String, override val jsonSource: String, val serializer: Json ) :
-    TaskDescriptor(), UnknownPolymorphicWrapper
+    TaskDescriptor, UnknownPolymorphicWrapper
 {
     override val name: String
     override val measures: List<Measure>
@@ -47,7 +47,7 @@ object TaskDescriptorSerializer : KSerializer<TaskDescriptor>
  * A wrapper used to load extending types from [Measure] serialized as JSON which are unknown at runtime.
  */
 data class CustomMeasure( override val className: String, override val jsonSource: String, val serializer: Json ) :
-    Measure(), UnknownPolymorphicWrapper
+    Measure, UnknownPolymorphicWrapper
 {
     override val type: DataType
 

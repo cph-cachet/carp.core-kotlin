@@ -15,7 +15,7 @@ data class NoOptionsSamplingConfiguration(
      */
     @Transient
     private val ignore: String = ""
-) : SamplingConfiguration()
+) : SamplingConfiguration
 
 
 /**

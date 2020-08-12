@@ -58,3 +58,15 @@ style:
   WildcardImport:
     excludes: ''
     excludeImports: ['kotlin.reflect.*', 'kotlin.test.*']
+
+carp:
+  VerifyDataClass:
+    active: true
+    includes: ['**/domain/**']
+  VerifyImmutable:
+    active: true
+    includes: ['**/domain/**']
+    assumeImmutable: [
+      'dk.cachet.carp.common.DateTime',
+      'Json'
+    ]

@@ -7,6 +7,7 @@ import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 /**
  * An initially empty configuration to start defining a set of tasks ([TaskDescriptor]).
  */
+@Suppress( "VerifyImmutable", "VerifyDataClass" )
 class EmptyTaskConfiguration : AbstractMap<String, TaskDescriptor>(), TaskConfiguration
 {
     private val _tasks: ExtractUniqueKeyMap<String, TaskDescriptor> = ExtractUniqueKeyMap(

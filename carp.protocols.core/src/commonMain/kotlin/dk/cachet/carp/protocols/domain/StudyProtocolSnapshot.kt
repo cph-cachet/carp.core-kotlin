@@ -29,7 +29,7 @@ data class StudyProtocolSnapshot(
     val tasks: List<@Serializable( TaskDescriptorSerializer::class ) TaskDescriptor>,
     val triggers: Map<Int, @Serializable( TriggerSerializer::class ) Trigger>,
     val triggeredTasks: List<TriggeredTask>
-) : Snapshot<StudyProtocol>()
+) : Snapshot<StudyProtocol>
 {
     @Serializable
     data class DeviceConnection( val roleName: String, val connectedToRoleName: String )

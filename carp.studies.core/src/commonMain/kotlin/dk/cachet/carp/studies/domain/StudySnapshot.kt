@@ -20,7 +20,7 @@ data class StudySnapshot(
     val protocolSnapshot: StudyProtocolSnapshot?,
     val isLive: Boolean,
     val participations: Map<UUID, Set<DeanonymizedParticipation>>
-) : Snapshot<Study>()
+) : Snapshot<Study>
 {
     companion object
     {

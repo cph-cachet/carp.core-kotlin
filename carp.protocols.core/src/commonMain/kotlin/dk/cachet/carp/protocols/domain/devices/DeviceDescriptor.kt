@@ -1,11 +1,11 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.Immutable
+import dk.cachet.carp.common.ImplementAsDataClass
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.protocols.domain.data.DataType
 import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.data.SamplingConfigurationMapBuilder
-import dk.cachet.carp.protocols.domain.notImmutableErrorFor
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
@@ -20,8 +20,12 @@ import kotlin.reflect.KClass
  */
 @Serializable
 @Polymorphic
-abstract class DeviceDescriptor<TRegistration : DeviceRegistration, out TRegistrationBuilder : DeviceRegistrationBuilder<TRegistration>> :
-    Immutable( notImmutableErrorFor( DeviceDescriptor::class ) )
+@Immutable
+@ImplementAsDataClass
+abstract class DeviceDescriptor<
+    TRegistration : DeviceRegistration,
+    out TRegistrationBuilder : DeviceRegistrationBuilder<TRegistration>
+>
 {
     /**
      * A name which describes how the device participates within the study protocol; it's 'role'.

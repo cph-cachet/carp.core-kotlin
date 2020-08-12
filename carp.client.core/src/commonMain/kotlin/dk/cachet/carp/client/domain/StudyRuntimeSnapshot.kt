@@ -15,7 +15,7 @@ data class StudyRuntimeSnapshot(
     val device: AnyMasterDeviceDescriptor,
     val isDeployed: Boolean,
     val deploymentInformation: MasterDeviceDeployment?
-) : Snapshot<StudyRuntime>()
+) : Snapshot<StudyRuntime>
 {
     companion object
     {

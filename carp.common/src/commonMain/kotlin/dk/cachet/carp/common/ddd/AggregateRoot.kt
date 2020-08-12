@@ -1,13 +1,11 @@
 package dk.cachet.carp.common.ddd
 
-import dk.cachet.carp.common.Immutable
-
 
 /**
  * A root objects which ensures the integrity of underlying state as a whole, tracks events raised from within,
  * and for which an immutable 'snapshot' at any given moment in time can be obtained.
  */
-abstract class AggregateRoot<TRoot, TSnapshot : Snapshot<TRoot>, TEvent : Immutable>
+abstract class AggregateRoot<TRoot, TSnapshot : Snapshot<TRoot>, TEvent : DomainEvent>
 {
     private val events: MutableList<TEvent> = mutableListOf()
 
