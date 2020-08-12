@@ -188,6 +188,19 @@ class VerifyImmutableTest
     }
 
     @Test
+    fun only_verify_class_members()
+    {
+        val mutableLocalProperty =
+            """
+            @Immutable class Immutable()
+            {
+                init { var bleh: Int }
+            }
+            """
+        assertTrue( isImmutable( mutableLocalProperty ) )
+    }
+
+    @Test
     fun report_multiple_mutable_findings()
     {
         val twoMutableMembers =

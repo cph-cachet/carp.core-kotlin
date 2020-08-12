@@ -162,6 +162,9 @@ class VerifyImmutable( private val immutableAnnotation: String, config: Config =
 
         override fun visitProperty( property: KtProperty )
         {
+            // Only verify class members.
+            if ( !property.isMember ) return
+
             // Verify whether the property is defined as var.
             if ( property.isVar )
             {
