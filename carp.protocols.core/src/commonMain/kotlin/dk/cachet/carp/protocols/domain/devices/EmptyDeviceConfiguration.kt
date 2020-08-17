@@ -9,7 +9,7 @@ import dk.cachet.carp.protocols.domain.InvalidConfigurationError
  *
  * Role names within a configuration should be unique.
  */
-@Suppress( "VerifyImmutable", "VerifyDataClass" )
+@Suppress( "Immutable", "DataClass" )
 internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescriptor>(), DeviceConfiguration
 {
     private val _devices: ExtractUniqueKeyMap<String, AnyDeviceDescriptor> = ExtractUniqueKeyMap(

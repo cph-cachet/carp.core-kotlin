@@ -29,6 +29,7 @@ buildscript {
 
             // DevOps versions.
             detektPlugin:'1.9.1',
+            detektVerifyImplementation:'1.0.0-alpha.2',
             nexusReleasePlugin:'0.21.2'
         ]
     }
@@ -381,6 +382,7 @@ configure( rootProject )
         dependencies {
             detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:${versions.detektPlugin}"
             detektPlugins project(":carp.detekt") // Add custom project-specific rules.
+            detektPlugins "dk.cachet.detekt.extensions:detekt-verify-implementation:${versions.detektVerifyImplementation}"
         }
     }
     task detektPasses(type: io.gitlab.arturbosch.detekt.Detekt) {

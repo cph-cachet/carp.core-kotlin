@@ -59,12 +59,14 @@ style:
     excludes: ''
     excludeImports: ['kotlin.reflect.*', 'kotlin.test.*']
 
-carp:
-  VerifyDataClass:
+verify-implementation:
+  DataClass:
     active: true
+    annotationClass: "dk.cachet.carp.common.ImplementAsDataClass"
     includes: ['**/domain/**']
-  VerifyImmutable:
+  Immutable:
     active: true
+    annotationClass: "dk.cachet.carp.common.Immutable"
     includes: ['**/domain/**']
     assumeImmutable: [
       'dk.cachet.carp.common.DateTime',
