@@ -1,8 +1,8 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.AggregateRoot
+import dk.cachet.carp.common.ddd.DomainEvent
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
@@ -24,7 +24,7 @@ class StudyRuntime private constructor(
     val device: AnyMasterDeviceDescriptor
 ) : AggregateRoot<StudyRuntime, StudyRuntimeSnapshot, StudyRuntime.Event>(), StudyRuntimeStatus
 {
-    sealed class Event : Immutable()
+    sealed class Event : DomainEvent()
     {
         data class Deployed( val deploymentInformation: MasterDeviceDeployment ) : Event()
     }

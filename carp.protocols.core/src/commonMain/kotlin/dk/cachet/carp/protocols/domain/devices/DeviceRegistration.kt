@@ -2,8 +2,8 @@ package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.Immutable
+import dk.cachet.carp.common.ImplementAsDataClass
 import dk.cachet.carp.common.serialization.NotSerializable
-import dk.cachet.carp.protocols.domain.notImmutableErrorFor
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
@@ -14,7 +14,9 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @Polymorphic
-abstract class DeviceRegistration : Immutable( notImmutableErrorFor( DeviceRegistration::class ) )
+@Immutable
+@ImplementAsDataClass
+abstract class DeviceRegistration
 {
     /**
      * An ID for the device, used to disambiguate between devices of the same type, as provided by the device itself.

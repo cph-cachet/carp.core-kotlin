@@ -25,7 +25,7 @@ data class StudyDeploymentSnapshot(
     val startTime: DateTime?,
     val isStopped: Boolean,
     val participations: Set<AccountParticipation>
-) : Snapshot<StudyDeployment>()
+) : Snapshot<StudyDeployment>
 {
     companion object
     {

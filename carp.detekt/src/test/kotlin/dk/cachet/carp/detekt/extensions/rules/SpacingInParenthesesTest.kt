@@ -52,8 +52,8 @@ class SpacingInParenthesesTest
     @Test
     fun spaces_are_not_allowed_in_getter()
     {
-        //val noSpaces = "val answer: Int get() = 42"
-        //assertEquals( 0, codeSmells( noSpaces ) )
+        val noSpaces = "val answer: Int get() = 42"
+        assertEquals( 0, codeSmells( noSpaces ) )
 
         val spaces = "val answer: Int get( ) = 42"
         assertEquals( 1, codeSmells( spaces ) )

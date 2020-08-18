@@ -31,6 +31,8 @@ performance:
 potential-bugs:
   EqualsAlwaysReturnsTrueOrFalse:
     active: false
+  UnsafeCallOnNullableType:
+    active: false
 
 style:
   EqualsNullCall:
@@ -56,3 +58,17 @@ style:
   WildcardImport:
     excludes: ''
     excludeImports: ['kotlin.reflect.*', 'kotlin.test.*']
+
+verify-implementation:
+  DataClass:
+    active: true
+    annotationClass: "dk.cachet.carp.common.ImplementAsDataClass"
+    includes: ['**/domain/**']
+  Immutable:
+    active: true
+    annotationClass: "dk.cachet.carp.common.Immutable"
+    includes: ['**/domain/**']
+    assumeImmutable: [
+      'dk.cachet.carp.common.DateTime',
+      'Json'
+    ]

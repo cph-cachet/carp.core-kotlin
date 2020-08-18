@@ -1,8 +1,8 @@
 package dk.cachet.carp.studies.domain
 
-import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.AggregateRoot
+import dk.cachet.carp.common.ddd.DomainEvent
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
@@ -36,7 +36,7 @@ class Study(
     val id: UUID = UUID.randomUUID()
 ) : AggregateRoot<Study, StudySnapshot, Study.Event>()
 {
-    sealed class Event : Immutable()
+    sealed class Event : DomainEvent()
     {
         data class InternalDescriptionChanged( val name: String, val description: String ) : Event()
         data class InvitationChanged( val invitation: StudyInvitation ) : Event()

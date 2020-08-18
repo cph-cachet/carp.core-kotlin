@@ -5,6 +5,7 @@ import dk.cachet.carp.detekt.extensions.getPrecedingElement
 import dk.cachet.carp.detekt.extensions.isDefinedOnOneLine
 import dk.cachet.carp.detekt.extensions.startsOnNewLine
 import io.gitlab.arturbosch.detekt.api.CodeSmell
+import io.gitlab.arturbosch.detekt.api.Config
 import io.gitlab.arturbosch.detekt.api.Debt
 import io.gitlab.arturbosch.detekt.api.Entity
 import io.gitlab.arturbosch.detekt.api.Issue
@@ -25,7 +26,7 @@ import org.jetbrains.kotlin.psi.KtReturnExpression
  * A rule which verifies whether curly braces of blocks are placed on separate lines (except for trailing lambda arguments),
  * aligned with the start of the definition the block is associated with (e.g., class, function, object literal, or return).
  */
-class CurlyBracesOnSeparateLine : Rule()
+class CurlyBracesOnSeparateLine( config: Config = Config.empty ) : Rule( config )
 {
     override val issue = Issue(
         javaClass.simpleName,

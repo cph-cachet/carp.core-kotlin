@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
  * It is up to the 'client' (e.g., smartphone runtime) to determine how to handle this measure.
  */
 @Serializable
-data class DataTypeMeasure( override val type: DataType ) : Measure()
+data class DataTypeMeasure( override val type: DataType ) : Measure
 {
     /**
      * Create a new [DataTypeMeasure] for a specific [DataType] by specifying the [namespace] and [name] of the [DataType] directly.

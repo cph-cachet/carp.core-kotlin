@@ -1,9 +1,9 @@
 package dk.cachet.carp.protocols.domain.triggers
 
 import dk.cachet.carp.common.Immutable
+import dk.cachet.carp.common.ImplementAsDataClass
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.notImmutableErrorFor
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -15,7 +15,9 @@ import kotlinx.serialization.Transient
  */
 @Serializable
 @Polymorphic
-abstract class Trigger : Immutable( notImmutableErrorFor( Trigger::class ) )
+@Immutable
+@ImplementAsDataClass
+abstract class Trigger
 {
     /**
      * Determines whether the trigger needs to be evaluated on a master device ([MasterDeviceDescriptor]).

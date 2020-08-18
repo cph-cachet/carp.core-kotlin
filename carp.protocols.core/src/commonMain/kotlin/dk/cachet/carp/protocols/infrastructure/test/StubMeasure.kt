@@ -7,4 +7,4 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StubMeasure( override val type: DataType = STUB_DATA_TYPE, val uniqueProperty: String = "Unique" ) :
-    Measure()
+    Measure
