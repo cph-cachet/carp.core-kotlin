@@ -22,7 +22,7 @@ data class StudyProtocolSnapshot(
     val ownerId: UUID,
     val name: String,
     val description: String,
-    val creationDate: DateTime,
+    override val creationDate: DateTime,
     val masterDevices: List<@Serializable( MasterDeviceDescriptorSerializer::class ) AnyMasterDeviceDescriptor>,
     val connectedDevices: List<@Serializable( DeviceDescriptorSerializer::class ) AnyDeviceDescriptor>,
     val connections: List<DeviceConnection>,

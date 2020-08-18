@@ -48,6 +48,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         fun fromSnapshot( snapshot: StudyDeploymentSnapshot ): StudyDeployment
         {
             val deployment = StudyDeployment( snapshot.studyProtocolSnapshot, snapshot.studyDeploymentId )
+            deployment.creationDate = snapshot.creationDate
             deployment.startTime = snapshot.startTime
 
             // Replay device registration history.

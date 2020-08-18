@@ -34,4 +34,4 @@ Respectively, the required claims and claims to grant upon a successful request.
 | `deploymentSuccessful` | Indicate to stakeholders in a study deployment that a master device was deployed successfully, i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it. | in deployment: `studyDeploymentId` | |
 | `stop` | Stop a study deployment. No further changes to this deployment will be allowed and no more data will be collected. | in deployment: `studyDeploymentId` | |
 | `addParticipation` | Let a person with a specified identity participate in a study deployment, using a specified master device. | manage deployment: `studyDeploymentId` | in deployment (to account with `identity`): `studyDeploymentId` |
-| `getParticipationInvitations` | Get all participations in study deployments a specified account has been invited to. | authenticated: `accountId` | |
+| `getActiveParticipationInvitations` | Get all participations of active study deployments a specified account has been invited to. | authenticated: `accountId` | |

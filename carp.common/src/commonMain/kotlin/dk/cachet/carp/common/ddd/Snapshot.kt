@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.ddd
 
+import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.ImplementAsDataClass
 
@@ -11,6 +12,9 @@ import dk.cachet.carp.common.ImplementAsDataClass
 @ImplementAsDataClass
 interface Snapshot<TAggregateRoot>
 {
+    val creationDate: DateTime
+
+
     /**
      * Load the aggregate root object from this snapshot.
      */

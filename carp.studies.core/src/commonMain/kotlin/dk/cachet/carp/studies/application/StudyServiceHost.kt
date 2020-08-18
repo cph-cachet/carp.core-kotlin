@@ -293,7 +293,9 @@ class StudyServiceHost(
 
         // Get study deployment statuses.
         val studyDeploymentIds = study.participations.keys
-        val studyDeploymentStatuses = deploymentService.getStudyDeploymentStatusList( studyDeploymentIds )
+        val studyDeploymentStatuses: List<StudyDeploymentStatus> =
+            if ( studyDeploymentIds.isEmpty() ) emptyList()
+            else deploymentService.getStudyDeploymentStatusList( studyDeploymentIds )
 
         // Map each study deployment status to a deanonymized participant group status.
         return studyDeploymentStatuses.map {

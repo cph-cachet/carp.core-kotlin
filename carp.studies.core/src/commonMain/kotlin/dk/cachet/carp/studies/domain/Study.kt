@@ -1,6 +1,5 @@
 package dk.cachet.carp.studies.domain
 
-import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.AggregateRoot
 import dk.cachet.carp.common.ddd.DomainEvent
@@ -103,12 +102,6 @@ class Study(
             field = value
             event( Event.InvitationChanged( invitation ) )
         }
-
-    /**
-     * The date when this study was created.
-     */
-    var creationDate: DateTime = DateTime.now()
-        private set
 
     /**
      * Get the status (serializable) of this [Study].

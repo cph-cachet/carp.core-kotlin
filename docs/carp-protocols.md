@@ -53,12 +53,14 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | --- | :---: | --- |
 | [Smartphone](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/devices/Smartphone.kt) | Yes | An internet-connected phone with built-in sensors. |
 | [AltBeacon](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/devices/AltBeacon.kt) | | A beacon meeting the open AltBeacon standard. |
+| [CustomProtocolDevice](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/devices/CustomProtocolDevice.kt) | Yes | A master device which uses a single `CustomProtocolTask` to determine how to run a study on the device. |
 
 ### Tasks
 
 | Class | Description |
 | --- | --- |
 | [ConcurrentTask](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/tasks/ConcurrentTask.kt) | Specifies that all containing measures should start immediately once triggered and run indefinitely until all containing measures have completed. |
+| [CustomProtocolTask](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/tasks/CustomProtocolTask.kt) | Contains a definition on how to run tasks, measures, and triggers which differs from the CARP domain model. |
 
 ### Measures
 

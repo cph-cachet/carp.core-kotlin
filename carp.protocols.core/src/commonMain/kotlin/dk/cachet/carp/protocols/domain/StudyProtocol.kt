@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.ddd.DomainEvent
 import dk.cachet.carp.protocols.domain.deployment.DeploymentError
 import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
@@ -91,12 +90,6 @@ class StudyProtocol(
         }
     }
 
-
-    /**
-     * The date when this protocol was created.
-     */
-    var creationDate: DateTime = DateTime.now()
-        private set
 
     /**
      * Add a master device which is responsible for aggregating and synchronizing incoming data.

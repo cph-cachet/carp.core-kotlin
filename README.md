@@ -32,6 +32,7 @@ Two key **design goals** differentiate this project from similar projects:
   - [Serialization](#serialization)
   - [Request objects](#request-objects)
   - [Authorization](#authorization)
+  - [Stub classes](#stub-classes)
 - [Usage](#usage)
   - [Example](#example)
 - [Building the project](#building-the-project)

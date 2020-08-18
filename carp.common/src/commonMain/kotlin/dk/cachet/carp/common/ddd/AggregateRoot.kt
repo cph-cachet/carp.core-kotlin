@@ -1,5 +1,7 @@
 package dk.cachet.carp.common.ddd
 
+import dk.cachet.carp.common.DateTime
+
 
 /**
  * A root objects which ensures the integrity of underlying state as a whole, tracks events raised from within,
@@ -7,6 +9,12 @@ package dk.cachet.carp.common.ddd
  */
 abstract class AggregateRoot<TRoot, TSnapshot : Snapshot<TRoot>, TEvent : DomainEvent>
 {
+    /**
+     * The date when this object was created.
+     */
+    var creationDate: DateTime = DateTime.now()
+        protected set
+
     private val events: MutableList<TEvent> = mutableListOf()
 
     /**
