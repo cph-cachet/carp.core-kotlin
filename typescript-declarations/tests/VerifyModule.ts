@@ -13,7 +13,7 @@ import {
     TSModuleDeclaration, 
     TSInterfaceBody,
     TypeElement }
-    from '@typescript-eslint/typescript-estree/dist/ts-estree/ts-estree'
+    from "@typescript-eslint/types/dist/ts-estree"
 import * as fs from 'fs'
 
 

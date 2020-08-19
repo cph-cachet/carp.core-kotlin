@@ -24,13 +24,13 @@ buildscript {
 
             // JS versions.
             nodePlugin:'2.2.4',
-            node:'14.5.0',
-            mocha:'8.0.1',
+            node:'14.8.0',
+            mocha:'8.1.1',
 
             // DevOps versions.
             detektPlugin:'1.10.0',
             detektVerifyImplementation:'1.0.0',
-            nexusReleasePlugin:'0.21.2'
+            nexusReleasePlugin:'0.22.0'
         ]
     }
 
