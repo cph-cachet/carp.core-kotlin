@@ -16,8 +16,8 @@ class DeanonymizedParticipationTest
     {
         val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
 
-        val serialized: String = JSON.stringify( DeanonymizedParticipation.serializer(), participation )
-        val parsed: DeanonymizedParticipation = JSON.parse( DeanonymizedParticipation.serializer(), serialized )
+        val serialized: String = JSON.encodeToString( DeanonymizedParticipation.serializer(), participation )
+        val parsed: DeanonymizedParticipation = JSON.decodeFromString( DeanonymizedParticipation.serializer(), serialized )
 
         assertEquals( participation, parsed )
     }

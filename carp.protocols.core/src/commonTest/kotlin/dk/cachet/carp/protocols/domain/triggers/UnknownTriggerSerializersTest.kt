@@ -24,7 +24,7 @@ class CustomTriggerTest
     fun initialization_from_json_extracts_base_Trigger_properties()
     {
         val trigger = StubTrigger( "Some device" )
-        val serialized: String = JSON.stringify( StubTrigger.serializer(), trigger )
+        val serialized: String = JSON.encodeToString( StubTrigger.serializer(), trigger )
 
         val custom = CustomTrigger( "Irrelevant", serialized, JSON )
         assertEquals( trigger.sourceDeviceRoleName, custom.sourceDeviceRoleName )
@@ -37,7 +37,7 @@ class CustomTriggerTest
     fun initialization_from_invalid_json_fails()
     {
         val incorrect = IncorrectTrigger()
-        val serialized: String = JSON.stringify( IncorrectTrigger.serializer(), incorrect )
+        val serialized: String = JSON.encodeToString( IncorrectTrigger.serializer(), incorrect )
 
         assertFailsWith<IllegalArgumentException>
         {

@@ -20,8 +20,8 @@ class ParticipantGroupStatusTest
         val participants = setOf( DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() ) )
         val groupStatus = ParticipantGroupStatus( deploymentStatus, participants )
 
-        val serialized: String = JSON.stringify( ParticipantGroupStatus.serializer(), groupStatus )
-        val parsed: ParticipantGroupStatus = JSON.parse( ParticipantGroupStatus.serializer(), serialized )
+        val serialized: String = JSON.encodeToString( ParticipantGroupStatus.serializer(), groupStatus )
+        val parsed: ParticipantGroupStatus = JSON.decodeFromString( ParticipantGroupStatus.serializer(), serialized )
 
         assertEquals( groupStatus, parsed )
     }

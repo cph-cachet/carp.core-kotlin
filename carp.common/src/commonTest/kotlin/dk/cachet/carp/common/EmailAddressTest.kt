@@ -15,8 +15,8 @@ class EmailAddressTest
         val email = EmailAddress( "test@test.com" )
 
         val json = createDefaultJSON()
-        val serialized: String = json.stringify( EmailAddress.serializer(), email )
-        val parsed: EmailAddress = json.parse( EmailAddress.serializer(), serialized )
+        val serialized: String = json.encodeToString( EmailAddress.serializer(), email )
+        val parsed: EmailAddress = json.decodeFromString( EmailAddress.serializer(), serialized )
 
         assertEquals( email, parsed )
     }

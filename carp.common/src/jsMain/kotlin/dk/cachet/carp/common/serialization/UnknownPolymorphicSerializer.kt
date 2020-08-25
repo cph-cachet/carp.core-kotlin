@@ -1,13 +1,13 @@
 package dk.cachet.carp.common.serialization
 
-import kotlinx.serialization.Decoder
-import kotlinx.serialization.Encoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonInput
-import kotlinx.serialization.json.JsonOutput
+import kotlinx.serialization.json.JsonEncoder
+import kotlinx.serialization.json.JsonDecoder
 import kotlin.reflect.KClass
 
 
@@ -39,7 +39,7 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
 
     actual override fun serialize( encoder: Encoder, value: P )
     {
-        if ( encoder !is JsonOutput )
+        if ( encoder !is JsonEncoder )
         {
             throw unsupportedException
         }
@@ -53,13 +53,13 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
 
             // Output raw JSON as originally wrapped.
             // TODO: This relies on accessing private properties dynamically since no raw JSON can be output using KOutput.
-            val composer = encoder.asDynamic().composer_0
+            val composer = encoder.asDynamic()._composer
             val toPrint = "," + value.jsonSource // The ',' is needed since it is normally added by the Encoder which is not called here.
-            composer.`print_61zpoe$`( toPrint ) // This is the generated 'print' function overload for strings.
+            composer.print_4( toPrint ) // This is the generated 'print' function overload for strings.
         }
         else
         {
-            val registeredSerializer = encoder.context.getPolymorphic( baseClass, value )
+            val registeredSerializer = encoder.serializersModule.getPolymorphic( baseClass, value )
                 ?: throw SerializationException( "${value.asDynamic().constructor.name} is not registered for polymorph serialization." )
 
             @Suppress( "UNCHECKED_CAST" )
@@ -74,7 +74,7 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
     actual override fun deserialize( decoder: Decoder ): P
     {
         // Get JSON serializer. This serializer assumes JSON serialization.
-        if ( decoder !is JsonInput )
+        if ( decoder !is JsonDecoder )
         {
             throw unsupportedException
         }
@@ -86,7 +86,7 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
         // Determine class to be loaded and whether it is available at runtime.
         decoder.decodeElementIndex( descriptor )
         val className = decoder.decodeStringElement( descriptor, 0 )
-        val registeredSerializer = decoder.context.getPolymorphic( baseClass, className )
+        val registeredSerializer = decoder.serializersModule.getPolymorphic( baseClass, className )
         val canLoadClass = registeredSerializer != null
 
         // Deserialize object when serializer is available, or wrap in case type is unknown.
@@ -102,18 +102,18 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
         {
             // TODO: Currently, the following relies on accessing properties dynamically.
 
-            val reader = decoder.asDynamic().`reader_8be2vx$`
+            val reader = decoder.asDynamic()._reader_0
 
             // Get source string.
-            val jsonSource: String = reader.source_0 as String
+            val jsonSource: String = reader._source as String
 
             // Find starting position of the unknown object.
-            val start = reader.tokenPosition_0 as Int
+            val start = reader._tokenPosition as Int
 
             // Find end position of the unknown object by skipping to the next element.
             // Skipping the element is also needed since otherwise deserialization of subsequent elements fails.
             reader.skipElement()
-            val end = reader.tokenPosition_0 as Int
+            val end = reader._tokenPosition as Int
 
             // Initialize wrapper for unknown object based on source string.
             val elementSource = jsonSource.subSequence( start, end ).toString()

@@ -4,10 +4,11 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.content
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.subclass
 import kotlin.test.*
 
 
@@ -19,7 +20,7 @@ class UnknownPolymorphicSerializerTest
     val SERIAL_MODULE = SerializersModule {
         polymorphic( BaseType::class )
         {
-            DerivingType::class with DerivingType.serializer()
+            subclass( DerivingType::class )
         }
     }
 
@@ -42,11 +43,11 @@ class UnknownPolymorphicSerializerTest
 
         init
         {
-            val json = serializer.parseJson( jsonSource ) as JsonObject
+            val json = serializer.parseToJsonElement( jsonSource ) as JsonObject
 
             val toOverridePropertyField = BaseType::toOverrideProperty.name
             require( json.containsKey( toOverridePropertyField ) ) { "No '$toOverridePropertyField' defined." }
-            toOverrideProperty = json[ toOverridePropertyField ]!!.content
+            toOverrideProperty = json[ toOverridePropertyField ]!!.jsonPrimitive.content
         }
     }
 
@@ -54,7 +55,7 @@ class UnknownPolymorphicSerializerTest
         by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomBaseType( className, json, serializer ) } )
 
 
-    private fun initializeJson() = Json( JsonConfiguration.Stable, SERIAL_MODULE )
+    private fun initializeJson() = Json { serializersModule = SERIAL_MODULE }
 
     @Test
     fun base_properties_are_serialized()
@@ -62,7 +63,7 @@ class UnknownPolymorphicSerializerTest
         val json = initializeJson()
         val knownType: BaseType = DerivingType( "Test" )
 
-        val serialized = json.stringify( UnknownBaseTypeSerializer, knownType )
+        val serialized = json.encodeToString( UnknownBaseTypeSerializer, knownType )
 
         assertTrue( serialized.contains( BaseType::baseProperty.name ) )
     }
@@ -72,13 +73,13 @@ class UnknownPolymorphicSerializerTest
     {
         val json = initializeJson()
         val toSerialize = DerivingType( "Test" )
-        val serialized = json.stringify( UnknownBaseTypeSerializer, toSerialize )
+        val serialized = json.encodeToString( UnknownBaseTypeSerializer, toSerialize )
         val unknownSerialized = serialized.replace( DerivingType::class.simpleName!!, "UnknownType" )
 
-        val parsed = json.parse( UnknownBaseTypeSerializer, unknownSerialized )
+        val parsed = json.decodeFromString( UnknownBaseTypeSerializer, unknownSerialized )
         assertTrue( parsed is CustomBaseType )
         assertEquals( "dk.cachet.carp.common.serialization.UnknownPolymorphicSerializerTest.UnknownType", parsed.className )
-        val expectedJsonSource = json.stringify( DerivingType.serializer(), toSerialize )
+        val expectedJsonSource = json.encodeToString( DerivingType.serializer(), toSerialize )
         assertEquals( expectedJsonSource, parsed.jsonSource )
     }
 }

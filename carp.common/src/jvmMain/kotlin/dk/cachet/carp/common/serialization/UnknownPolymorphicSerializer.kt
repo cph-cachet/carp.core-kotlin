@@ -1,13 +1,13 @@
 package dk.cachet.carp.common.serialization
 
-import kotlinx.serialization.Decoder
-import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonInput
-import kotlinx.serialization.json.JsonOutput
+import kotlinx.serialization.json.JsonDecoder
+import kotlinx.serialization.json.JsonEncoder
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
 import kotlin.reflect.jvm.isAccessible
@@ -42,9 +42,9 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
     actual override val descriptor: SerialDescriptor
         get() = UnknownPolymorphicClassDesc
 
-    actual override fun serialize( encoder: Encoder, value: P )
+    actual override fun serialize(encoder: Encoder, value: P )
     {
-        if ( encoder !is JsonOutput )
+        if ( encoder !is JsonEncoder )
         {
             throw unsupportedException
         }
@@ -70,7 +70,7 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
         }
         else
         {
-            val registeredSerializer = encoder.context.getPolymorphic( baseClass, value )
+            val registeredSerializer = encoder.serializersModule.getPolymorphic( baseClass, value )
                 ?: throw SerializationException( "${value.javaClass.typeName} is not registered for polymorph serialization." )
 
             @Suppress( "UNCHECKED_CAST" )
@@ -85,7 +85,7 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
     actual override fun deserialize( decoder: Decoder ): P
     {
         // Get JSON serializer. This serializer assumes JSON serialization.
-        if ( decoder !is JsonInput )
+        if ( decoder !is JsonDecoder )
         {
             throw unsupportedException
         }
@@ -97,7 +97,7 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
         // Determine class to be loaded and whether it is available at runtime.
         decoder.decodeElementIndex( descriptor )
         val className = decoder.decodeStringElement( descriptor, 0 )
-        val registeredSerializer = decoder.context.getPolymorphic( baseClass, className )
+        val registeredSerializer = decoder.serializersModule.getPolymorphic( baseClass, className )
         val canLoadClass = registeredSerializer != null
 
         // Deserialize object when serializer is available, or wrap in case type is unknown.

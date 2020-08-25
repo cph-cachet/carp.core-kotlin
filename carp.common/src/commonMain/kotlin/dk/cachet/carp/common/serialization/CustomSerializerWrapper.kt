@@ -1,8 +1,7 @@
 package dk.cachet.carp.common.serialization
 
-import kotlinx.serialization.Decoder
-import kotlinx.serialization.encode
-import kotlinx.serialization.Encoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
@@ -19,7 +18,7 @@ class CustomSerializerWrapper internal constructor( val inner: Any, val serializ
     companion object : KSerializer<CustomSerializerWrapper>
     {
         override fun serialize( encoder: Encoder, value: CustomSerializerWrapper ) =
-            encoder.encode( value.serializer, value.inner )
+            encoder.encodeSerializableValue( value.serializer, value.inner )
 
         override fun deserialize( decoder: Decoder ): CustomSerializerWrapper =
             throw UnsupportedOperationException( "${CustomSerializerWrapper::class.simpleName} only supports serialization." )

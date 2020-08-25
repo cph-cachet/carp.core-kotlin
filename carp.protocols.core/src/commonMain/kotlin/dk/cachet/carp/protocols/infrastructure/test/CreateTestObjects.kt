@@ -16,8 +16,11 @@ import dk.cachet.carp.protocols.infrastructure.JSON
 import dk.cachet.carp.protocols.infrastructure.PROTOCOLS_SERIAL_MODULE
 import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.PolymorphicModuleBuilder
 import kotlinx.serialization.modules.plus
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.subclass
 import kotlin.reflect.KClass
 
 
@@ -25,29 +28,35 @@ import kotlin.reflect.KClass
  * Stubs for testing extending from types in [dk.cachet.carp.protocols] module which need to be registered when using [Json] serializer.
  */
 val STUBS_SERIAL_MODULE = SerializersModule {
+    fun PolymorphicModuleBuilder<AnyMasterDeviceDescriptor>.registerMasterDeviceDescriptorSubclasses()
+    {
+        subclass( StubMasterDeviceDescriptor::class )
+    }
+
     polymorphic( DeviceDescriptor::class )
     {
-        StubDeviceDescriptor::class with StubDeviceDescriptor.serializer()
+        subclass( StubDeviceDescriptor::class )
+        registerMasterDeviceDescriptorSubclasses()
     }
-    polymorphic( MasterDeviceDescriptor::class, DeviceDescriptor::class )
+    polymorphic( MasterDeviceDescriptor::class )
     {
-        StubMasterDeviceDescriptor::class with StubMasterDeviceDescriptor.serializer()
+        registerMasterDeviceDescriptorSubclasses()
     }
     polymorphic( SamplingConfiguration::class )
     {
-        StubSamplingConfiguration::class with StubSamplingConfiguration.serializer()
+        subclass( StubSamplingConfiguration::class )
     }
     polymorphic( TaskDescriptor::class )
     {
-        StubTaskDescriptor::class with StubTaskDescriptor.serializer()
+        subclass( StubTaskDescriptor::class )
     }
     polymorphic( Measure::class )
     {
-        StubMeasure::class with StubMeasure.serializer()
+        subclass( StubMeasure::class )
     }
     polymorphic( Trigger::class )
     {
-        StubTrigger::class with StubTrigger.serializer()
+        subclass( StubTrigger::class )
     }
 }
 

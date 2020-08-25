@@ -1,18 +1,19 @@
 package dk.cachet.carp.common.serialization
 
-import kotlinx.serialization.Decoder
-import kotlinx.serialization.Encoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.PolymorphicKind
 import kotlinx.serialization.PolymorphicSerializer
-import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.descriptors.PolymorphicKind
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildSerialDescriptor
 import kotlinx.serialization.json.Json
 import kotlin.reflect.KClass
 
 
 internal val UnknownPolymorphicClassDesc =
-    SerialDescriptor( "kotlin.Any", PolymorphicKind.OPEN )
+    buildSerialDescriptor( "kotlin.Any", PolymorphicKind.OPEN )
     {
         element( "klass", String.serializer().descriptor )
         element( "object", PolymorphicSerializer( Any::class ).descriptor )

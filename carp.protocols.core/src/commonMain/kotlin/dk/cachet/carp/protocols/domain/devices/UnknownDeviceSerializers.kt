@@ -9,9 +9,10 @@ import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.data.SamplingConfigurationSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer
-import kotlinx.serialization.json.content
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
 import kotlin.reflect.KClass
 
 
@@ -26,11 +27,11 @@ data class CustomDeviceDescriptor( override val className: String, override val 
 
     init
     {
-        val json = serializer.parseJson( jsonSource ) as JsonObject
+        val json = serializer.parseToJsonElement( jsonSource ) as JsonObject
 
         val roleNameField = AnyDeviceDescriptor::roleName.name
         require( roleNameField in json.keys ) { "No '$roleNameField' defined." }
-        roleName = json[ roleNameField ]!!.content
+        roleName = json[ roleNameField ]!!.jsonPrimitive.content
 
         val samplingConfigurationField = AnyDeviceDescriptor::samplingConfiguration.name
         samplingConfiguration =
@@ -38,7 +39,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
             {
                 val configurationJson: String = json[ samplingConfigurationField ]!!.jsonArray.toString()
                 val configurationSerializer = MapSerializer( DataType.serializer(), SamplingConfigurationSerializer )
-                serializer.parse( configurationSerializer, configurationJson )
+                serializer.decodeFromString( configurationSerializer, configurationJson )
             }
             else emptyMap()
     }
@@ -65,11 +66,11 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
 
     init
     {
-        val json = serializer.parseJson( jsonSource ) as JsonObject
+        val json = serializer.parseToJsonElement( jsonSource ) as JsonObject
 
         val roleNameField = AnyMasterDeviceDescriptor::roleName.name
         require( roleNameField in json.keys ) { "No '$roleNameField' defined." }
-        roleName = json[ roleNameField ]!!.content
+        roleName = json[ roleNameField ]!!.jsonPrimitive.content
 
         val samplingConfigurationField = AnyDeviceDescriptor::samplingConfiguration.name
         samplingConfiguration =
@@ -77,7 +78,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
             {
                 val configurationJson: String = json[ samplingConfigurationField ]!!.jsonArray.toString()
                 val configurationSerializer = MapSerializer( DataType.serializer(), SamplingConfigurationSerializer )
-                serializer.parse( configurationSerializer, configurationJson )
+                serializer.decodeFromString( configurationSerializer, configurationJson )
             }
             else emptyMap()
     }
@@ -100,7 +101,7 @@ object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<AnyDeviceDescri
 {
     override fun createWrapper( className: String, json: String, serializer: Json ): AnyDeviceDescriptor
     {
-        val jsonObject = serializer.parseJson( json ) as JsonObject
+        val jsonObject = serializer.parseToJsonElement( json ) as JsonObject
         val isMasterDevice = jsonObject.containsKey( AnyMasterDeviceDescriptor::isMasterDevice.name )
 
         return if ( isMasterDevice )
@@ -131,11 +132,11 @@ data class CustomDeviceRegistration( override val className: String, override va
 
     init
     {
-        val json = serializer.parseJson( jsonSource ) as JsonObject
+        val json = serializer.parseToJsonElement( jsonSource ) as JsonObject
 
         val deviceIdField = DeviceRegistration::deviceId.name
         require( json.containsKey( deviceIdField ) ) { "No '$deviceIdField' defined." }
-        deviceId = json[ deviceIdField ]!!.content
+        deviceId = json[ deviceIdField ]!!.jsonPrimitive.content
     }
 }
 

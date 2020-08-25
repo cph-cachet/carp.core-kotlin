@@ -26,7 +26,7 @@ class CustomSamplingConfigurationTest
     fun initialization_from_any_object_succeeds()
     {
         val anyObject = SomeRandomSerializableObject( "Whatever" )
-        val serialized: String = JSON.stringify( SomeRandomSerializableObject.serializer(), anyObject )
+        val serialized: String = JSON.encodeToString( SomeRandomSerializableObject.serializer(), anyObject )
 
         // Currently, there are no base members in `SamplingConfiguration`.
         // Any class, even those that don't implement `SamplingConfiguration` can be used.
