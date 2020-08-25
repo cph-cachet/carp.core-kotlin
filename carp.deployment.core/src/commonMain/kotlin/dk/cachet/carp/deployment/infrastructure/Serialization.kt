@@ -12,9 +12,9 @@ import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.PROTOCOLS_SERIAL_MODULE
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.EmptyModule
+import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.plus
-import kotlinx.serialization.modules.SerialModule
+import kotlinx.serialization.modules.SerializersModule
 
 
 /**
@@ -22,7 +22,7 @@ import kotlinx.serialization.modules.SerialModule
  * This ensures a global configuration on how serialization should occur.
  * Additional types the serializer needs to be aware about (such as polymorph extending classes) should be registered through [module].
  */
-fun createDeploymentSerializer( module: SerialModule = EmptyModule ): Json
+fun createDeploymentSerializer( module: SerializersModule = EmptySerializersModule ): Json
 {
     return createDefaultJSON( PROTOCOLS_SERIAL_MODULE + module )
 }
@@ -38,82 +38,82 @@ var JSON: Json = createDeploymentSerializer()
  * Create a [Account] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun Account.Companion.fromJson( json: String ): Account =
-    JSON.parse( serializer(), json )
+    JSON.decodeFromString( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
 fun Account.toJson(): String =
-    JSON.stringify( Account.serializer(), this )
+    JSON.encodeToString( Account.serializer(), this )
 
 /**
  * Create a [Username] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun Username.Companion.fromJson( json: String ): Username =
-    JSON.parse( serializer(), json )
+    JSON.decodeFromString( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
 fun Username.toJson(): String =
-    JSON.stringify( Username.serializer(), this )
+    JSON.encodeToString( Username.serializer(), this )
 
 /**
  * Create a [Participation] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun Participation.Companion.fromJson( json: String ): Participation =
-    JSON.parse( serializer(), json )
+    JSON.decodeFromString( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
 fun Participation.toJson(): String =
-    JSON.stringify( Participation.serializer(), this )
+    JSON.encodeToString( Participation.serializer(), this )
 
 /**
  * Create a [StudyInvitation] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun StudyInvitation.Companion.fromJson( json: String ): StudyInvitation =
-    JSON.parse( serializer(), json )
+    JSON.decodeFromString( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
 fun StudyInvitation.toJson(): String =
-    JSON.stringify( StudyInvitation.serializer(), this )
+    JSON.encodeToString( StudyInvitation.serializer(), this )
 
 /**
  * Create a [StudyDeploymentSnapshot] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun StudyDeploymentSnapshot.Companion.fromJson( json: String ): StudyDeploymentSnapshot =
-    JSON.parse( serializer(), json )
+    JSON.decodeFromString( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
 fun StudyDeploymentSnapshot.toJson(): String =
-    JSON.stringify( StudyDeploymentSnapshot.serializer(), this )
+    JSON.encodeToString( StudyDeploymentSnapshot.serializer(), this )
 
 /**
  * Create a [StudyDeploymentStatus] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun StudyDeploymentStatus.Companion.fromJson( json: String ): StudyDeploymentStatus =
-    JSON.parse( serializer(), json )
+    JSON.decodeFromString( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
 fun StudyDeploymentStatus.toJson(): String =
-    JSON.stringify( StudyDeploymentStatus.serializer(), this )
+    JSON.encodeToString( StudyDeploymentStatus.serializer(), this )
 
 /**
  * Create a [MasterDeviceDeployment] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun MasterDeviceDeployment.Companion.fromJson( json: String ): MasterDeviceDeployment =
-    JSON.parse( serializer(), json )
+    JSON.decodeFromString( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
 fun MasterDeviceDeployment.toJson(): String =
-    JSON.stringify( MasterDeviceDeployment.serializer(), this )
+    JSON.encodeToString( MasterDeviceDeployment.serializer(), this )

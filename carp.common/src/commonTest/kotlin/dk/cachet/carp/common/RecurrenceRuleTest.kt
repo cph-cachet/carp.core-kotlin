@@ -40,8 +40,8 @@ class RecurrenceRuleTest
         val rule = RecurrenceRule.daily( 2, RecurrenceRule.End.Count( 5 ) )
 
         val json = createDefaultJSON()
-        val serialized = json.stringify( RecurrenceRule.serializer(), rule )
-        val parsed = json.parse( RecurrenceRule.serializer(), serialized )
+        val serialized = json.encodeToString( RecurrenceRule.serializer(), rule )
+        val parsed = json.decodeFromString( RecurrenceRule.serializer(), serialized )
 
         assertEquals( rule, parsed )
     }

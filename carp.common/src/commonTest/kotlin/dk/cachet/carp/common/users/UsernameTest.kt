@@ -15,8 +15,8 @@ class UsernameTest
         val username = Username( "Test" )
 
         val json = createDefaultJSON()
-        val serialized: String = json.stringify( Username.serializer(), username )
-        val parsed: Username = json.parse( Username.serializer(), serialized )
+        val serialized: String = json.encodeToString( Username.serializer(), username )
+        val parsed: Username = json.decodeFromString( Username.serializer(), serialized )
 
         assertEquals( username, parsed )
     }

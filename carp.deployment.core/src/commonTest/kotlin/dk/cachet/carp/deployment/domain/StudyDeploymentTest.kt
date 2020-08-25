@@ -125,8 +125,8 @@ class StudyDeploymentTest
         val connected = StubDeviceDescriptor( "Unknown connected" )
 
         // Mimic that the types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
-        val masterCustom = CustomMasterDeviceDescriptor( "Irrelevant", JSON.stringify( StubMasterDeviceDescriptor.serializer(), master ), JSON )
-        val connectedCustom = CustomDeviceDescriptor( "Irrelevant", JSON.stringify( StubDeviceDescriptor.serializer(), connected ), JSON )
+        val masterCustom = CustomMasterDeviceDescriptor( "Irrelevant", JSON.encodeToString( StubMasterDeviceDescriptor.serializer(), master ), JSON )
+        val connectedCustom = CustomDeviceDescriptor( "Irrelevant", JSON.encodeToString( StubDeviceDescriptor.serializer(), connected ), JSON )
 
         protocol.addMasterDevice( masterCustom )
         protocol.addConnectedDevice( connectedCustom, masterCustom )
@@ -164,8 +164,8 @@ class StudyDeploymentTest
         val device2 = StubDeviceDescriptor( "Unknown device 2" )
 
         // Mimic that the types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
-        val device1Custom = CustomDeviceDescriptor( "One class", JSON.stringify( StubMasterDeviceDescriptor.serializer(), device1 ), JSON )
-        val device2Custom = CustomDeviceDescriptor( "Not the same class", JSON.stringify( StubDeviceDescriptor.serializer(), device2 ), JSON )
+        val device1Custom = CustomDeviceDescriptor( "One class", JSON.encodeToString( StubMasterDeviceDescriptor.serializer(), device1 ), JSON )
+        val device2Custom = CustomDeviceDescriptor( "Not the same class", JSON.encodeToString( StubDeviceDescriptor.serializer(), device2 ), JSON )
 
         protocol.addMasterDevice( master )
         protocol.addConnectedDevice( device1Custom, master )

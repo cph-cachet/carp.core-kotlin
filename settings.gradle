@@ -7,7 +7,3 @@ include 'carp.protocols.core'
 include 'carp.studies.core'
 include 'carp.deployment.core'
 include 'carp.client.core'
-
-// Allow specifying a single dependency in the common source sets to projects configured in this build.
-// https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html#experimental-metadata-publishing-mode
-enableFeaturePreview('GRADLE_METADATA')

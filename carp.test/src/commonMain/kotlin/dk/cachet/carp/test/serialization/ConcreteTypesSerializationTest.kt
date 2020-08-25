@@ -2,10 +2,11 @@
 
 package dk.cachet.carp.test.serialization
 
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerialModule
-import kotlinx.serialization.modules.SerialModuleCollector
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.SerializersModuleCollector
 import kotlin.reflect.KClass
 import kotlin.test.*
 
@@ -22,7 +23,7 @@ abstract class ConcreteTypesSerializationTest(
     /**
      * The serial module containing the concrete types for which serialization needs to be tested.
      */
-    private val serialModule: SerialModule,
+    private val serialModule: SerializersModule,
     /**
      * For each of the types registered in [serialModule], an instance to be used to test serialization.
      */
@@ -51,17 +52,17 @@ abstract class ConcreteTypesSerializationTest(
             assertNotNull( serializer, "No serializer registered for type '$type'" )
 
             // Verify whether serializing and deserializing the instance results in the same object.
-            val serialized = json.stringify( serializer, toSerialize )
-            val parsed = json.parse( serializer, serialized )
+            val serialized = json.encodeToString( serializer, toSerialize )
+            val parsed = json.decodeFromString( serializer, serialized )
             assertEquals( toSerialize, parsed, "Serialization of type '$type' failed." )
         }
     }
 
 
-    private fun getPolymorphicSerializers( serialModule: SerialModule ): Map<KClass<*>, KSerializer<*>>
+    private fun getPolymorphicSerializers( serialModule: SerializersModule ): Map<KClass<*>, KSerializer<*>>
     {
         val collector =
-            object : SerialModuleCollector
+            object : SerializersModuleCollector
             {
                 val serializers: MutableMap<KClass<*>, KSerializer<*>> = mutableMapOf()
 
@@ -72,6 +73,11 @@ abstract class ConcreteTypesSerializationTest(
                 {
                     serializers[ actualClass ] = actualSerializer
                 }
+
+                override fun <Base : Any> polymorphicDefault(
+                    baseClass: KClass<Base>,
+                    defaultSerializerProvider: (className: String?) -> DeserializationStrategy<out Base>?
+                ) = throw UnsupportedOperationException()
             }
 
         serialModule.dumpTo( collector )
