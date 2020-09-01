@@ -30,7 +30,7 @@ data class Smartphone(
         /**
          * A factory to create measures for sensors commonly available on smartphones.
          */
-        val Sensors: PhoneSensorMeasure.Factory = PhoneSensorMeasure.Factory
+        val Sensors: PhoneSensorMeasure.Companion = PhoneSensorMeasure.Companion
 
         /**
          * All the data types and sampling schemes of sensor commonly available on smartphones.

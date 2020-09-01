@@ -50,7 +50,7 @@ data class PhoneSensorMeasure private constructor(
         val STEPCOUNT = add( Stepcount ) // No configuration options available.
     }
 
-    companion object Factory
+    companion object
     {
         private fun <T : DataTypeSamplingScheme<*>> measureOf( samplingScheme: T, duration: TimeSpan ) =
             PhoneSensorMeasure( samplingScheme.type, duration )
