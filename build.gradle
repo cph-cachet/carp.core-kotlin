@@ -81,7 +81,7 @@ configure( subprojects - detektModule ) {
             compilations.main.kotlinOptions.jvmTarget = versions.jvmTarget
             compilations.test.kotlinOptions.jvmTarget = versions.jvmTarget
         }
-        js(IR) {
+        js(LEGACY) {
             binaries.executable()
             browser()
         }

@@ -53,9 +53,9 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
 
             // Output raw JSON as originally wrapped.
             // TODO: This relies on accessing private properties dynamically since no raw JSON can be output using KOutput.
-            val composer = encoder.asDynamic()._composer
+            val composer = encoder.asDynamic().composer_0
             val toPrint = "," + value.jsonSource // The ',' is needed since it is normally added by the Encoder which is not called here.
-            composer.print_4( toPrint ) // This is the generated 'print' function overload for strings.
+            composer.`print_61zpoe$`( toPrint ) // This is the generated 'print' function overload for strings.
         }
         else
         {
@@ -102,18 +102,18 @@ actual abstract class UnknownPolymorphicSerializer<P : Any, W : P> actual constr
         {
             // TODO: Currently, the following relies on accessing properties dynamically.
 
-            val reader = decoder.asDynamic()._reader_0
+            val reader = decoder.asDynamic().`reader_8be2vx$`
 
             // Get source string.
-            val jsonSource: String = reader._source as String
+            val jsonSource: String = reader.source_0 as String
 
             // Find starting position of the unknown object.
-            val start = reader._tokenPosition as Int
+            val start = reader.tokenPosition_0 as Int
 
             // Find end position of the unknown object by skipping to the next element.
             // Skipping the element is also needed since otherwise deserialization of subsequent elements fails.
             reader.skipElement()
-            val end = reader._tokenPosition as Int
+            val end = reader.tokenPosition_0 as Int
 
             // Initialize wrapper for unknown object based on source string.
             val elementSource = jsonSource.subSequence( start, end ).toString()
