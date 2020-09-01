@@ -4,9 +4,9 @@ import { kotlin } from 'kotlin'
 import ArrayList = kotlin.collections.ArrayList
 import HashSet = kotlin.collections.HashSet
 import toSet = kotlin.collections.toSet_us0mfu$
-import { dk as dkc } from 'carp.common'
+import { dk as dkc } from 'carp.core-kotlin-carp.common'
 import UUID = dkc.cachet.carp.common.UUID
-import { dk } from 'carp.deployment.core'
+import { dk } from 'carp.core-kotlin-carp.deployment.core'
 import Participation = dk.cachet.carp.deployment.domain.users.Participation
 import StudyInvitation = dk.cachet.carp.deployment.domain.users.StudyInvitation
 import DeviceDeploymentStatus = dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
@@ -33,7 +33,7 @@ describe( "carp.deployment.core", () => {
             new StudyDeploymentStatus.Stopped( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null )
         ]
 
-        const moduleVerifier = new VerifyModule( 'carp.deployment.core', instances )
+        const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.deployment.core', instances )
         await moduleVerifier.verify()
     } )
 } )

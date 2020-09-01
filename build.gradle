@@ -243,19 +243,8 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
     projects.each { dependsOn("${it.name}:jsBrowserDistribution") }
 
     projects.each {
-        // Copy JS sources into ...
-        from "${it.projectDir}/build/distributions"
-        from it.compileKotlinJs.destinationDir
-        def configuration = it.configurations.jsTestRuntimeClasspath
-        from(files {
-            configuration.collect { File file ->
-                file.name.endsWith(".jar")
-                        ? zipTree(file.absolutePath).matching {
-                    include '*.js'
-                    include '*.js.map' }
-                        : files()
-            }
-        }.builtBy(configuration))
+        // Copy JS packages into ...
+        from "${it.rootDir}/build/js/node_modules"
 
         // ... 'node_modules' so that test can retrieve dependencies.
         into "./${typescriptFolder}/node_modules"
@@ -266,7 +255,11 @@ task verifyTsDeclarations(type: NodeTask, dependsOn: copyTestJsSources) {
     execOverrides {
         it.workingDir = typescriptFolder
     }
-    args = ['--require', 'ts-node/register', './tests/**/*.ts']
+    args = [
+        '--require', 'ts-node/register',
+        '--require', 'jsdom-global/register',
+        './tests/**/*.ts'
+    ]
 }
 
 // Add common dependencies:

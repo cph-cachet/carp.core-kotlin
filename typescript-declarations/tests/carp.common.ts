@@ -2,9 +2,9 @@ import { expect } from 'chai'
 import VerifyModule from './VerifyModule'
 
 import { Long } from 'kotlin'
-import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-runtime'
+import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
 import Json = kotlinx.serialization.json.Json
-import { dk } from "carp.common"
+import { dk } from "carp.core-kotlin-carp.common"
 import DateTime = dk.cachet.carp.common.DateTime
 import EmailAddress = dk.cachet.carp.common.EmailAddress
 import TimeSpan = dk.cachet.carp.common.TimeSpan
@@ -15,7 +15,7 @@ import AccountIdentity = dk.cachet.carp.common.users.AccountIdentity
 import EmailAccountIdentity = dk.cachet.carp.common.users.EmailAccountIdentity
 import emailAccountIdentityFromString = dk.cachet.carp.common.users.EmailAccountIdentity_init_61zpoe$
 import UsernameAccountIdentity = dk.cachet.carp.common.users.UsernameAccountIdentity
-import createDefaultJSON = dk.cachet.carp.common.serialization.createDefaultJSON_stpyu4$
+import createDefaultJSON = dk.cachet.carp.common.serialization.createDefaultJSON_4jix7z$
 
 
 describe( "carp.common", () => {
@@ -36,7 +36,7 @@ describe( "carp.common", () => {
             UsernameAccountIdentity.Companion
         ]
 
-        const moduleVerifier = new VerifyModule( 'carp.common', instances )
+        const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.common', instances )
         await moduleVerifier.verify()
     } )
 
@@ -47,7 +47,7 @@ describe( "carp.common", () => {
             
             const json: Json = createDefaultJSON()
             const serializer = DateTime.Companion.serializer()
-            const serialized = json.stringify_tf03ej$( serializer, dateTime )
+            const serialized = json.encodeToString_tf03ej$( serializer, dateTime )
     
             expect( serialized ).equals( "42" )
         } )
