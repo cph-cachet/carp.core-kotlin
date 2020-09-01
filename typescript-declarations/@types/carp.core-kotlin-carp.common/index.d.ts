@@ -1,7 +1,7 @@
-declare module 'carp.common'
+declare module 'carp.core-kotlin-carp.common'
 {
     import { Long } from 'kotlin'
-    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-runtime'
+    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
     import Json = kotlinx.serialization.json.Json
     
     
@@ -113,6 +113,6 @@ declare module 'carp.common'
 
     namespace dk.cachet.carp.common.serialization
     {
-        function createDefaultJSON_stpyu4$(): Json
+        function createDefaultJSON_4jix7z$(): Json
     }
 }

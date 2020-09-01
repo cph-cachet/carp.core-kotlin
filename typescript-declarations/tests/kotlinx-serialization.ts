@@ -6,7 +6,7 @@ describe( "kotlinx-serialization", () => {
         const instances = new Array<any>()
 
         const moduleVerifier = new VerifyModule(
-            'kotlinx-serialization-kotlinx-serialization-runtime',
+            'kotlinx-serialization-kotlinx-serialization-core-jsLegacy',
             instances
         )
         await moduleVerifier.verify()

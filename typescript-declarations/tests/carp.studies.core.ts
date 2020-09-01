@@ -5,18 +5,18 @@ import { kotlin } from 'kotlin'
 import ArrayList = kotlin.collections.ArrayList
 import HashSet = kotlin.collections.HashSet
 import toSet = kotlin.collections.toSet_us0mfu$
-import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-runtime'
+import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
 import Json = kotlinx.serialization.json.Json
 import getListSerializer = kotlinx.serialization.get_list_gekvwj$
-import { dk as cdk } from 'carp.common'
+import { dk as cdk } from 'carp.core-kotlin-carp.common'
 import DateTime = cdk.cachet.carp.common.DateTime
 import UUID = cdk.cachet.carp.common.UUID
 import UsernameIdentity = cdk.cachet.carp.common.users.UsernameAccountIdentity
-import { dk as ddk } from 'carp.deployment.core'
+import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
 import Participation = ddk.cachet.carp.deployment.domain.users.Participation
 import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
 import StudyDeploymentStatus = ddk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import { dk } from 'carp.studies.core'
+import { dk } from 'carp.core-kotlin-carp.studies.core'
 import AssignParticipantDevices = dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import getAssignedParticipantIds = dk.cachet.carp.studies.domain.users.participantIds_nvx6bb$
 import getAssignedDeviceRoles = dk.cachet.carp.studies.domain.users.deviceRoles_nvx6bb$
@@ -27,7 +27,7 @@ import ParticipantGroupStatus = dk.cachet.carp.studies.domain.ParticipantGroupSt
 import StudyDetails = dk.cachet.carp.studies.domain.StudyDetails
 import StudyStatus = dk.cachet.carp.studies.domain.StudyStatus
 import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
-import createStudiesSerializer = dk.cachet.carp.studies.infrastructure.createStudiesSerializer_stpyu4$
+import createStudiesSerializer = dk.cachet.carp.studies.infrastructure.createStudiesSerializer_4jix7z$
 
 
 describe( "carp.studies.core", () => {
@@ -51,7 +51,7 @@ describe( "carp.studies.core", () => {
             StudyServiceRequest.Companion
         ]
 
-        const moduleVerifier = new VerifyModule( 'carp.studies.core', instances )
+        const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.studies.core', instances )
         await moduleVerifier.verify()
     } )
 
@@ -110,7 +110,7 @@ describe( "carp.studies.core", () => {
 
             const json: Json = createStudiesSerializer()
             const serializer = StudyServiceRequest.Companion.serializer()
-            const serialized = json.stringify_tf03ej$( serializer, createStudy )
+            const serialized = json.encodeToString_tf03ej$( serializer, createStudy )
             expect( serialized ).has.string( "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.CreateStudy" )
         } )
 
@@ -124,7 +124,7 @@ describe( "carp.studies.core", () => {
 
             const json: Json = createStudiesSerializer()
             const serializer = StudyServiceRequest.Companion.serializer()
-            const serialized = json.stringify_tf03ej$( serializer, deployGroup )
+            const serialized = json.encodeToString_tf03ej$( serializer, deployGroup )
             expect( serialized ).is.not.undefined
         } )
 
@@ -135,7 +135,7 @@ describe( "carp.studies.core", () => {
             const json: Json = createStudiesSerializer()
             const serializer = getListSerializer( StudyStatus.Companion.serializer() )
             expect( serializer ).is.not.undefined
-            const serialized = json.stringify_tf03ej$( serializer, statusList )
+            const serialized = json.encodeToString_tf03ej$( serializer, statusList )
             expect( serialized ).is.not.not.undefined
         } )
     } )
