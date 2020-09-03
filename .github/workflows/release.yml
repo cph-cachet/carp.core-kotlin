@@ -30,7 +30,7 @@ jobs:
 
       - name: Publish to staging repo
         if: success()
-        run: ./gradlew publishSigned
+        run: ./gradlew jsPackageJson publishSigned
       
       - name: Release staged repo
         if: success()
