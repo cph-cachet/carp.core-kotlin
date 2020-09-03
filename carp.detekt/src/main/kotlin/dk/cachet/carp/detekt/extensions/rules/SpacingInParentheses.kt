@@ -3,6 +3,7 @@ package dk.cachet.carp.detekt.extensions.rules
 import dk.cachet.carp.detekt.extensions.getNextElement
 import dk.cachet.carp.detekt.extensions.getPrecedingElement
 import io.gitlab.arturbosch.detekt.api.CodeSmell
+import io.gitlab.arturbosch.detekt.api.Config
 import io.gitlab.arturbosch.detekt.api.Debt
 import io.gitlab.arturbosch.detekt.api.Entity
 import io.gitlab.arturbosch.detekt.api.Issue
@@ -21,7 +22,7 @@ import org.jetbrains.kotlin.psi.stubs.elements.KtParameterElementType
 /**
  * A rule which verifies whether spaces are added in all parentheses, except those of higher-order functions.
  */
-class SpacingInParentheses : Rule()
+class SpacingInParentheses( config: Config = Config.empty ) : Rule( config )
 {
     override val issue = Issue(
         javaClass.simpleName,

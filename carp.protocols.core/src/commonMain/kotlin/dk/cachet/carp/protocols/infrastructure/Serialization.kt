@@ -8,6 +8,7 @@ import dk.cachet.carp.protocols.domain.data.IntervalSamplingConfiguration
 import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.AltBeacon
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.CustomProtocolDevice
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
@@ -26,49 +27,57 @@ import dk.cachet.carp.protocols.domain.triggers.ManualTrigger
 import dk.cachet.carp.protocols.domain.triggers.ScheduledTrigger
 import dk.cachet.carp.protocols.domain.triggers.Trigger
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.EmptyModule
+import kotlinx.serialization.modules.EmptySerializersModule
+import kotlinx.serialization.modules.PolymorphicModuleBuilder
 import kotlinx.serialization.modules.plus
+import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.SerialModule
+import kotlinx.serialization.modules.subclass
 
 
 /**
  * Types in the [dk.cachet.carp.protocols] module which need to be registered when using [Json] serializer.
  */
 val PROTOCOLS_SERIAL_MODULE = SerializersModule {
+    fun PolymorphicModuleBuilder<AnyMasterDeviceDescriptor>.registerMasterDeviceDescriptorSubclasses()
+    {
+        subclass( Smartphone::class )
+        subclass( CustomProtocolDevice::class )
+    }
+
     polymorphic( DeviceDescriptor::class )
     {
-        AltBeacon::class with AltBeacon.serializer()
+        subclass( AltBeacon::class )
+        registerMasterDeviceDescriptorSubclasses()
     }
-    polymorphic( MasterDeviceDescriptor::class, DeviceDescriptor::class )
+    polymorphic( MasterDeviceDescriptor::class )
     {
-        Smartphone::class with Smartphone.serializer()
-        CustomProtocolDevice::class with CustomProtocolDevice.serializer()
+        registerMasterDeviceDescriptorSubclasses()
     }
     polymorphic( SamplingConfiguration::class )
     {
-        IntervalSamplingConfiguration::class with IntervalSamplingConfiguration.serializer()
+        subclass( IntervalSamplingConfiguration::class )
     }
     polymorphic( DeviceRegistration::class )
     {
-        DefaultDeviceRegistration::class with DefaultDeviceRegistration.serializer()
-        AltBeaconDeviceRegistration::class with AltBeaconDeviceRegistration.serializer()
+        subclass( DefaultDeviceRegistration::class )
+        subclass( AltBeaconDeviceRegistration::class )
     }
     polymorphic( TaskDescriptor::class )
     {
-        ConcurrentTask::class with ConcurrentTask.serializer()
-        CustomProtocolTask::class with CustomProtocolTask.serializer()
+        subclass( ConcurrentTask::class )
+        subclass( CustomProtocolTask::class )
     }
     polymorphic( Measure::class )
     {
-        DataTypeMeasure::class with DataTypeMeasure.serializer()
-        PhoneSensorMeasure::class with PhoneSensorMeasure.serializer()
+        subclass( DataTypeMeasure::class )
+        subclass( PhoneSensorMeasure::class )
     }
     polymorphic( Trigger::class )
     {
-        ElapsedTimeTrigger::class with ElapsedTimeTrigger.serializer()
-        ScheduledTrigger::class with ScheduledTrigger.serializer()
-        ManualTrigger::class with ManualTrigger.serializer()
+        subclass( ElapsedTimeTrigger::class )
+        subclass( ScheduledTrigger::class )
+        subclass( ManualTrigger::class )
     }
 }
 
@@ -77,7 +86,7 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
  * This ensures a global configuration on how serialization should occur.
  * Additional types the serializer needs to be aware about (such as polymorph extending classes) should be registered through [module].
  */
-fun createProtocolsSerializer( module: SerialModule = EmptyModule ): Json =
+fun createProtocolsSerializer( module: SerializersModule = EmptySerializersModule ): Json =
     createDefaultJSON( PROTOCOLS_SERIAL_MODULE + module )
 
 /**
@@ -92,46 +101,46 @@ var JSON: Json = createProtocolsSerializer()
  * Create a [ProtocolOwner] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun ProtocolOwner.Companion.fromJson( json: String ): ProtocolOwner =
-    JSON.parse( serializer(), json )
+    JSON.decodeFromString( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
 fun ProtocolOwner.toJson(): String =
-    JSON.stringify( ProtocolOwner.serializer(), this )
+    JSON.encodeToString( ProtocolOwner.serializer(), this )
 
 /**
  * Create a [ProtocolVersion] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun ProtocolVersion.Companion.fromJson( json: String ): ProtocolVersion =
-    JSON.parse( serializer(), json )
+    JSON.decodeFromString( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
 fun ProtocolVersion.toJson(): String =
-    JSON.stringify( ProtocolVersion.serializer(), this )
+    JSON.encodeToString( ProtocolVersion.serializer(), this )
 
 /**
  * Create a [StudyProtocolSnapshot] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun StudyProtocolSnapshot.Companion.fromJson( json: String ): StudyProtocolSnapshot =
-    JSON.parse( serializer(), json )
+    JSON.decodeFromString( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
 fun StudyProtocolSnapshot.toJson(): String =
-    JSON.stringify( StudyProtocolSnapshot.serializer(), this )
+    JSON.encodeToString( StudyProtocolSnapshot.serializer(), this )
 
 /**
  * Create a [DeviceRegistration] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun DeviceRegistration.Companion.fromJson( json: String ): DeviceRegistration =
-    JSON.parse( DeviceRegistrationSerializer, json )
+    JSON.decodeFromString( DeviceRegistrationSerializer, json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
 fun DeviceRegistration.toJson(): String =
-    JSON.stringify( DeviceRegistrationSerializer, this )
+    JSON.encodeToString( DeviceRegistrationSerializer, this )

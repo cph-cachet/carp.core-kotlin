@@ -9,6 +9,7 @@ import kotlin.reflect.KClass
  * Note that this is different from [DeploymentIssue]:
  * intermediate 'work-in-progress' configurations might not be deployable but be valid configurations.
  */
+@Suppress( "Immutable", "DataClass" )
 class InvalidConfigurationError( message: String ) : Throwable( message )
 
 

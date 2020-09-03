@@ -16,8 +16,8 @@ class UUIDTest
         val id = UUID( "00000000-0000-0000-0000-000000000000" )
 
         val json = createDefaultJSON()
-        val serialized = json.stringify( UUID.serializer(), id )
-        val parsed = json.parse( UUID.serializer(), serialized )
+        val serialized = json.encodeToString( UUID.serializer(), id )
+        val parsed = json.decodeFromString( UUID.serializer(), serialized )
 
         assertEquals( id, parsed )
     }
@@ -31,13 +31,13 @@ class UUIDTest
         val json = createDefaultJSON()
 
         val id = Id( UUID( "00000000-0000-0000-0000-000000000000" ) )
-        val idSerialized = json.stringify( Id.serializer(), id )
-        val idParsed = json.parse( Id.serializer(), idSerialized )
+        val idSerialized = json.encodeToString( Id.serializer(), id )
+        val idParsed = json.decodeFromString( Id.serializer(), idSerialized )
         assertEquals( id, idParsed )
 
         val nullableId = Id( null )
-        val nullableSerialized = json.stringify( Id.serializer(), nullableId )
-        val nullableParsed = json.parse( Id.serializer(), nullableSerialized )
+        val nullableSerialized = json.encodeToString( Id.serializer(), nullableId )
+        val nullableParsed = json.decodeFromString( Id.serializer(), nullableSerialized )
         assertEquals( nullableId, nullableParsed )
     }
 
@@ -48,7 +48,7 @@ class UUIDTest
         val id = UUID( "00000000-0000-0000-0000-000000000000" )
 
         val json = createDefaultJSON()
-        val serialized = json.stringify( UUID.serializer(), id )
+        val serialized = json.encodeToString( UUID.serializer(), id )
 
         assertEquals( "\"${id.stringRepresentation}\"", serialized )
     }

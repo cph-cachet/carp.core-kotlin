@@ -1,8 +1,8 @@
-declare module 'carp.protocols.core'
+declare module 'carp.core-kotlin-carp.protocols.core'
 {
-    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-runtime'
+    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
     import Json = kotlinx.serialization.json.Json
-    import { dk as cdk } from 'carp.common'
+    import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import DateTime = cdk.cachet.carp.common.DateTime
     import UUID = cdk.cachet.carp.common.UUID
 
@@ -72,6 +72,6 @@ declare module 'carp.protocols.core'
             }
         }
 
-        function createProtocolsSerializer_stpyu4$(): Json
+        function createProtocolsSerializer_4jix7z$(): Json
     }
 }

@@ -9,7 +9,7 @@ import dk.cachet.carp.protocols.infrastructure.JSON
  */
 fun StudyRuntimeSnapshot.Companion.fromJson( json: String ): StudyRuntimeSnapshot
 {
-    return JSON.parse( serializer(), json )
+    return JSON.decodeFromString( serializer(), json )
 }
 
 /**
@@ -17,5 +17,5 @@ fun StudyRuntimeSnapshot.Companion.fromJson( json: String ): StudyRuntimeSnapsho
  */
 fun StudyRuntimeSnapshot.toJson(): String
 {
-    return JSON.stringify( StudyRuntimeSnapshot.serializer(), this )
+    return JSON.encodeToString( StudyRuntimeSnapshot.serializer(), this )
 }

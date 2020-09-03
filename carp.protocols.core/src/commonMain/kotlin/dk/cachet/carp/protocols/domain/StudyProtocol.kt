@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.Immutable
+import dk.cachet.carp.common.ddd.DomainEvent
 import dk.cachet.carp.protocols.domain.deployment.DeploymentError
 import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
 import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
@@ -38,7 +38,7 @@ class StudyProtocol(
     val description: String = ""
 ) : StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration() )
 {
-    sealed class Event : Immutable()
+    sealed class Event : DomainEvent()
     {
         data class MasterDeviceAdded( val device: AnyMasterDeviceDescriptor ) : Event()
         data class ConnectedDeviceAdded( val connected: AnyDeviceDescriptor, val master: AnyMasterDeviceDescriptor ) : Event()

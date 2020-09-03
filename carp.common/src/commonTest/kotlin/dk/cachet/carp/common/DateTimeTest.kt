@@ -35,8 +35,8 @@ class DateTimeTest
         val dateTime = DateTime.now()
 
         val json = createDefaultJSON()
-        val serialized = json.stringify( DateTime.serializer(), dateTime )
-        val parsed = json.parse( DateTime.serializer(), serialized )
+        val serialized = json.encodeToString( DateTime.serializer(), dateTime )
+        val parsed = json.decodeFromString( DateTime.serializer(), serialized )
 
         assertEquals( dateTime, parsed )
     }

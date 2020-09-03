@@ -33,8 +33,8 @@ class ProtocolServiceRequestsTest
     {
         requests.forEach { request ->
             val serializer = ProtocolServiceRequest.serializer()
-            val serialized = JSON.stringify( serializer, request )
-            val parsed = JSON.parse( serializer, serialized )
+            val serialized = JSON.encodeToString( serializer, request )
+            val parsed = JSON.decodeFromString( serializer, serialized )
             assertEquals( request, parsed )
         }
     }
@@ -55,8 +55,8 @@ class ProtocolServiceRequestsTest
     fun invokeOn_deserialized_request_requires_copy() = runBlockingTest {
         val request = ProtocolServiceRequest.Add( createComplexProtocol().getSnapshot(), "Initial" )
         val serializer = ProtocolServiceRequest.serializer()
-        val serialized = JSON.stringify( serializer, request )
-        val parsed = JSON.parse( serializer, serialized ) as ProtocolServiceRequest.Add
+        val serialized = JSON.encodeToString( serializer, request )
+        val parsed = JSON.decodeFromString( serializer, serialized ) as ProtocolServiceRequest.Add
 
         // `ServiceInvoker` class delegation is not initialized as part of deserialization:
         // https://github.com/Kotlin/kotlinx.serialization/issues/241#issuecomment-555020729

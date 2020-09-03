@@ -42,8 +42,8 @@ class DeploymentServiceRequestsTest
     {
         requests.forEach { request ->
             val serializer = DeploymentServiceRequest.serializer()
-            val serialized = JSON.stringify( serializer, request )
-            val parsed = JSON.parse( serializer, serialized )
+            val serialized = JSON.encodeToString( serializer, request )
+            val parsed = JSON.decodeFromString( serializer, serialized )
             assertEquals( request, parsed )
         }
     }

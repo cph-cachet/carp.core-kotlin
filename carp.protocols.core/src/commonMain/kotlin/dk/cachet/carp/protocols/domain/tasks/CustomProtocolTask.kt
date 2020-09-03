@@ -14,7 +14,7 @@ data class CustomProtocolTask(
      * A definition on how to run a study on a master device, serialized as a string.
      */
     val studyProtocol: String
-) : TaskDescriptor()
+) : TaskDescriptor
 {
     /**
      * This list is empty, since measures are defined in [studyProtocol] in a different format.

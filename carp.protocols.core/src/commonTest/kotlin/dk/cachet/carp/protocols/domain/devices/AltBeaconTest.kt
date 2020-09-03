@@ -2,7 +2,8 @@ package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.serialization.createDefaultJSON
-import kotlinx.serialization.json.content
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.*
 
 
@@ -46,9 +47,9 @@ class AltBeaconTest
         val registration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 )
 
         val json = createDefaultJSON()
-        val serialized = json.stringify( AltBeaconDeviceRegistration.serializer(), registration )
-        val jsonElement = json.parseJson( serialized ).jsonObject
-        val serializedDeviceId = jsonElement[ DeviceRegistration::deviceId.name ]?.content
+        val serialized = json.encodeToString( AltBeaconDeviceRegistration.serializer(), registration )
+        val jsonElement = json.parseToJsonElement( serialized ).jsonObject
+        val serializedDeviceId = jsonElement[ DeviceRegistration::deviceId.name ]?.jsonPrimitive?.content
         assertEquals( registration.deviceId, serializedDeviceId )
     }
 }

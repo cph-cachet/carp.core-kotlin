@@ -16,8 +16,8 @@ class AccountTest
         var account = Account.withUsernameIdentity( "Test" )
 
         val json = createDefaultJSON()
-        val serialized = json.stringify( Account.serializer(), account )
-        val parsed = json.parse( Account.serializer(), serialized )
+        val serialized = json.encodeToString( Account.serializer(), account )
+        val parsed = json.decodeFromString( Account.serializer(), serialized )
 
         assertEquals( account, parsed )
     }

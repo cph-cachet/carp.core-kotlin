@@ -27,7 +27,7 @@ class CustomTaskDescriptorTest
     {
         val measures: List<Measure> = listOf( StubMeasure() )
         val task = StubTaskDescriptor( "Unknown", measures )
-        val serialized: String = JSON.stringify( StubTaskDescriptor.serializer(), task )
+        val serialized: String = JSON.encodeToString( StubTaskDescriptor.serializer(), task )
 
         val custom = CustomTaskDescriptor( "Irrelevant", serialized, JSON )
         assertEquals( task.name, custom.name )
@@ -41,7 +41,7 @@ class CustomTaskDescriptorTest
     fun initialization_from_invalid_json_fails()
     {
         val incorrect = IncorrectTask()
-        val serialized: String = JSON.stringify( IncorrectTask.serializer(), incorrect )
+        val serialized: String = JSON.encodeToString( IncorrectTask.serializer(), incorrect )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -66,7 +66,7 @@ class CustomMeasureTest
     fun initialization_from_json_extracts_base_Measure_properties()
     {
         val measure = StubMeasure( STUB_DATA_TYPE )
-        val serialized: String = JSON.stringify( StubMeasure.serializer(), measure )
+        val serialized: String = JSON.encodeToString( StubMeasure.serializer(), measure )
 
         val custom = CustomMeasure( "Irrelevant", serialized, JSON )
         assertEquals( measure.type, custom.type )
@@ -79,7 +79,7 @@ class CustomMeasureTest
     fun initialization_from_invalid_json_fails()
     {
         val incorrect = IncorrectMeasure()
-        val serialized: String = JSON.stringify( IncorrectMeasure.serializer(), incorrect )
+        val serialized: String = JSON.encodeToString( IncorrectMeasure.serializer(), incorrect )
 
         assertFailsWith<IllegalArgumentException>
         {

@@ -1,10 +1,10 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.AggregateRoot
+import dk.cachet.carp.common.ddd.DomainEvent
 import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
@@ -29,7 +29,7 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() ) :
     AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>()
 {
-    sealed class Event : Immutable()
+    sealed class Event : DomainEvent()
     {
         data class DeviceRegistered( val device: AnyDeviceDescriptor, val registration: DeviceRegistration ) : Event()
         data class DeviceUnregistered( val device: AnyDeviceDescriptor ) : Event()

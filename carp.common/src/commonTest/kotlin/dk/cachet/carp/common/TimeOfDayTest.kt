@@ -34,8 +34,8 @@ class TimeOfDayTest
         val time = TimeOfDay( 12 )
 
         val json = createDefaultJSON()
-        val serialized = json.stringify( TimeOfDay.serializer(), time )
-        val parsed = json.parse( TimeOfDay.serializer(), serialized )
+        val serialized = json.encodeToString( TimeOfDay.serializer(), time )
+        val parsed = json.decodeFromString( TimeOfDay.serializer(), serialized )
 
         assertEquals( time, parsed )
     }

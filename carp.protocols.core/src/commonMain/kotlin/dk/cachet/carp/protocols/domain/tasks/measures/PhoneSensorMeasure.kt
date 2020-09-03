@@ -26,7 +26,7 @@ data class PhoneSensorMeasure private constructor(
      * Infinite by default.
      */
     val duration: TimeSpan = TimeSpan.INFINITE
-) : Measure()
+) : Measure
 {
     /**
      * All the data types and sampling schemes of sensor measures commonly supported on smartphones, supported by [PhoneSensorMeasure].
@@ -50,7 +50,7 @@ data class PhoneSensorMeasure private constructor(
         val STEPCOUNT = add( Stepcount ) // No configuration options available.
     }
 
-    companion object Factory
+    companion object
     {
         private fun <T : DataTypeSamplingScheme<*>> measureOf( samplingScheme: T, duration: TimeSpan ) =
             PhoneSensorMeasure( samplingScheme.type, duration )

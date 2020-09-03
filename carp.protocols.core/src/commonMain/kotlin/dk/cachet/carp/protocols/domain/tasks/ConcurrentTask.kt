@@ -13,4 +13,4 @@ data class ConcurrentTask(
     override val name: String,
     @Serializable( MeasuresSerializer::class )
     override val measures: List<Measure>
-) : TaskDescriptor()
+) : TaskDescriptor

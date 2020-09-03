@@ -5,4 +5,4 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class StubSamplingConfiguration( val configuration: String ) : SamplingConfiguration()
+data class StubSamplingConfiguration( val configuration: String ) : SamplingConfiguration

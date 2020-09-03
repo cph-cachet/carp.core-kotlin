@@ -1,9 +1,9 @@
-declare module 'carp.deployment.core'
+declare module 'carp.core-kotlin-carp.deployment.core'
 {
     import { kotlin } from 'kotlin'
     import ArrayList = kotlin.collections.ArrayList
     import HashSet = kotlin.collections.HashSet
-    import { dk as cdk } from 'carp.common'
+    import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import UUID = cdk.cachet.carp.common.UUID
     import DateTime = cdk.cachet.carp.common.DateTime
 
@@ -141,12 +141,13 @@ declare module 'carp.deployment.core'
 
         class StudyInvitation
         {
-            constructor( name: string, description: string )
+            constructor( name: string, description: string, applicationData?: string )
 
             static get Companion(): StudyInvitation$Companion
 
             readonly name: string
             readonly description: string
+            readonly applicationData: string
         }
         interface StudyInvitation$Companion
         {

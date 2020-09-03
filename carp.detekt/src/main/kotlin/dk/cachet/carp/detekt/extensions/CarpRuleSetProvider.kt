@@ -15,8 +15,8 @@ class CarpRuleSetProvider : RuleSetProvider
         RuleSet(
             ruleSetId,
             listOf(
-                SpacingInParentheses(),
-                CurlyBracesOnSeparateLine()
+                SpacingInParentheses( config ),
+                CurlyBracesOnSeparateLine( config )
             )
         )
 }

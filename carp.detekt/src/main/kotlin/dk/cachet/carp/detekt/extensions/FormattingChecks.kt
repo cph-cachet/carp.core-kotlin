@@ -57,7 +57,9 @@ fun getIndentSize( element: PsiElement ): Int
             // Currently, tabs are not supported.
             // TODO: Can tabs be supported as well?
             if ( whitespace.contains( '\t' ) )
+            {
                 throw UnsupportedOperationException( "getIndentSize does not support tabs." )
+            }
 
             // When a newline is found, count all characters from the newline.
             foundNewline = true

@@ -41,7 +41,7 @@ class CurlyBracesOnSeparateLineFunctionTest
     @Test
     fun function_may_be_defined_on_one_line()
     {
-        val oneLine =  "fun answer(): Int { return 42 }"
+        val oneLine = "fun answer(): Int { return 42 }"
         assertEquals( 0, codeSmells( oneLine ) )
     }
 

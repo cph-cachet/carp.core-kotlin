@@ -1,18 +1,18 @@
-declare module 'carp.studies.core'
+declare module 'carp.core-kotlin-carp.studies.core'
 {
     import { kotlin } from 'kotlin'
     import ArrayList = kotlin.collections.ArrayList
     import HashSet = kotlin.collections.HashSet
-    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-runtime'
+    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
     import Json = kotlinx.serialization.json.Json
-    import { dk as cdk } from 'carp.common'
+    import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import DateTime = cdk.cachet.carp.common.DateTime
     import EmailAddress = cdk.cachet.carp.common.EmailAddress
     import UUID = cdk.cachet.carp.common.UUID
     import AccountIdentity = cdk.cachet.carp.common.users.AccountIdentity
-    import { dk as pdk } from 'carp.protocols.core'
+    import { dk as pdk } from 'carp.core-kotlin-carp.protocols.core'
     import StudyProtocolSnapshot = pdk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-    import { dk as ddk } from 'carp.deployment.core'
+    import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
     import Participation = ddk.cachet.carp.deployment.domain.users.Participation
     import StudyDeploymentStatus = ddk.cachet.carp.deployment.domain.StudyDeploymentStatus
     import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
@@ -221,6 +221,6 @@ declare module 'carp.studies.core'
             }
         }
 
-        function createStudiesSerializer_stpyu4$(): Json
+        function createStudiesSerializer_4jix7z$(): Json
     }
 }

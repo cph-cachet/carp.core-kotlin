@@ -47,7 +47,11 @@ private val protocolInstances = listOf(
         Smartphone( "User's phone"),
         TimeOfDay( 12 ), RecurrenceRule( RecurrenceRule.Frequency.DAILY )
     ),
-    ManualTrigger( "Mood", "Describe how you are feeling at the moment." )
+    ManualTrigger(
+        "User's phone",
+        "Mood",
+        "Describe how you are feeling at the moment."
+    )
 )
 
 /**
