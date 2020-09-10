@@ -25,7 +25,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 /**
  * Name of the class descriptor property for polymorphic serialization.
  */
-val CLASS_DISCRIMINATOR: String = "\$type"
+const val CLASS_DISCRIMINATOR: String = "\$type"
 
 /**
  * Create a [Json] serializer adopting a default CARP infrastructure configuration.
@@ -36,9 +36,6 @@ fun createDefaultJSON( module: SerializersModule = EmptySerializersModule ): Jso
 {
     return Json {
         classDiscriminator = CLASS_DISCRIMINATOR
-        // TODO: This used to be enabled by default before, but is disabled by default in kotlinx.serialization 1.0.0.
-        //  We should look at the serialized output of `DeviceDescriptor.samplingConfiguration` to determine whether we want this.
-        allowStructuredMapKeys = true
         serializersModule = COMMON_SERIAL_MODULE + module
     }
 }
