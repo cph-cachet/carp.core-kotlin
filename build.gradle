@@ -264,7 +264,7 @@ task verifyTsDeclarations(type: NodeTask, dependsOn: copyTestJsSources) {
 
 // Add common dependencies:
 // - `carp.test` for testing
-// - reflection is used by unknown polymorphic serializers.
+// - reflection for testing on JVM
 // TODO: unknown polymorphic serializers are only expected to be used on the server-side. Can this feature be made optional or refactored?
 configure( coreModules + commonModule ) {
     buildscript {
@@ -284,7 +284,7 @@ configure( coreModules + commonModule ) {
                     implementation project(':carp.test')
                 }
             }
-            jvmMain {
+            jvmTest {
                 dependencies {
                     implementation kotlin('reflect')
                 }
