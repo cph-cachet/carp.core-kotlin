@@ -17,7 +17,7 @@ declare module 'kotlin'
             // HACK: This internal array is exposed to simplify iterating over Kotlin arrays.
             //       It is unclear to me how to expose Kotlin's higher-order collection functions.
             readonly array_hd7ov6$_0: T[]
-            readonly size: Int
+            readonly size: number
 
             get_za3lpa$( index: number ): T
         }
