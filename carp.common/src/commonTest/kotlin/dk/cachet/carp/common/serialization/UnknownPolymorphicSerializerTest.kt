@@ -55,7 +55,11 @@ class UnknownPolymorphicSerializerTest
         by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomBaseType( className, json, serializer ) } )
 
 
-    private fun initializeJson() = Json { serializersModule = SERIAL_MODULE }
+    private fun initializeJson() = Json {
+        // TODO: Rather than hardcoding the class discriminator, get it from the `json.configuration`.
+        classDiscriminator = CLASS_DISCRIMINATOR
+        serializersModule = SERIAL_MODULE
+    }
 
     @Test
     fun base_properties_are_serialized()
@@ -79,7 +83,8 @@ class UnknownPolymorphicSerializerTest
         val parsed = json.decodeFromString( UnknownBaseTypeSerializer, unknownSerialized )
         assertTrue( parsed is CustomBaseType )
         assertEquals( "dk.cachet.carp.common.serialization.UnknownPolymorphicSerializerTest.UnknownType", parsed.className )
-        val expectedJsonSource = json.encodeToString( DerivingType.serializer(), toSerialize )
+        val expectedJsonSource = json.encodeToString( BaseType.serializer(), toSerialize )
+            .replace( DerivingType::class.simpleName!!, "UnknownType" )
         assertEquals( expectedJsonSource, parsed.jsonSource )
     }
 }
