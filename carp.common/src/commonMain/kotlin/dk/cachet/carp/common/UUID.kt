@@ -4,7 +4,9 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
 
 
 /**
@@ -32,9 +34,12 @@ val UUIDRegex = Regex( "([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9
 /**
  * A custom serializer for [UUID].
  */
-@Serializer( forClass = UUID::class )
 object UUIDSerializer : KSerializer<UUID>
 {
+    override val descriptor: SerialDescriptor
+        get() = PrimitiveSerialDescriptor( "dk.cachet.carp.common.UUID", PrimitiveKind.STRING )
+
+
     override fun serialize( encoder: Encoder, value: UUID )
     {
         encoder.encodeString( value.stringRepresentation )

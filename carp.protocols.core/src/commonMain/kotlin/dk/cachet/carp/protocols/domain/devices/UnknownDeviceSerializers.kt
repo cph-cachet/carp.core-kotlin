@@ -11,7 +11,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.reflect.KClass
 
@@ -37,7 +37,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
         samplingConfiguration =
             if ( samplingConfigurationField in json.keys )
             {
-                val configurationJson: String = json[ samplingConfigurationField ]!!.jsonArray.toString()
+                val configurationJson: String = json[ samplingConfigurationField ]!!.jsonObject.toString()
                 val configurationSerializer = MapSerializer( DataType.serializer(), SamplingConfigurationSerializer )
                 serializer.decodeFromString( configurationSerializer, configurationJson )
             }
@@ -76,7 +76,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
         samplingConfiguration =
             if ( samplingConfigurationField in json.keys )
             {
-                val configurationJson: String = json[ samplingConfigurationField ]!!.jsonArray.toString()
+                val configurationJson: String = json[ samplingConfigurationField ]!!.jsonObject.toString()
                 val configurationSerializer = MapSerializer( DataType.serializer(), SamplingConfigurationSerializer )
                 serializer.decodeFromString( configurationSerializer, configurationJson )
             }
