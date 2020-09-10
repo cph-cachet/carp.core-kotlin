@@ -87,10 +87,6 @@ configure( subprojects - detektModule ) {
         }
 
         sourceSets {
-            all {
-                // TODO: Find out which kotlinx.serialization features cause this and whether we can work around it.
-                languageSettings.useExperimentalAnnotation("kotlinx.serialization.InternalSerializationApi")
-            }
             commonMain {
                 dependencies {
                     implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:${versions.serialization}"
