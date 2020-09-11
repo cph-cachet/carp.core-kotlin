@@ -263,7 +263,7 @@ In case you want to contribute, please follow our [contribution guidelines](http
 We recommend using IntelliJ IDEA 2020, as this is the development environment we use and is therefore fully tested.
 
 - Open the project folder in IntelliJ 2020.
-- Install the Kotlin plugin (1.4.0-release-IJ2020.2-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Install the Kotlin plugin (1.4.10-release-IJ2020.2-1) for IntelliJ IDEA: `Tools->Kotlin->Configure Kotlin Plugin Updates`
 - To build/test/publish, click "Edit Configurations" to add configurations for [the included Gradle tasks](#gradle-tasks), or run them from the Gradle tool window.
 
 ### Gradle tasks

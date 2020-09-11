@@ -205,7 +205,7 @@ private fun <T : Any> String.makeUnknown( instance: T, klass: KClass<T>, key: St
     //       This is complex, and furthermore not 100% foolproof in rare cases (e.g., if the string is used not as a type name).
     //       Probably this should be rewritten with a JSON parser.
     val escapedQualifiedName = qualifiedName.replace( ".", "\\." )
-    val objectRegex = Regex("(\\[\")($escapedQualifiedName)(\",\\{(?!.*?$escapedQualifiedName.*?\"$key\":\"${value}\").*?\"$key\":\"${value}\".*?\\})" )
+    val objectRegex = Regex( "(\\{\"\\\$type\":\")($escapedQualifiedName)(\",(?!.*?$escapedQualifiedName.*?\"$key\":\"$value\").*?\"$key\":\"$value\".*?\\})" )
 
     // Replace type name with an unknown type name to mimic it is not available at runtime.
     val match = objectRegex.find( this )

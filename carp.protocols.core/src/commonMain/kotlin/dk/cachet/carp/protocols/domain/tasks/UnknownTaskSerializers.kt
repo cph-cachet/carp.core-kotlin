@@ -9,7 +9,6 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 
@@ -60,7 +59,7 @@ data class CustomMeasure( override val className: String, override val jsonSourc
         // Get raw JSON string of type (using klaxon) and use kotlinx serialization to deserialize.
         val typeField = Measure::type.name
         require( json.containsKey( typeField ) ) { "No '$typeField' defined." }
-        val typeJson = json[ typeField ]!!.jsonObject.toString()
+        val typeJson = json[ typeField ]!!.jsonPrimitive.toString()
         type = serializer.decodeFromString( DataType.serializer(), typeJson )
     }
 }

@@ -8,7 +8,7 @@ import {
     ClassElement,
     Identifier,
     Literal,
-    Statement,
+    ProgramStatement,
     TSModuleBlock, 
     TSModuleDeclaration, 
     TSInterfaceBody,
@@ -44,7 +44,7 @@ export default class VerifyModule
         }
     }
     
-    verifyStatement( statement: Statement, scope: any ): void
+    verifyStatement( statement: ProgramStatement, scope: any ): void
     {
         switch ( statement.type )
         {

@@ -1,9 +1,12 @@
+@file:Suppress( "TooManyFunctions" )
+
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.domain.data.DataType
 import dk.cachet.carp.protocols.domain.data.IntervalSamplingConfiguration
 import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.AltBeacon
@@ -96,6 +99,18 @@ fun createProtocolsSerializer( module: SerializersModule = EmptySerializersModul
  */
 var JSON: Json = createProtocolsSerializer()
 
+
+/**
+ * Create a [DataType] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
+ */
+fun DataType.Companion.fromJson( json: String ): DataType =
+    JSON.decodeFromString( serializer(), json )
+
+/**
+ * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun DataType.toJson(): String =
+    JSON.encodeToString( DataType.serializer(), this )
 
 /**
  * Create a [ProtocolOwner] from JSON, serialized using the globally set infrastructure serializer ([JSON]).

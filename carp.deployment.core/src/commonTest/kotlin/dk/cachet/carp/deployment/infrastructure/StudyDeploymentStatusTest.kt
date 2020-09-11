@@ -1,6 +1,7 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.serialization.CLASS_DISCRIMINATOR
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
@@ -65,6 +66,6 @@ class StudyDeploymentStatusTest
         val status = deployment.getStatus().toJson()
 
         // This verifies whether the 'CustomMasterDeviceDescriptor' wrapper is removed in JSON output.
-        assertTrue { status.contains( """"device":["com.unknown.UnknownMasterDevice",{""" ) }
+        assertTrue { status.contains( "\"device\":{\"$CLASS_DISCRIMINATOR\":\"com.unknown.UnknownMasterDevice\"" ) }
     }
 }

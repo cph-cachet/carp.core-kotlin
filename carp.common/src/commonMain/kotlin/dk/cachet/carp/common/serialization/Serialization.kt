@@ -23,6 +23,11 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 }
 
 /**
+ * Name of the class descriptor property for polymorphic serialization.
+ */
+const val CLASS_DISCRIMINATOR: String = "\$type"
+
+/**
  * Create a [Json] serializer adopting a default CARP infrastructure configuration.
  * This ensures a global configuration on how serialization should occur.
  * Additional types the serializer needs to be aware about (such as polymorph extending classes) should be registered through [module].
@@ -30,14 +35,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 fun createDefaultJSON( module: SerializersModule = EmptySerializersModule ): Json
 {
     return Json {
-        // The default has this set to "false" and classDiscriminator set to "type".
-        // But, this causes problems for types which include properties with the name "type" (i.e., Measure).
-        // In addition, the custom [UnknownPolymorphicSerializer] also uses array polymorphism at the moment.
-        // Therefore, continuing to use array polymorphism (as it was in older 'kotlinx.serialization' versions) is preferred.
-        useArrayPolymorphism = true
-        // TODO: This used to be enabled by default before, but is disabled by default in kotlinx.serialization 1.0.0.
-        //  We should look at the serialized output of `DeviceDescriptor.samplingConfiguration` to determine whether we want this.
-        allowStructuredMapKeys = true
+        classDiscriminator = CLASS_DISCRIMINATOR
         serializersModule = COMMON_SERIAL_MODULE + module
     }
 }
