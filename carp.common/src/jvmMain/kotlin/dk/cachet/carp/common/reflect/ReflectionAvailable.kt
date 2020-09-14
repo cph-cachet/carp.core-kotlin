@@ -1,4 +1,8 @@
-@file:Suppress( "MatchingDeclarationName" )
+@file:Suppress(
+    "MatchingDeclarationName",
+    // Access to reflection here is internal, and we guarantee it is only accessed when reflection is available.
+    "NO_REFLECTION_IN_CLASS_PATH"
+)
 
 package dk.cachet.carp.common.reflect
 
