@@ -3,6 +3,13 @@
 Maps the information specified in a study protocol to runtime configurations used by the 'client' subystem to run the protocol on concrete devices (e.g., a smartphone) and allow researchers to monitor their state.
 To start collecting data, participants need to be invited, devices need to be registered, and consent needs to be given to collect the requested data.
 
+## Deployment sequence
+
+The following diagram depicts a typical sequence of calls to [the `DeploymentService` endpoints](#application-service) to create a study deployment, invite participants, and deploy it successfully on a client device.
+When using the application and domain services in `carp.studies` and `carp.client` these requests are abstracted away.
+
+![Study deployment sequence diagram](https://i.imgur.com/a8oy5ad.png)
+
 ## Study and device deployment state
 
 Most of the [the `DeploymentService` endpoints](#application-service) return the current status of a study deployment after the requested operation has been executed.
