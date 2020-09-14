@@ -365,7 +365,27 @@ interface StudyServiceTest
     }
 
     @Test
-    fun getParticipantGroupStatuses_fails_for_unknown_studyId() = runBlockingTest {
+    fun getParticipantGroupStatusList_returns_multiple_deployments() = runBlockingTest {
+        val ( service, _ ) = createService()
+        val ( studyId, protocolSnapshot ) = createLiveStudy( service )
+        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+
+        val p1 = service.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val assignedP1 = AssignParticipantDevices( p1.id, deviceRoles )
+        service.deployParticipantGroup( studyId, setOf( assignedP1 ) )
+
+        val p2 = service.addParticipant( studyId, EmailAddress( "test2@test.com" ) )
+        val assignedP2 = AssignParticipantDevices( p2.id, deviceRoles )
+        service.deployParticipantGroup( studyId, setOf( assignedP2 ) )
+
+        val participantIds = service.getParticipantGroupStatusList( studyId )
+            .map { it.participants.single().participantId }
+            .toSet()
+        assertEquals( setOf( p1.id, p2.id ), participantIds )
+    }
+
+    @Test
+    fun getParticipantGroupStatusLists_fails_for_unknown_studyId() = runBlockingTest {
         val ( service, _ ) = createService()
 
         assertFailsWith<IllegalArgumentException> { service.getParticipantGroupStatusList( unknownId ) }
