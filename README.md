@@ -128,6 +128,12 @@ Since this project _does not contain any infrastructure_, you need to include de
 
 As this project progresses, we intend to include [native targets](https://kotlinlang.org/docs/reference/native-overview.html) as well, starting with iOS.
 
+The releases are published to Maven. In case you want to use `SNAPSHOT` versions, use the following repository:
+
+```groovy
+maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
+```
+
 ### Example
 
 The following shows how the subystems intereact to create a study protocol, instantiate it as a study, and deploy it to a client.
