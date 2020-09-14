@@ -1,6 +1,6 @@
 package dk.cachet.carp.common.serialization
 
-import dk.cachet.carp.common.reflect.JvmOnly
+import dk.cachet.carp.common.reflect.reflectIfAvailable
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
@@ -40,9 +40,10 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
     {
         // Enforce that wrapper type (W) implements UnknownPolymorphicWrapper.
         // Due to current limitations in Kotlin (stemming from the JVM) this cannot be statically enforced: https://stackoverflow.com/q/43790137/590790
-        if ( verifyUnknownPolymorphicWrapper && JvmOnly.isJvm )
+        val reflect = reflectIfAvailable()
+        if ( reflect != null && verifyUnknownPolymorphicWrapper )
         {
-            val implementsInterface: Boolean = JvmOnly.extendsType<UnknownPolymorphicWrapper>( wrapperClass )
+            val implementsInterface: Boolean = reflect.extendsType<UnknownPolymorphicWrapper>( wrapperClass )
             if ( !implementsInterface )
             {
                 throw IllegalArgumentException( "'$wrapperClass' must implement '${UnknownPolymorphicWrapper::class}'." )
