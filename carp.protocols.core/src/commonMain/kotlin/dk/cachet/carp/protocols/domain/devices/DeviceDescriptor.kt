@@ -34,6 +34,11 @@ abstract class DeviceDescriptor<
     abstract val roleName: String
 
     /**
+     * The set of [DataType]s defining which data can be collected on this device.
+     */
+    abstract val supportedDataTypes: Set<DataType>
+
+    /**
      * Sampling configurations for data types available on this device which override the default configuration.
      * TODO: Verify whether all configured data types are supported by this device (supported data streams), probably in init.
      *       We might also want to check whether the sampling configuration instances are valid.

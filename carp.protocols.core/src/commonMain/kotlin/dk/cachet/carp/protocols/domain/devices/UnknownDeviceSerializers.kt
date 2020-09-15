@@ -9,8 +9,10 @@ import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.data.SamplingConfigurationSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.SetSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.reflect.KClass
@@ -23,25 +25,15 @@ data class CustomDeviceDescriptor( override val className: String, override val 
     DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
+    override val supportedDataTypes: Set<DataType>
     override val samplingConfiguration: Map<DataType, SamplingConfiguration>
 
     init
     {
-        val json = serializer.parseToJsonElement( jsonSource ) as JsonObject
-
-        val roleNameField = AnyDeviceDescriptor::roleName.name
-        require( roleNameField in json.keys ) { "No '$roleNameField' defined." }
-        roleName = json[ roleNameField ]!!.jsonPrimitive.content
-
-        val samplingConfigurationField = AnyDeviceDescriptor::samplingConfiguration.name
-        samplingConfiguration =
-            if ( samplingConfigurationField in json.keys )
-            {
-                val configurationJson: String = json[ samplingConfigurationField ]!!.jsonObject.toString()
-                val configurationSerializer = MapSerializer( DataType.serializer(), SamplingConfigurationSerializer )
-                serializer.decodeFromString( configurationSerializer, configurationJson )
-            }
-            else emptyMap()
+        val parsed = parseDeviceDescriptorFields( jsonSource, serializer )
+        roleName = parsed.roleName
+        supportedDataTypes = parsed.supportedDataTypes
+        samplingConfiguration = parsed.samplingConfiguration
     }
 
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
@@ -54,6 +46,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
      */
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.UNKNOWN
 }
+
 
 /**
  * A wrapper used to load extending types from [MasterDeviceDescriptor] serialized as JSON which are unknown at runtime.
@@ -62,25 +55,15 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
     MasterDeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
+    override val supportedDataTypes: Set<DataType>
     override val samplingConfiguration: Map<DataType, SamplingConfiguration>
 
     init
     {
-        val json = serializer.parseToJsonElement( jsonSource ) as JsonObject
-
-        val roleNameField = AnyMasterDeviceDescriptor::roleName.name
-        require( roleNameField in json.keys ) { "No '$roleNameField' defined." }
-        roleName = json[ roleNameField ]!!.jsonPrimitive.content
-
-        val samplingConfigurationField = AnyDeviceDescriptor::samplingConfiguration.name
-        samplingConfiguration =
-            if ( samplingConfigurationField in json.keys )
-            {
-                val configurationJson: String = json[ samplingConfigurationField ]!!.jsonObject.toString()
-                val configurationSerializer = MapSerializer( DataType.serializer(), SamplingConfigurationSerializer )
-                serializer.decodeFromString( configurationSerializer, configurationJson )
-            }
-            else emptyMap()
+        val parsed = parseDeviceDescriptorFields( jsonSource, serializer )
+        roleName = parsed.roleName
+        supportedDataTypes = parsed.supportedDataTypes
+        samplingConfiguration = parsed.samplingConfiguration
     }
 
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
@@ -93,6 +76,45 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
      */
     override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.UNKNOWN
 }
+
+
+private data class DeviceDescriptorFields(
+    val roleName: String,
+    val supportedDataTypes: Set<DataType>,
+    val samplingConfiguration: Map<DataType, SamplingConfiguration>
+)
+
+private fun parseDeviceDescriptorFields( jsonSource: String, serializer: Json ): DeviceDescriptorFields
+{
+    val json = serializer.parseToJsonElement( jsonSource ) as JsonObject
+
+    val roleNameField = AnyDeviceDescriptor::roleName.name
+    require( roleNameField in json.keys ) { "No '$roleNameField' defined." }
+    val roleName = json[ roleNameField ]!!.jsonPrimitive.content
+
+    val supportedDataTypesField = AnyDeviceDescriptor::supportedDataTypes.name
+    val supportedDataTypes =
+        if ( supportedDataTypesField in json.keys )
+        {
+            val supportedTypesJson = json[ supportedDataTypesField ]!!.jsonArray.toString()
+            val supportedTypesSerializer = SetSerializer( DataType.serializer() )
+            serializer.decodeFromString( supportedTypesSerializer, supportedTypesJson )
+        }
+        else emptySet()
+
+    val samplingConfigurationField = AnyDeviceDescriptor::samplingConfiguration.name
+    val samplingConfiguration =
+        if ( samplingConfigurationField in json.keys )
+        {
+            val configurationJson: String = json[ samplingConfigurationField ]!!.jsonObject.toString()
+            val configurationSerializer = MapSerializer( DataType.serializer(), SamplingConfigurationSerializer )
+            serializer.decodeFromString( configurationSerializer, configurationJson )
+        }
+        else emptyMap()
+
+    return DeviceDescriptorFields( roleName, supportedDataTypes, samplingConfiguration )
+}
+
 
 /**
  * Custom serializer for [DeviceDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].

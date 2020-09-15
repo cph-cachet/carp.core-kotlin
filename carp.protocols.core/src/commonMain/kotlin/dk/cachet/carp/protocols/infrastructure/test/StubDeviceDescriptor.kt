@@ -14,6 +14,7 @@ import kotlin.reflect.KClass
 data class StubDeviceDescriptor( override val roleName: String = "Stub device" ) :
     DeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {
+    override val supportedDataTypes: Set<DataType> = emptySet()
     override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 
     override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()

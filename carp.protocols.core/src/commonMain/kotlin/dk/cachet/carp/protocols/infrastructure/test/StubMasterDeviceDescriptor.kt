@@ -16,6 +16,8 @@ data class StubMasterDeviceDescriptor(
     override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 ) : MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {
+    override val supportedDataTypes: Set<DataType> = emptySet()
+
     override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DefaultDeviceRegistration> = DefaultDeviceRegistration::class
     override fun isValidConfiguration( registration: DefaultDeviceRegistration ) = Trilean.TRUE
