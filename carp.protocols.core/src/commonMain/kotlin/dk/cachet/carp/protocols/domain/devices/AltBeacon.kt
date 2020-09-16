@@ -15,7 +15,8 @@ import kotlin.reflect.KClass
 @Serializable
 data class AltBeacon( override val roleName: String ) : DeviceDescriptor<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
 {
-    // A beacon does not measure anything. Other devices measure proximity to the beacon.
+    // The AltBeacon protocol does not expose any measures. Other devices measure proximity to the beacon.
+    // TODO: Some beacons do include information such as battery charge and temperature.
     override val supportedDataTypes: Set<DataType> = emptySet()
 
     override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
