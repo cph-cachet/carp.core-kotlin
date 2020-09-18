@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.protocols.domain.data.DataType
+import dk.cachet.carp.common.data.DataType
 import kotlin.test.*
 
 

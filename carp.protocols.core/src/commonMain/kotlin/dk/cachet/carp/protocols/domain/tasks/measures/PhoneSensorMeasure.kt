@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.common.TimeSpan
-import dk.cachet.carp.protocols.domain.data.DataType
+import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.protocols.domain.data.DataTypeSamplingScheme
 import dk.cachet.carp.protocols.domain.data.DataTypeSamplingSchemeList
 import dk.cachet.carp.protocols.domain.data.SamplingConfiguration

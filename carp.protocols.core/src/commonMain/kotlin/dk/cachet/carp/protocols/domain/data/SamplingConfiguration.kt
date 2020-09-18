@@ -2,6 +2,7 @@ package dk.cachet.carp.protocols.domain.data
 
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.ImplementAsDataClass
+import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorBuilder
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorBuilderDsl

@@ -1,4 +1,4 @@
-package dk.cachet.carp.protocols.domain.data
+package dk.cachet.carp.common.data
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
