@@ -2,13 +2,13 @@ package dk.cachet.carp.protocols.domain.tasks.measures
 
 import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.common.data.DataType
-import dk.cachet.carp.protocols.domain.data.DataTypeSamplingScheme
-import dk.cachet.carp.protocols.domain.data.DataTypeSamplingSchemeList
-import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
-import dk.cachet.carp.protocols.domain.data.SamplingConfigurationMapBuilder
-import dk.cachet.carp.protocols.domain.data.carp.Geolocation
-import dk.cachet.carp.protocols.domain.data.carp.GeolocationSamplingConfigurationBuilder
-import dk.cachet.carp.protocols.domain.data.carp.Stepcount
+import dk.cachet.carp.protocols.domain.sampling.DataTypeSamplingScheme
+import dk.cachet.carp.protocols.domain.sampling.DataTypeSamplingSchemeList
+import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
+import dk.cachet.carp.protocols.domain.sampling.SamplingConfigurationMapBuilder
+import dk.cachet.carp.protocols.domain.sampling.carp.GeolocationSamplingScheme
+import dk.cachet.carp.protocols.domain.sampling.carp.GeolocationSamplingConfigurationBuilder
+import dk.cachet.carp.protocols.domain.sampling.carp.StepcountSamplingScheme
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import kotlinx.serialization.Serializable
 
@@ -33,7 +33,7 @@ data class PhoneSensorMeasure private constructor(
      */
     object SamplingSchemes : DataTypeSamplingSchemeList()
     {
-        val GEOLOCATION = add( Geolocation( TimeSpan.fromMinutes( 1.0 ) ) )
+        val GEOLOCATION = add( GeolocationSamplingScheme( TimeSpan.fromMinutes( 1.0 ) ) )
 
         /**
          * Steps within recorded time intervals as reported by a phone's dedicated hardware sensor.
@@ -47,7 +47,7 @@ data class PhoneSensorMeasure private constructor(
          *       Each 'step' is reported as an event, so this would map to a different DataType (e.g. `Step`).
          *       Not certain this is available on iPhone.
          */
-        val STEPCOUNT = add( Stepcount ) // No configuration options available.
+        val STEPCOUNT = add( StepcountSamplingScheme ) // No configuration options available.
     }
 
     companion object
@@ -84,7 +84,7 @@ data class PhoneSensorMeasure private constructor(
 class PhoneSensorSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilder()
 {
     /**
-     * Configure sampling configuration for [Geolocation].
+     * Configure sampling configuration for [GeolocationSamplingScheme].
      */
     fun geolocation( builder: GeolocationSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
         addConfiguration( PhoneSensorMeasure.SamplingSchemes.GEOLOCATION, builder )

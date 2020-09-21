@@ -5,8 +5,8 @@ import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.common.serialization.createUnknownPolymorphicSerializer
 import dk.cachet.carp.common.serialization.UnknownPolymorphicSerializer
 import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
-import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
-import dk.cachet.carp.protocols.domain.data.SamplingConfigurationSerializer
+import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
+import dk.cachet.carp.protocols.domain.sampling.SamplingConfigurationSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.json.Json

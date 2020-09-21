@@ -1,4 +1,4 @@
-package dk.cachet.carp.protocols.domain.data
+package dk.cachet.carp.protocols.domain.sampling
 
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.ImplementAsDataClass

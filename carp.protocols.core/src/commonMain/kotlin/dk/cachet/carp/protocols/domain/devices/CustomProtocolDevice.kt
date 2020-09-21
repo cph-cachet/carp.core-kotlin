@@ -2,7 +2,7 @@ package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.Trilean
 import dk.cachet.carp.common.data.DataType
-import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
+import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.tasks.CustomProtocolTask
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
