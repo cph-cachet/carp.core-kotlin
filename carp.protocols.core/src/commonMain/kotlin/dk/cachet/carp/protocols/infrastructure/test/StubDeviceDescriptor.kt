@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.infrastructure.test
 
 import dk.cachet.carp.common.Trilean
-import dk.cachet.carp.protocols.domain.data.DataType
-import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
+import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistrationBuilder
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor

@@ -1,4 +1,4 @@
-package dk.cachet.carp.protocols.domain.data
+package dk.cachet.carp.common.data
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -23,9 +23,38 @@ data class DataType(
     val namespace: String,
     /**
      * Describes the data being collected (e.g., "acceleration", "stepcount", "audio"), but not the sensor (e.g., "accelerometer, "pedometer").
+     *
+     * The name may not contain any periods. Periods are reserved for namespaces.
      */
     val name: String
 )
+{
+    init
+    {
+        require( namespace.isNotEmpty() ) { "Namespace needs to be set." }
+        require( !name.contains( '.' ) ) { "Name may not contain any periods. Periods are reserved for namespaces." }
+    }
+
+    companion object
+    {
+        /**
+         * Initializes a [DataType] based on a [fullyQualifiedName], formatted as: "<namespace>.<name>".
+         *
+         * @throws IllegalArgumentException when no namespace is specified, i.e., [fullyQualifiedName] should contain at least one period.
+         *   [name] will be set to the characters after the last period.
+         */
+        fun fromFullyQualifiedName( fullyQualifiedName: String ): DataType
+        {
+            val segments = fullyQualifiedName.split( '.' )
+            require( segments.count() > 1 ) { "A namespace needs to be specified." }
+
+            val namespace = segments.subList( 0, segments.size - 1 ).joinToString( "." )
+            val name = segments.last()
+
+            return DataType( namespace, name )
+        }
+    }
+}
 
 
 object DataTypeSerializer : KSerializer<DataType>
@@ -42,11 +71,6 @@ object DataTypeSerializer : KSerializer<DataType>
     override fun deserialize( decoder: Decoder ): DataType
     {
         val dataType = decoder.decodeString()
-        val segments = dataType.split( '.' )
-
-        val namespace = segments.subList( 0, segments.size - 1 ).joinToString( "." )
-        val name = segments.last()
-
-        return DataType( namespace, name )
+        return DataType.fromFullyQualifiedName( dataType )
     }
 }

@@ -1,4 +1,4 @@
-package dk.cachet.carp.protocols.domain.data
+package dk.cachet.carp.protocols.domain.sampling
 
 import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
