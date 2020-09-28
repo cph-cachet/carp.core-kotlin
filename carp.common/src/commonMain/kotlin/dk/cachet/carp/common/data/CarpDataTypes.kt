@@ -27,3 +27,15 @@ internal const val STEPCOUNT_TYPE_NAME = "$CARP_NAMESPACE.stepcount"
  * Stepcount data, representing the number of steps a participant has taken in a specified time interval.
  */
 val STEPCOUNT_TYPE = DataType.fromFullyQualifiedName( STEPCOUNT_TYPE_NAME )
+
+internal const val ECG_TYPE_NAME = "$CARP_NAMESPACE.ecg"
+/**
+ * ECG data, representing electrical activity of the heart over time.
+ */
+val ECG_TYPE = DataType.fromFullyQualifiedName( ECG_TYPE_NAME )
+
+internal const val HEARTRATE_TYPE_NAME = "$CARP_NAMESPACE.heartrate"
+/**
+ * Heart rate. Measures the number of heart contractions (beats) per minute.
+ */
+val HEARTRATE_TYPE = DataType.fromFullyQualifiedName( HEARTRATE_TYPE_NAME )
