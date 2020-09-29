@@ -18,7 +18,7 @@ val FREEFORMTEXT_TYPE = DataType.fromFullyQualifiedName( FREEFORMTEXT_TYPE_NAME 
 
 internal const val GEOLOCATION_TYPE_NAME = "$CARP_NAMESPACE.geolocation"
 /**
- * Geographic location data, representing longitude and latitude.
+ * Geographic location data, representing latitude and longitude in decimal degrees within the World Geodetic System 1984.
  */
 val GEOLOCATION_TYPE = DataType.fromFullyQualifiedName( GEOLOCATION_TYPE_NAME )
 
@@ -30,7 +30,7 @@ val STEPCOUNT_TYPE = DataType.fromFullyQualifiedName( STEPCOUNT_TYPE_NAME )
 
 internal const val ECG_TYPE_NAME = "$CARP_NAMESPACE.ecg"
 /**
- * ECG data, representing electrical activity of the heart over time.
+ * ECG data, representing electrical activity of the heart over time for a single lead.
  */
 val ECG_TYPE = DataType.fromFullyQualifiedName( ECG_TYPE_NAME )
 

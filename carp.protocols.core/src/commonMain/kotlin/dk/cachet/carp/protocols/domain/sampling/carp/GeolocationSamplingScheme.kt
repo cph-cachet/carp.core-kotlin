@@ -7,7 +7,7 @@ import dk.cachet.carp.protocols.domain.sampling.IntervalSamplingConfigurationBui
 
 
 /**
- * Sampling scheme for geographic location data, representing longitude and latitude.
+ * Sampling scheme for geographic location data, representing longitude and latitude in decimal degrees within the World Geodetic System 1984.
  */
 class GeolocationSamplingScheme(
     val defaultMeasureInterval: TimeSpan
