@@ -5,4 +5,4 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @SerialName( ECG_TYPE_NAME )
-data class ECG( val voltage: Double ): Data
+data class ECG( val mV: Double ): Data
