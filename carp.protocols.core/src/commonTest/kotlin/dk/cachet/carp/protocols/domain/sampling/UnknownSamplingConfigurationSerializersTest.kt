@@ -1,6 +1,6 @@
 @file:Suppress( "MatchingDeclarationName" )
 
-package dk.cachet.carp.protocols.domain.data
+package dk.cachet.carp.protocols.domain.sampling
 
 import dk.cachet.carp.common.serialization.createDefaultJSON
 import kotlinx.serialization.Serializable

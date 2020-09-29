@@ -4,7 +4,7 @@ import dk.cachet.carp.common.RecurrenceRule
 import dk.cachet.carp.common.TimeOfDay
 import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.protocols.domain.data.IntervalSamplingConfiguration
+import dk.cachet.carp.protocols.domain.sampling.IntervalSamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.AltBeacon
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.CustomProtocolDevice

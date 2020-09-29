@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.Trilean
-import dk.cachet.carp.protocols.domain.data.DataType
-import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
+import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.tasks.CustomProtocolTask
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
@@ -15,6 +15,9 @@ import kotlin.reflect.KClass
 data class CustomProtocolDevice( override val roleName: String ) :
     MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {
+    // Measures and data types are defined in the custom `CustomProtocolTask.studyProtocol` and thus not managed by core.
+    override val supportedDataTypes: Set<DataType> = emptySet()
+
     override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 
     override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()

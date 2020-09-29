@@ -1,5 +1,7 @@
 package dk.cachet.carp.common.serialization
 
+import dk.cachet.carp.common.data.Data
+import dk.cachet.carp.common.data.FreeFormText
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.common.users.UsernameAccountIdentity
@@ -19,6 +21,11 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     {
         subclass( UsernameAccountIdentity::class )
         subclass( EmailAccountIdentity::class )
+    }
+
+    polymorphic( Data::class )
+    {
+        subclass( FreeFormText::class )
     }
 }
 

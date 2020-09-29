@@ -3,9 +3,9 @@ package dk.cachet.carp.protocols.domain.devices
 import dk.cachet.carp.common.Immutable
 import dk.cachet.carp.common.ImplementAsDataClass
 import dk.cachet.carp.common.Trilean
-import dk.cachet.carp.protocols.domain.data.DataType
-import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
-import dk.cachet.carp.protocols.domain.data.SamplingConfigurationMapBuilder
+import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
+import dk.cachet.carp.protocols.domain.sampling.SamplingConfigurationMapBuilder
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
@@ -32,6 +32,11 @@ abstract class DeviceDescriptor<
      * E.g., "Patient's phone"
      */
     abstract val roleName: String
+
+    /**
+     * The set of [DataType]s defining which data can be collected on this device.
+     */
+    abstract val supportedDataTypes: Set<DataType>
 
     /**
      * Sampling configurations for data types available on this device which override the default configuration.

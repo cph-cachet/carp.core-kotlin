@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.TimeSpan
-import dk.cachet.carp.protocols.domain.data.IntervalSamplingConfiguration
+import dk.cachet.carp.protocols.domain.sampling.IntervalSamplingConfiguration
 import kotlin.test.*
 
 
