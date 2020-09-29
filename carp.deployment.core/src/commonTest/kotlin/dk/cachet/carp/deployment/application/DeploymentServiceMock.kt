@@ -11,6 +11,7 @@ import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.test.Mock
 
 private typealias Service = DeploymentService
@@ -34,6 +35,7 @@ class DeploymentServiceMock(
             UUID( "00000000-0000-0000-0000-000000000000"),
             listOf(), null )
         private val emptyMasterDeviceDeployment: MasterDeviceDeployment = MasterDeviceDeployment(
+            StubMasterDeviceDescriptor(),
             DefaultDeviceRegistration( "Test" ),
             setOf(), mapOf(), setOf(), mapOf(), setOf() )
     }

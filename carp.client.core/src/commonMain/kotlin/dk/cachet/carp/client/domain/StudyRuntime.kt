@@ -122,9 +122,12 @@ class StudyRuntime private constructor(
         // Early out in case state indicates the device is not yet ready to deploy.
         if ( deviceStatus !is DeviceDeploymentStatus.NotDeployed || !deviceStatus.isReadyForDeployment ) return false
 
-        // TODO: Get deployment and throw exception in case there are missing plugins to perform the operations (e.g., measurements).
+        // Get deployment information.
         val deployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, device.roleName )
+        check( deployment.deviceDescriptor == device )
         deploymentInformation = deployment
+
+        // TODO: Verify whether probes are registered for the requested measures.
 
         // Notify deployment service of successful deployment.
         try

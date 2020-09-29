@@ -2,6 +2,7 @@ package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
@@ -17,6 +18,10 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class MasterDeviceDeployment(
+    /**
+     * The descriptor for the master device this deployment is intended for.
+     */
+    val deviceDescriptor: AnyMasterDeviceDescriptor,
     /**
      * Configuration for this master device.
      */
@@ -75,4 +80,20 @@ data class MasterDeviceDeployment(
             .map { it.registrationCreationDate.msSinceUTC }
             .max()
             .let { DateTime( it!! ) }
+
+    /**
+     * Retrieves for this master device and all connected devices the set of tasks which may be sent to them over the course of the deployment.
+     * Tasks which target other master devices are not included in this collection.
+     */
+    fun getTasksPerDevice(): Map<AnyDeviceDescriptor, Set<TaskDescriptor>> = triggeredTasks
+        // Only consider tasks which need to be handled by this master device.
+        .filter { triggered -> triggered.taskName in tasks.map { it.name } }
+        .map { triggered ->
+            val device = connectedDevices.plus( deviceDescriptor )
+                .first { it.roleName == triggered.destinationDeviceRoleName }
+            val task = tasks.first { it.name == triggered.taskName }
+            device to task
+        }
+        .groupBy( { it.first }, { it.second } )
+        .mapValues { it.value.toSet() }
 }
