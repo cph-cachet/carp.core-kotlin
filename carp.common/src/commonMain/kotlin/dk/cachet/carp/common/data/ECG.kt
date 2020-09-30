@@ -8,5 +8,5 @@ import kotlinx.serialization.Serializable
  * Holds electrocardiogram data of a single lead.
  */
 @Serializable
-@SerialName( ECG_TYPE_NAME )
+@SerialName( CarpDataTypes.ECG_TYPE_NAME )
 data class ECG( val milliVolt: Double ) : Data
