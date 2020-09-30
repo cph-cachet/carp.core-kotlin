@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.sampling.carp
 
-import dk.cachet.carp.common.data.HEARTRATE_TYPE
+import dk.cachet.carp.common.data.CarpDataTypes
 import dk.cachet.carp.protocols.domain.sampling.DataTypeSamplingScheme
 import dk.cachet.carp.protocols.domain.sampling.NoOptionsSamplingConfigurationBuilder
 
@@ -8,7 +8,7 @@ import dk.cachet.carp.protocols.domain.sampling.NoOptionsSamplingConfigurationBu
 /**
  * Sampling scheme for heart rate data, representing the number of heart contractions (beats) per minute.
  */
-object HeartRateSamplingScheme : DataTypeSamplingScheme<HearRateSamplingConfigurationBuilder>( HEARTRATE_TYPE )
+object HeartRateSamplingScheme : DataTypeSamplingScheme<HearRateSamplingConfigurationBuilder>( CarpDataTypes.HEARTRATE )
 {
     override fun createSamplingConfigurationBuilder(): HearRateSamplingConfigurationBuilder =
         HearRateSamplingConfigurationBuilder

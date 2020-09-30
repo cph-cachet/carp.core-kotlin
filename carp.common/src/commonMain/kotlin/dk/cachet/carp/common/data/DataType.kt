@@ -54,6 +54,9 @@ data class DataType(
             return DataType( namespace, name )
         }
     }
+
+
+    override fun toString(): String = "$namespace.$name"
 }
 
 
@@ -65,7 +68,7 @@ object DataTypeSerializer : KSerializer<DataType>
 
     override fun serialize( encoder: Encoder, value: DataType )
     {
-        encoder.encodeString( "${value.namespace}.${value.name}" )
+        encoder.encodeString( value.toString() )
     }
 
     override fun deserialize( decoder: Decoder ): DataType

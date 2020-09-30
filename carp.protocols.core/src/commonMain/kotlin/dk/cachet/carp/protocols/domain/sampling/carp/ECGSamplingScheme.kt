@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.sampling.carp
 
-import dk.cachet.carp.common.data.ECG_TYPE
+import dk.cachet.carp.common.data.CarpDataTypes
 import dk.cachet.carp.protocols.domain.sampling.DataTypeSamplingScheme
 import dk.cachet.carp.protocols.domain.sampling.NoOptionsSamplingConfigurationBuilder
 
@@ -8,7 +8,7 @@ import dk.cachet.carp.protocols.domain.sampling.NoOptionsSamplingConfigurationBu
 /**
  * Sampling scheme for ECG, representing electrical activity of the heart over time for a single lead.
  */
-object ECGSamplingScheme : DataTypeSamplingScheme<ECGSamplingConfigurationBuilder>( ECG_TYPE )
+object ECGSamplingScheme : DataTypeSamplingScheme<ECGSamplingConfigurationBuilder>( CarpDataTypes.ECG )
 {
     override fun createSamplingConfigurationBuilder(): ECGSamplingConfigurationBuilder =
         ECGSamplingConfigurationBuilder
