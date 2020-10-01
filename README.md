@@ -138,7 +138,7 @@ maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
 
 The following shows how the subystems interact to create a study protocol, instantiate it as a study, and deploy it to a client.
 
-**carp.protocols**: Example study protocol definition to collect GPS and stepcount on a smartphone which can be serialized to JSON:
+**carp.protocols**: Example study protocol definition to collect GPS and step count on a smartphone which can be serialized to JSON:
 
 ```kotlin
 // Create a new study protocol.
@@ -156,7 +156,7 @@ val phone = Smartphone( "Patient's phone" )
 protocol.addMasterDevice( phone )
 
 // Define what needs to be measured, on which device, when.
-val measures: List<Measure> = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepcount() )
+val measures: List<Measure> = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
 val startMeasures = ConcurrentTask( "Start measures", measures )
 protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 

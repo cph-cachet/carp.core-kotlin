@@ -3,7 +3,7 @@ package dk.cachet.carp.common.serialization
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.ECG
 import dk.cachet.carp.common.data.FreeFormText
-import dk.cachet.carp.common.data.GeoLocation
+import dk.cachet.carp.common.data.Geolocation
 import dk.cachet.carp.common.data.HeartRate
 import dk.cachet.carp.common.data.StepCount
 import dk.cachet.carp.common.users.AccountIdentity
@@ -31,7 +31,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     {
         subclass( ECG::class )
         subclass( FreeFormText::class )
-        subclass( GeoLocation::class )
+        subclass( Geolocation::class )
         subclass( HeartRate::class )
         subclass( StepCount::class )
     }
