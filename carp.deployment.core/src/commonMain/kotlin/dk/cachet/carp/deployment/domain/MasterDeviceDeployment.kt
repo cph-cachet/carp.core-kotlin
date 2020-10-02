@@ -68,6 +68,16 @@ data class MasterDeviceDeployment(
         val destinationDeviceRoleName: String
     )
 
+    /**
+     * The set of tasks which may need to be executed on a master device, or a connected device, during a deployment.
+     */
+    data class DeviceTasks(
+        val device: AnyDeviceDescriptor,
+        val isConnectedDevice: Boolean,
+        val deviceRegistration: DeviceRegistration?,
+        val tasks: Set<TaskDescriptor>
+    )
+
 
     /**
      * The time when this device deployment was last updated.
@@ -85,9 +95,10 @@ data class MasterDeviceDeployment(
      * Retrieves for this master device and all connected devices the set of tasks which may be sent to them over the course of the deployment.
      * Tasks which target other master devices are not included in this collection.
      */
-    fun getTasksPerDevice(): Map<AnyDeviceDescriptor, Set<TaskDescriptor>> = triggeredTasks
+    fun getTasksPerDevice(): List<DeviceTasks> = triggeredTasks
         // Only consider tasks which need to be handled by this master device.
         .filter { triggered -> triggered.taskName in tasks.map { it.name } }
+        // Group tasks by device.
         .map { triggered ->
             val device = connectedDevices.plus( deviceDescriptor )
                 .first { it.roleName == triggered.destinationDeviceRoleName }
@@ -95,5 +106,13 @@ data class MasterDeviceDeployment(
             device to task
         }
         .groupBy( { it.first }, { it.second } )
-        .mapValues { it.value.toSet() }
+        // Convert to `DeviceTasks`
+        .map {
+            val device = it.key
+            val isConnected = it.key != deviceDescriptor
+            val registration =
+                if ( isConnected ) connectedDeviceConfigurations[ device.roleName ]
+                else configuration
+            DeviceTasks( device, isConnected, registration, it.value.toSet() )
+        }
 }

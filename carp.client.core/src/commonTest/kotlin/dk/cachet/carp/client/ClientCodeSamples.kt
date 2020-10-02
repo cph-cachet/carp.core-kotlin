@@ -2,6 +2,7 @@ package dk.cachet.carp.client
 
 import dk.cachet.carp.client.domain.SmartphoneClient
 import dk.cachet.carp.client.domain.StudyRuntimeStatus
+import dk.cachet.carp.client.domain.data.StubDataCollector
 import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.Account
@@ -25,6 +26,7 @@ class ClientCodeSamples
     @Test
     fun readme() = runBlockingTest {
         val deploymentService = createDeploymentEndpoint()
+        val dataCollector = createDataCollector()
 
         // Retrieve invitation to participate in the study using a specific device.
         val account: Account = getLoggedInUser()
@@ -35,7 +37,7 @@ class ClientCodeSamples
 
         // Create a study runtime for the study.
         val clientRepository = createRepository()
-        val client = SmartphoneClient( clientRepository, deploymentService )
+        val client = SmartphoneClient( clientRepository, deploymentService, dataCollector )
         client.configure {
             // Device-specific registration options can be accessed from here.
             // Depending on the device type, different options are available.
@@ -67,6 +69,8 @@ class ClientCodeSamples
 
         return service
     }
+
+    private fun createDataCollector() = StubDataCollector()
 
     private fun createRepository() = InMemoryClientRepository()
 

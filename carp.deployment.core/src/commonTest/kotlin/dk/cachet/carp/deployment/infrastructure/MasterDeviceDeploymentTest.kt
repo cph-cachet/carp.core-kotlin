@@ -1,8 +1,6 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
-import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
-import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
@@ -59,22 +57,22 @@ class MasterDeviceDeploymentTest
         val connectedTrigger = StubTrigger( connected.roleName )
 
         val deployment = MasterDeviceDeployment(
-            device,
-            registration,
-            setOf( connected ),
-            mapOf( connected.roleName to connectedRegistration ),
-            setOf( task ),
-            mapOf( 0 to masterTrigger, 1 to connectedTrigger ),
-            setOf(
+            deviceDescriptor = device,
+            configuration = registration,
+            connectedDevices = setOf( connected ),
+            connectedDeviceConfigurations = mapOf( connected.roleName to connectedRegistration ),
+            tasks = setOf( task ),
+            triggers = mapOf( 0 to masterTrigger, 1 to connectedTrigger ),
+            triggeredTasks = setOf(
                 MasterDeviceDeployment.TriggeredTask( 0, task.name, device.roleName ),
                 MasterDeviceDeployment.TriggeredTask( 1, task.name, connected.roleName )
             )
         )
-        val tasks: Map<AnyDeviceDescriptor, Set<TaskDescriptor>> = deployment.getTasksPerDevice()
+        val deviceTasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 
-        assertEquals( 2, tasks.size )
-        assertEquals( task, tasks[ device ]?.single() )
-        assertEquals( task, tasks[ connected ]?.single() )
+        assertEquals( 2, deviceTasks.size )
+        assertEquals( task, deviceTasks.first { it.device == device }.tasks.single() )
+        assertEquals( task, deviceTasks.first {it.device == connected }.tasks.single() )
     }
 
     @Test
@@ -86,15 +84,17 @@ class MasterDeviceDeploymentTest
         val master1Trigger = StubTrigger( master1.roleName )
 
         val deployment = MasterDeviceDeployment(
-            master1,
-            master1Registration,
-            emptySet(),
-            emptyMap(),
-            emptySet(),
-            mapOf( 0 to master1Trigger ),
-            setOf( MasterDeviceDeployment.TriggeredTask( 0, "Task on Master 2", master2.roleName ) )
+            deviceDescriptor = master1,
+            configuration = master1Registration,
+            connectedDevices = emptySet(),
+            connectedDeviceConfigurations = emptyMap(),
+            tasks = emptySet(),
+            triggers = mapOf( 0 to master1Trigger ),
+            triggeredTasks = setOf(
+                MasterDeviceDeployment.TriggeredTask( 0, "Task on Master 2", master2.roleName )
+            )
         )
-        val tasks: Map<AnyDeviceDescriptor, Set<TaskDescriptor>> = deployment.getTasksPerDevice()
+        val tasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 
         assertTrue( tasks.isEmpty() )
     }
