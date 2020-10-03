@@ -7,15 +7,18 @@ import kotlin.reflect.KClass
 
 
 /**
- * A stub for [DataCollector] which presumes data can be collected for all requested data types.
+ * A mock for [DataCollector] which can specify whether data can be collected for requested data types or not.
+ *
+ * @param canCollectData
+ *   Determines whether or not this [DataCollector] can collect data for any requested type. True by default.
  */
-class StubDataCollector : DataCollector
+class MockDataCollector( private val canCollectData: Boolean = true ) : DataCollector
 {
-    override fun canCollectData( dataType: DataType ): Boolean = true
+    override fun canCollectData( dataType: DataType ): Boolean = canCollectData
 
     override fun canCollectDataForConnectedDevice(
         dataType: DataType,
         connectedDeviceType: KClass<out AnyDeviceDescriptor>,
         deviceRegistration: DeviceRegistration?
-    ): Boolean = true
+    ): Boolean = canCollectData
 }

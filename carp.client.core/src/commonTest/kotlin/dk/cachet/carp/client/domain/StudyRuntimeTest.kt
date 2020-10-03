@@ -1,11 +1,13 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.client.domain.data.StubDataCollector
+import dk.cachet.carp.client.domain.data.MockDataCollector
 import dk.cachet.carp.client.infrastructure.fromJson
 import dk.cachet.carp.client.infrastructure.toJson
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
+import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
+import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
 
@@ -18,10 +20,10 @@ class StudyRuntimeTest
     @Test
     fun initialize_matches_requested_runtime() = runBlockingTest {
         // Create a deployment service which contains a 'smartphone study'.
-        val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
 
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = StubDataCollector()
+        val dataCollector = MockDataCollector()
         val runtime = StudyRuntime.initialize(
             deploymentService, dataCollector,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
@@ -33,10 +35,10 @@ class StudyRuntimeTest
     @Test
     fun initialize_deploys_when_possible() = runBlockingTest {
         // Create a deployment service which contains a 'smartphone study'.
-        val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
 
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = StubDataCollector()
+        val dataCollector = MockDataCollector()
         val runtime = StudyRuntime.initialize(
             deploymentService, dataCollector,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
@@ -50,10 +52,10 @@ class StudyRuntimeTest
     @Test
     fun initialize_does_not_deploy_when_depending_on_other_devices() = runBlockingTest {
         // Create a deployment service which contains a study where 'smartphone' depends on another master device.
-        val ( deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
+        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createDependentSmartphoneStudy() )
 
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = StubDataCollector()
+        val dataCollector = MockDataCollector()
         val runtime = StudyRuntime.initialize(
             deploymentService, dataCollector,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
@@ -67,11 +69,11 @@ class StudyRuntimeTest
     @Test
     fun initialize_fails_for_unknown_studyDeploymentId() = runBlockingTest {
         // Create a deployment service which contains a 'smartphone study'.
-        val ( deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
+        val ( deploymentService, _ ) = createStudyDeployment( createSmartphoneStudy() )
 
         val unknownId = UUID.randomUUID()
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = StubDataCollector()
+        val dataCollector = MockDataCollector()
         assertFailsWith<IllegalArgumentException> {
             StudyRuntime.initialize(
                 deploymentService, dataCollector,
@@ -81,10 +83,10 @@ class StudyRuntimeTest
 
     @Test
     fun initialize_fails_for_unknown_deviceRoleName() = runBlockingTest {
-        val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
 
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = StubDataCollector()
+        val dataCollector = MockDataCollector()
         assertFailsWith<IllegalArgumentException> {
             StudyRuntime.initialize(
                 deploymentService, dataCollector,
@@ -94,10 +96,10 @@ class StudyRuntimeTest
 
     @Test
     fun initialize_fails_for_incorrect_deviceRegistration() = runBlockingTest {
-        val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
 
         val incorrectRegistration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 )
-        val dataCollector = StubDataCollector()
+        val dataCollector = MockDataCollector()
         assertFailsWith<IllegalArgumentException> {
             StudyRuntime.initialize(
                 deploymentService, dataCollector,
@@ -108,9 +110,9 @@ class StudyRuntimeTest
     @Test
     fun tryDeployment_only_succeeds_after_dependent_devices_are_registered() = runBlockingTest {
         // Create a study runtime for a study where 'smartphone' depends on another master device ('deviceSmartphoneDependsOn').
-        val ( deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
+        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createDependentSmartphoneStudy() )
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = StubDataCollector()
+        val dataCollector = MockDataCollector()
         val runtime = StudyRuntime.initialize(
             deploymentService, dataCollector,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
@@ -128,11 +130,30 @@ class StudyRuntimeTest
     }
 
     @Test
+    fun tryDeployment_fails_when_requested_data_cannot_be_collected() = runBlockingTest {
+        // Create a protocol that has one measure.
+        val protocol = createSmartphoneStudy()
+        val task = StubTaskDescriptor( "One measure", listOf( StubMeasure() ) )
+        protocol.addTriggeredTask( smartphone.atStartOfStudy(), task, smartphone )
+
+        // Initializing study runtime for the smartphone deployment should fail since StubMeasure can't be collected.
+        val ( deploymentService, deploymentStatus ) = createStudyDeployment( protocol )
+        val deviceRegistration = smartphone.createRegistration()
+        val dataCollector = MockDataCollector( canCollectData = false )
+        assertFailsWith<IllegalStateException>
+        {
+            StudyRuntime.initialize(
+                deploymentService, dataCollector,
+                deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
+        }
+    }
+
+    @Test
     fun creating_runtime_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runBlockingTest {
         // Create a study runtime snapshot for the 'smartphone' in 'smartphone study'.
-        val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = StubDataCollector()
+        val dataCollector = MockDataCollector()
         val runtime = StudyRuntime.initialize(
             deploymentService, dataCollector,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )

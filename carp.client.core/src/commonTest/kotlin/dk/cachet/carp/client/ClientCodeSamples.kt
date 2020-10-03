@@ -2,7 +2,7 @@ package dk.cachet.carp.client
 
 import dk.cachet.carp.client.domain.SmartphoneClient
 import dk.cachet.carp.client.domain.StudyRuntimeStatus
-import dk.cachet.carp.client.domain.data.StubDataCollector
+import dk.cachet.carp.client.domain.data.MockDataCollector
 import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.Account
@@ -70,7 +70,7 @@ class ClientCodeSamples
         return service
     }
 
-    private fun createDataCollector() = StubDataCollector()
+    private fun createDataCollector() = MockDataCollector()
 
     private fun createRepository() = InMemoryClientRepository()
 

@@ -1,6 +1,6 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.client.domain.data.StubDataCollector
+import dk.cachet.carp.client.domain.data.MockDataCollector
 import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentService
@@ -17,7 +17,7 @@ private val unknownId = UUID( "00000000-0000-0000-0000-000000000000" )
 class ClientManagerTest
 {
     private suspend fun initializeSmartphoneClient( deploymentService: DeploymentService ): SmartphoneClient =
-        SmartphoneClient( InMemoryClientRepository(), deploymentService, StubDataCollector() ).apply {
+        SmartphoneClient( InMemoryClientRepository(), deploymentService, MockDataCollector() ).apply {
             configure()
         }
 
@@ -27,7 +27,7 @@ class ClientManagerTest
         val ( deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
 
         // Initially not configured.
-        val client = SmartphoneClient( InMemoryClientRepository(), deploymentService, StubDataCollector() )
+        val client = SmartphoneClient( InMemoryClientRepository(), deploymentService, MockDataCollector() )
         assertFalse( client.isConfigured() )
 
         // Configuration succeeds.
@@ -38,7 +38,7 @@ class ClientManagerTest
     @Test
     fun add_study_fails_when_not_yet_configured() = runBlockingTest {
         val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
-        val client = SmartphoneClient( InMemoryClientRepository(), deploymentService, StubDataCollector() )
+        val client = SmartphoneClient( InMemoryClientRepository(), deploymentService, MockDataCollector() )
 
         assertFailsWith<IllegalArgumentException>
         {
