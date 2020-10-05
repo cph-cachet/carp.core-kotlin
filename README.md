@@ -138,7 +138,8 @@ maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
 
 The following shows how the subystems interact to create a study protocol, instantiate it as a study, and deploy it to a client.
 
-**carp.protocols**: Example study protocol definition to collect GPS and stepcount on a smartphone which can be serialized to JSON:
+<a name="example-protocols"></a>
+**carp.protocols**: Example study protocol definition to collect GPS and step count on a smartphone which can be serialized to JSON:
 
 ```kotlin
 // Create a new study protocol.
@@ -156,7 +157,7 @@ val phone = Smartphone( "Patient's phone" )
 protocol.addMasterDevice( phone )
 
 // Define what needs to be measured, on which device, when.
-val measures: List<Measure> = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepcount() )
+val measures: List<Measure> = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
 val startMeasures = ConcurrentTask( "Start measures", measures )
 protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
@@ -164,6 +165,7 @@ protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 val json: String = protocol.getSnapshot().toJson()
 ```
 
+<a name="example-studies"></a>
 **carp.studies**: Example creation of a study based on a study protocol, and adding and deploying a single participant:
 
 ```kotlin
@@ -202,6 +204,7 @@ if ( studyStatus.canDeployToParticipants )
 }
 ```
 
+<a name="example-deployment"></a>
 **carp.deployment**: Most calls to this subsystem are abstracted away by the 'studies' and 'client' subsystems, so you wouldn't call its endpoints directly. Example code which is called when a study is created and accessed by a client:
 
 ```kotlin
@@ -233,6 +236,7 @@ status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
 val isReady = status is StudyDeploymentStatus.DeploymentReady // True.
 ```
 
+<a name="example-client"></a>
 **carp.client**: Example initialization of a smartphone client for the participant that got invited to the study in the 'studies' code sample above:
 
 ```kotlin

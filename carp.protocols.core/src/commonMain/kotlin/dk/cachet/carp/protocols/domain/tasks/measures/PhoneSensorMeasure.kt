@@ -63,7 +63,7 @@ data class PhoneSensorMeasure private constructor(
         /**
          * Measure number of steps a participant has taken in a recorded time interval.
          */
-        fun stepcount( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( SamplingSchemes.STEPCOUNT, duration )
+        fun stepCount( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( SamplingSchemes.STEPCOUNT, duration )
     }
 
 

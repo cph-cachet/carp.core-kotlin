@@ -6,7 +6,7 @@ import kotlin.test.*
 
 
 /**
- * Tests for [ProtocolServiceRequest]'s.
+ * Tests for [ProtocolServiceRequest]'s which rely on reflection, and for now can only be executed on the JVM platform.
  */
 class ProtocolServiceRequestsReflectionTest
 {

@@ -35,7 +35,10 @@ private val protocolInstances = listOf(
 
     // Tasks.
     ConcurrentTask( "Start measures", listOf() ),
-    CustomProtocolTask( "Custom study runtime", "<protocol definition>" ),
+    CustomProtocolTask(
+        "Custom study runtime",
+        "{ \"\$type\": \"Study\", \"custom\": \"protocol\" }"
+    ),
 
     // Measures.
     DataTypeMeasure( "dk.cachet.carp", "SomeType" ),
