@@ -45,6 +45,7 @@ class StudyRuntime private constructor(
          * - [deviceRoleName] is not present in the deployment or is already registered and a different [deviceRegistration] is specified than a previous request
          * - [deviceRegistration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device
          * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
+         * @throws IllegalStateException in case data requested in the deployment cannot be collected on this client.
          */
         internal suspend fun initialize(
             /**
