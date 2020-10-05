@@ -26,12 +26,15 @@ class UnexpectedMeasuresWarning internal constructor() : DeploymentWarning
     override fun isIssuePresent( protocol: StudyProtocol ): Boolean = getUnexpectedMeasures( protocol ).any()
 
     fun getUnexpectedMeasures( protocol: StudyProtocol ): Set<UnexpectedMeasure> =
-        protocol.triggers
-            // Map each triggered measure to `UnexpectedMeasure`, even though we haven't verified this yet.
-            .flatMap { protocol.getTriggeredTasks( it ) }
-            .flatMap { triggeredTask ->
-                triggeredTask.task.measures.map { UnexpectedMeasure( triggeredTask.targetDevice, it ) } }
-            // Only keep triggered measures which are in fact unexpected.
-            .filter { it.measure.type !in it.device.supportedDataTypes }
+        protocol.devices
+            // Get measures per device.
+            .flatMap { device ->
+                protocol.getTasksForDevice( device ).flatMap { it.measures }.map { device to it }
+            }
+            // Filter out measures which are not supported on the device.
+            .filter { (device, measure) ->
+                measure.type !in device.supportedDataTypes
+            }
+            .map { (device, measure) -> UnexpectedMeasure( device, measure ) }
             .toSet()
 }
