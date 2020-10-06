@@ -1,10 +1,12 @@
 package dk.cachet.carp.common.serialization
 
+import dk.cachet.carp.common.data.CarpDataTypes
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.ECG
 import dk.cachet.carp.common.data.FreeFormText
 import dk.cachet.carp.common.data.Geolocation
 import dk.cachet.carp.common.data.HeartRate
+import dk.cachet.carp.common.data.SensorContact
 import dk.cachet.carp.common.data.StepCount
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.EmailAccountIdentity
@@ -34,6 +36,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( Geolocation::class )
         subclass( HeartRate::class )
         subclass( StepCount::class )
+        subclass( SensorContact::class )
     }
 }
 

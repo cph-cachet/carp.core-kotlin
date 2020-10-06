@@ -5,6 +5,7 @@ import dk.cachet.carp.common.data.CarpDataTypes
 import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.common.serialization.NotSerializable
 import dk.cachet.carp.common.toTrilean
+import dk.cachet.carp.protocols.domain.sampling.NoOptionsSamplingConfigurationBuilder
 import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.sampling.carp.HearRateSamplingConfigurationBuilder
 import kotlinx.serialization.Serializable
@@ -17,10 +18,15 @@ import kotlin.reflect.KClass
 data class BLEHeartRate(
     override val roleName: String
 ) : DeviceDescriptor<BLEDeviceRegistration, BLEDeviceRegistrationBuilder>() {
-    override val supportedDataTypes: Set<DataType> = setOf( CarpDataTypes.HEARTRATE )
+    override val supportedDataTypes: Set<DataType> =
+        setOf(
+            CarpDataTypes.HEARTRATE,
+            CarpDataTypes.SENSORCONTACT
+        )
     override val samplingConfiguration: Map<DataType, SamplingConfiguration> =
         mapOf(
-            CarpDataTypes.HEARTRATE to HearRateSamplingConfigurationBuilder.build()
+            CarpDataTypes.HEARTRATE to HearRateSamplingConfigurationBuilder.build(),
+            CarpDataTypes.SENSORCONTACT to NoOptionsSamplingConfigurationBuilder.build()
         )
 
     override fun createDeviceRegistrationBuilder(): BLEDeviceRegistrationBuilder =

@@ -46,5 +46,11 @@ object CarpDataTypes : EnumObjectList<DataType>()
      * Heart rate. Measures the number of heart contractions (beats) per minute.
      */
     val HEARTRATE = add( DataType.fromFullyQualifiedName( HEARTRATE_TYPE_NAME ) )
+
+    internal const val SENSORCONTACT_TYPE_NAME = "$CARP_NAMESPACE.sensorcontact"
+    /**
+     * Sensor contact. An indicator of proper skin contact. Typically found in HR chest straps.
+     */
+    val SENSORCONTACT = add( DataType.fromFullyQualifiedName( SENSORCONTACT_TYPE_NAME ) )
 }
 
