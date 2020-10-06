@@ -9,4 +9,4 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @SerialName( CarpDataTypes.HEARTRATE_TYPE_NAME )
-data class HeartRate( val beatsPerMinute: Float ) : Data
+data class HeartRate( val bpm: Int ) : Data
