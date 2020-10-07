@@ -72,9 +72,22 @@ data class MasterDeviceDeployment(
      * The set of tasks which may need to be executed on a master device, or a connected device, during a deployment.
      */
     data class DeviceTasks(
+        /**
+         * The device for which the set of [tasks] which may need to be executed during deployment are listed.
+         */
         val device: AnyDeviceDescriptor,
+        /**
+         * Determines whether [device] is a device which is connected to another master device.
+         * True when [device] is a connected device; false when [device] is a master device.
+         */
         val isConnectedDevice: Boolean,
+        /**
+         * The [DeviceRegistration] for [device]; null when no configuration is specified yet in [MasterDeviceDeployment].
+         */
         val deviceRegistration: DeviceRegistration?,
+        /**
+         * The set of tasks which may need to be executed during deployment on [device].
+         */
         val tasks: Set<TaskDescriptor>
     )
 
