@@ -43,26 +43,26 @@ object CarpDataTypes : EnumObjectList<DataType>()
 
     internal const val HEARTRATE_TYPE_NAME = "$CARP_NAMESPACE.heartrate"
     /**
-     * Heart rate. Measures the number of heart contractions (beats) per minute.
+     * Heart rate. Represents the number of heart contractions (beats) per minute.
      */
     val HEARTRATE = add( DataType.fromFullyQualifiedName( HEARTRATE_TYPE_NAME ) )
 
     internal const val RRI_TYPE_NAME = "$CARP_NAMESPACE.rri"
     /**
-     * Heart rate as RRI. Measures the R to R wave interval in ms.
+     * Heart R to R wave interval in ms.
      */
     val RRI = add( DataType.fromFullyQualifiedName( RRI_TYPE_NAME ) )
 
     internal const val SENSORCONTACT_TYPE_NAME = "$CARP_NAMESPACE.sensorcontact"
     /**
-     * Sensor contact. An indicator of proper skin contact. Typically found in HR chest straps.
+     * Sensor contact. An indicator of proper skin contact.
      */
     val SENSORCONTACT = add( DataType.fromFullyQualifiedName( SENSORCONTACT_TYPE_NAME ) )
 
-    internal const val ACCELEROMETER_TYPE_NAME = "$CARP_NAMESPACE.accelerometer"
+    internal const val ACCELERATION_TYPE_NAME = "$CARP_NAMESPACE.acceleration"
     /**
-     * Accelerometer in 3 axis measured in G.
+     * Acceleration in 3 axis.
      */
-    val ACCELEROMETER = add( DataType.fromFullyQualifiedName( ACCELEROMETER_TYPE_NAME ))
+    val ACCELERATION = add( DataType.fromFullyQualifiedName( ACCELERATION_TYPE_NAME ))
 }
 

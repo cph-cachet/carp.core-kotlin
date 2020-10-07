@@ -1,6 +1,6 @@
 package dk.cachet.carp.common.serialization
 
-import dk.cachet.carp.common.data.Accelerometer
+import dk.cachet.carp.common.data.Acceleration
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.ECG
 import dk.cachet.carp.common.data.FreeFormText
@@ -32,7 +32,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 
     polymorphic( Data::class )
     {
-        subclass( Accelerometer::class )
+        subclass( Acceleration::class )
         subclass( ECG::class )
         subclass( FreeFormText::class )
         subclass( Geolocation::class )
