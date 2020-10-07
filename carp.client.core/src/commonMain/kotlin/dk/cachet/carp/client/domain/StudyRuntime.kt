@@ -141,7 +141,7 @@ class StudyRuntime private constructor(
         check( deployment.deviceDescriptor == device )
         deploymentInformation = deployment
 
-        // Verify whether data can be collected for all requested measures.
+        // Verify whether data  collection is supported for all requested measures.
         for ( deviceTasks in deployment.getTasksPerDevice() )
         {
             val dataTypes = deviceTasks.tasks.flatMap { it.measures }.map { it.type }.distinct()
@@ -150,15 +150,15 @@ class StudyRuntime private constructor(
                 val canCollectData =
                     if ( deviceTasks.isConnectedDevice )
                     {
-                        dataCollector.canCollectDataForConnectedDevice(
+                        dataCollector.supportsDataCollectionOnConnectedDevice(
                             type,
                             deviceTasks.device::class,
                             deviceTasks.deviceRegistration )
                     }
-                    else dataCollector.canCollectData( type )
+                    else dataCollector.supportsDataCollection( type )
 
                 check( canCollectData )
-                    { "Cannot collect data of type \"$type\" for device with role \"${device.roleName}\" on this client." }
+                    { "Data collection for data type \"$type\" on device with role \"${device.roleName}\" is not supported on this client." }
             }
         }
 

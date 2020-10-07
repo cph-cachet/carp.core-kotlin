@@ -139,7 +139,7 @@ class StudyRuntimeTest
         // Initializing study runtime for the smartphone deployment should fail since StubMeasure can't be collected.
         val ( deploymentService, deploymentStatus ) = createStudyDeployment( protocol )
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = MockDataCollector( canCollectData = false )
+        val dataCollector = MockDataCollector( supportsDataCollection = false )
         assertFailsWith<IllegalStateException>
         {
             StudyRuntime.initialize(

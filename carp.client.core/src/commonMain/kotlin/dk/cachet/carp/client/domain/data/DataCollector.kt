@@ -13,14 +13,14 @@ import kotlin.reflect.KClass
 interface DataCollector
 {
     /**
-     * Determines whether a given [dataType] can be collected on this master device.
+     * Determines whether data collection for a given [dataType] is supported on this master device.
      */
-    fun canCollectData( dataType: DataType ): Boolean
+    fun supportsDataCollection( dataType: DataType ): Boolean
 
     /**
-     * Determines whether a given [dataType] can be collected by connecting to a device of type [connectedDeviceType] using [deviceRegistration].
+     * Determines whether data collection for a given [dataType] by connecting to a device of type [connectedDeviceType] using [deviceRegistration] is supported.
      */
-    fun canCollectDataForConnectedDevice(
+    fun supportsDataCollectionOnConnectedDevice(
         dataType: DataType,
         connectedDeviceType: KClass<out AnyDeviceDescriptor>,
         deviceRegistration: DeviceRegistration?
