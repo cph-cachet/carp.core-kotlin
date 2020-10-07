@@ -1,11 +1,15 @@
 package dk.cachet.carp.client.domain
 
+import dk.cachet.carp.client.domain.data.DataCollector
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.Data
+import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.common.ddd.AggregateRoot
 import dk.cachet.carp.common.ddd.DomainEvent
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
+import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
@@ -41,6 +45,7 @@ class StudyRuntime private constructor(
          * - [deviceRoleName] is not present in the deployment or is already registered and a different [deviceRegistration] is specified than a previous request
          * - [deviceRegistration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device
          * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
+         * @throws IllegalStateException in case data requested in the deployment cannot be collected on this client.
          */
         internal suspend fun initialize(
             /**
@@ -48,6 +53,10 @@ class StudyRuntime private constructor(
              * This deployment service should have the deployment with [studyDeploymentId] available.
              */
             deploymentService: DeploymentService,
+            /**
+             * Manages [Data] collection of requested [DataType]s for this master device and connected devices.
+             */
+            dataCollector: DataCollector,
             /**
              * The ID of the deployed study for which to collect data.
              */
@@ -66,11 +75,11 @@ class StudyRuntime private constructor(
             val deploymentStatus = deploymentService.registerDevice( studyDeploymentId, deviceRoleName, deviceRegistration )
 
             // Initialize runtime.
-            val clientDeviceStatus = deploymentStatus.devicesStatus.first { it.device.roleName == deviceRoleName }
+            val clientDeviceStatus = deploymentStatus.getDeviceStatus( deviceRoleName )
             val runtime = StudyRuntime( studyDeploymentId, clientDeviceStatus.device as AnyMasterDeviceDescriptor )
 
             // After registration, deployment information might immediately be available for this client device.
-            runtime.tryDeployment( deploymentService, clientDeviceStatus )
+            runtime.tryDeployment( deploymentService, dataCollector, deploymentStatus )
 
             return runtime
         }
@@ -108,23 +117,50 @@ class StudyRuntime private constructor(
      *
      * @return True in case deployment succeeded; false in case device could not yet be deployed (e.g., awaiting registration of other devices).
      * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
+     * @throws IllegalStateException in case data requested in the deployment cannot be collected on this client.
      */
-    suspend fun tryDeployment( deploymentService: DeploymentService ): Boolean
+    suspend fun tryDeployment( deploymentService: DeploymentService, dataCollector: DataCollector ): Boolean
     {
         val deploymentStatus = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
-        val clientDeviceStatus = deploymentStatus.getDeviceStatus( device )
 
-        return tryDeployment( deploymentService, clientDeviceStatus )
+        return tryDeployment( deploymentService, dataCollector, deploymentStatus )
     }
 
-    private suspend fun tryDeployment( deploymentService: DeploymentService, deviceStatus: DeviceDeploymentStatus ): Boolean
+    private suspend fun tryDeployment(
+        deploymentService: DeploymentService,
+        dataCollector: DataCollector,
+        deploymentStatus: StudyDeploymentStatus
+    ): Boolean
     {
         // Early out in case state indicates the device is not yet ready to deploy.
+        val deviceStatus = deploymentStatus.getDeviceStatus( device )
         if ( deviceStatus !is DeviceDeploymentStatus.NotDeployed || !deviceStatus.isReadyForDeployment ) return false
 
-        // TODO: Get deployment and throw exception in case there are missing plugins to perform the operations (e.g., measurements).
+        // Get deployment information.
         val deployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, device.roleName )
+        check( deployment.deviceDescriptor == device )
         deploymentInformation = deployment
+
+        // Verify whether data  collection is supported for all requested measures.
+        for ( deviceTasks in deployment.getTasksPerDevice() )
+        {
+            val dataTypes = deviceTasks.tasks.flatMap { it.measures }.map { it.type }.distinct()
+            for ( type in dataTypes )
+            {
+                val canCollectData =
+                    if ( deviceTasks.isConnectedDevice )
+                    {
+                        dataCollector.supportsDataCollectionOnConnectedDevice(
+                            type,
+                            deviceTasks.device::class,
+                            deviceTasks.deviceRegistration )
+                    }
+                    else dataCollector.supportsDataCollection( type )
+
+                check( canCollectData )
+                    { "Data collection for data type \"$type\" on device with role \"${device.roleName}\" is not supported on this client." }
+            }
+        }
 
         // Notify deployment service of successful deployment.
         try

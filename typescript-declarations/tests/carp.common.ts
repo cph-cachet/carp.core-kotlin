@@ -2,7 +2,7 @@ import { expect } from 'chai'
 import VerifyModule from './VerifyModule'
 
 import { Long } from 'kotlin'
-import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
+import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
 import Json = kotlinx.serialization.json.Json
 import { dk } from "carp.core-kotlin-carp.common"
 import DateTime = dk.cachet.carp.common.DateTime

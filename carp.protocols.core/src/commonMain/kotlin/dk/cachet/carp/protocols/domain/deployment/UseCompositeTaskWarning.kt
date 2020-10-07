@@ -24,10 +24,7 @@ class UseCompositeTaskWarning internal constructor() : DeploymentWarning
         "It is recommended to model this as one composite task instead, for clarity and to circumvent potential concurrency issues."
 
 
-    override fun isIssuePresent( protocol: StudyProtocol ): Boolean
-    {
-        return getOverlappingTasks( protocol ).any()
-    }
+    override fun isIssuePresent( protocol: StudyProtocol ): Boolean = getOverlappingTasks( protocol ).any()
 
     fun getOverlappingTasks( protocol: StudyProtocol ): List<OverlappingTasks>
     {

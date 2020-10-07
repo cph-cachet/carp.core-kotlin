@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.infrastructure.test
 
-import dk.cachet.carp.protocols.domain.data.SamplingConfiguration
+import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
 import kotlinx.serialization.Serializable
 
 

@@ -1,5 +1,11 @@
 package dk.cachet.carp.common.serialization
 
+import dk.cachet.carp.common.data.Data
+import dk.cachet.carp.common.data.ECG
+import dk.cachet.carp.common.data.FreeFormText
+import dk.cachet.carp.common.data.Geolocation
+import dk.cachet.carp.common.data.HeartRate
+import dk.cachet.carp.common.data.StepCount
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.common.users.UsernameAccountIdentity
@@ -20,6 +26,15 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( UsernameAccountIdentity::class )
         subclass( EmailAccountIdentity::class )
     }
+
+    polymorphic( Data::class )
+    {
+        subclass( ECG::class )
+        subclass( FreeFormText::class )
+        subclass( Geolocation::class )
+        subclass( HeartRate::class )
+        subclass( StepCount::class )
+    }
 }
 
 /**
@@ -37,5 +52,8 @@ fun createDefaultJSON( module: SerializersModule = EmptySerializersModule ): Jso
     return Json {
         classDiscriminator = CLASS_DISCRIMINATOR
         serializersModule = COMMON_SERIAL_MODULE + module
+        // TODO: `encodeDefaults` changed in kotlinx.serialization 1.0.0-RC2 to false by default
+        //  which caused unknown polymorphic serializer tests to fail. Verify whether we need this.
+        encodeDefaults = true
     }
 }

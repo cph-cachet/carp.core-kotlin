@@ -5,9 +5,10 @@ import { kotlin } from 'kotlin'
 import ArrayList = kotlin.collections.ArrayList
 import HashSet = kotlin.collections.HashSet
 import toSet = kotlin.collections.toSet_us0mfu$
-import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
+import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
 import Json = kotlinx.serialization.json.Json
-import getListSerializer = kotlinx.serialization.get_list_gekvwj$
+import { kotlinx as kotlinxcore } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
+import getListSerializer = kotlinxcore.serialization.get_list_gekvwj$
 import { dk as cdk } from 'carp.core-kotlin-carp.common'
 import DateTime = cdk.cachet.carp.common.DateTime
 import UUID = cdk.cachet.carp.common.UUID

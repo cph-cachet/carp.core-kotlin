@@ -46,11 +46,11 @@ Two key **design goals** differentiate this project from similar projects:
 
   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.protocols/carp.protocols.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.protocols) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.protocols/carp.protocols.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/protocols/)
 
-- **Studies**: Supports management of research studies, including the recruitment of participants and assigning metadata (e.g., contact information). This subsystem maps pseudonymized data (managed by the 'deployment' subsystem) to actual participants.
+- [**Studies**](docs/carp-studies.md): Supports management of research studies, including the recruitment of participants and assigning metadata (e.g., contact information). This subsystem maps pseudonymized data (managed by the 'deployment' subsystem) to actual participants.
 
   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.studies/carp.studies.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.studies) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.studies/carp.studies.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/studies/)
 
-- **Deployment**: Maps the information specified in a study protocol to runtime configurations used by the 'client' subystem to run the protocol on concrete devices (e.g., a smartphone) and allow researchers to monitor their state. To start collecting data, participants need to be invited, devices need to be registered, and consent needs to be given to collect the requested data.
+- [**Deployment**](docs/carp-deployment.md): Maps the information specified in a study protocol to runtime configurations used by the 'client' subystem to run the protocol on concrete devices (e.g., a smartphone) and allow researchers to monitor their state. To start collecting data, participants need to be invited, devices need to be registered, and consent needs to be given to collect the requested data.
 
   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.deployment/carp.deployment.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.deployment) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.deployment/carp.deployment.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/deployment/)
 
@@ -136,9 +136,10 @@ maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
 
 ### Example
 
-The following shows how the subystems intereact to create a study protocol, instantiate it as a study, and deploy it to a client.
+The following shows how the subystems interact to create a study protocol, instantiate it as a study, and deploy it to a client.
 
-**carp.protocols**: Example study protocol definition to collect GPS and stepcount on a smartphone which can be serialized to JSON:
+<a name="example-protocols"></a>
+**carp.protocols**: Example study protocol definition to collect GPS and step count on a smartphone which can be serialized to JSON:
 
 ```kotlin
 // Create a new study protocol.
@@ -156,7 +157,7 @@ val phone = Smartphone( "Patient's phone" )
 protocol.addMasterDevice( phone )
 
 // Define what needs to be measured, on which device, when.
-val measures: List<Measure> = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepcount() )
+val measures: List<Measure> = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
 val startMeasures = ConcurrentTask( "Start measures", measures )
 protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
@@ -164,6 +165,7 @@ protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 val json: String = protocol.getSnapshot().toJson()
 ```
 
+<a name="example-studies"></a>
 **carp.studies**: Example creation of a study based on a study protocol, and adding and deploying a single participant:
 
 ```kotlin
@@ -202,6 +204,7 @@ if ( studyStatus.canDeployToParticipants )
 }
 ```
 
+<a name="example-deployment"></a>
 **carp.deployment**: Most calls to this subsystem are abstracted away by the 'studies' and 'client' subsystems, so you wouldn't call its endpoints directly. Example code which is called when a study is created and accessed by a client:
 
 ```kotlin
@@ -233,10 +236,12 @@ status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
 val isReady = status is StudyDeploymentStatus.DeploymentReady // True.
 ```
 
+<a name="example-client"></a>
 **carp.client**: Example initialization of a smartphone client for the participant that got invited to the study in the 'studies' code sample above:
 
 ```kotlin
 val deploymentService = createDeploymentEndpoint()
+val dataCollector = createDataCollector()
 
 // Retrieve invitation to participate in the study using a specific device.
 val account: Account = getLoggedInUser()
@@ -247,7 +252,7 @@ val deviceToUse: String = invitation.devices.first().deviceRoleName // This matc
 
 // Create a study runtime for the study.
 val clientRepository = createRepository()
-val client = SmartphoneClient( clientRepository, deploymentService )
+val client = SmartphoneClient( clientRepository, deploymentService, dataCollector )
 client.configure {
     // Device-specific registration options can be accessed from here.
     // Depending on the device type, different options are available.
@@ -276,8 +281,8 @@ We recommend using IntelliJ IDEA 2020, as this is the development environment we
 
 For `carp.core-kotlin`:
 - **build**: Builds the full project, for both runtimes, including running unit tests, but not code analysis.
-- **cleanAllTests jvmTest**: Test the full project using JUnit5. `cleanAllTests` is optional, but ensures that test results always show up in IntelliJ; when tasks haven't changed it otherwise lists "Test events were not received".
-- **jsTest**: Test the full project using Mocha. Test results only show up in the build output and not in IntelliJ.
+- **jvmTest**: Test the full project on a JVM runtime using JUnit5.
+- **jsTest**: Test the full project on a JavaScript runtime using a headless Chrome browser.
 - **verifyTsDeclarations**: Verify whether the TypeScript declarations of all modules, defined in `typescript-declarations`, match the compiled JS sources and work at runtime.
 - **detektPasses**:: Run code analysis. Output will list failure in case code smells are detected.
 - **jsPackageJson publishSigned**: Publish all projects to Maven using the version number specified in `ext.globalVersion`. This includes documentation, sources, and signing. For this to work you need to configure a `publish.properties` file with a signing signature and repository user in the project root folder. See main `build.gradle` for details.

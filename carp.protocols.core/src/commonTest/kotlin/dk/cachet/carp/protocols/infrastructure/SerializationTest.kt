@@ -4,7 +4,7 @@ import dk.cachet.carp.common.RecurrenceRule
 import dk.cachet.carp.common.TimeOfDay
 import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.protocols.domain.data.IntervalSamplingConfiguration
+import dk.cachet.carp.protocols.domain.sampling.IntervalSamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.AltBeacon
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.CustomProtocolDevice
@@ -35,7 +35,10 @@ private val protocolInstances = listOf(
 
     // Tasks.
     ConcurrentTask( "Start measures", listOf() ),
-    CustomProtocolTask( "Custom study runtime", "<protocol definition>" ),
+    CustomProtocolTask(
+        "Custom study runtime",
+        "{ \"\$type\": \"Study\", \"custom\": \"protocol\" }"
+    ),
 
     // Measures.
     DataTypeMeasure( "dk.cachet.carp", "SomeType" ),
