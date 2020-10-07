@@ -364,6 +364,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             .toSet()
 
         return MasterDeviceDeployment(
+            device,
             configuration,
             connectedDevices,
             deviceRegistrations,

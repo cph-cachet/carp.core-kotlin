@@ -1,6 +1,9 @@
 package dk.cachet.carp.client.domain
 
+import dk.cachet.carp.client.domain.data.DataCollector
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.Data
+import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilder
@@ -22,7 +25,11 @@ abstract class ClientManager<
     /**
      * The application service through which study deployments, to be run on this client, can be managed and retrieved.
      */
-    private val deploymentService: DeploymentService
+    private val deploymentService: DeploymentService,
+    /**
+     * Manages [Data] collection of requested [DataType]s for this master device and connected devices.
+     */
+    private val dataCollector: DataCollector
 )
 {
     /**
@@ -77,7 +84,10 @@ abstract class ClientManager<
         // Create the study runtime.
         // IllegalArgumentException's will be thrown here when deployment or role name does not exist, or device is already registered.
         val deviceRegistration = repository.getDeviceRegistration()!!
-        val runtime = StudyRuntime.initialize( deploymentService, studyDeploymentId, deviceRoleName, deviceRegistration )
+        val runtime = StudyRuntime.initialize(
+            deploymentService, dataCollector,
+            studyDeploymentId, deviceRoleName, deviceRegistration
+        )
 
         repository.addStudyRuntime( runtime )
         return runtime
@@ -96,7 +106,7 @@ abstract class ClientManager<
         val runtime = repository.getStudyRuntimeList().firstOrNull { it.id == studyRuntimeId }
         requireNotNull( runtime ) { "The specified study runtime does not exist." }
 
-        val isDeployed = runtime.tryDeployment( deploymentService )
+        val isDeployed = runtime.tryDeployment( deploymentService, dataCollector )
         if ( isDeployed )
         {
             repository.updateStudyRuntime( runtime )
