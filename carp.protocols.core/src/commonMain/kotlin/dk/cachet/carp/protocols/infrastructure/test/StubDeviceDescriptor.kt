@@ -14,12 +14,13 @@ import kotlin.reflect.KClass
  * A stub [DeviceDescriptor] which can measure [STUB_DATA_TYPE].
  */
 @Serializable
-data class StubDeviceDescriptor( override val roleName: String = "Stub device" ) :
+data class StubDeviceDescriptor(
+    override val roleName: String = "Stub device",
+    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap(),
+    override val supportedDataTypes: Set<DataType> = setOf( STUB_DATA_TYPE )
+) :
     DeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {
-    override val supportedDataTypes: Set<DataType> = setOf( STUB_DATA_TYPE )
-    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
-
     override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DefaultDeviceRegistration> = DefaultDeviceRegistration::class
     override fun isValidConfiguration( registration: DefaultDeviceRegistration ): Trilean = Trilean.TRUE
