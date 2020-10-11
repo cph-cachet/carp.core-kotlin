@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.data
 
+import dk.cachet.carp.common.FullyQualifiedName
 import kotlin.test.*
 
 
@@ -9,32 +10,13 @@ import kotlin.test.*
 class DataTypeTest
 {
     @Test
-    fun namespace_needs_to_be_set()
-    {
-        assertFailsWith<IllegalArgumentException>
-        {
-            DataType( "", "typename" )
-        }
-    }
-
-    @Test
-    fun name_may_not_contain_periods()
-    {
-        assertFailsWith<IllegalArgumentException>
-        {
-            DataType( "some.namespace", "contains.dot" )
-        }
-    }
-
-    @Test
     fun fromFullyQualifiedName_succeeds()
     {
         val namespace = "some.namespace"
         val name = "typename"
         val type = DataType.fromFullyQualifiedName( "$namespace.$name" )
 
-        assertEquals( namespace, type.namespace )
-        assertEquals( name, type.name )
+        assertEquals( FullyQualifiedName( namespace, name ), type.name )
     }
 
     @Test

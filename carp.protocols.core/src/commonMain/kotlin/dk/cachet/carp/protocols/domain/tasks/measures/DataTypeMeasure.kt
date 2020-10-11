@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
+import dk.cachet.carp.common.FullyQualifiedName
 import dk.cachet.carp.common.data.DataType
 import kotlinx.serialization.Serializable
 
@@ -26,5 +27,5 @@ data class DataTypeMeasure( override val type: DataType ) : Measure
          * Describes the data being collected.
          */
         name: String
-    ) : this( DataType( namespace, name ) )
+    ) : this( DataType( FullyQualifiedName( namespace, name ) ) )
 }
