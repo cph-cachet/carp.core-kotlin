@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import VerifyModule from './VerifyModule'
 
-import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
+import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
 import Json = kotlinx.serialization.json.Json
 import { dk } from 'carp.core-kotlin-carp.protocols.core'
 import ProtocolOwner = dk.cachet.carp.protocols.domain.ProtocolOwner

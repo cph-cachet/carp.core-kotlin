@@ -16,10 +16,8 @@ class UnusedDevicesWarning internal constructor() : DeploymentWarning
         "The study protocol contains devices which are never used as the source or target of triggers, or to relay data (master device). " +
         "These devices thus serve no purpose as part of the specified study protocol."
 
-    override fun isIssuePresent( protocol: StudyProtocol ): Boolean
-    {
-        return getUnusedDevices( protocol ).any()
-    }
+
+    override fun isIssuePresent( protocol: StudyProtocol ): Boolean = getUnusedDevices( protocol ).any()
 
     fun getUnusedDevices( protocol: StudyProtocol ): Set<AnyDeviceDescriptor>
     {

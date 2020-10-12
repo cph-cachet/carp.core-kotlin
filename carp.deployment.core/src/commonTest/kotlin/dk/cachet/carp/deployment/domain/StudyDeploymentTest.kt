@@ -2,6 +2,7 @@ package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
@@ -14,7 +15,9 @@ import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import kotlinx.serialization.json.Json
@@ -441,6 +444,41 @@ class StudyDeploymentTest
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
 
         assertTrue( deviceDeployment.connectedDeviceConfigurations.isEmpty() )
+    }
+
+    @Test
+    fun getDeviceDeploymentFor_with_trigger_to_other_master_device_succeeds()
+    {
+        val sourceMaster = StubMasterDeviceDescriptor( "Master 1" )
+        val targetMaster = StubMasterDeviceDescriptor( "Master 2" )
+        val protocol = createEmptyProtocol().apply {
+            addMasterDevice( sourceMaster )
+            addMasterDevice( targetMaster )
+        }
+        val measure = StubMeasure( DataType( "namespace", "type" ) )
+        val task = StubTaskDescriptor( "Stub task", listOf( measure ) )
+        protocol.addTriggeredTask( StubTrigger( sourceMaster ), task, targetMaster )
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( sourceMaster, DefaultDeviceRegistration( "0" ) )
+        deployment.registerDevice( targetMaster, DefaultDeviceRegistration( "1" ) )
+
+        val sourceDeployment = deployment.getDeviceDeploymentFor( sourceMaster )
+        val targetDeployment = deployment.getDeviceDeploymentFor( targetMaster )
+
+        // The task should only be run on the target device.
+        assertEquals( 0, sourceDeployment.tasks.size )
+        assertEquals( task, targetDeployment.tasks.single() )
+
+        // The task is triggered from the source and sent to the target.
+        assertEquals( 1, sourceDeployment.triggers.size )
+        assertEquals( 1, sourceDeployment.triggeredTasks.size )
+        val triggeredTask = sourceDeployment.triggeredTasks.single()
+        assertEquals( task.name, triggeredTask.taskName )
+        assertEquals( 0, targetDeployment.triggers.size )
+
+        // There are no connected devices, only master devices.
+        assertEquals( 0, sourceDeployment.connectedDevices.size )
+        assertEquals( 0, targetDeployment.connectedDevices.size )
     }
 
     @Test

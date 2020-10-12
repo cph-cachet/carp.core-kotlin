@@ -241,6 +241,7 @@ val isReady = status is StudyDeploymentStatus.DeploymentReady // True.
 
 ```kotlin
 val deploymentService = createDeploymentEndpoint()
+val dataCollector = createDataCollector()
 
 // Retrieve invitation to participate in the study using a specific device.
 val account: Account = getLoggedInUser()
@@ -251,7 +252,7 @@ val deviceToUse: String = invitation.devices.first().deviceRoleName // This matc
 
 // Create a study runtime for the study.
 val clientRepository = createRepository()
-val client = SmartphoneClient( clientRepository, deploymentService )
+val client = SmartphoneClient( clientRepository, deploymentService, dataCollector )
 client.configure {
     // Device-specific registration options can be accessed from here.
     // Depending on the device type, different options are available.

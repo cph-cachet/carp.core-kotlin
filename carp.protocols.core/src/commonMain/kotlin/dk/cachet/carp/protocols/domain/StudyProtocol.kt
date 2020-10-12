@@ -4,6 +4,7 @@ import dk.cachet.carp.common.ddd.DomainEvent
 import dk.cachet.carp.protocols.domain.deployment.DeploymentError
 import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
 import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
+import dk.cachet.carp.protocols.domain.deployment.UnexpectedMeasuresWarning
 import dk.cachet.carp.protocols.domain.deployment.UntriggeredTasksWarning
 import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
 import dk.cachet.carp.protocols.domain.deployment.UseCompositeTaskWarning
@@ -274,7 +275,8 @@ class StudyProtocol(
         NoMasterDeviceError(),
         UntriggeredTasksWarning(),
         UseCompositeTaskWarning(),
-        UnusedDevicesWarning()
+        UnusedDevicesWarning(),
+        UnexpectedMeasuresWarning()
     )
 
     /**

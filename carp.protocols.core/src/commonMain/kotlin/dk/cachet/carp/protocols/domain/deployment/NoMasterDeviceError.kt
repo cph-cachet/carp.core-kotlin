@@ -15,8 +15,5 @@ class NoMasterDeviceError internal constructor() : DeploymentError
         "Without a master device, no data can be collected."
 
 
-    override fun isIssuePresent( protocol: StudyProtocol ): Boolean
-    {
-        return !protocol.masterDevices.any()
-    }
+    override fun isIssuePresent( protocol: StudyProtocol ): Boolean = !protocol.masterDevices.any()
 }
