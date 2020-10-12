@@ -31,7 +31,7 @@ data class BLEHeartRateSensor( override val roleName: String ) :
     }
 
 
-    override val supportedDataTypes: Set<DataType> = emptySet()
+    override val supportedDataTypes: Set<DataType> = SamplingSchemes.map { it.type }.toSet()
 
     override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 
