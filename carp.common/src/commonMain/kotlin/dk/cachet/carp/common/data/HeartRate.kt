@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Holds heart rate data in beats per minute.
+ * Holds heart rate data in beats per minute ([bpm]).
  */
 @Serializable
-@SerialName( CarpDataTypes.HEARTRATE_TYPE_NAME )
-data class HeartRate(val bpm: Int ) : Data
+@SerialName( CarpDataTypes.HEART_RATE_TYPE_NAME )
+data class HeartRate( val bpm: Int ) : Data

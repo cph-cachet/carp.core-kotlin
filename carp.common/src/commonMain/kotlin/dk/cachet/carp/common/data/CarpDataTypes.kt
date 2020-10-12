@@ -17,52 +17,52 @@ object CarpDataTypes : EnumObjectList<DataType>()
     const val CARP_NAMESPACE: String = "dk.cachet.carp"
 
 
-    internal const val FREEFORMTEXT_TYPE_NAME = "$CARP_NAMESPACE.freeformtext"
+    internal const val FREE_FORM_TEXT_TYPE_NAME = "$CARP_NAMESPACE.freeformtext"
     /**
      * Text of which the interpretation is left up to the specific application.
      */
-    val FREEFORMTEXT = add( DataType.fromFullyQualifiedName( FREEFORMTEXT_TYPE_NAME ) )
+    val FREE_FORM_TEXT = add( DataType.fromFullyQualifiedName( FREE_FORM_TEXT_TYPE_NAME ) )
 
     internal const val GEOLOCATION_TYPE_NAME = "$CARP_NAMESPACE.geolocation"
     /**
-     * Geographic location data, representing latitude and longitude in decimal degrees within the World Geodetic System 1984.
+     * Geographic location data, representing latitude and longitude within the World Geodetic System 1984.
      */
     val GEOLOCATION = add( DataType.fromFullyQualifiedName( GEOLOCATION_TYPE_NAME ) )
 
-    internal const val STEPCOUNT_TYPE_NAME = "$CARP_NAMESPACE.stepcount"
+    internal const val STEP_COUNT_TYPE_NAME = "$CARP_NAMESPACE.stepcount"
     /**
      * Step count data, representing the number of steps a participant has taken in a specified time interval.
      */
-    val STEPCOUNT = add( DataType.fromFullyQualifiedName( STEPCOUNT_TYPE_NAME ) )
+    val STEP_COUNT = add( DataType.fromFullyQualifiedName( STEP_COUNT_TYPE_NAME ) )
 
     internal const val ECG_TYPE_NAME = "$CARP_NAMESPACE.ecg"
     /**
-     * ECG data, representing electrical activity of the heart over time for a single lead.
+     * Electrocardiography (ECG) data, representing electrical activity of the heart for a single lead.
      */
     val ECG = add( DataType.fromFullyQualifiedName( ECG_TYPE_NAME ) )
 
-    internal const val HEARTRATE_TYPE_NAME = "$CARP_NAMESPACE.heartrate"
+    internal const val HEART_RATE_TYPE_NAME = "$CARP_NAMESPACE.heartrate"
     /**
-     * Heart rate. Represents the number of heart contractions (beats) per minute.
+     * Represents the number of heart contractions (beats) per minute.
      */
-    val HEARTRATE = add( DataType.fromFullyQualifiedName( HEARTRATE_TYPE_NAME ) )
+    val HEART_RATE = add( DataType.fromFullyQualifiedName( HEART_RATE_TYPE_NAME ) )
 
-    internal const val RRI_TYPE_NAME = "$CARP_NAMESPACE.rri"
+    internal const val RR_INTERVAL_TYPE_NAME = "$CARP_NAMESPACE.rrinterval"
     /**
-     * Heart R to R wave interval in ms.
+     * The time interval between two consecutive heartbeats (R-R interval).
      */
-    val RRI = add( DataType.fromFullyQualifiedName( RRI_TYPE_NAME ) )
+    val RR_INTERVAL = add( DataType.fromFullyQualifiedName( RR_INTERVAL_TYPE_NAME ) )
 
-    internal const val SENSORCONTACT_TYPE_NAME = "$CARP_NAMESPACE.sensorcontact"
+    internal const val SENSOR_SKIN_CONTACT_TYPE_NAME = "$CARP_NAMESPACE.sensorskincontact"
     /**
-     * Sensor contact. An indicator of proper skin contact.
+     * Determines whether a sensor requiring contact with skin is making proper contact at a specific point in time.
      */
-    val SENSORCONTACT = add( DataType.fromFullyQualifiedName( SENSORCONTACT_TYPE_NAME ) )
+    val SENSOR_SKIN_CONTACT = add( DataType.fromFullyQualifiedName( SENSOR_SKIN_CONTACT_TYPE_NAME ) )
 
     internal const val ACCELERATION_TYPE_NAME = "$CARP_NAMESPACE.acceleration"
     /**
-     * Acceleration in 3 axis.
+     * Acceleration along perpendicular x, y, and z axes.
      */
-    val ACCELERATION = add( DataType.fromFullyQualifiedName( ACCELERATION_TYPE_NAME ))
+    val ACCELERATION = add( DataType.fromFullyQualifiedName( ACCELERATION_TYPE_NAME ) )
 }
 

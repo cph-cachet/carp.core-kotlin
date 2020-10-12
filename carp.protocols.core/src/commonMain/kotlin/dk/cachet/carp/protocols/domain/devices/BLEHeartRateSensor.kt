@@ -22,12 +22,12 @@ data class BLEHeartRateSensor( override val roleName: String ) :
         /**
          * Measure the number of heart contractions (beats) per minute
          */
-        fun heartRate() = DataTypeMeasure( SamplingSchemes.HEARTRATE.type )
+        fun heartRate() = DataTypeMeasure( SamplingSchemes.HEART_RATE.type )
     }
 
     object SamplingSchemes : DataTypeSamplingSchemeList()
     {
-        val HEARTRATE = add( HeartRateSamplingScheme ) // No configuration options available.
+        val HEART_RATE = add( HeartRateSamplingScheme ) // No configuration options available.
     }
 
 

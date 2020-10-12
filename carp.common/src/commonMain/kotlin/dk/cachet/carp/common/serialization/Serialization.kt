@@ -6,8 +6,8 @@ import dk.cachet.carp.common.data.ECG
 import dk.cachet.carp.common.data.FreeFormText
 import dk.cachet.carp.common.data.Geolocation
 import dk.cachet.carp.common.data.HeartRate
-import dk.cachet.carp.common.data.RRI
-import dk.cachet.carp.common.data.SensorContact
+import dk.cachet.carp.common.data.RRInterval
+import dk.cachet.carp.common.data.SensorSkinContact
 import dk.cachet.carp.common.data.StepCount
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.EmailAccountIdentity
@@ -37,8 +37,8 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( FreeFormText::class )
         subclass( Geolocation::class )
         subclass( HeartRate::class )
-        subclass( RRI::class )
-        subclass( SensorContact::class )
+        subclass( RRInterval::class )
+        subclass( SensorSkinContact::class )
         subclass( StepCount::class )
     }
 }
