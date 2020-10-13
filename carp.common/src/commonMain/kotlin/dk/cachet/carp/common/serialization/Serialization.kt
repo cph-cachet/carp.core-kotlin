@@ -37,7 +37,10 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( FreeFormText::class )
         subclass( Geolocation::class )
         subclass( HeartRate::class )
-        subclass( RRInterval::class )
+        // HACK: explicit serializer needs to be registered for object declarations due to limitation of the JS legacy backend.
+        // https://github.com/Kotlin/kotlinx.serialization/issues/1138#issuecomment-707989920
+        // This can likely be removed once we upgrade to the new IR backend.
+        subclass( RRInterval::class, RRInterval.serializer() )
         subclass( SensorSkinContact::class )
         subclass( StepCount::class )
     }
