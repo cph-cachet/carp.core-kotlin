@@ -1,6 +1,6 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.client.domain.data.DataCollector
+import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.DataType
@@ -54,9 +54,9 @@ class StudyRuntime private constructor(
              */
             deploymentService: DeploymentService,
             /**
-             * Manages [Data] collection of requested [DataType]s for this master device and connected devices.
+             * Allows subscribing to [Data] of requested [DataType]s for this master device and connected devices.
              */
-            dataCollector: DataCollector,
+            dataListener: DataListener,
             /**
              * The ID of the deployed study for which to collect data.
              */
@@ -79,7 +79,7 @@ class StudyRuntime private constructor(
             val runtime = StudyRuntime( studyDeploymentId, clientDeviceStatus.device as AnyMasterDeviceDescriptor )
 
             // After registration, deployment information might immediately be available for this client device.
-            runtime.tryDeployment( deploymentService, dataCollector, deploymentStatus )
+            runtime.tryDeployment( deploymentService, dataListener, deploymentStatus )
 
             return runtime
         }
@@ -119,16 +119,16 @@ class StudyRuntime private constructor(
      * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
      * @throws IllegalStateException in case data requested in the deployment cannot be collected on this client.
      */
-    suspend fun tryDeployment( deploymentService: DeploymentService, dataCollector: DataCollector ): Boolean
+    suspend fun tryDeployment( deploymentService: DeploymentService, dataListener: DataListener ): Boolean
     {
         val deploymentStatus = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
 
-        return tryDeployment( deploymentService, dataCollector, deploymentStatus )
+        return tryDeployment( deploymentService, dataListener, deploymentStatus )
     }
 
     private suspend fun tryDeployment(
         deploymentService: DeploymentService,
-        dataCollector: DataCollector,
+        dataListener: DataListener,
         deploymentStatus: StudyDeploymentStatus
     ): Boolean
     {
@@ -147,18 +147,18 @@ class StudyRuntime private constructor(
             val dataTypes = deviceTasks.tasks.flatMap { it.measures }.map { it.type }.distinct()
             for ( type in dataTypes )
             {
-                val canCollectData =
+                val supportsData =
                     if ( deviceTasks.isConnectedDevice )
                     {
-                        dataCollector.supportsDataCollectionOnConnectedDevice(
+                        dataListener.supportsDataOnConnectedDevice(
                             type,
                             deviceTasks.device::class,
                             deviceTasks.deviceRegistration )
                     }
-                    else dataCollector.supportsDataCollection( type )
+                    else dataListener.supportsData( type )
 
-                check( canCollectData )
-                    { "Data collection for data type \"$type\" on device with role \"${device.roleName}\" is not supported on this client." }
+                check( supportsData )
+                    { "Subscribing to data of data type \"$type\" on device with role \"${device.roleName}\" is not supported on this client." }
             }
         }
 

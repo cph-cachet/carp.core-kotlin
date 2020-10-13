@@ -1,6 +1,6 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.client.domain.data.MockDataCollector
+import dk.cachet.carp.client.domain.data.MockDataListener
 import dk.cachet.carp.client.infrastructure.fromJson
 import dk.cachet.carp.client.infrastructure.toJson
 import dk.cachet.carp.common.UUID
@@ -23,9 +23,9 @@ class StudyRuntimeTest
         val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
 
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = MockDataCollector()
+        val dataListener = MockDataListener()
         val runtime = StudyRuntime.initialize(
-            deploymentService, dataCollector,
+            deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
 
         assertEquals( deploymentStatus.studyDeploymentId, runtime.studyDeploymentId )
@@ -38,9 +38,9 @@ class StudyRuntimeTest
         val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
 
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = MockDataCollector()
+        val dataListener = MockDataListener()
         val runtime = StudyRuntime.initialize(
-            deploymentService, dataCollector,
+            deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
         val updatedStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
 
@@ -55,9 +55,9 @@ class StudyRuntimeTest
         val ( deploymentService, deploymentStatus ) = createStudyDeployment( createDependentSmartphoneStudy() )
 
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = MockDataCollector()
+        val dataListener = MockDataListener()
         val runtime = StudyRuntime.initialize(
-            deploymentService, dataCollector,
+            deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
         val updatedStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
 
@@ -73,10 +73,10 @@ class StudyRuntimeTest
 
         val unknownId = UUID.randomUUID()
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = MockDataCollector()
+        val dataListener = MockDataListener()
         assertFailsWith<IllegalArgumentException> {
             StudyRuntime.initialize(
-                deploymentService, dataCollector,
+                deploymentService, dataListener,
                 unknownId, smartphone.roleName, deviceRegistration )
         }
     }
@@ -86,10 +86,10 @@ class StudyRuntimeTest
         val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
 
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = MockDataCollector()
+        val dataListener = MockDataListener()
         assertFailsWith<IllegalArgumentException> {
             StudyRuntime.initialize(
-                deploymentService, dataCollector,
+                deploymentService, dataListener,
                 deploymentStatus.studyDeploymentId, "Unknown role", deviceRegistration )
         }
     }
@@ -99,10 +99,10 @@ class StudyRuntimeTest
         val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
 
         val incorrectRegistration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 )
-        val dataCollector = MockDataCollector()
+        val dataListener = MockDataListener()
         assertFailsWith<IllegalArgumentException> {
             StudyRuntime.initialize(
-                deploymentService, dataCollector,
+                deploymentService, dataListener,
                 deploymentStatus.studyDeploymentId, smartphone.roleName, incorrectRegistration )
         }
     }
@@ -112,19 +112,19 @@ class StudyRuntimeTest
         // Create a study runtime for a study where 'smartphone' depends on another master device ('deviceSmartphoneDependsOn').
         val ( deploymentService, deploymentStatus ) = createStudyDeployment( createDependentSmartphoneStudy() )
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = MockDataCollector()
+        val dataListener = MockDataListener()
         val runtime = StudyRuntime.initialize(
-            deploymentService, dataCollector,
+            deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
 
         // Dependent devices are not yet registered.
-        var wasDeployed = runtime.tryDeployment( deploymentService, dataCollector )
+        var wasDeployed = runtime.tryDeployment( deploymentService, dataListener )
         assertEquals( 0, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.Deployed>().count() )
         assertFalse( wasDeployed )
 
         // Once dependent devices are registered, deployment succeeds.
         deploymentService.registerDevice( deploymentStatus.studyDeploymentId, deviceSmartphoneDependsOn.roleName, deviceSmartphoneDependsOn.createRegistration() )
-        wasDeployed = runtime.tryDeployment( deploymentService, dataCollector )
+        wasDeployed = runtime.tryDeployment( deploymentService, dataListener )
         assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.Deployed>().count() )
         assertTrue( wasDeployed )
     }
@@ -139,11 +139,11 @@ class StudyRuntimeTest
         // Initializing study runtime for the smartphone deployment should fail since StubMeasure can't be collected.
         val ( deploymentService, deploymentStatus ) = createStudyDeployment( protocol )
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = MockDataCollector( supportsDataCollection = false )
+        val dataListener = MockDataListener( supportsData = false )
         assertFailsWith<IllegalStateException>
         {
             StudyRuntime.initialize(
-                deploymentService, dataCollector,
+                deploymentService, dataListener,
                 deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
         }
     }
@@ -153,9 +153,9 @@ class StudyRuntimeTest
         // Create a study runtime snapshot for the 'smartphone' in 'smartphone study'.
         val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
         val deviceRegistration = smartphone.createRegistration()
-        val dataCollector = MockDataCollector()
+        val dataListener = MockDataListener()
         val runtime = StudyRuntime.initialize(
-            deploymentService, dataCollector,
+            deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
         val snapshot = StudyRuntimeSnapshot.fromStudyRuntime( runtime )
 

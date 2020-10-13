@@ -5,7 +5,7 @@ import dk.cachet.carp.client.domain.createStudyDeployment
 import dk.cachet.carp.client.domain.smartphone
 import dk.cachet.carp.client.domain.StudyRuntime
 import dk.cachet.carp.client.domain.StudyRuntimeSnapshot
-import dk.cachet.carp.client.domain.data.MockDataCollector
+import dk.cachet.carp.client.domain.data.MockDataListener
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistrationBuilder
 import dk.cachet.carp.test.runBlockingTest
 import kotlin.test.*
@@ -21,9 +21,9 @@ class StudyRuntimeSnapshotTest
         // Create deployment service with one 'smartphone' study.
         val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val deviceRegistration = DefaultDeviceRegistrationBuilder().build()
-        val dataCollector = MockDataCollector()
+        val dataListener = MockDataListener()
         val runtime = StudyRuntime.initialize(
-            deploymentService, dataCollector,
+            deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
         val snapshot = StudyRuntimeSnapshot.fromStudyRuntime( runtime )
 

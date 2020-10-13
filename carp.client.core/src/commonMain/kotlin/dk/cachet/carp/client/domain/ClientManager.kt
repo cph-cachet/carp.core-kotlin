@@ -1,6 +1,6 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.client.domain.data.DataCollector
+import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.DataType
@@ -27,9 +27,9 @@ abstract class ClientManager<
      */
     private val deploymentService: DeploymentService,
     /**
-     * Manages [Data] collection of requested [DataType]s for this master device and connected devices.
+     * Allows subscribing to [Data] of requested [DataType]s for this master device and connected devices.
      */
-    private val dataCollector: DataCollector
+    private val dataListener: DataListener
 )
 {
     /**
@@ -85,7 +85,7 @@ abstract class ClientManager<
         // IllegalArgumentException's will be thrown here when deployment or role name does not exist, or device is already registered.
         val deviceRegistration = repository.getDeviceRegistration()!!
         val runtime = StudyRuntime.initialize(
-            deploymentService, dataCollector,
+            deploymentService, dataListener,
             studyDeploymentId, deviceRoleName, deviceRegistration
         )
 
@@ -106,7 +106,7 @@ abstract class ClientManager<
         val runtime = repository.getStudyRuntimeList().firstOrNull { it.id == studyRuntimeId }
         requireNotNull( runtime ) { "The specified study runtime does not exist." }
 
-        val isDeployed = runtime.tryDeployment( deploymentService, dataCollector )
+        val isDeployed = runtime.tryDeployment( deploymentService, dataListener )
         if ( isDeployed )
         {
             repository.updateStudyRuntime( runtime )
