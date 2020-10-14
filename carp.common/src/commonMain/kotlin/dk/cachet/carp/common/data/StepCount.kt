@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
  * Holds step count data as number of steps taken in a corresponding time interval.
  */
 @Serializable
-@SerialName( CarpDataTypes.STEPCOUNT_TYPE_NAME )
+@SerialName( CarpDataTypes.STEP_COUNT_TYPE_NAME )
 data class StepCount( val steps: Int ) : Data
 {
     init

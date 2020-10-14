@@ -1,10 +1,13 @@
 package dk.cachet.carp.common.serialization
 
+import dk.cachet.carp.common.data.Acceleration
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.ECG
 import dk.cachet.carp.common.data.FreeFormText
 import dk.cachet.carp.common.data.Geolocation
 import dk.cachet.carp.common.data.HeartRate
+import dk.cachet.carp.common.data.RRInterval
+import dk.cachet.carp.common.data.SensorSkinContact
 import dk.cachet.carp.common.data.StepCount
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.EmailAccountIdentity
@@ -29,10 +32,16 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 
     polymorphic( Data::class )
     {
+        subclass( Acceleration::class )
         subclass( ECG::class )
         subclass( FreeFormText::class )
         subclass( Geolocation::class )
         subclass( HeartRate::class )
+        // HACK: explicit serializer needs to be registered for object declarations due to limitation of the JS legacy backend.
+        // https://github.com/Kotlin/kotlinx.serialization/issues/1138#issuecomment-707989920
+        // This can likely be removed once we upgrade to the new IR backend.
+        subclass( RRInterval::class, RRInterval.serializer() )
+        subclass( SensorSkinContact::class )
         subclass( StepCount::class )
     }
 }

@@ -30,6 +30,9 @@ class DataSerializationTest
         val serializer = PolymorphicSerializer( Data::class )
 
         val serialized = json.encodeToString( serializer, data )
-        assertEquals( "{\"$CLASS_DISCRIMINATOR\":\"${CarpDataTypes.FREEFORMTEXT_TYPE_NAME}\",\"text\":\"some text\"}", serialized )
+        assertEquals(
+            "{\"$CLASS_DISCRIMINATOR\":\"${CarpDataTypes.FREE_FORM_TEXT_TYPE_NAME}\",\"text\":\"some text\"}",
+            serialized
+        )
     }
 }
