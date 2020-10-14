@@ -1,6 +1,5 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.client.domain.data.MockDataListener
 import dk.cachet.carp.client.infrastructure.fromJson
 import dk.cachet.carp.client.infrastructure.toJson
 import dk.cachet.carp.common.UUID
@@ -20,10 +19,10 @@ class StudyRuntimeTest
     @Test
     fun initialize_matches_requested_runtime() = runBlockingTest {
         // Create a deployment service which contains a 'smartphone study'.
-        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
+        val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
         val deviceRegistration = smartphone.createRegistration()
-        val dataListener = MockDataListener()
+        val dataListener = createDataListener()
         val runtime = StudyRuntime.initialize(
             deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
@@ -35,10 +34,10 @@ class StudyRuntimeTest
     @Test
     fun initialize_deploys_when_possible() = runBlockingTest {
         // Create a deployment service which contains a 'smartphone study'.
-        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
+        val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
         val deviceRegistration = smartphone.createRegistration()
-        val dataListener = MockDataListener()
+        val dataListener = createDataListener()
         val runtime = StudyRuntime.initialize(
             deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
@@ -52,10 +51,10 @@ class StudyRuntimeTest
     @Test
     fun initialize_does_not_deploy_when_depending_on_other_devices() = runBlockingTest {
         // Create a deployment service which contains a study where 'smartphone' depends on another master device.
-        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createDependentSmartphoneStudy() )
+        val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
 
         val deviceRegistration = smartphone.createRegistration()
-        val dataListener = MockDataListener()
+        val dataListener = createDataListener()
         val runtime = StudyRuntime.initialize(
             deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
@@ -69,11 +68,11 @@ class StudyRuntimeTest
     @Test
     fun initialize_fails_for_unknown_studyDeploymentId() = runBlockingTest {
         // Create a deployment service which contains a 'smartphone study'.
-        val ( deploymentService, _ ) = createStudyDeployment( createSmartphoneStudy() )
+        val (deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
 
         val unknownId = UUID.randomUUID()
         val deviceRegistration = smartphone.createRegistration()
-        val dataListener = MockDataListener()
+        val dataListener = createDataListener()
         assertFailsWith<IllegalArgumentException> {
             StudyRuntime.initialize(
                 deploymentService, dataListener,
@@ -83,10 +82,10 @@ class StudyRuntimeTest
 
     @Test
     fun initialize_fails_for_unknown_deviceRoleName() = runBlockingTest {
-        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
+        val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
         val deviceRegistration = smartphone.createRegistration()
-        val dataListener = MockDataListener()
+        val dataListener = createDataListener()
         assertFailsWith<IllegalArgumentException> {
             StudyRuntime.initialize(
                 deploymentService, dataListener,
@@ -96,10 +95,10 @@ class StudyRuntimeTest
 
     @Test
     fun initialize_fails_for_incorrect_deviceRegistration() = runBlockingTest {
-        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
+        val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
         val incorrectRegistration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 )
-        val dataListener = MockDataListener()
+        val dataListener = createDataListener()
         assertFailsWith<IllegalArgumentException> {
             StudyRuntime.initialize(
                 deploymentService, dataListener,
@@ -110,9 +109,9 @@ class StudyRuntimeTest
     @Test
     fun tryDeployment_only_succeeds_after_dependent_devices_are_registered() = runBlockingTest {
         // Create a study runtime for a study where 'smartphone' depends on another master device ('deviceSmartphoneDependsOn').
-        val ( deploymentService, deploymentStatus ) = createStudyDeployment( createDependentSmartphoneStudy() )
+        val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val deviceRegistration = smartphone.createRegistration()
-        val dataListener = MockDataListener()
+        val dataListener = createDataListener()
         val runtime = StudyRuntime.initialize(
             deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
@@ -137,10 +136,10 @@ class StudyRuntimeTest
         protocol.addTriggeredTask( smartphone.atStartOfStudy(), task, smartphone )
 
         // Initializing study runtime for the smartphone deployment should fail since StubMeasure can't be collected.
-        val ( deploymentService, deploymentStatus ) = createStudyDeployment( protocol )
+        val (deploymentService, deploymentStatus) = createStudyDeployment( protocol )
         val deviceRegistration = smartphone.createRegistration()
-        val dataListener = MockDataListener( supportsData = false )
-        assertFailsWith<IllegalStateException>
+        val dataListener = createDataListener( supportedDataTypes = emptyArray() )
+        assertFailsWith<UnsupportedOperationException>
         {
             StudyRuntime.initialize(
                 deploymentService, dataListener,
@@ -153,7 +152,7 @@ class StudyRuntimeTest
         // Create a study runtime snapshot for the 'smartphone' in 'smartphone study'.
         val ( deploymentService, deploymentStatus ) = createStudyDeployment( createSmartphoneStudy() )
         val deviceRegistration = smartphone.createRegistration()
-        val dataListener = MockDataListener()
+        val dataListener = createDataListener()
         val runtime = StudyRuntime.initialize(
             deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )

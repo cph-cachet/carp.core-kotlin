@@ -141,9 +141,12 @@ class StudyRuntime private constructor(
         check( deployment.deviceDescriptor == device )
         deploymentInformation = deployment
 
-        // Verify whether data  collection is supported for all requested measures.
+        // Verify whether data collection is supported for all requested measures.
         for ( deviceTasks in deployment.getTasksPerDevice() )
         {
+            // It shouldn't be possible to be ready for deployment when connected device registration is not set.
+            checkNotNull( deviceTasks.deviceRegistration )
+
             val dataTypes = deviceTasks.tasks.flatMap { it.measures }.map { it.type }.distinct()
             for ( type in dataTypes )
             {
@@ -153,12 +156,16 @@ class StudyRuntime private constructor(
                         dataListener.supportsDataOnConnectedDevice(
                             type,
                             deviceTasks.device::class,
-                            deviceTasks.deviceRegistration )
+                            deviceTasks.deviceRegistration!! )
                     }
                     else dataListener.supportsData( type )
 
-                check( supportsData )
-                    { "Subscribing to data of data type \"$type\" on device with role \"${device.roleName}\" is not supported on this client." }
+                if ( !supportsData )
+                {
+                    throw UnsupportedOperationException(
+                        "Subscribing to data of data type \"$type\" on device with role \"${device.roleName}\" is not supported on this client."
+                    )
+                }
             }
         }
 

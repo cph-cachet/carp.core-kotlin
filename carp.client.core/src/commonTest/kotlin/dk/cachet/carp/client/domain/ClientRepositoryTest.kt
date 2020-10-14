@@ -1,7 +1,6 @@
 package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.client.domain.data.DataListener
-import dk.cachet.carp.client.domain.data.MockDataListener
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
@@ -22,7 +21,7 @@ interface ClientRepositoryTest
     private fun createDependencies(): Triple<ClientRepository, DeploymentService, DataListener>
     {
         val deploymentService = DeploymentServiceHost( InMemoryDeploymentRepository(), InMemoryAccountService() )
-        return Triple( createRepository(), deploymentService, MockDataListener() )
+        return Triple( createRepository(), deploymentService, createDataListener() )
     }
 
     private suspend fun addTestDeployment( deploymentService: DeploymentService ): UUID

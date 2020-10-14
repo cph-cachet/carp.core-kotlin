@@ -1,5 +1,8 @@
 package dk.cachet.carp.client.domain
 
+import dk.cachet.carp.client.domain.data.DataListener
+import dk.cachet.carp.client.domain.data.StubDeviceDataCollectorFactory
+import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
@@ -46,3 +49,9 @@ suspend fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentSer
     val status = deploymentService.createStudyDeployment( protocol.getSnapshot() )
     return Pair( deploymentService, status )
 }
+
+/**
+ * Create a data listener which supports the specified [supportedDataTypes].
+ */
+fun createDataListener( vararg supportedDataTypes: DataType ): DataListener =
+    DataListener( StubDeviceDataCollectorFactory( supportedDataTypes.toSet() ) )

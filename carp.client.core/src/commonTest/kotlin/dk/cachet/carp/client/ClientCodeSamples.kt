@@ -2,9 +2,10 @@ package dk.cachet.carp.client
 
 import dk.cachet.carp.client.domain.SmartphoneClient
 import dk.cachet.carp.client.domain.StudyRuntimeStatus
-import dk.cachet.carp.client.domain.data.MockDataListener
+import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.CarpDataTypes
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
@@ -70,8 +71,6 @@ class ClientCodeSamples
         return service
     }
 
-    private fun createDataListener() = MockDataListener()
-
     private fun createRepository() = InMemoryClientRepository()
 
     /**
@@ -91,6 +90,13 @@ class ClientCodeSamples
 
         return protocol
     }
+
+    /**
+     * A stub [DataListener] which supports the expected data types in [createExampleProtocol].
+     */
+    private fun createDataListener() = dk.cachet.carp.client.domain.createDataListener(
+        CarpDataTypes.GEOLOCATION, CarpDataTypes.STEPCOUNT
+    )
 
     private val accountService = InMemoryAccountService()
     private val accountIdentity: AccountIdentity = AccountIdentity.fromUsername( "Test user" )

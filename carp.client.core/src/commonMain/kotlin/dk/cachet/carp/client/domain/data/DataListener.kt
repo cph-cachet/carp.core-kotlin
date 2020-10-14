@@ -2,20 +2,24 @@ package dk.cachet.carp.client.domain.data
 
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.DataType
-import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
-import kotlin.reflect.KClass
+import dk.cachet.carp.protocols.domain.devices.DeviceType
 
 
 /**
- * Allows subscribing to [Data] of requested [DataType]s on a master device and connected devices.
+ * Allows subscribing to [Data] of requested [DataType]s on a master device and connected devices
+ * by using [DeviceDataCollector] instances provided by [dataCollectorFactory].
  */
-interface DataListener
+class DataListener( private val dataCollectorFactory: DeviceDataCollectorFactory )
 {
+    private val connectedDataCollectors: MutableMap<DeviceType, MutableMap<DeviceRegistration, ConnectedDeviceDataCollector>> = mutableMapOf()
+
+
     /**
      * Determines whether subscribing to [Data] of a given [dataType] is supported on this master device.
      */
-    fun supportsData( dataType: DataType ): Boolean
+    fun supportsData( dataType: DataType ): Boolean =
+        dataType in dataCollectorFactory.localDataCollector.supportedDataTypes
 
     /**
      * Determines whether subscribing to [Data] of a given [dataType] is supported
@@ -23,7 +27,20 @@ interface DataListener
      */
     fun supportsDataOnConnectedDevice(
         dataType: DataType,
-        connectedDeviceType: KClass<out AnyDeviceDescriptor>,
-        deviceRegistration: DeviceRegistration?
+        connectedDeviceType: DeviceType,
+        deviceRegistration: DeviceRegistration
     ): Boolean
+    {
+        return try
+        {
+            val dataCollector = connectedDataCollectors
+                .getOrPut( connectedDeviceType, { mutableMapOf() } )
+                .getOrPut(
+                    deviceRegistration,
+                    { dataCollectorFactory.createConnectedDataCollector( connectedDeviceType, deviceRegistration ) }
+                )
+            dataType in dataCollector.supportedDataTypes
+        }
+        catch ( ex: UnsupportedOperationException ) { false } // In case `createConnectedDataCollector` fails.
+    }
 }
