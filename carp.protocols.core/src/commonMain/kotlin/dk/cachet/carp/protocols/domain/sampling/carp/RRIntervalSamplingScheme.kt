@@ -8,10 +8,10 @@ import dk.cachet.carp.protocols.domain.sampling.NoOptionsSamplingConfigurationBu
 /**
  * Sampling scheme for heart rate data, representing the number of heart contractions (beats) per minute.
  */
-object HeartRateSamplingScheme : DataTypeSamplingScheme<HeartRateSamplingConfigurationBuilder>( CarpDataTypes.HEART_RATE )
+object RRIntervalSamplingScheme : DataTypeSamplingScheme<RRIntervalSamplingConfigurationBuilder>( CarpDataTypes.RR_INTERVAL )
 {
-    override fun createSamplingConfigurationBuilder(): HeartRateSamplingConfigurationBuilder =
-        HeartRateSamplingConfigurationBuilder
+    override fun createSamplingConfigurationBuilder(): RRIntervalSamplingConfigurationBuilder =
+        RRIntervalSamplingConfigurationBuilder
 }
 
-typealias HeartRateSamplingConfigurationBuilder = NoOptionsSamplingConfigurationBuilder
+typealias RRIntervalSamplingConfigurationBuilder = NoOptionsSamplingConfigurationBuilder
