@@ -5,9 +5,6 @@ import dk.cachet.carp.protocols.domain.sampling.DataTypeSamplingScheme
 import dk.cachet.carp.protocols.domain.sampling.NoOptionsSamplingConfigurationBuilder
 
 
-/**
- * Sampling scheme for heart rate data, representing the number of heart contractions (beats) per minute.
- */
 object SensorSkinContactSamplingScheme : DataTypeSamplingScheme<SensorSkinContactSamplingConfigurationBuilder>( CarpDataTypes.SENSOR_SKIN_CONTACT )
 {
     override fun createSamplingConfigurationBuilder(): SensorSkinContactSamplingConfigurationBuilder =
