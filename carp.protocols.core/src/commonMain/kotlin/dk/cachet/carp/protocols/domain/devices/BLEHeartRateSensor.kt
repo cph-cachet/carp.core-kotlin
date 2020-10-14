@@ -7,6 +7,7 @@ import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.sampling.carp.HeartRateSamplingScheme
 import dk.cachet.carp.protocols.domain.sampling.carp.RRIntervalSamplingScheme
 import dk.cachet.carp.protocols.domain.sampling.carp.SensorSkinContactSamplingScheme
+import dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -19,6 +20,23 @@ data class BLEHeartRateSensor(
     override val roleName: String
 ) : DeviceDescriptor<MACAddressDeviceRegistration, MACAddressDeviceRegistrationBuilder>()
 {
+    companion object
+    {
+        /**
+         * Measure the number of heart contractions (beats) per minute (bpm).
+         */
+        fun heartRate() = DataTypeMeasure( SamplingSchemes.HEART_RATE.type )
+
+        /**
+         * Measure the time interval between consecutive heartbeats (R-R intervals).
+         */
+        fun rrInterval() = DataTypeMeasure( SamplingSchemes.RR_INTERVAL.type )
+
+        /**
+         * Measure whether the sensor is making proper skin contact.
+         */
+        fun sensorSkinContact() = DataTypeMeasure( SamplingSchemes.SENSOR_SKIN_CONTACT.type )
+    }
 
     object SamplingSchemes : DataTypeSamplingSchemeList()
     {
