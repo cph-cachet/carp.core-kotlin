@@ -2,6 +2,7 @@ package dk.cachet.carp.protocols.domain.sampling
 
 import dk.cachet.carp.common.EnumObjectList
 import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure
 
 
 /**
@@ -18,6 +19,11 @@ abstract class DataTypeSamplingScheme<TSamplingConfigurationBuilder : SamplingCo
      * Create a [SamplingConfigurationBuilder] to help construct a matching [SamplingConfiguration] for [type].
      */
     protected abstract fun createSamplingConfigurationBuilder(): TSamplingConfigurationBuilder
+
+    /**
+     * Get the [DataTypeMeasure]
+     */
+    fun measure() = DataTypeMeasure( type )
 
     /**
      * Create a [SamplingConfiguration] which can be used to configure measures of [type].
