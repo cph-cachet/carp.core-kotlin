@@ -15,36 +15,48 @@ import kotlinx.serialization.encoding.Encoder
  *
  * This is equivalent to the EUI-48 identifier.
  *
- * @param address Six groups of two hexadecimal digits, separated by hyphens (-) or colons (:)
- *
- * TODO: It would probably be useful to allow even more flexible [address] entry (e.g., no/any separators, three groups with dot separator, ...).
+ * @param address Six groups of two upper case hexadecimal digits, separated by hyphens (-).
  */
 @Serializable( with = MACAddressSerializer::class )
-class MACAddress( address: String )
-{
+data class MACAddress(
     /**
      * The MAC address, represented according to the recommended IEEE 802 standard notation.
+     * Six groups of two upper case hexadecimal digits, separate by hyphens (-).
      */
-    val address: String = address.toUpperCase().replace( ':', '-' )
-
+    val address: String
+)
+{
     init
     {
-        require( address.split( ':' ).size == GROUPS || address.split( '-' ).size == GROUPS )
-            { "Invalid MAC address string representation: expected six groups of two hexadecimal digits, separated by hyphens (-) or colons (:)." }
         require( MACAddressRegex.matches( this.address ) )
-            { "Invalid MAC address string representation: passed string contains non-hexadecimal digits." }
+            { "Invalid MAC address string representation: expected six groups of two upper case hexadecimal digits, separated by hyphens (-)." }
     }
 
-    override fun equals( other: Any? ): Boolean = other is MACAddress && address == other.address
-    override fun hashCode(): Int = address.hashCode()
-    override fun toString(): String = address
+
+    companion object
+    {
+        private const val GROUPS: Int = 6 // Expected number of groups of two hexadecimal digits.
+
+        /**
+         * Parse common MAC [address] representations to initialize a [MACAddress].
+         * Six groups of two hexadecimal digits (upper or lower case), separated by hyphens (-) or colons (:).
+         *
+         * TODO: It might be useful to allow even more flexible [address] entry (e.g., no/any separators, three groups with dot separator, ...).
+         */
+        fun parse( address: String ): MACAddress
+        {
+            require( address.split( ':' ).size == GROUPS || address.split( '-' ).size == GROUPS )
+                { "Invalid MAC address string representation: expected six groups of two hexadecimal digits (upper or lower case), separated by hyphens (-) or colons (:)." }
+
+            val recommendedFormatting = address.toUpperCase().replace( ':', '-' )
+            return MACAddress( recommendedFormatting )
+        }
+    }
 }
 
 
-private const val GROUPS: Int = 6 // Expected number of groups of hexadecimal digits.
-
 /**
- * Regular expression to verify whether the string representation of a [MACAddress] matches the recommended IEEE 802 standard notation
+ * Regular expression to match [MACAddress] using the recommended IEEE 802 standard notation:
  * using hyphens to separate six groups of two upper case hexadecimal digits. E.g.: '00-1B-44-11-3A-B7'.
  */
 val MACAddressRegex = Regex( "([0-9A-F]{2}-){5}([0-9A-F]{2})" )
@@ -58,6 +70,6 @@ object MACAddressSerializer : KSerializer<MACAddress>
     override val descriptor: SerialDescriptor
         get() = PrimitiveSerialDescriptor( "dk.cachet.carp.common.MACAddress", PrimitiveKind.STRING )
 
-    override fun serialize(encoder: Encoder, value: MACAddress ) = encoder.encodeString( value.address )
-    override fun deserialize( decoder: Decoder): MACAddress = MACAddress( decoder.decodeString() )
+    override fun serialize( encoder: Encoder, value: MACAddress ) = encoder.encodeString( value.address )
+    override fun deserialize( decoder: Decoder ): MACAddress = MACAddress( decoder.decodeString() )
 }
