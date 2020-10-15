@@ -1,9 +1,9 @@
 declare module 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
 {
-    namespace kotlinx.serialization
+    namespace kotlinx.serialization.builtins
     {
-        function get_list_gekvwj$( serializer: any ): any
-        function get_set_gekvwj$( serializer: any ): any
-        function get_map_kgqhr1$( serializer: any ): any
+        function ListSerializer_swdriu$( serializer: any ): any
+        function SetSerializer_swdriu$( serializer: any ): any
+        function MapSerializer_2yqygg$( serializer: any ): any
     }
 }

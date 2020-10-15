@@ -8,7 +8,7 @@ import toSet = kotlin.collections.toSet_us0mfu$
 import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
 import Json = kotlinx.serialization.json.Json
 import { kotlinx as kotlinxcore } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
-import getListSerializer = kotlinxcore.serialization.get_list_gekvwj$
+import ListSerializer = kotlinxcore.serialization.builtins.ListSerializer_swdriu$
 import { dk as cdk } from 'carp.core-kotlin-carp.common'
 import DateTime = cdk.cachet.carp.common.DateTime
 import UUID = cdk.cachet.carp.common.UUID
@@ -134,7 +134,7 @@ describe( "carp.studies.core", () => {
             const statusList = new ArrayList( [ status ] )
 
             const json: Json = createStudiesSerializer()
-            const serializer = getListSerializer( StudyStatus.Companion.serializer() )
+            const serializer = ListSerializer( StudyStatus.Companion.serializer() )
             expect( serializer ).is.not.undefined
             const serialized = json.encodeToString_tf03ej$( serializer, statusList )
             expect( serialized ).is.not.not.undefined
