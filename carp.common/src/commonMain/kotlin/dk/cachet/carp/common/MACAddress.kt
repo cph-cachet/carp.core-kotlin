@@ -15,23 +15,37 @@ import kotlinx.serialization.encoding.Encoder
  *
  * This is equivalent to the EUI-48 identifier.
  *
- * @param address Six groups of two upper case hexadecimal digits, separated by hyphens (-).
+ * @param address Six groups of two hexadecimal digits, separated by hyphens (-) or colons (:)
  *
- * TODO: Allow more flexible [address] input and conversion to the common form. Make sure equality is ensured!
+ * TODO: It would probably be useful to allow even more flexible [address] entry (e.g., no/any separators, three groups with dot separator, ...).
  */
 @Serializable( with = MACAddressSerializer::class )
-data class MACAddress( val address: String )
+class MACAddress( address: String )
 {
+    /**
+     * The MAC address, represented according to the recommended IEEE 802 standard notation.
+     */
+    val address: String = address.toUpperCase().replace( ':', '-' )
+
     init
     {
-        require( MACAddressRegex.matches( address ) )
-            { "Invalid MAC address string representation. Expected six groups of two upper case hexadecimal digits, separated by hyphens (-)." }
+        require( address.split( ':' ).size == GROUPS || address.split( '-' ).size == GROUPS )
+            { "Invalid MAC address string representation: expected six groups of two hexadecimal digits, separated by hyphens (-) or colons (:)." }
+        require( MACAddressRegex.matches( this.address ) )
+            { "Invalid MAC address string representation: passed string contains non-hexadecimal digits." }
     }
+
+    override fun equals( other: Any? ): Boolean = other is MACAddress && address == other.address
+    override fun hashCode(): Int = address.hashCode()
+    override fun toString(): String = address
 }
 
 
+private const val GROUPS: Int = 6 // Expected number of groups of hexadecimal digits.
+
 /**
- * Regular expression to verify whether the string representation of a [MACAddress] matches the IEEE 802 standard notation.
+ * Regular expression to verify whether the string representation of a [MACAddress] matches the recommended IEEE 802 standard notation
+ * using hyphens to separate six groups of two upper case hexadecimal digits. E.g.: '00-1B-44-11-3A-B7'.
  */
 val MACAddressRegex = Regex( "([0-9A-F]{2}-){5}([0-9A-F]{2})" )
 

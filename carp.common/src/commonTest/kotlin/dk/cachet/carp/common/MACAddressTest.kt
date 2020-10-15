@@ -22,6 +22,21 @@ class MACAddressTest
     }
 
     @Test
+    fun can_initialize_with_alternate_representations()
+    {
+        val expected = "AA-BB-CC-DD-EE-FF"
+
+        val lowerCase = MACAddress( "aa-bb-cc-dd-ee-ff" )
+        assertEquals( expected, lowerCase.address )
+
+        val mixedCase = MACAddress( "aA-bB-cC-dD-eE-fF" )
+        assertEquals( expected, mixedCase.address )
+
+        val colonSeparator = MACAddress( "AA:BB:CC:DD:EE:FF" )
+        assertEquals( expected, colonSeparator.address )
+    }
+
+    @Test
     fun cant_initialize_incorrect_MACAddress()
     {
         assertFailsWith<IllegalArgumentException> { MACAddress( "Invalid" ) }
@@ -31,9 +46,9 @@ class MACAddressTest
         assertFailsWith<IllegalArgumentException> { MACAddress( "00-00-00-00-00-00-FF" ) }
         // Invalid character.
         assertFailsWith<IllegalArgumentException> { MACAddress( "G0-00-00-00-00-00" ) }
-        // Lower case.
-        assertFailsWith<IllegalArgumentException> { MACAddress( "aa-bb-cc-dd-ee-ff" ) }
-        // Incorrect separators.
-        assertFailsWith<IllegalArgumentException> { MACAddress( "00:11:22:33:44:55" ) }
+        // Mixed separators
+        assertFailsWith<IllegalArgumentException> { MACAddress( "00-11:22-33:44-55" ) }
+        // Unsupported separators.
+        assertFailsWith<IllegalArgumentException> { MACAddress( "00 11 22 33 44 55" ) }
     }
 }
