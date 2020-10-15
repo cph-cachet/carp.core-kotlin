@@ -13,8 +13,9 @@ actual class UUID actual constructor( actual val stringRepresentation: String )
 
     actual companion object
     {
-        private const val base = 16
+        actual fun parse( uuid: String ): UUID = UUID( uuid.toLowerCase() )
 
+        private const val base = 16
         actual fun randomUUID(): UUID
         {
             // It does not seem like JS can generate true UUIDs, but this is a best effort:
@@ -31,10 +32,7 @@ actual class UUID actual constructor( actual val stringRepresentation: String )
         }
     }
 
-    override fun toString(): String
-    {
-        return stringRepresentation
-    }
+    override fun toString(): String = stringRepresentation
 
     override fun equals( other: Any? ): Boolean
     {
@@ -44,8 +42,5 @@ actual class UUID actual constructor( actual val stringRepresentation: String )
         return stringRepresentation == other.stringRepresentation
     }
 
-    override fun hashCode(): Int
-    {
-        return stringRepresentation.hashCode()
-    }
+    override fun hashCode(): Int = stringRepresentation.hashCode()
 }
