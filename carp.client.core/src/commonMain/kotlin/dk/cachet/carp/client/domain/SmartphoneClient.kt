@@ -1,8 +1,8 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.client.domain.data.DataListener
-import dk.cachet.carp.common.data.Data
-import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.client.domain.data.ConnectedDeviceDataCollector
+import dk.cachet.carp.client.domain.data.DeviceDataCollector
+import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.protocols.domain.devices.Smartphone
 import dk.cachet.carp.protocols.domain.devices.SmartphoneDeviceRegistration
@@ -22,14 +22,15 @@ class SmartphoneClient(
      */
     deploymentService: DeploymentService,
     /**
-     * Allows subscribing to [Data] of requested [DataType]s for this master device and connected devices.
+     * Determines which [DeviceDataCollector] to use to collect data locally on this master device
+     * and this factory is used to create [ConnectedDeviceDataCollector] instances for connected devices.
      */
-    dataListener: DataListener
+    dataCollectorFactory: DeviceDataCollectorFactory
 ) :
 ClientManager<Smartphone, SmartphoneDeviceRegistration, SmartphoneDeviceRegistrationBuilder>(
     repository,
     deploymentService,
-    dataListener
+    dataCollectorFactory
 )
 {
     override fun createDeviceRegistrationBuilder(): SmartphoneDeviceRegistrationBuilder = SmartphoneDeviceRegistrationBuilder()

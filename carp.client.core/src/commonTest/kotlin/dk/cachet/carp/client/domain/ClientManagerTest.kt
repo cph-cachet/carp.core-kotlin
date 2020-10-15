@@ -16,7 +16,7 @@ private val unknownId = UUID( "00000000-0000-0000-0000-000000000000" )
 class ClientManagerTest
 {
     private suspend fun initializeSmartphoneClient( deploymentService: DeploymentService ): SmartphoneClient =
-        SmartphoneClient( InMemoryClientRepository(), deploymentService, createDataListener() ).apply {
+        SmartphoneClient( InMemoryClientRepository(), deploymentService, createDataCollectorFactory() ).apply {
             configure()
         }
 
@@ -26,7 +26,7 @@ class ClientManagerTest
         val (deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
 
         // Initially not configured.
-        val client = SmartphoneClient( InMemoryClientRepository(), deploymentService, createDataListener() )
+        val client = SmartphoneClient( InMemoryClientRepository(), deploymentService, createDataCollectorFactory() )
         assertFalse( client.isConfigured() )
 
         // Configuration succeeds.
@@ -37,7 +37,7 @@ class ClientManagerTest
     @Test
     fun add_study_fails_when_not_yet_configured() = runBlockingTest {
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val client = SmartphoneClient( InMemoryClientRepository(), deploymentService, createDataListener() )
+        val client = SmartphoneClient( InMemoryClientRepository(), deploymentService, createDataCollectorFactory() )
 
         assertFailsWith<IllegalArgumentException>
         {

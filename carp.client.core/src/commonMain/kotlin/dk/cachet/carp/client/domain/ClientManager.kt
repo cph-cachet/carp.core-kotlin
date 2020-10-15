@@ -1,9 +1,10 @@
 package dk.cachet.carp.client.domain
 
+import dk.cachet.carp.client.domain.data.ConnectedDeviceDataCollector
 import dk.cachet.carp.client.domain.data.DataListener
+import dk.cachet.carp.client.domain.data.DeviceDataCollector
+import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.data.Data
-import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilder
@@ -27,11 +28,15 @@ abstract class ClientManager<
      */
     private val deploymentService: DeploymentService,
     /**
-     * Allows subscribing to [Data] of requested [DataType]s for this master device and connected devices.
+     * Determines which [DeviceDataCollector] to use to collect data locally on this master device
+     * and this factory is used to create [ConnectedDeviceDataCollector] instances for connected devices.
      */
-    private val dataListener: DataListener
+    dataCollectorFactory: DeviceDataCollectorFactory
 )
 {
+    private val dataListener: DataListener = DataListener( dataCollectorFactory )
+
+
     /**
      * Determines whether a [DeviceRegistration] has been configured for this client, which is necessary to start adding [StudyRuntime]s.
      */

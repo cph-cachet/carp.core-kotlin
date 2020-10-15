@@ -1,6 +1,9 @@
 package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.client.domain.data.DataListener
+import dk.cachet.carp.client.domain.data.DeviceDataCollector
+import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
+import dk.cachet.carp.client.domain.data.StubDeviceDataCollector
 import dk.cachet.carp.client.domain.data.StubDeviceDataCollectorFactory
 import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.deployment.application.DeploymentService
@@ -51,7 +54,14 @@ suspend fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentSer
 }
 
 /**
+ * Create a [DeviceDataCollectorFactory] which for all [DeviceDataCollector] instances
+ * uses [StubDeviceDataCollector] with the specified [supportedDataTypes].
+ */
+fun createDataCollectorFactory( vararg supportedDataTypes: DataType ): DeviceDataCollectorFactory =
+    StubDeviceDataCollectorFactory( supportedDataTypes.toSet() )
+
+/**
  * Create a data listener which supports the specified [supportedDataTypes].
  */
 fun createDataListener( vararg supportedDataTypes: DataType ): DataListener =
-    DataListener( StubDeviceDataCollectorFactory( supportedDataTypes.toSet() ) )
+    DataListener( createDataCollectorFactory( *supportedDataTypes ) )
