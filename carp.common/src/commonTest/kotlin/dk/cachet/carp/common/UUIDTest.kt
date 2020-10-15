@@ -63,5 +63,14 @@ class UUIDTest
         assertFailsWith<IllegalArgumentException> { UUID( "g0000000-0000-0000-0000-000000000000" ) }
         // Incorrect dashes.
         assertFailsWith<IllegalArgumentException> { UUID( "00000000-0000-00000-0000-00000000000" ) }
+        // Non-standard upper case format.
+        assertFailsWith<IllegalArgumentException> { UUID( "AAAAAAAA-0000-0000-0000-000000000000" ) }
+    }
+
+    @Test
+    fun parse_succeeds_with_alternate_representations()
+    {
+        val upperCase = UUID.parse( "AAAAAAAA-0000-0000-0000-000000000000" )
+        assertEquals( "aaaaaaaa-0000-0000-0000-000000000000", upperCase.stringRepresentation )
     }
 }
