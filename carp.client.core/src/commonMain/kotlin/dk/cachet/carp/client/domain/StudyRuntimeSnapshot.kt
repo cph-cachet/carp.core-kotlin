@@ -23,12 +23,14 @@ data class StudyRuntimeSnapshot(
     {
         fun fromStudyRuntime( studyRuntime: StudyRuntime ): StudyRuntimeSnapshot
         {
+            val status = studyRuntime.getStatus()
+
             return StudyRuntimeSnapshot(
                 studyRuntime.studyDeploymentId,
                 studyRuntime.creationDate,
                 studyRuntime.device,
                 studyRuntime.isDeployed,
-                studyRuntime.deploymentInformation )
+                (status as? StudyRuntimeStatus.Deployed)?.deploymentInformation )
         }
     }
 

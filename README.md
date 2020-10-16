@@ -260,7 +260,7 @@ client.configure {
     deviceId = "xxxxxxxxx"
 }
 val runtime: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
-var isDeployed = runtime.isDeployed // True, because there are no dependent devices.
+var isDeployed = runtime is StudyRuntimeStatus.Deployed // True, because there are no dependent devices.
 
 // Suppose a deployment also depends on a "Clinician's phone" to be registered; deployment cannot complete yet.
 // After the clinician's phone has been registered, attempt deployment again.

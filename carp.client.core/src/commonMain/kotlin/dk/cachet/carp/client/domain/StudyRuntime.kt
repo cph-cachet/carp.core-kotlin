@@ -26,7 +26,7 @@ class StudyRuntime private constructor(
      * The description of the device this runtime is intended for within the deployment identified by [studyDeploymentId].
      */
     val device: AnyMasterDeviceDescriptor
-) : AggregateRoot<StudyRuntime, StudyRuntimeSnapshot, StudyRuntime.Event>(), StudyRuntimeStatus
+) : AggregateRoot<StudyRuntime, StudyRuntimeSnapshot, StudyRuntime.Event>()
 {
     sealed class Event : DomainEvent()
     {
@@ -96,21 +96,26 @@ class StudyRuntime private constructor(
     /**
      * Composite ID for this study runtime, comprised of the [studyDeploymentId] and [device] role name.
      */
-    override val id: StudyRuntimeId get() = StudyRuntimeId( studyDeploymentId, device.roleName )
+    val id: StudyRuntimeId get() = StudyRuntimeId( studyDeploymentId, device.roleName )
 
     /**
      * Determines whether the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
      */
-    override var isDeployed: Boolean = false
+    var isDeployed: Boolean = false
         private set
 
     /**
      * In case deployment succeeded ([isDeployed] is true), this contains all the information on the study to run.
-     * TODO: This should be consumed within this domain model and not be public.
-     *       Currently, it is in order to work towards a first MVP which includes server/client communication through the domain model.
      */
-    override var deploymentInformation: MasterDeviceDeployment? = null
-        private set
+    private var deploymentInformation: MasterDeviceDeployment? = null
+
+
+    /**
+     * Get the status of this [StudyRuntime].
+     */
+    fun getStatus(): StudyRuntimeStatus =
+        if ( isDeployed ) StudyRuntimeStatus.Deployed( id, deploymentInformation!! )
+        else StudyRuntimeStatus.NotDeployed( id )
 
     /**
      * Verifies whether the device is ready for deployment and in case it is, deploys.

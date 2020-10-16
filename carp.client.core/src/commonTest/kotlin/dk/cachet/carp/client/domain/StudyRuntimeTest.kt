@@ -2,8 +2,6 @@ package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.client.domain.data.StubConnectedDeviceDataCollectorFactory
-import dk.cachet.carp.client.infrastructure.fromJson
-import dk.cachet.carp.client.infrastructure.toJson
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
@@ -187,15 +185,13 @@ class StudyRuntimeTest
         val runtime = StudyRuntime.initialize(
             deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
-        val snapshot = StudyRuntimeSnapshot.fromStudyRuntime( runtime )
+        val snapshot = runtime.getSnapshot()
+        val fromSnapshot = StudyRuntime.fromSnapshot( snapshot )
 
-        val serialized = snapshot.toJson()
-        val parsed = StudyRuntimeSnapshot.fromJson( serialized )
-
-        assertEquals( runtime.studyDeploymentId, parsed.studyDeploymentId )
-        assertEquals( runtime.creationDate, parsed.creationDate )
-        assertEquals( runtime.device, parsed.device )
-        assertEquals( runtime.isDeployed, parsed.isDeployed )
-        assertEquals( runtime.deploymentInformation, parsed.deploymentInformation )
+        assertEquals( runtime.studyDeploymentId, fromSnapshot.studyDeploymentId )
+        assertEquals( runtime.creationDate, fromSnapshot.creationDate )
+        assertEquals( runtime.device, fromSnapshot.device )
+        assertEquals( runtime.isDeployed, fromSnapshot.isDeployed )
+        assertEquals( runtime.getStatus(), fromSnapshot.getStatus() )
     }
 }

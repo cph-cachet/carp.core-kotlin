@@ -5,24 +5,32 @@ import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 
 /**
  * Describes the status of a [StudyRuntime].
- * TODO: This might also need to be turned into a sealed class representing a state machine at some point (similar to StudyDeploymentStatus).
  */
-interface StudyRuntimeStatus
+sealed class StudyRuntimeStatus
 {
     /**
      * Unique ID of the study runtime on the [ClientManager].
      */
-    val id: StudyRuntimeId
+    abstract val id: StudyRuntimeId
+
 
     /**
-     * Determines whether the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
+     * Study runtime status when deployment has not been completed.
      */
-    val isDeployed: Boolean
+    data class NotDeployed( override val id: StudyRuntimeId ) : StudyRuntimeStatus()
 
     /**
-     * In case deployment succeeded ([isDeployed] is true), this contains all the information on the study to run.
-     * TODO: This should be consumed within this domain model and not be public.
-     *       Currently, it is in order to work towards a first MVP which includes server/client communication through the domain model.
+     * Study runtime status when deployment has been successfully completed:
+     * the [MasterDeviceDeployment] has been retrieved and all necessary plugins to execute the study have been loaded.
      */
-    val deploymentInformation: MasterDeviceDeployment?
+    data class Deployed(
+        override val id: StudyRuntimeId,
+        /**
+         * Contains all the information on the study to run.
+         *
+         * TODO: This should be consumed within this domain model and not be public.
+         *       Currently, it is in order to work towards a first MVP which includes server/client communication through the domain model.
+         */
+        val deploymentInformation: MasterDeviceDeployment
+    ) : StudyRuntimeStatus()
 }

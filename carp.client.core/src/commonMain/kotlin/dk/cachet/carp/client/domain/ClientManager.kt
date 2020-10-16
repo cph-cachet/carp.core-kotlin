@@ -60,7 +60,7 @@ abstract class ClientManager<
     /**
      * Get the status for the studies which run on this client device.
      */
-    suspend fun getStudies(): List<StudyRuntimeStatus> = repository.getStudyRuntimeList()
+    suspend fun getStudies(): List<StudyRuntimeStatus> = repository.getStudyRuntimeList().map { it.getStatus() }
 
 
     /**
@@ -95,7 +95,7 @@ abstract class ClientManager<
         )
 
         repository.addStudyRuntime( runtime )
-        return runtime
+        return runtime.getStatus()
     }
 
     /**
