@@ -114,6 +114,7 @@ class StudyRuntime private constructor(
 
     /**
      * Verifies whether the device is ready for deployment and in case it is, deploys.
+     * In case already deployed, nothing happens and this call returns true.
      *
      * @return True in case deployment succeeded; false in case device could not yet be deployed (e.g., awaiting registration of other devices).
      * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
@@ -132,9 +133,10 @@ class StudyRuntime private constructor(
         deploymentStatus: StudyDeploymentStatus
     ): Boolean
     {
-        // Early out in case state indicates the device is not yet ready to deploy.
+        // Early out in case state indicates the device is already deployed or not yet ready to deploy.
         val deviceStatus = deploymentStatus.getDeviceStatus( device )
-        if ( deviceStatus !is DeviceDeploymentStatus.NotDeployed || !deviceStatus.isReadyForDeployment ) return false
+        if ( deviceStatus is DeviceDeploymentStatus.Deployed ) return true
+        if ( deviceStatus is DeviceDeploymentStatus.NotDeployed && !deviceStatus.isReadyForDeployment ) return false
 
         // Get deployment information.
         val deployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, device.roleName )

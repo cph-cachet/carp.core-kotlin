@@ -95,9 +95,10 @@ abstract class ClientManager<
 
     /**
      * Verifies whether the device is ready for deployment of the study runtime identified by [studyRuntimeId],
-     * and in case it is, deploys.
+     * and in case it is, deploys. In case already deployed, nothing happens and this call returns true.
      *
-     * @return True in case deployment succeeded; false in case device could not yet be deployed (e.g., awaiting registration of other devices).
+     * @return True in case deployment succeeded or is already deployed;
+     *   false in case device could not yet be deployed (e.g., awaiting registration of other devices).
      * @throws IllegalArgumentException in case no [StudyRuntime] with the given [studyRuntimeId] exists.
      * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
      */
@@ -105,6 +106,9 @@ abstract class ClientManager<
     {
         val runtime = repository.getStudyRuntimeList().firstOrNull { it.id == studyRuntimeId }
         requireNotNull( runtime ) { "The specified study runtime does not exist." }
+
+        // Early out in case this runtime has already received and validated deployment information.
+        if ( runtime.isDeployed ) return true
 
         val isDeployed = runtime.tryDeployment( deploymentService, dataCollector )
         if ( isDeployed )
