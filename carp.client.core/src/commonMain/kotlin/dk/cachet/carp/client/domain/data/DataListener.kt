@@ -7,7 +7,7 @@ import dk.cachet.carp.protocols.domain.devices.DeviceType
 
 
 /**
- * Allows subscribing to [Data] of requested [DataType]s on a master device and connected devices
+ * Allows subscribing to [Data] (e.g., sensors, surveys) of requested [DataType]s on a master device and connected devices
  * by using [DeviceDataCollector] instances provided by [dataCollectorFactory].
  */
 class DataListener( private val dataCollectorFactory: DeviceDataCollectorFactory )

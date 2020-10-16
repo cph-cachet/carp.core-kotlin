@@ -7,17 +7,24 @@ import dk.cachet.carp.protocols.domain.devices.DeviceType
 
 /**
  * A [DeviceDataCollectorFactory] which for the local device data collector uses passed supported data types
- * and for connected devices uses [connectedSupportedDataTypes].
+ * and for connected devices initializes [ConnectedDeviceDataCollector] for requested [DeviceType]
+ * with the data types specified in [connectedSupportedDataTypes].
  *
  * @param localSupportedDataTypes The data types which are supported on the local device data collector.
  */
-class StubDeviceDataCollectorFactory(
+class StubConnectedDeviceDataCollectorFactory(
     localSupportedDataTypes: Set<DataType>,
-    private val connectedSupportedDataTypes: Set<DataType>
+    private val connectedSupportedDataTypes: Map<DeviceType, Set<DataType>>
 ) : DeviceDataCollectorFactory( StubDeviceDataCollector( localSupportedDataTypes ) )
 {
     override fun createConnectedDataCollector(
         deviceType: DeviceType,
         deviceRegistration: DeviceRegistration
-    ): ConnectedDeviceDataCollector = StubConnectedDeviceDataCollector( connectedSupportedDataTypes, deviceRegistration )
+    ): ConnectedDeviceDataCollector
+    {
+        val supportedDataTypes = connectedSupportedDataTypes[ deviceType ]
+            ?: throw UnsupportedOperationException( "No data collector for device of type `$deviceType` is available." )
+
+        return StubConnectedDeviceDataCollector( supportedDataTypes, deviceRegistration )
+    }
 }

@@ -58,7 +58,7 @@ suspend fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentSer
  * uses [StubDeviceDataCollector] with the specified [supportedDataTypes].
  */
 fun createDataCollectorFactory( vararg supportedDataTypes: DataType ): DeviceDataCollectorFactory =
-    StubDeviceDataCollectorFactory( supportedDataTypes.toSet() )
+    supportedDataTypes.toSet().let { StubDeviceDataCollectorFactory( it, it ) }
 
 /**
  * Create a data listener which supports the specified [supportedDataTypes].
