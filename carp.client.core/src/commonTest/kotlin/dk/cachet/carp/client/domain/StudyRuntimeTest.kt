@@ -1,10 +1,15 @@
 package dk.cachet.carp.client.domain
 
+import dk.cachet.carp.client.domain.data.DataListener
+import dk.cachet.carp.client.domain.data.StubConnectedDeviceDataCollectorFactory
 import dk.cachet.carp.client.infrastructure.fromJson
 import dk.cachet.carp.client.infrastructure.toJson
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
+import dk.cachet.carp.protocols.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.test.runBlockingTest
@@ -126,6 +131,32 @@ class StudyRuntimeTest
         wasDeployed = runtime.tryDeployment( deploymentService, dataListener )
         assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.Deployed>().count() )
         assertTrue( wasDeployed )
+    }
+
+    @Test
+    fun tryDeployment_succeeds_when_data_types_of_protocol_measures_are_supported() = runBlockingTest {
+        // Create protocol that measures on smartphone and one connected device.
+        val protocol = createSmartphoneStudy()
+        val connectedDevice = StubDeviceDescriptor( "Connected" )
+        protocol.addConnectedDevice( connectedDevice, smartphone )
+        val masterTask = StubTaskDescriptor( "Master measure", listOf( StubMeasure( STUB_DATA_TYPE ) ) )
+        protocol.addTriggeredTask( smartphone.atStartOfStudy(), masterTask, smartphone )
+        val connectedDataType = DataType( "custom", "type" )
+        val connectedTask = StubTaskDescriptor( "Connected measure", listOf( StubMeasure( connectedDataType ) ) )
+        protocol.addTriggeredTask( smartphone.atStartOfStudy(), connectedTask, connectedDevice )
+
+        // Create a data listener which supports the requested devices and types in the protocol
+        val dataListener = DataListener( StubConnectedDeviceDataCollectorFactory(
+            localSupportedDataTypes = setOf( STUB_DATA_TYPE ),
+            mapOf( StubDeviceDescriptor::class to setOf( connectedDataType ) )
+        ) )
+
+        // Initializing study runtime for the smartphone deployment should succeed since devices and data types are supported.
+        val (deploymentService, deploymentStatus) = createStudyDeployment( protocol )
+        val deviceRegistration = smartphone.createRegistration()
+        StudyRuntime.initialize(
+            deploymentService, dataListener,
+            deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
     }
 
     @Test
