@@ -46,12 +46,12 @@ class ClientCodeSamples
             // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
             deviceId = "xxxxxxxxx"
         }
-        val runtime: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
-        var isDeployed = runtime is StudyRuntimeStatus.Deployed // True, because there are no dependent devices.
+        var status: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
+        val isDeployed = status is StudyRuntimeStatus.Deployed // True, because there are no dependent devices.
 
         // Suppose a deployment also depends on a "Clinician's phone" to be registered; deployment cannot complete yet.
         // After the clinician's phone has been registered, attempt deployment again.
-        isDeployed = client.tryDeployment( runtime.id ) // True once dependent clients have been registered.
+        status = client.tryDeployment( status.id ) // 'Deployed' if dependent clients has been registered first.
     }
 
 

@@ -10,6 +10,7 @@ import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
@@ -30,7 +31,12 @@ class StudyRuntime private constructor(
 {
     sealed class Event : DomainEvent()
     {
-        data class Deployed( val deploymentInformation: MasterDeviceDeployment ) : Event()
+        data class DeploymentReceived(
+            val deploymentInformation: MasterDeviceDeployment,
+            val remainingDevicesToRegister: List<AnyDeviceDescriptor>
+        ) : Event()
+
+        object DeploymentCompleted : Event()
     }
 
 
@@ -99,14 +105,12 @@ class StudyRuntime private constructor(
     val id: StudyRuntimeId get() = StudyRuntimeId( studyDeploymentId, device.roleName )
 
     /**
-     * Determines whether the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
+     * Determines whether the device deployment has completed successfully.
      */
     var isDeployed: Boolean = false
         private set
 
-    /**
-     * In case deployment succeeded ([isDeployed] is true), this contains all the information on the study to run.
-     */
+    private var remainingDevicesToRegister: List<AnyDeviceDescriptor> = emptyList()
     private var deploymentInformation: MasterDeviceDeployment? = null
 
 
@@ -114,39 +118,52 @@ class StudyRuntime private constructor(
      * Get the status of this [StudyRuntime].
      */
     fun getStatus(): StudyRuntimeStatus =
-        if ( isDeployed ) StudyRuntimeStatus.Deployed( id, deploymentInformation!! )
-        else StudyRuntimeStatus.NotDeployed( id )
+        when {
+            deploymentInformation == null -> StudyRuntimeStatus.NotReadyForDeployment( id )
+            remainingDevicesToRegister.isNotEmpty() ->
+                StudyRuntimeStatus.RegisteringDevices( id, deploymentInformation!!, remainingDevicesToRegister )
+            isDeployed -> StudyRuntimeStatus.Deployed( id, deploymentInformation!! )
+            else -> error( "Unexpected study runtime state." )
+        }
 
     /**
      * Verifies whether the device is ready for deployment and in case it is, deploys.
-     * In case already deployed, nothing happens and this call returns true.
+     * In case already deployed, nothing happens.
      *
-     * @return True in case deployment succeeded; false in case device could not yet be deployed (e.g., awaiting registration of other devices).
      * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
-     * @throws IllegalStateException in case data requested in the deployment cannot be collected on this client.
      */
-    suspend fun tryDeployment( deploymentService: DeploymentService, dataListener: DataListener ): Boolean
+    suspend fun tryDeployment( deploymentService: DeploymentService, dataListener: DataListener ): StudyRuntimeStatus
     {
         val deploymentStatus = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
 
-        return tryDeployment( deploymentService, dataListener, deploymentStatus )
+        tryDeployment( deploymentService, dataListener, deploymentStatus )
+        return getStatus()
     }
 
+    // TODO: Handle `NeedsRedeployment`, invalidating the retrieved deployment information.
     private suspend fun tryDeployment(
         deploymentService: DeploymentService,
         dataListener: DataListener,
         deploymentStatus: StudyDeploymentStatus
-    ): Boolean
+    )
     {
-        // Early out in case state indicates the device is already deployed or not yet ready to deploy.
+        // Early out in case state indicates the device is already deployed or deployment cannot yet be obtained.
         val deviceStatus = deploymentStatus.getDeviceStatus( device )
-        if ( deviceStatus is DeviceDeploymentStatus.Deployed ) return true
-        if ( deviceStatus is DeviceDeploymentStatus.NotDeployed && !deviceStatus.isReadyForDeployment ) return false
+        if ( deviceStatus !is DeviceDeploymentStatus.NotDeployed ) return
+        if ( !deviceStatus.canObtainDeviceDeployment ) return
 
         // Get deployment information.
+        // TODO: Handle race condition in case other devices were unregistered in between.
         val deployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, device.roleName )
         check( deployment.deviceDescriptor == device )
         deploymentInformation = deployment
+        remainingDevicesToRegister = deploymentStatus.devicesStatus
+            .map { it.device }
+            .filter { it.roleName in deviceStatus.remainingDevicesToRegisterBeforeDeployment }
+        event( Event.DeploymentReceived( deployment, remainingDevicesToRegister.toList() ) )
+
+        // Early out in case devices need to be registered before being able to complete deployment.
+        if ( remainingDevicesToRegister.isNotEmpty() ) return
 
         // Verify whether data collection is supported for all requested measures.
         for ( deviceTasks in deployment.getTasksPerDevice() )
@@ -181,13 +198,11 @@ class StudyRuntime private constructor(
         {
             deploymentService.deploymentSuccessful( studyDeploymentId, device.roleName, deployment.lastUpdateDate )
             isDeployed = true
-            event( Event.Deployed( deployment ) )
+            event( Event.DeploymentCompleted )
         }
         // Handle race conditions with competing clients modifying device registrations, invalidating this deployment.
-        catch ( ignore: IllegalArgumentException ) { }
+        catch ( ignore: IllegalArgumentException ) { } // TODO: When deployment is out of date, maybe also use `IllegalStateException` for easier handling here.
         catch ( ignore: IllegalStateException ) { }
-
-        return isDeployed
     }
 
     /**

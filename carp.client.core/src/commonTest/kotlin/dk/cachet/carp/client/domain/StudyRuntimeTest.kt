@@ -47,7 +47,7 @@ class StudyRuntimeTest
         val updatedStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
 
         assertTrue( runtime.isDeployed )
-        assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.Deployed>().count() )
+        assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
         assertTrue( updatedStatus.getDeviceStatus( smartphone ) is DeviceDeploymentStatus.Deployed )
     }
 
@@ -64,7 +64,7 @@ class StudyRuntimeTest
         val updatedStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
 
         assertFalse( runtime.isDeployed )
-        assertEquals( 0, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.Deployed>().count() )
+        assertEquals( 0, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
         assertTrue( updatedStatus.getDeviceStatus( smartphone ) is DeviceDeploymentStatus.NotDeployed )
     }
 
@@ -120,15 +120,15 @@ class StudyRuntimeTest
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
 
         // Dependent devices are not yet registered.
-        var wasDeployed = runtime.tryDeployment( deploymentService, dataListener )
-        assertEquals( 0, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.Deployed>().count() )
-        assertFalse( wasDeployed )
+        var status = runtime.tryDeployment( deploymentService, dataListener )
+        assertEquals( 0, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
+        assertTrue( status !is StudyRuntimeStatus.Deployed )
 
         // Once dependent devices are registered, deployment succeeds.
         deploymentService.registerDevice( deploymentStatus.studyDeploymentId, deviceSmartphoneDependsOn.roleName, deviceSmartphoneDependsOn.createRegistration() )
-        wasDeployed = runtime.tryDeployment( deploymentService, dataListener )
-        assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.Deployed>().count() )
-        assertTrue( wasDeployed )
+        status = runtime.tryDeployment( deploymentService, dataListener )
+        assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
+        assertTrue( status is StudyRuntimeStatus.Deployed )
     }
 
     @Test
@@ -168,8 +168,8 @@ class StudyRuntimeTest
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
         assertTrue( runtime.isDeployed )
 
-        val isDeployed = runtime.tryDeployment( deploymentService, dataListener )
-        assertTrue( isDeployed )
+        val status = runtime.tryDeployment( deploymentService, dataListener )
+        assertTrue( status is StudyRuntimeStatus.Deployed )
     }
 
     @Test

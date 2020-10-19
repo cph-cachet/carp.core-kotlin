@@ -96,15 +96,15 @@ class ClientManagerTest
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
         val deploymentId = deploymentStatus.studyDeploymentId
-        val status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
+        var status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
 
         // Dependent device needs to be registered before the intended device can be deployed on this client.
-        assertTrue( status is StudyRuntimeStatus.NotDeployed )
+        assertFalse( status is StudyRuntimeStatus.Deployed )
         val dependentRegistration = SmartphoneDeviceRegistration( "dependent" )
         deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
 
-        val isDeployed = client.tryDeployment( client.getStudies().first().id )
-        assertTrue( isDeployed )
+        status = client.tryDeployment( client.getStudies().first().id )
+        assertTrue( status is StudyRuntimeStatus.Deployed )
     }
 
     @Test
@@ -113,16 +113,16 @@ class ClientManagerTest
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
         val deploymentId = deploymentStatus.studyDeploymentId
-        val status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
+        var status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
         assertTrue( status is StudyRuntimeStatus.Deployed )
 
-        val isDeployed = client.tryDeployment( client.getStudies().first().id )
-        assertTrue( isDeployed )
+        status = client.tryDeployment( client.getStudies().first().id )
+        assertTrue( status is StudyRuntimeStatus.Deployed )
     }
 
     @Test
     fun tryDeployment_fails_for_unknown_id() = runSuspendTest {
-        val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
+        val (deploymentService, _) = createStudyDeployment( createDependentSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
 
         assertFailsWith<IllegalArgumentException>
