@@ -9,14 +9,14 @@ import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
 import dk.cachet.carp.protocols.domain.tasks.CustomProtocolTask
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import dk.cachet.carp.protocols.infrastructure.toJson
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
 class ProtocolsCodeSamples
 {
     @Test
-    fun readme() = runBlockingTest {
+    fun readme() = runSuspendTest {
         // Create a new study protocol.
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Track patient movement" )
@@ -41,7 +41,7 @@ class ProtocolsCodeSamples
     }
 
     @Test
-    fun custom_protocol() = runBlockingTest {
+    fun custom_protocol() = runSuspendTest {
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study for CAMS runtime" )
 

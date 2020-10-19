@@ -12,14 +12,14 @@ import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.Smartphone
 import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
 class DeploymentCodeSamples
 {
     @Test
-    fun readme() = runBlockingTest {
+    fun readme() = runSuspendTest {
         val deploymentService: DeploymentService = createDeploymentEndpoint()
         val trackPatientStudy: StudyProtocol = createExampleProtocol()
         val patientPhone: Smartphone = trackPatientStudy.masterDevices.first() as Smartphone // "Patient's phone"

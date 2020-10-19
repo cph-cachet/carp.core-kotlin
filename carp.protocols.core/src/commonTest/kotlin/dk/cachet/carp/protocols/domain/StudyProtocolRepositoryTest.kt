@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
@@ -17,7 +17,7 @@ interface StudyProtocolRepositoryTest
 
 
     @Test
-    fun adding_study_protocol_and_retrieving_it_succeeds() = runBlockingTest {
+    fun adding_study_protocol_and_retrieving_it_succeeds() = runSuspendTest {
         val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
@@ -28,7 +28,7 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun getBy_for_a_specific_protocol_version_succeeds() = runBlockingTest {
+    fun getBy_for_a_specific_protocol_version_succeeds() = runSuspendTest {
         val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol1 = StudyProtocol( owner, "Study" )
@@ -47,7 +47,7 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun cant_add_study_protocol_which_already_exists() = runBlockingTest {
+    fun cant_add_study_protocol_which_already_exists() = runSuspendTest {
         val repo = createRepository()
         val protocol = StudyProtocol( ProtocolOwner(), "Study" )
         repo.add( protocol, "Initial" )
@@ -59,7 +59,7 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun cant_getBy_owner_which_does_not_exist() = runBlockingTest {
+    fun cant_getBy_owner_which_does_not_exist() = runSuspendTest {
         val repo = createRepository()
 
         assertFailsWith<IllegalArgumentException>
@@ -69,7 +69,7 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun cant_getBy_study_which_does_not_exist() = runBlockingTest {
+    fun cant_getBy_study_which_does_not_exist() = runSuspendTest {
         val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
@@ -82,7 +82,7 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun cant_getBy_version_which_does_not_exist() = runBlockingTest {
+    fun cant_getBy_version_which_does_not_exist() = runSuspendTest {
         val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
@@ -96,7 +96,7 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun update_study_protocol_succeeds() = runBlockingTest {
+    fun update_study_protocol_succeeds() = runSuspendTest {
         val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
@@ -109,7 +109,7 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun cant_update_study_protocol_which_does_not_yet_exist() = runBlockingTest {
+    fun cant_update_study_protocol_which_does_not_yet_exist() = runSuspendTest {
         val repo = createRepository()
 
         val protocol = StudyProtocol( ProtocolOwner(), "Study" )
@@ -120,7 +120,7 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun getAllFor_owner_succeeds() = runBlockingTest {
+    fun getAllFor_owner_succeeds() = runSuspendTest {
         val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol1 = StudyProtocol( owner, "Study 1" )
@@ -137,7 +137,7 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun cant_getAllFor_owner_which_does_not_exist() = runBlockingTest {
+    fun cant_getAllFor_owner_which_does_not_exist() = runSuspendTest {
         val repo = createRepository()
 
         assertFailsWith<IllegalArgumentException>
@@ -147,7 +147,7 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun getVersionHistoryFor_succeeds() = runBlockingTest {
+    fun getVersionHistoryFor_succeeds() = runSuspendTest {
         val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )

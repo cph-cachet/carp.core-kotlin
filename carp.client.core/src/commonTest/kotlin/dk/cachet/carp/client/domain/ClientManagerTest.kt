@@ -4,7 +4,7 @@ import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.protocols.domain.devices.SmartphoneDeviceRegistration
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
@@ -22,7 +22,7 @@ class ClientManagerTest
 
 
     @Test
-    fun configure_succeeds() = runBlockingTest {
+    fun configure_succeeds() = runSuspendTest {
         val (deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
 
         // Initially not configured.
@@ -35,7 +35,7 @@ class ClientManagerTest
     }
 
     @Test
-    fun add_study_fails_when_not_yet_configured() = runBlockingTest {
+    fun add_study_fails_when_not_yet_configured() = runSuspendTest {
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val client = SmartphoneClient( InMemoryClientRepository(), deploymentService, createDataCollectorFactory() )
 
@@ -46,7 +46,7 @@ class ClientManagerTest
     }
 
     @Test
-    fun add_study_succeeds() = runBlockingTest {
+    fun add_study_succeeds() = runSuspendTest {
         // Create deployment service and client manager.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
@@ -55,7 +55,7 @@ class ClientManagerTest
     }
 
     @Test
-    fun add_study_fails_for_invalid_deployment() = runBlockingTest {
+    fun add_study_fails_for_invalid_deployment() = runSuspendTest {
         // Create deployment service and client manager.
         val (deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
@@ -67,7 +67,7 @@ class ClientManagerTest
     }
 
     @Test
-    fun add_study_fails_for_nonexisting_device_role() = runBlockingTest {
+    fun add_study_fails_for_nonexisting_device_role() = runSuspendTest {
         // Create deployment service and client manager.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
@@ -79,7 +79,7 @@ class ClientManagerTest
     }
 
     @Test
-    fun add_study_fails_for_study_which_was_already_added() = runBlockingTest {
+    fun add_study_fails_for_study_which_was_already_added() = runSuspendTest {
         // Create deployment service and client manager.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
@@ -92,13 +92,14 @@ class ClientManagerTest
     }
 
     @Test
-    fun tryDeployment_succeeds() = runBlockingTest {
+    fun tryDeployment_succeeds() = runSuspendTest {
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
         val deploymentId = deploymentStatus.studyDeploymentId
-        client.addStudy( deploymentId, smartphone.roleName )
+        val status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
 
         // Dependent device needs to be registered before the intended device can be deployed on this client.
+        assertTrue( status is StudyRuntimeStatus.NotDeployed )
         val dependentRegistration = SmartphoneDeviceRegistration( "dependent" )
         deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
 
@@ -107,7 +108,20 @@ class ClientManagerTest
     }
 
     @Test
-    fun tryDeployment_fails_for_unknown_id() = runBlockingTest {
+    fun tryDeployment_returns_true_when_already_deployed() = runSuspendTest {
+        // Add a study which instantly deploys given that the protocol only contains one master device.
+        val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val client = initializeSmartphoneClient( deploymentService )
+        val deploymentId = deploymentStatus.studyDeploymentId
+        val status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
+        assertTrue( status is StudyRuntimeStatus.Deployed )
+
+        val isDeployed = client.tryDeployment( client.getStudies().first().id )
+        assertTrue( isDeployed )
+    }
+
+    @Test
+    fun tryDeployment_fails_for_unknown_id() = runSuspendTest {
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
 

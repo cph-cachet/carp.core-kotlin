@@ -7,7 +7,7 @@ import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.protocols.domain.devices.SmartphoneDeviceRegistration
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
@@ -35,13 +35,13 @@ interface ClientRepositoryTest
 
 
     @Test
-    fun deviceRegistration_is_initially_null() = runBlockingTest {
+    fun deviceRegistration_is_initially_null() = runSuspendTest {
         val (repo, _) = createDependencies()
         assertNull( repo.getDeviceRegistration() )
     }
 
     @Test
-    fun addStudyRuntime_can_be_retrieved() = runBlockingTest {
+    fun addStudyRuntime_can_be_retrieved() = runSuspendTest {
         val (repo, deploymentService, dataListener) = createDependencies()
         val deploymentId = addTestDeployment( deploymentService )
         val roleName = smartphone.roleName
@@ -62,7 +62,7 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun addStudyRuntime_fails_for_existing_runtime() = runBlockingTest {
+    fun addStudyRuntime_fails_for_existing_runtime() = runSuspendTest {
         val (repo, deploymentService, dataListener) = createDependencies()
         val deploymentId = addTestDeployment( deploymentService )
         val roleName = smartphone.roleName
@@ -75,7 +75,7 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun getStudyRuntimeBy_is_null_for_unknown_runtime() = runBlockingTest {
+    fun getStudyRuntimeBy_is_null_for_unknown_runtime() = runSuspendTest {
         val (repo, _) = createDependencies()
 
         val unknownId = UUID.randomUUID()
@@ -83,14 +83,14 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun getStudyRuntimeList_is_empty_initially() = runBlockingTest {
+    fun getStudyRuntimeList_is_empty_initially() = runSuspendTest {
         val (repo, _) = createDependencies()
 
         assertEquals( 0, repo.getStudyRuntimeList().count() )
     }
 
     @Test
-    fun updateStudyRuntime_succeeds() = runBlockingTest {
+    fun updateStudyRuntime_succeeds() = runSuspendTest {
         val (repo, deploymentService, dataListener) = createDependencies()
         val protocol = createDependentSmartphoneStudy()
         val snapshot = protocol.getSnapshot()
@@ -113,7 +113,7 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun updateStudyRuntime_fails_for_unknown_runtime() = runBlockingTest {
+    fun updateStudyRuntime_fails_for_unknown_runtime() = runSuspendTest {
         val (repo, deploymentService, dataListener) = createDependencies()
         val deploymentId = addTestDeployment( deploymentService )
         val studyRuntime = StudyRuntime.initialize(

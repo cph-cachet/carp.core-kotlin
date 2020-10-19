@@ -8,7 +8,7 @@ import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
@@ -27,7 +27,7 @@ abstract class DeploymentServiceTest
 
 
     @Test
-    fun getStudyDeploymentStatus_succeeds() = runBlockingTest {
+    fun getStudyDeploymentStatus_succeeds() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
 
@@ -36,14 +36,14 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun getStudyDeploymentStatus_fails_for_unknown_studyDeploymentId() = runBlockingTest {
+    fun getStudyDeploymentStatus_fails_for_unknown_studyDeploymentId() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
 
         assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatus( unknownId ) }
     }
 
     @Test
-    fun getStudyDeploymentStatusList_succeeds() = runBlockingTest {
+    fun getStudyDeploymentStatusList_succeeds() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
         val snapshot = createSingleMasterWithConnectedDeviceProtocol().getSnapshot()
         val status1 = deploymentService.createStudyDeployment( snapshot )
@@ -54,7 +54,7 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun getStudyDeploymentStatusList_fails_when_containing_an_unknown_studyDeploymentId() = runBlockingTest {
+    fun getStudyDeploymentStatusList_fails_when_containing_an_unknown_studyDeploymentId() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
 
@@ -63,7 +63,7 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun registerDevice_can_be_called_multiple_times() = runBlockingTest {
+    fun registerDevice_can_be_called_multiple_times() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Master" )
         val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
@@ -76,7 +76,7 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun registerDevice_cannot_be_called_with_same_registration_when_stopped() = runBlockingTest {
+    fun registerDevice_cannot_be_called_with_same_registration_when_stopped() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Master" )
         val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
@@ -92,7 +92,7 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun unregisterDevice_succeeds() = runBlockingTest {
+    fun unregisterDevice_succeeds() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
         val deviceRolename = "Test device"
         val studyDeploymentId = addTestDeployment( deploymentService, deviceRolename )
@@ -105,7 +105,7 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun stop_succeeds() = runBlockingTest {
+    fun stop_succeeds() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
 
@@ -114,14 +114,14 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun stop_fails_for_unknown_studyDeploymentId() = runBlockingTest {
+    fun stop_fails_for_unknown_studyDeploymentId() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
 
         assertFailsWith<IllegalArgumentException> { deploymentService.stop( unknownId ) }
     }
 
     @Test
-    fun modifications_after_stop_not_allowed() = runBlockingTest {
+    fun modifications_after_stop_not_allowed() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Master", "Connected" )
         val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
@@ -145,7 +145,7 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun addParticipation_has_matching_studyDeploymentId() = runBlockingTest {
+    fun addParticipation_has_matching_studyDeploymentId() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
         val deviceRoleName = "Test device"
         val studyDeploymentId = addTestDeployment( deploymentService, deviceRoleName )
@@ -158,7 +158,7 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun addParticipation_creates_new_account_for_new_identity() = runBlockingTest {
+    fun addParticipation_creates_new_account_for_new_identity() = runSuspendTest {
         val ( deploymentService, accountService ) = createService()
         val deviceRoleName = "Test device"
         val studyDeploymentId = addTestDeployment( deploymentService, deviceRoleName )
@@ -174,7 +174,7 @@ abstract class DeploymentServiceTest
 
     @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
     @Test
-    fun addParticipation_with_same_studyDeploymentId_and_identity() = runBlockingTest {
+    fun addParticipation_with_same_studyDeploymentId_and_identity() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
         val deviceRoleName = "Test device"
         val studyDeploymentId = addTestDeployment( deploymentService, deviceRoleName )
@@ -189,7 +189,7 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun addParticipation_fails_for_second_differing_request() = runBlockingTest {
+    fun addParticipation_fails_for_second_differing_request() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
         val deviceRoleName = "Test device"
         val studyDeploymentId = addTestDeployment( deploymentService, deviceRoleName )
@@ -205,7 +205,7 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun addParticipation_fails_for_unknown_studyDeploymentId() = runBlockingTest {
+    fun addParticipation_fails_for_unknown_studyDeploymentId() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
 
         val identity = AccountIdentity.fromUsername( "test" )
@@ -216,7 +216,7 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun addParticipation_fails_for_unknown_deviceRoleNames() = runBlockingTest {
+    fun addParticipation_fails_for_unknown_deviceRoleNames() = runSuspendTest {
         val ( deploymentService, _ ) = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Some device" )
         val emailIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
@@ -229,7 +229,7 @@ abstract class DeploymentServiceTest
     }
 
     @Test
-    fun addParticipation_and_retrieving_invitation_succeeds() = runBlockingTest {
+    fun addParticipation_and_retrieving_invitation_succeeds() = runSuspendTest {
         val ( deploymentService, accountService ) = createService()
         val deviceRoleName = "Test device"
         val studyDeploymentId = addTestDeployment( deploymentService, deviceRoleName )

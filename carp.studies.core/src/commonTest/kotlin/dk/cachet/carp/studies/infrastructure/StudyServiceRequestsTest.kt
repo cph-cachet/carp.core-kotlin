@@ -9,7 +9,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceMock
 import dk.cachet.carp.studies.domain.users.StudyOwner
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
@@ -55,7 +55,7 @@ class StudyServiceRequestsTest
 
     @Suppress( "UNCHECKED_CAST" )
     @Test
-    fun invokeOn_requests_call_service() = runBlockingTest {
+    fun invokeOn_requests_call_service() = runSuspendTest {
         requests.forEach { request ->
             val serviceInvoker = request as ServiceInvoker<StudyService, *>
             val function = serviceInvoker.function

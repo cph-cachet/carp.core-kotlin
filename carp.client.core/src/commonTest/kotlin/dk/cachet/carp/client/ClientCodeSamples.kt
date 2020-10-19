@@ -19,14 +19,14 @@ import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.Smartphone
 import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
 class ClientCodeSamples
 {
     @Test
-    fun readme() = runBlockingTest {
+    fun readme() = runSuspendTest {
         val deploymentService = createDeploymentEndpoint()
         val dataCollectorFactory = createDataCollectorFactory()
 
@@ -96,7 +96,7 @@ class ClientCodeSamples
      * A stub [DataListener] which supports the expected data types in [createExampleProtocol].
      */
     private fun createDataCollectorFactory() = createDataCollectorFactory(
-        CarpDataTypes.GEOLOCATION, CarpDataTypes.STEPCOUNT
+        CarpDataTypes.GEOLOCATION, CarpDataTypes.STEP_COUNT
     )
 
     private val accountService = InMemoryAccountService()
