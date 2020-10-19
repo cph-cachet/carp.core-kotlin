@@ -8,7 +8,7 @@ import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
 import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
@@ -18,7 +18,7 @@ import kotlin.test.*
 class StudyRuntimeTest
 {
     @Test
-    fun initialize_matches_requested_runtime() = runBlockingTest {
+    fun initialize_matches_requested_runtime() = runSuspendTest {
         // Create a deployment service which contains a 'smartphone study'.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
@@ -33,7 +33,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun initialize_deploys_when_possible() = runBlockingTest {
+    fun initialize_deploys_when_possible() = runSuspendTest {
         // Create a deployment service which contains a 'smartphone study'.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
@@ -50,7 +50,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun initialize_does_not_deploy_when_depending_on_other_devices() = runBlockingTest {
+    fun initialize_does_not_deploy_when_depending_on_other_devices() = runSuspendTest {
         // Create a deployment service which contains a study where 'smartphone' depends on another master device.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
 
@@ -67,7 +67,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun initialize_fails_for_unknown_studyDeploymentId() = runBlockingTest {
+    fun initialize_fails_for_unknown_studyDeploymentId() = runSuspendTest {
         // Create a deployment service which contains a 'smartphone study'.
         val (deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
 
@@ -82,7 +82,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun initialize_fails_for_unknown_deviceRoleName() = runBlockingTest {
+    fun initialize_fails_for_unknown_deviceRoleName() = runSuspendTest {
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
         val deviceRegistration = smartphone.createRegistration()
@@ -95,7 +95,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun initialize_fails_for_incorrect_deviceRegistration() = runBlockingTest {
+    fun initialize_fails_for_incorrect_deviceRegistration() = runSuspendTest {
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
         val incorrectRegistration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 )
@@ -108,7 +108,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun tryDeployment_only_succeeds_after_dependent_devices_are_registered() = runBlockingTest {
+    fun tryDeployment_only_succeeds_after_dependent_devices_are_registered() = runSuspendTest {
         // Create a study runtime for a study where 'smartphone' depends on another master device ('deviceSmartphoneDependsOn').
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val deviceRegistration = smartphone.createRegistration()
@@ -130,7 +130,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun tryDeployment_returns_true_when_already_deployed() = runBlockingTest {
+    fun tryDeployment_returns_true_when_already_deployed() = runSuspendTest {
         // Create a study runtime which instantly deploys because the protocol only contains one master device.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val deviceRegistration = smartphone.createRegistration()
@@ -145,7 +145,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun tryDeployment_fails_when_requested_data_cannot_be_collected() = runBlockingTest {
+    fun tryDeployment_fails_when_requested_data_cannot_be_collected() = runSuspendTest {
         // Create a protocol that has one measure.
         val protocol = createSmartphoneStudy()
         val task = StubTaskDescriptor( "One measure", listOf( StubMeasure() ) )
@@ -164,7 +164,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun creating_runtime_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runBlockingTest {
+    fun creating_runtime_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runSuspendTest {
         // Create a study runtime snapshot for the 'smartphone' in 'smartphone study'.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val deviceRegistration = smartphone.createRegistration()

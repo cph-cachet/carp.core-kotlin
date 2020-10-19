@@ -5,7 +5,7 @@ import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.StudyOwner
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
@@ -18,7 +18,7 @@ interface StudyRepositoryTest
 
 
     @Test
-    fun cant_add_study_with_id_that_already_exists() = runBlockingTest {
+    fun cant_add_study_with_id_that_already_exists() = runSuspendTest {
         val repo = createRepository()
         val study = addStudy( repo )
 
@@ -30,7 +30,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun getById_succeeds() = runBlockingTest {
+    fun getById_succeeds() = runSuspendTest {
         val repo = createRepository()
         val study = addStudy( repo )
 
@@ -40,7 +40,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun getById_null_when_not_found() = runBlockingTest {
+    fun getById_null_when_not_found() = runSuspendTest {
         val repo = createRepository()
 
         val foundStudy = repo.getById( UUID.randomUUID() )
@@ -48,7 +48,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun getForOwner_returns_owner_studies_only() = runBlockingTest {
+    fun getForOwner_returns_owner_studies_only() = runSuspendTest {
         val repo = createRepository()
         val owner = StudyOwner()
         val ownerStudy = Study( owner, "Test" )
@@ -61,7 +61,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun update_succeeds() = runBlockingTest {
+    fun update_succeeds() = runSuspendTest {
         val repo = createRepository()
         val study = Study( StudyOwner(), "Test" )
         repo.add( study )
@@ -79,7 +79,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun update_fails_for_unknown_study() = runBlockingTest {
+    fun update_fails_for_unknown_study() = runSuspendTest {
         val repo = createRepository()
 
         val study = Study( StudyOwner(), "Test" )
@@ -87,7 +87,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun adding_participant_and_retrieving_it_succeeds() = runBlockingTest {
+    fun adding_participant_and_retrieving_it_succeeds() = runSuspendTest {
         val repo = createRepository()
         val study = addStudy( repo )
 
@@ -98,7 +98,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun addParticipant_fails_with_nonexisting_studyId() = runBlockingTest {
+    fun addParticipant_fails_with_nonexisting_studyId() = runSuspendTest {
         val repo = createRepository()
 
         val unknownId = UUID.randomUUID()
@@ -107,7 +107,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun addParticipant_fails_for_duplicate_participant_id() = runBlockingTest {
+    fun addParticipant_fails_for_duplicate_participant_id() = runSuspendTest {
         val repo = createRepository()
         val study = addStudy( repo )
         val participant = Participant( AccountIdentity.fromUsername( "user" ) )
@@ -117,7 +117,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun getParticipants_fails_for_nonexisting_studyId() = runBlockingTest {
+    fun getParticipants_fails_for_nonexisting_studyId() = runSuspendTest {
         val repo = createRepository()
 
         val unknownId = UUID.randomUUID()
