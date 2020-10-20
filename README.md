@@ -241,6 +241,7 @@ val isReady = status is StudyDeploymentStatus.DeploymentReady // True.
 
 ```kotlin
 val deploymentService = createDeploymentEndpoint()
+val deploymentService = createDeploymentEndpoint()
 val dataCollectorFactory = createDataCollectorFactory()
 
 // Retrieve invitation to participate in the study using a specific device.
@@ -260,11 +261,18 @@ client.configure {
     deviceId = "xxxxxxxxx"
 }
 var status: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
-val isDeployed = status is StudyRuntimeStatus.Deployed // True, because there are no dependent devices.
 
-// Suppose a deployment also depends on a "Clinician's phone" to be registered; deployment cannot complete yet.
-// After the clinician's phone has been registered, attempt deployment again.
-status = client.tryDeployment( status.id ) // 'Deployed' if dependent clients has been registered first.
+// Register connected devices in case needed.
+if ( status is StudyRuntimeStatus.RegisteringDevices )
+{
+    val connectedDevice = status.remainingDevicesToRegister.first()
+    val connectedRegistration = connectedDevice.createRegistration()
+    deploymentService.registerDevice( studyDeploymentId, connectedDevice.roleName, connectedRegistration )
+
+    // Re-try deployment now that devices have been registered.
+    status = client.tryDeployment( status.id )
+    val isDeployed = status is StudyRuntimeStatus.Deployed // True.
+}
 ```
 
 ## Building the project

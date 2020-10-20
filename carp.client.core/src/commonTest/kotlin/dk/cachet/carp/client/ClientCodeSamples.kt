@@ -19,6 +19,7 @@ import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.Smartphone
 import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
+import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -47,11 +48,18 @@ class ClientCodeSamples
             deviceId = "xxxxxxxxx"
         }
         var status: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
-        val isDeployed = status is StudyRuntimeStatus.Deployed // True, because there are no dependent devices.
 
-        // Suppose a deployment also depends on a "Clinician's phone" to be registered; deployment cannot complete yet.
-        // After the clinician's phone has been registered, attempt deployment again.
-        status = client.tryDeployment( status.id ) // 'Deployed' if dependent clients has been registered first.
+        // Register connected devices in case needed.
+        if ( status is StudyRuntimeStatus.RegisteringDevices )
+        {
+            val connectedDevice = status.remainingDevicesToRegister.first()
+            val connectedRegistration = connectedDevice.createRegistration()
+            deploymentService.registerDevice( studyDeploymentId, connectedDevice.roleName, connectedRegistration )
+
+            // Re-try deployment now that devices have been registered.
+            status = client.tryDeployment( status.id )
+            val isDeployed = status is StudyRuntimeStatus.Deployed // True.
+        }
     }
 
 
@@ -84,6 +92,9 @@ class ClientCodeSamples
 
         val phone = Smartphone( "Patient's phone" )
         protocol.addMasterDevice( phone )
+
+        val connected = StubDeviceDescriptor( "External sensor" )
+        protocol.addConnectedDevice( connected, phone )
 
         val measures = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
         val startMeasures = ConcurrentTask( "Start measures", measures )
