@@ -24,6 +24,7 @@ class StudyRuntimeTest
         // Create a deployment service which contains a 'smartphone study'.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
+        // Initialize study runtime.
         val deviceRegistration = smartphone.createRegistration()
         val dataListener = createDataListener()
         val runtime = StudyRuntime.initialize(
@@ -31,7 +32,7 @@ class StudyRuntimeTest
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
 
         assertEquals( deploymentStatus.studyDeploymentId, runtime.studyDeploymentId )
-        assertEquals( smartphone.roleName, runtime.device.roleName )
+        assertEquals( smartphone, runtime.device )
     }
 
     @Test
@@ -39,16 +40,29 @@ class StudyRuntimeTest
         // Create a deployment service which contains a 'smartphone study'.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
+        // Initialize study runtime.
         val deviceRegistration = smartphone.createRegistration()
         val dataListener = createDataListener()
         val runtime = StudyRuntime.initialize(
             deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
-        val updatedStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
 
+        // Study runtime status is deployed.
         assertTrue( runtime.isDeployed )
-        assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
-        assertTrue( updatedStatus.getDeviceStatus( smartphone ) is DeviceDeploymentStatus.Deployed )
+        val runtimeStatus = runtime.getStatus()
+        assertTrue( runtimeStatus is StudyRuntimeStatus.Deployed )
+
+        // Study runtime events reflects deployment has been received and completed.
+        val events = runtime.consumeEvents()
+        val receivedEvent = events.filterIsInstance<StudyRuntime.Event.DeploymentReceived>()
+        assertEquals( 1, receivedEvent.count() )
+        assertEquals( runtimeStatus.deploymentInformation, receivedEvent.single().deploymentInformation )
+        assertEquals( 1, events.filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
+
+        // Device status in deployment is also set to deployed.
+        val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
+        val deviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
+        assertTrue( deviceStatus is DeviceDeploymentStatus.Deployed )
     }
 
     @Test
@@ -56,16 +70,58 @@ class StudyRuntimeTest
         // Create a deployment service which contains a study where 'smartphone' depends on another master device.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
 
+        // Initialize study runtime.
         val deviceRegistration = smartphone.createRegistration()
         val dataListener = createDataListener()
         val runtime = StudyRuntime.initialize(
             deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
-        val updatedStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
 
+        // Study runtime status is not ready for deployment.
         assertFalse( runtime.isDeployed )
-        assertEquals( 0, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
-        assertTrue( updatedStatus.getDeviceStatus( smartphone ) is DeviceDeploymentStatus.NotDeployed )
+        val runtimeStatus = runtime.getStatus()
+        assertTrue( runtimeStatus is StudyRuntimeStatus.NotReadyForDeployment )
+
+        // Study runtime events reflects deployment has not been received yet.
+        val events = runtime.consumeEvents()
+        assertEquals( 0, events.filterIsInstance<StudyRuntime.Event.DeploymentReceived>().count() )
+
+        // Device status in deployment is registered, but not deployed.
+        val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
+        val deviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
+        assertTrue( deviceStatus is DeviceDeploymentStatus.Registered )
+    }
+
+    @Test
+    fun initialize_does_not_deploy_when_registering_devices() = runSuspendTest {
+        // Create a deployment service which contains a study where 'smartphone' depends on a connected device.
+        val (deploymentService, deploymentStatus) =
+            createStudyDeployment( createSmartphoneWithConnectedDeviceStudy() )
+
+        // Initialize study runtime.
+        val deviceRegistration = smartphone.createRegistration()
+        val dataListener = createDataListener()
+        val runtime = StudyRuntime.initialize(
+            deploymentService, dataListener,
+            deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
+
+        // Study runtime status indicates `connectedDevice` needs to be registered.
+        assertFalse( runtime.isDeployed )
+        val runtimeStatus = runtime.getStatus()
+        assertTrue( runtimeStatus is StudyRuntimeStatus.RegisteringDevices )
+        assertEquals( connectedDevice, runtimeStatus.remainingDevicesToRegister.single() )
+
+        // Study runtime events reflects deployment has been received, but not completed.
+        val events = runtime.consumeEvents()
+        val receivedEvent = events.filterIsInstance<StudyRuntime.Event.DeploymentReceived>()
+        assertEquals( 1, receivedEvent.count() )
+        assertEquals( runtimeStatus.deploymentInformation, receivedEvent.single().deploymentInformation )
+        assertEquals( 0, events.filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
+
+        // Device status in deployment is registered, but not deployed.
+        val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
+        val deviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
+        assertTrue( deviceStatus is DeviceDeploymentStatus.Registered )
     }
 
     @Test
@@ -110,7 +166,7 @@ class StudyRuntimeTest
     }
 
     @Test
-    fun tryDeployment_only_succeeds_after_dependent_devices_are_registered() = runSuspendTest {
+    fun tryDeployment_only_succeeds_after_ready_for_deployment() = runSuspendTest {
         // Create a study runtime for a study where 'smartphone' depends on another master device ('deviceSmartphoneDependsOn').
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val deviceRegistration = smartphone.createRegistration()
@@ -122,10 +178,40 @@ class StudyRuntimeTest
         // Dependent devices are not yet registered.
         var status = runtime.tryDeployment( deploymentService, dataListener )
         assertEquals( 0, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
-        assertTrue( status !is StudyRuntimeStatus.Deployed )
+        assertTrue( status is StudyRuntimeStatus.NotReadyForDeployment )
 
         // Once dependent devices are registered, deployment succeeds.
-        deploymentService.registerDevice( deploymentStatus.studyDeploymentId, deviceSmartphoneDependsOn.roleName, deviceSmartphoneDependsOn.createRegistration() )
+        deploymentService.registerDevice(
+            deploymentStatus.studyDeploymentId,
+            deviceSmartphoneDependsOn.roleName,
+            deviceSmartphoneDependsOn.createRegistration() )
+        status = runtime.tryDeployment( deploymentService, dataListener )
+        assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
+        assertTrue( status is StudyRuntimeStatus.Deployed )
+    }
+
+    @Test
+    fun tryDeployment_only_succeeds_after_devices_are_registered() = runSuspendTest {
+        // Create a study runtime for a study where 'smartphone' depends on a connected device.
+        val (deploymentService, deploymentStatus) =
+            createStudyDeployment( createSmartphoneWithConnectedDeviceStudy() )
+        val deviceRegistration = smartphone.createRegistration()
+        val dataListener = createDataListener()
+        val runtime = StudyRuntime.initialize(
+            deploymentService, dataListener,
+            deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
+
+        // Connected device is not yet registered.
+        var status = runtime.tryDeployment( deploymentService, dataListener )
+        assertEquals( 0, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
+        assertTrue( status is StudyRuntimeStatus.RegisteringDevices )
+
+        // Once device is registered, deployment succeeds.
+        // TODO: It should be possible to register this device through `StudyRuntime` rather than directly from `deploymentService`.
+        deploymentService.registerDevice(
+            deploymentStatus.studyDeploymentId,
+            connectedDevice.roleName,
+            connectedDevice.createRegistration() )
         status = runtime.tryDeployment( deploymentService, dataListener )
         assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
         assertTrue( status is StudyRuntimeStatus.Deployed )
@@ -134,9 +220,7 @@ class StudyRuntimeTest
     @Test
     fun tryDeployment_succeeds_when_data_types_of_protocol_measures_are_supported() = runSuspendTest {
         // Create protocol that measures on smartphone and one connected device.
-        val protocol = createSmartphoneStudy()
-        val connectedDevice = StubDeviceDescriptor( "Connected" )
-        protocol.addConnectedDevice( connectedDevice, smartphone )
+        val protocol = createSmartphoneWithConnectedDeviceStudy()
         val masterTask = StubTaskDescriptor( "Master measure", listOf( StubMeasure( STUB_DATA_TYPE ) ) )
         protocol.addTriggeredTask( smartphone.atStartOfStudy(), masterTask, smartphone )
         val connectedDataType = DataType( "custom", "type" )
@@ -149,12 +233,19 @@ class StudyRuntimeTest
             mapOf( StubDeviceDescriptor::class to setOf( connectedDataType ) )
         ) )
 
-        // Initializing study runtime for the smartphone deployment should succeed since devices and data types are supported.
+        // Create study deployment with preregistered connected device (otherwise study runtime initialization won't complete).
         val (deploymentService, deploymentStatus) = createStudyDeployment( protocol )
+        deploymentService.registerDevice(
+            deploymentStatus.studyDeploymentId,
+            connectedDevice.roleName,
+            connectedDevice.createRegistration() )
+
+        // Initializing study runtime for the smartphone deployment should succeed since devices and data types are supported.
         val deviceRegistration = smartphone.createRegistration()
-        StudyRuntime.initialize(
+        val runtime = StudyRuntime.initialize(
             deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
+        assertTrue( runtime.isDeployed )
     }
 
     @Test

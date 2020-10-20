@@ -3,7 +3,6 @@ package dk.cachet.carp.client.domain
 import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentService
-import dk.cachet.carp.protocols.domain.devices.SmartphoneDeviceRegistration
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -99,9 +98,27 @@ class ClientManagerTest
         var status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
 
         // Dependent device needs to be registered before the intended device can be deployed on this client.
-        assertFalse( status is StudyRuntimeStatus.Deployed )
-        val dependentRegistration = SmartphoneDeviceRegistration( "dependent" )
+        assertTrue( status is StudyRuntimeStatus.NotReadyForDeployment )
+        val dependentRegistration = deviceSmartphoneDependsOn.createRegistration()
         deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
+
+        status = client.tryDeployment( client.getStudies().first().id )
+        assertTrue( status is StudyRuntimeStatus.Deployed )
+    }
+
+    @Test
+    fun tryDeployment_succeeds_after_registering_devices() = runSuspendTest {
+        val (deploymentService, deploymentStatus) =
+            createStudyDeployment( createSmartphoneWithConnectedDeviceStudy() )
+        val client = initializeSmartphoneClient( deploymentService )
+        val deploymentId = deploymentStatus.studyDeploymentId
+        var status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
+
+        // Connected device needs to be registered before deployment can complete.
+        // TODO: It should be possible to register this device through `ClientManager` rather than directly from `deploymentService`.
+        assertTrue( status is StudyRuntimeStatus.RegisteringDevices )
+        val connectedRegistration = connectedDevice.createRegistration()
+        deploymentService.registerDevice( deploymentId, connectedDevice.roleName, connectedRegistration )
 
         status = client.tryDeployment( client.getStudies().first().id )
         assertTrue( status is StudyRuntimeStatus.Deployed )
