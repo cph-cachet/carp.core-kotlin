@@ -15,9 +15,11 @@ import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.Smartphone
+import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 
 
 val smartphone: Smartphone = Smartphone( "User's phone" )
+val connectedDevice = StubDeviceDescriptor( "Connected sensor" )
 val deviceSmartphoneDependsOn: AnyMasterDeviceDescriptor = Smartphone( "Some other device" )
 
 /**
@@ -27,6 +29,17 @@ fun createSmartphoneStudy(): StudyProtocol
 {
     val protocol = StudyProtocol( ProtocolOwner(), "Smartphone study" )
     protocol.addMasterDevice( smartphone )
+    return protocol
+}
+
+/**
+ * Create a study protocol with [smartphone] as the single master device and [connectedDevice] as a single connected device.
+ */
+fun createSmartphoneWithConnectedDeviceStudy(): StudyProtocol
+{
+    val protocol = StudyProtocol( ProtocolOwner(), "Smartphone study" )
+    protocol.addMasterDevice( smartphone )
+    protocol.addConnectedDevice( connectedDevice, smartphone )
     return protocol
 }
 

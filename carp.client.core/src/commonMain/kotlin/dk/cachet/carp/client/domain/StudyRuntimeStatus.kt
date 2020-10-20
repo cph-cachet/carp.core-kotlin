@@ -18,6 +18,20 @@ sealed class StudyRuntimeStatus
 
 
     /**
+     * Deployment information has been received.
+     */
+    interface DeploymentReceived
+    {
+        /**
+         * Contains all the information on the study to run.
+         *
+         * TODO: This should be consumed within this domain model and not be public.
+         *       Currently, it is in order to work towards a first MVP which includes server/client communication through the domain model.
+         */
+        val deploymentInformation: MasterDeviceDeployment
+    }
+
+    /**
      * Deployment cannot succeed yet because other master devices have not been registered yet.
      */
     data class NotReadyForDeployment( override val id: StudyRuntimeId ) : StudyRuntimeStatus()
@@ -27,15 +41,9 @@ sealed class StudyRuntimeStatus
      */
     data class RegisteringDevices(
         override val id: StudyRuntimeId,
-        /**
-         * Contains all the information on the study to run.
-         *
-         * TODO: This should be consumed within this domain model and not be public.
-         *       Currently, it is in order to work towards a first MVP which includes server/client communication through the domain model.
-         */
-        val deploymentInformation: MasterDeviceDeployment,
+        override val deploymentInformation: MasterDeviceDeployment,
         val remainingDevicesToRegister: List<AnyDeviceDescriptor>
-    ) : StudyRuntimeStatus()
+    ) : StudyRuntimeStatus(), DeploymentReceived
 
     /**
      * Study runtime status when deployment has been successfully completed:
@@ -43,12 +51,6 @@ sealed class StudyRuntimeStatus
      */
     data class Deployed(
         override val id: StudyRuntimeId,
-        /**
-         * Contains all the information on the study to run.
-         *
-         * TODO: This should be consumed within this domain model and not be public.
-         *       Currently, it is in order to work towards a first MVP which includes server/client communication through the domain model.
-         */
-        val deploymentInformation: MasterDeviceDeployment
-    ) : StudyRuntimeStatus()
+        override val deploymentInformation: MasterDeviceDeployment
+    ) : StudyRuntimeStatus(), DeploymentReceived
 }

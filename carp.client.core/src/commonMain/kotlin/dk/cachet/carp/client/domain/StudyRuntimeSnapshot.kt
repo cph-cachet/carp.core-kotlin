@@ -4,6 +4,7 @@ import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.Snapshot
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
 import kotlinx.serialization.Serializable
@@ -16,7 +17,8 @@ data class StudyRuntimeSnapshot(
     @Serializable( DeviceDescriptorSerializer::class )
     val device: AnyMasterDeviceDescriptor,
     val isDeployed: Boolean,
-    val deploymentInformation: MasterDeviceDeployment?
+    val deploymentInformation: MasterDeviceDeployment?,
+    val remainingDevicesToRegister: List<AnyDeviceDescriptor>
 ) : Snapshot<StudyRuntime>
 {
     companion object
@@ -30,7 +32,10 @@ data class StudyRuntimeSnapshot(
                 studyRuntime.creationDate,
                 studyRuntime.device,
                 studyRuntime.isDeployed,
-                (status as? StudyRuntimeStatus.Deployed)?.deploymentInformation )
+                (status as? StudyRuntimeStatus.DeploymentReceived)?.deploymentInformation,
+                (status as? StudyRuntimeStatus.RegisteringDevices)?.remainingDevicesToRegister
+                    ?: emptyList()
+            )
         }
     }
 

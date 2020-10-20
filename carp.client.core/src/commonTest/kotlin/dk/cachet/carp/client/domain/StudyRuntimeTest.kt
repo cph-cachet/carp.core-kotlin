@@ -193,8 +193,9 @@ class StudyRuntimeTest
 
     @Test
     fun creating_runtime_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runSuspendTest {
-        // Create a study runtime snapshot for the 'smartphone' in 'smartphone study'.
-        val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        // Create a study runtime snapshot for the 'smartphone' with an unregistered connected device.
+        val protocol = createSmartphoneWithConnectedDeviceStudy()
+        val (deploymentService, deploymentStatus) = createStudyDeployment( protocol )
         val deviceRegistration = smartphone.createRegistration()
         val dataListener = createDataListener()
         val runtime = StudyRuntime.initialize(

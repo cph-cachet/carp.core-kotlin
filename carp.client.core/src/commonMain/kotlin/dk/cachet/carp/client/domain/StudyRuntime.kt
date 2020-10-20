@@ -95,6 +95,7 @@ class StudyRuntime private constructor(
                 creationDate = snapshot.creationDate
                 isDeployed = snapshot.isDeployed
                 deploymentInformation = snapshot.deploymentInformation
+                remainingDevicesToRegister = snapshot.remainingDevicesToRegister
             }
     }
 
