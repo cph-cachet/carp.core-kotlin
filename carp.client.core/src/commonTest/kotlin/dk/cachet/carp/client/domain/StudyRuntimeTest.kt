@@ -1,6 +1,6 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.client.domain.data.ConnectedDeviceDataCollector
+import dk.cachet.carp.client.domain.data.AnyConnectedDeviceDataCollector
 import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.client.domain.data.StubConnectedDeviceDataCollectorFactory
@@ -320,7 +320,7 @@ class StudyRuntimeTest
             override fun createConnectedDataCollector(
                 deviceType: DeviceType,
                 deviceRegistration: DeviceRegistration
-            ): ConnectedDeviceDataCollector = throw UnsupportedOperationException( "Unsupported device type." )
+            ): AnyConnectedDeviceDataCollector = throw UnsupportedOperationException( "Unsupported device type." )
         }
         val dataListener = DataListener( factory )
 

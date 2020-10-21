@@ -12,7 +12,7 @@ import dk.cachet.carp.protocols.domain.devices.DeviceType
  */
 class DataListener( private val dataCollectorFactory: DeviceDataCollectorFactory )
 {
-    private val connectedDataCollectors: MutableMap<DeviceType, MutableMap<DeviceRegistration, ConnectedDeviceDataCollector>> = mutableMapOf()
+    private val connectedDataCollectors: MutableMap<DeviceType, MutableMap<DeviceRegistration, AnyConnectedDeviceDataCollector>> = mutableMapOf()
 
 
     /**
@@ -40,7 +40,7 @@ class DataListener( private val dataCollectorFactory: DeviceDataCollectorFactory
      *
      * @return The [ConnectedDeviceDataCollector], or null in case it could not be created.
      */
-    fun tryGetConnectedDataCollector( connectedDeviceType: DeviceType, registration: DeviceRegistration ): ConnectedDeviceDataCollector?
+    fun tryGetConnectedDataCollector( connectedDeviceType: DeviceType, registration: DeviceRegistration ): AnyConnectedDeviceDataCollector?
     {
         return try
         {

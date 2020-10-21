@@ -19,5 +19,5 @@ abstract class DeviceDataCollectorFactory( val localDataCollector: DeviceDataCol
     abstract fun createConnectedDataCollector(
         deviceType: DeviceType,
         deviceRegistration: DeviceRegistration
-    ): ConnectedDeviceDataCollector
+    ): AnyConnectedDeviceDataCollector
 }

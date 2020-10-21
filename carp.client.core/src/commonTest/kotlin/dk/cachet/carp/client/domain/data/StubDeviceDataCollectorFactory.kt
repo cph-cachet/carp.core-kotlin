@@ -19,5 +19,5 @@ class StubDeviceDataCollectorFactory(
     override fun createConnectedDataCollector(
         deviceType: DeviceType,
         deviceRegistration: DeviceRegistration
-    ): ConnectedDeviceDataCollector = StubConnectedDeviceDataCollector( connectedSupportedDataTypes, deviceRegistration )
+    ): AnyConnectedDeviceDataCollector = StubConnectedDeviceDataCollector( connectedSupportedDataTypes, deviceRegistration )
 }

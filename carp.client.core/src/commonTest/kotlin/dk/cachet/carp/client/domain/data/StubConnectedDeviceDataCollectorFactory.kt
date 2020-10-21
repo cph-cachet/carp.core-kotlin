@@ -20,7 +20,7 @@ class StubConnectedDeviceDataCollectorFactory(
     override fun createConnectedDataCollector(
         deviceType: DeviceType,
         deviceRegistration: DeviceRegistration
-    ): ConnectedDeviceDataCollector
+    ): AnyConnectedDeviceDataCollector
     {
         val supportedDataTypes = connectedSupportedDataTypes[ deviceType ]
             ?: throw UnsupportedOperationException( "No data collector for device of type `$deviceType` is available." )
