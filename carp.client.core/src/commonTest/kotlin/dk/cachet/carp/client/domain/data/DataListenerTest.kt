@@ -36,18 +36,20 @@ class DataListenerTest
         val listener = DataListener( factory )
 
         val registration = StubDeviceDescriptor().createRegistration()
+        assertNotNull( listener.tryGetConnectedDataCollector( deviceType, registration ) )
         assertTrue( listener.supportsDataOnConnectedDevice( STUB_DATA_TYPE, deviceType, registration ) )
         assertFalse( listener.supportsDataOnConnectedDevice( unsupportedType, deviceType, registration ) )
     }
 
     @Test
-    fun supportsDataOnConnectedDevice_returns_false_for_unsupported_devices()
+    fun unsupported_connected_devices()
     {
         val factory = StubConnectedDeviceDataCollectorFactory( emptySet(), emptyMap() ) // Nothing is supported.
         val listener = DataListener( factory )
 
         val unsupportedDeviceType = StubDeviceDescriptor::class
         val registration = StubDeviceDescriptor().createRegistration()
+        assertNull( listener.tryGetConnectedDataCollector( unsupportedDeviceType, registration ) )
         assertFalse( listener.supportsDataOnConnectedDevice( STUB_DATA_TYPE, unsupportedDeviceType, registration ) )
     }
 }

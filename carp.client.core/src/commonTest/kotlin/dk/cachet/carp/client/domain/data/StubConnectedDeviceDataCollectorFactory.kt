@@ -7,8 +7,8 @@ import dk.cachet.carp.protocols.domain.devices.DeviceType
 
 /**
  * A [DeviceDataCollectorFactory] which for the local device data collector uses passed supported data types
- * and for connected devices initializes [ConnectedDeviceDataCollector] for requested [DeviceType]
- * with the data types specified in [connectedSupportedDataTypes].
+ * and for connected devices tries to initialize [ConnectedDeviceDataCollector] for supported [DeviceType]
+ * which are specified in [connectedSupportedDataTypes].
  *
  * @param localSupportedDataTypes The data types which are supported on the local device data collector.
  */

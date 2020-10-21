@@ -29,18 +29,28 @@ class DataListener( private val dataCollectorFactory: DeviceDataCollectorFactory
         dataType: DataType,
         connectedDeviceType: DeviceType,
         deviceRegistration: DeviceRegistration
-    ): Boolean
+    ): Boolean =
+        tryGetConnectedDataCollector( connectedDeviceType, deviceRegistration )
+            ?.let { dataType in it.supportedDataTypes }
+            ?: false
+
+    /**
+     * Retrieve existing [ConnectedDeviceDataCollector] for the given [connectedDeviceType] and [registration],
+     * or try to create a new one in case it was not created before.
+     *
+     * @return The [ConnectedDeviceDataCollector], or null in case it could not be created.
+     */
+    fun tryGetConnectedDataCollector( connectedDeviceType: DeviceType, registration: DeviceRegistration ): ConnectedDeviceDataCollector?
     {
         return try
         {
-            val dataCollector = connectedDataCollectors
+            connectedDataCollectors
                 .getOrPut( connectedDeviceType, { mutableMapOf() } )
                 .getOrPut(
-                    deviceRegistration,
-                    { dataCollectorFactory.createConnectedDataCollector( connectedDeviceType, deviceRegistration ) }
+                    registration,
+                    { dataCollectorFactory.createConnectedDataCollector( connectedDeviceType, registration ) }
                 )
-            dataType in dataCollector.supportedDataTypes
         }
-        catch ( ex: UnsupportedOperationException ) { false } // In case `createConnectedDataCollector` fails.
+        catch ( _: UnsupportedOperationException ) { null }
     }
 }

@@ -166,14 +166,20 @@ class StudyRuntime private constructor(
         // Early out in case devices need to be registered before being able to complete deployment.
         if ( remainingDevicesToRegister.isNotEmpty() ) return
 
-        // Verify whether data collection is supported for all requested measures.
+        // Verify whether data collection is supported on all connected devices and for all requested measures.
         for ( (device, tasks) in deployment.getTasksPerDevice() )
         {
             // It shouldn't be possible to be ready for deployment when connected device registration is not set.
             val registration = device.registration
             checkNotNull( registration )
 
+            // Verify whether connected device is supported.
             val deviceType = device.descriptor::class
+            if ( device.isConnectedDevice )
+            {
+                dataListener.tryGetConnectedDataCollector( deviceType, registration )
+                    ?: throw UnsupportedOperationException( "Connecting to device of type \"$deviceType\" is not supported on this client." )
+            }
 
             val dataTypes = tasks.flatMap { it.measures }.map { it.type }.distinct()
             for ( dataType in dataTypes )

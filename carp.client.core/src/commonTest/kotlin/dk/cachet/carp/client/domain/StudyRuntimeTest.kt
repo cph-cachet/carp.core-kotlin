@@ -1,11 +1,16 @@
 package dk.cachet.carp.client.domain
 
+import dk.cachet.carp.client.domain.data.ConnectedDeviceDataCollector
 import dk.cachet.carp.client.domain.data.DataListener
+import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.client.domain.data.StubConnectedDeviceDataCollectorFactory
+import dk.cachet.carp.client.domain.data.StubDeviceDataCollector
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceType
 import dk.cachet.carp.protocols.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
@@ -218,6 +223,21 @@ class StudyRuntimeTest
     }
 
     @Test
+    fun tryDeployment_returns_true_when_already_deployed() = runSuspendTest {
+        // Create a study runtime which instantly deploys because the protocol only contains one master device.
+        val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val deviceRegistration = smartphone.createRegistration()
+        val dataListener = createDataListener()
+        val runtime = StudyRuntime.initialize(
+            deploymentService, dataListener,
+            deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
+        assertTrue( runtime.isDeployed )
+
+        val status = runtime.tryDeployment( deploymentService, dataListener )
+        assertTrue( status is StudyRuntimeStatus.Deployed )
+    }
+
+    @Test
     fun tryDeployment_succeeds_when_data_types_of_protocol_measures_are_supported() = runSuspendTest {
         // Create protocol that measures on smartphone and one connected device.
         val protocol = createSmartphoneWithConnectedDeviceStudy()
@@ -242,25 +262,10 @@ class StudyRuntimeTest
 
         // Initializing study runtime for the smartphone deployment should succeed since devices and data types are supported.
         val deviceRegistration = smartphone.createRegistration()
-        val runtime = StudyRuntime.initialize(
+        val runtime = StudyRuntime.initialize( // This will 'tryDeployment'.
             deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
         assertTrue( runtime.isDeployed )
-    }
-
-    @Test
-    fun tryDeployment_returns_true_when_already_deployed() = runSuspendTest {
-        // Create a study runtime which instantly deploys because the protocol only contains one master device.
-        val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
-        val deviceRegistration = smartphone.createRegistration()
-        val dataListener = createDataListener()
-        val runtime = StudyRuntime.initialize(
-            deploymentService, dataListener,
-            deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
-        assertTrue( runtime.isDeployed )
-
-        val status = runtime.tryDeployment( deploymentService, dataListener )
-        assertTrue( status is StudyRuntimeStatus.Deployed )
     }
 
     @Test
@@ -276,7 +281,38 @@ class StudyRuntimeTest
         val dataListener = createDataListener( supportedDataTypes = emptyArray() )
         assertFailsWith<UnsupportedOperationException>
         {
-            StudyRuntime.initialize(
+            StudyRuntime.initialize( // This will 'tryDeployment'.
+                deploymentService, dataListener,
+                deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
+        }
+    }
+
+    @Test
+    fun tryDeployment_fails_when_connected_device_is_not_supported() = runSuspendTest {
+        // Create a deployment for a protocol with a preregistered connected device but no measures.
+        val (deploymentService, deploymentStatus) =
+            createStudyDeployment( createSmartphoneWithConnectedDeviceStudy() )
+        deploymentService.registerDevice(
+            deploymentStatus.studyDeploymentId,
+            connectedDevice.roleName,
+            connectedDevice.createRegistration() )
+        val deviceRegistration = smartphone.createRegistration()
+
+        // Create a listener which does not support measuring on the connected device.
+        val localDataCollector = StubDeviceDataCollector( emptySet() )
+        val factory = object : DeviceDataCollectorFactory( localDataCollector )
+        {
+            override fun createConnectedDataCollector(
+                deviceType: DeviceType,
+                deviceRegistration: DeviceRegistration
+            ): ConnectedDeviceDataCollector = throw UnsupportedOperationException( "Unsupported device type." )
+        }
+        val dataListener = DataListener( factory )
+
+        // Even though there are no measures for the connected device in the protocol, it should still verify support.
+        assertFailsWith<UnsupportedOperationException>
+        {
+            StudyRuntime.initialize( // This will 'tryDeployment'.
                 deploymentService, dataListener,
                 deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
         }
