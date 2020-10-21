@@ -147,4 +147,26 @@ class ClientManagerTest
             client.tryDeployment( StudyRuntimeId( unknownId, "Unknown device role" ) )
         }
     }
+
+    @Test
+    fun getConnectedDeviceManager_succeeds() = runSuspendTest {
+        // Create study deployment.
+        val (deploymentService, deploymentStatus) =
+            createStudyDeployment( createSmartphoneWithConnectedDeviceStudy() )
+        val deploymentId = deploymentStatus.studyDeploymentId
+
+        // Preregister the connected device so that registration is instantly available.
+        val connectedRegistration = connectedDevice.createRegistration()
+        deploymentService.registerDevice( deploymentId, connectedDevice.roleName, connectedRegistration )
+
+        // Get device registration status.
+        val client = initializeSmartphoneClient( deploymentService )
+        val studyStatus: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
+        assertTrue( studyStatus is StudyRuntimeStatus.DeploymentReceived )
+        val deviceStatus = studyStatus.devicesRegistrationStatus[ connectedDevice ]
+        assertTrue( deviceStatus is DeviceRegistrationStatus.Registered )
+
+        val deviceManager = client.getConnectedDeviceManager( deviceStatus )
+        assertEquals( connectedRegistration, deviceManager.deviceRegistration )
+    }
 }

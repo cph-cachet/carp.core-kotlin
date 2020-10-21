@@ -8,3 +8,6 @@ class StubConnectedDeviceDataCollector(
     override val supportedDataTypes: Set<DataType>,
     registration: DeviceRegistration
 ) : ConnectedDeviceDataCollector( registration )
+{
+    override suspend fun canConnect(): Boolean = true
+}

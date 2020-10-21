@@ -121,4 +121,19 @@ abstract class ClientManager<
 
         return newStatus
     }
+
+    /**
+     * Once a connected device has been registered, this returns a manager which provides access to the status of the [registeredDevice].
+     */
+    fun getConnectedDeviceManager( registeredDevice: DeviceRegistrationStatus.Registered ): ConnectedDeviceManager
+    {
+        val dataCollector = dataListener.tryGetConnectedDataCollector(
+            registeredDevice.device::class,
+            registeredDevice.registration )
+
+        // `tryDeployment`, through which registeredDevice is obtained, would have failed if data collector could not be created.
+        checkNotNull( dataCollector )
+
+        return ConnectedDeviceManager( registeredDevice.registration, dataCollector )
+    }
 }
