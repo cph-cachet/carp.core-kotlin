@@ -167,28 +167,29 @@ class StudyRuntime private constructor(
         if ( remainingDevicesToRegister.isNotEmpty() ) return
 
         // Verify whether data collection is supported for all requested measures.
-        for ( deviceTasks in deployment.getTasksPerDevice() )
+        for ( (device, tasks) in deployment.getTasksPerDevice() )
         {
             // It shouldn't be possible to be ready for deployment when connected device registration is not set.
-            checkNotNull( deviceTasks.deviceRegistration )
+            val registration = device.registration
+            checkNotNull( registration )
 
-            val dataTypes = deviceTasks.tasks.flatMap { it.measures }.map { it.type }.distinct()
-            for ( type in dataTypes )
+            val deviceType = device.descriptor::class
+
+            val dataTypes = tasks.flatMap { it.measures }.map { it.type }.distinct()
+            for ( dataType in dataTypes )
             {
                 val supportsData =
-                    if ( deviceTasks.isConnectedDevice )
+                    if ( device.isConnectedDevice )
                     {
-                        dataListener.supportsDataOnConnectedDevice(
-                            type,
-                            deviceTasks.device::class,
-                            deviceTasks.deviceRegistration!! )
+                        dataListener.supportsDataOnConnectedDevice( dataType, deviceType, registration )
                     }
-                    else dataListener.supportsData( type )
+                    else dataListener.supportsData( dataType )
 
                 if ( !supportsData )
                 {
                     throw UnsupportedOperationException(
-                        "Subscribing to data of data type \"$type\" on device with role \"${device.roleName}\" is not supported on this client."
+                        "Subscribing to data of data type \"$dataType\" " +
+                        "on device with role \"${device.descriptor.roleName}\" is not supported on this client."
                     )
                 }
             }
