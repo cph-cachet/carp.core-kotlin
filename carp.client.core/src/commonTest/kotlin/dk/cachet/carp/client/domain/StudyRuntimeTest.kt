@@ -52,10 +52,14 @@ class StudyRuntimeTest
             deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
 
-        // Study runtime status is deployed.
+        // Study runtime status is deployed and contains registered master device.
         assertTrue( runtime.isDeployed )
         val runtimeStatus = runtime.getStatus()
         assertTrue( runtimeStatus is StudyRuntimeStatus.Deployed )
+        val registrationStatus = runtimeStatus.devicesRegistrationStatus.values.singleOrNull()
+        assertTrue( registrationStatus is DeviceRegistrationStatus.Registered )
+        assertEquals( smartphone, registrationStatus.device )
+        assertEquals( deviceRegistration, registrationStatus.registration )
 
         // Study runtime events reflects deployment has been received and completed.
         val events = runtime.consumeEvents()
@@ -64,10 +68,10 @@ class StudyRuntimeTest
         assertEquals( runtimeStatus.deploymentInformation, receivedEvent.single().deploymentInformation )
         assertEquals( 1, events.filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
 
-        // Device status in deployment is also set to deployed.
+        // Master device status in deployment is also set to deployed.
         val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
-        val deviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
-        assertTrue( deviceStatus is DeviceDeploymentStatus.Deployed )
+        val masterDeviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
+        assertTrue( masterDeviceStatus is DeviceDeploymentStatus.Deployed )
     }
 
     @Test
@@ -91,10 +95,10 @@ class StudyRuntimeTest
         val events = runtime.consumeEvents()
         assertEquals( 0, events.filterIsInstance<StudyRuntime.Event.DeploymentReceived>().count() )
 
-        // Device status in deployment is registered, but not deployed.
+        // Master device status in deployment is registered, but not deployed.
         val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
-        val deviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
-        assertTrue( deviceStatus is DeviceDeploymentStatus.Registered )
+        val masterDeviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
+        assertTrue( masterDeviceStatus is DeviceDeploymentStatus.Registered )
     }
 
     @Test
@@ -115,6 +119,9 @@ class StudyRuntimeTest
         val runtimeStatus = runtime.getStatus()
         assertTrue( runtimeStatus is StudyRuntimeStatus.RegisteringDevices )
         assertEquals( connectedDevice, runtimeStatus.remainingDevicesToRegister.single() )
+        val connectedRegistrationStatus = runtimeStatus.devicesRegistrationStatus[ connectedDevice ]
+        assertTrue( connectedRegistrationStatus is DeviceRegistrationStatus.Unregistered )
+        assertEquals( connectedDevice, connectedRegistrationStatus.device )
 
         // Study runtime events reflects deployment has been received, but not completed.
         val events = runtime.consumeEvents()
@@ -123,10 +130,10 @@ class StudyRuntimeTest
         assertEquals( runtimeStatus.deploymentInformation, receivedEvent.single().deploymentInformation )
         assertEquals( 0, events.filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
 
-        // Device status in deployment is registered, but not deployed.
+        // Master device status in deployment is registered, but not deployed.
         val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
-        val deviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
-        assertTrue( deviceStatus is DeviceDeploymentStatus.Registered )
+        val masterDeviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
+        assertTrue( masterDeviceStatus is DeviceDeploymentStatus.Registered )
     }
 
     @Test
@@ -193,6 +200,10 @@ class StudyRuntimeTest
         status = runtime.tryDeployment( deploymentService, dataListener )
         assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
         assertTrue( status is StudyRuntimeStatus.Deployed )
+        val registrationStatus = status.devicesRegistrationStatus.values.singleOrNull()
+        assertTrue( registrationStatus is DeviceRegistrationStatus.Registered )
+        assertEquals( smartphone, registrationStatus.device )
+        assertEquals( deviceRegistration, registrationStatus.registration )
     }
 
     @Test
@@ -220,6 +231,10 @@ class StudyRuntimeTest
         status = runtime.tryDeployment( deploymentService, dataListener )
         assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.DeploymentCompleted>().count() )
         assertTrue( status is StudyRuntimeStatus.Deployed )
+        val registrationStatuses = status.devicesRegistrationStatus
+        assertEquals( 2, registrationStatuses.size ) // Smartphone and connected device.
+        assertTrue( registrationStatuses[ smartphone ] is DeviceRegistrationStatus.Registered )
+        assertTrue( registrationStatuses[ connectedDevice ] is DeviceRegistrationStatus.Registered )
     }
 
     @Test

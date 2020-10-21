@@ -22,6 +22,8 @@ sealed class StudyRuntimeStatus
      */
     interface DeploymentReceived
     {
+        val id: StudyRuntimeId
+
         /**
          * Contains all the information on the study to run.
          *
@@ -29,28 +31,50 @@ sealed class StudyRuntimeStatus
          *       Currently, it is in order to work towards a first MVP which includes server/client communication through the domain model.
          */
         val deploymentInformation: MasterDeviceDeployment
+
+        /**
+         * The [DeviceRegistrationStatus] for the master device and each of the devices this device needs to connect to.
+         */
+        val devicesRegistrationStatus: Map<AnyDeviceDescriptor, DeviceRegistrationStatus>
     }
 
     /**
      * Deployment cannot succeed yet because other master devices have not been registered yet.
      */
-    data class NotReadyForDeployment( override val id: StudyRuntimeId ) : StudyRuntimeStatus()
+    data class NotReadyForDeployment internal constructor( override val id: StudyRuntimeId ) : StudyRuntimeStatus()
 
     /**
      * Deployment can complete after [remainingDevicesToRegister] have been registered.
      */
-    data class RegisteringDevices(
+    data class RegisteringDevices internal constructor(
         override val id: StudyRuntimeId,
         override val deploymentInformation: MasterDeviceDeployment,
         val remainingDevicesToRegister: List<AnyDeviceDescriptor>
     ) : StudyRuntimeStatus(), DeploymentReceived
+    {
+        override val devicesRegistrationStatus = getDevicesRegistrationStatus( deploymentInformation )
+    }
 
     /**
      * Study runtime status when deployment has been successfully completed:
      * the [MasterDeviceDeployment] has been retrieved and all necessary plugins to execute the study have been loaded.
      */
-    data class Deployed(
+    data class Deployed internal constructor(
         override val id: StudyRuntimeId,
         override val deploymentInformation: MasterDeviceDeployment
     ) : StudyRuntimeStatus(), DeploymentReceived
+    {
+        override val devicesRegistrationStatus = getDevicesRegistrationStatus( deploymentInformation )
+    }
 }
+
+
+private fun getDevicesRegistrationStatus( deployment: MasterDeviceDeployment ) = deployment
+    .getAllDevicesAndRegistrations()
+    .map {
+        val registration = it.registration
+        if ( registration == null ) DeviceRegistrationStatus.Unregistered( it.descriptor )
+        else DeviceRegistrationStatus.Registered( it.descriptor, registration )
+    }
+    .map { it.device to it }
+    .toMap()

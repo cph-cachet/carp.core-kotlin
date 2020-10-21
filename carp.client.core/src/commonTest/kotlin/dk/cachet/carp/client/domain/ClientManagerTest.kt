@@ -102,7 +102,7 @@ class ClientManagerTest
         val dependentRegistration = deviceSmartphoneDependsOn.createRegistration()
         deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
 
-        status = client.tryDeployment( client.getStudies().first().id )
+        status = client.tryDeployment( client.getStudiesStatus().first().id )
         assertTrue( status is StudyRuntimeStatus.Deployed )
     }
 
@@ -120,7 +120,7 @@ class ClientManagerTest
         val connectedRegistration = connectedDevice.createRegistration()
         deploymentService.registerDevice( deploymentId, connectedDevice.roleName, connectedRegistration )
 
-        status = client.tryDeployment( client.getStudies().first().id )
+        status = client.tryDeployment( client.getStudiesStatus().first().id )
         assertTrue( status is StudyRuntimeStatus.Deployed )
     }
 
@@ -133,7 +133,7 @@ class ClientManagerTest
         var status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
         assertTrue( status is StudyRuntimeStatus.Deployed )
 
-        status = client.tryDeployment( client.getStudies().first().id )
+        status = client.tryDeployment( client.getStudiesStatus().first().id )
         assertTrue( status is StudyRuntimeStatus.Deployed )
     }
 
