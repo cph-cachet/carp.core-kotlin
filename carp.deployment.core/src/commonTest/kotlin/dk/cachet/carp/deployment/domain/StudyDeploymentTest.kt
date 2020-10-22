@@ -294,6 +294,24 @@ class StudyDeploymentTest
     }
 
     @Test
+    fun fromSnapshot_succeeds_with_rich_registration_history()
+    {
+        val deployment = createActiveDeployment( "Master" )
+        val master = deployment.protocol.devices.first { it.roleName == "Master" } as AnyMasterDeviceDescriptor
+
+        // Create registration history with two registrations for master.
+        val registration1 = master.createRegistration()
+        val registration2 = master.createRegistration()
+        deployment.registerDevice( master, registration1 )
+        deployment.unregisterDevice( master )
+        deployment.registerDevice( master, registration2 )
+
+        val snapshot = deployment.getSnapshot()
+        val fromSnapshot = StudyDeployment.fromSnapshot( snapshot )
+        assertEquals( listOf( registration1, registration2 ), fromSnapshot.deviceRegistrationHistory[ master ] )
+    }
+
+    @Test
     fun getStatus_lifecycle_master_and_connected()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
