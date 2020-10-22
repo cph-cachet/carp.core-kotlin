@@ -296,8 +296,8 @@ class StudyDeploymentTest
     @Test
     fun fromSnapshot_succeeds_with_rich_registration_history()
     {
-        val deployment = createActiveDeployment( "Master" )
-        val master = deployment.protocol.devices.first { it.roleName == "Master" } as AnyMasterDeviceDescriptor
+        val deployment: StudyDeployment = createActiveDeployment( "Master" )
+        val master: AnyMasterDeviceDescriptor = deployment.protocol.devices.first { it.roleName == "Master" } as AnyMasterDeviceDescriptor
 
         // Create registration history with two registrations for master.
         val registration1 = master.createRegistration()
