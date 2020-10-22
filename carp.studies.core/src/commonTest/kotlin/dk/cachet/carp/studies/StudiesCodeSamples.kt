@@ -21,14 +21,14 @@ import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
 class StudiesCodeSamples
 {
     @Test
-    fun readme() = runBlockingTest {
+    fun readme() = runSuspendTest {
         val studyService: StudyService = createStudiesEndpoint()
 
         // Create a new study.

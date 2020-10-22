@@ -1,5 +1,11 @@
 package dk.cachet.carp.client.domain
 
+import dk.cachet.carp.client.domain.data.DataListener
+import dk.cachet.carp.client.domain.data.DeviceDataCollector
+import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
+import dk.cachet.carp.client.domain.data.StubDeviceDataCollector
+import dk.cachet.carp.client.domain.data.StubDeviceDataCollectorFactory
+import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
@@ -9,9 +15,11 @@ import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.Smartphone
+import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 
 
 val smartphone: Smartphone = Smartphone( "User's phone" )
+val connectedDevice = StubDeviceDescriptor( "Connected sensor" )
 val deviceSmartphoneDependsOn: AnyMasterDeviceDescriptor = Smartphone( "Some other device" )
 
 /**
@@ -21,6 +29,17 @@ fun createSmartphoneStudy(): StudyProtocol
 {
     val protocol = StudyProtocol( ProtocolOwner(), "Smartphone study" )
     protocol.addMasterDevice( smartphone )
+    return protocol
+}
+
+/**
+ * Create a study protocol with [smartphone] as the single master device and [connectedDevice] as a single connected device.
+ */
+fun createSmartphoneWithConnectedDeviceStudy(): StudyProtocol
+{
+    val protocol = StudyProtocol( ProtocolOwner(), "Smartphone study" )
+    protocol.addMasterDevice( smartphone )
+    protocol.addConnectedDevice( connectedDevice, smartphone )
     return protocol
 }
 
@@ -46,3 +65,16 @@ suspend fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentSer
     val status = deploymentService.createStudyDeployment( protocol.getSnapshot() )
     return Pair( deploymentService, status )
 }
+
+/**
+ * Create a [DeviceDataCollectorFactory] which for all [DeviceDataCollector] instances
+ * uses [StubDeviceDataCollector] with the specified [supportedDataTypes].
+ */
+fun createDataCollectorFactory( vararg supportedDataTypes: DataType ): DeviceDataCollectorFactory =
+    supportedDataTypes.toSet().let { StubDeviceDataCollectorFactory( it, it ) }
+
+/**
+ * Create a data listener which supports the specified [supportedDataTypes].
+ */
+fun createDataListener( vararg supportedDataTypes: DataType ): DataListener =
+    DataListener( createDataCollectorFactory( *supportedDataTypes ) )

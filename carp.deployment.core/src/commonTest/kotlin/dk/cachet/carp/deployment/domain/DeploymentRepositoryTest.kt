@@ -6,7 +6,7 @@ import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
@@ -25,7 +25,7 @@ interface DeploymentRepositoryTest
 
 
     @Test
-    fun adding_study_deployment_and_retrieving_it_succeeds() = runBlockingTest {
+    fun adding_study_deployment_and_retrieving_it_succeeds() = runSuspendTest {
         val repo = createRepository()
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
@@ -38,7 +38,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun adding_study_deployment_with_existing_id_fails() = runBlockingTest {
+    fun adding_study_deployment_with_existing_id_fails() = runSuspendTest {
         val repo = createRepository()
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
@@ -51,7 +51,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getStudyDeploymentBy_succeeds() = runBlockingTest {
+    fun getStudyDeploymentBy_succeeds() = runSuspendTest {
         val repo = createRepository()
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
@@ -63,7 +63,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getStudyDeploymentBy_returns_null_for_unknown_id() = runBlockingTest {
+    fun getStudyDeploymentBy_returns_null_for_unknown_id() = runSuspendTest {
         val repo = createRepository()
 
         val deployment = repo.getStudyDeploymentBy( unknownId )
@@ -71,7 +71,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getStudyDeploymentsBy_succeeds() = runBlockingTest {
+    fun getStudyDeploymentsBy_succeeds() = runSuspendTest {
         val repo = createRepository()
         val protocolSnapshot = createSingleMasterWithConnectedDeviceProtocol().getSnapshot()
         val deployment1 = StudyDeployment( protocolSnapshot )
@@ -86,7 +86,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getStudyDeploymentsBy_ignores_unknown_ids() = runBlockingTest {
+    fun getStudyDeploymentsBy_ignores_unknown_ids() = runSuspendTest {
         val repo = createRepository()
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
@@ -98,7 +98,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun update_study_deployment_succeeds() = runBlockingTest {
+    fun update_study_deployment_succeeds() = runSuspendTest {
         val repo = createRepository()
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
@@ -128,7 +128,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun update_study_deployment_fails_for_unknown_deployment() = runBlockingTest {
+    fun update_study_deployment_fails_for_unknown_deployment() = runSuspendTest {
         val repo = createRepository()
         val protocol = createSingleMasterWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
@@ -140,7 +140,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun addInvitation_and_retrieving_it_succeeds() = runBlockingTest {
+    fun addInvitation_and_retrieving_it_succeeds() = runSuspendTest {
         val repo = createRepository()
 
         val account = Account.withUsernameIdentity( "test" )
@@ -152,7 +152,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getInvitations_is_empty_when_no_invitations() = runBlockingTest {
+    fun getInvitations_is_empty_when_no_invitations() = runSuspendTest {
         val repo = createRepository()
 
         val invitations = repo.getInvitations( UUID.randomUUID() )

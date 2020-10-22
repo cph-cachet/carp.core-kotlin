@@ -241,30 +241,38 @@ val isReady = status is StudyDeploymentStatus.DeploymentReady // True.
 
 ```kotlin
 val deploymentService = createDeploymentEndpoint()
-val dataCollector = createDataCollector()
+val deploymentService = createDeploymentEndpoint()
+val dataCollectorFactory = createDataCollectorFactory()
 
 // Retrieve invitation to participate in the study using a specific device.
 val account: Account = getLoggedInUser()
 val invitation: ActiveParticipationInvitation =
-	deploymentService.getActiveParticipationInvitations( account.id ).first()
+    deploymentService.getActiveParticipationInvitations( account.id ).first()
 val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
 val deviceToUse: String = invitation.devices.first().deviceRoleName // This matches "Patient's phone".
 
 // Create a study runtime for the study.
 val clientRepository = createRepository()
-val client = SmartphoneClient( clientRepository, deploymentService, dataCollector )
+val client = SmartphoneClient( clientRepository, deploymentService, dataCollectorFactory )
 client.configure {
     // Device-specific registration options can be accessed from here.
     // Depending on the device type, different options are available.
     // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
     deviceId = "xxxxxxxxx"
 }
-val runtime: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
-var isDeployed = runtime.isDeployed // True, because there are no dependent devices.
+var status: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
 
-// Suppose a deployment also depends on a "Clinician's phone" to be registered; deployment cannot complete yet.
-// After the clinician's phone has been registered, attempt deployment again.
-isDeployed = client.tryDeployment( runtime.id ) // True once dependent clients have been registered.
+// Register connected devices in case needed.
+if ( status is StudyRuntimeStatus.RegisteringDevices )
+{
+    val connectedDevice = status.remainingDevicesToRegister.first()
+    val connectedRegistration = connectedDevice.createRegistration()
+    deploymentService.registerDevice( studyDeploymentId, connectedDevice.roleName, connectedRegistration )
+
+    // Re-try deployment now that devices have been registered.
+    status = client.tryDeployment( status.id )
+    val isDeployed = status is StudyRuntimeStatus.Deployed // True.
+}
 ```
 
 ## Building the project
