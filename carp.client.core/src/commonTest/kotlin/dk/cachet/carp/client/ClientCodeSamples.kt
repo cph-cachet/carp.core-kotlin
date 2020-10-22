@@ -2,9 +2,11 @@ package dk.cachet.carp.client
 
 import dk.cachet.carp.client.domain.SmartphoneClient
 import dk.cachet.carp.client.domain.StudyRuntimeStatus
-import dk.cachet.carp.client.domain.data.MockDataCollector
+import dk.cachet.carp.client.domain.createDataCollectorFactory
+import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.CarpDataTypes
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
@@ -17,6 +19,7 @@ import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.Smartphone
 import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
+import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -26,7 +29,7 @@ class ClientCodeSamples
     @Test
     fun readme() = runSuspendTest {
         val deploymentService = createDeploymentEndpoint()
-        val dataCollector = createDataCollector()
+        val dataCollectorFactory = createDataCollectorFactory()
 
         // Retrieve invitation to participate in the study using a specific device.
         val account: Account = getLoggedInUser()
@@ -37,19 +40,26 @@ class ClientCodeSamples
 
         // Create a study runtime for the study.
         val clientRepository = createRepository()
-        val client = SmartphoneClient( clientRepository, deploymentService, dataCollector )
+        val client = SmartphoneClient( clientRepository, deploymentService, dataCollectorFactory )
         client.configure {
             // Device-specific registration options can be accessed from here.
             // Depending on the device type, different options are available.
             // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
             deviceId = "xxxxxxxxx"
         }
-        val runtime: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
-        var isDeployed = runtime.isDeployed // True, because there are no dependent devices.
+        var status: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
 
-        // Suppose a deployment also depends on a "Clinician's phone" to be registered; deployment cannot complete yet.
-        // After the clinician's phone has been registered, attempt deployment again.
-        isDeployed = client.tryDeployment( runtime.id ) // True once dependent clients have been registered.
+        // Register connected devices in case needed.
+        if ( status is StudyRuntimeStatus.RegisteringDevices )
+        {
+            val connectedDevice = status.remainingDevicesToRegister.first()
+            val connectedRegistration = connectedDevice.createRegistration()
+            deploymentService.registerDevice( studyDeploymentId, connectedDevice.roleName, connectedRegistration )
+
+            // Re-try deployment now that devices have been registered.
+            status = client.tryDeployment( status.id )
+            val isDeployed = status is StudyRuntimeStatus.Deployed // True.
+        }
     }
 
 
@@ -70,8 +80,6 @@ class ClientCodeSamples
         return service
     }
 
-    private fun createDataCollector() = MockDataCollector()
-
     private fun createRepository() = InMemoryClientRepository()
 
     /**
@@ -85,12 +93,22 @@ class ClientCodeSamples
         val phone = Smartphone( "Patient's phone" )
         protocol.addMasterDevice( phone )
 
+        val connected = StubDeviceDescriptor( "External sensor" )
+        protocol.addConnectedDevice( connected, phone )
+
         val measures = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
         val startMeasures = ConcurrentTask( "Start measures", measures )
         protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
         return protocol
     }
+
+    /**
+     * A stub [DataListener] which supports the expected data types in [createExampleProtocol].
+     */
+    private fun createDataCollectorFactory() = createDataCollectorFactory(
+        CarpDataTypes.GEOLOCATION, CarpDataTypes.STEP_COUNT
+    )
 
     private val accountService = InMemoryAccountService()
     private val accountIdentity: AccountIdentity = AccountIdentity.fromUsername( "Test user" )

@@ -1,7 +1,6 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.client.domain.data.DataCollector
-import dk.cachet.carp.client.domain.data.MockDataCollector
+import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
@@ -19,10 +18,10 @@ interface ClientRepositoryTest
      */
     fun createRepository(): ClientRepository
 
-    private fun createDependencies(): Triple<ClientRepository, DeploymentService, DataCollector>
+    private fun createDependencies(): Triple<ClientRepository, DeploymentService, DataListener>
     {
         val deploymentService = DeploymentServiceHost( InMemoryDeploymentRepository(), InMemoryAccountService() )
-        return Triple( createRepository(), deploymentService, MockDataCollector() )
+        return Triple( createRepository(), deploymentService, createDataListener() )
     }
 
     private suspend fun addTestDeployment( deploymentService: DeploymentService ): UUID
@@ -43,11 +42,11 @@ interface ClientRepositoryTest
 
     @Test
     fun addStudyRuntime_can_be_retrieved() = runSuspendTest {
-        val (repo, deploymentService, dataCollector) = createDependencies()
+        val (repo, deploymentService, dataListener) = createDependencies()
         val deploymentId = addTestDeployment( deploymentService )
         val roleName = smartphone.roleName
         val studyRuntime = StudyRuntime.initialize(
-            deploymentService, dataCollector,
+            deploymentService, dataListener,
             deploymentId, roleName, smartphone.createRegistration() )
 
         repo.addStudyRuntime( studyRuntime )
@@ -64,11 +63,11 @@ interface ClientRepositoryTest
 
     @Test
     fun addStudyRuntime_fails_for_existing_runtime() = runSuspendTest {
-        val (repo, deploymentService, dataCollector) = createDependencies()
+        val (repo, deploymentService, dataListener) = createDependencies()
         val deploymentId = addTestDeployment( deploymentService )
         val roleName = smartphone.roleName
         val studyRuntime = StudyRuntime.initialize(
-            deploymentService, dataCollector,
+            deploymentService, dataListener,
             deploymentId, roleName, smartphone.createRegistration() )
         repo.addStudyRuntime( studyRuntime )
 
@@ -92,19 +91,19 @@ interface ClientRepositoryTest
 
     @Test
     fun updateStudyRuntime_succeeds() = runSuspendTest {
-        val (repo, deploymentService, dataCollector) = createDependencies()
+        val (repo, deploymentService, dataListener) = createDependencies()
         val protocol = createDependentSmartphoneStudy()
         val snapshot = protocol.getSnapshot()
         val status = deploymentService.createStudyDeployment( snapshot )
         val deploymentId = status.studyDeploymentId
         val studyRuntime = StudyRuntime.initialize(
-            deploymentService, dataCollector,
+            deploymentService, dataListener,
             deploymentId, smartphone.roleName, smartphone.createRegistration() )
         repo.addStudyRuntime( studyRuntime )
 
         // Make some changes and update.
         deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, SmartphoneDeviceRegistration( "dependent" ) )
-        studyRuntime.tryDeployment( deploymentService, dataCollector )
+        studyRuntime.tryDeployment( deploymentService, dataListener )
         repo.updateStudyRuntime( studyRuntime )
 
         // Verify whether changes were stored.
@@ -115,10 +114,10 @@ interface ClientRepositoryTest
 
     @Test
     fun updateStudyRuntime_fails_for_unknown_runtime() = runSuspendTest {
-        val (repo, deploymentService, dataCollector) = createDependencies()
+        val (repo, deploymentService, dataListener) = createDependencies()
         val deploymentId = addTestDeployment( deploymentService )
         val studyRuntime = StudyRuntime.initialize(
-            deploymentService, dataCollector,
+            deploymentService, dataListener,
             deploymentId, smartphone.roleName, smartphone.createRegistration() )
 
         assertFailsWith<IllegalArgumentException> { repo.updateStudyRuntime( studyRuntime ) }

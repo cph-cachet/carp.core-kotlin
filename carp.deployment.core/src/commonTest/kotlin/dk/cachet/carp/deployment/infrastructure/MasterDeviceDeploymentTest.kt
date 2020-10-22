@@ -24,17 +24,15 @@ class MasterDeviceDeploymentTest
     fun can_serialize_and_deserialize_devicedeployment_using_JSON()
     {
         val device = StubMasterDeviceDescriptor()
-        val masterRegistration = device.createRegistration()
         val connected = StubDeviceDescriptor( "Connected" )
-        val connectedRegistration = connected.createRegistration()
         val task = StubTaskDescriptor( "Task" )
         val trigger = StubTrigger( connected.roleName )
 
         val deployment = MasterDeviceDeployment(
-            StubMasterDeviceDescriptor(),
-            masterRegistration,
+            device,
+            device.createRegistration(),
             setOf( connected ),
-            mapOf( connected.roleName to connectedRegistration ),
+            mapOf( connected.roleName to connected.createRegistration() ),
             setOf( task ),
             mapOf( 0 to trigger ),
             setOf( MasterDeviceDeployment.TriggeredTask( 0, task.name, connected.roleName ) )
@@ -43,6 +41,30 @@ class MasterDeviceDeploymentTest
         val json = deployment.toJson()
         val parsed = MasterDeviceDeployment.fromJson( json )
         assertEquals( deployment, parsed )
+    }
+
+    @Test
+    fun getAllDevicesAndRegistrations_succeeds()
+    {
+        val master = StubMasterDeviceDescriptor( "Master" )
+        val registration = master.createRegistration()
+        val connected = StubDeviceDescriptor( "Connected" )
+
+        val deployment = MasterDeviceDeployment(
+                master, registration, setOf( connected ), // Registered master and unregistered connected device.
+            emptyMap(), emptySet(), emptyMap(), emptySet() // Otherwise, empty deployment.
+        )
+
+        val devices = deployment.getAllDevicesAndRegistrations()
+        assertEquals( 2, devices.size )
+        assertEquals(
+            MasterDeviceDeployment.Device( master, false, registration ),
+            devices.firstOrNull { it.descriptor == master }
+        )
+        assertEquals(
+            MasterDeviceDeployment.Device( connected, true, null ),
+            devices.firstOrNull { it.descriptor == connected }
+        )
     }
 
     @Test
@@ -71,14 +93,48 @@ class MasterDeviceDeploymentTest
         val deviceTasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 
         assertEquals( 2, deviceTasks.size )
-        assertEquals( task, deviceTasks.first { it.device == device }.tasks.single() )
-        assertEquals( task, deviceTasks.first {it.device == connected }.tasks.single() )
+        val expectedMasterDeviceTasks = MasterDeviceDeployment.DeviceTasks(
+            device = MasterDeviceDeployment.Device( device, false, registration ),
+            tasks = setOf( task )
+        )
+        val expectedConnectedDeviceTasks = MasterDeviceDeployment.DeviceTasks(
+            device = MasterDeviceDeployment.Device( connected, true, connectedRegistration ),
+            tasks = setOf( task )
+        )
+        assertEquals( expectedMasterDeviceTasks, deviceTasks.first { it.device.descriptor == device } )
+        assertEquals( expectedConnectedDeviceTasks, deviceTasks.first { it.device.descriptor == connected } )
     }
 
     @Test
-    fun getTaskPerDevice_with_other_master_device_target_succeeds()
+    fun getTasksPerDevice_includes_devices_with_no_tasks()
+    {
+        val device = StubMasterDeviceDescriptor( "Master" )
+        val registration = device.createRegistration()
+
+        val deployment = MasterDeviceDeployment(
+            deviceDescriptor = device,
+            configuration = registration,
+            connectedDevices = emptySet(),
+            connectedDeviceConfigurations = emptyMap(),
+            tasks = emptySet(),
+            triggers = emptyMap(),
+            triggeredTasks = emptySet()
+        )
+        val tasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
+
+        assertEquals( 1, tasks.size )
+        val expectedDeviceTasks = MasterDeviceDeployment.DeviceTasks(
+            device = MasterDeviceDeployment.Device( device, false, registration ),
+            tasks = emptySet()
+        )
+        assertEquals( expectedDeviceTasks, tasks.single() )
+    }
+
+    @Test
+    fun getTaskPerDevice_does_not_include_tasks_for_other_master_devices()
     {
         val master1 = StubMasterDeviceDescriptor( "Master 1" )
+        val task = StubTaskDescriptor()
         val master2 = StubMasterDeviceDescriptor( "Master 2" )
         val master1Registration = master1.createRegistration()
         val master1Trigger = StubTrigger( master1.roleName )
@@ -88,14 +144,20 @@ class MasterDeviceDeploymentTest
             configuration = master1Registration,
             connectedDevices = emptySet(),
             connectedDeviceConfigurations = emptyMap(),
-            tasks = emptySet(),
+            tasks = setOf( task ),
             triggers = mapOf( 0 to master1Trigger ),
             triggeredTasks = setOf(
+                MasterDeviceDeployment.TriggeredTask( 0, task.name, master1.roleName ),
                 MasterDeviceDeployment.TriggeredTask( 0, "Task on Master 2", master2.roleName )
             )
         )
         val tasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 
-        assertTrue( tasks.isEmpty() )
+        assertEquals( 1, tasks.size ) // The other master device (master2) is not included.
+        val expectedMasterDeviceTasks = MasterDeviceDeployment.DeviceTasks(
+            device = MasterDeviceDeployment.Device( master1, false, master1Registration ),
+            tasks = setOf( task )
+        )
+        assertEquals( expectedMasterDeviceTasks, tasks.single() )
     }
 }

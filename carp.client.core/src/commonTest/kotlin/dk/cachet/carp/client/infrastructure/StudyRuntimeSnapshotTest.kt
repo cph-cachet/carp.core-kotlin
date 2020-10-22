@@ -5,7 +5,7 @@ import dk.cachet.carp.client.domain.createStudyDeployment
 import dk.cachet.carp.client.domain.smartphone
 import dk.cachet.carp.client.domain.StudyRuntime
 import dk.cachet.carp.client.domain.StudyRuntimeSnapshot
-import dk.cachet.carp.client.domain.data.MockDataCollector
+import dk.cachet.carp.client.domain.createDataListener
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistrationBuilder
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
@@ -19,11 +19,11 @@ class StudyRuntimeSnapshotTest
     @Test
     fun can_serialize_and_deserialize_snapshot_using_JSON() = runSuspendTest {
         // Create deployment service with one 'smartphone' study.
-        val ( deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val deviceRegistration = DefaultDeviceRegistrationBuilder().build()
-        val dataCollector = MockDataCollector()
+        val dataListener = createDataListener()
         val runtime = StudyRuntime.initialize(
-            deploymentService, dataCollector,
+            deploymentService, dataListener,
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
         val snapshot = StudyRuntimeSnapshot.fromStudyRuntime( runtime )
 

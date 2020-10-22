@@ -67,6 +67,7 @@ abstract class DeviceDescriptor<
 }
 
 typealias AnyDeviceDescriptor = DeviceDescriptor<*, *>
+typealias DeviceType = KClass<out AnyDeviceDescriptor>
 
 
 /**

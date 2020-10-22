@@ -69,27 +69,19 @@ data class MasterDeviceDeployment(
     )
 
     /**
-     * The set of tasks which may need to be executed on a master device, or a connected device, during a deployment.
+     * A participating master or connected device in a deployment (determined by [isConnectedDevice])
+     * with a matching [registration] in case the device has been registered.
      */
-    data class DeviceTasks(
-        /**
-         * The device for which the set of [tasks] which may need to be executed during deployment are listed.
-         */
-        val device: AnyDeviceDescriptor,
-        /**
-         * Determines whether [device] is a device which is connected to another master device.
-         * True when [device] is a connected device; false when [device] is a master device.
-         */
+    data class Device(
+        val descriptor: AnyDeviceDescriptor,
         val isConnectedDevice: Boolean,
-        /**
-         * The [DeviceRegistration] for [device]; null when no configuration is specified yet in [MasterDeviceDeployment].
-         */
-        val deviceRegistration: DeviceRegistration?,
-        /**
-         * The set of tasks which may need to be executed during deployment on [device].
-         */
-        val tasks: Set<TaskDescriptor>
+        val registration: DeviceRegistration?
     )
+
+    /**
+     * The set of [tasks] which may need to be executed on a master [device], or a connected [device], during a deployment.
+     */
+    data class DeviceTasks( val device: Device, val tasks: Set<TaskDescriptor> )
 
 
     /**
@@ -101,31 +93,27 @@ data class MasterDeviceDeployment(
         if ( connectedDeviceConfigurations == null || configuration == null ) DateTime.now()
         else connectedDeviceConfigurations.values.plus( configuration )
             .map { it.registrationCreationDate.msSinceUTC }
-            .max()
+            .maxOrNull()
             .let { DateTime( it!! ) }
 
+
     /**
-     * Retrieves for this master device and all connected devices the set of tasks which may be sent to them over the course of the deployment.
+     * Get master device and each of the devices this device needs to connect to and their current [DeviceRegistration].
+     */
+    fun getAllDevicesAndRegistrations(): List<Device> =
+        connectedDevices.map { Device( it, true, connectedDeviceConfigurations[ it.roleName ] ) }
+        .plus( Device( deviceDescriptor, false, configuration ) ) // Add master device registration.
+
+    /**
+     * Retrieves for this master device and all connected devices
+     * the set of tasks which may be sent to them over the course of the deployment, or an empty set in case there are none.
      * Tasks which target other master devices are not included in this collection.
      */
-    fun getTasksPerDevice(): List<DeviceTasks> = triggeredTasks
-        // Only consider tasks which need to be handled by this master device.
-        .filter { triggered -> triggered.taskName in tasks.map { it.name } }
-        // Group tasks by device.
-        .map { triggered ->
-            val device = connectedDevices.plus( deviceDescriptor )
-                .first { it.roleName == triggered.destinationDeviceRoleName }
-            val task = tasks.first { it.name == triggered.taskName }
-            device to task
-        }
-        .groupBy( { it.first }, { it.second } )
-        // Convert to `DeviceTasks`
-        .map {
-            val device = it.key
-            val isConnected = it.key != deviceDescriptor
-            val registration =
-                if ( isConnected ) connectedDeviceConfigurations[ device.roleName ]
-                else configuration
-            DeviceTasks( device, isConnected, registration, it.value.toSet() )
+    fun getTasksPerDevice(): List<DeviceTasks> = getAllDevicesAndRegistrations()
+        .map { device ->
+            val tasks = triggeredTasks
+                .filter { it.destinationDeviceRoleName == device.descriptor.roleName }
+                .map { triggered -> tasks.first { it.name == triggered.taskName } }
+            DeviceTasks( device, tasks.toSet() )
         }
 }
