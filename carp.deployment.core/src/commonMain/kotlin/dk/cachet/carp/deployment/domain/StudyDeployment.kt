@@ -52,15 +52,19 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             deployment.startTime = snapshot.startTime
 
             // Replay device registration history.
-            snapshot.deviceRegistrationHistory.forEach { r ->
-                val registrable = deployment.registrableDevices.firstOrNull { it.device.roleName == r.key }
-                    ?: throw IllegalArgumentException( "Can't find registered device with role name '${r.key}' in snapshot." )
-                r.value.forEach { deployment.registerDevice( registrable.device, it ) }
+            snapshot.deviceRegistrationHistory.forEach { (roleName, registrations) ->
+                val device = deployment.registrableDevices.map { it.device }.firstOrNull { it.roleName == roleName }
+                    ?: throw IllegalArgumentException( "Can't find registered device with role name '$roleName' in snapshot." )
+                registrations.forEachIndexed { index, registration ->
+                    val isNotFirstOrLast = index in 1 until registrations.size
+                    if ( isNotFirstOrLast ) deployment.unregisterDevice( device )
+                    deployment.registerDevice( device, registration )
+                }
 
                 // In case snapshot indicates the device is currently not registered, unregister it.
-                if ( r.key !in snapshot.registeredDevices )
+                if ( roleName !in snapshot.registeredDevices )
                 {
-                    deployment.unregisterDevice( registrable.device )
+                    deployment.unregisterDevice( device )
                 }
             }
 
