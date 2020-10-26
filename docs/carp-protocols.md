@@ -98,7 +98,7 @@ However, due to (current) limitations of Kotlin, the JS runtime currently does n
 Add a `@Serializable` annotation to the class so that it can be serialized by `kotlinx.serialization`.
 In most cases this is sufficient, but for more information, check [the serialization documentation for CARP developers](serialization.md).
 
-## Application service
+## Application services
 
 [ProtocolService](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/application/ProtocolService.kt) allows managing multiple versions of study protocols.
 
@@ -114,3 +114,10 @@ In case you want to support organizations this could be the ID of the organizati
 | `getBy` | Find the study protocol with a specified protocol name owned by a specific owner. | protocol owner: `owner.id` | |
 | `getAllFor` | Find all study protocols owned by a specific owner. | protocol owner: `owner.id` | |
 | `getVersionHistoryFor` | Returns all stored versions for the study protocol with a given name owned by a specific owner. |  protocol owner: `owner.id` | |
+
+[ProtocolFactoryService](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/application/ProtocolFactoryService.kt) provides factory methods to create common study protocols.
+To store these protocols, pass the returned protocols to `ProtocolService`.
+
+| Endpoint | Description |
+| --- | --- |
+| `createCustomProtocol` | Create a study protocol to be deployed to a single device which has its own way of describing study protocols that deviates from the CARP core study protocol model. |
