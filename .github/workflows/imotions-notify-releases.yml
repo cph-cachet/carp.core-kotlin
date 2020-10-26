@@ -1,0 +1,27 @@
+# Notify iMotions Slack webhook of releases.
+
+name: Notify iMotions Slack of release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  notify-webhook:
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        env:
+          VERSION_NAME: ${{ github.event.release.name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_NOTES: ${{ github.event.release.body }}
+        run: |
+          curl \
+            -X POST \
+            -H 'Content-Type: application/json' \
+            -d "{ \
+                \"versionName\": \"$VERSION_NAME\", \
+                \"releaseUrl\": \"$RELEASE_URL\", \
+                \"releaseNotes\": \"$RELEASE_NOTES\" \
+              }" \
+            ${{ secrets.IMOTIONS_SLACK_RELEASE_WEBHOOK }}

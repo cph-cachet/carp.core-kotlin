@@ -92,8 +92,6 @@ Example: [`Geolocation`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/
 
 All extending classes (except `DataTypeSamplingScheme`) should be **immutable data classes**.
 The domain objects using them expect them to remain unchanged (they are [DDD value objects](https://deviq.com/value-object/)).
-To enforce correct implementation of extending objects, the `Immutable` base type they extend from uses reflection to verify whether the class is a data class and whether all members are immutable during initialization; if not, an exception is thrown.
-However, due to (current) limitations of Kotlin, the JS runtime currently does not verify this.
 
 Add a `@Serializable` annotation to the class so that it can be serialized by `kotlinx.serialization`.
 In most cases this is sufficient, but for more information, check [the serialization documentation for CARP developers](serialization.md).
