@@ -67,8 +67,8 @@ val MACAddressRegex = Regex( "([0-9A-F]{2}-){5}([0-9A-F]{2})" )
  */
 object MACAddressSerializer : KSerializer<MACAddress>
 {
-    override val descriptor: SerialDescriptor
-        get() = PrimitiveSerialDescriptor( "dk.cachet.carp.common.MACAddress", PrimitiveKind.STRING )
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor( "dk.cachet.carp.common.MACAddress", PrimitiveKind.STRING )
 
     override fun serialize( encoder: Encoder, value: MACAddress ) = encoder.encodeString( value.address )
     override fun deserialize( decoder: Decoder ): MACAddress = MACAddress( decoder.decodeString() )
