@@ -37,6 +37,8 @@ class StudyRuntime private constructor(
         ) : Event()
 
         object DeploymentCompleted : Event()
+
+        object DeploymentStopped : Event()
     }
 
 
@@ -114,6 +116,12 @@ class StudyRuntime private constructor(
     private var remainingDevicesToRegister: List<AnyDeviceDescriptor> = emptyList()
     private var deploymentInformation: MasterDeviceDeployment? = null
 
+    /**
+     * Determines whether the study has stopped and no more further data is being collected.
+     */
+    var isStopped: Boolean = false
+        private set
+
 
     /**
      * Get the status of this [StudyRuntime].
@@ -123,6 +131,7 @@ class StudyRuntime private constructor(
             deploymentInformation == null -> StudyRuntimeStatus.NotReadyForDeployment( id )
             remainingDevicesToRegister.isNotEmpty() ->
                 StudyRuntimeStatus.RegisteringDevices( id, deploymentInformation!!, remainingDevicesToRegister )
+            isStopped -> StudyRuntimeStatus.Stopped( id, deploymentInformation!! )
             isDeployed -> StudyRuntimeStatus.Deployed( id, deploymentInformation!! )
             else -> error( "Unexpected study runtime state." )
         }
@@ -211,6 +220,26 @@ class StudyRuntime private constructor(
         // Handle race conditions with competing clients modifying device registrations, invalidating this deployment.
         catch ( ignore: IllegalArgumentException ) { } // TODO: When deployment is out of date, maybe also use `IllegalStateException` for easier handling here.
         catch ( ignore: IllegalStateException ) { }
+    }
+
+    /**
+     * Permanently stop collecting data for this [StudyRuntime].
+     */
+    suspend fun stop( deploymentService: DeploymentService ): StudyRuntimeStatus
+    {
+        // Early out in case study has already been stopped.
+        val status = getStatus()
+        if ( status is StudyRuntimeStatus.Stopped ) return status
+
+        // Stop study deployment.
+        // TODO: Right now this requires the client to be online in case `deploymentService` is an online service.
+        //       Once we have domain events in place this should be modeled as a request to stop deployment which is cached when offline.
+        val deploymentStatus = deploymentService.stop( studyDeploymentId )
+        check( deploymentStatus is StudyDeploymentStatus.Stopped )
+        isStopped = true
+        event( Event.DeploymentStopped )
+
+        return getStatus()
     }
 
     /**

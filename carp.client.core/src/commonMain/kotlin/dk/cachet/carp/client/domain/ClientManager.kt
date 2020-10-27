@@ -106,8 +106,7 @@ abstract class ClientManager<
      */
     suspend fun tryDeployment( studyRuntimeId: StudyRuntimeId ): StudyRuntimeStatus
     {
-        val runtime = repository.getStudyRuntimeList().firstOrNull { it.id == studyRuntimeId }
-        requireNotNull( runtime ) { "The specified study runtime does not exist." }
+        val runtime = getStudyRuntime( studyRuntimeId )
 
         // Early out in case this runtime has already received and validated deployment information.
         val status = runtime.getStatus()
@@ -121,6 +120,29 @@ abstract class ClientManager<
 
         return newStatus
     }
+
+    /**
+     * Permanently stop collecting data for the study runtime identified by [studyRuntimeId].
+     *
+     * @throws IllegalArgumentException in case no [StudyRuntime] with the given [studyRuntimeId] exists.
+     */
+    suspend fun stopStudy( studyRuntimeId: StudyRuntimeId ): StudyRuntimeStatus
+    {
+        val runtime = getStudyRuntime( studyRuntimeId )
+        val status = runtime.getStatus()
+
+        val newStatus = runtime.stop( deploymentService )
+        if ( status != newStatus )
+        {
+            repository.updateStudyRuntime( runtime )
+        }
+
+        return newStatus
+    }
+
+    private suspend fun getStudyRuntime( studyRuntimeid: StudyRuntimeId ): StudyRuntime =
+        repository.getStudyRuntimeList().firstOrNull { it.id == studyRuntimeid }
+            ?: throw IllegalArgumentException( "The specified study runtime does not exist." )
 
     /**
      * Once a connected device has been registered, this returns a manager which provides access to the status of the [registeredDevice].

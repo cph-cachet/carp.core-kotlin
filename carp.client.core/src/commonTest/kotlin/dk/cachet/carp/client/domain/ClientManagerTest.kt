@@ -149,6 +149,27 @@ class ClientManagerTest
     }
 
     @Test
+    fun stopStudy_succeeds() = runSuspendTest {
+        val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val client = initializeSmartphoneClient( deploymentService )
+        val status = client.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
+
+        val newStatus = client.stopStudy( status.id )
+        assertTrue( newStatus is StudyRuntimeStatus.Stopped )
+    }
+
+    @Test
+    fun stopStudy_fails_for_unknown_id() = runSuspendTest {
+        val (deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
+        val client = initializeSmartphoneClient( deploymentService )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            client.stopStudy( StudyRuntimeId( unknownId, "Unknown device role" ) )
+        }
+    }
+
+    @Test
     fun getConnectedDeviceManager_succeeds() = runSuspendTest {
         // Create study deployment.
         val (deploymentService, deploymentStatus) =
