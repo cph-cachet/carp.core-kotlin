@@ -66,6 +66,17 @@ sealed class StudyRuntimeStatus
     {
         override val devicesRegistrationStatus = getDevicesRegistrationStatus( deploymentInformation )
     }
+
+    /**
+     * Study runtime status when deployment has been stopped, either by this client or researcher.
+     */
+    data class Stopped internal constructor(
+        override val id: StudyRuntimeId,
+        override val deploymentInformation: MasterDeviceDeployment
+    ) : StudyRuntimeStatus(), DeploymentReceived
+    {
+        override val devicesRegistrationStatus = getDevicesRegistrationStatus( deploymentInformation )
+    }
 }
 
 

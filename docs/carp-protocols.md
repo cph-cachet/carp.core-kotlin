@@ -53,6 +53,7 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | --- | :---: | --- |
 | [Smartphone](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/devices/Smartphone.kt) | Yes | An internet-connected phone with built-in sensors. |
 | [AltBeacon](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/devices/AltBeacon.kt) | | A beacon meeting the open AltBeacon standard. |
+| [BLEHeartRateSensor](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/devices/BLEHeartRateSensor.kt) | | A Bluetooth device which implements a Heart Rate service. |
 | [CustomProtocolDevice](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/devices/CustomProtocolDevice.kt) | Yes | A master device which uses a single `CustomProtocolTask` to determine how to run a study on the device. |
 
 ### Tasks
