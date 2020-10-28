@@ -98,6 +98,7 @@ class StudyRuntime private constructor(
                 isDeployed = snapshot.isDeployed
                 deploymentInformation = snapshot.deploymentInformation
                 remainingDevicesToRegister = snapshot.remainingDevicesToRegister
+                isStopped = snapshot.isStopped
             }
     }
 
