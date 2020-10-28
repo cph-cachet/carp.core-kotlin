@@ -42,4 +42,7 @@ interface ClientRepository
      * @throws IllegalArgumentException when no previous version of this study runtime is stored in the repository.
      */
     suspend fun updateStudyRuntime( runtime: StudyRuntime )
+
+    // TODO: Temporary simplified 'all or nothing' data collection mode.
+    var isDataCollectionPaused: Boolean
 }

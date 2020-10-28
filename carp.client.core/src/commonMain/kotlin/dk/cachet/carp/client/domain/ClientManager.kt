@@ -11,6 +11,7 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilder
 import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 
 
+@Suppress( "TooManyFunctions" ) // TODO: If we split `StudyRuntime` into a `StudyManager` and `Study`, we might move functions out of here.
 /**
  * Allows managing [StudyRuntime]'s on a client device.
  */
@@ -157,5 +158,27 @@ abstract class ClientManager<
         checkNotNull( dataCollector )
 
         return ConnectedDeviceManager( registeredDevice.registration, dataCollector )
+    }
+
+
+    // TODO: Temporary simplified 'all or nothing' data collection mode.
+    //       This will be replaced with starting/stopping data collection based on trigger evaluation,
+    //       and based on a 'privacy mode' for which we still need to investigate requirements.
+    val isDataCollectionPaused = repository.isDataCollectionPaused
+    fun pauseDataCollection()
+    {
+        if ( isDataCollectionPaused ) return
+
+        // TODO: Notify data collectors to stop collecting data as determined by study runtimes.
+
+        repository.isDataCollectionPaused = true
+    }
+    fun startDataCollection()
+    {
+        if ( !isDataCollectionPaused ) return
+
+        // TODO: Notify data collectors to start collecting data as determined by study runtimes.
+
+        repository.isDataCollectionPaused = false
     }
 }

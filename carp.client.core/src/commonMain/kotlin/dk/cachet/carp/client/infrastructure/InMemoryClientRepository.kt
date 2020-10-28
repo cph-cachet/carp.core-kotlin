@@ -73,4 +73,6 @@ class InMemoryClientRepository : ClientRepository
         studyRuntimes.remove( storedRuntime )
         studyRuntimes.add( runtime.getSnapshot() )
     }
+
+    override var isDataCollectionPaused: Boolean = true
 }

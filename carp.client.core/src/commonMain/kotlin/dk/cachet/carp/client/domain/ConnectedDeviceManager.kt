@@ -11,9 +11,7 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
  */
 class ConnectedDeviceManager(
     val deviceRegistration: DeviceRegistration,
-    // TODO: This should not be public here.
-    //       Currently, it is as a first MVP which starts with creating data collectors as determined by the domain model.
-    val dataCollector: AnyConnectedDeviceDataCollector
+    private val dataCollector: AnyConnectedDeviceDataCollector
 )
 {
     /**
