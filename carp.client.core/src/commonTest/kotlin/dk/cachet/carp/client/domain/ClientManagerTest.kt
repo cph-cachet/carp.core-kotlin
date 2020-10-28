@@ -102,7 +102,7 @@ class ClientManagerTest
         val dependentRegistration = deviceSmartphoneDependsOn.createRegistration()
         deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
 
-        status = client.tryDeployment( client.getStudiesStatus().first().id )
+        status = client.tryDeployment( status.id )
         assertTrue( status is StudyRuntimeStatus.Deployed )
     }
 
@@ -120,7 +120,7 @@ class ClientManagerTest
         val connectedRegistration = connectedDevice.createRegistration()
         deploymentService.registerDevice( deploymentId, connectedDevice.roleName, connectedRegistration )
 
-        status = client.tryDeployment( client.getStudiesStatus().first().id )
+        status = client.tryDeployment( status.id )
         assertTrue( status is StudyRuntimeStatus.Deployed )
     }
 
@@ -133,7 +133,7 @@ class ClientManagerTest
         var status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
         assertTrue( status is StudyRuntimeStatus.Deployed )
 
-        status = client.tryDeployment( client.getStudiesStatus().first().id )
+        status = client.tryDeployment( status.id )
         assertTrue( status is StudyRuntimeStatus.Deployed )
     }
 
@@ -146,6 +146,47 @@ class ClientManagerTest
         {
             client.tryDeployment( StudyRuntimeId( unknownId, "Unknown device role" ) )
         }
+    }
+
+    @Test
+    fun stopStudy_succeeds() = runSuspendTest {
+        val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val client = initializeSmartphoneClient( deploymentService )
+        val status: StudyRuntimeStatus = client.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
+
+        val newStatus = client.stopStudy( status.id )
+        assertTrue( newStatus is StudyRuntimeStatus.Stopped )
+    }
+
+    @Test
+    fun stopStudy_fails_for_unknown_id() = runSuspendTest {
+        val (deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
+        val client = initializeSmartphoneClient( deploymentService )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            client.stopStudy( StudyRuntimeId( unknownId, "Unknown device role" ) )
+        }
+    }
+
+    @Test
+    fun getStudiesStatus_returns_latest_status() = runSuspendTest {
+        val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
+        val client = initializeSmartphoneClient( deploymentService )
+        val deploymentId = deploymentStatus.studyDeploymentId
+        var status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
+
+        // Register dependent device and deploy client.
+        check( status is StudyRuntimeStatus.NotReadyForDeployment )
+        val dependentRegistration = deviceSmartphoneDependsOn.createRegistration()
+        deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
+        status = client.tryDeployment( status.id )
+        check( status is StudyRuntimeStatus.Deployed )
+        assertEquals( status, client.getStudiesStatus().first() )
+
+        // Stop client.
+        status = client.stopStudy( status.id )
+        assertEquals( status, client.getStudiesStatus().first() )
     }
 
     @Test

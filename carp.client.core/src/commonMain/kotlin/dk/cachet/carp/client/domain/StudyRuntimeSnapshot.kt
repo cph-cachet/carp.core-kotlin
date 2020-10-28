@@ -18,7 +18,8 @@ data class StudyRuntimeSnapshot(
     val device: AnyMasterDeviceDescriptor,
     val isDeployed: Boolean,
     val deploymentInformation: MasterDeviceDeployment?,
-    val remainingDevicesToRegister: List<AnyDeviceDescriptor>
+    val remainingDevicesToRegister: List<AnyDeviceDescriptor>,
+    val isStopped: Boolean
 ) : Snapshot<StudyRuntime>
 {
     companion object
@@ -34,7 +35,8 @@ data class StudyRuntimeSnapshot(
                 studyRuntime.isDeployed,
                 (status as? StudyRuntimeStatus.DeploymentReceived)?.deploymentInformation,
                 (status as? StudyRuntimeStatus.RegisteringDevices)?.remainingDevicesToRegister
-                    ?: emptyList()
+                    ?: emptyList(),
+                studyRuntime.isStopped
             )
         }
     }
