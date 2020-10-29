@@ -5,6 +5,7 @@ import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.client.domain.data.DeviceDataCollector
 import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilder
@@ -164,21 +165,23 @@ abstract class ClientManager<
     // TODO: Temporary simplified 'all or nothing' data collection mode.
     //       This will be replaced with starting/stopping data collection based on trigger evaluation,
     //       and based on a 'privacy mode' for which we still need to investigate requirements.
-    val isDataCollectionPaused = repository.isDataCollectionPaused
-    fun pauseDataCollection()
+    suspend fun startDataCollectors( studyRuntime: StudyRuntimeStatus.DeploymentReceived ) =
+        getActiveDataTypesPerDataCollector( studyRuntime ).forEach { (collector, types) -> collector.start( types ) }
+    suspend fun stopDataCollectors( studyRuntime: StudyRuntimeStatus.DeploymentReceived ) =
+        getActiveDataTypesPerDataCollector( studyRuntime ).forEach { (collector, types) -> collector.stop( types ) }
+    private fun getActiveDataTypesPerDataCollector( studyRuntime: StudyRuntimeStatus.DeploymentReceived ): Map<DeviceDataCollector, Set<DataType>>
     {
-        if ( isDataCollectionPaused ) return
-
-        // TODO: Notify data collectors to stop collecting data as determined by study runtimes.
-
-        repository.isDataCollectionPaused = true
-    }
-    fun startDataCollection()
-    {
-        if ( !isDataCollectionPaused ) return
-
-        // TODO: Notify data collectors to start collecting data as determined by study runtimes.
-
-        repository.isDataCollectionPaused = false
+        return studyRuntime.deploymentInformation.getTasksPerDevice()
+            .filter { it.device.registration != null } // Unregistered devices cannot collect data.
+            .map { (device, tasks) ->
+                val dataCollector =
+                    if ( device.isConnectedDevice ) dataListener.tryGetConnectedDataCollector( device.descriptor::class, device.registration!! )!!
+                    else dataListener.localDataCollector
+                val dataTypes = tasks.flatMap { it.measures }.map { it.type }.toSet()
+                dataCollector to dataTypes
+            }
+            .filter { it.second.isNotEmpty() }
+            .toMap()
     }
 }
+

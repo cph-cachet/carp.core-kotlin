@@ -1,8 +1,18 @@
 package dk.cachet.carp.client.domain
 
+import dk.cachet.carp.client.domain.data.AnyConnectedDeviceDataCollector
+import dk.cachet.carp.client.domain.data.DeviceDataCollector
+import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
+import dk.cachet.carp.client.domain.data.MockDeviceDataCollector
 import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentService
+import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import dk.cachet.carp.protocols.domain.devices.DeviceType
+import dk.cachet.carp.protocols.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
+import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -209,5 +219,37 @@ class ClientManagerTest
 
         val deviceManager = client.getConnectedDeviceManager( deviceStatus )
         assertEquals( connectedRegistration, deviceManager.deviceRegistration )
+    }
+
+    @Test
+    fun startDataCollectors_and_stopDataCollectors_succeeds() = runSuspendTest {
+        // Create protocol which measures `STUB_DATA_TYPE` on smartphone.
+        val protocol: StudyProtocol = createSmartphoneStudy()
+        val task = StubTaskDescriptor( "Task", listOf( StubMeasure( STUB_DATA_TYPE ) ) )
+        protocol.addTriggeredTask( smartphone.atStartOfStudy(), task, smartphone )
+
+        // Create device data collector factory with mock listener.
+        val localDataCollector = MockDeviceDataCollector( setOf( STUB_DATA_TYPE ) )
+        val collectorFactory = object : DeviceDataCollectorFactory( localDataCollector )
+        {
+            override fun createConnectedDataCollector(
+                deviceType: DeviceType,
+                deviceRegistration: DeviceRegistration
+            ): AnyConnectedDeviceDataCollector = fail()
+        }
+
+        // Set up smartphone client with study.
+        val (deploymentService, deploymentStatus) = createStudyDeployment( protocol )
+        val client = SmartphoneClient( InMemoryClientRepository(), deploymentService, collectorFactory )
+        client.configure()
+        val studyStatus: StudyRuntimeStatus = client.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
+        assertTrue( studyStatus is StudyRuntimeStatus.DeploymentReceived )
+
+        // Verify whether start/stop is redirect to local data collector.
+        client.startDataCollectors( studyStatus )
+        assertTrue( localDataCollector.wasSuspendCalled( DeviceDataCollector::start, setOf( STUB_DATA_TYPE ) ) )
+        localDataCollector.reset()
+        client.stopDataCollectors( studyStatus )
+        assertTrue( localDataCollector.wasSuspendCalled( DeviceDataCollector::stop, setOf( STUB_DATA_TYPE ) ) )
     }
 }

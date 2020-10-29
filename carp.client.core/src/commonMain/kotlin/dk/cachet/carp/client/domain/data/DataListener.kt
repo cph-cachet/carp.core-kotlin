@@ -12,6 +12,11 @@ import dk.cachet.carp.protocols.domain.devices.DeviceType
  */
 class DataListener( private val dataCollectorFactory: DeviceDataCollectorFactory )
 {
+    /**
+     * Data collector used to collect data locally on the master device.
+     */
+    val localDataCollector: DeviceDataCollector = dataCollectorFactory.localDataCollector
+
     private val connectedDataCollectors: MutableMap<DeviceType, MutableMap<DeviceRegistration, AnyConnectedDeviceDataCollector>> = mutableMapOf()
 
 

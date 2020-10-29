@@ -15,4 +15,13 @@ class StubConnectedDeviceDataCollector<
 ) : ConnectedDeviceDataCollector<TDeviceDescriptor, TRegistration>( registration )
 {
     override suspend fun canConnect(): Boolean = true
+
+    override suspend fun start( dataTypes: Set<DataType> )
+    {
+        // Nothing to do.
+    }
+    override suspend fun stop( dataTypes: Set<DataType> )
+    {
+        // Nothing to do.
+    }
 }
