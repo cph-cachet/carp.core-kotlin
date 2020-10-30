@@ -45,8 +45,8 @@ val UUIDRegex = Regex( "([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9
  */
 object UUIDSerializer : KSerializer<UUID>
 {
-    override val descriptor: SerialDescriptor
-        get() = PrimitiveSerialDescriptor( "dk.cachet.carp.common.UUID", PrimitiveKind.STRING )
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor( "dk.cachet.carp.common.UUID", PrimitiveKind.STRING )
 
 
     override fun serialize( encoder: Encoder, value: UUID ) = encoder.encodeString( value.stringRepresentation )

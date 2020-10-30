@@ -22,12 +22,14 @@ Two key **design goals** differentiate this project from similar projects:
     - [Domain objects](docs/carp-protocols.md#domain-objects)
     - [Built-in types](docs/carp-protocols.md#built-in-types)
     - [Extending domain objects](docs/carp-protocols.md#extending-domain-objects)
-    - [Application service](docs/carp-protocols.md#application-service)
+    - [Application services](docs/carp-protocols.md#application-services)
   - [Studies](docs/carp-studies.md)
     - [Application service](docs/carp-studies.md#application-service)
   - [Deployment](docs/carp-deployment.md)
     - [Study and device deployment state](docs/carp-deployment.md#study-and-device-deployment-state)
     - [Application service](docs/carp-deployment.md#application-service)
+  - [Client](docs/carp-client.md)
+    - [Study runtime state](docs/carp-client.md#study-runtime-state)
 - [Infrastructure helpers](#infrastructure-helpers)
   - [Serialization](#serialization)
   - [Request objects](#request-objects)
@@ -54,7 +56,7 @@ Two key **design goals** differentiate this project from similar projects:
 
   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.deployment/carp.deployment.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.deployment) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.deployment/carp.deployment.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/deployment/)
 
-- **Client**: The runtime which performs the actual data collection on a device (e.g., desktop computer or smartphone). This subsystem contains reusable components which understand the runtime configuration derived from a study protocol by the ‘deployment’ subsystem. Integrations with sensors are loaded through a 'data collection' plug-in system to decouple sensing—not part of core⁠—from sensing logic.
+- [**Client**](docs/carp-client.md): The runtime which performs the actual data collection on a device (e.g., desktop computer or smartphone). This subsystem contains reusable components which understand the runtime configuration derived from a study protocol by the ‘deployment’ subsystem. Integrations with sensors are loaded through a 'device data collector' plug-in system to decouple sensing—not part of core⁠—from sensing logic.
 
    [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.client/carp.client.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.client) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.client/carp.client.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/client/)
 

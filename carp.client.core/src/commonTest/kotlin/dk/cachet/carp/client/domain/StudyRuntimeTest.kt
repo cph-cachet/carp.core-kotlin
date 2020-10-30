@@ -8,6 +8,7 @@ import dk.cachet.carp.client.domain.data.StubDeviceDataCollector
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
+import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceType
@@ -334,6 +335,33 @@ class StudyRuntimeTest
     }
 
     @Test
+    fun stop_succeeds() = runSuspendTest {
+        // Initialize a study runtime for a typical 'smartphone study'.
+        val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
+        val deviceRegistration = smartphone.createRegistration()
+        val dataListener = createDataListener()
+        val runtime = StudyRuntime.initialize(
+            deploymentService, dataListener,
+            deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
+        check( runtime.isDeployed )
+        runtime.consumeEvents() // Drop events so only new ones under test appear.
+
+        val status = runtime.stop( deploymentService )
+
+        // Study runtime status reflects the study has stopped.
+        assertTrue( runtime.isStopped )
+        assertTrue( status is StudyRuntimeStatus.Stopped )
+        assertTrue( runtime.isDeployed ) // The device is still considered deployed.
+
+        // Study runtime events reflects deployment has stopped
+        assertEquals( 1, runtime.consumeEvents().filterIsInstance<StudyRuntime.Event.DeploymentStopped>().count() )
+
+        // Deployment status also reflects deployment has stopped.
+        val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
+        assertTrue( newDeploymentStatus is StudyDeploymentStatus.Stopped )
+    }
+
+    @Test
     fun creating_runtime_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runSuspendTest {
         // Create a study runtime snapshot for the 'smartphone' with an unregistered connected device.
         val protocol = createSmartphoneWithConnectedDeviceStudy()
@@ -350,6 +378,7 @@ class StudyRuntimeTest
         assertEquals( runtime.creationDate, fromSnapshot.creationDate )
         assertEquals( runtime.device, fromSnapshot.device )
         assertEquals( runtime.isDeployed, fromSnapshot.isDeployed )
+        assertEquals( runtime.isStopped, fromSnapshot.isStopped )
         assertEquals( runtime.getStatus(), fromSnapshot.getStatus() )
     }
 }
