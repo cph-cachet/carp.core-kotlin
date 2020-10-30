@@ -130,6 +130,9 @@ class StudyServiceHost(
      */
     override suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant
     {
+        val study = repository.getById( studyId )
+        requireNotNull( study )
+
         // Verify whether participant was already added.
         val identity = EmailAccountIdentity( email )
         var participant = repository.getParticipants( studyId ).firstOrNull { it.accountIdentity == identity }
@@ -149,8 +152,13 @@ class StudyServiceHost(
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
-    override suspend fun getParticipants( studyId: UUID ): List<Participant> =
-        repository.getParticipants( studyId )
+    override suspend fun getParticipants( studyId: UUID ): List<Participant>
+    {
+        val study = repository.getById( studyId )
+        requireNotNull( study )
+
+        return repository.getParticipants( studyId )
+    }
 
     /**
      * Specify an [invitation], shared with participants once they are invited to the study with the specified [studyId].
