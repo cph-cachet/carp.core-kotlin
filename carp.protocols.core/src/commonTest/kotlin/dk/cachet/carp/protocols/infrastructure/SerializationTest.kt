@@ -1,37 +1,36 @@
+@file:Suppress( "WildcardImport" )
+
 package dk.cachet.carp.protocols.infrastructure
 
+import dk.cachet.carp.common.MACAddress
 import dk.cachet.carp.common.RecurrenceRule
 import dk.cachet.carp.common.TimeOfDay
 import dk.cachet.carp.common.TimeSpan
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.protocols.domain.sampling.IntervalSamplingConfiguration
-import dk.cachet.carp.protocols.domain.devices.AltBeacon
-import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
-import dk.cachet.carp.protocols.domain.devices.CustomProtocolDevice
-import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
-import dk.cachet.carp.protocols.domain.devices.Smartphone
-import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
-import dk.cachet.carp.protocols.domain.tasks.CustomProtocolTask
-import dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure
-import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure
-import dk.cachet.carp.protocols.domain.triggers.ElapsedTimeTrigger
-import dk.cachet.carp.protocols.domain.triggers.ManualTrigger
-import dk.cachet.carp.protocols.domain.triggers.ScheduledTrigger
+import dk.cachet.carp.protocols.domain.sampling.*
+import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.tasks.*
+import dk.cachet.carp.protocols.domain.tasks.measures.*
+import dk.cachet.carp.protocols.domain.triggers.*
 import dk.cachet.carp.test.serialization.ConcreteTypesSerializationTest
 
 
 private val protocolInstances = listOf(
     // Devices.
-    Smartphone( "User's phone" ),
     AltBeacon( "Kitchen" ),
+    BLEHeartRateSensor( "Polar" ),
     CustomProtocolDevice( "User's phone" ),
+    Smartphone( "User's phone" ),
 
     // Sampling configurations.
     IntervalSamplingConfiguration( TimeSpan.fromMilliseconds( 1000.0 ) ),
+    NoOptionsSamplingConfiguration(),
 
     // Device registrations.
     AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 ),
+    BLESerialNumberDeviceRegistration( "123456789" ),
     DefaultDeviceRegistration( "Some device" ),
+    MACAddressDeviceRegistration( MACAddress( "00-00-00-00-00-00" ) ),
 
     // Tasks.
     ConcurrentTask( "Start measures", listOf() ),
@@ -46,14 +45,14 @@ private val protocolInstances = listOf(
 
     // Triggers.
     ElapsedTimeTrigger( Smartphone( "User's phone" ), TimeSpan( 0 ) ),
-    ScheduledTrigger(
-        Smartphone( "User's phone"),
-        TimeOfDay( 12 ), RecurrenceRule( RecurrenceRule.Frequency.DAILY )
-    ),
     ManualTrigger(
         "User's phone",
         "Mood",
         "Describe how you are feeling at the moment."
+    ),
+    ScheduledTrigger(
+        Smartphone( "User's phone"),
+        TimeOfDay( 12 ), RecurrenceRule( RecurrenceRule.Frequency.DAILY )
     )
 )
 

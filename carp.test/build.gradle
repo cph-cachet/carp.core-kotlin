@@ -25,6 +25,7 @@ kotlin {
             dependencies {
                 implementation kotlin('test')
                 implementation kotlin('test-junit5')
+                implementation "org.reflections:reflections:0.9.12"
             }
         }
         jsMain {

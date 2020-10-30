@@ -1,4 +1,4 @@
-@file:Suppress( "TooManyFunctions" )
+@file:Suppress( "TooManyFunctions", "WildcardImport" )
 
 package dk.cachet.carp.protocols.infrastructure
 
@@ -7,28 +7,11 @@ import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.sampling.IntervalSamplingConfiguration
-import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
-import dk.cachet.carp.protocols.domain.devices.AltBeacon
-import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
-import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.CustomProtocolDevice
-import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
-import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
-import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.Smartphone
-import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
-import dk.cachet.carp.protocols.domain.tasks.CustomProtocolTask
-import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
-import dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure
-import dk.cachet.carp.protocols.domain.tasks.measures.Measure
-import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure
-import dk.cachet.carp.protocols.domain.triggers.ElapsedTimeTrigger
-import dk.cachet.carp.protocols.domain.triggers.ManualTrigger
-import dk.cachet.carp.protocols.domain.triggers.ScheduledTrigger
-import dk.cachet.carp.protocols.domain.triggers.Trigger
+import dk.cachet.carp.protocols.domain.sampling.*
+import dk.cachet.carp.protocols.domain.devices.*
+import dk.cachet.carp.protocols.domain.tasks.*
+import dk.cachet.carp.protocols.domain.tasks.measures.*
+import dk.cachet.carp.protocols.domain.triggers.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.PolymorphicModuleBuilder
@@ -44,13 +27,14 @@ import kotlinx.serialization.modules.subclass
 val PROTOCOLS_SERIAL_MODULE = SerializersModule {
     fun PolymorphicModuleBuilder<AnyMasterDeviceDescriptor>.registerMasterDeviceDescriptorSubclasses()
     {
-        subclass( Smartphone::class )
         subclass( CustomProtocolDevice::class )
+        subclass( Smartphone::class )
     }
 
     polymorphic( DeviceDescriptor::class )
     {
         subclass( AltBeacon::class )
+        subclass( BLEHeartRateSensor::class )
         registerMasterDeviceDescriptorSubclasses()
     }
     polymorphic( MasterDeviceDescriptor::class )
@@ -60,11 +44,14 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
     polymorphic( SamplingConfiguration::class )
     {
         subclass( IntervalSamplingConfiguration::class )
+        subclass( NoOptionsSamplingConfiguration::class )
     }
     polymorphic( DeviceRegistration::class )
     {
-        subclass( DefaultDeviceRegistration::class )
         subclass( AltBeaconDeviceRegistration::class )
+        subclass( BLESerialNumberDeviceRegistration::class )
+        subclass( DefaultDeviceRegistration::class )
+        subclass( MACAddressDeviceRegistration::class )
     }
     polymorphic( TaskDescriptor::class )
     {
@@ -79,8 +66,8 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
     polymorphic( Trigger::class )
     {
         subclass( ElapsedTimeTrigger::class )
-        subclass( ScheduledTrigger::class )
         subclass( ManualTrigger::class )
+        subclass( ScheduledTrigger::class )
     }
 }
 
