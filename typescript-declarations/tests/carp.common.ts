@@ -15,7 +15,7 @@ import AccountIdentity = dk.cachet.carp.common.users.AccountIdentity
 import EmailAccountIdentity = dk.cachet.carp.common.users.EmailAccountIdentity
 import emailAccountIdentityFromString = dk.cachet.carp.common.users.EmailAccountIdentity_init_61zpoe$
 import UsernameAccountIdentity = dk.cachet.carp.common.users.UsernameAccountIdentity
-import createDefaultJSON = dk.cachet.carp.common.serialization.createDefaultJSON_4jix7z$
+import createDefaultJSON = dk.cachet.carp.common.serialization.createDefaultJSON_18xi4u$
 
 
 describe( "carp.common", () => {

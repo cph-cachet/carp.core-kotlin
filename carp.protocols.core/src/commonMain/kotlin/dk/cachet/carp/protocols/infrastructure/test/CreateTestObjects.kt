@@ -15,6 +15,7 @@ import dk.cachet.carp.protocols.domain.triggers.Trigger
 import dk.cachet.carp.protocols.infrastructure.JSON
 import dk.cachet.carp.protocols.infrastructure.PROTOCOLS_SERIAL_MODULE
 import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.PolymorphicModuleBuilder
 import kotlinx.serialization.modules.plus
@@ -127,6 +128,7 @@ fun createComplexProtocol(): StudyProtocol
 /**
  * Replace the type name of [deviceDescriptor] in this JSON string with [unknownTypeName].
  */
+@ExperimentalSerializationApi
 fun String.makeUnknown(
     deviceDescriptor: AnyDeviceDescriptor,
     unknownTypeName: String = "com.unknown.UnknownDeviceDescriptor"
@@ -136,6 +138,7 @@ fun String.makeUnknown(
 /**
  * Replace the type name of [masterDeviceDescriptor] in this JSON string with [unknownTypeName].
  */
+@ExperimentalSerializationApi
 fun String.makeUnknown(
     masterDeviceDescriptor: AnyMasterDeviceDescriptor,
     unknownTypeName: String = "com.unknown.UnknownMasterDeviceDescriptor"
@@ -145,6 +148,7 @@ fun String.makeUnknown(
 /**
  * Replace the type name of [registration] in this JSON string with [unknownTypeName].
  */
+@ExperimentalSerializationApi
 fun String.makeUnknown(
     registration: DeviceRegistration,
     unknownTypeName: String = "com.unknown.UnknownDeviceRegistration"
@@ -154,6 +158,7 @@ fun String.makeUnknown(
 /**
  * Replace the type name of [taskDescriptor] in this JSON string with [unknownTypeName].
  */
+@ExperimentalSerializationApi
 fun String.makeUnknown(
     taskDescriptor: TaskDescriptor,
     unknownTypeName: String = "com.unknown.UnknownTaskDescriptor"
@@ -163,6 +168,7 @@ fun String.makeUnknown(
 /**
  * Replace the type name of the [measure] with the specified [key] set to [value] in this JSON string with [unknownTypeName].
  */
+@ExperimentalSerializationApi
 fun String.makeUnknown(
     measure: Measure,
     key: String,
@@ -174,6 +180,7 @@ fun String.makeUnknown(
 /**
  * Replace the type name of the [samplingConfiguration] with the specified [key] set to [value] in this JSON string with [unknownTypeName].
  */
+@ExperimentalSerializationApi
 fun String.makeUnknown(
     samplingConfiguration: SamplingConfiguration,
     key: String,
@@ -185,6 +192,7 @@ fun String.makeUnknown(
 /**
  * Replace the type name of the [trigger] with the specified [key] set to [value] in this JSON string with [unknownTypeName].
  */
+@ExperimentalSerializationApi
 fun String.makeUnknown(
     trigger: Trigger,
     key: String,
@@ -193,10 +201,11 @@ fun String.makeUnknown(
 ): String =
     this.makeUnknown( trigger, Trigger::class, key, value, unknownTypeName )
 
+@ExperimentalSerializationApi
 private fun <T : Any> String.makeUnknown( instance: T, klass: KClass<T>, key: String, value: String, unknownTypeName: String ): String
 {
     // Get qualified type name.
-    val serialModule = PROTOCOLS_SERIAL_MODULE.plus( STUBS_SERIAL_MODULE )
+    val serialModule = PROTOCOLS_SERIAL_MODULE + STUBS_SERIAL_MODULE
     val serializer = serialModule.getPolymorphic( klass, instance )
     val qualifiedName = serializer!!.descriptor.serialName
 

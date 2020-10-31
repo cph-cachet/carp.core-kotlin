@@ -3,6 +3,7 @@
 package dk.cachet.carp.test.serialization
 
 import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -30,6 +31,7 @@ abstract class ConcreteTypesSerializationTest(
     private val instancesToSerialize: List<Any>
 )
 {
+    @ExperimentalSerializationApi
     @Test
     fun all_types_in_serial_module_are_tested()
     {
@@ -41,6 +43,7 @@ abstract class ConcreteTypesSerializationTest(
         }
     }
 
+    @ExperimentalSerializationApi
     @Test
     fun can_serialize_all_instances_using_JSON()
     {
@@ -64,6 +67,7 @@ abstract class ConcreteTypesSerializationTest(
 /**
  * Get a map which holds the [KSerializer] for each [KClass] registered for polymorphic serialization in [serialModule].
  */
+@ExperimentalSerializationApi
 fun getPolymorphicSerializers( serialModule: SerializersModule ): Map<KClass<*>, KSerializer<*>>
 {
     val collector =

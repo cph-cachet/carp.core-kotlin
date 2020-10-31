@@ -19,6 +19,7 @@ import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.makeUnknown
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.*
 
 
@@ -42,6 +43,7 @@ class StudyProtocolSnapshotTest
     /**
      * Types not known at compile time should not prevent deserializing a protocol, but should be loaded through a 'Custom' type wrapper.
      */
+    @ExperimentalSerializationApi
     @Test
     fun unknown_types_are_wrapped_when_deserializing()
     {
@@ -58,6 +60,7 @@ class StudyProtocolSnapshotTest
         assertEquals( 1, parsed.triggers.filter { t -> t.value is CustomTrigger }.count() )
     }
 
+    @ExperimentalSerializationApi
     @Test
     fun unknown_connected_master_device_is_deserialized_as_a_master_device()
     {
@@ -78,6 +81,7 @@ class StudyProtocolSnapshotTest
     /**
      * Types which were wrapped in a 'Custom' type wrapper upon deserialization should be serialized to their original form (returning the original type, not the wrapper).
      */
+    @ExperimentalSerializationApi
     @Test
     fun serializing_unknown_types_removes_the_wrapper()
     {
@@ -88,6 +92,7 @@ class StudyProtocolSnapshotTest
         assertEquals( serialized, customSerialized )
     }
 
+    @ExperimentalSerializationApi
     @Test
     fun create_protocol_fromSnapshot_with_custom_extending_types_succeeds()
     {
@@ -104,6 +109,7 @@ class StudyProtocolSnapshotTest
      * (3) known task with an unknown measure and known data type
      * There is thus exactly one unknown object for each of these types, except for 'Measure' which has two.
      */
+    @ExperimentalSerializationApi
     private fun serializeProtocolSnapshotIncludingUnknownTypes(): String
     {
         val protocol = createComplexProtocol()

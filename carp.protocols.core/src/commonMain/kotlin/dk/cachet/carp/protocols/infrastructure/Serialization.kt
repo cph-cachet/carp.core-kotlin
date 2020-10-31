@@ -13,7 +13,6 @@ import dk.cachet.carp.protocols.domain.tasks.*
 import dk.cachet.carp.protocols.domain.tasks.measures.*
 import dk.cachet.carp.protocols.domain.triggers.*
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.PolymorphicModuleBuilder
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.modules.polymorphic
@@ -76,8 +75,14 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
  * This ensures a global configuration on how serialization should occur.
  * Additional types the serializer needs to be aware about (such as polymorph extending classes) should be registered through [module].
  */
-fun createProtocolsSerializer( module: SerializersModule = EmptySerializersModule ): Json =
-    createDefaultJSON( PROTOCOLS_SERIAL_MODULE + module )
+fun createProtocolsSerializer( module: SerializersModule? = null ): Json
+{
+    val serializersModule =
+        if ( module == null ) PROTOCOLS_SERIAL_MODULE
+        else PROTOCOLS_SERIAL_MODULE + module
+
+    return createDefaultJSON( serializersModule )
+}
 
 /**
  * A default CARP infrastructure serializer capable of serializing all [dk.cachet.carp.protocols] types.

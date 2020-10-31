@@ -4,7 +4,9 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
 
 
 /**
@@ -110,9 +112,11 @@ val RecurrenceRuleRegex = Regex( """RRULE:FREQ=(SECONDLY|MINUTELY|HOURLY|DAILY|W
 /**
  * A custom serializer for [RecurrenceRule].
  */
-@Serializer( forClass = RecurrenceRule::class )
 object RecurrenceRuleSerializer : KSerializer<RecurrenceRule>
 {
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor( "dk.cachet.carp.common.RecurrenceRule", PrimitiveKind.STRING )
+
     override fun serialize( encoder: Encoder, value: RecurrenceRule ) =
         encoder.encodeString( value.toString() )
 

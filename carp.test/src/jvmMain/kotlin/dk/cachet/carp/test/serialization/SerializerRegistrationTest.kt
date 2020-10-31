@@ -1,5 +1,6 @@
 package dk.cachet.carp.test.serialization
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.modules.SerializersModule
 import org.reflections.Reflections
 import java.lang.reflect.Modifier
@@ -13,6 +14,7 @@ import kotlin.test.*
  *
  * It is assumed all extending classes are located in the same namespace.
  */
+@ExperimentalSerializationApi
 inline fun <reified T : Any> verifyTypesAreRegistered( serializersModule: SerializersModule )
 {
     val klass = T::class

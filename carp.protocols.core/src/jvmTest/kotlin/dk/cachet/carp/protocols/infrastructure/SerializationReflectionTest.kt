@@ -7,9 +7,11 @@ import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import dk.cachet.carp.protocols.domain.triggers.Trigger
 import dk.cachet.carp.test.serialization.verifyTypesAreRegistered
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.*
 
 
+@ExperimentalSerializationApi
 class SerializationReflectionTest
 {
     @Test

@@ -3,9 +3,11 @@ package dk.cachet.carp.common.serialization
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.test.serialization.verifyTypesAreRegistered
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.*
 
 
+@ExperimentalSerializationApi
 class SerializationReflectionTest
 {
     @Test
