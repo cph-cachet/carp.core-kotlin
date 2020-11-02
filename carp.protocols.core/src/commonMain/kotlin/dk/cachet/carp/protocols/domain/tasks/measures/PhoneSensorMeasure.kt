@@ -8,7 +8,7 @@ import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.sampling.SamplingConfigurationMapBuilder
 import dk.cachet.carp.protocols.domain.sampling.carp.GeolocationSamplingScheme
 import dk.cachet.carp.protocols.domain.sampling.carp.GeolocationSamplingConfigurationBuilder
-import dk.cachet.carp.protocols.domain.sampling.carp.StepcountSamplingScheme
+import dk.cachet.carp.protocols.domain.sampling.carp.StepCountSamplingScheme
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import kotlinx.serialization.Serializable
 
@@ -47,7 +47,7 @@ data class PhoneSensorMeasure private constructor(
          *       Each 'step' is reported as an event, so this would map to a different DataType (e.g. `Step`).
          *       Not certain this is available on iPhone.
          */
-        val STEPCOUNT = add( StepcountSamplingScheme ) // No configuration options available.
+        val STEP_COUNT = add( StepCountSamplingScheme ) // No configuration options available.
     }
 
     companion object
@@ -63,7 +63,7 @@ data class PhoneSensorMeasure private constructor(
         /**
          * Measure number of steps a participant has taken in a recorded time interval.
          */
-        fun stepcount( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( SamplingSchemes.STEPCOUNT, duration )
+        fun stepCount( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( SamplingSchemes.STEP_COUNT, duration )
     }
 
 

@@ -13,17 +13,12 @@ actual class UUID actual constructor( actual val stringRepresentation: String )
 
     actual companion object
     {
-        actual fun randomUUID(): UUID
-        {
-            return UUID( java.util.UUID.randomUUID().toString() )
-        }
+        actual fun parse( uuid: String ): UUID = UUID( uuid.toLowerCase() )
+        actual fun randomUUID(): UUID = UUID( java.util.UUID.randomUUID().toString() )
     }
 
 
-    override fun toString(): String
-    {
-        return stringRepresentation
-    }
+    override fun toString(): String = stringRepresentation
 
     override fun equals( other: Any? ): Boolean
     {
@@ -33,8 +28,5 @@ actual class UUID actual constructor( actual val stringRepresentation: String )
         return stringRepresentation == other.stringRepresentation
     }
 
-    override fun hashCode(): Int
-    {
-        return stringRepresentation.hashCode()
-    }
+    override fun hashCode(): Int = stringRepresentation.hashCode()
 }

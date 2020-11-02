@@ -10,10 +10,14 @@ import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
 
+/**
+ * A stub [MasterDeviceDescriptor] which can measure [STUB_DATA_TYPE].
+ */
 @Serializable
 data class StubMasterDeviceDescriptor(
     override val roleName: String = "Stub master device",
-    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
+    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap(),
+    override val supportedDataTypes: Set<DataType> = setOf( STUB_DATA_TYPE )
 ) : MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {
     override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()

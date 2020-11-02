@@ -5,7 +5,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.studies.application.ParticipantService
 import dk.cachet.carp.studies.application.ParticipantServiceMock
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
@@ -43,7 +43,7 @@ class ParticipantServiceRequestsTest
 
     @Suppress( "UNCHECKED_CAST" )
     @Test
-    fun invokeOn_requests_call_service() = runBlockingTest {
+    fun invokeOn_requests_call_service() = runSuspendTest {
         requests.forEach { request ->
             val serviceInvoker = request as ServiceInvoker<ParticipantService, *>
             val function = serviceInvoker.function

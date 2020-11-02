@@ -54,6 +54,9 @@ data class FullyQualifiedName(
             return FullyQualifiedName( namespace, name )
         }
     }
+
+
+    override fun toString(): String = "$namespace.$name"
 }
 
 
@@ -64,8 +67,8 @@ object FullyQualifiedNameSerializer : KSerializer<FullyQualifiedName>
 
 
     override fun serialize( encoder: Encoder, value: FullyQualifiedName ) =
-        encoder.encodeString( "${value.namespace}.${value.name}" )
+        encoder.encodeString( value.toString() )
 
-    override fun deserialize( decoder: Decoder): FullyQualifiedName =
+    override fun deserialize( decoder: Decoder ): FullyQualifiedName =
         FullyQualifiedName.fromString( decoder.decodeString() )
 }

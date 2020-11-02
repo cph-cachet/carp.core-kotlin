@@ -3,7 +3,7 @@ package dk.cachet.carp.studies.domain
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.studies.domain.users.StudyOwner
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
@@ -16,7 +16,7 @@ interface StudyRepositoryTest
 
 
     @Test
-    fun cant_add_study_with_id_that_already_exists() = runBlockingTest {
+    fun cant_add_study_with_id_that_already_exists() = runSuspendTest {
         val repo = createRepository()
         val study = Study( StudyOwner(), "Test" )
         repo.add( study )
@@ -29,7 +29,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun getById_succeeds() = runBlockingTest {
+    fun getById_succeeds() = runSuspendTest {
         val repo = createRepository()
         val study = Study( StudyOwner(), "Test" )
         repo.add( study )
@@ -40,7 +40,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun getById_null_when_not_found() = runBlockingTest {
+    fun getById_null_when_not_found() = runSuspendTest {
         val repo = createRepository()
 
         val foundStudy = repo.getById( UUID.randomUUID() )
@@ -48,7 +48,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun getForOwner_returns_owner_studies_only() = runBlockingTest {
+    fun getForOwner_returns_owner_studies_only() = runSuspendTest {
         val repo = createRepository()
         val owner = StudyOwner()
         val ownerStudy = Study( owner, "Test" )
@@ -61,7 +61,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun update_succeeds() = runBlockingTest {
+    fun update_succeeds() = runSuspendTest {
         val repo = createRepository()
         val study = Study( StudyOwner(), "Test" )
         repo.add( study )
@@ -79,7 +79,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun update_fails_for_unknown_study() = runBlockingTest {
+    fun update_fails_for_unknown_study() = runSuspendTest {
         val repo = createRepository()
 
         val study = Study( StudyOwner(), "Test" )

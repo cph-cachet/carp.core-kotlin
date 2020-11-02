@@ -33,6 +33,9 @@ data class DataType(
         fun fromFullyQualifiedName( fullyQualifiedName: String ): DataType =
             DataType( FullyQualifiedName.fromString( fullyQualifiedName ) )
     }
+
+
+    override fun toString(): String = name.toString()
 }
 
 
@@ -42,12 +45,6 @@ object DataTypeSerializer : KSerializer<DataType>
         get() = PrimitiveSerialDescriptor( "dk.cachet.carp.common.data.DataType", PrimitiveKind.STRING )
 
 
-    override fun serialize( encoder: Encoder, value: DataType ) =
-        encoder.encodeSerializableValue( FullyQualifiedName.serializer(), value.name )
-
-    override fun deserialize( decoder: Decoder ): DataType
-    {
-        val name: FullyQualifiedName = decoder.decodeSerializableValue( FullyQualifiedName.serializer() )
-        return DataType( name )
-    }
+    override fun serialize( encoder: Encoder, value: DataType ) = encoder.encodeString( value.toString() )
+    override fun deserialize( decoder: Decoder ): DataType = DataType.fromFullyQualifiedName( decoder.decodeString() )
 }

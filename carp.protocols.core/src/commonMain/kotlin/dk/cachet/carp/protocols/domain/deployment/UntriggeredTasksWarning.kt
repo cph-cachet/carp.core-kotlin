@@ -17,10 +17,7 @@ class UntriggeredTasksWarning internal constructor() : DeploymentWarning
         "Tasks which are never triggered are never initiated on a device, and are thus never used during the study."
 
 
-    override fun isIssuePresent( protocol: StudyProtocol ): Boolean
-    {
-        return getUntriggeredTasks( protocol ).any()
-    }
+    override fun isIssuePresent( protocol: StudyProtocol ): Boolean = getUntriggeredTasks( protocol ).any()
 
     fun getUntriggeredTasks( protocol: StudyProtocol ): Set<TaskDescriptor>
     {

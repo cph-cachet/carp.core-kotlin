@@ -2,16 +2,13 @@
 
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.serialization.createDefaultJSON
-import dk.cachet.carp.protocols.infrastructure.PROTOCOLS_SERIAL_MODULE
+import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudySnapshot
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.Participant
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.EmptySerializersModule
-import kotlinx.serialization.modules.plus
 import kotlinx.serialization.modules.SerializersModule
 
 
@@ -20,10 +17,7 @@ import kotlinx.serialization.modules.SerializersModule
  * This ensures a global configuration on how serialization should occur.
  * Additional types the serializer needs to be aware about (such as polymorph extending classes) should be registered through [module].
  */
-fun createStudiesSerializer( module: SerializersModule = EmptySerializersModule ): Json
-{
-    return createDefaultJSON( PROTOCOLS_SERIAL_MODULE + module )
-}
+fun createStudiesSerializer( module: SerializersModule? = null ): Json = createProtocolsSerializer( module )
 
 /**
  * A default CARP infrastructure serializer capable of serializing all [dk.cachet.carp.studies] types.

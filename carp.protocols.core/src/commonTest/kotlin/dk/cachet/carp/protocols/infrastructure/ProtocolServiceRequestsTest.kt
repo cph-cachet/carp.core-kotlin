@@ -5,12 +5,12 @@ import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.application.ProtocolServiceMock
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
 /**
- * Tests for [ProtocolServiceRequest]'s which rely on reflection, and for now can only be executed on the JVM platform.
+ * Tests for [ProtocolServiceRequest]'s.
  */
 class ProtocolServiceRequestsTest
 {
@@ -41,7 +41,7 @@ class ProtocolServiceRequestsTest
 
     @Suppress( "UNCHECKED_CAST" )
     @Test
-    fun invokeOn_requests_call_service() = runBlockingTest {
+    fun invokeOn_requests_call_service() = runSuspendTest {
         requests.forEach { request ->
             val serviceInvoker = request as ServiceInvoker<ProtocolService, *>
             val function = serviceInvoker.function
@@ -52,7 +52,7 @@ class ProtocolServiceRequestsTest
     }
 
     @Test
-    fun invokeOn_deserialized_request_requires_copy() = runBlockingTest {
+    fun invokeOn_deserialized_request_requires_copy() = runSuspendTest {
         val request = ProtocolServiceRequest.Add( createComplexProtocol().getSnapshot(), "Initial" )
         val serializer = ProtocolServiceRequest.serializer()
         val serialized = JSON.encodeToString( serializer, request )

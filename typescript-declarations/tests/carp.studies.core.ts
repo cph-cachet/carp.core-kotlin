@@ -5,9 +5,10 @@ import { kotlin } from 'kotlin'
 import ArrayList = kotlin.collections.ArrayList
 import HashSet = kotlin.collections.HashSet
 import toSet = kotlin.collections.toSet_us0mfu$
-import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
+import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
 import Json = kotlinx.serialization.json.Json
-import getListSerializer = kotlinx.serialization.get_list_gekvwj$
+import { kotlinx as kotlinxcore } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
+import ListSerializer = kotlinxcore.serialization.builtins.ListSerializer_swdriu$
 import { dk as cdk } from 'carp.core-kotlin-carp.common'
 import DateTime = cdk.cachet.carp.common.DateTime
 import UUID = cdk.cachet.carp.common.UUID
@@ -28,7 +29,7 @@ import StudyDetails = dk.cachet.carp.studies.domain.StudyDetails
 import StudyStatus = dk.cachet.carp.studies.domain.StudyStatus
 import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
 import ParticipantServiceRequest = dk.cachet.carp.studies.infrastructure.ParticipantServiceRequest
-import createStudiesSerializer = dk.cachet.carp.studies.infrastructure.createStudiesSerializer_4jix7z$
+import createStudiesSerializer = dk.cachet.carp.studies.infrastructure.createStudiesSerializer_18xi4u$
 
 
 describe( "carp.studies.core", () => {
@@ -121,7 +122,7 @@ describe( "carp.studies.core", () => {
             const statusList = new ArrayList( [ status ] )
 
             const json: Json = createStudiesSerializer()
-            const serializer = getListSerializer( StudyStatus.Companion.serializer() )
+            const serializer = ListSerializer( StudyStatus.Companion.serializer() )
             expect( serializer ).is.not.undefined
             const serialized = json.encodeToString_tf03ej$( serializer, statusList )
             expect( serialized ).is.not.not.undefined

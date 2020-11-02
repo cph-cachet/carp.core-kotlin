@@ -18,19 +18,19 @@ kotlin {
             dependencies {
                 implementation kotlin('test-common')
                 implementation kotlin('test-annotations-common')
+                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
             }
         }
         jvmMain {
             dependencies {
                 implementation kotlin('test')
                 implementation kotlin('test-junit5')
-                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
+                implementation "org.reflections:reflections:0.9.12"
             }
         }
         jsMain {
             dependencies {
                 implementation kotlin('test-js')
-                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${versions.coroutines}"
             }
         }
     }

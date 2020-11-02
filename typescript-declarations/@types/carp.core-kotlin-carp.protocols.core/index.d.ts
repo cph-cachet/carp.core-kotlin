@@ -72,6 +72,6 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             }
         }
 
-        function createProtocolsSerializer_4jix7z$(): Json
+        function createProtocolsSerializer_18xi4u$(): Json
     }
 }

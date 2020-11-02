@@ -7,8 +7,9 @@ To start collecting data, participants need to be invited, devices need to be re
 
 The following diagram depicts a typical sequence of calls to [the `DeploymentService` endpoints](#application-service) to create a study deployment, invite participants, and deploy it successfully on a client device.
 When using the application and domain services in `carp.studies` and `carp.client` these requests are abstracted away.
+Matching code for these calls can be found in the main README as part of the [carp.deployment](../README.md#example-deployment) and [carp.client](../README.md#example-client) examples.
 
-![Study deployment sequence diagram](https://i.imgur.com/a8oy5ad.png)
+![Study deployment sequence diagram](https://i.imgur.com/tS1FPyj.png)
 
 ## Study and device deployment state
 
@@ -16,12 +17,12 @@ Most of the [the `DeploymentService` endpoints](#application-service) return the
 Depending on the current state of the deployment, different operations are available.
 This is represented by [`StudyDeploymentStatus`](../carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/domain/StudyDeploymentStatus.kt), which reflects the underlying state machine:
 
-![Study deployment state machine](https://i.imgur.com/e6u5Om7.png)
+![Study deployment state machine](https://i.imgur.com/HGpF8BI.png)
 
 The overall deployment state depends on the aggregate of individual device deployment states.
 Each device within the study deployment has a corresponding [`DeviceDeploymentStatus`](../carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/domain/DeviceDeploymentStatus.kt):
 
-![Device deployment state machine](https://i.imgur.com/VRfD4wL.png)
+![Device deployment state machine](https://i.imgur.com/Mkb78W4.png)
 
 ## Application service
 

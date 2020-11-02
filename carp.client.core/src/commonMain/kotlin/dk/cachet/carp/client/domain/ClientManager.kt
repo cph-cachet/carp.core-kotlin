@@ -1,5 +1,9 @@
 package dk.cachet.carp.client.domain
 
+import dk.cachet.carp.client.domain.data.ConnectedDeviceDataCollector
+import dk.cachet.carp.client.domain.data.DataListener
+import dk.cachet.carp.client.domain.data.DeviceDataCollector
+import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -22,9 +26,17 @@ abstract class ClientManager<
     /**
      * The application service through which study deployments, to be run on this client, can be managed and retrieved.
      */
-    private val deploymentService: DeploymentService
+    private val deploymentService: DeploymentService,
+    /**
+     * Determines which [DeviceDataCollector] to use to collect data locally on this master device
+     * and this factory is used to create [ConnectedDeviceDataCollector] instances for connected devices.
+     */
+    dataCollectorFactory: DeviceDataCollectorFactory
 )
 {
+    private val dataListener: DataListener = DataListener( dataCollectorFactory )
+
+
     /**
      * Determines whether a [DeviceRegistration] has been configured for this client, which is necessary to start adding [StudyRuntime]s.
      */
@@ -48,8 +60,7 @@ abstract class ClientManager<
     /**
      * Get the status for the studies which run on this client device.
      */
-    suspend fun getStudies(): List<StudyRuntimeStatus> = repository.getStudyRuntimeList()
-
+    suspend fun getStudiesStatus(): List<StudyRuntimeStatus> = repository.getStudyRuntimeList().map { it.getStatus() }
 
     /**
      * Add a study which needs to be executed on this client. This involves registering this device for the specified study deployment.
@@ -77,31 +88,74 @@ abstract class ClientManager<
         // Create the study runtime.
         // IllegalArgumentException's will be thrown here when deployment or role name does not exist, or device is already registered.
         val deviceRegistration = repository.getDeviceRegistration()!!
-        val runtime = StudyRuntime.initialize( deploymentService, studyDeploymentId, deviceRoleName, deviceRegistration )
+        val runtime = StudyRuntime.initialize(
+            deploymentService, dataListener,
+            studyDeploymentId, deviceRoleName, deviceRegistration
+        )
 
         repository.addStudyRuntime( runtime )
-        return runtime
+        return runtime.getStatus()
     }
 
     /**
      * Verifies whether the device is ready for deployment of the study runtime identified by [studyRuntimeId],
-     * and in case it is, deploys.
+     * and in case it is, deploys. In case already deployed, nothing happens.
      *
-     * @return True in case deployment succeeded; false in case device could not yet be deployed (e.g., awaiting registration of other devices).
      * @throws IllegalArgumentException in case no [StudyRuntime] with the given [studyRuntimeId] exists.
      * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
      */
-    suspend fun tryDeployment( studyRuntimeId: StudyRuntimeId ): Boolean
+    suspend fun tryDeployment( studyRuntimeId: StudyRuntimeId ): StudyRuntimeStatus
     {
-        val runtime = repository.getStudyRuntimeList().firstOrNull { it.id == studyRuntimeId }
-        requireNotNull( runtime ) { "The specified study runtime does not exist." }
+        val runtime = getStudyRuntime( studyRuntimeId )
 
-        val isDeployed = runtime.tryDeployment( deploymentService )
-        if ( isDeployed )
+        // Early out in case this runtime has already received and validated deployment information.
+        val status = runtime.getStatus()
+        if ( status is StudyRuntimeStatus.Deployed ) return status
+
+        val newStatus = runtime.tryDeployment( deploymentService, dataListener )
+        if ( status != newStatus )
         {
             repository.updateStudyRuntime( runtime )
         }
 
-        return isDeployed
+        return newStatus
+    }
+
+    /**
+     * Permanently stop collecting data for the study runtime identified by [studyRuntimeId].
+     *
+     * @throws IllegalArgumentException in case no [StudyRuntime] with the given [studyRuntimeId] exists.
+     */
+    suspend fun stopStudy( studyRuntimeId: StudyRuntimeId ): StudyRuntimeStatus
+    {
+        val runtime = getStudyRuntime( studyRuntimeId )
+        val status = runtime.getStatus()
+
+        val newStatus = runtime.stop( deploymentService )
+        if ( status != newStatus )
+        {
+            repository.updateStudyRuntime( runtime )
+        }
+
+        return newStatus
+    }
+
+    private suspend fun getStudyRuntime( studyRuntimeid: StudyRuntimeId ): StudyRuntime =
+        repository.getStudyRuntimeList().firstOrNull { it.id == studyRuntimeid }
+            ?: throw IllegalArgumentException( "The specified study runtime does not exist." )
+
+    /**
+     * Once a connected device has been registered, this returns a manager which provides access to the status of the [registeredDevice].
+     */
+    fun getConnectedDeviceManager( registeredDevice: DeviceRegistrationStatus.Registered ): ConnectedDeviceManager
+    {
+        val dataCollector = dataListener.tryGetConnectedDataCollector(
+            registeredDevice.device::class,
+            registeredDevice.registration )
+
+        // `tryDeployment`, through which registeredDevice is obtained, would have failed if data collector could not be created.
+        checkNotNull( dataCollector )
+
+        return ConnectedDeviceManager( registeredDevice.registration, dataCollector )
     }
 }

@@ -15,6 +15,9 @@ import kotlin.reflect.KClass
 data class CustomProtocolDevice( override val roleName: String ) :
     MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {
+    // Measures and data types are defined in the custom `CustomProtocolTask.studyProtocol` and thus not managed by core.
+    override val supportedDataTypes: Set<DataType> = emptySet()
+
     override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 
     override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()

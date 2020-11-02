@@ -4,7 +4,9 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
 
 
 /**
@@ -44,9 +46,11 @@ val TimeOfDayRegex = Regex( """\d\d:\d\d:\d\d""" )
 /**
  * A custom serializer for [TimeOfDay].
  */
-@Serializer( forClass = TimeOfDay::class )
 object TimeOfDaySerializer : KSerializer<TimeOfDay>
 {
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor( "dk.cachet.carp.common.TimeOfDay", PrimitiveKind.STRING )
+
     override fun serialize( encoder: Encoder, value: TimeOfDay ) =
         encoder.encodeString( value.toString() )
 

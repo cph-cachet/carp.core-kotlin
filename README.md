@@ -22,12 +22,14 @@ Two key **design goals** differentiate this project from similar projects:
     - [Domain objects](docs/carp-protocols.md#domain-objects)
     - [Built-in types](docs/carp-protocols.md#built-in-types)
     - [Extending domain objects](docs/carp-protocols.md#extending-domain-objects)
-    - [Application service](docs/carp-protocols.md#application-service)
+    - [Application services](docs/carp-protocols.md#application-services)
   - [Studies](docs/carp-studies.md)
     - [Application services](docs/carp-studies.md#application-services)
   - [Deployment](docs/carp-deployment.md)
     - [Study and device deployment state](docs/carp-deployment.md#study-and-device-deployment-state)
     - [Application service](docs/carp-deployment.md#application-service)
+  - [Client](docs/carp-client.md)
+    - [Study runtime state](docs/carp-client.md#study-runtime-state)
 - [Infrastructure helpers](#infrastructure-helpers)
   - [Serialization](#serialization)
   - [Request objects](#request-objects)
@@ -54,7 +56,7 @@ Two key **design goals** differentiate this project from similar projects:
 
   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.deployment/carp.deployment.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.deployment) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.deployment/carp.deployment.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/deployment/)
 
-- **Client**: The runtime which performs the actual data collection on a device (e.g., desktop computer or smartphone). This subsystem contains reusable components which understand the runtime configuration derived from a study protocol by the ‘deployment’ subsystem. Integrations with sensors are loaded through a 'data collection' plug-in system to decouple sensing—not part of core⁠—from sensing logic.
+- [**Client**](docs/carp-client.md): The runtime which performs the actual data collection on a device (e.g., desktop computer or smartphone). This subsystem contains reusable components which understand the runtime configuration derived from a study protocol by the ‘deployment’ subsystem. Integrations with sensors are loaded through a 'device data collector' plug-in system to decouple sensing—not part of core⁠—from sensing logic.
 
    [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.client/carp.client.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.client) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.client/carp.client.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/client/)
 
@@ -138,7 +140,8 @@ maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
 
 The following shows how the subystems interact to create a study protocol, instantiate it as a study, and deploy it to a client.
 
-**carp.protocols**: Example study protocol definition to collect GPS and stepcount on a smartphone which can be serialized to JSON:
+<a name="example-protocols"></a>
+**carp.protocols**: Example study protocol definition to collect GPS and step count on a smartphone which can be serialized to JSON:
 
 ```kotlin
 // Create a new study protocol.
@@ -156,7 +159,7 @@ val phone = Smartphone( "Patient's phone" )
 protocol.addMasterDevice( phone )
 
 // Define what needs to be measured, on which device, when.
-val measures: List<Measure> = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepcount() )
+val measures: List<Measure> = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
 val startMeasures = ConcurrentTask( "Start measures", measures )
 protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
@@ -164,6 +167,7 @@ protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 val json: String = protocol.getSnapshot().toJson()
 ```
 
+<a name="example-studies"></a>
 **carp.studies**: Example creation of a study based on a study protocol, and adding and deploying a single participant:
 
 ```kotlin
@@ -202,6 +206,7 @@ if ( studyStatus.canDeployToParticipants )
 }
 ```
 
+<a name="example-deployment"></a>
 **carp.deployment**: Most calls to this subsystem are abstracted away by the 'studies' and 'client' subsystems, so you wouldn't call its endpoints directly. Example code which is called when a study is created and accessed by a client:
 
 ```kotlin
@@ -233,33 +238,43 @@ status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
 val isReady = status is StudyDeploymentStatus.DeploymentReady // True.
 ```
 
+<a name="example-client"></a>
 **carp.client**: Example initialization of a smartphone client for the participant that got invited to the study in the 'studies' code sample above:
 
 ```kotlin
 val deploymentService = createDeploymentEndpoint()
+val deploymentService = createDeploymentEndpoint()
+val dataCollectorFactory = createDataCollectorFactory()
 
 // Retrieve invitation to participate in the study using a specific device.
 val account: Account = getLoggedInUser()
 val invitation: ActiveParticipationInvitation =
-	deploymentService.getActiveParticipationInvitations( account.id ).first()
+    deploymentService.getActiveParticipationInvitations( account.id ).first()
 val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
 val deviceToUse: String = invitation.devices.first().deviceRoleName // This matches "Patient's phone".
 
 // Create a study runtime for the study.
 val clientRepository = createRepository()
-val client = SmartphoneClient( clientRepository, deploymentService )
+val client = SmartphoneClient( clientRepository, deploymentService, dataCollectorFactory )
 client.configure {
     // Device-specific registration options can be accessed from here.
     // Depending on the device type, different options are available.
     // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
     deviceId = "xxxxxxxxx"
 }
-val runtime: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
-var isDeployed = runtime.isDeployed // True, because there are no dependent devices.
+var status: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
 
-// Suppose a deployment also depends on a "Clinician's phone" to be registered; deployment cannot complete yet.
-// After the clinician's phone has been registered, attempt deployment again.
-isDeployed = client.tryDeployment( runtime.id ) // True once dependent clients have been registered.
+// Register connected devices in case needed.
+if ( status is StudyRuntimeStatus.RegisteringDevices )
+{
+    val connectedDevice = status.remainingDevicesToRegister.first()
+    val connectedRegistration = connectedDevice.createRegistration()
+    deploymentService.registerDevice( studyDeploymentId, connectedDevice.roleName, connectedRegistration )
+
+    // Re-try deployment now that devices have been registered.
+    status = client.tryDeployment( status.id )
+    val isDeployed = status is StudyRuntimeStatus.Deployed // True.
+}
 ```
 
 ## Building the project

@@ -2,6 +2,7 @@ package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.common.serialization.createDefaultJSON
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
@@ -14,7 +15,9 @@ import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import kotlinx.serialization.json.Json
@@ -291,6 +294,24 @@ class StudyDeploymentTest
     }
 
     @Test
+    fun fromSnapshot_succeeds_with_rich_registration_history()
+    {
+        val deployment: StudyDeployment = createActiveDeployment( "Master" )
+        val master: AnyMasterDeviceDescriptor = deployment.protocol.devices.first { it.roleName == "Master" } as AnyMasterDeviceDescriptor
+
+        // Create registration history with two registrations for master.
+        val registration1 = master.createRegistration()
+        val registration2 = master.createRegistration()
+        deployment.registerDevice( master, registration1 )
+        deployment.unregisterDevice( master )
+        deployment.registerDevice( master, registration2 )
+
+        val snapshot = deployment.getSnapshot()
+        val fromSnapshot = StudyDeployment.fromSnapshot( snapshot )
+        assertEquals( listOf( registration1, registration2 ), fromSnapshot.deviceRegistrationHistory[ master ] )
+    }
+
+    @Test
     fun getStatus_lifecycle_master_and_connected()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
@@ -441,6 +462,41 @@ class StudyDeploymentTest
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
 
         assertTrue( deviceDeployment.connectedDeviceConfigurations.isEmpty() )
+    }
+
+    @Test
+    fun getDeviceDeploymentFor_with_trigger_to_other_master_device_succeeds()
+    {
+        val sourceMaster = StubMasterDeviceDescriptor( "Master 1" )
+        val targetMaster = StubMasterDeviceDescriptor( "Master 2" )
+        val protocol = createEmptyProtocol().apply {
+            addMasterDevice( sourceMaster )
+            addMasterDevice( targetMaster )
+        }
+        val measure = StubMeasure( DataType.fromFullyQualifiedName( "namespace.type" ) )
+        val task = StubTaskDescriptor( "Stub task", listOf( measure ) )
+        protocol.addTriggeredTask( StubTrigger( sourceMaster ), task, targetMaster )
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( sourceMaster, DefaultDeviceRegistration( "0" ) )
+        deployment.registerDevice( targetMaster, DefaultDeviceRegistration( "1" ) )
+
+        val sourceDeployment = deployment.getDeviceDeploymentFor( sourceMaster )
+        val targetDeployment = deployment.getDeviceDeploymentFor( targetMaster )
+
+        // The task should only be run on the target device.
+        assertEquals( 0, sourceDeployment.tasks.size )
+        assertEquals( task, targetDeployment.tasks.single() )
+
+        // The task is triggered from the source and sent to the target.
+        assertEquals( 1, sourceDeployment.triggers.size )
+        assertEquals( 1, sourceDeployment.triggeredTasks.size )
+        val triggeredTask = sourceDeployment.triggeredTasks.single()
+        assertEquals( task.name, triggeredTask.taskName )
+        assertEquals( 0, targetDeployment.triggers.size )
+
+        // There are no connected devices, only master devices.
+        assertEquals( 0, sourceDeployment.connectedDevices.size )
+        assertEquals( 0, targetDeployment.connectedDevices.size )
     }
 
     @Test

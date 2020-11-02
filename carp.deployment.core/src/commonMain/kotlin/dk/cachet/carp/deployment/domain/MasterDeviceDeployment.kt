@@ -2,6 +2,7 @@ package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
@@ -17,6 +18,10 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class MasterDeviceDeployment(
+    /**
+     * The descriptor for the master device this deployment is intended for.
+     */
+    val deviceDescriptor: AnyMasterDeviceDescriptor,
     /**
      * Configuration for this master device.
      */
@@ -63,6 +68,21 @@ data class MasterDeviceDeployment(
         val destinationDeviceRoleName: String
     )
 
+    /**
+     * A participating master or connected device in a deployment (determined by [isConnectedDevice])
+     * with a matching [registration] in case the device has been registered.
+     */
+    data class Device(
+        val descriptor: AnyDeviceDescriptor,
+        val isConnectedDevice: Boolean,
+        val registration: DeviceRegistration?
+    )
+
+    /**
+     * The set of [tasks] which may need to be executed on a master [device], or a connected [device], during a deployment.
+     */
+    data class DeviceTasks( val device: Device, val tasks: Set<TaskDescriptor> )
+
 
     /**
      * The time when this device deployment was last updated.
@@ -73,6 +93,27 @@ data class MasterDeviceDeployment(
         if ( connectedDeviceConfigurations == null || configuration == null ) DateTime.now()
         else connectedDeviceConfigurations.values.plus( configuration )
             .map { it.registrationCreationDate.msSinceUTC }
-            .max()
+            .maxOrNull()
             .let { DateTime( it!! ) }
+
+
+    /**
+     * Get master device and each of the devices this device needs to connect to and their current [DeviceRegistration].
+     */
+    fun getAllDevicesAndRegistrations(): List<Device> =
+        connectedDevices.map { Device( it, true, connectedDeviceConfigurations[ it.roleName ] ) }
+        .plus( Device( deviceDescriptor, false, configuration ) ) // Add master device registration.
+
+    /**
+     * Retrieves for this master device and all connected devices
+     * the set of tasks which may be sent to them over the course of the deployment, or an empty set in case there are none.
+     * Tasks which target other master devices are not included in this collection.
+     */
+    fun getTasksPerDevice(): List<DeviceTasks> = getAllDevicesAndRegistrations()
+        .map { device ->
+            val tasks = triggeredTasks
+                .filter { it.destinationDeviceRoleName == device.descriptor.roleName }
+                .map { triggered -> tasks.first { it.name == triggered.taskName } }
+            DeviceTasks( device, tasks.toSet() )
+        }
 }

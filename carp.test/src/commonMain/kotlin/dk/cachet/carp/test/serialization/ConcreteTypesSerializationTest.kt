@@ -3,6 +3,7 @@
 package dk.cachet.carp.test.serialization
 
 import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -30,6 +31,7 @@ abstract class ConcreteTypesSerializationTest(
     private val instancesToSerialize: List<Any>
 )
 {
+    @ExperimentalSerializationApi
     @Test
     fun all_types_in_serial_module_are_tested()
     {
@@ -41,14 +43,16 @@ abstract class ConcreteTypesSerializationTest(
         }
     }
 
+    @ExperimentalSerializationApi
     @Test
     fun can_serialize_all_instances_using_JSON()
     {
+        val polymorphicSerializers = getPolymorphicSerializers( serialModule )
         for ( toSerialize in instancesToSerialize )
         {
             // Get serializer.
             val type = toSerialize::class
-            val serializer = getPolymorphicSerializers( serialModule )[ type ] as KSerializer<Any>
+            val serializer = polymorphicSerializers[ type ] as KSerializer<Any>
             assertNotNull( serializer, "No serializer registered for type '$type'" )
 
             // Verify whether serializing and deserializing the instance results in the same object.
@@ -57,30 +61,38 @@ abstract class ConcreteTypesSerializationTest(
             assertEquals( toSerialize, parsed, "Serialization of type '$type' failed." )
         }
     }
+}
 
 
-    private fun getPolymorphicSerializers( serialModule: SerializersModule ): Map<KClass<*>, KSerializer<*>>
-    {
-        val collector =
-            object : SerializersModuleCollector
+/**
+ * Get a map which holds the [KSerializer] for each [KClass] registered for polymorphic serialization in [serialModule].
+ */
+@ExperimentalSerializationApi
+fun getPolymorphicSerializers( serialModule: SerializersModule ): Map<KClass<*>, KSerializer<*>>
+{
+    val collector =
+        object : SerializersModuleCollector
+        {
+            val serializers: MutableMap<KClass<*>, KSerializer<*>> = mutableMapOf()
+
+            override fun <T : Any> contextual( kClass: KClass<T>, serializer: KSerializer<T> ) =
+                throw UnsupportedOperationException()
+
+            override fun <Base : Any, Sub : Base> polymorphic(
+                baseClass: KClass<Base>,
+                actualClass: KClass<Sub>,
+                actualSerializer: KSerializer<Sub>
+            )
             {
-                val serializers: MutableMap<KClass<*>, KSerializer<*>> = mutableMapOf()
-
-                override fun <T : Any> contextual( kClass: KClass<T>, serializer: KSerializer<T> ) =
-                    throw UnsupportedOperationException()
-
-                override fun <Base : Any, Sub : Base> polymorphic( baseClass: KClass<Base>, actualClass: KClass<Sub>, actualSerializer: KSerializer<Sub> )
-                {
-                    serializers[ actualClass ] = actualSerializer
-                }
-
-                override fun <Base : Any> polymorphicDefault(
-                    baseClass: KClass<Base>,
-                    defaultSerializerProvider: (className: String?) -> DeserializationStrategy<out Base>?
-                ) = throw UnsupportedOperationException()
+                serializers[ actualClass ] = actualSerializer
             }
 
-        serialModule.dumpTo( collector )
-        return collector.serializers
-    }
+            override fun <Base : Any> polymorphicDefault(
+                baseClass: KClass<Base>,
+                defaultSerializerProvider: (className: String?) -> DeserializationStrategy<out Base>?
+            ) = throw UnsupportedOperationException()
+        }
+
+    serialModule.dumpTo( collector )
+    return collector.serializers
 }

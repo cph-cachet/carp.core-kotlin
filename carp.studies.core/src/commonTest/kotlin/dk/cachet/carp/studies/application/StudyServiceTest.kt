@@ -8,7 +8,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.Smartphone
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
@@ -27,7 +27,7 @@ interface StudyServiceTest
 
 
     @Test
-    fun createStudy_succeeds() = runBlockingTest {
+    fun createStudy_succeeds() = runSuspendTest {
         val service = createService()
 
         val owner = StudyOwner()
@@ -48,7 +48,7 @@ interface StudyServiceTest
     }
 
     @Test
-    fun createStudy_with_invitation_succeeds() = runBlockingTest {
+    fun createStudy_with_invitation_succeeds() = runSuspendTest {
         val service = createService()
 
         val owner = StudyOwner()
@@ -67,7 +67,7 @@ interface StudyServiceTest
     }
 
     @Test
-    fun setInternalDescription_succeeds() = runBlockingTest {
+    fun setInternalDescription_succeeds() = runSuspendTest {
         val service = createService()
         val status = service.createStudy( StudyOwner(), "Test" )
 
@@ -81,7 +81,7 @@ interface StudyServiceTest
     }
 
     @Test
-    fun setInternalDescription_fails_for_unknown_studyId() = runBlockingTest {
+    fun setInternalDescription_fails_for_unknown_studyId() = runSuspendTest {
         val service = createService()
 
         assertFailsWith<IllegalArgumentException>
@@ -91,14 +91,14 @@ interface StudyServiceTest
     }
 
     @Test
-    fun getStudyDetails_fails_for_unknown_studyId() = runBlockingTest {
+    fun getStudyDetails_fails_for_unknown_studyId() = runSuspendTest {
         val service = createService()
 
         assertFailsWith<IllegalArgumentException> { service.getStudyDetails( unknownId ) }
     }
 
     @Test
-    fun getStudyStatus_succeeds() = runBlockingTest {
+    fun getStudyStatus_succeeds() = runSuspendTest {
         val service = createService()
         val status = service.createStudy( StudyOwner(), "Test" )
 
@@ -107,15 +107,16 @@ interface StudyServiceTest
     }
 
     @Test
-    fun getStudyStatus_fails_for_unknown_studyId() = runBlockingTest {
+    fun getStudyStatus_fails_for_unknown_studyId() = runSuspendTest {
         val service = createService()
 
         assertFailsWith<IllegalArgumentException> { service.getStudyStatus( unknownId ) }
     }
 
     @Test
-    fun getStudiesOverview_returns_owner_studies() = runBlockingTest {
+    fun getStudiesOverview_returns_owner_studies() = runSuspendTest {
         val service = createService()
+
         val owner = StudyOwner()
         val studyOne = service.createStudy( owner, "One" )
         val studyTwo = service.createStudy( owner, "Two" )
@@ -127,7 +128,7 @@ interface StudyServiceTest
     }
 
     @Test
-    fun setInvitation_succeeds() = runBlockingTest {
+    fun setInvitation_succeeds() = runSuspendTest {
         val service = createService()
         val status = service.createStudy( StudyOwner(), "Test" )
 
@@ -139,14 +140,14 @@ interface StudyServiceTest
     }
 
     @Test
-    fun setInvitation_fails_for_unknown_studyId() = runBlockingTest {
+    fun setInvitation_fails_for_unknown_studyId() = runSuspendTest {
         val service = createService()
 
         assertFailsWith<IllegalArgumentException> { service.setInvitation( unknownId, StudyInvitation.empty() ) }
     }
 
     @Test
-    fun setProtocol_succeeds() = runBlockingTest {
+    fun setProtocol_succeeds() = runSuspendTest {
         val service = createService()
         var status = service.createStudy( StudyOwner(), "Test" )
 
@@ -161,14 +162,14 @@ interface StudyServiceTest
     }
 
     @Test
-    fun setProtocol_fails_for_unknown_studyId() = runBlockingTest {
+    fun setProtocol_fails_for_unknown_studyId() = runSuspendTest {
         val service = createService()
 
         assertFailsWith<IllegalArgumentException> { service.setProtocol( unknownId, createDeployableProtocol() ) }
     }
 
     @Test
-    fun setProtocol_fails_for_invalid_protocol_snapshot() = runBlockingTest {
+    fun setProtocol_fails_for_invalid_protocol_snapshot() = runSuspendTest {
         val service = createService()
         val status = service.createStudy( StudyOwner(), "Test" )
 
@@ -182,7 +183,7 @@ interface StudyServiceTest
     }
 
     @Test
-    fun setProtocol_fails_for_protocol_which_cant_be_deployed() = runBlockingTest {
+    fun setProtocol_fails_for_protocol_which_cant_be_deployed() = runSuspendTest {
         val service = createService()
         val status = service.createStudy( StudyOwner(), "Test" )
 
@@ -191,7 +192,7 @@ interface StudyServiceTest
     }
 
     @Test
-    fun setInvitation_and_setProtocol_fails_after_study_gone_live() = runBlockingTest {
+    fun setInvitation_and_setProtocol_fails_after_study_gone_live() = runSuspendTest {
         val service = createService()
         var status = service.createStudy( StudyOwner(), "Test" )
 
@@ -206,7 +207,7 @@ interface StudyServiceTest
     }
 
     @Test
-    fun goLive_succeeds() = runBlockingTest {
+    fun goLive_succeeds() = runSuspendTest {
         val service = createService()
 
         var status = service.createStudy( StudyOwner(), "Test" )
@@ -220,14 +221,14 @@ interface StudyServiceTest
     }
 
     @Test
-    fun goLive_fails_for_unknown_studyId() = runBlockingTest {
+    fun goLive_fails_for_unknown_studyId() = runSuspendTest {
         val service = createService()
 
         assertFailsWith<IllegalArgumentException> { service.goLive( unknownId ) }
     }
 
     @Test
-    fun goLive_fails_when_no_protocol_set_yet() = runBlockingTest {
+    fun goLive_fails_when_no_protocol_set_yet() = runSuspendTest {
         val service = createService()
         val status = service.createStudy( StudyOwner(), "Test" )
 

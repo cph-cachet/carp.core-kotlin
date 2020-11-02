@@ -23,14 +23,14 @@ import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
-import dk.cachet.carp.test.runBlockingTest
+import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
 
 class StudiesCodeSamples
 {
     @Test
-    fun readme() = runBlockingTest {
+    fun readme() = runSuspendTest {
         val (studyService, participantService) = createEndpoints()
 
         // Create a new study.
@@ -89,7 +89,7 @@ class StudiesCodeSamples
         val phone = Smartphone( "Patient's phone" )
         protocol.addMasterDevice( phone )
 
-        val measures = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepcount() )
+        val measures = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
         val startMeasures = ConcurrentTask( "Start measures", measures )
         protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
