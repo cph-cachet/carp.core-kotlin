@@ -25,8 +25,5 @@ class InMemoryParticipantRepository : ParticipantRepository
     /**
      * Returns the participants which were added to the study with the specified [studyId].
      */
-    override suspend fun getParticipants( studyId: UUID ): List<Participant>
-    {
-        return participants[ studyId ] ?: listOf()
-    }
+    override suspend fun getParticipants( studyId: UUID ): List<Participant> = participants[ studyId ] ?: listOf()
 }

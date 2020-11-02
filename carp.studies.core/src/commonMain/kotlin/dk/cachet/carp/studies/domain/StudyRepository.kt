@@ -1,14 +1,13 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.studies.domain.users.ParticipantRepository
 import dk.cachet.carp.studies.domain.users.StudyOwner
 
 
 /**
  * Store [Study] instances.
  */
-interface StudyRepository : ParticipantRepository
+interface StudyRepository
 {
     /**
      * Adds a new [study] to the repository.

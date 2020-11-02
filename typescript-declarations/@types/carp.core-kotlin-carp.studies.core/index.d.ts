@@ -187,14 +187,6 @@ declare module 'carp.core-kotlin-carp.studies.core'
             {
                 constructor( owner: StudyOwner )
             }
-            class AddParticipant extends StudyServiceRequest
-            {
-                constructor( studyId: UUID, email: EmailAddress )
-            }
-            class GetParticipants extends StudyServiceRequest
-            {
-                constructor( studyId: UUID )
-            }
             class SetInvitation extends StudyServiceRequest
             {
                 constructor( studyId: UUID, invitation: StudyInvitation )
@@ -204,6 +196,25 @@ declare module 'carp.core-kotlin-carp.studies.core'
                 constructor( studyId: UUID, protocol: StudyProtocolSnapshot )
             }
             class GoLive extends StudyServiceRequest
+            {
+                constructor( studyId: UUID )
+            }
+        }
+
+
+        abstract class ParticipantServiceRequest
+        {
+            static get Companion(): ParticipantServiceRequest$Companion
+        }
+        interface ParticipantServiceRequest$Companion { serializer(): any }
+
+        namespace ParticipantServiceRequest
+        {
+            class AddParticipant extends ParticipantServiceRequest
+            {
+                constructor( studyId: UUID, email: EmailAddress )
+            }
+            class GetParticipants extends ParticipantServiceRequest
             {
                 constructor( studyId: UUID )
             }
@@ -220,6 +231,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
                 constructor( studyId: UUID, groupId: UUID )
             }
         }
+
 
         function createStudiesSerializer_4jix7z$(): Json
     }

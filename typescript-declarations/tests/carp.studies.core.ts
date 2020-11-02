@@ -27,6 +27,7 @@ import ParticipantGroupStatus = dk.cachet.carp.studies.domain.ParticipantGroupSt
 import StudyDetails = dk.cachet.carp.studies.domain.StudyDetails
 import StudyStatus = dk.cachet.carp.studies.domain.StudyStatus
 import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
+import ParticipantServiceRequest = dk.cachet.carp.studies.infrastructure.ParticipantServiceRequest
 import createStudiesSerializer = dk.cachet.carp.studies.infrastructure.createStudiesSerializer_4jix7z$
 
 
@@ -48,7 +49,8 @@ describe( "carp.studies.core", () => {
             new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, true, false, true ),
             new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, false, true ),
             StudyStatus.Companion,
-            StudyServiceRequest.Companion
+            StudyServiceRequest.Companion,
+            ParticipantServiceRequest.Companion
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.studies.core', instances )
@@ -114,20 +116,6 @@ describe( "carp.studies.core", () => {
             expect( serialized ).has.string( "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.CreateStudy" )
         } )
 
-        it( "can serialize DeployParticipantGroup", () => {
-            const deployGroup = new StudyServiceRequest.DeployParticipantGroup(
-                UUID.Companion.randomUUID(),
-                toSet( [
-                    new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Smartphone" ] ) )
-                ] )
-            )
-
-            const json: Json = createStudiesSerializer()
-            const serializer = StudyServiceRequest.Companion.serializer()
-            const serialized = json.encodeToString_tf03ej$( serializer, deployGroup )
-            expect( serialized ).is.not.undefined
-        } )
-
         it( "can serialize getStudiesOverview response", () => {
             const status = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, true, false, true )
             const statusList = new ArrayList( [ status ] )
@@ -137,6 +125,23 @@ describe( "carp.studies.core", () => {
             expect( serializer ).is.not.undefined
             const serialized = json.encodeToString_tf03ej$( serializer, statusList )
             expect( serialized ).is.not.not.undefined
+        } )
+    } )
+
+
+    describe( "ParticipantServiceRequest", () => {
+        it( "can serialize DeployParticipantGroup", () => {
+            const deployGroup = new ParticipantServiceRequest.DeployParticipantGroup(
+                UUID.Companion.randomUUID(),
+                toSet( [
+                    new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Smartphone" ] ) )
+                ] )
+            )
+
+            const json: Json = createStudiesSerializer()
+            const serializer = ParticipantServiceRequest.Companion.serializer()
+            const serialized = json.encodeToString_tf03ej$( serializer, deployGroup )
+            expect( serialized ).is.not.undefined
         } )
     } )
 } )

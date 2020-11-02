@@ -24,7 +24,7 @@ Two key **design goals** differentiate this project from similar projects:
     - [Extending domain objects](docs/carp-protocols.md#extending-domain-objects)
     - [Application service](docs/carp-protocols.md#application-service)
   - [Studies](docs/carp-studies.md)
-    - [Application service](docs/carp-studies.md#application-service)
+    - [Application services](docs/carp-studies.md#application-services)
   - [Deployment](docs/carp-deployment.md)
     - [Study and device deployment state](docs/carp-deployment.md#study-and-device-deployment-state)
     - [Application service](docs/carp-deployment.md#application-service)
@@ -167,7 +167,7 @@ val json: String = protocol.getSnapshot().toJson()
 **carp.studies**: Example creation of a study based on a study protocol, and adding and deploying a single participant:
 
 ```kotlin
-val studyService: StudyService = createStudiesEndpoint()
+val (studyService, participantService) = createEndpoints()
 
 // Create a new study.
 val studyOwner = StudyOwner()
@@ -182,7 +182,7 @@ studyStatus = studyService.setProtocol( studyId, protocolSnapshot )
 
 // Add a participant.
 val email = EmailAddress( "participant@email.com" )
-val participant: Participant = studyService.addParticipant( studyId, email )
+val participant: Participant = participantService.addParticipant( studyId, email )
 
 // Once all necessary study options have been configured, the study can go live.
 if ( studyStatus is StudyStatus.Configuring && studyStatus.canGoLive )
@@ -197,7 +197,7 @@ if ( studyStatus.canDeployToParticipants )
     val participation = AssignParticipantDevices( participant.id, setOf( patientPhone.roleName ) )
     val participantGroup = setOf( participation )
 
-    val groupStatus: ParticipantGroupStatus = studyService.deployParticipantGroup( studyId, participantGroup )
+    val groupStatus: ParticipantGroupStatus = participantService.deployParticipantGroup( studyId, participantGroup )
     val isInvited = groupStatus.studyDeploymentStatus is StudyDeploymentStatus.Invited // True.
 }
 ```
