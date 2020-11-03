@@ -10,11 +10,11 @@ import kotlinx.serialization.encoding.Encoder
 
 
 /**
- * A uniquely named entity within a [namespace].
+ * A uniquely named identifier within a [namespace].
  * TODO: This likely needs more restrictions in line with other standards. Disallow certain symbols? Lower-case only?
  */
-@Serializable( with = FullyQualifiedNameSerializer::class )
-data class FullyQualifiedName(
+@Serializable( with = NamespacedIdSerializer::class )
+data class NamespacedId(
     /**
      * Uniquely identifies the organization/person who determines how to interpret [name].
      * To prevent conflicts, a reverse domain namespace is suggested: e.g., "org.openmhealth" or "dk.cachet.carp".
@@ -38,12 +38,12 @@ data class FullyQualifiedName(
     companion object
     {
         /**
-         * Initializes a [FullyQualifiedName] based on a string, formatted as: "<namespace>.<name>".
+         * Initializes a [NamespacedId] based on a string, formatted as: "<namespace>.<name>".
          *
          * @throws IllegalArgumentException when no namespace is specified, i.e., [fullyQualifiedName] should contain at least one period.
          *   [name] will be set to the characters after the last period.
          */
-        fun fromString( fullyQualifiedName: String ): FullyQualifiedName
+        fun fromString( fullyQualifiedName: String ): NamespacedId
         {
             val segments = fullyQualifiedName.split( '.' )
             require( segments.count() > 1 ) { "A namespace needs to be specified." }
@@ -51,7 +51,7 @@ data class FullyQualifiedName(
             val namespace = segments.subList( 0, segments.size - 1 ).joinToString( "." )
             val name = segments.last()
 
-            return FullyQualifiedName( namespace, name )
+            return NamespacedId( namespace, name )
         }
     }
 
@@ -60,15 +60,11 @@ data class FullyQualifiedName(
 }
 
 
-object FullyQualifiedNameSerializer : KSerializer<FullyQualifiedName>
+object NamespacedIdSerializer : KSerializer<NamespacedId>
 {
     override val descriptor: SerialDescriptor
-        get() = PrimitiveSerialDescriptor("dk.cachet.carp.common.FullyQualifiedName", PrimitiveKind.STRING )
+        get() = PrimitiveSerialDescriptor("dk.cachet.carp.common.NamespacedId", PrimitiveKind.STRING )
 
-
-    override fun serialize( encoder: Encoder, value: FullyQualifiedName ) =
-        encoder.encodeString( value.toString() )
-
-    override fun deserialize( decoder: Decoder ): FullyQualifiedName =
-        FullyQualifiedName.fromString( decoder.decodeString() )
+    override fun serialize( encoder: Encoder, value: NamespacedId ) = encoder.encodeString( value.toString() )
+    override fun deserialize( decoder: Decoder ): NamespacedId = NamespacedId.fromString( decoder.decodeString() )
 }

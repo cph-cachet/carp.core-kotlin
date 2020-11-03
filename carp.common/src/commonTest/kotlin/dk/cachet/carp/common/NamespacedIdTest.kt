@@ -4,16 +4,16 @@ import kotlin.test.*
 
 
 /**
- * Tests for [FullyQualifiedName].
+ * Tests for [NamespacedId].
  */
-class FullyQualifiedNameTest
+class NamespacedIdTest
 {
     @Test
     fun namespace_needs_to_be_set()
     {
         assertFailsWith<IllegalArgumentException>
         {
-            FullyQualifiedName( "", "typename" )
+            NamespacedId( "", "typename" )
         }
     }
 
@@ -22,7 +22,7 @@ class FullyQualifiedNameTest
     {
         assertFailsWith<IllegalArgumentException>
         {
-            FullyQualifiedName( "some.namespace", "contains.dot" )
+            NamespacedId( "some.namespace", "contains.dot" )
         }
     }
 
@@ -31,7 +31,7 @@ class FullyQualifiedNameTest
     {
         val namespace = "some.namespace"
         val name = "typename"
-        val fqName = FullyQualifiedName.fromString( "$namespace.$name" )
+        val fqName = NamespacedId.fromString( "$namespace.$name" )
 
         assertEquals( namespace, fqName.namespace )
         assertEquals( name, fqName.name )
@@ -42,7 +42,7 @@ class FullyQualifiedNameTest
     {
         assertFailsWith<IllegalArgumentException>
         {
-            FullyQualifiedName.fromString( "typename" )
+            NamespacedId.fromString( "typename" )
         }
     }
 }

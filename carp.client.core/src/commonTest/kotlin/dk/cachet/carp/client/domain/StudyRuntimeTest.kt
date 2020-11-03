@@ -259,7 +259,7 @@ class StudyRuntimeTest
         val protocol = createSmartphoneWithConnectedDeviceStudy()
         val masterTask = StubTaskDescriptor( "Master measure", listOf( StubMeasure( STUB_DATA_TYPE ) ) )
         protocol.addTriggeredTask( smartphone.atStartOfStudy(), masterTask, smartphone )
-        val connectedDataType = DataType.fromFullyQualifiedName( "custom.type" )
+        val connectedDataType = DataType( "custom", "type" )
         val connectedTask = StubTaskDescriptor( "Connected measure", listOf( StubMeasure( connectedDataType ) ) )
         protocol.addTriggeredTask( smartphone.atStartOfStudy(), connectedTask, connectedDevice )
 

@@ -18,7 +18,7 @@ class UnexpectedMeasuresWarningTest
         val master = StubMasterDeviceDescriptor( supportedDataTypes = setOf( STUB_DATA_TYPE ) )
         protocol.addMasterDevice( master )
         val expectedMeasure = StubMeasure( STUB_DATA_TYPE )
-        val unexpectedMeasure = StubMeasure( DataType.fromFullyQualifiedName( "namespace.unexpected" ) )
+        val unexpectedMeasure = StubMeasure( DataType( "namespace", "unexpected" ) )
         val task = StubTaskDescriptor( "Task", listOf( expectedMeasure, unexpectedMeasure ) )
         protocol.addTriggeredTask( master.atStartOfStudy(), task, master )
 

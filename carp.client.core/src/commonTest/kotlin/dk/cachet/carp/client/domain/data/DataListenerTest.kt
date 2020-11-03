@@ -11,7 +11,7 @@ import kotlin.test.*
  */
 class DataListenerTest
 {
-    private val unsupportedType = DataType.fromFullyQualifiedName( "not.supported" )
+    private val unsupportedType = DataType( "not", "supported" )
 
 
     @Test

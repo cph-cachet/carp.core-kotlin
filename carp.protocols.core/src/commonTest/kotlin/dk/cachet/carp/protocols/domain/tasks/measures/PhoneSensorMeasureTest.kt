@@ -12,7 +12,7 @@ class PhoneSensorMeasureTest
     @Test
     fun initialization_with_unsupported_data_type_fails()
     {
-        val invalidType = DataType.fromFullyQualifiedName( "not.supported" )
+        val invalidType = DataType( "not", "supported" )
         val validMeasure = PhoneSensorMeasure.geolocation()
 
         assertFailsWith<IllegalArgumentException>
