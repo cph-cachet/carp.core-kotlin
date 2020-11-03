@@ -28,7 +28,7 @@ import ParticipantGroupStatus = dk.cachet.carp.studies.domain.ParticipantGroupSt
 import StudyDetails = dk.cachet.carp.studies.domain.StudyDetails
 import StudyStatus = dk.cachet.carp.studies.domain.StudyStatus
 import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
-import createStudiesSerializer = dk.cachet.carp.studies.infrastructure.createStudiesSerializer_4jix7z$
+import createStudiesSerializer = dk.cachet.carp.studies.infrastructure.createStudiesSerializer_18xi4u$
 
 
 describe( "carp.studies.core", () => {

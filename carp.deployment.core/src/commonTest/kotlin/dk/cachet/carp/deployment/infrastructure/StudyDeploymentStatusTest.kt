@@ -12,6 +12,7 @@ import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import dk.cachet.carp.protocols.infrastructure.test.makeUnknown
 import dk.cachet.carp.protocols.infrastructure.toJson
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.*
 
 
@@ -48,6 +49,7 @@ class StudyDeploymentStatusTest
         assertEquals( status, parsed )
     }
 
+    @ExperimentalSerializationApi
     @Test
     fun serializing_deployment_when_unknown_devices_are_involved()
     {

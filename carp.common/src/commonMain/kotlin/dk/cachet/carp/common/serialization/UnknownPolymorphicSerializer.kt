@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.serialization
 
 import dk.cachet.carp.common.reflect.reflectIfAvailable
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
@@ -51,7 +52,7 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         }
     }
 
-    private val polymorphicSerializer: KSerializer<P> = PolymorphicSerializer( baseClass )
+    private val polymorphicSerializer: PolymorphicSerializer<P> = PolymorphicSerializer( baseClass )
     override val descriptor: SerialDescriptor = polymorphicSerializer.descriptor
 
     override fun serialize( encoder: Encoder, value: P )
@@ -75,6 +76,7 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         }
     }
 
+    @InternalSerializationApi
     override fun deserialize( decoder: Decoder ): P
     {
         // This serializer assumes JSON serialization.
@@ -87,7 +89,7 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         // TODO: Can CLASS_DISCRIMINATOR be loaded from the configuration to remove this dependency (without relying on reflection)?
         val jsonElement = decoder.decodeJsonElement()
         val className = jsonElement.jsonObject[ CLASS_DISCRIMINATOR ]!!.jsonPrimitive.content
-        val registeredSerializer = decoder.serializersModule.getPolymorphic( baseClass, className )
+        val registeredSerializer = polymorphicSerializer.findPolymorphicSerializerOrNull( decoder, className )
         val canLoadClass = registeredSerializer != null
 
         // Deserialize object when serializer is available, or wrap in case type is unknown.

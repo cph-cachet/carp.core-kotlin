@@ -113,6 +113,6 @@ declare module 'carp.core-kotlin-carp.common'
 
     namespace dk.cachet.carp.common.serialization
     {
-        function createDefaultJSON_4jix7z$(): Json
+        function createDefaultJSON_18xi4u$(): Json
     }
 }

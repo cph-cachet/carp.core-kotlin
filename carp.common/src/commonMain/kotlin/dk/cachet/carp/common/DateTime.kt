@@ -4,7 +4,6 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -34,7 +33,6 @@ expect class DateTime( msSinceUTC: Long )
 /**
  * A custom serializer for [DateTime].
  */
-@Serializer( forClass = DateTime::class )
 object DateTimeSerializer : KSerializer<DateTime>
 {
     override val descriptor: SerialDescriptor =

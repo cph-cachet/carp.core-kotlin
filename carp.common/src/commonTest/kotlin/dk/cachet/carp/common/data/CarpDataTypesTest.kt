@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.data
 
 import dk.cachet.carp.common.serialization.COMMON_SERIAL_MODULE
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.*
 
 
@@ -9,6 +10,7 @@ import kotlin.test.*
  */
 class CarpDataTypesTest
 {
+    @ExperimentalSerializationApi
     @Test
     fun serializable_data_class_registered_for_each_data_type()
     {

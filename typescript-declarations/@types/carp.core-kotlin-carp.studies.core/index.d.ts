@@ -221,6 +221,6 @@ declare module 'carp.core-kotlin-carp.studies.core'
             }
         }
 
-        function createStudiesSerializer_4jix7z$(): Json
+        function createStudiesSerializer_18xi4u$(): Json
     }
 }

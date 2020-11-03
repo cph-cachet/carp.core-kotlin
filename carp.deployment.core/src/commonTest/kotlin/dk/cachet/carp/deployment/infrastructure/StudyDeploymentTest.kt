@@ -11,6 +11,7 @@ import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.makeUnknown
 import dk.cachet.carp.protocols.infrastructure.toJson
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.*
 
 
@@ -48,6 +49,7 @@ class StudyDeploymentTest
         }
     }
 
+    @ExperimentalSerializationApi
     @Test
     fun create_deployment_fromSnapshot_with_custom_extending_types_succeeds()
     {
