@@ -5,16 +5,15 @@ import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudySnapshot
-import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.ParticipantRepository
 
 
 /**
  * A [StudyRepository] which holds studies in memory as long as the instance is held in memory.
  */
-class InMemoryStudyRepository : StudyRepository
+class InMemoryStudyRepository : StudyRepository, ParticipantRepository by InMemoryParticipantRepository()
 {
     private val studies: MutableMap<UUID, StudySnapshot> = mutableMapOf()
-    private val participants: MutableMap<UUID, MutableList<Participant>> = mutableMapOf()
 
 
     /**
@@ -52,32 +51,5 @@ class InMemoryStudyRepository : StudyRepository
         require( studies.contains( study.id ) )
 
         studies[ study.id ] = study.getSnapshot()
-    }
-
-    /**
-     * Adds a new [participant] for the study with [studyId] to the repository.
-     *
-     * @throws IllegalArgumentException when a study with the specified [studyId] does not exist,
-     * or when a participant with the specified ID already exists within the study.
-     */
-    override suspend fun addParticipant( studyId: UUID, participant: Participant )
-    {
-        require( studies.contains( studyId ) )
-
-        val studyParticipants = participants.getOrPut( studyId ) { mutableListOf() }
-        require( studyParticipants.none { it.id == participant.id } )
-        studyParticipants.add( participant )
-    }
-
-    /**
-     * Returns the participants which were added to the study with the specified [studyId].
-     *
-     * @throws IllegalArgumentException when a study with the specified [studyId] does not exist.
-     */
-    override suspend fun getParticipants( studyId: UUID ): List<Participant>
-    {
-        require( studies.contains( studyId ) )
-
-        return participants[ studyId ] ?: listOf()
     }
 }
