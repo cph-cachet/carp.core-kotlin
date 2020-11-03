@@ -20,7 +20,7 @@ actual class DateTime actual constructor( actual val msSinceUTC: Long )
 
     private val dateTime = Instant.ofEpochMilli( msSinceUTC )
 
-    actual override fun toString(): String =
+    actual fun defaultFormat(): String =
         DateTimeFormatter
             .ofPattern( "YYYY-mm-dd'T'HH:mm:ss.SSS'Z'" )
             .withZone( ZoneId.of( "UTC" ) )

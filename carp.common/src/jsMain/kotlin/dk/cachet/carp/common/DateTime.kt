@@ -18,7 +18,7 @@ actual class DateTime actual constructor( actual val msSinceUTC: Long )
 
     private val dateTime: Date = Date( msSinceUTC )
 
-    actual override fun toString(): String = dateTime.toISOString()
+    actual fun defaultFormat(): String = dateTime.toISOString()
 
     override fun equals( other: Any? ): Boolean
     {

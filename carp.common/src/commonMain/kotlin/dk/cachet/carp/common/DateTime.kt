@@ -26,7 +26,7 @@ expect class DateTime( msSinceUTC: Long )
      * Output as ISO 8601 UTC date and time in extended format with day and seconds precision with 3 decimal places following a period.
      * E.g., "2020-01-01T12:00:00.000Z"
      */
-    override fun toString(): String
+    fun defaultFormat(): String
 }
 
 
