@@ -244,7 +244,11 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
         into "./${typescriptFolder}/node_modules"
     }
 }
-task verifyTsDeclarations(type: NodeTask, dependsOn: copyTestJsSources) {
+task compileTs(type: NpmTask, dependsOn: copyTestJsSources) {
+    workingDir = file(typescriptFolder)
+    args = ['run', 'tsc']
+}
+task verifyTsDeclarations(type: NodeTask, dependsOn: compileTs) {
     script = file("${typescriptFolder}/node_modules/mocha/bin/mocha")
     execOverrides {
         it.workingDir = typescriptFolder
