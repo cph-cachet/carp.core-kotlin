@@ -1,12 +1,8 @@
 package dk.cachet.carp.common
 
+import dk.cachet.carp.common.serialization.createCarpStringPrimitiveSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
 
 
 /**
@@ -60,11 +56,7 @@ data class NamespacedId(
 }
 
 
-object NamespacedIdSerializer : KSerializer<NamespacedId>
-{
-    override val descriptor: SerialDescriptor
-        get() = PrimitiveSerialDescriptor("dk.cachet.carp.common.NamespacedId", PrimitiveKind.STRING )
-
-    override fun serialize( encoder: Encoder, value: NamespacedId ) = encoder.encodeString( value.toString() )
-    override fun deserialize( decoder: Decoder ): NamespacedId = NamespacedId.fromString( decoder.decodeString() )
-}
+/**
+ * A custom serializer for [NamespacedId].
+ */
+object NamespacedIdSerializer : KSerializer<NamespacedId> by createCarpStringPrimitiveSerializer( { s -> NamespacedId.fromString( s ) } )
