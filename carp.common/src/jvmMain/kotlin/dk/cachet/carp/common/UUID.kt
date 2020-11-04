@@ -11,6 +11,7 @@ actual class UUID actual constructor( actual val stringRepresentation: String )
         require( UUIDRegex.matches( stringRepresentation ) ) { "Invalid UUID string representation." }
     }
 
+
     actual companion object
     {
         actual fun parse( uuid: String ): UUID = UUID( uuid.toLowerCase() )
@@ -18,7 +19,7 @@ actual class UUID actual constructor( actual val stringRepresentation: String )
     }
 
 
-    override fun toString(): String = stringRepresentation
+    actual override fun toString(): String = stringRepresentation
 
     override fun equals( other: Any? ): Boolean
     {

@@ -1,12 +1,8 @@
 package dk.cachet.carp.common
 
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
+import dk.cachet.carp.common.serialization.createCarpLongPrimitiveSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
 
 
 /**
@@ -17,10 +13,12 @@ expect class DateTime( msSinceUTC: Long )
 {
     val msSinceUTC: Long
 
+
     companion object
     {
         fun now(): DateTime
     }
+
 
     /**
      * Output as ISO 8601 UTC date and time in extended format with day and seconds precision with 3 decimal places following a period.
@@ -33,11 +31,4 @@ expect class DateTime( msSinceUTC: Long )
 /**
  * A custom serializer for [DateTime].
  */
-object DateTimeSerializer : KSerializer<DateTime>
-{
-    override val descriptor: SerialDescriptor =
-        PrimitiveSerialDescriptor( "dk.cachet.carp.common.DateTime", PrimitiveKind.STRING )
-
-    override fun serialize( encoder: Encoder, value: DateTime ) = encoder.encodeLong( value.msSinceUTC )
-    override fun deserialize( decoder: Decoder ): DateTime = DateTime( decoder.decodeLong() )
-}
+object DateTimeSerializer : KSerializer<DateTime> by createCarpLongPrimitiveSerializer( { DateTime( it ) }, { it.msSinceUTC } )
