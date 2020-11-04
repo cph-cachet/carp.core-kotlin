@@ -8,12 +8,15 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 
+const val NAMESPACE = "dk.cachet.carp.common"
+
+
 /**
  * Creates a primitive serializer for CARP types in the [dk.cachet.carp.common] namespace
  * which are serialized using `toString` and deserialized using [fromString].
  */
 internal inline fun <reified T> createCarpStringPrimitiveSerializer( noinline fromString: (String) -> T ) =
-    object : StringConversionSerializer<T>( fullyQualified( T::class.simpleName!! ), fromString ) { }
+    object : StringConversionSerializer<T>( "$NAMESPACE.${T::class.simpleName!!}", fromString ) { }
 
 internal open class StringConversionSerializer<T>(
     serialName: String,
@@ -35,7 +38,7 @@ internal inline fun <reified T> createCarpLongPrimitiveSerializer(
     noinline fromLong: (Long) -> T,
     noinline toLong: (T) -> Long
 ) =
-    object : LongConversionSerializer<T>( fullyQualified( T::class.simpleName!! ), fromLong, toLong ) { }
+    object : LongConversionSerializer<T>( "$NAMESPACE.${T::class.simpleName!!}", fromLong, toLong ) { }
 
 internal open class LongConversionSerializer<T>(
     serialName: String,
@@ -48,6 +51,3 @@ internal open class LongConversionSerializer<T>(
     override fun serialize( encoder: Encoder, value: T ) = encoder.encodeLong( toLong( value ) )
     override fun deserialize( decoder: Decoder ): T = fromLong( decoder.decodeLong() )
 }
-
-
-private fun fullyQualified( typeName: String ) = "dk.cachet.carp.common.$typeName"
