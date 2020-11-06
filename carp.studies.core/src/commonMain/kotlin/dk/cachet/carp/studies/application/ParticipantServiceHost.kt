@@ -31,8 +31,7 @@ class ParticipantServiceHost(
      */
     override suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant
     {
-        val study = studyRepository.getById( studyId )
-        requireNotNull( study )
+        getStudyOrThrow( studyId )
 
         // Verify whether participant was already added.
         val identity = EmailAccountIdentity( email )
@@ -49,17 +48,29 @@ class ParticipantServiceHost(
     }
 
     /**
+     * Returns a participant of a study with the specified [studyId], identified by [participantId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] or participant with [participantId] does not exist.
+     */
+    override suspend fun getParticipant( studyId: UUID, participantId: UUID ): Participant
+    {
+        getStudyOrThrow( studyId )
+
+        // Load participant from repository.
+        // We don't expect massive amounts of participants for now, so loading all from repo is fine for now.
+        val participant = participantRepository.getParticipants( studyId ).firstOrNull { it.id == participantId }
+        requireNotNull( participant )
+
+        return participant
+    }
+
+    /**
      * Get all [Participant]s for the study with the specified [studyId].
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
-    override suspend fun getParticipants( studyId: UUID ): List<Participant>
-    {
-        val study = studyRepository.getById( studyId )
-        requireNotNull( study )
-
-        return participantRepository.getParticipants( studyId )
-    }
+    override suspend fun getParticipants( studyId: UUID ): List<Participant> =
+        getStudyOrThrow( studyId ).let { participantRepository.getParticipants( studyId ) }
 
     /**
      * Deploy the study with the given [studyId] to a [group] of previously added participants.
@@ -79,8 +90,7 @@ class ParticipantServiceHost(
         require( group.isNotEmpty() ) { "No participants to deploy specified." }
 
         // Verify whether the study is ready for deployment.
-        val study: Study? = studyRepository.getById( studyId )
-        requireNotNull( study ) { "Study with the specified studyId is not found." }
+        val study: Study = getStudyOrThrow( studyId )
         check( study.canDeployToParticipants ) { "Study is not yet ready to be deployed to participants." }
         val protocolSnapshot = study.protocolSnapshot!!
 
@@ -142,8 +152,7 @@ class ParticipantServiceHost(
      */
     override suspend fun getParticipantGroupStatusList( studyId: UUID ): List<ParticipantGroupStatus>
     {
-        val study: Study? = studyRepository.getById( studyId )
-        requireNotNull( study ) { "Study with the specified studyId is not found." }
+        val study: Study = getStudyOrThrow( studyId )
 
         // Get study deployment statuses.
         val studyDeploymentIds = study.participations.keys
@@ -167,14 +176,14 @@ class ParticipantServiceHost(
      */
     override suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ): ParticipantGroupStatus
     {
-        // We don't really need to verify whether the study exists since groupId is equivalent to studyDeploymentId.
-        // However, for future-proofing, if they were to differ, it is good to already enforce the dependence on studyId.
-        val study: Study? = studyRepository.getById( studyId )
-        requireNotNull( study ) { "Study with the specified studyId is not found." }
+        val study: Study = getStudyOrThrow( studyId )
         val participations = study.participations.getOrElse( groupId ) { emptySet() }
         require( participations.count() > 0 ) { "Study deployment with the specified groupId not found." }
 
         val deploymentStatus = deploymentService.stop( groupId )
         return ParticipantGroupStatus( deploymentStatus, participations )
     }
+
+    private suspend fun getStudyOrThrow( studyId: UUID ): Study = studyRepository.getById( studyId )
+        ?: throw IllegalArgumentException( "Study with the specified studyId does not exist." )
 }

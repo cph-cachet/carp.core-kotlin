@@ -20,6 +20,7 @@ class ParticipantServiceRequestsTest
 
         val requests: List<ParticipantServiceRequest> = listOf(
             ParticipantServiceRequest.AddParticipant( studyId, EmailAddress( "test@test.com" ) ),
+            ParticipantServiceRequest.GetParticipant( studyId, UUID.randomUUID() ),
             ParticipantServiceRequest.GetParticipants( studyId ),
             ParticipantServiceRequest.DeployParticipantGroup( studyId, setOf() ),
             ParticipantServiceRequest.GetParticipantGroupStatusList( studyId ),
