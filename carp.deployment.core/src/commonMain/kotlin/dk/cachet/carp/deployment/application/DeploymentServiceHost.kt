@@ -12,8 +12,8 @@ import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
-import dk.cachet.carp.deployment.domain.users.ParticipationService
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.deployment.domain.users.filterActiveParticipationInvitations
 import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
@@ -262,7 +262,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository, priva
         val deploymentIds = invitations.map { it.participation.studyDeploymentId }.toSet()
         val deployments = repository.getStudyDeploymentsBy( deploymentIds )
 
-        return ParticipationService.filterActiveParticipationInvitations( invitations, deployments )
+        return filterActiveParticipationInvitations( invitations, deployments )
     }
 
     private suspend fun getStudyDeployment( studyDeploymentId: UUID ): StudyDeployment
