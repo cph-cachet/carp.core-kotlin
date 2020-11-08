@@ -242,14 +242,13 @@ val isReady = status is StudyDeploymentStatus.DeploymentReady // True.
 **carp.client**: Example initialization of a smartphone client for the participant that got invited to the study in the 'studies' code sample above:
 
 ```kotlin
-val deploymentService = createDeploymentEndpoint()
-val deploymentService = createDeploymentEndpoint()
+val (participationService, deploymentService) = createEndpoints()
 val dataCollectorFactory = createDataCollectorFactory()
 
 // Retrieve invitation to participate in the study using a specific device.
 val account: Account = getLoggedInUser()
 val invitation: ActiveParticipationInvitation =
-    deploymentService.getActiveParticipationInvitations( account.id ).first()
+    participationService.getActiveParticipationInvitations( account.id ).first()
 val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
 val deviceToUse: String = invitation.devices.first().deviceRoleName // This matches "Patient's phone".
 

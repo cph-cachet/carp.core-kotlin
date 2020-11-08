@@ -3,6 +3,7 @@ package dk.cachet.carp.studies
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
+import dk.cachet.carp.deployment.application.ParticipationServiceHost
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
@@ -72,8 +73,14 @@ class StudiesCodeSamples
         val studyRepo = InMemoryStudyRepository()
         val studyService = StudyServiceHost( studyRepo )
 
-        val deploymentService = DeploymentServiceHost( InMemoryDeploymentRepository(), InMemoryAccountService() )
-        val participantService = ParticipantServiceHost( studyRepo, InMemoryParticipantRepository(), deploymentService )
+        val deploymentRepository = InMemoryDeploymentRepository()
+        val deploymentService = DeploymentServiceHost( deploymentRepository )
+        val participationService = ParticipationServiceHost( deploymentRepository, InMemoryAccountService() )
+        val participantService = ParticipantServiceHost(
+            studyRepo,
+            InMemoryParticipantRepository(),
+            deploymentService,
+            participationService )
 
         return Pair( studyService, participantService )
     }

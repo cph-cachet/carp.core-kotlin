@@ -11,6 +11,8 @@ import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
+import dk.cachet.carp.deployment.application.ParticipationService
+import dk.cachet.carp.deployment.application.ParticipationServiceHost
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
@@ -28,13 +30,13 @@ class ClientCodeSamples
 {
     @Test
     fun readme() = runSuspendTest {
-        val deploymentService = createDeploymentEndpoint()
+        val (participationService, deploymentService) = createEndpoints()
         val dataCollectorFactory = createDataCollectorFactory()
 
         // Retrieve invitation to participate in the study using a specific device.
         val account: Account = getLoggedInUser()
         val invitation: ActiveParticipationInvitation =
-            deploymentService.getActiveParticipationInvitations( account.id ).first()
+            participationService.getActiveParticipationInvitations( account.id ).first()
         val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
         val deviceToUse: String = invitation.devices.first().deviceRoleName // This matches "Patient's phone".
 
@@ -63,21 +65,23 @@ class ClientCodeSamples
     }
 
 
-    private suspend fun createDeploymentEndpoint(): DeploymentService
+    private suspend fun createEndpoints(): Pair<ParticipationService, DeploymentService>
     {
-        val service = DeploymentServiceHost( InMemoryDeploymentRepository(), accountService )
+        val deploymentRepository = InMemoryDeploymentRepository()
+        val deploymentService = DeploymentServiceHost( deploymentRepository )
+        val participationService = ParticipationServiceHost( deploymentRepository, accountService )
 
         // Create deployment for the example protocol.
         val protocol = createExampleProtocol()
-        val status = service.createStudyDeployment( protocol.getSnapshot() )
+        val status = deploymentService.createStudyDeployment( protocol.getSnapshot() )
 
         // Invite a participant.
         val phone = protocol.masterDevices.first()
         val invitation = StudyInvitation.empty()
-        service.addParticipation( status.studyDeploymentId, setOf( phone.roleName ), accountIdentity, invitation )
-        val account = accountService.findAccount( accountIdentity )
+        participationService.addParticipation( status.studyDeploymentId, setOf( phone.roleName ), accountIdentity, invitation )
+        accountService.findAccount( accountIdentity )
 
-        return service
+        return Pair( participationService, deploymentService )
     }
 
     private fun createRepository() = InMemoryClientRepository()

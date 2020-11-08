@@ -5,6 +5,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
+import dk.cachet.carp.deployment.application.ParticipationService
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.studies.domain.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.Study
@@ -20,7 +21,8 @@ import dk.cachet.carp.studies.domain.users.participantIds
 class ParticipantServiceHost(
     private val studyRepository: StudyRepository,
     private val participantRepository: ParticipantRepository,
-    private val deploymentService: DeploymentService
+    private val deploymentService: DeploymentService,
+    private val participationService: ParticipationService
 ) : ParticipantService
 {
     /**
@@ -128,7 +130,7 @@ class ParticipantServiceHost(
         for ( toAssign in group )
         {
             val identity: AccountIdentity = allParticipants.getValue( toAssign.participantId ).accountIdentity
-            val participation = deploymentService.addParticipation(
+            val participation = participationService.addParticipation(
                 deploymentStatus.studyDeploymentId,
                 toAssign.deviceRoleNames,
                 identity,

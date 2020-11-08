@@ -2,12 +2,8 @@ package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
-import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -25,8 +21,7 @@ class DeploymentServiceMock(
     private val unregisterDeviceResult: StudyDeploymentStatus = emptyStatus,
     private val getDeviceDeploymentForResult: MasterDeviceDeployment = emptyMasterDeviceDeployment,
     private val deploymentSuccessfulResult: StudyDeploymentStatus = emptyStatus,
-    private val stopResult: StudyDeploymentStatus = emptyStatus,
-    private val getActiveParticipationInvitationResult: Set<ActiveParticipationInvitation> = emptySet()
+    private val stopResult: StudyDeploymentStatus = emptyStatus
 ) : Mock<Service>(), Service
 {
     companion object
@@ -72,12 +67,4 @@ class DeploymentServiceMock(
     override suspend fun stop( studyDeploymentId: UUID ) =
         stopResult
         .also { trackSuspendCall( Service::stop, studyDeploymentId ) }
-
-    override suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ) =
-        Participation( studyDeploymentId )
-        .also { trackSuspendCall( Service::addParticipation, studyDeploymentId, deviceRoleNames, identity, invitation ) }
-
-    override suspend fun getActiveParticipationInvitations( accountId: UUID ) =
-        getActiveParticipationInvitationResult
-        .also { trackSuspendCall( Service::getActiveParticipationInvitations, accountId ) }
 }
