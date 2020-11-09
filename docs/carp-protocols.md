@@ -99,7 +99,9 @@ In most cases this is sufficient, but for more information, check [the serializa
 
 ## Application services
 
-[ProtocolService](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/application/ProtocolService.kt) allows managing multiple versions of study protocols.
+### [`ProtocolService`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/application/ProtocolService.kt)
+
+Allows managing multiple versions of study protocols.
 
 The _'Require'_ and _'Grant'_ column lists claim-based authorization recommendations for implementing infrastructures.
 Respectively, the required claims and claims to grant upon a successful request.
@@ -114,7 +116,9 @@ In case you want to support organizations this could be the ID of the organizati
 | `getAllFor` | Find all study protocols owned by a specific owner. | protocol owner: `owner.id` | |
 | `getVersionHistoryFor` | Returns all stored versions for the study protocol with a given name owned by a specific owner. |  protocol owner: `owner.id` | |
 
-[ProtocolFactoryService](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/application/ProtocolFactoryService.kt) provides factory methods to create common study protocols.
+### [`ProtocolFactoryService`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/application/ProtocolFactoryService.kt)
+
+Provides factory methods to create common study protocols.
 To store these protocols, pass the returned protocols to `ProtocolService`.
 
 | Endpoint | Description |
