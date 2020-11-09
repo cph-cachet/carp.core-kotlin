@@ -16,6 +16,7 @@ import dk.cachet.carp.test.Mock
 
 class ParticipantServiceMock(
     private val addParticipantResult: Participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ),
+    private val getParticipantResult: Participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ),
     private val getParticipantsResult: List<Participant> = emptyList(),
     private val deployParticipantResult: ParticipantGroupStatus = groupStatus,
     private val getParticipantGroupStatusListResult: List<ParticipantGroupStatus> = emptyList(),
@@ -33,6 +34,10 @@ class ParticipantServiceMock(
     override suspend fun addParticipant( studyId: UUID, email: EmailAddress ) =
         addParticipantResult
         .also { trackSuspendCall( ParticipantService::addParticipant, studyId, email ) }
+
+    override suspend fun getParticipant( studyId: UUID, participantId: UUID ) =
+        getParticipantResult
+        .also { trackSuspendCall( ParticipantService::getParticipant, studyId, participantId ) }
 
     override suspend fun getParticipants( studyId: UUID ) =
         getParticipantsResult

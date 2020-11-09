@@ -34,6 +34,12 @@ interface ParticipantServiceTest
         val studyId = study.studyId
 
         val participant = participantService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+
+        // Get single participant.
+        val studyParticipant = participantService.getParticipant( studyId, participant.id )
+        assertEquals( participant, studyParticipant )
+
+        // Get all participants.
         val studyParticipants = participantService.getParticipants( studyId )
         assertEquals( participant, studyParticipants.single() )
     }
@@ -57,6 +63,18 @@ interface ParticipantServiceTest
         val p1 = participantService.addParticipant( studyId, email )
         val p2 = participantService.addParticipant( studyId, email )
         assertTrue( p1 == p2 )
+    }
+
+    @Test
+    fun getParticipant_fails_for_unknown_id() = runSuspendTest {
+        val (participantService, studyService) = createService()
+        val study = studyService.createStudy( StudyOwner(), "Test" )
+
+        // Unknown study Id.
+        assertFailsWith<IllegalArgumentException> { participantService.getParticipant( unknownId, unknownId ) }
+
+        // Unknown participant Id.
+        assertFailsWith<IllegalArgumentException> { participantService.getParticipant( study.studyId, unknownId ) }
     }
 
     @Test

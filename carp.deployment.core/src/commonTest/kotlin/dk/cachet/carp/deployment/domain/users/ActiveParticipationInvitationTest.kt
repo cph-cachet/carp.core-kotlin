@@ -7,9 +7,9 @@ import kotlin.test.*
 
 
 /**
- * Tests for [ParticipationService].
+ * Tests for [ActiveParticipationInvitation].
  */
-class ParticipationServiceTest
+class ActiveParticipationInvitationTest
 {
     @Test
     fun filterActiveParticipationInvitations_only_returns_active_deployments()
@@ -21,7 +21,7 @@ class ParticipationServiceTest
         val participation = Participation( activeDeployment.id )
         val invitation = ParticipationInvitation( participation, StudyInvitation.empty(), setOf( deviceRole ) )
 
-        val activeInvitations = ParticipationService.filterActiveParticipationInvitations(
+        val activeInvitations = filterActiveParticipationInvitations(
             setOf( invitation ),
             listOf( activeDeployment, stoppedDeployment )
         )
@@ -39,7 +39,7 @@ class ParticipationServiceTest
         val invitation = ParticipationInvitation( participation, StudyInvitation.empty(), setOf( deviceRole ) )
 
         // When the device is not registered in the deployment, this is communicated in the active invitation.
-        var activeInvitation = ParticipationService.filterActiveParticipationInvitations(
+        var activeInvitation = filterActiveParticipationInvitations(
             setOf( invitation ),
             listOf( deployment )
         ).first()
@@ -48,7 +48,7 @@ class ParticipationServiceTest
         // Once the device is registered, this is communicated in the active invitation.
         val toRegister = deployment.registrableDevices.first { it.device.roleName == deviceRole }.device
         deployment.registerDevice( toRegister, toRegister.createRegistration() )
-        activeInvitation = ParticipationService.filterActiveParticipationInvitations(
+        activeInvitation = filterActiveParticipationInvitations(
             setOf( invitation ),
             listOf( deployment )
         ).first()
@@ -64,7 +64,7 @@ class ParticipationServiceTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            ParticipationService.filterActiveParticipationInvitations( setOf( invitation ), emptyList() )
+            filterActiveParticipationInvitations( setOf( invitation ), emptyList() )
         }
     }
 
@@ -78,7 +78,7 @@ class ParticipationServiceTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            ParticipationService.filterActiveParticipationInvitations( setOf( invitation ), listOf( deployment ) )
+            filterActiveParticipationInvitations( setOf( invitation ), listOf( deployment ) )
         }
     }
 }

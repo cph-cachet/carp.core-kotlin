@@ -24,9 +24,14 @@ private typealias ParticipantServiceInvoker<T> = ServiceInvoker<ParticipantServi
 sealed class ParticipantServiceRequest
 {
     @Serializable
-    data class AddParticipant(val studyId: UUID, val email: EmailAddress) :
+    data class AddParticipant( val studyId: UUID, val email: EmailAddress ) :
         ParticipantServiceRequest(),
         ParticipantServiceInvoker<Participant> by createServiceInvoker( ParticipantService::addParticipant, studyId, email )
+
+    @Serializable
+    data class GetParticipant( val studyId: UUID, val participantId: UUID ) :
+        ParticipantServiceRequest(),
+        ParticipantServiceInvoker<Participant> by createServiceInvoker( ParticipantService::getParticipant, studyId, participantId )
 
     @Serializable
     data class GetParticipants( val studyId: UUID) :

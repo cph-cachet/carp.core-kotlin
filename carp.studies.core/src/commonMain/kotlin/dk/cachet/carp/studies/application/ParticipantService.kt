@@ -21,6 +21,13 @@ interface ParticipantService
     suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant
 
     /**
+     * Returns a participant of a study with the specified [studyId], identified by [participantId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] or participant with [participantId] does not exist.
+     */
+    suspend fun getParticipant( studyId: UUID, participantId: UUID ): Participant
+
+    /**
      * Get all [Participant]s for the study with the specified [studyId].
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist.

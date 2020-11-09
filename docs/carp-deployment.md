@@ -24,12 +24,14 @@ Each device within the study deployment has a corresponding [`DeviceDeploymentSt
 
 ![Device deployment state machine](https://i.imgur.com/Mkb78W4.png)
 
-## Application service
-
-[DeploymentService](../carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/application/DeploymentService.kt) allows deploying study protocols, registering participations, and retrieving deployment information for participating master devices as defined in the protocol.
+## Application services
 
 The _'Require'_ and _'Grant'_ column lists claim-based authorization recommendations for implementing infrastructures.
 Respectively, the required claims and claims to grant upon a successful request.
+
+### [`DeploymentService`](../carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/application/DeploymentService.kt)
+
+Allows deploying study protocols and retrieving master device deployments for participating master devices as defined in the protocol.
 
 | Endpoint | Description | Require | Grant |
 | --- | --- | --- | --- |
@@ -41,5 +43,12 @@ Respectively, the required claims and claims to grant upon a successful request.
 | `getDeviceDeploymentFor` | Get the deployment configuration for a master device in a study deployment. | in deployment: `studyDeploymentId` | |
 | `deploymentSuccessful` | Indicate to stakeholders in a study deployment that a master device was deployed successfully, i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it. | in deployment: `studyDeploymentId` | |
 | `stop` | Stop a study deployment. No further changes to this deployment will be allowed and no more data will be collected. | in deployment: `studyDeploymentId` | |
+
+### [`ParticipationService`](../carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/application/ParticipationService.kt)
+
+Allows inviting participants and retrieving participations for study deployments.
+
+| Endpoint | Description | Require | Grant |
+| --- | --- | --- | --- |
 | `addParticipation` | Let a person with a specified identity participate in a study deployment, using a specified master device. | manage deployment: `studyDeploymentId` | in deployment (to account with `identity`): `studyDeploymentId` |
 | `getActiveParticipationInvitations` | Get all participations of active study deployments a specified account has been invited to. | authenticated: `accountId` | |
