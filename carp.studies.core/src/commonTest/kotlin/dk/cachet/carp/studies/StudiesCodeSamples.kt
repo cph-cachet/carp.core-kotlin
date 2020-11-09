@@ -7,6 +7,7 @@ import dk.cachet.carp.deployment.application.ParticipationServiceHost
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
+import dk.cachet.carp.deployment.infrastructure.InMemoryParticipationRepository
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
@@ -75,7 +76,13 @@ class StudiesCodeSamples
 
         val deploymentRepository = InMemoryDeploymentRepository()
         val deploymentService = DeploymentServiceHost( deploymentRepository )
-        val participationService = ParticipationServiceHost( deploymentRepository, InMemoryAccountService() )
+
+        val participationRepository = InMemoryParticipationRepository()
+        val participationService = ParticipationServiceHost(
+            deploymentRepository,
+            participationRepository,
+            InMemoryAccountService() )
+
         val participantService = ParticipantServiceHost(
             studyRepo,
             InMemoryParticipantRepository(),

@@ -4,6 +4,7 @@ import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.application.ParticipationServiceHost
 import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
+import dk.cachet.carp.deployment.infrastructure.InMemoryParticipationRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
 
@@ -25,7 +26,8 @@ class ParticipantServiceHostTest : ParticipantServiceTest
 
         // Create dependent participation service.
         val accountService = InMemoryAccountService()
-        val participationService = ParticipationServiceHost( deploymentRepo, accountService )
+        val participationRepository = InMemoryParticipationRepository()
+        val participationService = ParticipationServiceHost( deploymentRepo, participationRepository, accountService )
 
         val participantService = ParticipantServiceHost(
             studyRepo,

@@ -17,6 +17,7 @@ import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
+import dk.cachet.carp.deployment.infrastructure.InMemoryParticipationRepository
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.Smartphone
@@ -69,7 +70,8 @@ class ClientCodeSamples
     {
         val deploymentRepository = InMemoryDeploymentRepository()
         val deploymentService = DeploymentServiceHost( deploymentRepository )
-        val participationService = ParticipationServiceHost( deploymentRepository, accountService )
+        val participationRepository = InMemoryParticipationRepository()
+        val participationService = ParticipationServiceHost( deploymentRepository, participationRepository, accountService )
 
         // Create deployment for the example protocol.
         val protocol = createExampleProtocol()
