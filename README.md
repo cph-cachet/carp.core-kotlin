@@ -27,7 +27,7 @@ Two key **design goals** differentiate this project from similar projects:
     - [Application services](docs/carp-studies.md#application-services)
   - [Deployment](docs/carp-deployment.md)
     - [Study and device deployment state](docs/carp-deployment.md#study-and-device-deployment-state)
-    - [Application service](docs/carp-deployment.md#application-service)
+    - [Application services](docs/carp-deployment.md#application-services)
   - [Client](docs/carp-client.md)
     - [Study runtime state](docs/carp-client.md#study-runtime-state)
 - [Infrastructure helpers](#infrastructure-helpers)
