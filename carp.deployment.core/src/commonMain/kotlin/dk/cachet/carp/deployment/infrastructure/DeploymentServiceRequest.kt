@@ -4,13 +4,9 @@ import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.createServiceInvoker
 import dk.cachet.carp.common.ddd.ServiceInvoker
-import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
-import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
@@ -69,14 +65,4 @@ sealed class DeploymentServiceRequest
     data class Stop( val studyDeploymentId: UUID ) :
         DeploymentServiceRequest(),
         Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::stop, studyDeploymentId )
-
-    @Serializable
-    data class AddParticipation( val studyDeploymentId: UUID, val deviceRoleNames: Set<String>, val identity: AccountIdentity, val invitation: StudyInvitation ) :
-        DeploymentServiceRequest(),
-        Invoker<Participation> by createServiceInvoker( Service::addParticipation, studyDeploymentId, deviceRoleNames, identity, invitation )
-
-    @Serializable
-    data class GetActiveParticipationInvitations( val accountId: UUID ) :
-        DeploymentServiceRequest(),
-        Invoker<Set<ActiveParticipationInvitation>> by createServiceInvoker( Service::getActiveParticipationInvitations, accountId )
 }

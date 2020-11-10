@@ -3,7 +3,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
     import { kotlin } from 'kotlin'
     import ArrayList = kotlin.collections.ArrayList
     import HashSet = kotlin.collections.HashSet
-    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
+    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
     import Json = kotlinx.serialization.json.Json
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import DateTime = cdk.cachet.carp.common.DateTime

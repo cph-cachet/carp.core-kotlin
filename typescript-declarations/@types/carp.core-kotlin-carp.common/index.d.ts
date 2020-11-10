@@ -1,7 +1,7 @@
 declare module 'carp.core-kotlin-carp.common'
 {
     import { Long } from 'kotlin'
-    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
+    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
     import Json = kotlinx.serialization.json.Json
     
     

@@ -4,7 +4,6 @@ import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
-import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.protocols.domain.devices.SmartphoneDeviceRegistration
 import dk.cachet.carp.test.runSuspendTest
@@ -20,7 +19,7 @@ interface ClientRepositoryTest
 
     private fun createDependencies(): Triple<ClientRepository, DeploymentService, DataListener>
     {
-        val deploymentService = DeploymentServiceHost( InMemoryDeploymentRepository(), InMemoryAccountService() )
+        val deploymentService = DeploymentServiceHost( InMemoryDeploymentRepository() )
         return Triple( createRepository(), deploymentService, createDataListener() )
     }
 

@@ -27,7 +27,7 @@ Two key **design goals** differentiate this project from similar projects:
     - [Application services](docs/carp-studies.md#application-services)
   - [Deployment](docs/carp-deployment.md)
     - [Study and device deployment state](docs/carp-deployment.md#study-and-device-deployment-state)
-    - [Application service](docs/carp-deployment.md#application-service)
+    - [Application services](docs/carp-deployment.md#application-services)
   - [Client](docs/carp-client.md)
     - [Study runtime state](docs/carp-client.md#study-runtime-state)
 - [Infrastructure helpers](#infrastructure-helpers)
@@ -242,14 +242,13 @@ val isReady = status is StudyDeploymentStatus.DeploymentReady // True.
 **carp.client**: Example initialization of a smartphone client for the participant that got invited to the study in the 'studies' code sample above:
 
 ```kotlin
-val deploymentService = createDeploymentEndpoint()
-val deploymentService = createDeploymentEndpoint()
+val (participationService, deploymentService) = createEndpoints()
 val dataCollectorFactory = createDataCollectorFactory()
 
 // Retrieve invitation to participate in the study using a specific device.
 val account: Account = getLoggedInUser()
 val invitation: ActiveParticipationInvitation =
-    deploymentService.getActiveParticipationInvitations( account.id ).first()
+    participationService.getActiveParticipationInvitations( account.id ).first()
 val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
 val deviceToUse: String = invitation.devices.first().deviceRoleName // This matches "Patient's phone".
 
