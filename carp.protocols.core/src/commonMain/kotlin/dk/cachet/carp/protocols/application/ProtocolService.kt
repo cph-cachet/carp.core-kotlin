@@ -30,7 +30,7 @@ interface ProtocolService
      * @throws IllegalArgumentException when the [protocol] is not yet stored in the repository or when the [versionTag] is already in use.
      * @throws InvalidConfigurationError when [protocol] is invalid.
      */
-    suspend fun update( protocol: StudyProtocolSnapshot, versionTag: String = DateTime.now().defaultFormat() )
+    suspend fun update( protocol: StudyProtocolSnapshot, versionTag: String = DateTime.now().toString() )
 
     /**
      * Find the [StudyProtocolSnapshot] with the specified [protocolName] owned by [owner].

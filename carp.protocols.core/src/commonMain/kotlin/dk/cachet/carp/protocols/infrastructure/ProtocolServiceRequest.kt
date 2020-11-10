@@ -22,7 +22,7 @@ sealed class ProtocolServiceRequest
         ServiceInvoker<ProtocolService, Unit> by createServiceInvoker( ProtocolService::add, protocol, versionTag )
 
     @Serializable
-    data class Update( val protocol: StudyProtocolSnapshot, val versionTag: String = DateTime.now().defaultFormat() ) :
+    data class Update( val protocol: StudyProtocolSnapshot, val versionTag: String = DateTime.now().toString() ) :
         ProtocolServiceRequest(),
         ServiceInvoker<ProtocolService, Unit> by createServiceInvoker( ProtocolService::update, protocol, versionTag )
 

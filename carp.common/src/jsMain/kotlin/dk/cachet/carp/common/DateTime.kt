@@ -5,20 +5,23 @@ import kotlin.js.Date
 
 
 @Serializable( DateTimeSerializer::class )
-actual class DateTime actual constructor( actual val msSinceUTC: Long )
+actual data class DateTime actual constructor( actual val msSinceUTC: Long )
 {
+    private val dateTime: Date = Date( msSinceUTC )
+
+
     actual companion object
     {
-        actual fun now(): DateTime
+        actual fun now(): DateTime = DateTime( Date.now().toLong() )
+        actual fun fromString( string: String ): DateTime
         {
-            return DateTime( Date.now().toLong() )
+            val date = Date.parse( string )
+            return DateTime( date.toLong() )
         }
     }
 
 
-    private val dateTime: Date = Date( msSinceUTC )
-
-    actual fun defaultFormat(): String = dateTime.toISOString()
+    actual override fun toString(): String = dateTime.toISOString()
 
     override fun equals( other: Any? ): Boolean
     {
