@@ -20,6 +20,7 @@ declare module 'carp.core-kotlin-carp.common'
         {
             serializer(): any;
             now(): DateTime;
+            fromString_61zpoe$( s: string ): DateTime
         }
 
         
