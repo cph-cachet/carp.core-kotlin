@@ -1,5 +1,7 @@
 package dk.cachet.carp.common
 
+import dk.cachet.carp.common.serialization.createCarpLongPrimitiveSerializer
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -7,7 +9,7 @@ import kotlinx.serialization.Serializable
  * Represents a time interval.
  * TODO: A custom serializer which serializes [INFINITE] as text, and optionally defines metrics to use (e.g., ms), would make JSON more human readable.
  */
-@Serializable
+@Serializable( TimeSpanSerializer::class )
 data class TimeSpan(
     /**
      * The duration of the time interval expressed in microseconds.
@@ -67,3 +69,9 @@ data class TimeSpan(
      */
     val totalMinutes: Double get() = this.microseconds.toDouble() / MICROSECONDS_IN_M
 }
+
+
+/**
+ * A custom serializer for [TimeSpan].
+ */
+object TimeSpanSerializer : KSerializer<TimeSpan> by createCarpLongPrimitiveSerializer( { TimeSpan( it ) }, { it.microseconds } )

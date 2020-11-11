@@ -1,6 +1,5 @@
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
@@ -28,14 +27,9 @@ class StudyServiceRequestsTest
             StudyServiceRequest.GetStudyDetails( studyId ),
             StudyServiceRequest.GetStudyStatus( studyId ),
             StudyServiceRequest.GetStudiesOverview( StudyOwner() ),
-            StudyServiceRequest.AddParticipant( studyId, EmailAddress( "test@test.com" ) ),
-            StudyServiceRequest.GetParticipants( studyId ),
             StudyServiceRequest.SetInvitation( studyId, StudyInvitation.empty() ),
             StudyServiceRequest.SetProtocol( studyId, StudyProtocol( ProtocolOwner(), "Test" ).getSnapshot() ),
-            StudyServiceRequest.GoLive( studyId ),
-            StudyServiceRequest.DeployParticipantGroup( studyId, setOf() ),
-            StudyServiceRequest.GetParticipantGroupStatusList( studyId ),
-            StudyServiceRequest.StopParticipantGroup( studyId, UUID.randomUUID() )
+            StudyServiceRequest.GoLive( studyId )
         )
     }
 

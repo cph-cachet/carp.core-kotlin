@@ -131,7 +131,7 @@ class StudyRuntime private constructor(
         when {
             deploymentInformation == null -> StudyRuntimeStatus.NotReadyForDeployment( id )
             remainingDevicesToRegister.isNotEmpty() ->
-                StudyRuntimeStatus.RegisteringDevices( id, deploymentInformation!!, remainingDevicesToRegister )
+                StudyRuntimeStatus.RegisteringDevices( id, deploymentInformation!!, remainingDevicesToRegister.toList() )
             isStopped -> StudyRuntimeStatus.Stopped( id, deploymentInformation!! )
             isDeployed -> StudyRuntimeStatus.Deployed( id, deploymentInformation!! )
             else -> error( "Unexpected study runtime state." )

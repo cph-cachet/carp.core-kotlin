@@ -6,7 +6,6 @@ import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -67,6 +66,5 @@ class DeploymentCodeSamples
         return protocol
     }
 
-    private fun createDeploymentEndpoint(): DeploymentService =
-        DeploymentServiceHost( InMemoryDeploymentRepository(), InMemoryAccountService() )
+    private fun createDeploymentEndpoint(): DeploymentService = DeploymentServiceHost( InMemoryDeploymentRepository() )
 }

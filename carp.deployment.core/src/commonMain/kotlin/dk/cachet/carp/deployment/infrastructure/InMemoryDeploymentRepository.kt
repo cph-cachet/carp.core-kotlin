@@ -4,16 +4,14 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.DeploymentRepository
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
-import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 
 
 /**
- * A [DeploymentRepository] which holds study deployments and participations in memory as long as the instance is held in memory.
+ * A [DeploymentRepository] which holds study deployments in memory as long as the instance is held in memory.
  */
 class InMemoryDeploymentRepository : DeploymentRepository
 {
     private val studyDeployments: MutableMap<UUID, StudyDeploymentSnapshot> = mutableMapOf()
-    private val participationInvitations: MutableMap<UUID, MutableSet<ParticipationInvitation>> = mutableMapOf()
 
 
     /**
@@ -50,19 +48,4 @@ class InMemoryDeploymentRepository : DeploymentRepository
 
         studyDeployments[ studyDeployment.id ] = studyDeployment.getSnapshot()
     }
-
-    /**
-     * Add a participation [invitation] for an account with the given [accountId].
-     */
-    override suspend fun addInvitation( accountId: UUID, invitation: ParticipationInvitation )
-    {
-        val invitations = participationInvitations.getOrPut( accountId ) { mutableSetOf() }
-        invitations.add( invitation )
-    }
-
-    /**
-     * Get all participation invitations for the account with the specified [accountId].
-     */
-    override suspend fun getInvitations( accountId: UUID ): Set<ParticipationInvitation> =
-        participationInvitations.getOrElse( accountId ) { setOf() }
 }

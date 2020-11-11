@@ -49,7 +49,7 @@ describe( "carp.common", () => {
             const serializer = DateTime.Companion.serializer()
             const serialized = json.encodeToString_tf03ej$( serializer, dateTime )
     
-            expect( serialized ).equals( "42" )
+            expect( serialized ).equals( "\"1970-01-01T00:00:00.042Z\"" )
         } )
     
         it( "msSinceUTC is Long", () => {
