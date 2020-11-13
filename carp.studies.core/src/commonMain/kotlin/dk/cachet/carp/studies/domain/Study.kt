@@ -185,11 +185,10 @@ class Study(
     {
         check( canDeployToParticipants ) { "The study is not yet ready for deployment." }
 
-        val participations = _participations.getOrPut( studyDeploymentId ) { mutableSetOf() }
-        if ( participations.add( participation ) )
-        {
-            event( Event.ParticipationAdded( studyDeploymentId, participation ) )
-        }
+        _participations
+            .getOrPut( studyDeploymentId ) { mutableSetOf() }
+            .add( participation )
+            .eventOnSuccess { Event.ParticipationAdded( studyDeploymentId, participation ) }
     }
 
     /**

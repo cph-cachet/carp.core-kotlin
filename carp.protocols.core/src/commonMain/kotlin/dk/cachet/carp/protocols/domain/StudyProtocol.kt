@@ -100,15 +100,9 @@ class StudyProtocol(
      * @param masterDevice A description of the master device to add. Its role name should be unique in the protocol.
      * @return True if the device has been added; false if the specified [MasterDeviceDescriptor] is already set as a master device.
      */
-    override fun addMasterDevice( masterDevice: AnyMasterDeviceDescriptor ): Boolean
-    {
-        val added = super.addMasterDevice( masterDevice )
-        if ( added )
-        {
-            event( Event.MasterDeviceAdded( masterDevice ) )
-        }
-        return added
-    }
+    override fun addMasterDevice( masterDevice: AnyMasterDeviceDescriptor ): Boolean =
+        super.addMasterDevice( masterDevice )
+        .eventOnSuccess { Event.MasterDeviceAdded( masterDevice ) }
 
     /**
      * Add a device which is connected to a master device within this configuration.
@@ -119,15 +113,9 @@ class StudyProtocol(
      * @param masterDevice The master device to connect to.
      * @return True if the device has been added; false if the specified [DeviceDescriptor] is already connected to the specified [MasterDeviceDescriptor].
      */
-    override fun addConnectedDevice( device: AnyDeviceDescriptor, masterDevice: AnyMasterDeviceDescriptor ): Boolean
-    {
-        val added = super.addConnectedDevice(device, masterDevice)
-        if ( added )
-        {
-            event( Event.ConnectedDeviceAdded( device, masterDevice ) )
-        }
-        return added
-    }
+    override fun addConnectedDevice( device: AnyDeviceDescriptor, masterDevice: AnyMasterDeviceDescriptor ): Boolean =
+        super.addConnectedDevice( device, masterDevice )
+        .eventOnSuccess { Event.ConnectedDeviceAdded( device, masterDevice ) }
 
     private val _triggers: MutableSet<Trigger> = mutableSetOf()
 
@@ -155,13 +143,12 @@ class StudyProtocol(
             throw InvalidConfigurationError( "The passed trigger cannot be initiated by the specified device since it is not a master device." )
         }
 
-        val isAdded: Boolean = _triggers.add( trigger )
-        if ( isAdded )
-        {
-            triggeredTasks[ trigger ] = mutableSetOf()
-            event( Event.TriggerAdded( trigger ) )
-        }
-        return isAdded
+        return _triggers
+            .add( trigger )
+            .eventOnSuccess {
+                triggeredTasks[ trigger ] = mutableSetOf()
+                Event.TriggerAdded( trigger )
+            }
     }
 
     /**
@@ -188,13 +175,9 @@ class StudyProtocol(
 
         // Add triggered task.
         val triggeredTask = TriggeredTask( task, targetDevice )
-        val triggeredTaskAdded = triggeredTasks[ trigger ]!!.add( triggeredTask )
-        if ( triggeredTaskAdded )
-        {
-            event( Event.TriggeredTaskAdded( triggeredTask ) )
-        }
-
-        return triggeredTaskAdded
+        return triggeredTasks[ trigger ]!!
+            .add( triggeredTask )
+            .eventOnSuccess { Event.TriggeredTaskAdded( triggeredTask ) }
     }
 
     /**
@@ -232,15 +215,9 @@ class StudyProtocol(
      * @param task The task to add.
      * @return True if the task has been added; false if the specified [TaskDescriptor] is already included in this configuration.
      */
-    override fun addTask( task: TaskDescriptor ): Boolean
-    {
-        val added = super.addTask( task )
-        if ( added )
-        {
-            event( Event.TaskAdded( task ) )
-        }
-        return added
-    }
+    override fun addTask( task: TaskDescriptor ): Boolean =
+        super.addTask( task )
+        .eventOnSuccess { Event.TaskAdded( task ) }
 
     /**
      * Remove a task currently present in the study protocol, including removing it from any [Trigger]'s which initiate it.
@@ -258,13 +235,9 @@ class StudyProtocol(
         }
 
         // Remove task itself.
-        val isRemoved = taskConfiguration.removeTask( task )
-        if ( isRemoved )
-        {
-            event( Event.TaskRemoved( task ) )
-        }
-
-        return isRemoved
+        return taskConfiguration
+            .removeTask( task )
+            .eventOnSuccess { Event.TaskRemoved( task ) }
     }
 
 

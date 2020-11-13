@@ -23,6 +23,12 @@ abstract class AggregateRoot<TRoot, TSnapshot : Snapshot<TRoot>, TEvent : Domain
     protected fun event( event: TEvent ) = events.add( event )
 
     /**
+     * In case the instance this is called on is true, [createEvent] and add it to the event queue of this aggregate root.
+     */
+    protected fun Boolean.eventOnSuccess( createEvent: () -> TEvent ): Boolean =
+        this.also { if ( this ) event( createEvent() ) }
+
+    /**
      * Returns all tracked events on this aggregate root in the order they were triggered and clears the queue.
      */
     fun consumeEvents(): List<TEvent>

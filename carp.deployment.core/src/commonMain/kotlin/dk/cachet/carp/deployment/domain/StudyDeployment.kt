@@ -319,11 +319,12 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val dependentMasterDevices = getDependentDevices( device )
             .filterIsInstance<AnyMasterDeviceDescriptor>()
         dependentMasterDevices.forEach {
-            if ( _deployedDevices.remove( it ) )
-            {
-                _invalidatedDeployedDevices.add( it )
-                event( Event.DeploymentInvalidated( it ) )
-            }
+            _deployedDevices
+                .remove( it )
+                .eventOnSuccess {
+                    _invalidatedDeployedDevices.add( it )
+                    Event.DeploymentInvalidated( it )
+                }
         }
     }
 
@@ -402,10 +403,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             it is DeviceDeploymentStatus.NotDeployed && it.isReadyForDeployment }
         check( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
-        if ( _deployedDevices.add( device ) )
-        {
-            event( Event.DeviceDeployed( device ) )
-        }
+        _deployedDevices
+            .add( device )
+            .eventOnSuccess { Event.DeviceDeployed( device ) }
 
         // Set start time first time deployment is ready (last device deployed).
         if ( startTime == null && getStatus() is StudyDeploymentStatus.DeploymentReady )
