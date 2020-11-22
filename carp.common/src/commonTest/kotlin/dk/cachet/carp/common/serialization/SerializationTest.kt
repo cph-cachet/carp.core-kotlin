@@ -3,6 +3,7 @@
 package dk.cachet.carp.common.serialization
 
 import dk.cachet.carp.common.data.*
+import dk.cachet.carp.common.data.input.*
 import dk.cachet.carp.common.data.input.element.*
 import dk.cachet.carp.common.users.*
 import dk.cachet.carp.test.serialization.ConcreteTypesSerializationTest
@@ -25,6 +26,10 @@ private val commonInstances = listOf(
     SensorSkinContact( true ),
     StepCount( 42 ),
 
+    // Input objects.
+    CustomInput( "42" ),
+    Sex.Male,
+
     // Input elements.
     SelectOne( "Sex", setOf( "Male", "Female" ) ),
     Text( "Name" )
@@ -46,5 +51,16 @@ class SerializationTest : ConcreteTypesSerializationTest(
         val serialized = json.encodeToString( polySerializer, inputElement )
         val parsed = json.decodeFromString( polySerializer, serialized )
         assertEquals( inputElement, parsed )
+    }
+
+    @Test
+    fun can_serialize_generic_CustomInput()
+    {
+        val data: Data = CustomInput( 42 )
+        val dataSerializer = PolymorphicSerializer( Data::class )
+
+        val serialized = json.encodeToString( dataSerializer, data )
+        val parsed = json.decodeFromString( dataSerializer, serialized )
+        assertEquals( data, parsed )
     }
 }
