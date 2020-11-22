@@ -3,6 +3,7 @@
 package dk.cachet.carp.common.serialization
 
 import dk.cachet.carp.common.data.*
+import dk.cachet.carp.common.data.input.*
 import dk.cachet.carp.common.data.input.element.*
 import dk.cachet.carp.common.users.*
 import kotlinx.serialization.json.Json
@@ -24,6 +25,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 
     polymorphic( Data::class )
     {
+        // DataType classes.
         subclass( Acceleration::class )
         subclass( ECG::class )
         subclass( FreeFormText::class )
@@ -35,6 +37,14 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( RRInterval::class, RRInterval.serializer() )
         subclass( SensorSkinContact::class )
         subclass( StepCount::class )
+
+        // InputDataType classes.
+        subclass(
+            CustomInput::class,
+            // TODO: Write a test to verify whether all necessary types are registered (use reflection to find all InputElement<T>).
+            CustomInputSerializer( String::class, Int::class )
+        )
+        subclass( Sex::class, PolymorphicEnumSerializer( Sex.serializer() ) )
     }
 
     polymorphic( InputElement::class )
