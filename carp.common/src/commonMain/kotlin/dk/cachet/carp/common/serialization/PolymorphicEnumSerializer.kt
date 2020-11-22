@@ -25,7 +25,7 @@ class PolymorphicEnumSerializer<T : Enum<T>>( private val enumSerializer: KSeria
         element( "value", enumSerializer.descriptor )
     }
 
-    override fun deserialize( decoder: Decoder): T =
+    override fun deserialize( decoder: Decoder ): T =
         decoder.decodeStructure( descriptor )
         {
             decodeElementIndex( descriptor )

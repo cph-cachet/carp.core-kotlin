@@ -20,7 +20,7 @@ abstract class ConcreteTypesSerializationTest(
     /**
      * The JSON serializer to use.
      */
-    private val json: Json,
+    protected val json: Json,
     /**
      * The serial module containing the concrete types for which serialization needs to be tested.
      */
@@ -52,7 +52,7 @@ abstract class ConcreteTypesSerializationTest(
         {
             // Get serializer.
             val type = toSerialize::class
-            val serializer = polymorphicSerializers[ type ] as KSerializer<Any>
+            val serializer = polymorphicSerializers[ type ] as? KSerializer<Any>
             assertNotNull( serializer, "No serializer registered for type '$type'" )
 
             // Verify whether serializing and deserializing the instance results in the same object.
