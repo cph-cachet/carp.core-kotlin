@@ -34,7 +34,7 @@ sealed class ParticipantServiceRequest
         ParticipantServiceInvoker<Participant> by createServiceInvoker( ParticipantService::getParticipant, studyId, participantId )
 
     @Serializable
-    data class GetParticipants( val studyId: UUID) :
+    data class GetParticipants( val studyId: UUID ) :
         ParticipantServiceRequest(),
         ParticipantServiceInvoker<List<Participant>> by createServiceInvoker( ParticipantService::getParticipants, studyId )
 
