@@ -10,3 +10,13 @@ publishing {
         }
     }
 }
+
+kotlin {
+    sourceSets {
+        jvmTest {
+            dependencies {
+                implementation "org.reflections:reflections:${versions.reflections}"
+            }
+        }
+    }
+}
