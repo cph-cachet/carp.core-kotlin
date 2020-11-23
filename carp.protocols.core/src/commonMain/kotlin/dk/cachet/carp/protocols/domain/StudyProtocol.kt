@@ -102,7 +102,7 @@ class StudyProtocol(
      */
     override fun addMasterDevice( masterDevice: AnyMasterDeviceDescriptor ): Boolean =
         super.addMasterDevice( masterDevice )
-        .eventOnSuccess { Event.MasterDeviceAdded( masterDevice ) }
+        .eventIf( true ) { Event.MasterDeviceAdded( masterDevice ) }
 
     /**
      * Add a device which is connected to a master device within this configuration.
@@ -115,7 +115,7 @@ class StudyProtocol(
      */
     override fun addConnectedDevice( device: AnyDeviceDescriptor, masterDevice: AnyMasterDeviceDescriptor ): Boolean =
         super.addConnectedDevice( device, masterDevice )
-        .eventOnSuccess { Event.ConnectedDeviceAdded( device, masterDevice ) }
+        .eventIf( true ) { Event.ConnectedDeviceAdded( device, masterDevice ) }
 
     private val _triggers: MutableSet<Trigger> = mutableSetOf()
 
@@ -145,7 +145,7 @@ class StudyProtocol(
 
         return _triggers
             .add( trigger )
-            .eventOnSuccess {
+            .eventIf( true ) {
                 triggeredTasks[ trigger ] = mutableSetOf()
                 Event.TriggerAdded( trigger )
             }
@@ -177,7 +177,7 @@ class StudyProtocol(
         val triggeredTask = TriggeredTask( task, targetDevice )
         return triggeredTasks[ trigger ]!!
             .add( triggeredTask )
-            .eventOnSuccess { Event.TriggeredTaskAdded( triggeredTask ) }
+            .eventIf( true ) { Event.TriggeredTaskAdded( triggeredTask ) }
     }
 
     /**
@@ -217,7 +217,7 @@ class StudyProtocol(
      */
     override fun addTask( task: TaskDescriptor ): Boolean =
         super.addTask( task )
-        .eventOnSuccess { Event.TaskAdded( task ) }
+        .eventIf( true ) { Event.TaskAdded( task ) }
 
     /**
      * Remove a task currently present in the study protocol, including removing it from any [Trigger]'s which initiate it.
@@ -237,7 +237,7 @@ class StudyProtocol(
         // Remove task itself.
         return taskConfiguration
             .removeTask( task )
-            .eventOnSuccess { Event.TaskRemoved( task ) }
+            .eventIf( true ) { Event.TaskRemoved( task ) }
     }
 
 

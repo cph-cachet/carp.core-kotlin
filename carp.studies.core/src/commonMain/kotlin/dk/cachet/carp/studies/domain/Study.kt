@@ -188,7 +188,7 @@ class Study(
         _participations
             .getOrPut( studyDeploymentId ) { mutableSetOf() }
             .add( participation )
-            .eventOnSuccess { Event.ParticipationAdded( studyDeploymentId, participation ) }
+            .eventIf( true ) { Event.ParticipationAdded( studyDeploymentId, participation ) }
     }
 
     /**
