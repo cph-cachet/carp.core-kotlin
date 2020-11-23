@@ -4,13 +4,12 @@ import dk.cachet.carp.common.NamespacedId
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.AnyInputElement
-import dk.cachet.carp.common.data.input.CUSTOM_INPUT_TYPE
+import dk.cachet.carp.common.data.input.CUSTOM_INPUT_TYPE_NAME
 import dk.cachet.carp.common.data.input.CustomInput
 import dk.cachet.carp.common.data.input.InputElement
 import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.data.input.InputDataTypeList
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 
 /**
@@ -24,33 +23,21 @@ sealed class ParticipantAttribute
      */
     abstract val inputType: InputDataType
 
-    /**
-     * The unique identifier for this participant attribute.
-     */
-    abstract val id: NamespacedId
-
 
     /**
-     * A default participant attribute which is solely identified by the data [inputType] to be input.
+     * A default participant attribute which is identified by the data [inputType] to be input.
      */
     @Serializable
     data class DefaultParticipantAttribute( override val inputType: InputDataType ) : ParticipantAttribute()
-    {
-        @Transient
-        override val id: NamespacedId = inputType
-    }
 
 
     /**
-     * A custom participant attribute, for which an [input] element is specified, and for which a unique id is generated.
+     * A custom participant attribute, for which an [input] element is specified, and for which an [inputType] is generated.
      */
     @Serializable
     data class CustomParticipantAttribute<T : Any>( val input: InputElement<T> ) : ParticipantAttribute()
     {
-        @Transient
-        override val inputType: InputDataType = CUSTOM_INPUT_TYPE
-
-        override val id: NamespacedId = NamespacedId( CUSTOM_INPUT_TYPE.toString(), UUID.randomUUID().toString() )
+        override val inputType: NamespacedId = NamespacedId( CUSTOM_INPUT_TYPE_NAME, UUID.randomUUID().toString() )
     }
 
 
@@ -84,7 +71,7 @@ sealed class ParticipantAttribute
         if ( input == null ) return null
 
         // Early out for custom input which is simply wrapped.
-        if ( inputType == CUSTOM_INPUT_TYPE ) return CustomInput( input )
+        if ( this is CustomParticipantAttribute<*> ) return CustomInput( input )
 
         // Verify whether input is valid.
         // TODO: `getDataClass` is a trivial implementation in extending classes, but could this be enforced by using the type system instead?
