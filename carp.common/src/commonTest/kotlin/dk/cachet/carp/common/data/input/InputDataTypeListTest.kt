@@ -16,10 +16,11 @@ class InputDataTypeListTest
         val inputElement = Text( "Test" )
         val dataConverter = { _: String -> Sex.Male }
 
-        val list = object : InputDataTypeList()
-        {
-            val TEST = add( type, inputElement, dataConverter )
-        }
+        val list =
+            object : InputDataTypeList()
+            {
+                val TEST = add( type, inputElement, dataConverter )
+            }
 
         // Added item can be queried.
         assertEquals( type, list.single() )

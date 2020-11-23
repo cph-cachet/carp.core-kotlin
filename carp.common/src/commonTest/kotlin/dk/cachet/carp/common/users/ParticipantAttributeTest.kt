@@ -22,10 +22,11 @@ class ParticipantAttributeTest
         val type = InputDataType( "test", "test" )
         val inputElement = Text( "Test" )
         val dataConverter = { _: String -> Sex.Male }
-        val inputTypeList = object : InputDataTypeList()
-        {
-            val SEX = add( type, inputElement, dataConverter )
-        }
+        val inputTypeList =
+            object : InputDataTypeList()
+            {
+                val SEX = add( type, inputElement, dataConverter )
+            }
 
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( type )
 
