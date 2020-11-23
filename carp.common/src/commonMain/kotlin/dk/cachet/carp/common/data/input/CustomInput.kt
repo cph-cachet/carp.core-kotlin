@@ -87,7 +87,3 @@ class CustomInputSerializer( vararg supportedDataTypes: KClass<*> ) : KSerialize
 
 
 internal const val CUSTOM_INPUT_TYPE_NAME = "${CarpInputDataTypes.CARP_NAMESPACE}.custom"
-/**
- * Custom input data to be stored as defined by a researcher.
- */
-internal val CUSTOM_INPUT_TYPE = InputDataType.fromString( CUSTOM_INPUT_TYPE_NAME )
