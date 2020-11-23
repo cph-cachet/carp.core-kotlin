@@ -321,7 +321,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         dependentMasterDevices.forEach {
             _deployedDevices
                 .remove( it )
-                .eventOnSuccess {
+                .eventIf( true ) {
                     _invalidatedDeployedDevices.add( it )
                     Event.DeploymentInvalidated( it )
                 }
@@ -405,7 +405,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
         _deployedDevices
             .add( device )
-            .eventOnSuccess { Event.DeviceDeployed( device ) }
+            .eventIf( true ) { Event.DeviceDeployed( device ) }
 
         // Set start time first time deployment is ready (last device deployed).
         if ( startTime == null && getStatus() is StudyDeploymentStatus.DeploymentReady )
