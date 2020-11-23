@@ -21,6 +21,7 @@ buildscript {
             jvmTarget:'1.6',
             jUnit5:'5.7.0',
             dokkaPlugin:'0.9.18',
+            reflections:'0.9.12',
 
             // JS versions.
             nodePlugin:'3.0.0-rc2',

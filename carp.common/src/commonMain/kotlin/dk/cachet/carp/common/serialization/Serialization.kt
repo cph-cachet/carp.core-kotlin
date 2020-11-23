@@ -41,7 +41,6 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         // InputDataType classes.
         subclass(
             CustomInput::class,
-            // TODO: Write a test to verify whether all necessary types are registered (use reflection to find all InputElement<T>).
             CustomInputSerializer( String::class, Int::class )
         )
         subclass( Sex::class, PolymorphicEnumSerializer( Sex.serializer() ) )
