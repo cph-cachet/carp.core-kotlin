@@ -1,12 +1,8 @@
 package dk.cachet.carp.common
 
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
+import dk.cachet.carp.common.serialization.createCarpStringPrimitiveSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
 
 
 /**
@@ -20,6 +16,7 @@ expect class UUID( stringRepresentation: String )
 {
     val stringRepresentation: String
 
+
     companion object
     {
         /**
@@ -31,6 +28,9 @@ expect class UUID( stringRepresentation: String )
 
         fun randomUUID(): UUID
     }
+
+
+    override fun toString(): String
 }
 
 
@@ -43,12 +43,4 @@ val UUIDRegex = Regex( "([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9
 /**
  * A custom serializer for [UUID].
  */
-object UUIDSerializer : KSerializer<UUID>
-{
-    override val descriptor: SerialDescriptor =
-        PrimitiveSerialDescriptor( "dk.cachet.carp.common.UUID", PrimitiveKind.STRING )
-
-
-    override fun serialize( encoder: Encoder, value: UUID ) = encoder.encodeString( value.stringRepresentation )
-    override fun deserialize( decoder: Decoder ): UUID = UUID( decoder.decodeString() )
-}
+object UUIDSerializer : KSerializer<UUID> by createCarpStringPrimitiveSerializer( { UUID( it ) } )

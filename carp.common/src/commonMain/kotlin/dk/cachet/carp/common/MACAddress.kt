@@ -1,12 +1,8 @@
 package dk.cachet.carp.common
 
+import dk.cachet.carp.common.serialization.createCarpStringPrimitiveSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
 
 
 /**
@@ -52,6 +48,9 @@ data class MACAddress(
             return MACAddress( recommendedFormatting )
         }
     }
+
+
+    override fun toString(): String = address
 }
 
 
@@ -65,11 +64,4 @@ val MACAddressRegex = Regex( "([0-9A-F]{2}-){5}([0-9A-F]{2})" )
 /**
  * A custom serializer for [MACAddress].
  */
-object MACAddressSerializer : KSerializer<MACAddress>
-{
-    override val descriptor: SerialDescriptor =
-        PrimitiveSerialDescriptor( "dk.cachet.carp.common.MACAddress", PrimitiveKind.STRING )
-
-    override fun serialize( encoder: Encoder, value: MACAddress ) = encoder.encodeString( value.address )
-    override fun deserialize( decoder: Decoder ): MACAddress = MACAddress( decoder.decodeString() )
-}
+object MACAddressSerializer : KSerializer<MACAddress> by createCarpStringPrimitiveSerializer( { MACAddress( it ) } )

@@ -1,12 +1,8 @@
 package dk.cachet.carp.common
 
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
+import dk.cachet.carp.common.serialization.createCarpStringPrimitiveSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
 
 
 /**
@@ -34,6 +30,12 @@ data class RecurrenceRule(
     val end: End = End.Never
 )
 {
+    init
+    {
+        require( interval >= 1 ) { "Interval needs to be 1 or more." }
+    }
+
+
     companion object
     {
         fun secondly( interval: Int = 1, end: End = End.Never ) = RecurrenceRule( Frequency.SECONDLY, interval, end )
@@ -43,12 +45,61 @@ data class RecurrenceRule(
         fun weekly( interval: Int = 1, end: End = End.Never ) = RecurrenceRule( Frequency.WEEKLY, interval, end )
         fun monthly( interval: Int = 1, end: End = End.Never ) = RecurrenceRule( Frequency.MONTHLY, interval, end )
         fun yearly( interval: Int = 1, end: End = End.Never ) = RecurrenceRule( Frequency.YEARLY, interval, end )
+
+        /**
+         * Initialize a [RecurrenceRule] based on a [rrule] string.
+         */
+        fun fromString( rrule: String ): RecurrenceRule
+        {
+            require( RecurrenceRuleRegex.matches( rrule ) ) { "Invalid or unsupported RecurrenceRule string representation." }
+
+            // Extract parameters.
+            val parameters = rrule.substring( "RRULE:".length )
+                .split( ';' )
+                .map {
+                    val par = it.split( '=' )
+                    require( par.count() == 2 ) { "Invalid RRULE parameter format." }
+                    par[ 0 ] to par[ 1 ]
+                }
+                .toMap()
+
+            // Verify parameter correctness.
+            val supportedParameters = listOf( "FREQ", "INTERVAL", "UNTIL", "COUNT" )
+            require( parameters.keys.all { it in supportedParameters } ) { "Invalid or unsupported RRULE parameter found." }
+            require( parameters.keys.distinct().count() == parameters.keys.count() ) { "RRULE does not allow repeating the same parameter multiple times." }
+
+            // Extract frequency.
+            val frequencyString = parameters[ "FREQ" ] ?: throw IllegalArgumentException( "FREQ needs to be specified." )
+            val frequency = Frequency.valueOf( frequencyString )
+
+            // Extract remaining parameters.
+            var interval = 1
+            var until: TimeSpan? = null
+            var count: Int? = null
+            for ( par in parameters )
+            {
+                when ( par.key )
+                {
+                    "INTERVAL" -> interval = par.value.toInt()
+                    "UNTIL" -> until = TimeSpan( par.value.toLong() )
+                    "COUNT" -> count = par.value.toInt()
+                }
+            }
+            require( until == null || count == null ) { "UNTIL and COUNT cannot both be set." }
+
+            // Determine end.
+            val end =
+                if ( until == null && count == null ) End.Never
+                else
+                {
+                    if ( until != null ) End.Until( until )
+                    else End.Count( count!! )
+                }
+
+            return RecurrenceRule( frequency, interval, end )
+        }
     }
 
-    init
-    {
-        require( interval >= 1 ) { "Interval needs to be 1 or more." }
-    }
 
     /**
      * Specify repeating events based on an interval of a chosen type or multiples thereof.
@@ -112,62 +163,4 @@ val RecurrenceRuleRegex = Regex( """RRULE:FREQ=(SECONDLY|MINUTELY|HOURLY|DAILY|W
 /**
  * A custom serializer for [RecurrenceRule].
  */
-object RecurrenceRuleSerializer : KSerializer<RecurrenceRule>
-{
-    override val descriptor: SerialDescriptor =
-        PrimitiveSerialDescriptor( "dk.cachet.carp.common.RecurrenceRule", PrimitiveKind.STRING )
-
-    override fun serialize( encoder: Encoder, value: RecurrenceRule ) =
-        encoder.encodeString( value.toString() )
-
-    override fun deserialize( decoder: Decoder ): RecurrenceRule
-    {
-        val rule = decoder.decodeString()
-        require( RecurrenceRuleRegex.matches( rule ) ) { "Invalid or unsupported RecurrenceRule string representation." }
-
-        // Extract parameters.
-        val parameters = rule.substring( "RRULE:".length )
-            .split( ';' )
-            .map {
-                val par = it.split( '=' )
-                require( par.count() == 2 ) { "Invalid RRULE parameter format." }
-                par[ 0 ] to par[ 1 ]
-            }
-            .toMap()
-
-        // Verify parameter correctness.
-        val supportedParameters = listOf( "FREQ", "INTERVAL", "UNTIL", "COUNT" )
-        require( parameters.keys.all { it in supportedParameters } ) { "Invalid or unsupported RRULE parameter found." }
-        require( parameters.keys.distinct().count() == parameters.keys.count() ) { "RRULE does not allow repeating the same parameter multiple times." }
-
-        // Extract frequency.
-        val frequencyString = parameters[ "FREQ" ] ?: throw IllegalArgumentException( "FREQ needs to be specified." )
-        val frequency = RecurrenceRule.Frequency.valueOf( frequencyString )
-
-        // Extract remaining parameters.
-        var interval: Int = 1
-        var until: TimeSpan? = null
-        var count: Int? = null
-        for ( par in parameters )
-        {
-            when ( par.key )
-            {
-                "INTERVAL" -> interval = par.value.toInt()
-                "UNTIL" -> until = TimeSpan( par.value.toLong() )
-                "COUNT" -> count = par.value.toInt()
-            }
-        }
-        require( until == null || count == null ) { "UNTIL and COUNT cannot both be set." }
-
-        // Determine end.
-        val end =
-            if ( until == null && count == null ) RecurrenceRule.End.Never
-            else
-            {
-                if ( until != null ) RecurrenceRule.End.Until( until )
-                else RecurrenceRule.End.Count( count!! )
-            }
-
-        return RecurrenceRule( frequency, interval, end )
-    }
-}
+object RecurrenceRuleSerializer : KSerializer<RecurrenceRule> by createCarpStringPrimitiveSerializer( { s -> RecurrenceRule.fromString( s ) } )
