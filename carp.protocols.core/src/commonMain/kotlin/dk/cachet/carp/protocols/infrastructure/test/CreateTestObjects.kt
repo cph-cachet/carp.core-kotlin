@@ -1,6 +1,8 @@
 package dk.cachet.carp.protocols.infrastructure.test
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.input.InputDataType
+import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
@@ -113,6 +115,7 @@ fun createComplexProtocol(): StudyProtocol
     val trigger = StubTrigger( connectedDevice )
     val measures = listOf( StubMeasure() )
     val task = StubTaskDescriptor( "Task", measures )
+    val expectedParticipantData = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
     with ( protocol )
     {
         addMasterDevice( masterDevice )
@@ -120,6 +123,7 @@ fun createComplexProtocol(): StudyProtocol
         addConnectedDevice( chainedMasterDevice, masterDevice )
         addConnectedDevice( chainedConnectedDevice, chainedMasterDevice )
         addTriggeredTask( trigger, task, masterDevice )
+        addExpectedParticipantData( expectedParticipantData )
     }
 
     return protocol
