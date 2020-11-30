@@ -1,5 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.data.input.InputDataType
+import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
 import dk.cachet.carp.protocols.domain.deployment.UntriggeredTasksWarning
 import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
@@ -28,19 +30,19 @@ class StudyProtocolTest
     @Nested
     inner class Devices : DeviceConfigurationTest
     {
-        override fun createDeviceConfiguration(): DeviceConfiguration
-        {
-            return createEmptyProtocol()
-        }
+        override fun createDeviceConfiguration(): DeviceConfiguration = createEmptyProtocol()
     }
 
     @Nested
     inner class Tasks : TaskConfigurationTest
     {
-        override fun createTaskConfiguration(): TaskConfiguration
-        {
-            return createEmptyProtocol()
-        }
+        override fun createTaskConfiguration(): TaskConfiguration = createEmptyProtocol()
+    }
+
+    @Nested
+    inner class ParticipantData : ParticipantDataConfigurationTest
+    {
+        override fun createParticipantDataConfiguration(): ParticipantDataConfiguration = createEmptyProtocol()
     }
 
 
@@ -321,6 +323,36 @@ class StudyProtocolTest
     }
 
     @Test
+    fun addExpectedParticipantData_succeeds()
+    {
+        val protocol = createEmptyProtocol()
+
+        val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
+        val isAdded = protocol.addExpectedParticipantData( attribute )
+
+        assertTrue( isAdded )
+        val addedEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.ExpectedParticipantDataAdded>()
+        assertEquals( 1, addedEvents.count() )
+        assertEquals( attribute, addedEvents.single().attribute )
+    }
+
+    @Test
+    fun removeExpectedParticipantData_succeeds()
+    {
+        val protocol = createEmptyProtocol()
+        val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
+        protocol.addExpectedParticipantData( attribute )
+        protocol.consumeEvents()
+
+        val isRemoved = protocol.removeExpectedParticipantData( attribute )
+
+        assertTrue( isRemoved )
+        val removedEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.ExpectedParticipantDataRemoved>()
+        assertEquals( 1, removedEvents.count() )
+        assertEquals( attribute, removedEvents.single().attribute )
+    }
+
+    @Test
     fun creating_protocol_fromSnapshot_obtained_by_getSnapshot_is_the_same()
     {
         val protocol = createComplexProtocol()
@@ -332,15 +364,16 @@ class StudyProtocolTest
         assertEquals( protocol.name, fromSnapshot.name )
         assertEquals( protocol.description, fromSnapshot.description )
         assertEquals( protocol.creationDate, fromSnapshot.creationDate )
-        assertEquals( protocol.devices.count(), protocol.devices.intersect( fromSnapshot.devices ).count() )
+        assertEquals( protocol.devices, fromSnapshot.devices )
         protocol.masterDevices.forEach { assertTrue( connectedDevicesAreSame( protocol, fromSnapshot, it ) ) }
-        assertEquals( protocol.triggers.count(), protocol.triggers.intersect( fromSnapshot.triggers ).count() )
-        assertEquals( protocol.tasks.count(), protocol.tasks.intersect( fromSnapshot.tasks ).count() )
+        assertEquals( protocol.triggers, fromSnapshot.triggers )
+        assertEquals( protocol.tasks, fromSnapshot.tasks )
         protocol.triggers.forEach {
             val triggeredTasks = protocol.getTriggeredTasks( it )
             val fromSnapshotTriggeredTasks = fromSnapshot.getTriggeredTasks( it )
             assertEquals( triggeredTasks.count(), triggeredTasks.intersect( fromSnapshotTriggeredTasks ).count() )
         }
+        assertEquals( protocol.expectedParticipantData, fromSnapshot.expectedParticipantData )
     }
 
     private fun connectedDevicesAreSame( protocol: StudyProtocol, fromSnapshot: StudyProtocol, masterDevice: AnyMasterDeviceDescriptor ): Boolean

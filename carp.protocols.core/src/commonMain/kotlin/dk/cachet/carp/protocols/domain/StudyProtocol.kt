@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.ddd.DomainEvent
+import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.deployment.DeploymentError
 import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
 import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
@@ -37,7 +38,7 @@ class StudyProtocol(
      * An optional description for the study protocol.
      */
     val description: String = ""
-) : StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration() )
+) : StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration(), EmptyParticipantDataConfiguration() )
 {
     sealed class Event : DomainEvent()
     {
@@ -48,6 +49,8 @@ class StudyProtocol(
         data class TaskRemoved( val task: TaskDescriptor ) : Event()
         data class TriggeredTaskAdded( val triggeredTask: TriggeredTask ) : Event()
         data class TriggeredTaskRemoved( val triggeredTask: TriggeredTask ) : Event()
+        data class ExpectedParticipantDataAdded( val attribute: ParticipantAttribute ) : Event()
+        data class ExpectedParticipantDataRemoved( val attribute: ParticipantAttribute ) : Event()
     }
 
 
@@ -86,6 +89,9 @@ class StudyProtocol(
                     ?: throw InvalidConfigurationError( "Can't find device with role name '${triggeredTask.targetDeviceRoleName}' in snapshot." )
                 protocol.addTriggeredTask( triggerMatch.value, task, device )
             }
+
+            // Add expected participant data.
+            snapshot.expectedParticipantData.forEach { protocol.addExpectedParticipantData( it ) }
 
             return protocol
         }
@@ -239,6 +245,25 @@ class StudyProtocol(
             .removeTask( task )
             .eventIf( true ) { Event.TaskRemoved( task ) }
     }
+
+    /**
+     * Add expected participant data [attribute] to be be input by users.
+     *
+     * @throws InvalidConfigurationError in case a differing [attribute] with a matching input type is already added.
+     * @return True if the [attribute] has been added; false in case the same [attribute] has already been added before.
+     */
+    override fun addExpectedParticipantData( attribute: ParticipantAttribute ): Boolean =
+        super.addExpectedParticipantData( attribute )
+        .eventIf( true ) { Event.ExpectedParticipantDataAdded( attribute ) }
+
+    /**
+     * Remove expected participant data [attribute] to be input by users.
+     *
+     * @return True if the [attribute] has been removed; false if it is not included in this configuration.
+     */
+    override fun removeExpectedParticipantData( attribute: ParticipantAttribute ): Boolean =
+        super.removeExpectedParticipantData(attribute)
+        .eventIf( true ) { Event.ExpectedParticipantDataRemoved( attribute ) }
 
 
     /**
