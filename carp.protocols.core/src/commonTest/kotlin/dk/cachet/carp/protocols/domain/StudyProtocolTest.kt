@@ -94,7 +94,7 @@ class StudyProtocolTest
         val protocol = createEmptyProtocol()
         val trigger = StubTrigger( StubDeviceDescriptor() )
 
-        assertFailsWith<InvalidConfigurationError>
+        assertFailsWith<IllegalArgumentException>
         {
             protocol.addTrigger( trigger )
         }
@@ -112,7 +112,7 @@ class StudyProtocolTest
         protocol.addConnectedDevice( connectedDevice, masterDevice )
         val trigger = StubTrigger( connectedDevice.roleName, "Unique", true )
 
-        assertFailsWith<InvalidConfigurationError>
+        assertFailsWith<IllegalArgumentException>
         {
             protocol.addTrigger( trigger )
         }
@@ -199,7 +199,7 @@ class StudyProtocolTest
             addTask( task )
         }
 
-        assertFailsWith<InvalidConfigurationError>
+        assertFailsWith<IllegalArgumentException>
         {
             protocol.addTriggeredTask( trigger, task, StubDeviceDescriptor() )
         }
@@ -231,7 +231,7 @@ class StudyProtocolTest
     {
         val protocol = createEmptyProtocol()
 
-        assertFailsWith<InvalidConfigurationError>
+        assertFailsWith<IllegalArgumentException>
         {
             protocol.getTriggeredTasks( StubTrigger( StubDeviceDescriptor() ) )
         }

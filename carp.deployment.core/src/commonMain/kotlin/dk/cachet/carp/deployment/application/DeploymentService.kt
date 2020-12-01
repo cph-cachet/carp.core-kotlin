@@ -4,7 +4,6 @@ import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
@@ -18,7 +17,7 @@ interface DeploymentService
     /**
      * Instantiate a study deployment for a given [StudyProtocolSnapshot].
      *
-     * @throws InvalidConfigurationError when [protocol] is invalid.
+     * @throws IllegalArgumentException when [protocol] is invalid.
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
     suspend fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus

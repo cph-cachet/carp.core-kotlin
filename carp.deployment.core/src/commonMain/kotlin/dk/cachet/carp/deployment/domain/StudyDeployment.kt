@@ -9,7 +9,6 @@ import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
 import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
@@ -104,9 +103,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         {
             StudyProtocol.fromSnapshot( protocolSnapshot )
         }
-        catch ( e: InvalidConfigurationError )
+        catch ( e: IllegalArgumentException )
         {
-            throw IllegalArgumentException( "Invalid protocol snapshot passed." )
+            throw IllegalArgumentException( "Invalid protocol snapshot passed.", e )
         }
 
     /**
