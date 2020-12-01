@@ -12,9 +12,11 @@ import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 @Suppress( "Immutable", "DataClass" )
 internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescriptor>(), DeviceConfiguration
 {
-    private val _devices: ExtractUniqueKeyMap<String, AnyDeviceDescriptor> = ExtractUniqueKeyMap(
-        { device -> device.roleName },
-        InvalidConfigurationError( "Role names of devices within a device configuration should be unique." ) )
+    private val _devices: ExtractUniqueKeyMap<String, AnyDeviceDescriptor> =
+        ExtractUniqueKeyMap( { device -> device.roleName } )
+        {
+            key -> InvalidConfigurationError( "Role name \"$key\" is not unique within device configuration." )
+        }
 
     override val entries: Set<Map.Entry<String, AnyDeviceDescriptor>>
         get() = _devices.entries
