@@ -10,9 +10,11 @@ import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 @Suppress( "Immutable", "DataClass" )
 class EmptyTaskConfiguration : AbstractMap<String, TaskDescriptor>(), TaskConfiguration
 {
-    private val _tasks: ExtractUniqueKeyMap<String, TaskDescriptor> = ExtractUniqueKeyMap(
-        { task -> task.name },
-        InvalidConfigurationError( "Task names within a task configuration should be unique." ) )
+    private val _tasks: ExtractUniqueKeyMap<String, TaskDescriptor> =
+        ExtractUniqueKeyMap( { task -> task.name } )
+        {
+            key -> InvalidConfigurationError( "Task name \"$key\" is not unique within task configuration." )
+        }
 
     override val entries: Set<Map.Entry<String, TaskDescriptor>>
         get() = _tasks.entries

@@ -14,7 +14,7 @@ class ExtractUniqueKeyMapTest
     @Test
     fun tryAddIfKeyIsNew_succeeds()
     {
-        val map = ExtractUniqueKeyMap<String, SomeObject>( { s -> s.key }, Error() )
+        val map = ExtractUniqueKeyMap<String, SomeObject>( { s -> s.key } ) { Error() }
         val toAdd = SomeObject( "New" )
 
         val isAdded: Boolean = map.tryAddIfKeyIsNew( toAdd )
@@ -25,7 +25,7 @@ class ExtractUniqueKeyMapTest
     @Test
     fun tryAddIfKeyIsNew_multiple_times_only_adds_first_time()
     {
-        val map = ExtractUniqueKeyMap<String, SomeObject>( { s -> s.key }, Error() )
+        val map = ExtractUniqueKeyMap<String, SomeObject>( { s -> s.key } ) { Error() }
         val toAdd = SomeObject( "Test" )
         map.tryAddIfKeyIsNew( toAdd )
 
@@ -37,17 +37,16 @@ class ExtractUniqueKeyMapTest
     @Test
     fun tryAddIfKeyIsNew_throws_on_existing_key()
     {
-        val error = Error( "Fails" )
-        val map = ExtractUniqueKeyMap<String, SomeObject>( {s -> s.key }, error )
+        val map = ExtractUniqueKeyMap<String, SomeObject>( { s -> s.key } ) { key -> Error( "$key exists" ) }
         map.tryAddIfKeyIsNew( SomeObject( "Existing" ) )
 
-        assertFailsWith<Error>("Fails" ) { map.tryAddIfKeyIsNew( SomeObject( "Existing" ) ) }
+        assertFailsWith<Error>("Existing exists" ) { map.tryAddIfKeyIsNew( SomeObject( "Existing" ) ) }
     }
 
     @Test
     fun remove_succeeds()
     {
-        val map = ExtractUniqueKeyMap<String, SomeObject>( {s -> s.key }, Error() )
+        val map = ExtractUniqueKeyMap<String, SomeObject>( {s -> s.key } ) { Error() }
         val toRemove = SomeObject( "Remove" )
         map.tryAddIfKeyIsNew( toRemove )
 
@@ -58,7 +57,7 @@ class ExtractUniqueKeyMapTest
     @Test
     fun remove_returns_false_when_element_not_present()
     {
-        val map = ExtractUniqueKeyMap<String, SomeObject>( {s -> s.key }, Error() )
+        val map = ExtractUniqueKeyMap<String, SomeObject>( { s -> s.key } ) { Error() }
         val toRemove = SomeObject( "Remove" )
 
         val isRemoved = map.remove( toRemove )
