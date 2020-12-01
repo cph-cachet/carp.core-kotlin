@@ -1,13 +1,12 @@
 package dk.cachet.carp.protocols.domain.devices
 
 import dk.cachet.carp.common.ExtractUniqueKeyMap
-import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 
 
 /**
  * An initially empty configuration to start defining how a set of devices ([DeviceDescriptor]) work together.
  *
- * Role names within a configuration should be unique.
+ * Role names of added [DeviceDescriptor]s should be unique.
  */
 @Suppress( "Immutable", "DataClass" )
 internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescriptor>(), DeviceConfiguration
@@ -15,7 +14,7 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescripto
     private val _devices: ExtractUniqueKeyMap<String, AnyDeviceDescriptor> =
         ExtractUniqueKeyMap( { device -> device.roleName } )
         {
-            key -> InvalidConfigurationError( "Role name \"$key\" is not unique within device configuration." )
+            key -> IllegalArgumentException( "Role name \"$key\" is not unique within device configuration." )
         }
 
     override val entries: Set<Map.Entry<String, AnyDeviceDescriptor>>
@@ -75,13 +74,8 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescripto
     }
 
     /**
-     * Throws error when master device is not part of this configuration.
+     * Throws [IllegalArgumentException] when master device is not part of this configuration.
      */
-    private fun verifyMasterDevice( device: AnyMasterDeviceDescriptor )
-    {
-        if ( device !in devices )
-        {
-            throw InvalidConfigurationError( "The passed master device is not part of this device configuration." )
-        }
-    }
+    private fun verifyMasterDevice( device: AnyMasterDeviceDescriptor ) = require( device in devices )
+        { "The passed master device with role name \"${device.roleName}\" is not part of this device configuration." }
 }

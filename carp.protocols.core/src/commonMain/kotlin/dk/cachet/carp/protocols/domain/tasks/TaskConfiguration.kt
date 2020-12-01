@@ -14,20 +14,17 @@ interface TaskConfiguration
     val tasks: Set<TaskDescriptor>
 
     /**
-     * Add a task to this configuration.
+     * Add a [task] to this configuration.
      *
-     * Throws an [InvalidConfigurationError] in case a task with the specified name already exists.
-     *
-     * @param task The task to add.
-     * @return True if the task has been added; false if the specified [TaskDescriptor] is already included in this configuration.
+     * @throws IllegalArgumentException in case a task with the specified name already exists.
+     * @return True if the [task] has been added; false if it is already included in this configuration.
      */
     fun addTask( task: TaskDescriptor ): Boolean
 
     /**
-     * Remove a task currently present in this configuration.
+     * Remove a [task] currently present in this configuration.
      *
-     * @param task The task to remove.
-     * @return True if the task has been removed; false if the specified [TaskDescriptor] is not included in this configuration.
+     * @return True if the [task] has been removed; false if it is not included in this configuration.
      */
     fun removeTask( task: TaskDescriptor ): Boolean
 }

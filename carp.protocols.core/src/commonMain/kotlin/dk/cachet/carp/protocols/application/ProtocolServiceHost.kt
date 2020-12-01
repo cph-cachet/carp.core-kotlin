@@ -16,10 +16,10 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
     /**
      * Add the specified study [protocol].
      *
-     * @param protocol The [StudyProtocolSnapshot] to add.
      * @param versionTag An optional label used to identify this first version of the [protocol]. "Initial" by default.
-     * @throws IllegalArgumentException when the [protocol] already exists.
-     * @throws InvalidConfigurationError when [protocol] is invalid.
+     * @throws IllegalArgumentException when:
+     *   - [protocol] already exists
+     *   - [protocol] is invalid
      */
     override suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String )
     {
@@ -32,8 +32,10 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
      *
      * @param protocol An updated version of a [StudyProtocolSnapshot] already stored.
      * @param versionTag An optional unique label used to identify this specific version of the [protocol]. The current date/time by default.
-     * @throws IllegalArgumentException when the [protocol] is not yet stored in the repository or when the [versionTag] is already in use.
-     * @throws InvalidConfigurationError when [protocol] is invalid.
+     * @throws IllegalArgumentException when:
+     *   - [protocol] is not yet stored in the repository
+     *   - [protocol] is invalid
+     *   - the [versionTag] is already in use
      */
     override suspend fun update( protocol: StudyProtocolSnapshot, versionTag: String )
     {
@@ -44,8 +46,6 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
     /**
      * Find the [StudyProtocolSnapshot] with the specified [protocolName] owned by [owner].
      *
-     * @param owner The owner of the protocol to return.
-     * @param protocolName The name of the protocol to return.
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      * @throws IllegalArgumentException when the [owner], [protocolName], or [versionTag] does not exist.
      */

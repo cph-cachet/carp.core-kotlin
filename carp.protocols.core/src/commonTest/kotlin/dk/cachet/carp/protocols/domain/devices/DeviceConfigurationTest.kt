@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import kotlin.test.*
@@ -110,7 +109,7 @@ interface DeviceConfigurationTest
         configuration.addConnectedDevice( StubDeviceDescriptor( "Duplicate name" ), masterDevice )
 
         // Adding an additional master device with duplicate name should fail.
-        assertFailsWith<InvalidConfigurationError>
+        assertFailsWith<IllegalArgumentException>
         {
             configuration.addMasterDevice( StubMasterDeviceDescriptor( "Duplicate name" ) )
         }
@@ -121,7 +120,7 @@ interface DeviceConfigurationTest
     {
         val configuration = createDeviceConfiguration()
 
-        assertFailsWith<InvalidConfigurationError>
+        assertFailsWith<IllegalArgumentException>
         {
             configuration.addConnectedDevice( StubDeviceDescriptor(), StubMasterDeviceDescriptor() )
         }
@@ -132,7 +131,7 @@ interface DeviceConfigurationTest
     {
         val configuration = createDeviceConfiguration()
 
-        assertFailsWith<InvalidConfigurationError>
+        assertFailsWith<IllegalArgumentException>
         {
             configuration.getConnectedDevices( StubMasterDeviceDescriptor() )
         }
