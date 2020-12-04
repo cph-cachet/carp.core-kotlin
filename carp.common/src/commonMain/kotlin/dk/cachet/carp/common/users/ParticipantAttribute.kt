@@ -57,8 +57,10 @@ sealed class ParticipantAttribute
     /**
      * Determines whether [input] is valid and can be converted to a matching [Data] object associated to this attribute
      * as registered in [registeredInputDataTypes] or [CustomInput] in case this is a [CustomParticipantAttribute].
+     *
+     * @throws UnsupportedOperationException when no input element is registered for this attribute.
      */
-    fun <TInput> isValid( registeredInputDataTypes: InputDataTypeList, input: TInput ): Boolean
+    fun <TInput> isValidInput( registeredInputDataTypes: InputDataTypeList, input: TInput ): Boolean
     {
         @Suppress( "UNCHECKED_CAST" )
         val inputElement = getInputElement( registeredInputDataTypes ) as InputElement<Any>
@@ -81,7 +83,7 @@ sealed class ParticipantAttribute
      */
     fun <TInput> inputToData( registeredInputDataTypes: InputDataTypeList, input: TInput ): Data?
     {
-        require( isValid( registeredInputDataTypes, input ) )
+        require( isValidInput( registeredInputDataTypes, input ) )
             { "Input value does not match constraints for the specified input type." }
 
         // TODO: Add 'isRequired' to `InputElement` and validate whether 'null' input (not set) is a valid option.
@@ -91,8 +93,65 @@ sealed class ParticipantAttribute
         if ( this is CustomParticipantAttribute<*> ) return CustomInput( input )
 
         // Convert to concrete Data object.
-        val converter = registeredInputDataTypes.dataConverters[ inputType ]
+        val converter = registeredInputDataTypes.inputToDataConverters[ inputType ]
             ?: throw UnsupportedOperationException( "No data converter for '$inputType' registered." )
         return converter( input )
     }
+
+    /**
+     * Determines whether [data] is valid input for this attribute.
+     *
+     * @throws UnsupportedOperationException when no input element is registered for this attribute.
+     */
+    fun <TData : Data?> isValidData( registeredInputDataTypes: InputDataTypeList, data: TData ): Boolean
+    {
+        val inputElement = getInputElement( registeredInputDataTypes )
+
+        // TODO: For now, consider null always a valid option.
+        if ( data == null ) return true
+
+        // Early out in case data is of the wrong type.
+        val isCorrectDataType = when ( this )
+        {
+            is CustomParticipantAttribute<*> -> data is CustomInput<*> && isValidCustomData( inputElement, data )
+            is DefaultParticipantAttribute -> registeredInputDataTypes.dataClasses[ inputType ]!!.isInstance( data )
+        }
+        if ( !isCorrectDataType ) return false
+
+        val input: Any? = dataToInput( registeredInputDataTypes, data )
+        return isValidInput( registeredInputDataTypes, input )
+    }
+
+    /**
+     * Convert [data] to the corresponding input representation.
+     * The returned input is not necessarily valid as it may be constrained further by the registered input element.
+     *
+     * @throws UnsupportedOperationException when no input element is registered for this attribute.
+     */
+    fun <TData : Data?> dataToInput( registeredInputDataTypes: InputDataTypeList, data: TData ): Any?
+    {
+        @Suppress( "UNCHECKED_CAST" )
+        val inputElement = getInputElement( registeredInputDataTypes ) as InputElement<Any>
+
+        // TODO: For now, consider null always a valid option.
+        if ( data == null ) return null
+
+        // Custom input should be wrapped by `CustomInput` and contain an object of the expected input type.
+        if ( this is CustomParticipantAttribute<*> )
+        {
+            require( data is CustomInput<*> && isValidCustomData( inputElement, data ) )
+                { "Data is not of expected type for this attribute." }
+            return data.input
+        }
+
+        // Convert to input data.
+        val converter = registeredInputDataTypes.dataToInputConverters[ inputType ]
+            ?: throw UnsupportedOperationException( "No data converter for '$inputType' registered." )
+        require( registeredInputDataTypes.dataClasses[ inputType ]!!.isInstance( data ) )
+            { "Data is not of expected type for this attribute." }
+        return converter( data )
+    }
+
+    private fun isValidCustomData( inputElement: InputElement<*>, data: CustomInput<*> ) =
+        inputElement.getDataClass().isInstance( data.input )
 }

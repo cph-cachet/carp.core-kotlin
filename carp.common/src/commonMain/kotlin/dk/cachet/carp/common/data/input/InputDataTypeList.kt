@@ -1,10 +1,12 @@
 package dk.cachet.carp.common.data.input
 
 import dk.cachet.carp.common.data.Data
+import kotlin.reflect.KClass
 
 
 /**
- * A helper class to access and list [InputDataType]s, and register matching [InputElement]s and converters to convert input to [Data] objects.
+ * A helper class to access and list [InputDataType]s,
+ * and register matching [InputElement]s and converters to convert input from and to [Data] objects.
  *
  * Extend from this class as an object and assign members as follows: `val MEMBER = add( type, dataConverter, inputElement )`.
  */
@@ -15,23 +17,33 @@ open class InputDataTypeList private constructor( val list: MutableList<InputDat
     private val _inputElements: MutableMap<InputDataType, AnyInputElement> = mutableMapOf()
     val inputElements: Map<InputDataType, AnyInputElement> = _inputElements
 
-    private val _dataConverters: MutableMap<InputDataType, (Any) -> Data> = mutableMapOf()
-    val dataConverters: Map<InputDataType, (Any) -> Data> = _dataConverters
+    private val _dataClasses: MutableMap<InputDataType, KClass<*>> = mutableMapOf()
+    val dataClasses: Map<InputDataType, KClass<*>> = _dataClasses
+
+    private val _inputToDataConverters: MutableMap<InputDataType, (Any) -> Data> = mutableMapOf()
+    val inputToDataConverters: Map<InputDataType, (Any) -> Data> = _inputToDataConverters
+
+    private val _dataToInputConverters: MutableMap<InputDataType, (Data) -> Any> = mutableMapOf()
+    val dataToInputConverters: Map<InputDataType, (Data) -> Any> = _dataToInputConverters
 
     /**
      * Register an input [type], an associated [inputElement], and data converter to convert the data type of the [inputElement] to a [Data] object.
      */
+    @Suppress( "UNCHECKED_CAST" )
     protected fun <TInput : Any, TData : Data> add(
-        type: InputDataType,
+        inputType: InputDataType,
         inputElement: InputElement<TInput>,
-        dataConverter: (TInput) -> TData
+        dataClass: KClass<TData>,
+        inputToData: (TInput) -> TData,
+        dataToInput: (TData) -> TInput
     ): InputDataType =
-        type.also{
+        inputType.also{
             require( !_inputElements.containsKey( it ) ) { "The specified input data type is already registered in this list." }
 
             list.add( it )
             _inputElements[ it ] = inputElement
-            @Suppress( "UNCHECKED_CAST" )
-            _dataConverters[ it ] = dataConverter as (Any) -> TData
+            _dataClasses[ it ] = dataClass
+            _inputToDataConverters[ it ] = inputToData as (Any) -> TData
+            _dataToInputConverters[ it ] = dataToInput as (Data) -> Any
         }
 }
