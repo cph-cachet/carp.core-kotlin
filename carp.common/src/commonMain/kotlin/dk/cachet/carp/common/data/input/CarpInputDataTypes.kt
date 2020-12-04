@@ -19,8 +19,10 @@ object CarpInputDataTypes : InputDataTypeList()
      * Biological sex assigned at birth.
      */
     val SEX = add(
-        type = InputDataType.fromString( SEX_TYPE_NAME ),
+        inputType = InputDataType.fromString( SEX_TYPE_NAME ),
         inputElement = SelectOne( "Sex", Sex.values().map { it.toString() }.toSet() ),
-        dataConverter = { Sex.valueOf( it ) }
+        dataClass = Sex::class,
+        inputToData = { Sex.valueOf( it ) },
+        dataToInput = { it.name }
     )
 }

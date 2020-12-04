@@ -14,12 +14,13 @@ class InputDataTypeListTest
     {
         val type = InputDataType( "test", "test" )
         val inputElement = Text( "Test" )
-        val dataConverter = { _: String -> Sex.Male }
+        val toData = { _: String -> Sex.Male }
+        val toInput = { _: Sex -> "Male" }
 
         val list =
             object : InputDataTypeList()
             {
-                val TEST = add( type, inputElement, dataConverter )
+                val TEST = add( type, inputElement, Sex::class, toData, toInput )
             }
 
         // Added item can be queried.
@@ -27,8 +28,9 @@ class InputDataTypeListTest
 
         // Input element and data converter have been added.
         assertEquals( inputElement, list.inputElements[ list.TEST ] )
-        @Suppress( "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING" )
-        assertEquals( dataConverter, list.dataConverters[ list.TEST ] )
+        assertEquals( Sex::class, list.dataClasses[ list.TEST ] )
+        assertEquals<Any?>( toData, list.inputToDataConverters[ list.TEST ] )
+        assertEquals<Any?>( toInput, list.dataToInputConverters[ list.TEST ] )
     }
 
     @Test
@@ -36,14 +38,15 @@ class InputDataTypeListTest
     {
         val type = InputDataType( "test", "test" )
         val inputElement = Text( "Test" )
-        val dataConverter = { _: String -> Sex.Male }
+        val toData = { _: String -> Sex.Male }
+        val toInput = { _: Sex -> "Male" }
 
         assertFailsWith<IllegalArgumentException>
         {
             object : InputDataTypeList()
             {
-                val TEST = add( type, inputElement, dataConverter )
-                val TEST2 = add( type, inputElement, dataConverter )
+                val TEST = add( type, inputElement, Sex::class, toData, toInput )
+                val TEST2 = add( type, inputElement, Sex::class, toData, toInput )
             }
         }
     }
