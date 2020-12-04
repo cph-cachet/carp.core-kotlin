@@ -80,6 +80,15 @@ class ParticipantAttributeTest
     }
 
     @Test
+    fun inputToData_fails_for_custom_types_with_wrong_data_type()
+    {
+        val attribute = ParticipantAttribute.CustomParticipantAttribute( Text( "Answer" ) )
+
+        val notAString = 42
+        assertFailsWith<IllegalArgumentException> { attribute.inputToData( CarpInputDataTypes, notAString ) }
+    }
+
+    @Test
     fun inputToData_fails_when_breaking_constraints()
     {
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
