@@ -1,6 +1,5 @@
 package dk.cachet.carp.common.users
 
-import dk.cachet.carp.common.NamespacedId
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.AnyInputElement
@@ -37,7 +36,7 @@ sealed class ParticipantAttribute
     @Serializable
     data class CustomParticipantAttribute<T : Any>( val input: InputElement<T> ) : ParticipantAttribute()
     {
-        override val inputType: NamespacedId = NamespacedId( CUSTOM_INPUT_TYPE_NAME, UUID.randomUUID().toString() )
+        override val inputType: InputDataType = InputDataType( CUSTOM_INPUT_TYPE_NAME, UUID.randomUUID().toString() )
     }
 
 
@@ -70,14 +69,14 @@ sealed class ParticipantAttribute
         // TODO: Add 'isRequired' to `InputElement` and validate whether 'null' input (not set) is a valid option.
         if ( input == null ) return null
 
-        // Early out for custom input which is simply wrapped.
-        if ( this is CustomParticipantAttribute<*> ) return CustomInput( input )
-
         // Verify whether input is valid.
         // TODO: `getDataClass` is a trivial implementation in extending classes, but could this be enforced by using the type system instead?
         //       On the JVM runtime, `isValidConfiguration` throws a `ClassCastException` when the wrong type were to be passed, but not on JS runtime.
         require( inputElement.getDataClass().isInstance( input ) ) { "Input data type does not match expected data type." }
         require( inputElement.isValid( input ) ) { "Input value does not match constraints for the specified type." }
+
+        // Custom input which is simply wrapped.
+        if ( this is CustomParticipantAttribute<*> ) return CustomInput( input )
 
         // Convert to concrete Data object.
         val converter = registeredInputDataTypes.dataConverters[ inputType ]
