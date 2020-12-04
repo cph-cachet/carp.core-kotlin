@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.users
 
+import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.data.input.CustomInput
 import dk.cachet.carp.common.data.input.InputDataType
@@ -55,51 +56,63 @@ class ParticipantAttributeTest
         assertEquals( inputElement, retrievedInputElement )
     }
 
+
+    // Helper classes and functions to set up test cases.
+    private data class AttributeTest<T>( val input: T, val expectValid: Boolean, val expectData: Data? )
+    private data class AttributeWithTest( val attribute: ParticipantAttribute, val test: AttributeTest<*> )
+    private fun ParticipantAttribute.expect( vararg tests: AttributeTest<*> ) =
+        tests.map { AttributeWithTest( this, it ) }.toTypedArray()
+    private fun <T> T.canConvert( isValid: Boolean, data: Data? ) = AttributeTest( this, isValid, data )
+
+    // Test cases.
+    private val tests: Array<AttributeWithTest> = arrayOf(
+        // Defined type.
+        *ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ).expect(
+            "Male".canConvert( true, Sex.Male ),
+            42.canConvert( false, null ), // Wrong data type.
+            "Zorg".canConvert( false, null ) // Breaking constraints.
+        ),
+
+        // Custom type.
+        *ParticipantAttribute.CustomParticipantAttribute( Text( "Answer" ) ).expect(
+            "42".canConvert( true, CustomInput( "42" ) ),
+            42.canConvert( false, null ) // Wrong data type.
+        )
+    )
+
     @Test
-    fun inputToData_succeeds_for_defined_types()
+    fun isValid_returns_expected_results_for_all_test_cases()
     {
-        val attribute = ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
-        val data = attribute.inputToData( CarpInputDataTypes, "Male" )
-        assertEquals( Sex.Male, data )
+        for ( (attribute, test) in tests )
+        {
+            val isValid = attribute.isValid( CarpInputDataTypes, test.input )
+            assertEquals( test.expectValid, isValid )
+        }
     }
 
     @Test
-    fun inputToData_succeeds_for_custom_types()
+    fun inputToData_returns_expected_results_for_all_test_cases()
     {
-        val attribute = ParticipantAttribute.CustomParticipantAttribute( Text( "Answer" ) )
-        val data = attribute.inputToData( CarpInputDataTypes, "42" )
-        assertTrue( data is CustomInput<*> )
-        assertEquals( "42", data.input )
+        for ( (attribute, test) in tests )
+        {
+            if ( !test.expectValid )
+            {
+                assertFailsWith<IllegalArgumentException> { attribute.inputToData( CarpInputDataTypes, test.input ) }
+            }
+            else
+            {
+                assertEquals( test.expectData, attribute.inputToData( CarpInputDataTypes, test.input ) )
+            }
+        }
     }
 
     @Test
-    fun inputToData_fails_for_invalid_input_type()
-    {
-        val attribute = ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
-        assertFailsWith<IllegalArgumentException> { attribute.inputToData( CarpInputDataTypes, 42 ) }
-    }
-
-    @Test
-    fun inputToData_fails_for_custom_types_with_wrong_data_type()
-    {
-        val attribute = ParticipantAttribute.CustomParticipantAttribute( Text( "Answer" ) )
-
-        val notAString = 42
-        assertFailsWith<IllegalArgumentException> { attribute.inputToData( CarpInputDataTypes, notAString ) }
-    }
-
-    @Test
-    fun inputToData_fails_when_breaking_constraints()
-    {
-        val attribute = ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
-        assertFailsWith<IllegalArgumentException> { attribute.inputToData( CarpInputDataTypes, "Zorg" ) }
-    }
-
-    @Test
-    fun inputToData_fails_for_unsupported_input_data_type()
+    fun isValid_and_inputToData_fail_for_unsupported_input_data_type()
     {
         val unknownType = InputDataType( "namespace", "unknowntype" )
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( unknownType )
+
+        assertFailsWith<UnsupportedOperationException> { attribute.isValid( CarpInputDataTypes, "Test" ) }
         assertFailsWith<UnsupportedOperationException> { attribute.inputToData( CarpInputDataTypes, "Test" ) }
     }
 

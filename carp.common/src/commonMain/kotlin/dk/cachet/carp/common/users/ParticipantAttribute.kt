@@ -55,6 +55,24 @@ sealed class ParticipantAttribute
         }
 
     /**
+     * Determines whether [input] is valid and can be converted to a matching [Data] object associated to this attribute
+     * as registered in [registeredInputDataTypes] or [CustomInput] in case this is a [CustomParticipantAttribute].
+     */
+    fun <TInput> isValid( registeredInputDataTypes: InputDataTypeList, input: TInput ): Boolean
+    {
+        @Suppress( "UNCHECKED_CAST" )
+        val inputElement = getInputElement( registeredInputDataTypes ) as InputElement<Any>
+
+        // TODO: For now, consider null always a valid option.
+        if ( input == null ) return true
+
+        // TODO: `getDataClass` is a trivial implementation in extending classes, but could this be enforced by using the type system instead?
+        //       On the JVM runtime, `isValidConfiguration` throws a `ClassCastException` when the wrong type were to be passed, but not on JS runtime.
+        val isExpectedDataType = inputElement.getDataClass().isInstance( input )
+        return isExpectedDataType && inputElement.isValid( input )
+    }
+
+    /**
      * Convert [input] to the matching [Data] object associated to this attribute as registered in [registeredInputDataTypes],
      * or [CustomInput] in case this is a [CustomParticipantAttribute].
      *
@@ -63,17 +81,11 @@ sealed class ParticipantAttribute
      */
     fun <TInput> inputToData( registeredInputDataTypes: InputDataTypeList, input: TInput ): Data?
     {
-        @Suppress( "UNCHECKED_CAST" )
-        val inputElement = getInputElement( registeredInputDataTypes ) as InputElement<Any>
+        require( isValid( registeredInputDataTypes, input ) )
+            { "Input value does not match constraints for the specified input type." }
 
         // TODO: Add 'isRequired' to `InputElement` and validate whether 'null' input (not set) is a valid option.
         if ( input == null ) return null
-
-        // Verify whether input is valid.
-        // TODO: `getDataClass` is a trivial implementation in extending classes, but could this be enforced by using the type system instead?
-        //       On the JVM runtime, `isValidConfiguration` throws a `ClassCastException` when the wrong type were to be passed, but not on JS runtime.
-        require( inputElement.getDataClass().isInstance( input ) ) { "Input data type does not match expected data type." }
-        require( inputElement.isValid( input ) ) { "Input value does not match constraints for the specified type." }
 
         // Custom input which is simply wrapped.
         if ( this is CustomParticipantAttribute<*> ) return CustomInput( input )
