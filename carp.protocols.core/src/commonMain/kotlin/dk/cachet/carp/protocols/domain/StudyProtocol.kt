@@ -91,6 +91,9 @@ class StudyProtocol(
             // Add expected participant data.
             snapshot.expectedParticipantData.forEach { protocol.addExpectedParticipantData( it ) }
 
+            // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
+            protocol.consumeEvents()
+
             return protocol
         }
     }

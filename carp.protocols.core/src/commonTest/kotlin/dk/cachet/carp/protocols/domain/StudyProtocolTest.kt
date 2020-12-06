@@ -374,6 +374,7 @@ class StudyProtocolTest
             assertEquals( triggeredTasks.count(), triggeredTasks.intersect( fromSnapshotTriggeredTasks ).count() )
         }
         assertEquals( protocol.expectedParticipantData, fromSnapshot.expectedParticipantData )
+        assertEquals( 0, fromSnapshot.consumeEvents().size )
     }
 
     private fun connectedDevicesAreSame( protocol: StudyProtocol, fromSnapshot: StudyProtocol, masterDevice: AnyMasterDeviceDescriptor ): Boolean

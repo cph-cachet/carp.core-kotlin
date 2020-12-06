@@ -45,6 +45,7 @@ class ParticipantGroupTest
             group.data.map { it.key to it.value }.toSet(),
             fromSnapshot.data.map { it.key to it.value }.toSet()
         )
+        assertEquals( 0, fromSnapshot.consumeEvents().size )
     }
 
     @Test
