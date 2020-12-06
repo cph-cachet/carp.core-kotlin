@@ -381,5 +381,6 @@ class StudyRuntimeTest
         assertEquals( runtime.isDeployed, fromSnapshot.isDeployed )
         assertEquals( runtime.isStopped, fromSnapshot.isStopped )
         assertEquals( runtime.getStatus(), fromSnapshot.getStatus() )
+        assertEquals( 0, fromSnapshot.consumeEvents().size )
     }
 }

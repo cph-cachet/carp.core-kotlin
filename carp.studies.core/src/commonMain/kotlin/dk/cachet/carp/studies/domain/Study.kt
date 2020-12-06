@@ -58,6 +58,9 @@ class Study(
                 study._participations[ p.key ] = p.value.toMutableSet()
             }
 
+            // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
+            study.consumeEvents()
+
             return study
         }
     }

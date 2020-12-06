@@ -291,6 +291,7 @@ class StudyDeploymentTest
         assertEquals(
             deployment.participations.count(),
             deployment.participations.intersect( fromSnapshot.participations ).count() )
+        assertEquals( 0, fromSnapshot.consumeEvents().size )
     }
 
     @Test
