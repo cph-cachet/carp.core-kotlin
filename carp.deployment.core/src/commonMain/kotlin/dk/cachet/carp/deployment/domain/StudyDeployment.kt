@@ -18,13 +18,12 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
 
 /**
- * A single instantiation of a [StudyProtocol], taking care of common concerns when 'running' a study.
+ * A single instantiation of a [StudyProtocol], taking care of common concerns related to devices when 'running' a study.
  *
  * I.e., a [StudyDeployment] is responsible for registering the physical devices described in the [StudyProtocol],
- * enabling a connection between them, tracking device connection issues, assessing data quality,
- * and registering participant consent.
+ * enabling a connection between them, tracking device connection issues, and assessing data quality.
  */
-@Suppress( "TooManyFunctions" ) // TODO: Can this be decomposed a bit?
+@Suppress( "TooManyFunctions" ) // TODO: Can this be decomposed a bit? Participation management will be moved to `ParticipantGroup`.
 class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() ) :
     AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>()
 {
