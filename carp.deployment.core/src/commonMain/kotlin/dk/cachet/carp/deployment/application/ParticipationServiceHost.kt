@@ -1,10 +1,15 @@
 package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.Data
+import dk.cachet.carp.common.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.data.input.InputDataType
+import dk.cachet.carp.common.data.input.InputDataTypeList
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.DeploymentRepository
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
+import dk.cachet.carp.deployment.domain.users.ParticipantGroup
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.ParticipationRepository
@@ -13,12 +18,19 @@ import dk.cachet.carp.deployment.domain.users.filterActiveParticipationInvitatio
 
 
 /**
- * Application service which allows inviting participants and retrieving participations for study deployments.
+ * Application service which allows inviting participants, retrieving participations for study deployments,
+ * and managing data related to participants which is input by users.
+ *
+ * TODO: Replace dependency on [deploymentRepository] with a dependency on [DeploymentService].
  */
 class ParticipationServiceHost(
     private val deploymentRepository: DeploymentRepository,
     private val participationRepository: ParticipationRepository,
-    private val accountService: AccountService
+    private val accountService: AccountService,
+    /**
+     * Supported [InputDataType]'s for participant data input by users.
+     */
+    private val participantDataInputTypes: InputDataTypeList = CarpInputDataTypes
 ) : ParticipationService
 {
     /**
@@ -104,5 +116,40 @@ class ParticipationServiceHost(
         val deployments = deploymentRepository.getStudyDeploymentsBy( deploymentIds )
 
         return filterActiveParticipationInvitations( invitations, deployments )
+    }
+
+    /**
+     * Get currently set data for all expected participant data in the study deployment with [studyDeploymentId].
+     * Data which is not set equals null.
+     *
+     * @throws IllegalArgumentException when there is no study deployment with [studyDeploymentId].
+     */
+    override suspend fun getParticipantData( studyDeploymentId: UUID ): Map<InputDataType, Data?>
+    {
+        val deployment = deploymentRepository.getStudyDeploymentOrThrowBy( studyDeploymentId )
+        val group = participationRepository.getParticipantGroup( studyDeploymentId )
+            ?: ParticipantGroup.fromDeployment( deployment )
+
+        return group.data.toMap()
+    }
+
+    /**
+     * Set participant [data] for the given [inputDataType] in the study deployment with [studyDeploymentId].
+     *
+     * @throws IllegalArgumentException when:
+     *   - there is no study deployment with [studyDeploymentId]
+     *   - [inputDataType] is not configured as expected participant data in the study protocol
+     *   - [data] is invalid data for [inputDataType]
+     */
+    override suspend fun setParticipantData( studyDeploymentId: UUID, inputDataType: InputDataType, data: Data? )
+    {
+        // Verify whether data is expected.
+        val deployment = deploymentRepository.getStudyDeploymentOrThrowBy( studyDeploymentId )
+
+        // Set data in participant group.
+        val group = participationRepository.getParticipantGroup( studyDeploymentId )
+            ?: ParticipantGroup.fromDeployment( deployment )
+        group.setData( participantDataInputTypes, inputDataType, data )
+        participationRepository.putParticipantGroup( group )
     }
 }

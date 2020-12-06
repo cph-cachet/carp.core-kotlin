@@ -1,7 +1,13 @@
 package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.Data
+import dk.cachet.carp.common.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.data.input.InputDataTypeList
+import dk.cachet.carp.common.data.input.Sex
+import dk.cachet.carp.common.data.input.element.Text
 import dk.cachet.carp.common.users.AccountIdentity
+import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.Participation
@@ -22,7 +28,9 @@ abstract class ParticipationServiceTest
     /**
      * Create a deployment service and account service it depends on to be used in the tests.
      */
-    abstract fun createService(): Triple<ParticipationService, DeploymentService, AccountService>
+    abstract fun createService(
+        participantDataInputTypes: InputDataTypeList = CarpInputDataTypes
+    ): Triple<ParticipationService, DeploymentService, AccountService>
 
 
     @Test
@@ -130,6 +138,87 @@ abstract class ParticipationServiceTest
         val retrievedInvitations = participationService.getActiveParticipationInvitations( account.id )
         val expectedDeviceInvitation = ActiveParticipationInvitation.DeviceInvitation( deviceRoleName, false )
         assertEquals( ActiveParticipationInvitation( participation, invitation, setOf( expectedDeviceInvitation ) ), retrievedInvitations.single() )
+    }
+
+    @Test
+    fun getParticipantData_initially_returns_null_for_all_expected_data() = runSuspendTest {
+        val (participationService, deploymentService, _) =
+            createService( CarpInputDataTypes )
+
+        // Create protocol with expected 'sex' participant data.
+        val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
+        protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
+        val customAttribute = ParticipantAttribute.CustomParticipantAttribute( Text( "Custom" ) )
+        protocol.addExpectedParticipantData( customAttribute )
+        val snapshot = protocol.getSnapshot()
+        val status = deploymentService.createStudyDeployment( snapshot )
+
+        val data = participationService.getParticipantData( status.studyDeploymentId )
+        assertEquals( setOf( CarpInputDataTypes.SEX, customAttribute.inputType ), data.keys )
+        assertTrue( data.values.all { it == null } )
+    }
+
+    @Test
+    fun getParticipantData_fails_for_unknown_deploymentId() = runSuspendTest {
+        val (participationService, _, _) = createService( CarpInputDataTypes )
+
+        assertFailsWith<IllegalArgumentException> { participationService.getParticipantData( unknownId ) }
+    }
+
+    @Test
+    fun setParticipantData_succeeds() = runSuspendTest {
+        val (participationService, deploymentService, _) =
+            createService( CarpInputDataTypes )
+
+        // Create protocol with expected 'sex' participant data.
+        val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
+        protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
+        val snapshot = protocol.getSnapshot()
+        val status = deploymentService.createStudyDeployment( snapshot )
+
+        participationService.setParticipantData( status.studyDeploymentId, CarpInputDataTypes.SEX, Sex.Male )
+        val data = participationService.getParticipantData( status.studyDeploymentId )
+        assertEquals( Sex.Male, data[ CarpInputDataTypes.SEX ] )
+    }
+
+    @Test
+    fun setParticipantData_fails_for_unknown_deploymentId() = runSuspendTest {
+        val (participationService, _, _) = createService( CarpInputDataTypes )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            participationService.setParticipantData( unknownId, CarpInputDataTypes.SEX, Sex.Male )
+        }
+    }
+
+    @Test
+    fun setParticipantData_fails_for_unexpected_input_for_protocol() = runSuspendTest {
+        val (participationService, deploymentService, _) =
+            createService( CarpInputDataTypes )
+        val studyDeploymentId = addTestDeployment( deploymentService )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            participationService.setParticipantData( studyDeploymentId, CarpInputDataTypes.SEX, Sex.Male )
+        }
+    }
+
+    @Test
+    fun setParticipantData_fails_for_invalid_data() = runSuspendTest {
+        val (participationService, deploymentService, _) =
+            createService( CarpInputDataTypes )
+
+        // Create protocol with expected 'sex' participant data.
+        val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
+        protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
+        val snapshot = protocol.getSnapshot()
+        val status = deploymentService.createStudyDeployment( snapshot )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            val wrongData = object : Data { }
+            participationService.setParticipantData( status.studyDeploymentId, CarpInputDataTypes.SEX, wrongData )
+        }
     }
 
 

@@ -1,6 +1,12 @@
 package dk.cachet.carp.deployment.domain
 
+import dk.cachet.carp.common.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.data.input.CustomInput
+import dk.cachet.carp.common.data.input.Sex
+import dk.cachet.carp.common.data.input.element.Text
 import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.common.users.ParticipantAttribute
+import dk.cachet.carp.deployment.domain.users.ParticipantGroup
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
@@ -60,3 +66,23 @@ fun createActiveDeployment( masterDeviceRoleName: String ): StudyDeployment
  */
 fun createStoppedDeployment( masterDeviceRoleName: String ): StudyDeployment =
     createActiveDeployment( masterDeviceRoleName ).apply { stop() }
+
+/**
+ * Creates a participant group with a default and custom expected participant attribute and sets the data.
+ */
+fun createComplexParticipantGroup(): ParticipantGroup
+{
+    val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+    val defaultAttribute = ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
+    protocol.addExpectedParticipantData( defaultAttribute )
+    val customAttribute = ParticipantAttribute.CustomParticipantAttribute( Text( "Name" ) )
+    protocol.addExpectedParticipantData( customAttribute )
+    val deployment = StudyDeployment( protocol.getSnapshot() )
+
+    return ParticipantGroup.fromDeployment( deployment ).apply {
+        setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
+        setData( CarpInputDataTypes, customAttribute.inputType, CustomInput( "Steven" ) )
+    }
+}
+
+

@@ -1,9 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.ExtractUniqueKeyMap
-import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.InputDataType
-import dk.cachet.carp.common.data.input.InputDataTypeList
 import dk.cachet.carp.common.users.ParticipantAttribute
 
 
@@ -35,10 +33,4 @@ class EmptyParticipantDataConfiguration :
 
     override fun removeExpectedParticipantData( attribute: ParticipantAttribute ): Boolean =
         _expectedParticipantData.remove( attribute )
-
-    override fun <TData : Data?> isValidParticipantData(
-        registeredInputDataTypes: InputDataTypeList,
-        inputDataType: InputDataType,
-        data: TData
-    ): Boolean = _expectedParticipantData[ inputDataType ]?.isValidData( registeredInputDataTypes, data ) ?: false
 }

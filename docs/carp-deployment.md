@@ -46,9 +46,12 @@ Allows deploying study protocols and retrieving master device deployments for pa
 
 ### [`ParticipationService`](../carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/application/ParticipationService.kt)
 
-Allows inviting participants and retrieving participations for study deployments.
+Allows inviting participants, retrieving participations for study deployments,
+and managing data related to participants which is input by users.
 
 | Endpoint | Description | Require | Grant |
 | --- | --- | --- | --- |
 | `addParticipation` | Let a person with a specified identity participate in a study deployment, using a specified master device. | manage deployment: `studyDeploymentId` | in deployment (to account with `identity`): `studyDeploymentId` |
 | `getActiveParticipationInvitations` | Get all participations of active study deployments a specified account has been invited to. | authenticated: `accountId` | |
+| `getParticipantData` | Get currently set data for all expected participant data. | in deployment: `studyDeploymentId` | |
+| `setParticipantData` | Set participant data for a specified study deployment. | in deployment: `studyDeploymentId` | |

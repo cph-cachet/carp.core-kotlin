@@ -1,6 +1,8 @@
 package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.Data
+import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.Participation
@@ -13,7 +15,8 @@ import dk.cachet.carp.test.Mock
 
 
 class ParticipationServiceMock(
-    private val getActiveParticipationInvitationResult: Set<ActiveParticipationInvitation> = emptySet()
+    private val getActiveParticipationInvitationResult: Set<ActiveParticipationInvitation> = emptySet(),
+    private val getParticipantDataResult: Map<InputDataType, Data?> = emptyMap()
 ) : Mock<ParticipationService>(), ParticipationService
 {
     override suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ) =
@@ -23,4 +26,11 @@ class ParticipationServiceMock(
     override suspend fun getActiveParticipationInvitations( accountId: UUID ) =
         getActiveParticipationInvitationResult
         .also { trackSuspendCall( ParticipationService::getActiveParticipationInvitations, accountId ) }
+
+    override suspend fun getParticipantData( studyDeploymentId: UUID ): Map<InputDataType, Data?> =
+        getParticipantDataResult
+        .also { trackSuspendCall( ParticipationService::getParticipantData, studyDeploymentId ) }
+
+    override suspend fun setParticipantData( studyDeploymentId: UUID, inputDataType: InputDataType, data: Data? ) =
+        trackSuspendCall( ParticipationService::setParticipantData, studyDeploymentId, inputDataType, data )
 }

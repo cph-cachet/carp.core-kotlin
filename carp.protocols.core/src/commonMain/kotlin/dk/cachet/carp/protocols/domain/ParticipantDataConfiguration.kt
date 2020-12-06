@@ -32,15 +32,21 @@ interface ParticipantDataConfiguration
      * @return True if the [attribute] has been removed; false if it is not included in this configuration.
      */
     fun removeExpectedParticipantData( attribute: ParticipantAttribute ): Boolean
+}
 
-    /**
-     * Determines whether input [data] for a given [inputDataType],
-     * as registered in [registeredInputDataTypes] or of type [CustomInput],
-     * is expected to be input by users and valid.
-     */
-    fun <TData : Data?> isValidParticipantData(
-        registeredInputDataTypes: InputDataTypeList,
-        inputDataType: InputDataType,
-        data: TData
-    ): Boolean
+
+/**
+ * Determines whether input [data] for a given [inputDataType],
+ * as registered in [registeredInputDataTypes] or of type [CustomInput],
+ * is expected to be input by users and is valid.
+ */
+fun <TData : Data?> Set<ParticipantAttribute>.isValidParticipantData(
+    registeredInputDataTypes: InputDataTypeList,
+    inputDataType: InputDataType,
+    data: TData
+): Boolean
+{
+    val attribute = this.firstOrNull { it.inputType == inputDataType } ?: return false
+
+    return attribute.isValidData( registeredInputDataTypes, data )
 }

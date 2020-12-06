@@ -62,40 +62,36 @@ interface ParticipantDataConfigurationTest
     @Test
     fun isValidParticipantData_matches_isValidData_for_expected_data()
     {
-        val configuration = createParticipantDataConfiguration()
         val defaultAttribute = ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
-        configuration.addExpectedParticipantData( defaultAttribute )
         val customAttribute = ParticipantAttribute.CustomParticipantAttribute( Text( "Test " ) )
-        configuration.addExpectedParticipantData( customAttribute )
+        val attributes = setOf( defaultAttribute, customAttribute )
 
         // Default (registered) types.
         assertEquals(
             defaultAttribute.isValidData( CarpInputDataTypes, Sex.Male ),
-            configuration.isValidParticipantData( CarpInputDataTypes, defaultAttribute.inputType, Sex.Male )
+            attributes.isValidParticipantData( CarpInputDataTypes, defaultAttribute.inputType, Sex.Male )
         )
         assertEquals(
             defaultAttribute.isValidData( CarpInputDataTypes, CustomInput( "Zorg" ) ),
-            configuration.isValidParticipantData( CarpInputDataTypes, defaultAttribute.inputType, CustomInput( "Zorg" ) )
+            attributes.isValidParticipantData( CarpInputDataTypes, defaultAttribute.inputType, CustomInput( "Zorg" ) )
         )
 
         // Custom types.
         assertEquals(
             customAttribute.isValidData( CarpInputDataTypes, CustomInput( "Valid" ) ),
-            configuration.isValidParticipantData( CarpInputDataTypes, customAttribute.inputType, CustomInput( "Valid" ) )
+            attributes.isValidParticipantData( CarpInputDataTypes, customAttribute.inputType, CustomInput( "Valid" ) )
         )
         assertEquals(
             customAttribute.isValidData( CarpInputDataTypes, CustomInput( -1 ) ),
-            configuration.isValidParticipantData( CarpInputDataTypes, customAttribute.inputType, CustomInput( -1 ) )
+            attributes.isValidParticipantData( CarpInputDataTypes, customAttribute.inputType, CustomInput( -1 ) )
         )
     }
 
     @Test
     fun isValidParticipantData_returns_false_for_unexpected_data()
     {
-        val configuration = createParticipantDataConfiguration()
-
         val unexpectedType = CarpInputDataTypes.SEX
-        val isValid = configuration.isValidParticipantData( CarpInputDataTypes, unexpectedType, Sex.Male )
+        val isValid = emptySet<ParticipantAttribute>().isValidParticipantData( CarpInputDataTypes, unexpectedType, Sex.Male )
         assertFalse( isValid )
     }
 }

@@ -1,6 +1,8 @@
 package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.Data
+import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.Participation
@@ -8,7 +10,8 @@ import dk.cachet.carp.deployment.domain.users.StudyInvitation
 
 
 /**
- * Application service which allows inviting participants and retrieving participations for study deployments.
+ * Application service which allows inviting participants, retrieving participations for study deployments,
+ * and managing data related to participants which is input by users.
  */
 interface ParticipationService
 {
@@ -32,4 +35,22 @@ interface ParticipationService
      * Get all participations of active study deployments the account with the given [accountId] has been invited to.
      */
     suspend fun getActiveParticipationInvitations( accountId: UUID ): Set<ActiveParticipationInvitation>
+
+    /**
+     * Get currently set data for all expected participant data in the study deployment with [studyDeploymentId].
+     * Data which is not set equals null.
+     *
+     * @throws IllegalArgumentException when there is no study deployment with [studyDeploymentId].
+     */
+    suspend fun getParticipantData( studyDeploymentId: UUID ): Map<InputDataType, Data?>
+
+    /**
+     * Set participant [data] for the given [inputDataType] in the study deployment with [studyDeploymentId].
+     *
+     * @throws IllegalArgumentException when:
+     *   - there is no study deployment with [studyDeploymentId]
+     *   - [inputDataType] is not configured as expected participant data in the study protocol
+     *   - [data] is invalid data for [inputDataType]
+     */
+    suspend fun setParticipantData( studyDeploymentId: UUID, inputDataType: InputDataType, data: Data? )
 }
