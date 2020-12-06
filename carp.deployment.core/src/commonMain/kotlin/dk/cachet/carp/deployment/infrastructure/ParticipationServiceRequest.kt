@@ -1,6 +1,8 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.Data
+import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.common.ddd.createServiceInvoker
 import dk.cachet.carp.common.users.AccountIdentity
@@ -32,4 +34,14 @@ sealed class ParticipationServiceRequest
     data class GetActiveParticipationInvitations( val accountId: UUID ) :
         ParticipationServiceRequest(),
         ParticipationServiceInvoker<Set<ActiveParticipationInvitation>> by createServiceInvoker( ParticipationService::getActiveParticipationInvitations, accountId )
+
+    @Serializable
+    data class GetParticipantData( val studyDeploymentId: UUID ) :
+        ParticipationServiceRequest(),
+        ParticipationServiceInvoker<Map<InputDataType, Data?>> by createServiceInvoker( ParticipationService::getParticipantData, studyDeploymentId )
+
+    @Serializable
+    data class SetParticipantData( val studyDeploymentId: UUID, val inputDataType: InputDataType, val data: Data? ) :
+        ParticipationServiceRequest(),
+        ParticipationServiceInvoker<Unit> by createServiceInvoker( ParticipationService::setParticipantData, studyDeploymentId, inputDataType, data )
 }

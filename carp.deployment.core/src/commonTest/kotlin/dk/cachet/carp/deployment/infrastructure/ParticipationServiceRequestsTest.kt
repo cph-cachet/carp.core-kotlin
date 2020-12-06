@@ -1,6 +1,8 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.data.input.Sex
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.common.users.UsernameAccountIdentity
 import dk.cachet.carp.deployment.application.ParticipationService
@@ -19,7 +21,9 @@ class ParticipationServiceRequestsTest
     {
         val requests: List<ParticipationServiceRequest> = listOf(
             ParticipationServiceRequest.AddParticipation( UUID.randomUUID(), setOf( "Phone" ), UsernameAccountIdentity( "Test" ), StudyInvitation.empty() ),
-            ParticipationServiceRequest.GetActiveParticipationInvitations( UUID.randomUUID() )
+            ParticipationServiceRequest.GetActiveParticipationInvitations( UUID.randomUUID() ),
+            ParticipationServiceRequest.GetParticipantData( UUID.randomUUID() ),
+            ParticipationServiceRequest.SetParticipantData( UUID.randomUUID(), CarpInputDataTypes.SEX, Sex.Male )
         )
     }
 
