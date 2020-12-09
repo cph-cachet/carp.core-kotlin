@@ -28,19 +28,19 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
     }
 
     /**
-     * Store an updated version of the specified study [protocol].
+     * Add a new version for the specified study [protocol],
+     * of which a previous version with the same owner and name is already stored.
      *
-     * @param protocol An updated version of a [StudyProtocolSnapshot] already stored.
      * @param versionTag An optional unique label used to identify this specific version of the [protocol]. The current date/time by default.
      * @throws IllegalArgumentException when:
      *   - [protocol] is not yet stored in the repository
      *   - [protocol] is invalid
      *   - the [versionTag] is already in use
      */
-    override suspend fun update( protocol: StudyProtocolSnapshot, versionTag: String )
+    override suspend fun addVersion( protocol: StudyProtocolSnapshot, versionTag: String )
     {
         val initializedProtocol = StudyProtocol.fromSnapshot( protocol )
-        repository.update( initializedProtocol, versionTag )
+        repository.addVersion( initializedProtocol, versionTag )
     }
 
     /**

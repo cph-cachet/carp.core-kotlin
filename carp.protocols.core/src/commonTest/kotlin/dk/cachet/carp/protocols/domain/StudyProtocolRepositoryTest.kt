@@ -36,11 +36,11 @@ interface StudyProtocolRepositoryTest
 
         val protocol2 = StudyProtocol( owner, "Study" )
         protocol2.addMasterDevice( StubMasterDeviceDescriptor( "Device" ) )
-        repo.update( protocol2, "Version 2" )
+        repo.addVersion( protocol2, "Version 2" )
 
         val protocol3 = StudyProtocol( owner, "Study" )
         protocol3.addMasterDevice( StubMasterDeviceDescriptor( "Other device" ) )
-        repo.update( protocol3, "Version 3" )
+        repo.addVersion( protocol3, "Version 3" )
 
         val retrievedProtocol = repo.getBy( owner, "Study", "Version 2" )
         assertEquals( protocol2.getSnapshot(), retrievedProtocol.getSnapshot() ) // StudyProtocol does not implement equals, but snapshot does.
@@ -87,7 +87,7 @@ interface StudyProtocolRepositoryTest
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
         repo.add( protocol, "Initial" )
-        repo.update( protocol, "Update" )
+        repo.addVersion( protocol, "Update" )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -96,14 +96,14 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun update_study_protocol_succeeds() = runSuspendTest {
+    fun addVersion_to_study_protocol_succeeds() = runSuspendTest {
         val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
         repo.add( protocol, "Initial" )
 
         protocol.addMasterDevice( StubMasterDeviceDescriptor() )
-        repo.update( protocol, "New version" )
+        repo.addVersion( protocol, "New version" )
         val retrieved = repo.getBy( owner, "Study" )
         assertEquals( protocol.getSnapshot(), retrieved.getSnapshot() ) // StudyProtocol does not implement equals, but snapshot does.
     }
@@ -115,7 +115,7 @@ interface StudyProtocolRepositoryTest
         val protocol = StudyProtocol( ProtocolOwner(), "Study" )
         assertFailsWith<IllegalArgumentException>
         {
-            repo.update( protocol, "New version" )
+            repo.addVersion( protocol, "New version" )
         }
     }
 
@@ -128,7 +128,7 @@ interface StudyProtocolRepositoryTest
         repo.add( protocol1, "Initial" )
         repo.add( protocol2, "Initial" )
         protocol2.addMasterDevice( StubMasterDeviceDescriptor() )
-        repo.update( protocol2, "Latest should be retrieved" )
+        repo.addVersion( protocol2, "Latest should be retrieved" )
 
         // StudyProtocol does not implement equals, but snapshot does, so compare snapshots.
         val protocols: List<StudyProtocolSnapshot> = repo.getAllFor( owner ).map { it.getSnapshot() }.toList()
@@ -152,8 +152,8 @@ interface StudyProtocolRepositoryTest
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
         repo.add( protocol, "Initial" )
-        repo.update( protocol, "Version 1" )
-        repo.update( protocol, "Version 2" )
+        repo.addVersion( protocol, "Version 1" )
+        repo.addVersion( protocol, "Version 2" )
 
         val history: List<ProtocolVersion> = repo.getVersionHistoryFor( owner, "Study" )
         val historyVersions: List<String> = history.map { it.tag }.toList()
