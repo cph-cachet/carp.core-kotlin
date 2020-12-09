@@ -54,7 +54,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             {
                 constructor( protocol: StudyProtocolSnapshot, versionTag?: string )
             }
-            class Update extends ProtocolServiceRequest
+            class AddVersion extends ProtocolServiceRequest
             {
                 constructor( protocol: StudyProtocolSnapshot, versionTag?: string )
             }
