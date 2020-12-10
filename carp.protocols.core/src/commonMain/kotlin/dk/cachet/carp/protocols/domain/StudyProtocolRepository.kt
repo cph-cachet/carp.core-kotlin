@@ -29,17 +29,16 @@ interface StudyProtocolRepository
     suspend fun addVersion( protocol: StudyProtocol, versionTag: String )
 
     /**
-     * Find the [StudyProtocol] with the specified [protocolName] owned by [owner].
+     * Return the [StudyProtocol] with the specified [protocolName] owned by [owner],
+     * or null when no such protocol is found.
      *
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
-     * @throws IllegalArgumentException when the [owner], [protocolName], or [versionTag] does not exist.
      */
-    suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? = null ): StudyProtocol
+    suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? = null ): StudyProtocol?
 
     /**
-     * Find all [StudyProtocol]'s owned by [owner].
+     * Find all [StudyProtocol]'s owned by [owner], or an empty sequence if none are found.
      *
-     * @throws IllegalArgumentException when the [owner] does not exist.
      * @return This returns the last version of each [StudyProtocol] owned by the specified [owner].
      */
     suspend fun getAllFor( owner: ProtocolOwner ): Sequence<StudyProtocol>

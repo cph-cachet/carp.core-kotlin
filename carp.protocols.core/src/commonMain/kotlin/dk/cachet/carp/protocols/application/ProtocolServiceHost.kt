@@ -51,27 +51,26 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
      */
     override suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? ): StudyProtocolSnapshot
     {
-        val protocol: StudyProtocol = repository.getBy( owner, protocolName, versionTag )
+        val protocol: StudyProtocol? = repository.getBy( owner, protocolName, versionTag )
+        requireNotNull( protocol ) { "No protocol found for the specified owner with the given name and version." }
+
         return protocol.getSnapshot()
     }
 
     /**
      * Find all [StudyProtocolSnapshot]'s owned by [owner].
      *
-     * @throws IllegalArgumentException when the [owner] does not exist.
-     * @return This returns the last version of each [StudyProtocolSnapshot] owned by the specified [owner].
+     * @return This returns the last version of each [StudyProtocolSnapshot] owned by the specified [owner],
+     *   or an empty list when none are found.
      */
-    override suspend fun getAllFor( owner: ProtocolOwner ): List<StudyProtocolSnapshot>
-    {
-        val protocols: Sequence<StudyProtocol> = repository.getAllFor( owner )
-        return protocols.map { it.getSnapshot() }.toList()
-    }
+    override suspend fun getAllFor( owner: ProtocolOwner ): List<StudyProtocolSnapshot> =
+        repository.getAllFor( owner ).map { it.getSnapshot() }.toList()
 
     /**
      * Returns all stored versions for the [StudyProtocol] owned by [owner] with [protocolName].
+     *
+     * @throws IllegalArgumentException when a protocol with [protocolName] for [owner] does not exist.
      */
-    override suspend fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion>
-    {
-        return repository.getVersionHistoryFor( owner, protocolName )
-    }
+    override suspend fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion> =
+        repository.getVersionHistoryFor( owner, protocolName )
 }

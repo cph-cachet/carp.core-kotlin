@@ -26,6 +26,7 @@ interface StudyProtocolRepositoryTest
         repo.add( protocol, "Initial" )
         val retrieved = repo.getBy( owner, name )
 
+        assertNotNull( retrieved )
         assertNotSame( protocol, retrieved )
         assertEquals( protocol.getSnapshot(), retrieved.getSnapshot() ) // StudyProtocol does not implement equals, but snapshot does.
     }
@@ -51,6 +52,7 @@ interface StudyProtocolRepositoryTest
         repo.addVersion( protocol, "New version" )
 
         val retrieved = repo.getBy( owner, name, "New version" )
+        assertNotNull( retrieved )
         assertEquals( protocol.getSnapshot(), retrieved.getSnapshot() ) // StudyProtocol does not implement equals, but snapshot does.
     }
 
@@ -86,6 +88,7 @@ interface StudyProtocolRepositoryTest
         repo.addVersion( protocol2, "New version" )
 
         val retrieved = repo.getBy( owner, name )
+        assertNotNull( retrieved )
         assertNotSame( protocol2, retrieved )
         assertEquals( protocol2.getSnapshot(), retrieved.getSnapshot() ) // StudyProtocol does not implement equals, but snapshot does.
     }
@@ -107,37 +110,38 @@ interface StudyProtocolRepositoryTest
         protocol3.addMasterDevice( StubMasterDeviceDescriptor( "Other device" ) )
         repo.addVersion( protocol3, "Version 3" )
 
-        val retrievedProtocol = repo.getBy( owner, name, "Version 2" )
-        assertNotSame( protocol2, retrievedProtocol )
-        assertEquals( protocol2.getSnapshot(), retrievedProtocol.getSnapshot() ) // StudyProtocol does not implement equals, but snapshot does.
+        val retrieved = repo.getBy( owner, name, "Version 2" )
+        assertNotNull ( retrieved )
+        assertNotSame( protocol2, retrieved )
+        assertEquals( protocol2.getSnapshot(), retrieved.getSnapshot() ) // StudyProtocol does not implement equals, but snapshot does.
     }
 
     @Test
-    fun getBy_fails_for_owner_which_does_not_exist() = runSuspendTest {
+    fun getBy_returns_null_for_owner_which_does_not_exist() = runSuspendTest {
         val repo = createRepository()
 
-        assertFailsWith<IllegalArgumentException> { repo.getBy( ProtocolOwner(), "Study" ) }
+        assertNull( repo.getBy( ProtocolOwner(), "Study" ) )
     }
 
     @Test
-    fun getBy_fails_for_name_which_does_not_exist() = runSuspendTest {
+    fun getBy_returns_null_for_name_which_does_not_exist() = runSuspendTest {
         val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
         repo.add( protocol, "Initial" )
 
-        assertFailsWith<IllegalArgumentException> { repo.getBy( owner, "Non-existing study" ) }
+        assertNull( repo.getBy( owner, "Non-existing study" ) )
     }
 
     @Test
-    fun getBy_fails_for_version_which_does_not_exist() = runSuspendTest {
+    fun getBy_returns_null_for_version_which_does_not_exist() = runSuspendTest {
         val repo = createRepository()
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Study" )
         repo.add( protocol, "Initial" )
         repo.addVersion( protocol, "Update" )
 
-        assertFailsWith<IllegalArgumentException> { repo.getBy( owner, "Study", "Non-existing version" ) }
+        assertNull( repo.getBy( owner, "Study", "Non-existing version" ) )
     }
 
     @Test
@@ -163,10 +167,11 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun getAllFor_fails_for_owner_which_does_not_exist() = runSuspendTest {
+    fun getAllFor_is_empty_when_no_protocols_are_stored_for_owner() = runSuspendTest {
         val repo = createRepository()
 
-        assertFailsWith<IllegalArgumentException> { repo.getAllFor( ProtocolOwner() ) }
+        val protocols = repo.getAllFor( ProtocolOwner() )
+        assertTrue( protocols.count() == 0 )
     }
 
     @Test
