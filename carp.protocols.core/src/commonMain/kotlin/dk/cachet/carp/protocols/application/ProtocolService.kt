@@ -36,7 +36,7 @@ interface ProtocolService
     suspend fun addVersion( protocol: StudyProtocolSnapshot, versionTag: String = DateTime.now().toString() )
 
     /**
-     * Find the [StudyProtocolSnapshot] with the specified [protocolName] owned by [owner].
+     * Return the [StudyProtocolSnapshot] with the specified [protocolName] owned by [owner],
      *
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      * @throws IllegalArgumentException when the [owner], [protocolName], or [versionTag] does not exist.
@@ -46,13 +46,15 @@ interface ProtocolService
     /**
      * Find all [StudyProtocolSnapshot]'s owned by [owner].
      *
-     * @throws IllegalArgumentException when the [owner] does not exist.
-     * @return This returns the last version of each [StudyProtocolSnapshot] owned by the specified [owner].
+     * @return This returns the last version of each [StudyProtocolSnapshot] owned by the specified [owner],
+     *   or an empty list when none are found.
      */
     suspend fun getAllFor( owner: ProtocolOwner ): List<StudyProtocolSnapshot>
 
     /**
      * Returns all stored versions for the [StudyProtocol] owned by [owner] with [protocolName].
+     *
+     * @throws IllegalArgumentException when a protocol with [protocolName] for [owner] does not exist.
      */
     suspend fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion>
 }

@@ -58,46 +58,39 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
     }
 
     /**
-     * Find the [StudyProtocol] with the specified [protocolName] owned by [owner].
+     * Return the [StudyProtocol] with the specified [protocolName] owned by [owner],
+     * or null when no such protocol is found.
      *
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
-     * @throws IllegalArgumentException when the [owner], [protocolName], or [versionTag] does not exist.
      */
-    override suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? ): StudyProtocol
+    override suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? ): StudyProtocol?
     {
         val id = StudyProtocolId( owner.id, protocolName )
-        val versions = _protocols[ id ]
-        requireNotNull( versions ) { "A protocol with the specified owner and protocol name does not exist." }
+        val versions = _protocols[ id ] ?: return null
 
         val selectedVersion =
             if ( versionTag == null ) versions.getLatest()
-            else
-            {
-                versions.keys.firstOrNull { it.tag == versionTag }
-            }
-        requireNotNull( selectedVersion ) { "No matching version for the requested protocol found." }
+            else versions.keys.firstOrNull { it.tag == versionTag }
+                ?: return null
 
         return StudyProtocol.fromSnapshot( versions[ selectedVersion ]!! )
     }
 
     /**
-     * Find all [StudyProtocol]'s owned by [owner].
+     * Find all [StudyProtocol]'s owned by [owner], or an empty sequence if none are found.
      *
-     * @throws IllegalArgumentException when the [owner] does not exist.
      * @return This returns the last version of each [StudyProtocol] owned by the specified [owner].
      */
     override suspend fun getAllFor( owner: ProtocolOwner ): Sequence<StudyProtocol>
     {
-        val ownerProtocols = _protocols
+        return _protocols
             .filter { it.key.ownerId == owner.id }
             .map {
                 val versions = it.value
                 val latest = versions.getLatest()
                 versions[ latest ]!!
             }
-        require( ownerProtocols.isNotEmpty() ) { "There are no protocols for the specified owner." }
-
-        return ownerProtocols.asSequence().map { StudyProtocol.fromSnapshot( it ) }
+            .asSequence().map { StudyProtocol.fromSnapshot( it ) }
     }
 
     /**
