@@ -13,7 +13,7 @@ interface StudyProtocolRepository
      * Add the specified study [protocol] to the repository.
      *
      * @param versionTag A label used to identify this first initial version of the [protocol].
-     * @throws IllegalArgumentException when the [protocol] already exists.
+     * @throws IllegalArgumentException when a [protocol] with the same owner and name already exists.
      */
     suspend fun add( protocol: StudyProtocol, versionTag: String )
 
@@ -46,6 +46,8 @@ interface StudyProtocolRepository
 
     /**
      * Returns all stored versions for the [StudyProtocol] owned by [owner] with [protocolName].
+     *
+     * @throws IllegalArgumentException when a protocol with [protocolName] for [owner] does not exist.
      */
     suspend fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion>
 }
