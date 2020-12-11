@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
@@ -23,38 +22,35 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
     /**
      * Add the specified study [protocol] to the repository.
      *
-     * @param versionTag A label used to identify this first initial version of the [protocol].
+     * @param version Identifies this first initial version of the [protocol].
      * @throws IllegalArgumentException when a [protocol] with the same owner and name already exists.
      */
-    override suspend fun add( protocol: StudyProtocol, versionTag: String )
+    override suspend fun add( protocol: StudyProtocol, version: ProtocolVersion )
     {
         val id = getId( protocol )
         require( !_protocols.containsKey( id ) )
             { "A protocol with the same owner and name is already stored in this repository." }
 
-        val version = ProtocolVersion( DateTime.now(), versionTag )
         val versions = mutableMapOf( version to protocol.getSnapshot() )
         _protocols[ id ] = versions
     }
 
     /**
-     * Add a new version for the specified study [protocol] in the repository,
+     * Add a new [version] for the specified study [protocol] in the repository,
      * of which a previous version with the same owner and name is already stored.
      *
-     * @param versionTag A unique label used to identify this specific version of the [protocol].
      * @throws IllegalArgumentException when:
      *   - the [protocol] is not yet stored in the repository
-     *   - the [versionTag] is already in use
+     *   - the tag specified in [version] is already in use
      */
-    override suspend fun addVersion( protocol: StudyProtocol, versionTag: String )
+    override suspend fun addVersion( protocol: StudyProtocol, version: ProtocolVersion )
     {
         val id = getId( protocol )
         val versions = _protocols[ id ]
         requireNotNull( versions ) { "The specified protocol is not stored in this repository." }
-        require( versions.keys.none { it.tag == versionTag } ) { "The version tag is already in use." }
+        require( versions.keys.none { it.tag == version.tag } ) { "The version tag is already in use." }
 
-        val newVersion = ProtocolVersion( DateTime.now(), versionTag )
-        versions[ newVersion ] = protocol.getSnapshot()
+        versions[ version ] = protocol.getSnapshot()
     }
 
     /**
@@ -109,5 +105,5 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
 
     private fun getId( protocol: StudyProtocol ) = StudyProtocolId( protocol.owner.id, protocol.name )
     private fun MutableMap<ProtocolVersion, StudyProtocolSnapshot>.getLatest() =
-        this.keys.last() // Versions are always stored in order.
+        this.keys.maxByOrNull { it.date.msSinceUTC }
 }

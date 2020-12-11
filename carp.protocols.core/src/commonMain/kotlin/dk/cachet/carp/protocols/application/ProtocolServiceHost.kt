@@ -24,7 +24,7 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
     override suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String )
     {
         val initializedProtocol = StudyProtocol.fromSnapshot( protocol )
-        repository.add( initializedProtocol, versionTag )
+        repository.add( initializedProtocol, ProtocolVersion( versionTag ) )
     }
 
     /**
@@ -40,7 +40,7 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
     override suspend fun addVersion( protocol: StudyProtocolSnapshot, versionTag: String )
     {
         val initializedProtocol = StudyProtocol.fromSnapshot( protocol )
-        repository.addVersion( initializedProtocol, versionTag )
+        repository.addVersion( initializedProtocol, ProtocolVersion( versionTag ) )
     }
 
     /**
