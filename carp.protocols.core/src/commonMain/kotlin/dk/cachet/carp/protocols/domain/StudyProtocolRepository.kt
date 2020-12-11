@@ -12,21 +12,20 @@ interface StudyProtocolRepository
     /**
      * Add the specified study [protocol] to the repository.
      *
-     * @param versionTag A label used to identify this first initial version of the [protocol].
+     * @param version Identifies this first initial version of the [protocol].
      * @throws IllegalArgumentException when a [protocol] with the same owner and name already exists.
      */
-    suspend fun add( protocol: StudyProtocol, versionTag: String )
+    suspend fun add( protocol: StudyProtocol, version: ProtocolVersion )
 
     /**
-     * Add a new version for the specified study [protocol] in the repository,
+     * Add a new [version] for the specified study [protocol] in the repository,
      * of which a previous version with the same owner and name is already stored.
      *
-     * @param versionTag A unique label used to identify this specific version of the [protocol].
      * @throws IllegalArgumentException when:
      *   - the [protocol] is not yet stored in the repository
-     *   - the [versionTag] is already in use
+     *   - the tag specified in [version] is already in use
      */
-    suspend fun addVersion( protocol: StudyProtocol, versionTag: String )
+    suspend fun addVersion( protocol: StudyProtocol, version: ProtocolVersion )
 
     /**
      * Return the [StudyProtocol] with the specified [protocolName] owned by [owner],
