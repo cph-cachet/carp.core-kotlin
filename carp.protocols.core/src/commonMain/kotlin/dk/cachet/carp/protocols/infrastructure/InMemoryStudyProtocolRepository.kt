@@ -105,5 +105,5 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
 
     private fun getId( protocol: StudyProtocol ) = StudyProtocolId( protocol.owner.id, protocol.name )
     private fun MutableMap<ProtocolVersion, StudyProtocolSnapshot>.getLatest() =
-        this.keys.maxByOrNull { it.date.msSinceUTC }
+        this.keys.last() // Versions are stored in order added. Adding versions quickly (e.g., in tests) can result in same dates.
 }

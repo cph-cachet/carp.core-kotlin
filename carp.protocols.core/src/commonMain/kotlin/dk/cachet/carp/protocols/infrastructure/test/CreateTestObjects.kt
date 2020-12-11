@@ -68,12 +68,12 @@ val STUBS_SERIAL_MODULE = SerializersModule {
  * Creates a study protocol using the default initialization (no devices, tasks, or triggers),
  * and initializes the infrastructure serializer to be aware about polymorph stub testing classes.
  */
-fun createEmptyProtocol(): StudyProtocol
+fun createEmptyProtocol( name: String = "Test protocol" ): StudyProtocol
 {
     JSON = createProtocolsSerializer( STUBS_SERIAL_MODULE )
 
     val alwaysSameOwner = ProtocolOwner( UUID( "27879e75-ccc1-4866-9ab3-4ece1b735052" ) )
-    return StudyProtocol( alwaysSameOwner, "Test protocol", "Test description" )
+    return StudyProtocol( alwaysSameOwner, name, "Test description" )
 }
 
 /**
