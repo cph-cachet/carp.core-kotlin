@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.infrastructure
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.ddd.createServiceInvoker
 import dk.cachet.carp.common.ddd.ServiceInvoker
+import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
@@ -25,6 +26,11 @@ sealed class ProtocolServiceRequest
     data class AddVersion( val protocol: StudyProtocolSnapshot, val versionTag: String = DateTime.now().toString() ) :
         ProtocolServiceRequest(),
         ServiceInvoker<ProtocolService, Unit> by createServiceInvoker( ProtocolService::addVersion, protocol, versionTag )
+
+    @Serializable
+    data class UpdateParticipantDataConfiguration( val owner: ProtocolOwner, val protocolName: String, val versionTag: String, val expectedParticipantData: Set<ParticipantAttribute> ) :
+        ProtocolServiceRequest(),
+        ServiceInvoker<ProtocolService, StudyProtocolSnapshot> by createServiceInvoker( ProtocolService::updateParticipantDataConfiguration, owner, protocolName, versionTag, expectedParticipantData )
 
     @Serializable
     data class GetBy( val owner: ProtocolOwner, val protocolName: String, val versionTag: String? = null ) :

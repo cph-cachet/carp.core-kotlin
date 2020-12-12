@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.application
 
+import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -8,6 +9,7 @@ import dk.cachet.carp.test.Mock
 
 
 class ProtocolServiceMock(
+    val updateParticipantDataConfigurationResult: StudyProtocolSnapshot = StudyProtocol( ProtocolOwner(), "Mock" ).getSnapshot(),
     val getByResult: StudyProtocolSnapshot = StudyProtocol( ProtocolOwner(), "Mock" ).getSnapshot(),
     val getAllForResult: List<StudyProtocolSnapshot> = listOf(),
     val getVersionHistoryForResult: List<ProtocolVersion> = listOf()
@@ -18,6 +20,17 @@ class ProtocolServiceMock(
 
     override suspend fun addVersion( protocol: StudyProtocolSnapshot, versionTag: String ) =
         trackSuspendCall( ProtocolService::addVersion, protocol, versionTag )
+
+    override suspend fun updateParticipantDataConfiguration(
+        owner: ProtocolOwner,
+        protocolName: String,
+        versionTag: String,
+        expectedParticipantData: Set<ParticipantAttribute>
+    ): StudyProtocolSnapshot
+    {
+        trackSuspendCall( ProtocolService::updateParticipantDataConfiguration, owner, protocolName, versionTag, expectedParticipantData )
+        return updateParticipantDataConfigurationResult
+    }
 
     override suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? ): StudyProtocolSnapshot
     {

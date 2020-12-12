@@ -19,6 +19,7 @@ class ProtocolServiceRequestsTest
         val requests: List<ProtocolServiceRequest> = listOf(
             ProtocolServiceRequest.Add( createComplexProtocol().getSnapshot(), "Initial" ),
             ProtocolServiceRequest.AddVersion( createComplexProtocol().getSnapshot(), "Updated" ),
+            ProtocolServiceRequest.UpdateParticipantDataConfiguration( ProtocolOwner(), "Name", "Version", emptySet() ),
             ProtocolServiceRequest.GetBy( ProtocolOwner(), "Name", "Version" ),
             ProtocolServiceRequest.GetAllFor( ProtocolOwner() ),
             ProtocolServiceRequest.GetVersionHistoryFor( ProtocolOwner(), "Name" )

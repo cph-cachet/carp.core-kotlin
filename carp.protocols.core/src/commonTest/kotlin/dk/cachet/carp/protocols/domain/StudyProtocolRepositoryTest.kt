@@ -79,6 +79,30 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
+    fun replace_succeeds() = runSuspendTest {
+        val repo = createRepository()
+        val protocol = StudyProtocol( ProtocolOwner(), "Study" )
+        val version = ProtocolVersion( "Version" )
+        repo.add( protocol, version )
+
+        protocol.addMasterDevice( StubMasterDeviceDescriptor() )
+        repo.replace( protocol, version )
+
+        val retrieved = repo.getBy( protocol.owner, protocol.name, "Version" )
+        assertNotNull( retrieved )
+        assertNotSame( protocol, retrieved )
+        assertEquals( protocol.getSnapshot(), retrieved.getSnapshot() )
+    }
+
+    @Test
+    fun replace_fails_for_protocol_which_does_not_exist() = runSuspendTest {
+        val repo = createRepository()
+
+        val protocol = StudyProtocol( ProtocolOwner(), "Study")
+        assertFailsWith<IllegalArgumentException> { repo.replace( protocol, ProtocolVersion( "Version" )) }
+    }
+
+    @Test
     fun getBy_gets_latest_when_version_not_specified() = runSuspendTest {
         val repo = createRepository()
         val owner = ProtocolOwner()
