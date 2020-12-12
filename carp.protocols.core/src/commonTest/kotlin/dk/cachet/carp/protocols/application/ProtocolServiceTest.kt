@@ -1,5 +1,7 @@
 package dk.cachet.carp.protocols.application
 
+import dk.cachet.carp.common.data.input.InputDataType
+import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
@@ -87,6 +89,42 @@ interface ProtocolServiceTest
 
         assertFailsWith<IllegalArgumentException> { service.add( invalidSnapshot ) }
         assertFailsWith<IllegalArgumentException> { service.addVersion( invalidSnapshot, "New version" ) }
+    }
+
+    @Test
+    fun updateParticipantDataConfiguration_replaces_existing_attributes() = runSuspendTest {
+        val service = createService()
+        val protocol = createEmptyProtocol()
+        val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
+        protocol.addExpectedParticipantData( attribute )
+        val version = "Version"
+        service.add( protocol.getSnapshot(), version )
+
+        val newAttribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "otherType" ) )
+        val updated = service.updateParticipantDataConfiguration( protocol.owner, protocol.name, version, setOf( newAttribute ) )
+        val retrieved = service.getBy( protocol.owner, protocol.name, version )
+
+        val updateIsStored = updated == retrieved
+        assertTrue( updateIsStored )
+        val updatedProtocol = StudyProtocol.fromSnapshot( retrieved )
+        assertEquals( setOf( newAttribute ), updatedProtocol.expectedParticipantData )
+    }
+
+    @Test
+    fun updateParticipantDataConfiguration_fails_for_unknown_protocol() = runSuspendTest {
+        val service = createService()
+
+        val unknownOwner = ProtocolOwner()
+        val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
+        assertFailsWith<IllegalArgumentException>
+        {
+            service.updateParticipantDataConfiguration(
+                unknownOwner,
+                "Unknown protocol",
+                "Unknown version",
+                setOf( attribute )
+            )
+        }
     }
 
     @Test

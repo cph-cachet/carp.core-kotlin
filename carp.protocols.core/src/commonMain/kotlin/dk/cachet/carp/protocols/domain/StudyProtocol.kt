@@ -263,6 +263,30 @@ class StudyProtocol(
         super.removeExpectedParticipantData( attribute )
         .eventIf( true ) { Event.ExpectedParticipantDataRemoved( attribute ) }
 
+    /**
+     * Replace the expected participant data to be input by users with the specified [attributes].
+     *
+     * TODO: This is currently defined in `StudyProtocol` rather than `ParticipantDataConfiguration` due to the need to track events.
+     *   Once eventing is implemented on `ParticipantDataConfiguration`, this can be moved where it logically belongs.
+     *
+     * @throws IllegalArgumentException in case the specified [attributes] contain two or more attributes with the same input type.
+     * @return True if any attributes have been replaced; false if the specified [attributes] were the same as those already set.
+     */
+    fun replaceExpectedParticipantData( attributes: Set<ParticipantAttribute> ): Boolean
+    {
+        require( attributes.map { it.inputType }.toSet().size == attributes.size )
+            { "The specified attributes contain two or more attributes with the same input type." }
+
+        val toRemove = expectedParticipantData.minus( attributes )
+        val toAdd = attributes.minus( expectedParticipantData )
+
+        if ( toRemove.isEmpty() && toAdd.isEmpty() ) return false
+
+        toRemove.forEach { removeExpectedParticipantData( it ) }
+        toAdd.forEach { addExpectedParticipantData( it ) }
+        return true
+    }
+
 
     /**
      * All possible issues related to incomplete or problematic configuration of a [StudyProtocol] which might prevent deployment.

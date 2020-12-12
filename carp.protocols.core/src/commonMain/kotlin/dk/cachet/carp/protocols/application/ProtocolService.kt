@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.DateTime
+import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -34,6 +35,22 @@ interface ProtocolService
      *   - the [versionTag] is already in use
      */
     suspend fun addVersion( protocol: StudyProtocolSnapshot, versionTag: String = DateTime.now().toString() )
+
+    /**
+     * Replace the expected participant data for the study protocol with the specified [protocolName], owned by [owner],
+     * and the specific [versionTag] with [expectedParticipantData].
+     *
+     * @throws IllegalArgumentException when:
+     *   - no protocol with [protocolName], owned by [owner], and the specific [versionTag] is found
+     *   - [expectedParticipantData] contains two or more attributes with the same input type.
+     * @return The updated [StudyProtocolSnapshot].
+     */
+    suspend fun updateParticipantDataConfiguration(
+        owner: ProtocolOwner,
+        protocolName: String,
+        versionTag: String,
+        expectedParticipantData: Set<ParticipantAttribute>
+    ): StudyProtocolSnapshot
 
     /**
      * Return the [StudyProtocolSnapshot] with the specified [protocolName] owned by [owner],

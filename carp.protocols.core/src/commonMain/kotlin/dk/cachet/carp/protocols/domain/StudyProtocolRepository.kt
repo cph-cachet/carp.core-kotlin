@@ -28,12 +28,28 @@ interface StudyProtocolRepository
     suspend fun addVersion( protocol: StudyProtocol, version: ProtocolVersion )
 
     /**
+     * Replace a [version] of a [protocol], of which a previous version with the same owner and name is already stored.
+     *
+     * @throws IllegalArgumentException when the [protocol] with [version] to replace is not found.
+     */
+    suspend fun replace( protocol: StudyProtocol, version: ProtocolVersion )
+
+    /**
      * Return the [StudyProtocol] with the specified [protocolName] owned by [owner],
      * or null when no such protocol is found.
      *
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      */
     suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? = null ): StudyProtocol?
+
+    /**
+     * Return the [StudyProtocol] with the specified [protocolName] owned by [owner].
+     *
+     * @throws IllegalArgumentException when the requested protocol is not found.
+     */
+    suspend fun getByOrThrow( owner: ProtocolOwner, protocolName: String, versionTag: String? = null ): StudyProtocol =
+        getBy( owner, protocolName, versionTag )
+            ?: throw IllegalArgumentException( "A protocol named \"$protocolName\" for owner with ID \"${owner.id}\" with the specified version tag does not exist." )
 
     /**
      * Find all [StudyProtocol]'s owned by [owner], or an empty sequence if none are found.

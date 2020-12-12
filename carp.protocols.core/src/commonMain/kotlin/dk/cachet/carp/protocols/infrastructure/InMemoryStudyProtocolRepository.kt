@@ -45,10 +45,23 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
      */
     override suspend fun addVersion( protocol: StudyProtocol, version: ProtocolVersion )
     {
-        val id = getId( protocol )
-        val versions = _protocols[ id ]
-        requireNotNull( versions ) { "The specified protocol is not stored in this repository." }
+        val id = StudyProtocolId( protocol.owner.id, protocol.name )
+        val versions = getVersionsOrThrow( id )
         require( versions.keys.none { it.tag == version.tag } ) { "The version tag is already in use." }
+
+        versions[ version ] = protocol.getSnapshot()
+    }
+
+    /**
+     * Replace a [version] of a [protocol], of which a previous version with the same owner and name is already stored.
+     *
+     * @throws IllegalArgumentException when the [protocol] with [version] to replace is not found.
+     */
+    override suspend fun replace( protocol: StudyProtocol, version: ProtocolVersion )
+    {
+        val id = getId( protocol )
+        val versions = getVersionsOrThrow( id )
+        require( version in versions.keys ) { "The specified version does not exist." }
 
         versions[ version ] = protocol.getSnapshot()
     }
@@ -97,13 +110,17 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
     override suspend fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion>
     {
         val id = StudyProtocolId( owner.id, protocolName )
-        val versions = _protocols[ id ]
-        requireNotNull( versions ) { "A protocol with the specified owner and protocol name does not exist." }
+        val versions = getVersionsOrThrow( id )
 
         return versions.keys.toList()
     }
 
+
     private fun getId( protocol: StudyProtocol ) = StudyProtocolId( protocol.owner.id, protocol.name )
+
+    private fun getVersionsOrThrow( id: StudyProtocolId ) = _protocols[ id ]
+        ?: throw IllegalArgumentException( "The specified protocol is not stored in this repository" )
+
     private fun MutableMap<ProtocolVersion, StudyProtocolSnapshot>.getLatest() =
         this.keys.last() // Versions are stored in order added. Adding versions quickly (e.g., in tests) can result in same dates.
 }

@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.application
 
+import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -41,6 +42,36 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
     {
         val initializedProtocol = StudyProtocol.fromSnapshot( protocol )
         repository.addVersion( initializedProtocol, ProtocolVersion( versionTag ) )
+    }
+
+    /**
+     * Replace the expected participant data for the study protocol with the specified [protocolName], owned by [owner],
+     * and the specific [versionTag] with [expectedParticipantData].
+     *
+     * @throws IllegalArgumentException when:
+     *   - no protocol with [protocolName], owned by [owner], and the specific [versionTag] is found
+     *   - [expectedParticipantData] contains two or more attributes with the same input type.
+     * @return The updated [StudyProtocolSnapshot].
+     */
+    override suspend fun updateParticipantDataConfiguration(
+        owner: ProtocolOwner,
+        protocolName: String,
+        versionTag: String,
+        expectedParticipantData: Set<ParticipantAttribute>
+    ): StudyProtocolSnapshot
+    {
+        val protocol = repository.getByOrThrow( owner, protocolName, versionTag )
+        val isReplaced = protocol.replaceExpectedParticipantData( expectedParticipantData )
+
+        if ( isReplaced )
+        {
+            val version = repository
+                .getVersionHistoryFor( protocol.owner, protocol.name )
+                .first { it.tag == versionTag }
+            repository.replace( protocol, version )
+        }
+
+        return protocol.getSnapshot()
     }
 
     /**
