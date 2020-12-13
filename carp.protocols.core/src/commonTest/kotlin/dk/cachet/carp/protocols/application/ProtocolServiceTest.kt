@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.application
 
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.ProtocolOwner
@@ -29,7 +30,7 @@ interface ProtocolServiceTest
         val snapshot = protocol.getSnapshot()
 
         service.add( snapshot, "Initial" )
-        val retrieved = service.getBy( protocol.owner, protocol.name, "Initial" )
+        val retrieved = service.getBy( protocol.id, "Initial" )
         assertEquals( snapshot, retrieved )
     }
 
@@ -52,7 +53,7 @@ interface ProtocolServiceTest
         val version2Snapshot = protocol.getSnapshot()
         service.addVersion( version2Snapshot, "Version 2" )
 
-        val retrieved = service.getBy( protocol.owner, protocol.name, "Version 2" )
+        val retrieved = service.getBy( protocol.id, "Version 2" )
         assertEquals( version2Snapshot, retrieved )
     }
 
@@ -101,8 +102,8 @@ interface ProtocolServiceTest
         service.add( protocol.getSnapshot(), version )
 
         val newAttribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "otherType" ) )
-        val updated = service.updateParticipantDataConfiguration( protocol.owner, protocol.name, version, setOf( newAttribute ) )
-        val retrieved = service.getBy( protocol.owner, protocol.name, version )
+        val updated = service.updateParticipantDataConfiguration( protocol.id, version, setOf( newAttribute ) )
+        val retrieved = service.getBy( protocol.id, version )
 
         val updateIsStored = updated == retrieved
         assertTrue( updateIsStored )
@@ -114,16 +115,11 @@ interface ProtocolServiceTest
     fun updateParticipantDataConfiguration_fails_for_unknown_protocol() = runSuspendTest {
         val service = createService()
 
-        val unknownOwner = ProtocolOwner()
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
+        val unknownId = StudyProtocol.Id( ProtocolOwner().id, "Unknown protocol" )
         assertFailsWith<IllegalArgumentException>
         {
-            service.updateParticipantDataConfiguration(
-                unknownOwner,
-                "Unknown protocol",
-                "Unknown version",
-                setOf( attribute )
-            )
+            service.updateParticipantDataConfiguration( unknownId, "Unknown version", setOf( attribute ) )
         }
     }
 
@@ -136,7 +132,7 @@ interface ProtocolServiceTest
         val lastSnapshot = protocol.getSnapshot()
         service.addVersion( lastSnapshot, "Version 2" )
 
-        val retrieved = service.getBy( protocol.owner, protocol.name )
+        val retrieved = service.getBy( protocol.id )
         assertEquals( lastSnapshot, retrieved )
     }
 
@@ -144,8 +140,8 @@ interface ProtocolServiceTest
     fun getBy_fails_for_nonexisting_protocol() = runSuspendTest {
         val service = createService()
 
-        val unknownOwner = ProtocolOwner()
-        assertFailsWith<IllegalArgumentException> { service.getBy( unknownOwner, "Nope" ) }
+        val unknownId = StudyProtocol.Id( UUID.randomUUID(), "Unknown" )
+        assertFailsWith<IllegalArgumentException> { service.getBy( unknownId, "Nope" ) }
     }
 
     @Test
@@ -159,7 +155,7 @@ interface ProtocolServiceTest
         service.addVersion( protocol2.getSnapshot(), "Version 2" )
 
         val owner = protocol1.owner // Also owner of protocol2; `createEmptyProtocol` has a fixed owner.
-        val protocols = service.getAllFor( owner )
+        val protocols = service.getAllFor( owner.id )
         assertEquals( setOf( protocol1.getSnapshot(), protocol2.getSnapshot() ), protocols.toSet() )
     }
 
@@ -167,7 +163,7 @@ interface ProtocolServiceTest
     fun getAllFor_returns_empty_list_when_none_found() = runSuspendTest {
         val service = createService()
 
-        val unknown = ProtocolOwner()
+        val unknown = UUID.randomUUID()
         assertTrue( service.getAllFor( unknown ).isEmpty() )
     }
 
@@ -179,7 +175,7 @@ interface ProtocolServiceTest
         modifyProtocol( protocol )
         service.addVersion( protocol.getSnapshot(), "2" )
 
-        val history = service.getVersionHistoryFor( protocol.owner, protocol.name )
+        val history = service.getVersionHistoryFor( protocol.id )
         assertEquals( setOf( "1", "2" ), history.map { it.tag }.toSet() )
     }
 
@@ -187,8 +183,8 @@ interface ProtocolServiceTest
     fun getVersionHistoryFor_fails_when_protocol_not_found() = runSuspendTest {
         val service = createService()
 
-        val unknown = ProtocolOwner()
-        assertFailsWith<IllegalArgumentException> { service.getVersionHistoryFor( unknown, "Unknown" ) }
+        val unknown = StudyProtocol.Id( UUID.randomUUID(), "Unknown" )
+        assertFailsWith<IllegalArgumentException> { service.getVersionHistoryFor( unknown ) }
     }
 
     private fun modifyProtocol( protocol: StudyProtocol ): StudyProtocol =

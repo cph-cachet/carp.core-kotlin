@@ -1,7 +1,6 @@
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolRepository
@@ -13,10 +12,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
  */
 class InMemoryStudyProtocolRepository : StudyProtocolRepository
 {
-    private data class StudyProtocolId( val ownerId: UUID, val name: String )
-
-
-    private val _protocols: MutableMap<StudyProtocolId, MutableMap<ProtocolVersion, StudyProtocolSnapshot>> = mutableMapOf()
+    private val _protocols: MutableMap<StudyProtocol.Id, MutableMap<ProtocolVersion, StudyProtocolSnapshot>> = mutableMapOf()
 
 
     /**
@@ -27,12 +23,11 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
      */
     override suspend fun add( protocol: StudyProtocol, version: ProtocolVersion )
     {
-        val id = getId( protocol )
-        require( !_protocols.containsKey( id ) )
+        require( protocol.id !in _protocols )
             { "A protocol with the same owner and name is already stored in this repository." }
 
         val versions = mutableMapOf( version to protocol.getSnapshot() )
-        _protocols[ id ] = versions
+        _protocols[ protocol.id ] = versions
     }
 
     /**
@@ -45,8 +40,7 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
      */
     override suspend fun addVersion( protocol: StudyProtocol, version: ProtocolVersion )
     {
-        val id = StudyProtocolId( protocol.owner.id, protocol.name )
-        val versions = getVersionsOrThrow( id )
+        val versions = getVersionsOrThrow( protocol.id )
         require( versions.keys.none { it.tag == version.tag } ) { "The version tag is already in use." }
 
         versions[ version ] = protocol.getSnapshot()
@@ -59,22 +53,19 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
      */
     override suspend fun replace( protocol: StudyProtocol, version: ProtocolVersion )
     {
-        val id = getId( protocol )
-        val versions = getVersionsOrThrow( id )
+        val versions = getVersionsOrThrow( protocol.id )
         require( version in versions.keys ) { "The specified version does not exist." }
 
         versions[ version ] = protocol.getSnapshot()
     }
 
     /**
-     * Return the [StudyProtocol] with the specified [protocolName] owned by [owner],
-     * or null when no such protocol is found.
+     * Return the [StudyProtocol] with the specified protocol [id], or null when no such protocol is found.
      *
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      */
-    override suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? ): StudyProtocol?
+    override suspend fun getBy( id: StudyProtocol.Id, versionTag: String? ): StudyProtocol?
     {
-        val id = StudyProtocolId( owner.id, protocolName )
         val versions = _protocols[ id ] ?: return null
 
         val selectedVersion =
@@ -86,14 +77,14 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
     }
 
     /**
-     * Find all [StudyProtocol]'s owned by [owner], or an empty sequence if none are found.
+     * Find all [StudyProtocol]'s owned by the owner with [ownerId], or an empty sequence if none are found.
      *
-     * @return This returns the last version of each [StudyProtocol] owned by the specified [owner].
+     * @return This returns the last version of each [StudyProtocol] owned by the requested owner.
      */
-    override suspend fun getAllFor( owner: ProtocolOwner ): Sequence<StudyProtocol>
+    override suspend fun getAllFor( ownerId: UUID ): Sequence<StudyProtocol>
     {
         return _protocols
-            .filter { it.key.ownerId == owner.id }
+            .filter { it.key.ownerId == ownerId }
             .map {
                 val versions = it.value
                 val latest = versions.getLatest()
@@ -103,22 +94,19 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
     }
 
     /**
-     * Returns all stored versions for the [StudyProtocol] owned by [owner] with [protocolName].
+     * Returns all stored versions for the [StudyProtocol] with the specified [id].
      *
-     * @throws IllegalArgumentException when a protocol with [protocolName] for [owner] does not exist.
+     * @throws IllegalArgumentException when a protocol with the specified [id] does not exist.
      */
-    override suspend fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion>
+    override suspend fun getVersionHistoryFor( id: StudyProtocol.Id ): List<ProtocolVersion>
     {
-        val id = StudyProtocolId( owner.id, protocolName )
         val versions = getVersionsOrThrow( id )
 
         return versions.keys.toList()
     }
 
 
-    private fun getId( protocol: StudyProtocol ) = StudyProtocolId( protocol.owner.id, protocol.name )
-
-    private fun getVersionsOrThrow( id: StudyProtocolId ) = _protocols[ id ]
+    private fun getVersionsOrThrow( id: StudyProtocol.Id ) = _protocols[ id ]
         ?: throw IllegalArgumentException( "The specified protocol is not stored in this repository" )
 
     private fun MutableMap<ProtocolVersion, StudyProtocolSnapshot>.getLatest() =

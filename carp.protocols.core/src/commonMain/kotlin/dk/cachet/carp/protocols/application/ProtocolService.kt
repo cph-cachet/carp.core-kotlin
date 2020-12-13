@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.DateTime
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.ParticipantAttribute
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
@@ -37,41 +37,40 @@ interface ProtocolService
     suspend fun addVersion( protocol: StudyProtocolSnapshot, versionTag: String = DateTime.now().toString() )
 
     /**
-     * Replace the expected participant data for the study protocol with the specified [protocolName], owned by [owner],
-     * and the specific [versionTag] with [expectedParticipantData].
+     * Replace the expected participant data for the study protocol with the specified [protocolId]
+     * and [versionTag] with [expectedParticipantData].
      *
      * @throws IllegalArgumentException when:
-     *   - no protocol with [protocolName], owned by [owner], and the specific [versionTag] is found
+     *   - no protocol with [protocolId] is found
      *   - [expectedParticipantData] contains two or more attributes with the same input type.
      * @return The updated [StudyProtocolSnapshot].
      */
     suspend fun updateParticipantDataConfiguration(
-        owner: ProtocolOwner,
-        protocolName: String,
+        protocolId: StudyProtocol.Id,
         versionTag: String,
         expectedParticipantData: Set<ParticipantAttribute>
     ): StudyProtocolSnapshot
 
     /**
-     * Return the [StudyProtocolSnapshot] with the specified [protocolName] owned by [owner],
+     * Return the [StudyProtocolSnapshot] with the specified [protocolId],
      *
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
-     * @throws IllegalArgumentException when the [owner], [protocolName], or [versionTag] does not exist.
+     * @throws IllegalArgumentException when a protocol with [protocolId] or [versionTag] does not exist.
      */
-    suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? = null ): StudyProtocolSnapshot
+    suspend fun getBy( protocolId: StudyProtocol.Id, versionTag: String? = null ): StudyProtocolSnapshot
 
     /**
-     * Find all [StudyProtocolSnapshot]'s owned by [owner].
+     * Find all [StudyProtocolSnapshot]'s owned by the owner with [ownerId].
      *
-     * @return This returns the last version of each [StudyProtocolSnapshot] owned by the specified [owner],
+     * @return This returns the last version of each [StudyProtocolSnapshot] owned by the requested owner,
      *   or an empty list when none are found.
      */
-    suspend fun getAllFor( owner: ProtocolOwner ): List<StudyProtocolSnapshot>
+    suspend fun getAllFor( ownerId: UUID ): List<StudyProtocolSnapshot>
 
     /**
-     * Returns all stored versions for the [StudyProtocol] owned by [owner] with [protocolName].
+     * Returns all stored versions for the protocol with the specified [protocolId].
      *
-     * @throws IllegalArgumentException when a protocol with [protocolName] for [owner] does not exist.
+     * @throws IllegalArgumentException when a protocol with [protocolId] does not exist.
      */
-    suspend fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion>
+    suspend fun getVersionHistoryFor( protocolId: StudyProtocol.Id ): List<ProtocolVersion>
 }

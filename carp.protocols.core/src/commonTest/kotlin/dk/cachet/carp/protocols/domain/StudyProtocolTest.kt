@@ -102,6 +102,15 @@ class StudyProtocolTest
 
 
     @Test
+    fun id_set_to_ownerId_and_name()
+    {
+        val owner = ProtocolOwner()
+        val protocol = StudyProtocol( owner, "Name" )
+
+        assertEquals( StudyProtocol.Id( owner.id, "Name" ), protocol.id )
+    }
+
+    @Test
     fun one_master_device_needed_for_deployment()
     {
         // By default, no master device is defined in a study protocol.
@@ -111,7 +120,6 @@ class StudyProtocolTest
         assertFalse( protocol.isDeployable() )
         assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<NoMasterDeviceError>().count() )
     }
-
 
     @Test
     fun addTrigger_succeeds()
@@ -431,6 +439,7 @@ class StudyProtocolTest
         assertEquals( protocol.expectedParticipantData, fromSnapshot.expectedParticipantData )
         assertEquals( 0, fromSnapshot.consumeEvents().size )
     }
+
 
     private fun connectedDevicesAreSame( protocol: StudyProtocol, fromSnapshot: StudyProtocol, masterDevice: AnyMasterDeviceDescriptor ): Boolean
     {

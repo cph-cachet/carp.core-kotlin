@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.application
 
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
@@ -22,31 +23,30 @@ class ProtocolServiceMock(
         trackSuspendCall( ProtocolService::addVersion, protocol, versionTag )
 
     override suspend fun updateParticipantDataConfiguration(
-        owner: ProtocolOwner,
-        protocolName: String,
+        protocolId: StudyProtocol.Id,
         versionTag: String,
         expectedParticipantData: Set<ParticipantAttribute>
     ): StudyProtocolSnapshot
     {
-        trackSuspendCall( ProtocolService::updateParticipantDataConfiguration, owner, protocolName, versionTag, expectedParticipantData )
+        trackSuspendCall( ProtocolService::updateParticipantDataConfiguration, protocolId, versionTag, expectedParticipantData )
         return updateParticipantDataConfigurationResult
     }
 
-    override suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? ): StudyProtocolSnapshot
+    override suspend fun getBy( protocolId: StudyProtocol.Id, versionTag: String? ): StudyProtocolSnapshot
     {
-        trackSuspendCall( ProtocolService::getBy, owner, protocolName, versionTag )
+        trackSuspendCall( ProtocolService::getBy, protocolId, versionTag )
         return getByResult
     }
 
-    override suspend fun getAllFor( owner: ProtocolOwner ): List<StudyProtocolSnapshot>
+    override suspend fun getAllFor( ownerId: UUID ): List<StudyProtocolSnapshot>
     {
-        trackSuspendCall( ProtocolService::getAllFor, owner )
+        trackSuspendCall( ProtocolService::getAllFor, ownerId )
         return getAllForResult
     }
 
-    override suspend fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion>
+    override suspend fun getVersionHistoryFor( protocolId: StudyProtocol.Id ): List<ProtocolVersion>
     {
-        trackSuspendCall( ProtocolService::getVersionHistoryFor, owner, protocolName )
+        trackSuspendCall( ProtocolService::getVersionHistoryFor, protocolId )
         return getVersionHistoryForResult
     }
 }
