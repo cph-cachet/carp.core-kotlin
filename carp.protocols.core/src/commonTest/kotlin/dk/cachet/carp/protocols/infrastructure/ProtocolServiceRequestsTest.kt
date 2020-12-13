@@ -1,9 +1,10 @@
 package dk.cachet.carp.protocols.infrastructure
 
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.application.ProtocolServiceMock
-import dk.cachet.carp.protocols.domain.ProtocolOwner
+import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
@@ -19,10 +20,10 @@ class ProtocolServiceRequestsTest
         val requests: List<ProtocolServiceRequest> = listOf(
             ProtocolServiceRequest.Add( createComplexProtocol().getSnapshot(), "Initial" ),
             ProtocolServiceRequest.AddVersion( createComplexProtocol().getSnapshot(), "Updated" ),
-            ProtocolServiceRequest.UpdateParticipantDataConfiguration( ProtocolOwner(), "Name", "Version", emptySet() ),
-            ProtocolServiceRequest.GetBy( ProtocolOwner(), "Name", "Version" ),
-            ProtocolServiceRequest.GetAllFor( ProtocolOwner() ),
-            ProtocolServiceRequest.GetVersionHistoryFor( ProtocolOwner(), "Name" )
+            ProtocolServiceRequest.UpdateParticipantDataConfiguration( StudyProtocol.Id( UUID.randomUUID(), "Name" ), "Version", emptySet() ),
+            ProtocolServiceRequest.GetBy( StudyProtocol.Id( UUID.randomUUID(), "Name" ), "Version" ),
+            ProtocolServiceRequest.GetAllFor( UUID.randomUUID() ),
+            ProtocolServiceRequest.GetVersionHistoryFor( StudyProtocol.Id( UUID.randomUUID(), "Name" ) )
         )
     }
 

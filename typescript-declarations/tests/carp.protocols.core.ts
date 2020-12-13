@@ -3,7 +3,10 @@ import VerifyModule from './VerifyModule'
 
 import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
 import Json = kotlinx.serialization.json.Json
+import { dk as dkc } from 'carp.core-kotlin-carp.common'
+import UUID = dkc.cachet.carp.common.UUID
 import { dk } from 'carp.core-kotlin-carp.protocols.core'
+import ProtocolId = dk.cachet.carp.protocols.domain.StudyProtocol.Id
 import ProtocolOwner = dk.cachet.carp.protocols.domain.ProtocolOwner
 import ProtocolVersion = dk.cachet.carp.protocols.domain.ProtocolVersion
 import StudyProtocolSnapshot = dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
@@ -16,6 +19,8 @@ const serializedSnapshot = `{"ownerId":"27879e75-ccc1-4866-9ab3-4ece1b735052","n
 describe( "carp.protocols.core", () => {
     it( "verify module declarations", async () => {
         const instances = [
+            new ProtocolId( UUID.Companion.randomUUID(), "Name" ),
+            [ "Id$Companion", ProtocolId.Companion ],
             StudyProtocolSnapshot.Companion,
             ProtocolVersion.Companion,
             ProtocolServiceRequest.Companion,

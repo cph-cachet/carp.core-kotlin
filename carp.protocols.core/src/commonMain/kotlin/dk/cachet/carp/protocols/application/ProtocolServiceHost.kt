@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.application
 
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.ParticipantAttribute
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolRepository
@@ -45,28 +45,27 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
     }
 
     /**
-     * Replace the expected participant data for the study protocol with the specified [protocolName], owned by [owner],
-     * and the specific [versionTag] with [expectedParticipantData].
+     * Replace the expected participant data for the study protocol with the specified [protocolId]
+     * and [versionTag] with [expectedParticipantData].
      *
      * @throws IllegalArgumentException when:
-     *   - no protocol with [protocolName], owned by [owner], and the specific [versionTag] is found
+     *   - no protocol with [protocolId] is found
      *   - [expectedParticipantData] contains two or more attributes with the same input type.
      * @return The updated [StudyProtocolSnapshot].
      */
     override suspend fun updateParticipantDataConfiguration(
-        owner: ProtocolOwner,
-        protocolName: String,
+        protocolId: StudyProtocol.Id,
         versionTag: String,
         expectedParticipantData: Set<ParticipantAttribute>
     ): StudyProtocolSnapshot
     {
-        val protocol = repository.getByOrThrow( owner, protocolName, versionTag )
+        val protocol = repository.getByOrThrow( protocolId, versionTag )
         val isReplaced = protocol.replaceExpectedParticipantData( expectedParticipantData )
 
         if ( isReplaced )
         {
             val version = repository
-                .getVersionHistoryFor( protocol.owner, protocol.name )
+                .getVersionHistoryFor( protocol.id )
                 .first { it.tag == versionTag }
             repository.replace( protocol, version )
         }
@@ -75,33 +74,33 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
     }
 
     /**
-     * Find the [StudyProtocolSnapshot] with the specified [protocolName] owned by [owner].
+     * Return the [StudyProtocolSnapshot] with the specified [protocolId],
      *
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
-     * @throws IllegalArgumentException when the [owner], [protocolName], or [versionTag] does not exist.
+     * @throws IllegalArgumentException when a protocol with [protocolId] or [versionTag] does not exist.
      */
-    override suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? ): StudyProtocolSnapshot
+    override suspend fun getBy( protocolId: StudyProtocol.Id, versionTag: String? ): StudyProtocolSnapshot
     {
-        val protocol: StudyProtocol? = repository.getBy( owner, protocolName, versionTag )
+        val protocol: StudyProtocol? = repository.getBy( protocolId, versionTag )
         requireNotNull( protocol ) { "No protocol found for the specified owner with the given name and version." }
 
         return protocol.getSnapshot()
     }
 
     /**
-     * Find all [StudyProtocolSnapshot]'s owned by [owner].
+     * Find all [StudyProtocolSnapshot]'s owned by the owner with [ownerId].
      *
-     * @return This returns the last version of each [StudyProtocolSnapshot] owned by the specified [owner],
+     * @return This returns the last version of each [StudyProtocolSnapshot] owned by the requested owner,
      *   or an empty list when none are found.
      */
-    override suspend fun getAllFor( owner: ProtocolOwner ): List<StudyProtocolSnapshot> =
-        repository.getAllFor( owner ).map { it.getSnapshot() }.toList()
+    override suspend fun getAllFor( ownerId: UUID ): List<StudyProtocolSnapshot> =
+        repository.getAllFor( ownerId ).map { it.getSnapshot() }.toList()
 
     /**
-     * Returns all stored versions for the [StudyProtocol] owned by [owner] with [protocolName].
+     * Returns all stored versions for the protocol with the specified [protocolId].
      *
-     * @throws IllegalArgumentException when a protocol with [protocolName] for [owner] does not exist.
+     * @throws IllegalArgumentException when a protocol with [protocolId] does not exist.
      */
-    override suspend fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion> =
-        repository.getVersionHistoryFor( owner, protocolName )
+    override suspend fun getVersionHistoryFor( protocolId: StudyProtocol.Id ): List<ProtocolVersion> =
+        repository.getVersionHistoryFor( protocolId )
 }

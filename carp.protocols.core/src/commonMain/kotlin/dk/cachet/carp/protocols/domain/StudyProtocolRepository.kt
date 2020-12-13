@@ -1,5 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.UUID
+
 
 /**
  * A repository which handles persisting different versions of [StudyProtocol]s.
@@ -35,33 +37,32 @@ interface StudyProtocolRepository
     suspend fun replace( protocol: StudyProtocol, version: ProtocolVersion )
 
     /**
-     * Return the [StudyProtocol] with the specified [protocolName] owned by [owner],
-     * or null when no such protocol is found.
+     * Return the [StudyProtocol] with the specified protocol [id], or null when no such protocol is found.
      *
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      */
-    suspend fun getBy( owner: ProtocolOwner, protocolName: String, versionTag: String? = null ): StudyProtocol?
+    suspend fun getBy( id: StudyProtocol.Id, versionTag: String? = null ): StudyProtocol?
 
     /**
-     * Return the [StudyProtocol] with the specified [protocolName] owned by [owner].
+     * Return the [StudyProtocol] with the specified [id].
      *
      * @throws IllegalArgumentException when the requested protocol is not found.
      */
-    suspend fun getByOrThrow( owner: ProtocolOwner, protocolName: String, versionTag: String? = null ): StudyProtocol =
-        getBy( owner, protocolName, versionTag )
-            ?: throw IllegalArgumentException( "A protocol named \"$protocolName\" for owner with ID \"${owner.id}\" with the specified version tag does not exist." )
+    suspend fun getByOrThrow( id: StudyProtocol.Id, versionTag: String? = null ): StudyProtocol =
+        getBy( id, versionTag )
+            ?: throw IllegalArgumentException( "A protocol named \"${id.name}\" for owner with ID \"${id.ownerId}\" with the specified version tag does not exist." )
 
     /**
-     * Find all [StudyProtocol]'s owned by [owner], or an empty sequence if none are found.
+     * Find all [StudyProtocol]'s owned by the owner with [ownerId], or an empty sequence if none are found.
      *
-     * @return This returns the last version of each [StudyProtocol] owned by the specified [owner].
+     * @return This returns the last version of each [StudyProtocol] owned by the requested owner.
      */
-    suspend fun getAllFor( owner: ProtocolOwner ): Sequence<StudyProtocol>
+    suspend fun getAllFor( ownerId: UUID ): Sequence<StudyProtocol>
 
     /**
-     * Returns all stored versions for the [StudyProtocol] owned by [owner] with [protocolName].
+     * Returns all stored versions for the [StudyProtocol] with the specified [id].
      *
-     * @throws IllegalArgumentException when a protocol with [protocolName] for [owner] does not exist.
+     * @throws IllegalArgumentException when a protocol with the specified [id] does not exist.
      */
-    suspend fun getVersionHistoryFor( owner: ProtocolOwner, protocolName: String ): List<ProtocolVersion>
+    suspend fun getVersionHistoryFor( id: StudyProtocol.Id ): List<ProtocolVersion>
 }

@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.DomainEvent
 import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.deployment.DeploymentError
@@ -16,6 +17,7 @@ import dk.cachet.carp.protocols.domain.tasks.EmptyTaskConfiguration
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.triggers.Trigger
 import dk.cachet.carp.protocols.domain.triggers.TriggeredTask
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -97,6 +99,15 @@ class StudyProtocol(
             return protocol
         }
     }
+
+
+    @Serializable
+    data class Id( val ownerId: UUID, val name: String )
+
+    /**
+     * A study protocol is uniquely identified by the [owner] ID and it's [name].
+     */
+    val id: Id = Id( owner.id, name )
 
 
     /**

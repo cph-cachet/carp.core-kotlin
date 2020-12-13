@@ -9,6 +9,20 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
     namespace dk.cachet.carp.protocols.domain
     {
+        namespace StudyProtocol
+        {
+            class Id
+            {
+                constructor( ownerId: UUID, name: string )
+
+                static get Companion(): Id$Companion
+    
+                readonly ownerId: UUID
+                readonly name: string
+            }
+            interface Id$Companion { serializer(): any }
+        }
+
         class ProtocolOwner
         {
             constructor( id?: UUID )
@@ -38,6 +52,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
     namespace dk.cachet.carp.protocols.infrastructure
     {
+        import ProtocolId = dk.cachet.carp.protocols.domain.StudyProtocol.Id
         import ProtocolOwner = dk.cachet.carp.protocols.domain.ProtocolOwner
         import StudyProtocolSnapshot = dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 
@@ -60,15 +75,15 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             }
             class GetBy extends ProtocolServiceRequest
             {
-                constructor( owner: ProtocolOwner, protocolName: string, versionTag?: string )
+                constructor( protocolId: ProtocolId, versionTag?: string )
             }
             class GetAllFor extends ProtocolServiceRequest
             {
-                constructor( owner: ProtocolOwner )
+                constructor( ownerId: UUID )
             }
             class GetVersionHistoryFor extends ProtocolServiceRequest
             {
-                constructor( owner: ProtocolOwner, protocolName: string )
+                constructor( protocolId: ProtocolId )
             }
         }
 
