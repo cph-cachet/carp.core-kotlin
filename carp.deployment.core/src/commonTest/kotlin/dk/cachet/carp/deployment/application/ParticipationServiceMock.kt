@@ -18,7 +18,8 @@ import dk.cachet.carp.test.Mock
 class ParticipationServiceMock(
     private val getActiveParticipationInvitationResult: Set<ActiveParticipationInvitation> = emptySet(),
     private val getParticipantDataResult: ParticipantData = ParticipantData( UUID.randomUUID(), emptyMap() ),
-    private val getParticipantDataListResult: List<ParticipantData> = emptyList()
+    private val getParticipantDataListResult: List<ParticipantData> = emptyList(),
+    private val setParticipantDataResult: ParticipantData = ParticipantData( UUID.randomUUID(), emptyMap() )
 ) : Mock<ParticipationService>(), ParticipationService
 {
     override suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ) =
@@ -38,5 +39,6 @@ class ParticipationServiceMock(
         .also { trackSuspendCall( ParticipationService::getParticipantDataList, studyDeploymentIds ) }
 
     override suspend fun setParticipantData( studyDeploymentId: UUID, inputDataType: InputDataType, data: Data? ) =
-        trackSuspendCall( ParticipationService::setParticipantData, studyDeploymentId, inputDataType, data )
+        setParticipantDataResult
+        .also { trackSuspendCall( ParticipationService::setParticipantData, studyDeploymentId, inputDataType, data ) }
 }

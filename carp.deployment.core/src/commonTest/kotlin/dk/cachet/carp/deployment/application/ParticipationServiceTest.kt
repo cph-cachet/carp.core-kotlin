@@ -198,9 +198,11 @@ abstract class ParticipationServiceTest
         val snapshot = protocol.getSnapshot()
         val status = deploymentService.createStudyDeployment( snapshot )
 
-        participationService.setParticipantData( status.studyDeploymentId, CarpInputDataTypes.SEX, Sex.Male )
-        val participantData = participationService.getParticipantData( status.studyDeploymentId )
-        assertEquals( Sex.Male, participantData.data[ CarpInputDataTypes.SEX ] )
+        val afterSet = participationService.setParticipantData( status.studyDeploymentId, CarpInputDataTypes.SEX, Sex.Male )
+        assertEquals( Sex.Male, afterSet.data[ CarpInputDataTypes.SEX ] )
+
+        val retrievedData = participationService.getParticipantData( status.studyDeploymentId )
+        assertEquals( afterSet, retrievedData )
     }
 
     @Test
