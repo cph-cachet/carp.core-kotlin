@@ -2,6 +2,8 @@ package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.Data
+import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
@@ -115,7 +117,8 @@ class ParticipantServiceHost(
         if ( deployedStatus != null && deployedStatus !is StudyDeploymentStatus.Stopped )
         {
             val participants = study.getParticipations( deployedStatus.studyDeploymentId )
-            return ParticipantGroupStatus( deployedStatus, participants )
+            val participantData = participationService.getParticipantData( deployedStatus.studyDeploymentId )
+            return ParticipantGroupStatus( deployedStatus, participants, participantData.data )
         }
 
         // Get participant information.
@@ -144,7 +147,8 @@ class ParticipantServiceHost(
         studyRepository.update( study )
 
         val participants = study.getParticipations( deploymentStatus.studyDeploymentId )
-        return ParticipantGroupStatus( deploymentStatus, participants )
+        val participantData = participationService.getParticipantData( deploymentStatus.studyDeploymentId )
+        return ParticipantGroupStatus( deploymentStatus, participants, participantData.data )
     }
 
     /**
@@ -163,9 +167,11 @@ class ParticipantServiceHost(
             else deploymentService.getStudyDeploymentStatusList( studyDeploymentIds )
 
         // Map each study deployment status to a deanonymized participant group status.
-        return studyDeploymentStatuses.map {
-            val participants = study.getParticipations( it.studyDeploymentId )
-            ParticipantGroupStatus( it, participants )
+        val participantDataList = participationService.getParticipantDataList( studyDeploymentIds )
+        return studyDeploymentStatuses.map { deployment ->
+            val participants = study.getParticipations( deployment.studyDeploymentId )
+            val participantData = participantDataList.first { it.studyDeploymentId == deployment.studyDeploymentId }
+            ParticipantGroupStatus( deployment, participants, participantData.data )
         }
     }
 
@@ -178,14 +184,42 @@ class ParticipantServiceHost(
      */
     override suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ): ParticipantGroupStatus
     {
-        val study: Study = getStudyOrThrow( studyId )
-        val participations = study.participations.getOrElse( groupId ) { emptySet() }
-        require( participations.count() > 0 ) { "Study deployment with the specified groupId not found." }
+        val participations = getStudyParticipationsOrThrow( studyId, groupId )
 
         val deploymentStatus = deploymentService.stop( groupId )
-        return ParticipantGroupStatus( deploymentStatus, participations )
+        val participantData = participationService.getParticipantData( deploymentStatus.studyDeploymentId )
+        return ParticipantGroupStatus( deploymentStatus, participations, participantData.data )
+    }
+
+    /**
+     * Set participant [data] for the given [inputDataType],
+     * related to participants of the participant group with [groupId] in the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when:
+     *   - a study with [studyId] or participant group with [groupId] does not exist.
+     *   - [inputDataType] is not configured as expected participant data in the study protocol
+     *   - [data] is invalid data for [inputDataType]
+     */
+    override suspend fun setParticipantGroupData( studyId: UUID, groupId: UUID, inputDataType: InputDataType, data: Data? ): ParticipantGroupStatus
+    {
+        val participations = getStudyParticipationsOrThrow( studyId, groupId )
+
+        participationService.setParticipantData( groupId, inputDataType, data )
+
+        val deploymentStatus = deploymentService.getStudyDeploymentStatus( groupId )
+        val participantData = participationService.getParticipantData( groupId )
+        return ParticipantGroupStatus( deploymentStatus, participations, participantData.data )
     }
 
     private suspend fun getStudyOrThrow( studyId: UUID ): Study = studyRepository.getById( studyId )
         ?: throw IllegalArgumentException( "Study with the specified studyId does not exist." )
+
+    private suspend fun getStudyParticipationsOrThrow( studyId: UUID, groupId: UUID ): Set<DeanonymizedParticipation>
+    {
+        val study: Study = getStudyOrThrow( studyId )
+        val participations = study.participations[ groupId ]
+        requireNotNull( participations ) { "Study deployment with the specified groupId not found." }
+
+        return participations
+    }
 }

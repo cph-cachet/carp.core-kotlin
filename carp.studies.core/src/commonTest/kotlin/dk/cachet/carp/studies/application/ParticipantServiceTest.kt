@@ -2,11 +2,16 @@ package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.data.input.InputDataType
+import dk.cachet.carp.common.data.input.Sex
+import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.Smartphone
+import dk.cachet.carp.studies.domain.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.test.runSuspendTest
@@ -94,6 +99,7 @@ interface ParticipantServiceTest
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
         val groupStatus = participantService.deployParticipantGroup( studyId, setOf( assignParticipant ) )
         assertEquals( participant.id, groupStatus.participants.single().participantId )
+        assertNull( groupStatus.data[ CarpInputDataTypes.SEX ] ) // By default, the configured expected data is not set.
         val participantGroups = participantService.getParticipantGroupStatusList( studyId )
         val participantIdInGroup = participantGroups.single().participants.single().participantId
         assertEquals( participant.id, participantIdInGroup )
@@ -244,12 +250,52 @@ interface ParticipantServiceTest
         assertFailsWith<IllegalArgumentException> { participantService.stopParticipantGroup( studyId, unknownId ) }
     }
 
+    @Test
+    fun setParticipantGroupData_succeeds() = runSuspendTest {
+        val (participantService, studyService) = createService()
+        val (studyId, snapshot) = createLiveStudy( studyService )
+        val group = createLiveGroup( participantService, studyId, snapshot )
+
+        val expectedData = CarpInputDataTypes.SEX
+        val groupAfterSet = participantService.setParticipantGroupData( studyId, group.id, expectedData, Sex.Male )
+        assertEquals( 1, groupAfterSet.data.size )
+        assertEquals( Sex.Male, groupAfterSet.data[ expectedData ] )
+
+        val retrievedGroups = participantService.getParticipantGroupStatusList( studyId )
+        val retrievedGroup = retrievedGroups.firstOrNull { it.id == group.id }
+        assertNotNull( retrievedGroup )
+        assertEquals( groupAfterSet.data, retrievedGroup.data )
+    }
+
+    @Test
+    fun setParticipantGroupData_fails_with_unknown_id() = runSuspendTest {
+        val (participantService, _) = createService()
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            participantService.setParticipantGroupData( unknownId, unknownId, CarpInputDataTypes.SEX, Sex.Male )
+        }
+    }
+
+    @Test
+    fun setParticipantGroupData_fails_for_unexpected_data() = runSuspendTest {
+        val (participantService, studyService) = createService()
+        val (studyId, snapshot) = createLiveStudy( studyService )
+        val group = createLiveGroup( participantService, studyId, snapshot )
+
+        val unexpectedData = InputDataType( "namespace", "type" )
+        assertFailsWith<IllegalArgumentException> {
+            participantService.setParticipantGroupData( studyId, group.id, unexpectedData, null )
+        }
+    }
+
 
     private suspend fun createLiveStudy( service: StudyService ): Pair<UUID, StudyProtocolSnapshot>
     {
         // Create deployable protocol.
         val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
         protocol.addMasterDevice( Smartphone( "User's phone" ) )
+        protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
         val validSnapshot = protocol.getSnapshot()
 
         // Create live study from protocol.
@@ -259,5 +305,18 @@ interface ParticipantServiceTest
         service.goLive( studyId )
 
         return Pair( studyId, validSnapshot )
+    }
+
+    private suspend fun createLiveGroup(
+        participantService: ParticipantService,
+        studyId: UUID,
+        protocolSnapshot: StudyProtocolSnapshot
+    ): ParticipantGroupStatus
+    {
+        val participant = participantService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
+
+        return participantService.deployParticipantGroup( studyId, setOf( assignParticipant ) )
     }
 }
