@@ -54,14 +54,10 @@ class DeploymentServiceHost( private val repository: DeploymentRepository ) : De
      *
      * @throws IllegalArgumentException when [studyDeploymentIds] contains an ID for which no deployment exists.
      */
-    override suspend fun getStudyDeploymentStatusList( studyDeploymentIds: Set<UUID> ): List<StudyDeploymentStatus>
-    {
-        val deployments = repository.getStudyDeploymentsBy( studyDeploymentIds )
-        require( deployments.count() == studyDeploymentIds.count() )
-            { "No deployment exists for one of the specified studyDeploymentIds." }
-
-        return deployments.map{ it.getStatus() }
-    }
+    override suspend fun getStudyDeploymentStatusList( studyDeploymentIds: Set<UUID> ): List<StudyDeploymentStatus> =
+        repository
+            .getStudyDeploymentsOrThrowBy( studyDeploymentIds )
+            .map { it.getStatus() }
 
     /**
      * Register the device with the specified [deviceRoleName] for the study deployment with [studyDeploymentId].

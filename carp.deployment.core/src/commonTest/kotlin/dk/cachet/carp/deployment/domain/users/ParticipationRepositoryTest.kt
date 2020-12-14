@@ -2,9 +2,15 @@ package dk.cachet.carp.deployment.domain.users
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.Account
+import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.createComplexParticipantGroup
+import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
+
+
+private val unknownId = UUID.randomUUID()
 
 
 /**
@@ -34,7 +40,7 @@ interface ParticipationRepositoryTest
     fun getInvitations_is_empty_when_no_invitations() = runSuspendTest {
         val repo = createRepository()
 
-        val invitations = repo.getInvitations( UUID.randomUUID() )
+        val invitations = repo.getInvitations( unknownId )
         assertEquals( 0, invitations.count() )
     }
 
@@ -54,8 +60,33 @@ interface ParticipationRepositoryTest
     @Test
     fun getParticipantGroup_is_null_when_not_found() = runSuspendTest {
         val repo = createRepository()
-        val unknownId = UUID.randomUUID()
+
         assertNull( repo.getParticipantGroup( unknownId ) )
+    }
+
+    @Test
+    fun getParticipantGroupList_succeeds() = runSuspendTest {
+        val repo = createRepository()
+        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+
+        val deployment1 = StudyDeployment( protocol.getSnapshot() )
+        val group1 = ParticipantGroup.fromDeployment( deployment1 )
+        repo.putParticipantGroup( group1 )
+
+        val deployment2 = StudyDeployment( protocol.getSnapshot() )
+        val group2 = ParticipantGroup.fromDeployment( deployment2 )
+        repo.putParticipantGroup( group2 )
+
+        val groups = repo.getParticipantGroupList( setOf( deployment1.id, deployment2.id ) )
+        assertEquals( setOf( group1, group2 ), groups.toSet() )
+    }
+
+    @Test
+    fun getParticipantGroupList_is_empty_when_no_matches() = runSuspendTest {
+        val repo = createRepository()
+
+        val groups = repo.getParticipantGroupList( setOf( unknownId ) )
+        assertTrue( groups.isEmpty() )
     }
 
     @Test

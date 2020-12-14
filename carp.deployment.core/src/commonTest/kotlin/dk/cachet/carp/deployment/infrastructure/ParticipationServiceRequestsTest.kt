@@ -23,6 +23,7 @@ class ParticipationServiceRequestsTest
             ParticipationServiceRequest.AddParticipation( UUID.randomUUID(), setOf( "Phone" ), UsernameAccountIdentity( "Test" ), StudyInvitation.empty() ),
             ParticipationServiceRequest.GetActiveParticipationInvitations( UUID.randomUUID() ),
             ParticipationServiceRequest.GetParticipantData( UUID.randomUUID() ),
+            ParticipationServiceRequest.GetParticipantDataList( emptySet() ),
             ParticipationServiceRequest.SetParticipantData( UUID.randomUUID(), CarpInputDataTypes.SEX, Sex.Male )
         )
     }

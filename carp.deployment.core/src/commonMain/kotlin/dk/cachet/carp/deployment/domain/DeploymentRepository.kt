@@ -32,6 +32,19 @@ interface DeploymentRepository
     suspend fun getStudyDeploymentsBy( ids: Set<UUID> ): List<StudyDeployment>
 
     /**
+     * Return all [StudyDeployment]s matching the specified [ids].
+     *
+     * @throws IllegalArgumentException when no deployment exists for one of the specified [ids].
+     */
+    suspend fun getStudyDeploymentsOrThrowBy( ids: Set<UUID> ): List<StudyDeployment>
+    {
+        val deployments = getStudyDeploymentsBy( ids )
+        require( ids.size == deployments.size ) { "No deployment exists for one of the specified studyDeploymentIds." }
+
+        return deployments
+    }
+
+    /**
      * Update a [studyDeployment] which is already stored in this repository.
      *
      * @param studyDeployment The updated version of the study deployment to store.
