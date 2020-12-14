@@ -7,6 +7,7 @@ import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.Username
+import dk.cachet.carp.deployment.domain.users.ParticipantData
 import dk.cachet.carp.deployment.domain.users.ParticipantGroupSnapshot
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
@@ -112,6 +113,18 @@ fun MasterDeviceDeployment.Companion.fromJson( json: String ): MasterDeviceDeplo
  */
 fun MasterDeviceDeployment.toJson(): String =
     JSON.encodeToString( MasterDeviceDeployment.serializer(), this )
+
+/**
+ * Create [ParticipantData] from JSON, serializer using the globally set infrastructure serializer ([JSON]).
+ */
+fun ParticipantData.Companion.fromJson( json: String ): ParticipantData =
+    JSON.decodeFromString( serializer(), json )
+
+/**
+ * Serializer to JSON, using the globally set infrastructure serializer ([JSON]).
+ */
+fun ParticipantData.toJson(): String =
+    JSON.encodeToString( ParticipantData.serializer(), this )
 
 /**
  * Create a [ParticipantGroupSnapshot] from JSON, serialized using the globally set infrastructure serializer ([JSON]).

@@ -2,6 +2,8 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.input.CustomInput
+import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.studies.application.ParticipantService
 import dk.cachet.carp.studies.application.ParticipantServiceMock
@@ -24,7 +26,8 @@ class ParticipantServiceRequestsTest
             ParticipantServiceRequest.GetParticipants( studyId ),
             ParticipantServiceRequest.DeployParticipantGroup( studyId, setOf() ),
             ParticipantServiceRequest.GetParticipantGroupStatusList( studyId ),
-            ParticipantServiceRequest.StopParticipantGroup( studyId, UUID.randomUUID() )
+            ParticipantServiceRequest.StopParticipantGroup( studyId, UUID.randomUUID() ),
+            ParticipantServiceRequest.SetParticipantGroupData( studyId, UUID.randomUUID(), InputDataType( "some", "type" ), CustomInput( "Test" ) )
         )
     }
 

@@ -2,6 +2,8 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.Data
+import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.common.ddd.createServiceInvoker
 import dk.cachet.carp.studies.application.ParticipantService
@@ -52,4 +54,9 @@ sealed class ParticipantServiceRequest
     data class StopParticipantGroup( val studyId: UUID, val groupId: UUID ) :
         ParticipantServiceRequest(),
         ParticipantServiceInvoker<ParticipantGroupStatus> by createServiceInvoker( ParticipantService::stopParticipantGroup, studyId, groupId )
+
+    @Serializable
+    data class SetParticipantGroupData( val studyId: UUID, val groupId: UUID, val inputDataType: InputDataType, val data: Data? ) :
+        ParticipantServiceRequest(),
+        ParticipantServiceInvoker<ParticipantGroupStatus> by createServiceInvoker( ParticipantService::setParticipantGroupData, studyId, groupId, inputDataType, data )
 }
