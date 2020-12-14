@@ -60,6 +60,7 @@ interface ParticipationService
      *   - there is no study deployment with [studyDeploymentId]
      *   - [inputDataType] is not configured as expected participant data in the study protocol
      *   - [data] is invalid data for [inputDataType]
+     * @return All data for the specified study deployment, including the newly set data.
      */
-    suspend fun setParticipantData( studyDeploymentId: UUID, inputDataType: InputDataType, data: Data? )
+    suspend fun setParticipantData( studyDeploymentId: UUID, inputDataType: InputDataType, data: Data? ): ParticipantData
 }

@@ -204,11 +204,9 @@ class ParticipantServiceHost(
     {
         val participations = getStudyParticipationsOrThrow( studyId, groupId )
 
-        participationService.setParticipantData( groupId, inputDataType, data )
-
         val deploymentStatus = deploymentService.getStudyDeploymentStatus( groupId )
-        val participantData = participationService.getParticipantData( groupId )
-        return ParticipantGroupStatus( deploymentStatus, participations, participantData.data )
+        val newData = participationService.setParticipantData( groupId, inputDataType, data )
+        return ParticipantGroupStatus( deploymentStatus, participations, newData.data )
     }
 
     private suspend fun getStudyOrThrow( studyId: UUID ): Study = studyRepository.getById( studyId )

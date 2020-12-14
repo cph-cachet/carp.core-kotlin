@@ -162,8 +162,9 @@ class ParticipationServiceHost(
      *   - there is no study deployment with [studyDeploymentId]
      *   - [inputDataType] is not configured as expected participant data in the study protocol
      *   - [data] is invalid data for [inputDataType]
+     * @return All data for the specified study deployment, including the newly set data.
      */
-    override suspend fun setParticipantData( studyDeploymentId: UUID, inputDataType: InputDataType, data: Data? )
+    override suspend fun setParticipantData( studyDeploymentId: UUID, inputDataType: InputDataType, data: Data? ): ParticipantData
     {
         // Verify whether data is expected.
         val deployment = deploymentRepository.getStudyDeploymentOrThrowBy( studyDeploymentId )
@@ -173,5 +174,7 @@ class ParticipationServiceHost(
             ?: ParticipantGroup.fromDeployment( deployment )
         group.setData( participantDataInputTypes, inputDataType, data )
         participationRepository.putParticipantGroup( group )
+
+        return ParticipantData( group.studyDeploymentId, group.data.toMap() )
     }
 }
