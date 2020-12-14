@@ -9,6 +9,7 @@ import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.DeploymentRepository
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
+import dk.cachet.carp.deployment.domain.users.ParticipantData
 import dk.cachet.carp.deployment.domain.users.ParticipantGroup
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
@@ -124,13 +125,34 @@ class ParticipationServiceHost(
      *
      * @throws IllegalArgumentException when there is no study deployment with [studyDeploymentId].
      */
-    override suspend fun getParticipantData( studyDeploymentId: UUID ): Map<InputDataType, Data?>
+    override suspend fun getParticipantData( studyDeploymentId: UUID ): ParticipantData
     {
         val deployment = deploymentRepository.getStudyDeploymentOrThrowBy( studyDeploymentId )
         val group = participationRepository.getParticipantGroup( studyDeploymentId )
             ?: ParticipantGroup.fromDeployment( deployment )
 
-        return group.data.toMap()
+        return ParticipantData( deployment.id, group.data.toMap() )
+    }
+
+    /**
+     * Get currently set data for all expected participant data for a set of study deployments with [studyDeploymentIds].
+     * Data which is not set equals null.
+     *
+     * @throws IllegalArgumentException when [studyDeploymentIds] contains an ID for which no deployment exists.
+     */
+    override suspend fun getParticipantDataList( studyDeploymentIds: Set<UUID> ): List<ParticipantData>
+    {
+        val deployments = deploymentRepository.getStudyDeploymentsOrThrowBy( studyDeploymentIds )
+        require( deployments.size == studyDeploymentIds.size )
+            { "A study deployment ID has been passed for which no deployment exists." }
+
+        val groups = participationRepository.getParticipantGroupList( studyDeploymentIds )
+
+        return deployments.map { deployment ->
+            val group = groups.firstOrNull { it.studyDeploymentId == deployment.id }
+                ?: ParticipantGroup.fromDeployment( deployment )
+            ParticipantData( deployment.id, group.data.toMap() )
+        }
     }
 
     /**

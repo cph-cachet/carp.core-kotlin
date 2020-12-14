@@ -153,9 +153,10 @@ abstract class ParticipationServiceTest
         val snapshot = protocol.getSnapshot()
         val status = deploymentService.createStudyDeployment( snapshot )
 
-        val data = participationService.getParticipantData( status.studyDeploymentId )
-        assertEquals( setOf( CarpInputDataTypes.SEX, customAttribute.inputType ), data.keys )
-        assertTrue( data.values.all { it == null } )
+        val participantData = participationService.getParticipantData( status.studyDeploymentId )
+        assertEquals( status.studyDeploymentId, participantData.studyDeploymentId )
+        assertEquals( setOf( CarpInputDataTypes.SEX, customAttribute.inputType ), participantData.data.keys )
+        assertTrue( participantData.data.values.all { it == null } )
     }
 
     @Test
@@ -163,6 +164,27 @@ abstract class ParticipationServiceTest
         val (participationService, _, _) = createService( CarpInputDataTypes )
 
         assertFailsWith<IllegalArgumentException> { participationService.getParticipantData( unknownId ) }
+    }
+
+    @Test
+    fun getParticipantDataList_succeeds() = runSuspendTest {
+        val (participationService, deploymentService, _) = createService()
+        val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
+        val snapshot = protocol.getSnapshot()
+        val deployment1 = deploymentService.createStudyDeployment( snapshot )
+        val deployment2 = deploymentService.createStudyDeployment( snapshot )
+
+        val deploymentIds = setOf( deployment1.studyDeploymentId, deployment2.studyDeploymentId )
+        val participantDataList = participationService.getParticipantDataList( deploymentIds )
+        assertEquals( 2, participantDataList.size )
+    }
+
+    @Test
+    fun getParticipantDataList_fails_for_unknown_deploymentId() = runSuspendTest {
+        val (participationService, _, _) = createService()
+
+        val deploymentIds = setOf( unknownId )
+        assertFailsWith<IllegalArgumentException> { participationService.getParticipantDataList( deploymentIds ) }
     }
 
     @Test
@@ -177,8 +199,8 @@ abstract class ParticipationServiceTest
         val status = deploymentService.createStudyDeployment( snapshot )
 
         participationService.setParticipantData( status.studyDeploymentId, CarpInputDataTypes.SEX, Sex.Male )
-        val data = participationService.getParticipantData( status.studyDeploymentId )
-        assertEquals( Sex.Male, data[ CarpInputDataTypes.SEX ] )
+        val participantData = participationService.getParticipantData( status.studyDeploymentId )
+        assertEquals( Sex.Male, participantData.data[ CarpInputDataTypes.SEX ] )
     }
 
     @Test

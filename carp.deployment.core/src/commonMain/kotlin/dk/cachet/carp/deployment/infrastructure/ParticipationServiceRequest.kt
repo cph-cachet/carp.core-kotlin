@@ -8,6 +8,7 @@ import dk.cachet.carp.common.ddd.createServiceInvoker
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.application.ParticipationService
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
+import dk.cachet.carp.deployment.domain.users.ParticipantData
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import kotlinx.serialization.Serializable
@@ -38,7 +39,12 @@ sealed class ParticipationServiceRequest
     @Serializable
     data class GetParticipantData( val studyDeploymentId: UUID ) :
         ParticipationServiceRequest(),
-        ParticipationServiceInvoker<Map<InputDataType, Data?>> by createServiceInvoker( ParticipationService::getParticipantData, studyDeploymentId )
+        ParticipationServiceInvoker<ParticipantData> by createServiceInvoker( ParticipationService::getParticipantData, studyDeploymentId )
+
+    @Serializable
+    data class GetParticipantDataList( val studyDeploymentIds: Set<UUID> ) :
+        ParticipationServiceRequest(),
+        ParticipationServiceInvoker<List<ParticipantData>> by createServiceInvoker( ParticipationService::getParticipantDataList, studyDeploymentIds )
 
     @Serializable
     data class SetParticipantData( val studyDeploymentId: UUID, val inputDataType: InputDataType, val data: Data? ) :

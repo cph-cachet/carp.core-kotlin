@@ -21,6 +21,12 @@ interface ParticipationRepository
     suspend fun getParticipantGroup( studyDeploymentId: UUID ): ParticipantGroup?
 
     /**
+     * Return all [ParticipantGroup]s maching the specified [studyDeploymentIds].
+     * Ids that are not found are ignored.
+     */
+    suspend fun getParticipantGroupList( studyDeploymentIds: Set<UUID> ): List<ParticipantGroup>
+
+    /**
      * Adds or updates the participant [group] in this repository.
      *
      * @return the previous [ParticipantGroup] stored in the repository, or null if it was not present before.
