@@ -1,10 +1,14 @@
 declare module 'carp.core-kotlin-carp.protocols.core'
 {
+    import { kotlin } from 'kotlin'
+    import ArrayList = kotlin.collections.ArrayList
+    import HashSet = kotlin.collections.HashSet
     import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
     import Json = kotlinx.serialization.json.Json
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import DateTime = cdk.cachet.carp.common.DateTime
     import UUID = cdk.cachet.carp.common.UUID
+    import ParticipantAttribute = cdk.cachet.carp.common.users.ParticipantAttribute
 
 
     namespace dk.cachet.carp.protocols.domain
@@ -28,14 +32,19 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             constructor( id?: UUID )
 
             static get Companion(): ProtocolOwner$Companion
+
+            readonly id: UUID
         }
         interface ProtocolOwner$Companion { serializer(): any }
 
         class ProtocolVersion
         {
-            constructor( date: DateTime, tag: string )
+            constructor( tag: string, date?: DateTime )
 
             static get Companion(): ProtocolVersion$Companion
+
+            readonly tag: string
+            readonly date: DateTime
         }
         interface ProtocolVersion$Companion { serializer(): any }
 
@@ -45,6 +54,12 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             private constructor()
 
             static get Companion(): StudyProtocolSnapshot$Companion
+
+            readonly ownerId: UUID
+            readonly name: string
+            readonly description: string
+            readonly creationDate: DateTime
+            readonly expectedParticipantData: ArrayList<ParticipantAttribute>
         }
         interface StudyProtocolSnapshot$Companion { serializer(): any }
     }
@@ -53,7 +68,6 @@ declare module 'carp.core-kotlin-carp.protocols.core'
     namespace dk.cachet.carp.protocols.infrastructure
     {
         import ProtocolId = dk.cachet.carp.protocols.domain.StudyProtocol.Id
-        import ProtocolOwner = dk.cachet.carp.protocols.domain.ProtocolOwner
         import StudyProtocolSnapshot = dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 
         
@@ -73,6 +87,10 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             {
                 constructor( protocol: StudyProtocolSnapshot, versionTag?: string )
             }
+            class UpdateParticipantDataConfiguration extends ProtocolServiceRequest
+            {
+                constructor( protocolId: ProtocolId, versionTag: string, expectedParticipantData: HashSet<ParticipantAttribute> )
+            }
             class GetBy extends ProtocolServiceRequest
             {
                 constructor( protocolId: ProtocolId, versionTag?: string )
@@ -86,6 +104,22 @@ declare module 'carp.core-kotlin-carp.protocols.core'
                 constructor( protocolId: ProtocolId )
             }
         }
+
+
+        abstract class ProtocolFactoryServiceRequest
+        {
+            static Companion(): ProtocolFactoryServiceRequest$Companion
+        }
+        interface ProtocolFactoryServiceRequest$Companion { serializer(): any }
+
+        namespace ProtocolFactoryServiceRequest
+        {
+            class CreateCustomProtocol extends ProtocolFactoryServiceRequest
+            {
+                constructor( ownerId: UUID, name: string, customProtocol: string, description: string )
+            }
+        }
+
 
         function createProtocolsSerializer_18xi4u$(): Json
     }

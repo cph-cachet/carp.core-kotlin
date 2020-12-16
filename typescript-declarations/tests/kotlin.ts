@@ -3,6 +3,7 @@ import VerifyModule from './VerifyModule'
 
 import { Long } from 'kotlin'
 import { kotlin } from 'kotlin'
+import Pair = kotlin.Pair
 import ArrayList = kotlin.collections.ArrayList
 import HashSet = kotlin.collections.HashSet
 import toSet = kotlin.collections.toSet_us0mfu$
@@ -11,6 +12,7 @@ import toSet = kotlin.collections.toSet_us0mfu$
 describe( "kotlin", () => {
     it( "verify module declarations", async () => {
         const instances = [
+            new Pair( "key", "value" ),
             new HashSet(),
             new ArrayList( [ "One", "Two", "Three" ] )
         ]

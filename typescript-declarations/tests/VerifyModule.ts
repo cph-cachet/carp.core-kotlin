@@ -15,6 +15,7 @@ import {
     TypeElement }
     from "@typescript-eslint/types/dist/ts-estree"
 import * as fs from 'fs'
+import { getEffectiveTypeParameterDeclarations } from 'typescript'
 
 
 export default class VerifyModule
@@ -68,6 +69,17 @@ export default class VerifyModule
                 const interfaceName = statement.id.name
                 const instance = this.getInstance( interfaceName )
                 this.verifyBody( statement.body, instance )
+                break;
+            }
+            case AST_NODE_TYPES.VariableDeclaration:
+            {   
+                const declarations = statement.declarations
+                if ( declarations.length != 1 )
+                {
+                    throw( Error( `Only one declarator expected. Support for none or more not implemented.` ) )
+                }
+                const declaratorId = declarations[ 0 ].id as Identifier
+                this.verifyIdentifier( declaratorId, scope )
                 break;
             }
             case AST_NODE_TYPES.ImportDeclaration:

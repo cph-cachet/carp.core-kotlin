@@ -8,8 +8,23 @@ declare module 'kotlin'
     }
 
 
+    namespace kotlin
+    {
+        class Pair<TFirst, TSecond>
+        {
+            constructor( first: TFirst, second: TSecond )
+
+            readonly first: TFirst
+            readonly second: TSecond
+        }
+    }
+
+
     namespace kotlin.collections
     {
+        import Pair = kotlin.Pair
+
+
         class ArrayList<T>
         {
             constructor( array: T[] )
@@ -28,5 +43,8 @@ declare module 'kotlin'
             contains_11rb$( element: T ): boolean
         }
         function toSet_us0mfu$<T>( array: T[] ): HashSet<T>
+
+        class HashMap<TKey, TValue> {}
+        function toMap_v2dak7$<TKey, TValue>( pairs: Pair<TKey, TValue>[] ): HashMap<TKey, TValue>
     }
 }

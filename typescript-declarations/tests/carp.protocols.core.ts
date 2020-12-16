@@ -12,18 +12,28 @@ import ProtocolVersion = dk.cachet.carp.protocols.domain.ProtocolVersion
 import StudyProtocolSnapshot = dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import createProtocolsSerializer = dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer_18xi4u$
 import ProtocolServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest
+import ProtocolFactoryServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceRequest
 
 const serializedSnapshot = `{"ownerId":"27879e75-ccc1-4866-9ab3-4ece1b735052","name":"Test protocol","description":"Test description","creationDate":"2020-12-05T21:55:59.454Z","masterDevices":[{"$type":"dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor","isMasterDevice":true,"roleName":"Stub master device","samplingConfiguration":{},"supportedDataTypes":["dk.cachet.carp.stub"]}],"connectedDevices":[{"$type":"dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor","roleName":"Stub device","samplingConfiguration":{},"supportedDataTypes":["dk.cachet.carp.stub"]},{"$type":"dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor","isMasterDevice":true,"roleName":"Chained master","samplingConfiguration":{},"supportedDataTypes":["dk.cachet.carp.stub"]},{"$type":"dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor","roleName":"Chained connected","samplingConfiguration":{},"supportedDataTypes":["dk.cachet.carp.stub"]}],"connections":[{"roleName":"Stub device","connectedToRoleName":"Stub master device"},{"roleName":"Chained master","connectedToRoleName":"Stub master device"},{"roleName":"Chained connected","connectedToRoleName":"Chained master"}],"tasks":[{"$type":"dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor","name":"Task","measures":[{"$type":"dk.cachet.carp.protocols.infrastructure.test.StubMeasure","type":"dk.cachet.carp.stub","uniqueProperty":"Unique"}]}],"triggers":{"0":{"$type":"dk.cachet.carp.protocols.infrastructure.test.StubTrigger","sourceDeviceRoleName":"Stub device","uniqueProperty":"Unique"}},"triggeredTasks":[{"triggerId":0,"taskName":"Task","targetDeviceRoleName":"Stub master device"}],"expectedParticipantData":[{"$type":"dk.cachet.carp.common.users.ParticipantAttribute.DefaultParticipantAttribute","inputType":"some.type"}]}`
 
 
 describe( "carp.protocols.core", () => {
     it( "verify module declarations", async () => {
+        // Create `StudyProtocolSnapshot` instance.
+        const json: Json = createProtocolsSerializer()
+        const serializer = StudyProtocolSnapshot.Companion.serializer()
+        const studyProtocolSnapshot = json.decodeFromString_awif5v$( serializer, serializedSnapshot )
+
         const instances = [
             new ProtocolId( UUID.Companion.randomUUID(), "Name" ),
             [ "Id$Companion", ProtocolId.Companion ],
+            studyProtocolSnapshot,
             StudyProtocolSnapshot.Companion,
+            new ProtocolVersion( "Version" ),
             ProtocolVersion.Companion,
             ProtocolServiceRequest.Companion,
+            ProtocolFactoryServiceRequest.Companion,
+            new ProtocolOwner(),
             ProtocolOwner.Companion
         ]
 
@@ -42,7 +52,11 @@ describe( "carp.protocols.core", () => {
 
     describe( "ProtocolServiceRequest", () => {
         it( "add request has default version tag", () => {
-            const addProtocol = new ProtocolServiceRequest.Add( serializedSnapshot )
+            const json: Json = createProtocolsSerializer()
+            const serializer = StudyProtocolSnapshot.Companion.serializer()
+            const snapshot = json.decodeFromString_awif5v$( serializer, serializedSnapshot )
+
+            const addProtocol = new ProtocolServiceRequest.Add( snapshot )
             const versionTag = (addProtocol as any).versionTag
             expect( versionTag ).equals( "Initial" )
         } )
