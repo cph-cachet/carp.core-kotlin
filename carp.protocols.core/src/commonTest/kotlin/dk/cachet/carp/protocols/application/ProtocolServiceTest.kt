@@ -154,8 +154,8 @@ interface ProtocolServiceTest
         modifyProtocol( protocol2 )
         service.addVersion( protocol2.getSnapshot(), "Version 2" )
 
-        val owner = protocol1.owner // Also owner of protocol2; `createEmptyProtocol` has a fixed owner.
-        val protocols = service.getAllFor( owner.id )
+        val ownerId = protocol1.ownerId // Also owner of protocol2; `createEmptyProtocol` has a fixed owner.
+        val protocols = service.getAllFor( ownerId )
         assertEquals( setOf( protocol1.getSnapshot(), protocol2.getSnapshot() ), protocols.toSet() )
     }
 

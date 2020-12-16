@@ -55,7 +55,7 @@ data class StudyProtocolSnapshot(
                 .associateBy { curTriggerId++ }
 
             return StudyProtocolSnapshot(
-                ownerId = protocol.owner.id,
+                ownerId = protocol.ownerId,
                 name = protocol.name,
                 description = protocol.description,
                 creationDate = protocol.creationDate,

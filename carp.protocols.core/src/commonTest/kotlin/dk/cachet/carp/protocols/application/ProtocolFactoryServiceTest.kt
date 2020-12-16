@@ -29,7 +29,7 @@ interface ProtocolFactoryServiceTest
         val protocolSnapshot = factory.createCustomProtocol( ownerId, name, customProtocol, description )
         val protocol = StudyProtocol.fromSnapshot( protocolSnapshot )
 
-        assertEquals( ownerId, protocol.owner.id )
+        assertEquals( ownerId, protocol.ownerId )
         assertEquals( name, protocol.name )
         assertEquals( description, protocol.description )
 

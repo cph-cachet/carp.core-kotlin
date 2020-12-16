@@ -423,7 +423,7 @@ class StudyProtocolTest
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
         val fromSnapshot = StudyProtocol.fromSnapshot( snapshot )
 
-        assertEquals( protocol.owner, fromSnapshot.owner )
+        assertEquals( protocol.ownerId, fromSnapshot.ownerId )
         assertEquals( protocol.name, fromSnapshot.name )
         assertEquals( protocol.description, fromSnapshot.description )
         assertEquals( protocol.creationDate, fromSnapshot.creationDate )
