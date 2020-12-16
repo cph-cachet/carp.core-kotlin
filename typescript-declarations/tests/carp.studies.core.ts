@@ -2,19 +2,24 @@ import { expect } from 'chai'
 import VerifyModule from './VerifyModule'
 
 import { kotlin } from 'kotlin'
+import Pair = kotlin.Pair
 import ArrayList = kotlin.collections.ArrayList
 import HashSet = kotlin.collections.HashSet
 import toSet = kotlin.collections.toSet_us0mfu$
+import toMap = kotlin.collections.toMap_v2dak7$
 import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
 import Json = kotlinx.serialization.json.Json
 import { kotlinx as kotlinxcore } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
 import ListSerializer = kotlinxcore.serialization.builtins.ListSerializer_swdriu$
 import { dk as cdk } from 'carp.core-kotlin-carp.common'
 import DateTime = cdk.cachet.carp.common.DateTime
+import NamespacedId = cdk.cachet.carp.common.NamespacedId
 import UUID = cdk.cachet.carp.common.UUID
 import UsernameIdentity = cdk.cachet.carp.common.users.UsernameAccountIdentity
+import ParticipantAttribute = cdk.cachet.carp.common.users.ParticipantAttribute
+import CarpInputDataTypes = cdk.cachet.carp.common.data.input.CarpInputDataTypes
+import Text = cdk.cachet.carp.common.data.input.element.Text
 import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
-import Participation = ddk.cachet.carp.deployment.domain.users.Participation
 import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
 import StudyDeploymentStatus = ddk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import { dk } from 'carp.core-kotlin-carp.studies.core'
@@ -43,7 +48,7 @@ describe( "carp.studies.core", () => {
             Participant.Companion,
             new StudyOwner(),
             StudyOwner.Companion,
-            new ParticipantGroupStatus( new StudyDeploymentStatus(), new HashSet<DeanonymizedParticipant>() ),
+            new ParticipantGroupStatus( new StudyDeploymentStatus(), new HashSet<DeanonymizedParticipant>(), toMap( [] ) ),
             ParticipantGroupStatus.Companion,
             new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", DateTime.Companion.now(), "Description", StudyInvitation.Companion.empty(), null ),
             StudyDetails.Companion,
@@ -142,6 +147,23 @@ describe( "carp.studies.core", () => {
             const json: Json = createStudiesSerializer()
             const serializer = ParticipantServiceRequest.Companion.serializer()
             const serialized = json.encodeToString_tf03ej$( serializer, deployGroup )
+            expect( serialized ).is.not.undefined
+        } )
+
+        it( "can serialize ParticipantGroupStatus", () => {
+            const deploymentStatus = new StudyDeploymentStatus.DeploymentReady( UUID.Companion.randomUUID(), new ArrayList( [] ), DateTime.Companion.now() )
+            const participants = toSet( [ new DeanonymizedParticipant( UUID.Companion.randomUUID(), UUID.Companion.randomUUID() ) ] )
+
+            // Initialize data through a participant attribute. TypeScript does not have to initialize data objects directly.
+            const attribute = new ParticipantAttribute.CustomParticipantAttribute( new Text( "Name" ) )
+            const inputData = attribute.inputToData_jon1ci$( CarpInputDataTypes, "Steven" )
+            const data = toMap( [ new Pair( new NamespacedId( "namespace", "type" ), inputData ) ] )
+
+            const group = new ParticipantGroupStatus( deploymentStatus, participants, data )
+
+            const json: Json = createStudiesSerializer()
+            const serializer = ParticipantGroupStatus.Companion.serializer()
+            const serialized = json.encodeToString_tf03ej$( serializer, group )
             expect( serialized ).is.not.undefined
         } )
     } )
