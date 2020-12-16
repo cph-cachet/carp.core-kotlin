@@ -25,21 +25,25 @@ import kotlinx.serialization.Serializable
  * the optional devices ([AnyDeviceDescriptor]) connected to them, and the [Trigger]'s which lead to data collection on said devices.
  */
 @Suppress( "TooManyFunctions" ) // TODO: some of the device and task configuration methods are overridden solely to add events. Can this be refactored?
-class StudyProtocol(
-    /**
-     * The person or group that created this [StudyProtocol].
-     */
-    val owner: ProtocolOwner,
-    /**
-     * A unique descriptive name for the protocol assigned by the [ProtocolOwner].
-     */
-    val name: String,
-    /**
-     * An optional description for the study protocol.
-     */
-    val description: String = ""
-) : StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration(), EmptyParticipantDataConfiguration() )
+class StudyProtocol private constructor( val ownerId: UUID, val name: String, val description: String ) :
+    StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration(), EmptyParticipantDataConfiguration() )
 {
+    constructor(
+        /**
+         * The person or group that created this [StudyProtocol].
+         */
+        owner: ProtocolOwner,
+        /**
+         * A unique descriptive name for the protocol assigned by the [ProtocolOwner].
+         */
+        name: String,
+        /**
+         * An optional description for the study protocol.
+         */
+        description: String = ""
+    ) : this( owner.id, name, description )
+
+
     sealed class Event : DomainEvent()
     {
         data class MasterDeviceAdded( val device: AnyMasterDeviceDescriptor ) : Event()
@@ -58,8 +62,7 @@ class StudyProtocol(
     {
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
-            val owner = ProtocolOwner( snapshot.ownerId )
-            val protocol = StudyProtocol( owner, snapshot.name, snapshot.description )
+            val protocol = StudyProtocol( snapshot.ownerId, snapshot.name, snapshot.description )
             protocol.creationDate = snapshot.creationDate
 
             // Add master devices.
@@ -105,9 +108,9 @@ class StudyProtocol(
     data class Id( val ownerId: UUID, val name: String )
 
     /**
-     * A study protocol is uniquely identified by the [owner] ID and it's [name].
+     * A study protocol is uniquely identified by the [ownerId] and it's [name].
      */
-    val id: Id = Id( owner.id, name )
+    val id: Id = Id( ownerId, name )
 
 
     /**
