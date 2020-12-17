@@ -316,13 +316,14 @@ class StudyRuntimeTest
 
         // Create a listener which does not support measuring on the connected device.
         val localDataCollector = StubDeviceDataCollector( emptySet() )
-        val factory = object : DeviceDataCollectorFactory( localDataCollector )
-        {
-            override fun createConnectedDataCollector(
-                deviceType: DeviceType,
-                deviceRegistration: DeviceRegistration
-            ): AnyConnectedDeviceDataCollector = throw UnsupportedOperationException( "Unsupported device type." )
-        }
+        val factory =
+            object : DeviceDataCollectorFactory( localDataCollector )
+            {
+                override fun createConnectedDataCollector(
+                    deviceType: DeviceType,
+                    deviceRegistration: DeviceRegistration
+                ): AnyConnectedDeviceDataCollector = throw UnsupportedOperationException( "Unsupported device type." )
+            }
         val dataListener = DataListener( factory )
 
         // Even though there are no measures for the connected device in the protocol, it should still verify support.
@@ -380,5 +381,6 @@ class StudyRuntimeTest
         assertEquals( runtime.isDeployed, fromSnapshot.isDeployed )
         assertEquals( runtime.isStopped, fromSnapshot.isStopped )
         assertEquals( runtime.getStatus(), fromSnapshot.getStatus() )
+        assertEquals( 0, fromSnapshot.consumeEvents().size )
     }
 }

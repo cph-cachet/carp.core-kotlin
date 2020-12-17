@@ -2,6 +2,8 @@ package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.input.InputDataType
+import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
@@ -74,7 +76,7 @@ class StudyProtocolSnapshotTest
     }
 
     @Test
-    fun order_of_tasks_and_devices_in_snapshot_does_not_matter_for_equality_or_hashcode()
+    fun order_of_tasks_devices_and_expected_participant_data_in_snapshot_does_not_matter_for_equality_or_hashcode()
     {
         val masterDevices = listOf<AnyMasterDeviceDescriptor>( StubMasterDeviceDescriptor( "M1" ), StubMasterDeviceDescriptor( "M2" ) )
         val connectedDevices = listOf<AnyDeviceDescriptor>( StubDeviceDescriptor( "C1" ), StubDeviceDescriptor( "C2" ) )
@@ -89,6 +91,10 @@ class StudyProtocolSnapshotTest
             StudyProtocolSnapshot.TriggeredTask( 0, "T1", "C1" ),
             StudyProtocolSnapshot.TriggeredTask( 1, "T2", "C2" )
         )
+        val expectedParticipantData = listOf(
+            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) ),
+            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "othertype" ) ),
+        )
 
         val ownerId = UUID( "ef26be3f-2de8-4779-a608-bb6e027e4b75" )
         val creationDate = DateTime.now()
@@ -96,12 +102,12 @@ class StudyProtocolSnapshotTest
             ownerId, "Study", "Description",
             creationDate,
             masterDevices, connectedDevices, connections,
-            tasks, triggers, triggeredTasks )
+            tasks, triggers, triggeredTasks, expectedParticipantData )
         val reorganizedSnapshot = StudyProtocolSnapshot(
             ownerId, "Study", "Description",
             creationDate,
             masterDevices.reversed(), connectedDevices.reversed(), connections.reversed(),
-            tasks.reversed(), triggers, triggeredTasks.reversed() )
+            tasks.reversed(), triggers, triggeredTasks.reversed(), expectedParticipantData.reversed() )
 
         assertEquals( snapshot, reorganizedSnapshot )
         assertEquals( snapshot.hashCode(), reorganizedSnapshot.hashCode() )

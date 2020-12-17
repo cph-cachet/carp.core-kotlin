@@ -1,6 +1,8 @@
 package dk.cachet.carp.protocols.infrastructure.test
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.input.InputDataType
+import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
@@ -66,12 +68,12 @@ val STUBS_SERIAL_MODULE = SerializersModule {
  * Creates a study protocol using the default initialization (no devices, tasks, or triggers),
  * and initializes the infrastructure serializer to be aware about polymorph stub testing classes.
  */
-fun createEmptyProtocol(): StudyProtocol
+fun createEmptyProtocol( name: String = "Test protocol" ): StudyProtocol
 {
     JSON = createProtocolsSerializer( STUBS_SERIAL_MODULE )
 
     val alwaysSameOwner = ProtocolOwner( UUID( "27879e75-ccc1-4866-9ab3-4ece1b735052" ) )
-    return StudyProtocol( alwaysSameOwner, "Test protocol", "Test description" )
+    return StudyProtocol( alwaysSameOwner, name, "Test description" )
 }
 
 /**
@@ -113,6 +115,7 @@ fun createComplexProtocol(): StudyProtocol
     val trigger = StubTrigger( connectedDevice )
     val measures = listOf( StubMeasure() )
     val task = StubTaskDescriptor( "Task", measures )
+    val expectedParticipantData = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
     with ( protocol )
     {
         addMasterDevice( masterDevice )
@@ -120,6 +123,7 @@ fun createComplexProtocol(): StudyProtocol
         addConnectedDevice( chainedMasterDevice, masterDevice )
         addConnectedDevice( chainedConnectedDevice, chainedMasterDevice )
         addTriggeredTask( trigger, task, masterDevice )
+        addExpectedParticipantData( expectedParticipantData )
     }
 
     return protocol

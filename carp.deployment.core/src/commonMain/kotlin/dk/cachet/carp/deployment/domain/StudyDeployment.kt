@@ -9,7 +9,6 @@ import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
 import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
@@ -19,13 +18,12 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
 
 /**
- * A single instantiation of a [StudyProtocol], taking care of common concerns when 'running' a study.
+ * A single instantiation of a [StudyProtocol], taking care of common concerns related to devices when 'running' a study.
  *
  * I.e., a [StudyDeployment] is responsible for registering the physical devices described in the [StudyProtocol],
- * enabling a connection between them, tracking device connection issues, assessing data quality,
- * and registering participant consent.
+ * enabling a connection between them, tracking device connection issues, and assessing data quality.
  */
-@Suppress( "TooManyFunctions" ) // TODO: Can this be decomposed a bit?
+@Suppress( "TooManyFunctions" ) // TODO: Can this be decomposed a bit? Participation management will be moved to `ParticipantGroup`.
 class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() ) :
     AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>()
 {
@@ -104,9 +102,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         {
             StudyProtocol.fromSnapshot( protocolSnapshot )
         }
-        catch ( e: InvalidConfigurationError )
+        catch ( e: IllegalArgumentException )
         {
-            throw IllegalArgumentException( "Invalid protocol snapshot passed." )
+            throw IllegalArgumentException( "Invalid protocol snapshot passed.", e )
         }
 
     /**
@@ -319,11 +317,12 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val dependentMasterDevices = getDependentDevices( device )
             .filterIsInstance<AnyMasterDeviceDescriptor>()
         dependentMasterDevices.forEach {
-            if ( _deployedDevices.remove( it ) )
-            {
-                _invalidatedDeployedDevices.add( it )
-                event( Event.DeploymentInvalidated( it ) )
-            }
+            _deployedDevices
+                .remove( it )
+                .eventIf( true ) {
+                    _invalidatedDeployedDevices.add( it )
+                    Event.DeploymentInvalidated( it )
+                }
         }
     }
 
@@ -402,10 +401,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             it is DeviceDeploymentStatus.NotDeployed && it.isReadyForDeployment }
         check( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
-        if ( _deployedDevices.add( device ) )
-        {
-            event( Event.DeviceDeployed( device ) )
-        }
+        _deployedDevices
+            .add( device )
+            .eventIf( true ) { Event.DeviceDeployed( device ) }
 
         // Set start time first time deployment is ready (last device deployed).
         if ( startTime == null && getStatus() is StudyDeploymentStatus.DeploymentReady )

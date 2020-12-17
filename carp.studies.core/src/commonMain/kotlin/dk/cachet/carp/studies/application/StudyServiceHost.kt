@@ -2,7 +2,6 @@ package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
-import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.StudyDetails
@@ -126,9 +125,10 @@ class StudyServiceHost( private val repository: StudyRepository ) : StudyService
     /**
      * Specify the study [protocol] to use for the study with the specified [studyId].
      *
-     * @throws IllegalArgumentException when a study with [studyId] does not exist,
-     * when the provided [protocol] snapshot is invalid,
-     * or when the protocol contains errors preventing it from being used in deployments.
+     * @throws IllegalArgumentException when:
+     *   - a study with [studyId] does not exist
+     *   - the provided [protocol] snapshot is invalid
+     *   - the [protocol] contains errors preventing it from being used in deployments
      * @throws IllegalStateException when the study protocol can no longer be set since the study went 'live'.
      */
     override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
@@ -137,9 +137,7 @@ class StudyServiceHost( private val repository: StudyRepository ) : StudyService
         requireNotNull( study )
 
         // Configure study to use the protocol.
-        try { study.protocolSnapshot = protocol }
-        catch ( e: InvalidConfigurationError ) { throw IllegalArgumentException( e.message ) }
-
+        study.protocolSnapshot = protocol
         repository.update( study )
 
         return study.getStatus()

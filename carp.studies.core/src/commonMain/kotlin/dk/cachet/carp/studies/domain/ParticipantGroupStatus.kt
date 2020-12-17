@@ -1,6 +1,8 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.Data
+import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
@@ -20,7 +22,12 @@ data class ParticipantGroupStatus(
     /**
      * The participants and assigned anonymized participation IDs that are part of this deployment.
      */
-    val participants: Set<DeanonymizedParticipation>
+    val participants: Set<DeanonymizedParticipation>,
+    /**
+     * Configurable data related to the participants in this participant group.
+     * Data which is not set equals null.
+     */
+    val data: Map<InputDataType, Data?>
 )
 {
     /**

@@ -13,7 +13,7 @@ class ProtocolVersionTest
     @Test
     fun can_serialize_and_deserialize_protocol_version_using_JSON()
     {
-        val version = ProtocolVersion( DateTime.now(), "Test" )
+        val version = ProtocolVersion( "Test", DateTime.now() )
 
         val serialized: String = version.toJson()
         val parsed: ProtocolVersion = ProtocolVersion.fromJson( serialized )

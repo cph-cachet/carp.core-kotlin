@@ -10,7 +10,9 @@ import dk.cachet.carp.protocols.domain.tasks.TaskConfiguration
  */
 abstract class StudyProtocolComposition internal constructor(
     protected val deviceConfiguration: DeviceConfiguration,
-    protected val taskConfiguration: TaskConfiguration
+    protected val taskConfiguration: TaskConfiguration,
+    protected val participantDataConfiguration: ParticipantDataConfiguration
 ) : DeviceConfiguration by deviceConfiguration,
     TaskConfiguration by taskConfiguration,
+    ParticipantDataConfiguration by participantDataConfiguration,
     AggregateRoot<StudyProtocol, StudyProtocolSnapshot, StudyProtocol.Event>()

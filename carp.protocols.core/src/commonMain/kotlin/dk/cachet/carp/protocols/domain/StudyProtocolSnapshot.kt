@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.domain
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.Snapshot
+import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
@@ -28,7 +29,8 @@ data class StudyProtocolSnapshot(
     val connections: List<DeviceConnection>,
     val tasks: List<@Serializable( TaskDescriptorSerializer::class ) TaskDescriptor>,
     val triggers: Map<Int, @Serializable( TriggerSerializer::class ) Trigger>,
-    val triggeredTasks: List<TriggeredTask>
+    val triggeredTasks: List<TriggeredTask>,
+    val expectedParticipantData: List<ParticipantAttribute>
 ) : Snapshot<StudyProtocol>
 {
     @Serializable
@@ -53,7 +55,7 @@ data class StudyProtocolSnapshot(
                 .associateBy { curTriggerId++ }
 
             return StudyProtocolSnapshot(
-                ownerId = protocol.owner.id,
+                ownerId = protocol.ownerId,
                 name = protocol.name,
                 description = protocol.description,
                 creationDate = protocol.creationDate,
@@ -61,12 +63,13 @@ data class StudyProtocolSnapshot(
                 connectedDevices = protocol.devices.minus( protocol.masterDevices ).toList(),
                 connections = protocol.masterDevices.flatMap { getConnections( protocol, it ) }.toList(),
                 tasks = protocol.tasks.toList(),
-                triggers = triggers,
+                triggers = triggers.toMap(),
                 triggeredTasks = triggers
                     .flatMap { trigger -> protocol.getTriggeredTasks( trigger.value ).map { trigger to it } }
                     .map { (trigger, taskInfo) ->
                         TriggeredTask( trigger.key, taskInfo.task.name, taskInfo.targetDevice.roleName ) }
-                    .toList()
+                    .toList(),
+                expectedParticipantData = protocol.expectedParticipantData.toList()
             )
         }
 
@@ -103,7 +106,8 @@ data class StudyProtocolSnapshot(
             connections to other.connections,
             tasks to other.tasks,
             triggers.toList() to other.triggers.toList(),
-            triggeredTasks to other.triggeredTasks
+            triggeredTasks to other.triggeredTasks,
+            expectedParticipantData.toList() to other.expectedParticipantData.toList()
         )
         val allListsMatch = listsToCompare.all { listEquals( it.first, it.second ) }
         if ( !allListsMatch ) return false
@@ -129,6 +133,7 @@ data class StudyProtocolSnapshot(
         result = 31 * result + tasks.sortedWith( compareBy { it.name } ).toTypedArray().contentDeepHashCode()
         result = 31 * result + triggers.entries.sortedWith( compareBy { it.key } ).toTypedArray().contentDeepHashCode()
         result = 31 * result + triggeredTasks.sortedWith( compareBy( { it.triggerId }, { it.taskName }, { it.targetDeviceRoleName } ) ).toTypedArray().contentDeepHashCode()
+        result = 31 * result + expectedParticipantData.sortedWith( compareBy { it.inputType.toString() } ).toTypedArray().contentDeepHashCode()
 
         return result
     }

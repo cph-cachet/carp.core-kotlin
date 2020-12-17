@@ -72,3 +72,9 @@ verify-implementation:
       'dk.cachet.carp.common.DateTime',
       'Json'
     ]
+
+carp:
+  CurlyBracesOnSeparateLine:
+    active: true
+  SpacingInParentheses:
+    active: true

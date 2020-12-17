@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.domain.tasks
 
-import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
 import kotlin.test.*
 
@@ -69,7 +68,7 @@ interface TaskConfigurationTest
         configuration.addTask( StubTaskDescriptor( "Duplicate name" ) )
 
         // Adding an additional task with duplicate name should fail.
-        assertFailsWith<InvalidConfigurationError>
+        assertFailsWith<IllegalArgumentException>
         {
             configuration.addTask( StubTaskDescriptor( "Duplicate name" ) )
         }

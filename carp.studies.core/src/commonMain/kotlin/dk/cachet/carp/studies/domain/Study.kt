@@ -5,7 +5,6 @@ import dk.cachet.carp.common.ddd.AggregateRoot
 import dk.cachet.carp.common.ddd.DomainEvent
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
-import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
@@ -58,6 +57,9 @@ class Study(
             {
                 study._participations[ p.key ] = p.value.toMutableSet()
             }
+
+            // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
+            study.consumeEvents()
 
             return study
         }
@@ -121,8 +123,9 @@ class Study(
          * Passing 'null' removes the assigned protocol.
          *
          * @throws IllegalStateException when the study protocol can no longer be set since the study went 'live'.
-         * @throws InvalidConfigurationError when an invalid protocol snapshot is specified.
-         * @throws IllegalArgumentException when a protocol is specified which cannot be deployed (contains deployment errors).
+         * @throws IllegalArgumentException when:
+         *   - an invalid protocol snapshot is specified
+         *   - a protocol is specified which cannot be deployed (contains deployment errors)
          */
         set( value )
         {
@@ -185,11 +188,10 @@ class Study(
     {
         check( canDeployToParticipants ) { "The study is not yet ready for deployment." }
 
-        val participations = _participations.getOrPut( studyDeploymentId ) { mutableSetOf() }
-        if ( participations.add( participation ) )
-        {
-            event( Event.ParticipationAdded( studyDeploymentId, participation ) )
-        }
+        _participations
+            .getOrPut( studyDeploymentId ) { mutableSetOf() }
+            .add( participation )
+            .eventIf( true ) { Event.ParticipationAdded( studyDeploymentId, participation ) }
     }
 
     /**

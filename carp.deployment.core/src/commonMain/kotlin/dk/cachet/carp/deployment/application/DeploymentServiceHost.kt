@@ -7,7 +7,6 @@ import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.RegistrableDevice
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.protocols.domain.InvalidConfigurationError
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
@@ -24,7 +23,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository ) : De
     /**
      * Instantiate a study deployment for a given [StudyProtocolSnapshot].
      *
-     * @throws InvalidConfigurationError when [protocol] is invalid.
+     * @throws IllegalArgumentException when [protocol] is invalid.
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
     override suspend fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus
@@ -55,14 +54,10 @@ class DeploymentServiceHost( private val repository: DeploymentRepository ) : De
      *
      * @throws IllegalArgumentException when [studyDeploymentIds] contains an ID for which no deployment exists.
      */
-    override suspend fun getStudyDeploymentStatusList( studyDeploymentIds: Set<UUID> ): List<StudyDeploymentStatus>
-    {
-        val deployments = repository.getStudyDeploymentsBy( studyDeploymentIds )
-        require( deployments.count() == studyDeploymentIds.count() )
-            { "No deployment exists for one of the specified studyDeploymentIds." }
-
-        return deployments.map{ it.getStatus() }
-    }
+    override suspend fun getStudyDeploymentStatusList( studyDeploymentIds: Set<UUID> ): List<StudyDeploymentStatus> =
+        repository
+            .getStudyDeploymentsOrThrowBy( studyDeploymentIds )
+            .map { it.getStatus() }
 
     /**
      * Register the device with the specified [deviceRoleName] for the study deployment with [studyDeploymentId].

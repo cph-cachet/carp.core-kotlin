@@ -1,7 +1,5 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.protocols.domain.InvalidConfigurationError
-
 
 /**
  * Defines how a set of devices ([DeviceDescriptor]) are configured to work together.
@@ -23,29 +21,30 @@ interface DeviceConfiguration
     /**
      * Add a master device which is responsible for aggregating and synchronizing incoming data.
      *
-     * Throws an [InvalidConfigurationError] in case a device with the specified role name already exists.
-     *
+     * @throws IllegalArgumentException in case a device with the specified role name already exists.
      * @param masterDevice A description of the master device to add. Its role name should be unique in the protocol.
-     * @return True if the device has been added; false if the specified [MasterDeviceDescriptor] is already set as a master device.
+     * @return True if the [masterDevice] has been added; false if it is already set as a master device.
      */
     fun addMasterDevice( masterDevice: AnyMasterDeviceDescriptor ): Boolean
 
     /**
-     * Add a device which is connected to a master device within this configuration.
+     * Add a device which is connected to a [masterDevice] within this configuration.
      *
-     * Throws an [InvalidConfigurationError] in case a device with the specified role name already exists.
-     *
+     * @throws IllegalArgumentException when:
+     *   - a device with the specified role name already exists
+     *   - [masterDevice] is not part of the device configuration
      * @param device The device to be connected to a master device. Its role name should be unique in the protocol.
-     * @param masterDevice The master device to connect to.
-     * @return True if the device has been added; false if the specified [DeviceDescriptor] is already connected to the specified [MasterDeviceDescriptor].
+     * @return True if the [device] has been added; false if it is already connected to the specified [masterDevice].
      */
     fun addConnectedDevice( device: AnyDeviceDescriptor, masterDevice: AnyMasterDeviceDescriptor ): Boolean
 
     /**
-     * Gets all the devices configured to be connected to the specified [MasterDeviceDescriptor].
+     * Gets all the devices configured to be connected to the specified [masterDevice].
      *
-     * @param masterDevice The master device for which to return the connected devices.
-     * @param includeChainedDevices Include all underlying devices, i.e., including devices connected through chained master devices.
+     * @throws IllegalArgumentException when [masterDevice] is not part of the device configuration.
+     * @param includeChainedDevices
+     *   Include all underlying devices, i.e., including devices connected through chained master devices.
      */
-    fun getConnectedDevices( masterDevice: AnyMasterDeviceDescriptor, includeChainedDevices: Boolean = false ): Iterable<AnyDeviceDescriptor>
+    fun getConnectedDevices( masterDevice: AnyMasterDeviceDescriptor, includeChainedDevices: Boolean = false ):
+        Iterable<AnyDeviceDescriptor>
 }

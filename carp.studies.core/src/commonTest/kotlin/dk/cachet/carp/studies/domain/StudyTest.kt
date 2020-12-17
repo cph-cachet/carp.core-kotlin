@@ -32,6 +32,7 @@ class StudyTest
         assertEquals( study.protocolSnapshot, fromSnapshot.protocolSnapshot )
         assertEquals( study.isLive, fromSnapshot.isLive )
         assertEquals( study.participations, fromSnapshot.participations )
+        assertEquals( 0, fromSnapshot.consumeEvents().size )
     }
 
     @Test

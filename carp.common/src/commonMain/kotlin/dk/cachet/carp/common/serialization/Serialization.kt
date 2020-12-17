@@ -1,17 +1,11 @@
+@file:Suppress( "WildcardImport" )
+
 package dk.cachet.carp.common.serialization
 
-import dk.cachet.carp.common.data.Acceleration
-import dk.cachet.carp.common.data.Data
-import dk.cachet.carp.common.data.ECG
-import dk.cachet.carp.common.data.FreeFormText
-import dk.cachet.carp.common.data.Geolocation
-import dk.cachet.carp.common.data.HeartRate
-import dk.cachet.carp.common.data.RRInterval
-import dk.cachet.carp.common.data.SensorSkinContact
-import dk.cachet.carp.common.data.StepCount
-import dk.cachet.carp.common.users.AccountIdentity
-import dk.cachet.carp.common.users.EmailAccountIdentity
-import dk.cachet.carp.common.users.UsernameAccountIdentity
+import dk.cachet.carp.common.data.*
+import dk.cachet.carp.common.data.input.*
+import dk.cachet.carp.common.data.input.element.*
+import dk.cachet.carp.common.users.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.modules.polymorphic
@@ -31,6 +25,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 
     polymorphic( Data::class )
     {
+        // DataType classes.
         subclass( Acceleration::class )
         subclass( ECG::class )
         subclass( FreeFormText::class )
@@ -42,6 +37,19 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( RRInterval::class, RRInterval.serializer() )
         subclass( SensorSkinContact::class )
         subclass( StepCount::class )
+
+        // InputDataType classes.
+        subclass(
+            CustomInput::class,
+            CustomInputSerializer( String::class, Int::class )
+        )
+        subclass( Sex::class, PolymorphicEnumSerializer( Sex.serializer() ) )
+    }
+
+    polymorphic( InputElement::class )
+    {
+        subclass( SelectOne::class )
+        subclass( Text::class )
     }
 }
 

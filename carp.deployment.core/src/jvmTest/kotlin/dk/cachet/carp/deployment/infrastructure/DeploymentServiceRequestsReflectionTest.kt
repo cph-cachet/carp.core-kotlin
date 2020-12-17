@@ -2,7 +2,6 @@ package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.deployment.application.DeploymentService
-import dk.cachet.carp.protocols.application.ProtocolService
 import kotlin.test.*
 
 
@@ -18,7 +17,7 @@ class DeploymentServiceRequestsReflectionTest
         val serviceFunctions = DeploymentService::class.members
             .filterNot { it.name == "equals" || it.name == "hashCode" || it.name == "toString" }
         val testedRequests = DeploymentServiceRequestsTest.requests.map {
-            val serviceInvoker = it as ServiceInvoker<ProtocolService, *>
+            val serviceInvoker = it as ServiceInvoker<DeploymentService, *>
             serviceInvoker.function
         }
 

@@ -3,17 +3,19 @@ declare module 'carp.core-kotlin-carp.studies.core'
     import { kotlin } from 'kotlin'
     import ArrayList = kotlin.collections.ArrayList
     import HashSet = kotlin.collections.HashSet
+    import HashMap = kotlin.collections.HashMap
     import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
     import Json = kotlinx.serialization.json.Json
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import DateTime = cdk.cachet.carp.common.DateTime
     import EmailAddress = cdk.cachet.carp.common.EmailAddress
+    import NamespacedId = cdk.cachet.carp.common.NamespacedId
     import UUID = cdk.cachet.carp.common.UUID
     import AccountIdentity = cdk.cachet.carp.common.users.AccountIdentity
     import { dk as pdk } from 'carp.core-kotlin-carp.protocols.core'
     import StudyProtocolSnapshot = pdk.cachet.carp.protocols.domain.StudyProtocolSnapshot
     import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
-    import Participation = ddk.cachet.carp.deployment.domain.users.Participation
+
     import StudyDeploymentStatus = ddk.cachet.carp.deployment.domain.StudyDeploymentStatus
     import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
 
@@ -26,12 +28,13 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
         class ParticipantGroupStatus
         {
-            constructor( studyDeploymentStatus: StudyDeploymentStatus, participants: HashSet<DeanonymizedParticipation> )
+            constructor( studyDeploymentStatus: StudyDeploymentStatus, participants: HashSet<DeanonymizedParticipation>, data: HashMap<NamespacedId, any> )
 
             static get Companion(): ParticipantGroupStatus$Companion
 
             readonly studyDeploymentStatus: StudyDeploymentStatus
             readonly participants: HashSet<DeanonymizedParticipation>
+            readonly data: any
         }
         interface ParticipantGroupStatus$Companion { serializer(): any }
 
@@ -169,7 +172,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
         {
             class CreateStudy extends StudyServiceRequest
             {
-                constructor( owner: StudyOwner, name: string, description: string, invitation: StudyInvitation )
+                constructor( owner: StudyOwner, name: string, description?: string, invitation?: StudyInvitation )
             }
             class SetInternalDescription extends StudyServiceRequest
             {
@@ -214,21 +217,29 @@ declare module 'carp.core-kotlin-carp.studies.core'
             {
                 constructor( studyId: UUID, email: EmailAddress )
             }
+            class GetParticipant extends ParticipantServiceRequest
+            {
+                constructor( studyId: UUID, participantId: UUID )
+            }
             class GetParticipants extends ParticipantServiceRequest
             {
                 constructor( studyId: UUID )
             }
-            class DeployParticipantGroup extends StudyServiceRequest
+            class DeployParticipantGroup extends ParticipantServiceRequest
             {
                 constructor( studyId: UUID, group: HashSet<AssignParticipantDevices> )
             }
-            class GetParticipantGroupStatusList extends StudyServiceRequest
+            class GetParticipantGroupStatusList extends ParticipantServiceRequest
             {
                 constructor( studyId: UUID )
             }
-            class StopParticipantGroup extends StudyServiceRequest
+            class StopParticipantGroup extends ParticipantServiceRequest
             {
                 constructor( studyId: UUID, groupId: UUID )
+            }
+            class SetParticipantGroupData extends ParticipantServiceRequest
+            {
+                constructor( studyId: UUID, groupId: UUID, inputDataType: NamespacedId, data?: any )
             }
         }
 

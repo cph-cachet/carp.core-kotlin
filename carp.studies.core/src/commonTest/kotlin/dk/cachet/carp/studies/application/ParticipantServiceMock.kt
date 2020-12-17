@@ -2,6 +2,8 @@ package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.data.Data
+import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.studies.domain.ParticipantGroupStatus
@@ -20,14 +22,16 @@ class ParticipantServiceMock(
     private val getParticipantsResult: List<Participant> = emptyList(),
     private val deployParticipantResult: ParticipantGroupStatus = groupStatus,
     private val getParticipantGroupStatusListResult: List<ParticipantGroupStatus> = emptyList(),
-    private val stopParticipantGroupResult: ParticipantGroupStatus = groupStatus
+    private val stopParticipantGroupResult: ParticipantGroupStatus = groupStatus,
+    private val setParticipantGroupDataResult: ParticipantGroupStatus = groupStatus
 ) : Mock<ParticipantService>(), ParticipantService
 {
     companion object
     {
         private val groupStatus = ParticipantGroupStatus(
             StudyDeploymentStatus.Invited( UUID.randomUUID(), emptyList(), null ),
-            emptySet() )
+            emptySet(),
+            emptyMap() )
     }
 
 
@@ -54,4 +58,8 @@ class ParticipantServiceMock(
     override suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ) =
         stopParticipantGroupResult
         .also { trackSuspendCall( ParticipantService::stopParticipantGroup, studyId, groupId ) }
+
+    override suspend fun setParticipantGroupData( studyId: UUID, groupId: UUID, inputDataType: InputDataType, data: Data? ) =
+        setParticipantGroupDataResult
+        .also { trackSuspendCall( ParticipantService::setParticipantGroupData, studyId, groupId, inputDataType, data ) }
 }
