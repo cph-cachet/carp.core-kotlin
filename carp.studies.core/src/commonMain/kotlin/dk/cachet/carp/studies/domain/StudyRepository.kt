@@ -32,4 +32,11 @@ interface StudyRepository
      * @throws IllegalArgumentException when no previous version of this study is stored in the repository.
      */
     suspend fun update( study: Study )
+
+    /**
+     * Remove the [Study] with the specified [studyId] from the repository.
+     *
+     * @return True when the study was removed; false when the study is not present in the repository.
+     */
+    suspend fun remove( studyId: UUID ): Boolean
 }

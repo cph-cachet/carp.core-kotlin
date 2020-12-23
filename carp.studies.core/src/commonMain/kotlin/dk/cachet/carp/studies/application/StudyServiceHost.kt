@@ -159,4 +159,12 @@ class StudyServiceHost( private val repository: StudyRepository ) : StudyService
 
         return study.getStatus()
     }
+
+    /**
+     * Remove the study with the specified [studyId].
+     *
+     * @return True when the study has been deleted, or false when there is no study to delete.
+     */
+    override suspend fun remove( studyId: UUID ): Boolean =
+        repository.remove( studyId )
 }

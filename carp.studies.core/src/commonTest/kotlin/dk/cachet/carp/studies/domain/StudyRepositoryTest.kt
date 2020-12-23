@@ -85,4 +85,26 @@ interface StudyRepositoryTest
         val study = Study( StudyOwner(), "Test" )
         assertFailsWith<IllegalArgumentException> { repo.update( study ) }
     }
+
+    @Test
+    fun remove_succeeds() = runSuspendTest {
+        val repo = createRepository()
+        val study = Study( StudyOwner(), "Test" )
+        repo.add( study )
+
+        val isRemoved = repo.remove( study.id )
+        assertTrue( isRemoved )
+        assertNull( repo.getById( study.id ) )
+    }
+
+    @Test
+    fun remove_returns_false_when_study_not_present() = runSuspendTest {
+        val repo = createRepository()
+        val study = Study( StudyOwner(), "Test")
+        repo.add( study )
+        repo.remove( study.id )
+
+        val isRemoved = repo.remove( study.id )
+        assertFalse( isRemoved )
+    }
 }

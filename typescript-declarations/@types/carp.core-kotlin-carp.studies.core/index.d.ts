@@ -202,6 +202,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
             {
                 constructor( studyId: UUID )
             }
+            class Remove extends StudyServiceRequest
+            {
+                constructor( studyId: UUID )
+            }
         }
 
 
