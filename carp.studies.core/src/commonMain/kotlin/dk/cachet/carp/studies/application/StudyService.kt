@@ -89,4 +89,11 @@ interface StudyService
      * @throws IllegalStateException when no study protocol for the given study is set yet.
      */
     suspend fun goLive( studyId: UUID ): StudyStatus
+
+    /**
+     * Remove the study with the specified [studyId].
+     *
+     * @return True when the study has been deleted, or false when there is no study to delete.
+     */
+    suspend fun remove( studyId: UUID ): Boolean
 }
