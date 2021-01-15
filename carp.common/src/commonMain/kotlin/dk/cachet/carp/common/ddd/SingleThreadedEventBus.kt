@@ -8,18 +8,18 @@ import kotlin.reflect.KClass
  */
 class SingleThreadedEventBus : EventBus
 {
-    private val eventHandlers: MutableMap<KClass<*>, MutableList<(IntegrationEvent) -> Unit>> = mutableMapOf()
+    private class Handler( val eventType: KClass<*>, val handler: (IntegrationEvent) -> Unit )
+
+
+    private val eventHandlers: MutableList<Handler> = mutableListOf()
 
     /**
      * Publish the specified [event] and instantly deliver it to all subscribers on the same thread as it is published on.
      */
     override suspend fun publish( event: IntegrationEvent )
     {
-        // Get handlers for this event type.
-        val eventType = event::class
-        val handlers = eventHandlers[ eventType ]
-
-        handlers?.forEach { it( event ) }
+        val matchingTypes = eventHandlers.filter { it.eventType.isInstance( event ) }
+        matchingTypes.forEach { it.handler( event ) }
     }
 
     /**
@@ -27,9 +27,9 @@ class SingleThreadedEventBus : EventBus
      */
     override suspend fun <TEvent : IntegrationEvent> subscribe( eventType: KClass<TEvent>, handler: (TEvent) -> Unit )
     {
-        val handlers = eventHandlers.getOrPut( eventType, { mutableListOf() } )
-
         @Suppress("UNCHECKED_CAST")
-        handlers.add( handler as (IntegrationEvent) -> Unit )
+        val baseHandler = handler as (IntegrationEvent) -> Unit
+
+        eventHandlers.add( Handler( eventType, baseHandler ) )
     }
 }
