@@ -11,20 +11,26 @@ import kotlin.test.*
 class SingleThreadedEventBusTest
 {
     @Serializable
-    data class SomeIntegrationEvent( val data: String ) : IntegrationEvent()
+    sealed class BaseIntegrationEvent : IntegrationEvent()
+    {
+        @Serializable
+        data class SomeIntegrationEvent( val data: String ) : BaseIntegrationEvent()
 
-    @Serializable
-    data class AnotherIntegrationEvent( val data: String ) : IntegrationEvent()
+        @Serializable
+        data class AnotherIntegrationEvent( val data: String ) : BaseIntegrationEvent()
+    }
 
     @Test
     fun published_events_are_received_by_subscribers() = runSuspendTest {
         val bus = SingleThreadedEventBus()
 
         var receivedEventData: String? = null
-        bus.subscribe( SomeIntegrationEvent::class ) { event -> receivedEventData = event.data }
+        bus.subscribe( BaseIntegrationEvent.SomeIntegrationEvent::class ) { event ->
+            receivedEventData = event.data
+        }
         val sentData = "Data"
 
-        bus.publish( SomeIntegrationEvent( sentData ) )
+        bus.publish( BaseIntegrationEvent.SomeIntegrationEvent( sentData ) )
         assertEquals( "Data", receivedEventData )
     }
 
@@ -33,9 +39,9 @@ class SingleThreadedEventBusTest
         val bus = SingleThreadedEventBus()
 
         var eventReceived = false
-        bus.subscribe( SomeIntegrationEvent::class ) { eventReceived = true }
+        bus.subscribe( BaseIntegrationEvent.SomeIntegrationEvent::class ) { eventReceived = true }
 
-        bus.publish( AnotherIntegrationEvent( "Test" ) )
+        bus.publish( BaseIntegrationEvent.AnotherIntegrationEvent( "Test" ) )
         assertFalse( eventReceived )
     }
 
@@ -44,13 +50,27 @@ class SingleThreadedEventBusTest
         val bus = SingleThreadedEventBus()
 
         var receivedBySubscriber1 = false
-        bus.subscribe( SomeIntegrationEvent::class ) { receivedBySubscriber1 = true }
+        bus.subscribe( BaseIntegrationEvent.SomeIntegrationEvent::class ) { receivedBySubscriber1 = true }
         var receivedBySubscriber2 = false
-        bus.subscribe( SomeIntegrationEvent::class ) { receivedBySubscriber2 = true }
+        bus.subscribe( BaseIntegrationEvent.SomeIntegrationEvent::class ) { receivedBySubscriber2 = true }
 
-        bus.publish( SomeIntegrationEvent( "Test" ) )
+        bus.publish( BaseIntegrationEvent.SomeIntegrationEvent( "Test" ) )
         assertTrue( receivedBySubscriber1 )
         assertTrue( receivedBySubscriber2 )
+    }
+
+    @Test
+    fun polymorphic_subscribers_are_possible() = runSuspendTest {
+        val bus = SingleThreadedEventBus()
+
+        var receivedEvent = false
+        bus.subscribe( BaseIntegrationEvent::class )
+        {
+            if ( it is BaseIntegrationEvent.SomeIntegrationEvent ) receivedEvent = true
+        }
+
+        bus.publish( BaseIntegrationEvent.SomeIntegrationEvent( "Test" ) )
+        assertTrue( receivedEvent )
     }
 
     @Test
@@ -58,10 +78,10 @@ class SingleThreadedEventBusTest
         val bus = SingleThreadedEventBus()
 
         var receivedData: String? = null
-        subscribeEvent( bus ) { event: SomeIntegrationEvent ->
+        subscribeEvent( bus ) { event: BaseIntegrationEvent.SomeIntegrationEvent ->
             receivedData = event.data
         }
-        bus.publish( SomeIntegrationEvent( "Test" ) )
+        bus.publish( BaseIntegrationEvent.SomeIntegrationEvent( "Test" ) )
 
         assertEquals( "Test", receivedData )
     }
