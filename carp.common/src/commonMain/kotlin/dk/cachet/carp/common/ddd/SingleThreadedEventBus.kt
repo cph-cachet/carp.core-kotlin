@@ -8,27 +8,34 @@ import kotlin.reflect.KClass
  */
 class SingleThreadedEventBus : EventBus
 {
-    private class Handler( val eventType: KClass<*>, val handler: (IntegrationEvent) -> Unit )
+    private class Handler( val eventType: KClass<*>, val handler: (IntegrationEvent<*>) -> Unit )
 
 
     private val eventHandlers: MutableList<Handler> = mutableListOf()
 
     /**
-     * Publish the specified [event] and instantly deliver it to all subscribers on the same thread as it is published on.
+     * Publish the specified [event] belonging to [applicationServiceKlass]
+     * and instantly deliver it to all subscribers on the same thread as it is published on.
      */
-    override suspend fun publish( event: IntegrationEvent )
+    override suspend fun <
+        TApplicationService : ApplicationService<TApplicationService, TEvent>,
+        TEvent : IntegrationEvent<TApplicationService>
+    > publish( applicationServiceKlass: KClass<TApplicationService>, event: TEvent )
     {
         val matchingTypes = eventHandlers.filter { it.eventType.isInstance( event ) }
         matchingTypes.forEach { it.handler( event ) }
     }
 
     /**
-     * Subscribe to events of [eventType] and handle them using [handler].
+     * Subscribe to events of [eventType] belonging to [applicationServiceKlass] and handle them using [handler].
      */
-    override suspend fun <TEvent : IntegrationEvent> subscribe( eventType: KClass<TEvent>, handler: (TEvent) -> Unit )
+    override suspend fun <
+        TApplicationService : ApplicationService<TApplicationService, TEvent>,
+        TEvent : IntegrationEvent<TApplicationService>
+    > subscribe( applicationServiceKlass: KClass<TApplicationService>, eventType: KClass<TEvent>, handler: (TEvent) -> Unit )
     {
         @Suppress("UNCHECKED_CAST")
-        val baseHandler = handler as (IntegrationEvent) -> Unit
+        val baseHandler = handler as (IntegrationEvent<*>) -> Unit
 
         eventHandlers.add( Handler( eventType, baseHandler ) )
     }
