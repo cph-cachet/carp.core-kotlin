@@ -25,6 +25,7 @@ interface EventBus
     > subscribe( applicationServiceKlass: KClass<TApplicationService>, eventType: KClass<TEvent>, handler: (TEvent) -> Unit )
 }
 
+
 /**
  * Publish the specified [event] on this [EventBus].
  */
