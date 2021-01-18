@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * An event raised by an application service.
+ * An event raised by an application service [TApplicationService].
  *
  * Integration events need to be immutable.
  */
@@ -15,4 +15,4 @@ import kotlinx.serialization.Serializable
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
-abstract class IntegrationEvent
+abstract class IntegrationEvent<TApplicationService : ApplicationService<TApplicationService, *>>
