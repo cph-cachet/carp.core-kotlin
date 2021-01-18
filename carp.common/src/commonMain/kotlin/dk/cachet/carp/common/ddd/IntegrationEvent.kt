@@ -15,4 +15,4 @@ import kotlinx.serialization.Serializable
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
-abstract class IntegrationEvent<TApplicationService : ApplicationService<TApplicationService, *>>
+abstract class IntegrationEvent<out TApplicationService : ApplicationService<out TApplicationService, *>>
