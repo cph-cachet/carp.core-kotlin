@@ -34,4 +34,26 @@ interface ParticipantRepositoryTest
 
         assertFailsWith<IllegalArgumentException> { repo.addParticipant( studyId, participant ) }
     }
+
+    @Test
+    fun removeStudy_succeeds() = runSuspendTest {
+        val repo = createRepository()
+        val studyId = UUID.randomUUID()
+        val participant = Participant( AccountIdentity.fromUsername( "user" ) )
+        repo.addParticipant( studyId, participant )
+
+        val isRemoved = repo.removeStudy( studyId )
+
+        assertTrue( isRemoved )
+        assertEquals( 0, repo.getParticipants( studyId ).size )
+    }
+
+    @Test
+    fun removeStudy_returns_false_when_study_not_present() = runSuspendTest {
+        val repo = createRepository()
+
+        val isRemoved = repo.removeStudy( UUID.randomUUID() )
+
+        assertFalse( isRemoved )
+    }
 }

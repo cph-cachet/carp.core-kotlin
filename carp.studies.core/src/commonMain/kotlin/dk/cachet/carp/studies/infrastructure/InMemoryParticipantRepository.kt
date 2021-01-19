@@ -23,6 +23,13 @@ class InMemoryParticipantRepository : ParticipantRepository
     }
 
     /**
+     * Remove all data (participants) for the study with [studyId].
+     *
+     * @return True when all data for the study was removed; false when no data for the study is present in the repository.
+     */
+    override suspend fun removeStudy( studyId: UUID ) = participants.remove( studyId ) != null
+
+    /**
      * Returns the participants which were added to the study with the specified [studyId].
      */
     override suspend fun getParticipants( studyId: UUID ): List<Participant> = participants[ studyId ] ?: listOf()
