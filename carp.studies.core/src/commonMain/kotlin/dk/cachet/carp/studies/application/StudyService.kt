@@ -1,18 +1,29 @@
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.ApplicationService
+import dk.cachet.carp.common.ddd.IntegrationEvent
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.StudyDetails
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudyStatus
+import kotlinx.serialization.Serializable
 
 
 /**
  * Application service which allows creating and managing studies.
  */
-interface StudyService
+interface StudyService : ApplicationService<StudyService, StudyService.Event>
 {
+    @Serializable
+    sealed class Event : IntegrationEvent<StudyService>()
+    {
+        @Serializable
+        class StudyRemoved( val studyId: UUID ) : Event()
+    }
+
+
     /**
      * Create a new study for the specified [owner].
      */
