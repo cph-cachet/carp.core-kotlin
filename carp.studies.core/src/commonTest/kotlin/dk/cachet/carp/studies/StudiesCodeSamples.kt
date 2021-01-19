@@ -2,6 +2,8 @@ package dk.cachet.carp.studies
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.SingleThreadedEventBus
+import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.application.ParticipationServiceHost
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
@@ -71,8 +73,9 @@ class StudiesCodeSamples
 
     private fun createEndpoints(): Pair<StudyService, ParticipantService>
     {
+        val eventBus = SingleThreadedEventBus()
         val studyRepo = InMemoryStudyRepository()
-        val studyService = StudyServiceHost( studyRepo )
+        val studyService = StudyServiceHost( studyRepo, eventBus.createApplicationServiceAdapter( StudyService::class ) )
 
         val deploymentRepository = InMemoryDeploymentRepository()
         val deploymentService = DeploymentServiceHost( deploymentRepository )
