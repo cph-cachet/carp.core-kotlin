@@ -20,22 +20,22 @@ class ApplicationServiceEventBus<
     /**
      * Subscribe to events of [eventType] belonging to [applicationServiceKlass] and handle them using [handler].
      */
-    suspend fun <
+    fun <
         TOtherService : ApplicationService<TOtherService, TOtherServiceEvent>,
         TOtherServiceEvent : IntegrationEvent<TOtherService>> subscribe(
         applicationServiceKlass: KClass<TOtherService>,
         eventType: KClass<TOtherServiceEvent>,
-        handler: (TOtherServiceEvent) -> Unit
+        handler: suspend (TOtherServiceEvent) -> Unit
     ) = eventBus.subscribe( applicationServiceKlass, eventType, handler )
 }
 
 /**
  * Subscribe to events of type [TEvent] on this [ApplicationServiceEventBus] and handle them using [handler].
  */
-suspend inline fun <
+inline fun <
     reified TApplicationService : ApplicationService<TApplicationService, TEvent>,
     reified TEvent : IntegrationEvent<TApplicationService>
-> ApplicationServiceEventBus<*, *>.subscribe( noinline handler: (TEvent) -> Unit ) =
+> ApplicationServiceEventBus<*, *>.subscribe( noinline handler: suspend (TEvent) -> Unit ) =
     this.subscribe( TApplicationService::class, TEvent::class, handler )
 
 

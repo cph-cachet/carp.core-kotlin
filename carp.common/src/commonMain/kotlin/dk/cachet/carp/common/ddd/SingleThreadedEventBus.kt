@@ -8,7 +8,7 @@ import kotlin.reflect.KClass
  */
 class SingleThreadedEventBus : EventBus
 {
-    private class Handler( val eventType: KClass<*>, val handler: (IntegrationEvent<*>) -> Unit )
+    private class Handler( val eventType: KClass<*>, val handler: suspend (IntegrationEvent<*>) -> Unit )
 
 
     private val eventHandlers: MutableList<Handler> = mutableListOf()
@@ -29,13 +29,13 @@ class SingleThreadedEventBus : EventBus
     /**
      * Subscribe to events of [eventType] belonging to [applicationServiceKlass] and handle them using [handler].
      */
-    override suspend fun <
+    override fun <
         TApplicationService : ApplicationService<TApplicationService, TEvent>,
         TEvent : IntegrationEvent<TApplicationService>
-    > subscribe( applicationServiceKlass: KClass<TApplicationService>, eventType: KClass<TEvent>, handler: (TEvent) -> Unit )
+    > subscribe( applicationServiceKlass: KClass<TApplicationService>, eventType: KClass<TEvent>, handler: suspend (TEvent) -> Unit )
     {
         @Suppress("UNCHECKED_CAST")
-        val baseHandler = handler as (IntegrationEvent<*>) -> Unit
+        val baseHandler = handler as suspend (IntegrationEvent<*>) -> Unit
 
         eventHandlers.add( Handler( eventType, baseHandler ) )
     }
