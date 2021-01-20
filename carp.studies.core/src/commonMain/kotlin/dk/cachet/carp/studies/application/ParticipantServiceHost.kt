@@ -4,6 +4,8 @@ import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.InputDataType
+import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
+import dk.cachet.carp.common.ddd.subscribe
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
@@ -24,9 +26,18 @@ class ParticipantServiceHost(
     private val studyRepository: StudyRepository,
     private val participantRepository: ParticipantRepository,
     private val deploymentService: DeploymentService,
-    private val participationService: ParticipationService
+    private val participationService: ParticipationService,
+    private val eventBus: ApplicationServiceEventBus<ParticipantService, ParticipantService.Event>
 ) : ParticipantService
 {
+    init
+    {
+        eventBus.subscribe { removed: StudyService.Event.StudyRemoved ->
+            participantRepository.removeStudy( removed.studyId )
+        }
+    }
+
+
     /**
      * Add a [Participant] to the study with the specified [studyId], identified by the specified [email] address.
      * In case the [email] was already added before, the same [Participant] is returned.

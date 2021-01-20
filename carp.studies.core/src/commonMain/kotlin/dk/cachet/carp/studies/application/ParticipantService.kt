@@ -4,6 +4,8 @@ import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.InputDataType
+import dk.cachet.carp.common.ddd.ApplicationService
+import dk.cachet.carp.common.ddd.IntegrationEvent
 import dk.cachet.carp.studies.domain.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.Participant
@@ -12,8 +14,11 @@ import dk.cachet.carp.studies.domain.users.Participant
 /**
  * Application service which allows adding participants to studies and creating deployments for them.
  */
-interface ParticipantService
+interface ParticipantService : ApplicationService<ParticipantService, ParticipantService.Event>
 {
+    sealed class Event : IntegrationEvent<ParticipantService>()
+
+
     /**
      * Add a [Participant] to the study with the specified [studyId], identified by the specified [email] address.
      * In case the [email] was already added before, the same [Participant] is returned.

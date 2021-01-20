@@ -90,7 +90,8 @@ class StudiesCodeSamples
             studyRepo,
             InMemoryParticipantRepository(),
             deploymentService,
-            participationService )
+            participationService,
+            eventBus.createApplicationServiceAdapter( ParticipantService::class ) )
 
         return Pair( studyService, participantService )
     }
