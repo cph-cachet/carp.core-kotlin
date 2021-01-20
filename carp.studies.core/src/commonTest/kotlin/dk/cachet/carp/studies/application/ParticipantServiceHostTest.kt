@@ -37,7 +37,8 @@ class ParticipantServiceHostTest : ParticipantServiceTest
             studyRepo,
             InMemoryParticipantRepository(),
             deploymentService,
-            participationService )
+            participationService,
+            eventBus.createApplicationServiceAdapter( ParticipantService::class ) )
 
         return Pair( participantService, studyService )
     }
