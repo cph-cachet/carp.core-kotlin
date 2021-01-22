@@ -20,6 +20,9 @@ interface StudyService : ApplicationService<StudyService, StudyService.Event>
     sealed class Event : IntegrationEvent<StudyService>()
     {
         @Serializable
+        class StudyCreated( val study: StudyDetails ) : Event()
+
+        @Serializable
         class StudyRemoved( val studyId: UUID ) : Event()
     }
 
