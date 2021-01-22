@@ -43,6 +43,7 @@ class StudyServiceHost(
         val study = Study( owner, name, description, ensuredInvitation )
 
         repository.add( study )
+        eventBus.publish( StudyService.Event.StudyCreated( study.getStudyDetails() ) )
 
         return study.getStatus()
     }
@@ -78,16 +79,11 @@ class StudyServiceHost(
         val study: Study? = repository.getById( studyId )
         requireNotNull( study )
 
-        return StudyDetails(
-            study.id,
-            study.owner,
-            study.name,
-            study.creationDate,
-            study.description,
-            study.invitation,
-            study.protocolSnapshot
-        )
+        return study.getStudyDetails()
     }
+
+    private fun Study.getStudyDetails(): StudyDetails =
+        StudyDetails( id, owner, name, creationDate, description, invitation, protocolSnapshot )
 
     /**
      * Get the status for a study with the given [studyId].
