@@ -82,9 +82,6 @@ class StudyServiceHost(
         return study.getStudyDetails()
     }
 
-    private fun Study.getStudyDetails(): StudyDetails =
-        StudyDetails( id, owner, name, creationDate, description, invitation, protocolSnapshot )
-
     /**
      * Get the status for a study with the given [studyId].
      *
