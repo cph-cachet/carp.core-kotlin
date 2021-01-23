@@ -112,6 +112,12 @@ class Study(
         if ( isLive ) StudyStatus.Live( id, name, creationDate, canSetInvitation, canSetStudyProtocol, canDeployToParticipants )
         else StudyStatus.Configuring( id, name, creationDate, canSetInvitation, canSetStudyProtocol, canDeployToParticipants, canGoLive )
 
+    /**
+     * Get [StudyDetails] for this [Study].
+     */
+    fun getStudyDetails(): StudyDetails =
+        StudyDetails( id, owner, name, creationDate, description, invitation, protocolSnapshot )
+
     val canSetStudyProtocol: Boolean get() = !isLive
 
     /**

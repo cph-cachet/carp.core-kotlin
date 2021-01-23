@@ -51,11 +51,10 @@ interface ParticipantRepositoryTest
     @Test
     fun addRecruitment_for_existing_studyId_fails() = runSuspendTest {
         val repo = createRepository()
-        val studyId = UUID.randomUUID()
-        repo.addRecruitment( Recruitment( studyId ) )
+        val recruitment = Recruitment( UUID.randomUUID() )
+        repo.addRecruitment( recruitment )
 
-        val existingRecruitment = Recruitment( studyId )
-        assertFailsWith<IllegalArgumentException> { repo.addRecruitment( existingRecruitment ) }
+        assertFailsWith<IllegalArgumentException> { repo.addRecruitment( recruitment ) }
     }
 
     @Test
