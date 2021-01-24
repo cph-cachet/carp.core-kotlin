@@ -23,6 +23,9 @@ interface StudyService : ApplicationService<StudyService, StudyService.Event>
         class StudyCreated( val study: StudyDetails ) : Event()
 
         @Serializable
+        class StudyGoneLive( val study: StudyDetails ) : Event()
+
+        @Serializable
         class StudyRemoved( val studyId: UUID ) : Event()
     }
 

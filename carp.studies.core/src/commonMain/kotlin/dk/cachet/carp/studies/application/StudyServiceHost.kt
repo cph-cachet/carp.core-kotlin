@@ -151,8 +151,12 @@ class StudyServiceHost(
         val study: Study? = repository.getById( studyId )
         requireNotNull( study )
 
-        study.goLive()
-        repository.update( study )
+        if ( !study.isLive )
+        {
+            study.goLive()
+            eventBus.publish( StudyService.Event.StudyGoneLive( study.getStudyDetails() ) )
+            repository.update( study )
+        }
 
         return study.getStatus()
     }

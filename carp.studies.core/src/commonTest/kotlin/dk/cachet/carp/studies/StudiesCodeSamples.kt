@@ -87,7 +87,6 @@ class StudiesCodeSamples
             InMemoryAccountService() )
 
         val participantService = ParticipantServiceHost(
-            studyRepo,
             InMemoryParticipantRepository(),
             deploymentService,
             participationService,

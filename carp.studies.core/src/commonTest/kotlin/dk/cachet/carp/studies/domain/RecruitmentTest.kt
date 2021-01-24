@@ -1,6 +1,7 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import kotlin.test.*
@@ -16,7 +17,8 @@ class RecruitmentTest
     {
         val recruitment = Recruitment( UUID.randomUUID() )
         val protocol = createEmptyProtocol()
-        recruitment.lockInStudyProtocol( protocol.getSnapshot() )
+        val invitation = StudyInvitation( "Test", "A study" )
+        recruitment.readyForDeployment( protocol.getSnapshot(), invitation )
         recruitment.addParticipation( UUID.randomUUID(), DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() ) )
 
         val snapshot = recruitment.getSnapshot()
@@ -24,6 +26,7 @@ class RecruitmentTest
 
         assertEquals( recruitment.studyId, fromSnapshot.studyId )
         assertEquals( recruitment.studyProtocol, fromSnapshot.studyProtocol )
+        assertEquals( recruitment.invitation, fromSnapshot.invitation )
         assertEquals( recruitment.participations, fromSnapshot.participations )
     }
 
@@ -32,7 +35,7 @@ class RecruitmentTest
     {
         val recruitment = Recruitment( UUID.randomUUID() )
         val protocol = createEmptyProtocol()
-        recruitment.lockInStudyProtocol( protocol.getSnapshot() )
+        recruitment.readyForDeployment( protocol.getSnapshot(), StudyInvitation.empty() )
 
         assertTrue( recruitment.canAddParticipations )
 
