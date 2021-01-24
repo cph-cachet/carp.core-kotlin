@@ -4,6 +4,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.AggregateRoot
 import dk.cachet.carp.common.ddd.DomainEvent
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.domain.users.Participant
@@ -27,7 +28,10 @@ class Recruitment( val studyId: UUID ) :
         {
             val recruitment = Recruitment( snapshot.studyId )
             recruitment.creationDate = snapshot.creationDate
-            if ( snapshot.studyProtocol != null ) recruitment.lockInStudyProtocol( snapshot.studyProtocol )
+            if ( snapshot.studyProtocol != null && snapshot.invitation != null )
+            {
+                recruitment.readyForDeployment( snapshot.studyProtocol, snapshot.invitation )
+            }
             for ( p in snapshot.participations )
             {
                 recruitment._participations[ p.key ] = p.value.toMutableSet()
@@ -39,18 +43,26 @@ class Recruitment( val studyId: UUID ) :
 
 
     /**
-     * The snapshot of the study protocol to which participants in this recruitment are invited.
+     * The snapshot of the study protocol to which participants in this recruitment can be invited.
      */
     var studyProtocol: StudyProtocolSnapshot? = null
         private set
-    val canAddParticipations: Boolean get() = studyProtocol != null
 
     /**
-     * Set the protocol which participants in this recruitment can participate in.
+     * The invitation to send to invited participants.
      */
-    fun lockInStudyProtocol( protocol: StudyProtocolSnapshot )
+    var invitation: StudyInvitation? = null
+        private set
+    val canAddParticipations: Boolean get() = studyProtocol != null && invitation != null
+
+    /**
+     * Lock in the [protocol] which participants in this recruitment can participate in,
+     * and the [invitation] which is sent to them once they are deployed.
+     */
+    fun readyForDeployment( protocol: StudyProtocolSnapshot, invitation: StudyInvitation )
     {
-        studyProtocol = protocol
+        this.studyProtocol = protocol
+        this.invitation = invitation
     }
 
     /**

@@ -34,7 +34,6 @@ class ParticipantServiceHostTest : ParticipantServiceTest
         val participationService = ParticipationServiceHost( deploymentRepo, participationRepository, accountService )
 
         val participantService = ParticipantServiceHost(
-            studyRepo,
             InMemoryParticipantRepository(),
             deploymentService,
             participationService,

@@ -51,7 +51,6 @@ class HostsIntegrationTest
         participationService = ParticipationServiceHost( deploymentRepo, participationRepository, accountService )
 
         participantService = ParticipantServiceHost(
-            studyRepo,
             InMemoryParticipantRepository(),
             deploymentService,
             participationService,
