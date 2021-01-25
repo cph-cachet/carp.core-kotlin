@@ -12,6 +12,8 @@ import dk.cachet.carp.deployment.application.ParticipationServiceHost
 import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployment.infrastructure.InMemoryParticipationRepository
+import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
+import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
@@ -59,7 +61,38 @@ class HostsIntegrationTest
 
 
     @Test
-    fun remove_study_removes_participants() = runSuspendTest {
+    fun create_study_creates_recruitment() = runSuspendTest {
+        var studyCreated: StudyService.Event.StudyCreated? = null
+        eventBus.subscribe( StudyService::class, StudyService.Event.StudyCreated::class ) { studyCreated = it }
+
+        val study = studyService.createStudy( StudyOwner(), "Test" )
+        val participants = participantService.getParticipants( study.studyId )
+
+        assertEquals( study.studyId, studyCreated?.study?.studyId )
+        assertEquals( 0, participants.size )
+    }
+
+    @Test
+    fun when_study_goes_live_recruitment_is_ready_for_deployment() = runSuspendTest {
+        val study = studyService.createStudy( StudyOwner(), "Test" )
+        val studyId = study.studyId
+        val protocol = createSingleMasterDeviceProtocol( "Device" )
+        studyService.setProtocol( studyId, protocol.getSnapshot() )
+
+        var studyGoneLive: StudyService.Event.StudyGoneLive? = null
+        eventBus.subscribe( StudyService::class, StudyService.Event.StudyGoneLive::class ) { studyGoneLive = it }
+        studyService.goLive( studyId )
+        val participant = participantService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+
+        // Call succeeding means recruitment is ready for deployment.
+        val assignDevices = setOf( AssignParticipantDevices( participant.id, setOf( "Device" ) ) )
+        participantService.deployParticipantGroup( study.studyId, assignDevices )
+
+        assertEquals( study.studyId, studyGoneLive?.study?.studyId )
+    }
+
+    @Test
+    fun remove_study_removes_recruitment() = runSuspendTest {
         val owner = StudyOwner()
         val studyStatus = studyService.createStudy( owner, "Test" )
         val studyId = studyStatus.studyId
@@ -70,7 +103,10 @@ class HostsIntegrationTest
         studyService.remove( studyId )
 
         assertEquals( studyId, removedEvent?.studyId )
-        assertFailsWith<IllegalArgumentException> { participantService.getParticipants( studyId ) } // Study no longer exists.
+
+         // Data related to study no longer exists.
+        assertFailsWith<IllegalArgumentException> { participantService.getParticipantGroupStatusList( studyId ) }
+        assertFailsWith<IllegalArgumentException> { participantService.getParticipants( studyId ) }
     }
 
     @Test
