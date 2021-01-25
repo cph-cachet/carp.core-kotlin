@@ -1,6 +1,8 @@
 package dk.cachet.carp.studies.domain
 
+import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
@@ -27,7 +29,38 @@ class RecruitmentTest
         assertEquals( recruitment.studyId, fromSnapshot.studyId )
         assertEquals( recruitment.studyProtocol, fromSnapshot.studyProtocol )
         assertEquals( recruitment.invitation, fromSnapshot.invitation )
+        assertEquals( recruitment.participants, fromSnapshot.participants )
         assertEquals( recruitment.participations, fromSnapshot.participations )
+    }
+
+    @Test
+    fun addParticipant_succeeds()
+    {
+        val recruitment = Recruitment( UUID.randomUUID() )
+
+        val email = EmailAddress( "test@test.com" )
+        val participant = recruitment.addParticipant( email )
+        val participantEvents = recruitment.consumeEvents().filterIsInstance<Recruitment.Event.ParticipantAdded>()
+        val retrievedParticipant = recruitment.participants
+
+        assertEquals( EmailAccountIdentity( email ), participant.accountIdentity )
+        assertEquals( participant, retrievedParticipant.single() )
+        assertEquals( participant, participantEvents.single().participant )
+    }
+
+    @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
+    @Test
+    fun addParticipant_twice_returns_same_participant()
+    {
+        val recruitment = Recruitment( UUID.randomUUID() )
+        val email = EmailAddress( "test@test.com" )
+        val p1 = recruitment.addParticipant( email )
+
+        val p2 = recruitment.addParticipant( email )
+        val participantEvents = recruitment.consumeEvents().filterIsInstance<Recruitment.Event.ParticipantAdded>()
+
+        assertTrue( p1 == p2 )
+        assertEquals( 1, participantEvents.size ) // Event should only be published for first participant.
     }
 
     @Test

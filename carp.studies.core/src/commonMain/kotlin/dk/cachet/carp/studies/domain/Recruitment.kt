@@ -1,8 +1,10 @@
 package dk.cachet.carp.studies.domain
 
+import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.AggregateRoot
 import dk.cachet.carp.common.ddd.DomainEvent
+import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
@@ -11,13 +13,14 @@ import dk.cachet.carp.studies.domain.users.Participant
 
 
 /**
- * Represents a set of participants recruited for a [Study] identified by [studyId].
+ * Represents a set of [participants] recruited for a [Study] identified by [studyId].
  */
 class Recruitment( val studyId: UUID ) :
     AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>()
 {
     sealed class Event : DomainEvent()
     {
+        data class ParticipantAdded( val participant: Participant ) : Event()
         data class ParticipationAdded( val studyDeploymentId: UUID, val participation: DeanonymizedParticipation ) : Event()
     }
 
@@ -32,6 +35,7 @@ class Recruitment( val studyId: UUID ) :
             {
                 recruitment.readyForDeployment( snapshot.studyProtocol, snapshot.invitation )
             }
+            snapshot.participants.forEach { recruitment._participants.add( it ) }
             for ( p in snapshot.participations )
             {
                 recruitment._participations[ p.key ] = p.value.toMutableSet()
@@ -41,6 +45,36 @@ class Recruitment( val studyId: UUID ) :
         }
     }
 
+
+    // We don't expect massive amounts of participants, so storing them within recruitment is fine for now.
+    private val _participants: MutableSet<Participant> = mutableSetOf()
+
+    /**
+     * The participants which are part of this [Recruitment].
+     */
+    val participants: Set<Participant>
+        get() = _participants.toSet()
+
+    /**
+     * Add a [Participant] identified by the specified [email] address.
+     * In case the [email] was already added before, the same [Participant] is returned.
+     */
+    fun addParticipant( email: EmailAddress ): Participant
+    {
+        // Verify whether participant was already added.
+        val identity = EmailAccountIdentity( email )
+        var participant = _participants.firstOrNull { it.accountIdentity == identity }
+
+        // Add new participant in case it was not added before.
+        if ( participant == null )
+        {
+            participant = Participant( identity )
+            _participants.add( participant )
+            event( Event.ParticipantAdded( participant ) )
+        }
+
+        return participant
+    }
 
     /**
      * The snapshot of the study protocol to which participants in this recruitment can be invited.

@@ -7,7 +7,6 @@ import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
 import dk.cachet.carp.common.ddd.subscribe
 import dk.cachet.carp.common.users.AccountIdentity
-import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.ParticipationService
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
@@ -60,18 +59,10 @@ class ParticipantServiceHost(
      */
     override suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant
     {
-        getRecruitmentOrThrow( studyId )
+        val recruitment = getRecruitmentOrThrow( studyId )
 
-        // Verify whether participant was already added.
-        val identity = EmailAccountIdentity( email )
-        var participant = participantRepository.getParticipants( studyId ).firstOrNull { it.accountIdentity == identity }
-
-        // Add new participant in case it was not added before.
-        if ( participant == null )
-        {
-            participant = Participant( identity )
-            participantRepository.addParticipant( studyId, participant )
-        }
+        val participant = recruitment.addParticipant( email )
+        participantRepository.updateRecruitment( recruitment )
 
         return participant
     }
@@ -83,12 +74,10 @@ class ParticipantServiceHost(
      */
     override suspend fun getParticipant( studyId: UUID, participantId: UUID ): Participant
     {
-        getRecruitmentOrThrow( studyId )
+        val recruitment = getRecruitmentOrThrow( studyId )
 
-        // Load participant from repository.
-        // We don't expect massive amounts of participants for now, so loading all from repo is fine for now.
-        val participant = participantRepository.getParticipants( studyId ).firstOrNull { it.id == participantId }
-        requireNotNull( participant )
+        val participant = recruitment.participants.firstOrNull { it.id == participantId }
+        requireNotNull( participant ) { "Participant with ID \"$participantId\" not found." }
 
         return participant
     }
@@ -99,7 +88,7 @@ class ParticipantServiceHost(
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
     override suspend fun getParticipants( studyId: UUID ): List<Participant> =
-        getRecruitmentOrThrow( studyId ).let { participantRepository.getParticipants( studyId ) }
+        getRecruitmentOrThrow( studyId ).let { it.participants.toList() }
 
     /**
      * Deploy the study with the given [studyId] to a [group] of previously added participants.
@@ -147,7 +136,7 @@ class ParticipantServiceHost(
         }
 
         // Get participant information.
-        val allParticipants = participantRepository.getParticipants( studyId ).associateBy { it.id }
+        val allParticipants = recruitment.participants.associateBy { it.id }
         require( group.participantIds().all { it in allParticipants } )
             { "One of the specified participants is not part of this study." }
 
@@ -244,5 +233,5 @@ class ParticipantServiceHost(
     }
 
     private suspend fun getRecruitmentOrThrow( studyId: UUID ): Recruitment = participantRepository.getRecruitment( studyId )
-        ?: throw IllegalArgumentException( "Study with the specified studyId doe snot exist." )
+        ?: throw IllegalArgumentException( "Study with ID \"$studyId\" not found." )
 }
