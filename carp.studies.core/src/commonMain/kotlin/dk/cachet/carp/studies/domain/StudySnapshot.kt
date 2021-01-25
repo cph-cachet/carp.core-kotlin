@@ -5,7 +5,6 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.Snapshot
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import kotlinx.serialization.Serializable
 
 
@@ -18,8 +17,7 @@ data class StudySnapshot(
     val invitation: StudyInvitation,
     override val creationDate: DateTime,
     val protocolSnapshot: StudyProtocolSnapshot?,
-    val isLive: Boolean,
-    val participations: Map<UUID, Set<DeanonymizedParticipation>>
+    val isLive: Boolean
 ) : Snapshot<Study>
 {
     companion object
@@ -31,12 +29,6 @@ data class StudySnapshot(
          */
         fun fromStudy( study: Study ): StudySnapshot
         {
-            val clonedParticipations: MutableMap<UUID, Set<DeanonymizedParticipation>> = mutableMapOf()
-            for ( p in study.participations )
-            {
-                clonedParticipations[ p.key ] = p.value.toSet()
-            }
-
             return StudySnapshot(
                 studyId = study.id,
                 ownerId = study.owner.id,
@@ -45,8 +37,7 @@ data class StudySnapshot(
                 invitation = study.invitation,
                 creationDate = study.creationDate,
                 protocolSnapshot = study.protocolSnapshot,
-                isLive = study.isLive,
-                participations = clonedParticipations )
+                isLive = study.isLive )
         }
     }
 

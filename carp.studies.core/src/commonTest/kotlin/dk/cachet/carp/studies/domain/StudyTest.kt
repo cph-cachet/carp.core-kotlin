@@ -1,11 +1,9 @@
 package dk.cachet.carp.studies.domain
 
-import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.Smartphone
-import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import kotlin.test.*
 
@@ -31,7 +29,6 @@ class StudyTest
         assertEquals( study.creationDate, fromSnapshot.creationDate )
         assertEquals( study.protocolSnapshot, fromSnapshot.protocolSnapshot )
         assertEquals( study.isLive, fromSnapshot.isLive )
-        assertEquals( study.participations, fromSnapshot.participations )
         assertEquals( 0, fromSnapshot.consumeEvents().size )
     }
 
@@ -157,46 +154,6 @@ class StudyTest
         assertEquals( 0, study.consumeEvents().count() )
     }
 
-    @Test
-    fun addParticipation_succeeds()
-    {
-        val study = createStudy()
-        setDeployableProtocol( study )
-        study.goLive()
-
-        assertTrue( study.canDeployToParticipants )
-
-        val studyDeploymentId = UUID.randomUUID()
-        val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
-        study.addParticipation( studyDeploymentId, participation )
-        assertEquals( Study.Event.ParticipationAdded( studyDeploymentId, participation ), study.consumeEvents().last() )
-        assertEquals( participation, study.getParticipations( studyDeploymentId ).single() )
-    }
-
-    @Test
-    fun addParticipation_fails_when_study_not_live()
-    {
-        val study = createStudy()
-        setDeployableProtocol( study )
-
-        assertFalse( study.canDeployToParticipants )
-
-        val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
-        val studyDeploymentId = UUID.randomUUID()
-        assertFailsWith<IllegalStateException> { study.addParticipation( studyDeploymentId, participation ) }
-        val participationEvents = study.consumeEvents().filterIsInstance<Study.Event.ParticipationAdded>()
-        assertEquals( 0, participationEvents.count() )
-    }
-
-    @Test
-    fun getParticipations_fails_for_unknown_studyDeploymentId()
-    {
-        val study = createStudy()
-        setDeployableProtocol( study )
-
-        val unknownId = UUID.randomUUID()
-        assertFailsWith<IllegalArgumentException> { study.getParticipations( unknownId ) }
-    }
 
     private fun createStudy(): Study = Study( StudyOwner(), "Test study" )
 
