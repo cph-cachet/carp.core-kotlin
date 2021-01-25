@@ -120,7 +120,7 @@ class ParticipantServiceHost(
 
         // Verify whether the study is ready for deployment.
         val recruitment = getRecruitmentOrThrow( studyId )
-        check( recruitment.canAddParticipations ) { "Study is not yet ready to be deployed to participants." }
+        check( recruitment.isReadyForDeployment ) { "Study is not yet ready to be deployed to participants." }
         val protocolSnapshot = recruitment.studyProtocol!!
 
         // Verify whether the master device roles to deploy exist in the protocol.
