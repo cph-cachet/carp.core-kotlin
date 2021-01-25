@@ -37,7 +37,7 @@ class RecruitmentTest
         val protocol = createEmptyProtocol()
         recruitment.readyForDeployment( protocol.getSnapshot(), StudyInvitation.empty() )
 
-        assertTrue( recruitment.canAddParticipations )
+        assertTrue( recruitment.isReadyForDeployment )
 
         val studyDeploymentId = UUID.randomUUID()
         val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
@@ -51,7 +51,7 @@ class RecruitmentTest
     {
         val recruitment = Recruitment( UUID.randomUUID() )
 
-        assertFalse( recruitment.canAddParticipations )
+        assertFalse( recruitment.isReadyForDeployment )
 
         val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
         val studyDeploymentId = UUID.randomUUID()

@@ -53,7 +53,8 @@ class Recruitment( val studyId: UUID ) :
      */
     var invitation: StudyInvitation? = null
         private set
-    val canAddParticipations: Boolean get() = studyProtocol != null && invitation != null
+
+    val isReadyForDeployment: Boolean get() = studyProtocol != null && invitation != null
 
     /**
      * Lock in the [protocol] which participants in this recruitment can participate in,
@@ -81,7 +82,7 @@ class Recruitment( val studyId: UUID ) :
      */
     fun addParticipation( studyDeploymentId: UUID, participation: DeanonymizedParticipation )
     {
-        check( canAddParticipations ) { "The study is not yet ready for deployment." }
+        check( isReadyForDeployment ) { "The study is not yet ready for deployment." }
 
         _participations
             .getOrPut( studyDeploymentId ) { mutableSetOf() }
