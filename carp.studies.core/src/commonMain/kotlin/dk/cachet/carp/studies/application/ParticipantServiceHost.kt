@@ -16,6 +16,7 @@ import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.ParticipantRepository
+import dk.cachet.carp.studies.domain.users.RecruitmentStatus
 import dk.cachet.carp.studies.domain.users.deviceRoles
 import dk.cachet.carp.studies.domain.users.participantIds
 
@@ -109,8 +110,10 @@ class ParticipantServiceHost(
 
         // Verify whether the study is ready for deployment.
         val recruitment = getRecruitmentOrThrow( studyId )
-        check( recruitment.isReadyForDeployment ) { "Study is not yet ready to be deployed to participants." }
-        val protocolSnapshot = recruitment.studyProtocol!!
+        val recruitmentStatus = recruitment.getStatus()
+        check( recruitmentStatus is RecruitmentStatus.ReadyForDeployment )
+            { "Study is not yet ready to be deployed to participants." }
+        val protocolSnapshot = recruitmentStatus.studyProtocol
 
         // Verify whether the master device roles to deploy exist in the protocol.
         val masterDevices = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
@@ -151,7 +154,7 @@ class ParticipantServiceHost(
                 deploymentStatus.studyDeploymentId,
                 toAssign.deviceRoleNames,
                 identity,
-                recruitment.invitation!! )
+                recruitmentStatus.invitation )
 
             recruitment.addParticipation(
                 deploymentStatus.studyDeploymentId,

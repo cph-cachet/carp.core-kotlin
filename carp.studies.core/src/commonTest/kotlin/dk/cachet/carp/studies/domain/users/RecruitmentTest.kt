@@ -5,6 +5,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import kotlin.test.*
 
 
@@ -26,8 +27,7 @@ class RecruitmentTest
         val fromSnapshot = Recruitment.fromSnapshot( snapshot )
 
         assertEquals( recruitment.studyId, fromSnapshot.studyId )
-        assertEquals( recruitment.studyProtocol, fromSnapshot.studyProtocol )
-        assertEquals( recruitment.invitation, fromSnapshot.invitation )
+        assertEquals( recruitment.getStatus(), fromSnapshot.getStatus() )
         assertEquals( recruitment.participants, fromSnapshot.participants )
         assertEquals( recruitment.participations, fromSnapshot.participations )
     }
@@ -63,13 +63,29 @@ class RecruitmentTest
     }
 
     @Test
+    fun readyForDeployment_succeeds()
+    {
+        val recruitment = Recruitment( UUID.randomUUID() )
+        assertTrue( recruitment.getStatus() is RecruitmentStatus.AwaitingStudyToGoLive )
+
+        val protocol = createSingleMasterDeviceProtocol().getSnapshot()
+        val invitation = StudyInvitation( "Study", "This study is about ..." )
+        recruitment.readyForDeployment( protocol, invitation )
+
+        val statusAfter = recruitment.getStatus()
+        assertTrue( statusAfter is RecruitmentStatus.ReadyForDeployment )
+        assertEquals( protocol, statusAfter.studyProtocol )
+        assertEquals( invitation, statusAfter.invitation )
+    }
+
+    @Test
     fun addParticipation_succeeds()
     {
         val recruitment = Recruitment( UUID.randomUUID() )
         val protocol = createEmptyProtocol()
         recruitment.readyForDeployment( protocol.getSnapshot(), StudyInvitation.empty() )
 
-        assertTrue( recruitment.isReadyForDeployment )
+        assertTrue( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
 
         val studyDeploymentId = UUID.randomUUID()
         val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
@@ -83,7 +99,7 @@ class RecruitmentTest
     {
         val recruitment = Recruitment( UUID.randomUUID() )
 
-        assertFalse( recruitment.isReadyForDeployment )
+        assertFalse( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
 
         val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
         val studyDeploymentId = UUID.randomUUID()

@@ -31,11 +31,20 @@ data class RecruitmentSnapshot(
                 clonedParticipations[ p.key ] = p.value.toSet()
             }
 
+            val status = recruitment.getStatus()
+            var studyProtocol: StudyProtocolSnapshot? = null
+            var invitation: StudyInvitation? = null
+            if ( status is RecruitmentStatus.ReadyForDeployment )
+            {
+                studyProtocol = status.studyProtocol
+                invitation = status.invitation
+            }
+
             return RecruitmentSnapshot(
                 recruitment.studyId,
                 recruitment.creationDate,
-                recruitment.studyProtocol,
-                recruitment.invitation,
+                studyProtocol,
+                invitation,
                 recruitment.participants,
                 participations = clonedParticipations )
         }
