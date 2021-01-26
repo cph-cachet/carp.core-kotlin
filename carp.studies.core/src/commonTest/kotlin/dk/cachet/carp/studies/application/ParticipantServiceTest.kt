@@ -11,8 +11,8 @@ import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.Smartphone
-import dk.cachet.carp.studies.domain.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
+import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*

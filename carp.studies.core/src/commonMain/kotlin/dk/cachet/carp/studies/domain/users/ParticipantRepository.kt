@@ -1,7 +1,6 @@
 package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.studies.domain.Recruitment
 
 
 /**

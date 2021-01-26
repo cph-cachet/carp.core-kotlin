@@ -26,19 +26,6 @@ declare module 'carp.core-kotlin-carp.studies.core'
         import DeanonymizedParticipation = dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 
 
-        class ParticipantGroupStatus
-        {
-            constructor( studyDeploymentStatus: StudyDeploymentStatus, participants: HashSet<DeanonymizedParticipation>, data: HashMap<NamespacedId, any> )
-
-            static get Companion(): ParticipantGroupStatus$Companion
-
-            readonly studyDeploymentStatus: StudyDeploymentStatus
-            readonly participants: HashSet<DeanonymizedParticipation>
-            readonly data: any
-        }
-        interface ParticipantGroupStatus$Companion { serializer(): any }
-
-
         class StudyDetails
         {
             constructor(
@@ -142,6 +129,19 @@ declare module 'carp.core-kotlin-carp.studies.core'
             readonly id: UUID
         }
         interface Participant$Companion { serializer(): any }
+
+
+        class ParticipantGroupStatus
+        {
+            constructor( studyDeploymentStatus: StudyDeploymentStatus, participants: HashSet<DeanonymizedParticipation>, data: HashMap<NamespacedId, any> )
+
+            static get Companion(): ParticipantGroupStatus$Companion
+
+            readonly studyDeploymentStatus: StudyDeploymentStatus
+            readonly participants: HashSet<DeanonymizedParticipation>
+            readonly data: any
+        }
+        interface ParticipantGroupStatus$Companion { serializer(): any }
 
 
         class StudyOwner
