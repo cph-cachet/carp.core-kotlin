@@ -74,19 +74,8 @@ class Recruitment( val studyId: UUID ) :
         return participant
     }
 
-    /**
-     * The snapshot of the study protocol to which participants in this recruitment can be invited.
-     */
-    var studyProtocol: StudyProtocolSnapshot? = null
-        private set
-
-    /**
-     * The invitation to send to invited participants.
-     */
-    var invitation: StudyInvitation? = null
-        private set
-
-    val isReadyForDeployment: Boolean get() = studyProtocol != null && invitation != null
+    private var studyProtocol: StudyProtocolSnapshot? = null
+    private var invitation: StudyInvitation? = null
 
     /**
      * Lock in the [protocol] which participants in this recruitment can participate in,
@@ -96,6 +85,17 @@ class Recruitment( val studyId: UUID ) :
     {
         this.studyProtocol = protocol
         this.invitation = invitation
+    }
+
+    /**
+     * Get the status (serializable) of this [Recruitment].
+     */
+    fun getStatus(): RecruitmentStatus
+    {
+        val protocol = studyProtocol
+        val invitation = invitation
+        return if ( protocol != null && invitation != null ) RecruitmentStatus.ReadyForDeployment( protocol, invitation )
+            else RecruitmentStatus.AwaitingStudyToGoLive
     }
 
     /**
@@ -114,7 +114,7 @@ class Recruitment( val studyId: UUID ) :
      */
     fun addParticipation( studyDeploymentId: UUID, participation: DeanonymizedParticipation )
     {
-        check( isReadyForDeployment ) { "The study is not yet ready for deployment." }
+        check( getStatus() is RecruitmentStatus.ReadyForDeployment ) { "The study is not yet ready for deployment." }
 
         _participations
             .getOrPut( studyDeploymentId ) { mutableSetOf() }
