@@ -4,8 +4,8 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.data.input.Sex
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.studies.domain.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
+import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
 import kotlin.test.*
 
 

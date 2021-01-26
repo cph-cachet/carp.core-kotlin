@@ -7,9 +7,9 @@ import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.ddd.ServiceInvoker
 import dk.cachet.carp.common.ddd.createServiceInvoker
 import dk.cachet.carp.studies.application.ParticipantService
-import dk.cachet.carp.studies.domain.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
 import kotlinx.serialization.Serializable
 
 // TODO: Due to a bug, `Service` and `Invoker` cannot be used here, although that would be preferred.

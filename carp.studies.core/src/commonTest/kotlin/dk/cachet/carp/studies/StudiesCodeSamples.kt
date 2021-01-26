@@ -20,10 +20,10 @@ import dk.cachet.carp.studies.application.ParticipantService
 import dk.cachet.carp.studies.application.ParticipantServiceHost
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceHost
-import dk.cachet.carp.studies.domain.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository

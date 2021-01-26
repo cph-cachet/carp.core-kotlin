@@ -1,4 +1,4 @@
-package dk.cachet.carp.studies.domain
+package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
@@ -8,8 +8,6 @@ import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
-import dk.cachet.carp.studies.domain.users.Participant
 
 
 /**

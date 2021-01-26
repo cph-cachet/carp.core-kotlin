@@ -1,8 +1,8 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.studies.domain.Recruitment
-import dk.cachet.carp.studies.domain.RecruitmentSnapshot
+import dk.cachet.carp.studies.domain.users.Recruitment
+import dk.cachet.carp.studies.domain.users.RecruitmentSnapshot
 import dk.cachet.carp.studies.domain.users.ParticipantRepository
 
 

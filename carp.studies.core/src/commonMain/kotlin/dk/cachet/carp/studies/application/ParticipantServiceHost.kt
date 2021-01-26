@@ -10,11 +10,11 @@ import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.ParticipationService
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.studies.domain.ParticipantGroupStatus
-import dk.cachet.carp.studies.domain.Recruitment
+import dk.cachet.carp.studies.domain.users.Recruitment
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.ParticipantRepository
 import dk.cachet.carp.studies.domain.users.deviceRoles
 import dk.cachet.carp.studies.domain.users.participantIds
