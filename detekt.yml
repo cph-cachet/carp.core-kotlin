@@ -35,7 +35,7 @@ potential-bugs:
     active: false
   UnnecessarySafeCall:
     # TODO: Re-enable once detekt bug is fixed: https://github.com/detekt/detekt/issues/3414
-    active: false
+    active: true
 
 style:
   EqualsNullCall:
