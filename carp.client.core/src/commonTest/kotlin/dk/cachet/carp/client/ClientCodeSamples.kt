@@ -30,6 +30,7 @@ import kotlin.test.*
 class ClientCodeSamples
 {
     @Test
+    @Suppress( "UnusedPrivateMember" )
     fun readme() = runSuspendTest {
         val (participationService, deploymentService) = createEndpoints()
         val dataCollectorFactory = createDataCollectorFactory()

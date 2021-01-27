@@ -36,7 +36,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         data class DeploymentInvalidated( val device: AnyMasterDeviceDescriptor ) : Event()
         // TODO: Immutable base class does not allow this to be defined as `object Stopped : Event()`.
         //       It requires a data class, but that does not make sense since an object would still be immutable.
-        data class Stopped( private val ignoreThis: Unit = Unit ) : Event()
+        data class Stopped( private val ignored: Unit = Unit ) : Event()
         data class ParticipationAdded( val accountParticipation: AccountParticipation ) : Event()
     }
 

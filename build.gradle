@@ -24,10 +24,10 @@ buildscript {
             reflections:'0.9.12',
 
             // JS versions.
-            nodePlugin:'3.0.0-rc5',
+            nodePlugin:'3.0.0-rc7',
 
             // DevOps versions.
-            detektPlugin:'1.14.2',
+            detektPlugin:'1.16.0-RC1',
             detektVerifyImplementation:'1.0.0',
             nexusReleasePlugin:'0.22.0'
         ]

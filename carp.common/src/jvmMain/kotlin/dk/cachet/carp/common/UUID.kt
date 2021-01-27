@@ -14,6 +14,7 @@ actual class UUID actual constructor( actual val stringRepresentation: String )
 
     actual companion object
     {
+        @Suppress( "ImplicitDefaultLocale" ) // Does not cause a bug now, and API will be updated in next Kotlin release: https://youtrack.jetbrains.com/issue/KT-43023
         actual fun parse( uuid: String ): UUID = UUID( uuid.toLowerCase() )
         actual fun randomUUID(): UUID = UUID( java.util.UUID.randomUUID().toString() )
     }

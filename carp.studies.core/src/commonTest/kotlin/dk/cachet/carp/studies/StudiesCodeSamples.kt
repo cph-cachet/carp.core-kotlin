@@ -34,6 +34,7 @@ import kotlin.test.*
 class StudiesCodeSamples
 {
     @Test
+    @Suppress( "UnusedPrivateMember" )
     fun readme() = runSuspendTest {
         val (studyService, participantService) = createEndpoints()
 
