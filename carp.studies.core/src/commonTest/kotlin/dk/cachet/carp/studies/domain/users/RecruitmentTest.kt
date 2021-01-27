@@ -20,7 +20,7 @@ class RecruitmentTest
         val recruitment = Recruitment( UUID.randomUUID() )
         val protocol = createEmptyProtocol()
         val invitation = StudyInvitation( "Test", "A study" )
-        recruitment.readyForDeployment( protocol.getSnapshot(), invitation )
+        recruitment.lockInStudy( protocol.getSnapshot(), invitation )
         recruitment.addParticipation( UUID.randomUUID(), DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() ) )
 
         val snapshot = recruitment.getSnapshot()
@@ -63,14 +63,14 @@ class RecruitmentTest
     }
 
     @Test
-    fun readyForDeployment_succeeds()
+    fun lockInStudy_succeeds()
     {
         val recruitment = Recruitment( UUID.randomUUID() )
         assertTrue( recruitment.getStatus() is RecruitmentStatus.AwaitingStudyToGoLive )
 
         val protocol = createSingleMasterDeviceProtocol().getSnapshot()
         val invitation = StudyInvitation( "Study", "This study is about ..." )
-        recruitment.readyForDeployment( protocol, invitation )
+        recruitment.lockInStudy( protocol, invitation )
 
         val statusAfter = recruitment.getStatus()
         assertTrue( statusAfter is RecruitmentStatus.ReadyForDeployment )
@@ -79,11 +79,22 @@ class RecruitmentTest
     }
 
     @Test
+    fun lockInStudy_only_allowed_once()
+    {
+        val recruitment = Recruitment( UUID.randomUUID() )
+        val protocol = createSingleMasterDeviceProtocol().getSnapshot()
+        val invitation = StudyInvitation.empty()
+        recruitment.lockInStudy( protocol, invitation )
+
+        assertFailsWith<IllegalStateException> { recruitment.lockInStudy( protocol, invitation ) }
+    }
+
+    @Test
     fun addParticipation_succeeds()
     {
         val recruitment = Recruitment( UUID.randomUUID() )
         val protocol = createEmptyProtocol()
-        recruitment.readyForDeployment( protocol.getSnapshot(), StudyInvitation.empty() )
+        recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation.empty() )
 
         assertTrue( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
 

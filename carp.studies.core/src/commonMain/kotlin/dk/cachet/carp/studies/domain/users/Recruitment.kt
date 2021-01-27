@@ -31,7 +31,7 @@ class Recruitment( val studyId: UUID ) :
             recruitment.creationDate = snapshot.creationDate
             if ( snapshot.studyProtocol != null && snapshot.invitation != null )
             {
-                recruitment.readyForDeployment( snapshot.studyProtocol, snapshot.invitation )
+                recruitment.lockInStudy( snapshot.studyProtocol, snapshot.invitation )
             }
             snapshot.participants.forEach { recruitment._participants.add( it ) }
             for ( p in snapshot.participations )
@@ -81,8 +81,10 @@ class Recruitment( val studyId: UUID ) :
      * Lock in the [protocol] which participants in this recruitment can participate in,
      * and the [invitation] which is sent to them once they are deployed.
      */
-    fun readyForDeployment( protocol: StudyProtocolSnapshot, invitation: StudyInvitation )
+    fun lockInStudy( protocol: StudyProtocolSnapshot, invitation: StudyInvitation )
     {
+        check( getStatus() is RecruitmentStatus.AwaitingStudyToGoLive )
+
         this.studyProtocol = protocol
         this.invitation = invitation
     }
@@ -96,6 +98,36 @@ class Recruitment( val studyId: UUID ) :
         val invitation = invitation
         return if ( protocol != null && invitation != null ) RecruitmentStatus.ReadyForDeployment( protocol, invitation )
             else RecruitmentStatus.AwaitingStudyToGoLive
+    }
+
+    /**
+     * Verify whether this [Recruitment] is ready for deployment and participant [group] is configured correctly
+     * by evaluating preconditions and throwing exceptions in case preconditions are violated.
+     *
+     * @throws IllegalStateException when the study is not yet ready for deployment.
+     * @throws IllegalArgumentException when:
+     *  - [group] is empty
+     *  - any of the participants specified in [group] does not exist
+     *  - any of the device roles specified in [group] are not part of the configured study protocol
+     *  - not all devices part of the study have been assigned a participant
+     */
+    fun verifyReadyForDeployment( group: Set<AssignParticipantDevices> ): RecruitmentStatus.ReadyForDeployment
+    {
+        val status = getStatus()
+        check( status is RecruitmentStatus.ReadyForDeployment )
+            { "Study is not yet ready to be deployed to participants." }
+        require( group.isNotEmpty() ) { "No participants to deploy specified." }
+
+        // Verify whether the master device roles to deploy exist in the protocol.
+        val masterDevices = status.studyProtocol.masterDevices.map { it.roleName }.toSet()
+        require( group.deviceRoles().all { it in masterDevices } )
+            { "One of the specified device roles is not part of the configured study protocol." }
+
+        // Verify whether all master devices in the study protocol have been assigned to a participant.
+        require( group.deviceRoles().containsAll( masterDevices ) )
+            { "Not all devices required for this study have been assigned to a participant." }
+
+        return status
     }
 
     /**
