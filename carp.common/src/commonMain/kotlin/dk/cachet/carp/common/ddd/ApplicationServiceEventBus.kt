@@ -8,9 +8,9 @@ import kotlin.reflect.KClass
  * and subscribe to any other events.
  */
 class ApplicationServiceEventBus<
-    TApplicationService : ApplicationService<TApplicationService, TEvent>,
-    TEvent : IntegrationEvent<TApplicationService>
->( private val serviceKlass: KClass<TApplicationService>, private val eventBus: EventBus )
+    TService : ApplicationService<TService, TEvent>,
+    TEvent : IntegrationEvent<TService>
+>( private val serviceKlass: KClass<TService>, private val eventBus: EventBus )
 {
     /**
      * Publish the specified [event].
@@ -33,18 +33,18 @@ class ApplicationServiceEventBus<
  * Subscribe to events of type [TEvent] on this [ApplicationServiceEventBus] and handle them using [handler].
  */
 inline fun <
-    reified TApplicationService : ApplicationService<TApplicationService, TEvent>,
-    reified TEvent : IntegrationEvent<TApplicationService>
+    reified TService : ApplicationService<TService, TEvent>,
+    reified TEvent : IntegrationEvent<TService>
 > ApplicationServiceEventBus<*, *>.subscribe( noinline handler: suspend (TEvent) -> Unit ) =
-    this.subscribe( TApplicationService::class, TEvent::class, handler )
+    this.subscribe( TService::class, TEvent::class, handler )
 
 
 /**
  * Create an adapter for this [EventBus] which can only publish events associated with [serviceKlass].
  */
 fun <
-    TApplicationService : ApplicationService<TApplicationService, TEvent>,
-    TEvent : IntegrationEvent<TApplicationService>
+    TService : ApplicationService<TService, TEvent>,
+    TEvent : IntegrationEvent<TService>
 > EventBus.createApplicationServiceAdapter(
-    serviceKlass: KClass<TApplicationService>
-): ApplicationServiceEventBus<TApplicationService, TEvent> = ApplicationServiceEventBus( serviceKlass, this )
+    serviceKlass: KClass<TService>
+): ApplicationServiceEventBus<TService, TEvent> = ApplicationServiceEventBus( serviceKlass, this )

@@ -12,17 +12,17 @@ interface EventBus
      * Publish the specified [event] belonging to [applicationServiceKlass].
      */
     suspend fun <
-        TApplicationService : ApplicationService<TApplicationService, TEvent>,
-        TEvent : IntegrationEvent<TApplicationService>
-    > publish( applicationServiceKlass: KClass<TApplicationService>, event: TEvent )
+        TService : ApplicationService<TService, TEvent>,
+        TEvent : IntegrationEvent<TService>
+    > publish( applicationServiceKlass: KClass<TService>, event: TEvent )
 
     /**
      * Subscribe to events of [eventType] belonging to [applicationServiceKlass] and handle them using [handler].
      */
     fun <
-        TApplicationService : ApplicationService<TApplicationService, TEvent>,
-        TEvent : IntegrationEvent<TApplicationService>
-    > subscribe( applicationServiceKlass: KClass<TApplicationService>, eventType: KClass<TEvent>, handler: suspend (TEvent) -> Unit )
+        TService : ApplicationService<TService, TEvent>,
+        TEvent : IntegrationEvent<TService>
+    > subscribe( applicationServiceKlass: KClass<TService>, eventType: KClass<TEvent>, handler: suspend (TEvent) -> Unit )
 }
 
 
@@ -30,16 +30,16 @@ interface EventBus
  * Publish the specified [event] on this [EventBus].
  */
 suspend inline fun <
-    reified TApplicationService : ApplicationService<TApplicationService, TEvent>,
-    reified TEvent : IntegrationEvent<TApplicationService>
+    reified TService : ApplicationService<TService, TEvent>,
+    reified TEvent : IntegrationEvent<TService>
 > EventBus.publish( event: TEvent ) =
-    this.publish( TApplicationService::class, event )
+    this.publish( TService::class, event )
 
 /**
  * Subscribe to events of type [TEvent] on this [EventBus] and handle them using [handler].
  */
 inline fun <
-    reified TApplicationService : ApplicationService<TApplicationService, TEvent>,
-    reified TEvent : IntegrationEvent<TApplicationService>
+    reified TService : ApplicationService<TService, TEvent>,
+    reified TEvent : IntegrationEvent<TService>
 > EventBus.subscribe( noinline handler: suspend (TEvent) -> Unit ) =
-    this.subscribe( TApplicationService::class, TEvent::class, handler )
+    this.subscribe( TService::class, TEvent::class, handler )
