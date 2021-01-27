@@ -16,8 +16,6 @@ import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.ParticipantRepository
-import dk.cachet.carp.studies.domain.users.RecruitmentStatus
-import dk.cachet.carp.studies.domain.users.deviceRoles
 import dk.cachet.carp.studies.domain.users.participantIds
 
 
@@ -41,7 +39,7 @@ class ParticipantServiceHost(
             val recruitment = participantRepository.getRecruitment( goneLive.study.studyId )
             checkNotNull( recruitment )
             checkNotNull( goneLive.study.protocolSnapshot )
-            recruitment.readyForDeployment( goneLive.study.protocolSnapshot, goneLive.study.invitation )
+            recruitment.lockInStudy( goneLive.study.protocolSnapshot, goneLive.study.invitation )
             participantRepository.updateRecruitment( recruitment )
         }
 
@@ -106,23 +104,8 @@ class ParticipantServiceHost(
      */
     override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus
     {
-        require( group.isNotEmpty() ) { "No participants to deploy specified." }
-
-        // Verify whether the study is ready for deployment.
         val recruitment = getRecruitmentOrThrow( studyId )
-        val recruitmentStatus = recruitment.getStatus()
-        check( recruitmentStatus is RecruitmentStatus.ReadyForDeployment )
-            { "Study is not yet ready to be deployed to participants." }
-        val protocolSnapshot = recruitmentStatus.studyProtocol
-
-        // Verify whether the master device roles to deploy exist in the protocol.
-        val masterDevices = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
-        require( group.deviceRoles().all { it in masterDevices } )
-            { "One of the specified device roles is not part of the configured study protocol." }
-
-        // Verify whether all master devices in the study protocol have been assigned to a participant.
-        require( group.deviceRoles().containsAll( masterDevices ) )
-            { "Not all devices required for this study have been assigned to a participant." }
+        val recruitmentStatus = recruitment.verifyReadyForDeployment( group )
 
         // In case the same participants have been invited before,
         // and that deployment is still running, return the existing group.
@@ -146,7 +129,7 @@ class ParticipantServiceHost(
         // Create deployment and add participations to study.
         // TODO: How to deal with failing or partially succeeding requests?
         //       In a distributed setup, deploymentService would be network calls.
-        val deploymentStatus = deploymentService.createStudyDeployment( protocolSnapshot )
+        val deploymentStatus = deploymentService.createStudyDeployment( recruitmentStatus.studyProtocol )
         for ( toAssign in group )
         {
             val identity: AccountIdentity = allParticipants.getValue( toAssign.participantId ).accountIdentity
