@@ -44,6 +44,7 @@ data class MACAddress(
             require( address.split( ':' ).size == GROUPS || address.split( '-' ).size == GROUPS )
                 { "Invalid MAC address string representation: expected six groups of two hexadecimal digits (upper or lower case), separated by hyphens (-) or colons (:)." }
 
+            @Suppress( "ImplicitDefaultLocale" ) // Does not cause a bug now, and API will be updated in next Kotlin release: https://youtrack.jetbrains.com/issue/KT-43023
             val recommendedFormatting = address.toUpperCase().replace( ':', '-' )
             return MACAddress( recommendedFormatting )
         }

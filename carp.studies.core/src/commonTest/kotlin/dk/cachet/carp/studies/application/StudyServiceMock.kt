@@ -24,7 +24,8 @@ class StudyServiceMock(
     private val getStudiesOverviewResult: List<StudyStatus> = emptyList(),
     private val setInvitationResult: StudyStatus = studyStatus,
     private val setProtocolResult: StudyStatus = studyStatus,
-    private val goLiveResult: StudyStatus = studyStatus
+    private val goLiveResult: StudyStatus = studyStatus,
+    private val removeResult: Boolean = true
 ) : Mock<Service>(), Service
 {
     companion object
@@ -69,4 +70,8 @@ class StudyServiceMock(
     override suspend fun goLive( studyId: UUID ) =
         goLiveResult
         .also { trackSuspendCall( Service::goLive, studyId ) }
+
+    override suspend fun remove( studyId: UUID ): Boolean =
+        removeResult
+        .also { trackSuspendCall( Service::remove, studyId ) }
 }

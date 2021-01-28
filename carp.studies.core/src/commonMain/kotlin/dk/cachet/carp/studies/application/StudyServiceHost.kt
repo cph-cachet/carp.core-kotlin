@@ -1,6 +1,7 @@
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.Study
@@ -13,7 +14,10 @@ import dk.cachet.carp.studies.domain.users.StudyOwner
 /**
  * Implementation of [StudyService] which allows creating and managing studies.
  */
-class StudyServiceHost( private val repository: StudyRepository ) : StudyService
+class StudyServiceHost(
+    private val repository: StudyRepository,
+    private val eventBus: ApplicationServiceEventBus<StudyService, StudyService.Event>
+) : StudyService
 {
     /**
      * Create a new study for the specified [owner].
@@ -39,6 +43,7 @@ class StudyServiceHost( private val repository: StudyRepository ) : StudyService
         val study = Study( owner, name, description, ensuredInvitation )
 
         repository.add( study )
+        eventBus.publish( StudyService.Event.StudyCreated( study.getStudyDetails() ) )
 
         return study.getStatus()
     }
@@ -74,15 +79,7 @@ class StudyServiceHost( private val repository: StudyRepository ) : StudyService
         val study: Study? = repository.getById( studyId )
         requireNotNull( study )
 
-        return StudyDetails(
-            study.id,
-            study.owner,
-            study.name,
-            study.creationDate,
-            study.description,
-            study.invitation,
-            study.protocolSnapshot
-        )
+        return study.getStudyDetails()
     }
 
     /**
@@ -154,9 +151,30 @@ class StudyServiceHost( private val repository: StudyRepository ) : StudyService
         val study: Study? = repository.getById( studyId )
         requireNotNull( study )
 
-        study.goLive()
-        repository.update( study )
+        if ( !study.isLive )
+        {
+            study.goLive()
+            eventBus.publish( StudyService.Event.StudyGoneLive( study.getStudyDetails() ) )
+            repository.update( study )
+        }
 
         return study.getStatus()
+    }
+
+    /**
+     * Remove the study with the specified [studyId].
+     *
+     * @return True when the study has been deleted, or false when there is no study to delete.
+     */
+    override suspend fun remove( studyId: UUID ): Boolean
+    {
+        val isRemoved = repository.remove( studyId )
+
+        if ( isRemoved )
+        {
+            eventBus.publish( StudyService.Event.StudyRemoved( studyId ) )
+        }
+
+        return isRemoved
     }
 }

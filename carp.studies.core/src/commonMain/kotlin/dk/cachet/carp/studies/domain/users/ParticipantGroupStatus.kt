@@ -1,12 +1,10 @@
-package dk.cachet.carp.studies.domain
+package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
-import dk.cachet.carp.studies.domain.users.Participant
 import kotlinx.serialization.Serializable
 
 

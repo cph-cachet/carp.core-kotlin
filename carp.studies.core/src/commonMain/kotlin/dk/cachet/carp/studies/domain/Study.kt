@@ -3,12 +3,9 @@ package dk.cachet.carp.studies.domain
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.AggregateRoot
 import dk.cachet.carp.common.ddd.DomainEvent
-import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
-import dk.cachet.carp.studies.domain.users.Participant
 import dk.cachet.carp.studies.domain.users.StudyOwner
 
 
@@ -41,7 +38,6 @@ class Study(
         data class InvitationChanged( val invitation: StudyInvitation ) : Event()
         data class ProtocolSnapshotChanged( val protocolSnapshot: StudyProtocolSnapshot? ) : Event()
         data class StateChanged( val isLive: Boolean ) : Event()
-        data class ParticipationAdded( val studyDeploymentId: UUID, val participation: DeanonymizedParticipation ) : Event()
     }
 
 
@@ -53,10 +49,6 @@ class Study(
             study.creationDate = snapshot.creationDate
             study.protocolSnapshot = snapshot.protocolSnapshot
             study.isLive = snapshot.isLive
-            for ( p in snapshot.participations )
-            {
-                study._participations[ p.key ] = p.value.toMutableSet()
-            }
 
             // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
             study.consumeEvents()
@@ -111,6 +103,12 @@ class Study(
     fun getStatus(): StudyStatus =
         if ( isLive ) StudyStatus.Live( id, name, creationDate, canSetInvitation, canSetStudyProtocol, canDeployToParticipants )
         else StudyStatus.Configuring( id, name, creationDate, canSetInvitation, canSetStudyProtocol, canDeployToParticipants, canGoLive )
+
+    /**
+     * Get [StudyDetails] for this [Study].
+     */
+    fun getStudyDetails(): StudyDetails =
+        StudyDetails( id, owner, name, creationDate, description, invitation, protocolSnapshot )
 
     val canSetStudyProtocol: Boolean get() = !isLive
 
@@ -169,43 +167,6 @@ class Study(
      * Determines whether the study in its current state is ready to be deployed to participants.
      */
     val canDeployToParticipants: Boolean get() = isLive
-
-    /**
-     * Per study deployment ID, the set of participants that participate in it.
-     * TODO: Maybe this should be kept private and be replaced with clearer helper functions (e.g., getStudyDeploymentIds).
-     */
-    val participations: Map<UUID, Set<DeanonymizedParticipation>>
-        get() = _participations
-
-    private val _participations: MutableMap<UUID, MutableSet<DeanonymizedParticipation>> = mutableMapOf()
-
-    /**
-     * Specify that a [Participation] has been created for a [Participant] in this study.
-     *
-     * @throws IllegalStateException when the study is not yet ready for deployment.
-     */
-    fun addParticipation( studyDeploymentId: UUID, participation: DeanonymizedParticipation )
-    {
-        check( canDeployToParticipants ) { "The study is not yet ready for deployment." }
-
-        _participations
-            .getOrPut( studyDeploymentId ) { mutableSetOf() }
-            .add( participation )
-            .eventIf( true ) { Event.ParticipationAdded( studyDeploymentId, participation ) }
-    }
-
-    /**
-     * Get all [DeanonymizedParticipation]s for a specific [studyDeploymentId].
-     *
-     * @throws IllegalArgumentException when the given [studyDeploymentId] is not part of this study.
-     */
-    fun getParticipations( studyDeploymentId: UUID ): Set<DeanonymizedParticipation>
-    {
-        val participations: Set<DeanonymizedParticipation> = _participations.getOrElse( studyDeploymentId ) { emptySet() }
-        require( participations.isNotEmpty() ) { "The specified study deployment ID is not part of this study." }
-
-        return participations
-    }
 
     /**
      * Get a serializable snapshot of the current state of this [Study].

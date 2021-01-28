@@ -108,7 +108,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
         abstract class ProtocolFactoryServiceRequest
         {
-            static Companion(): ProtocolFactoryServiceRequest$Companion
+            static get Companion(): ProtocolFactoryServiceRequest$Companion
         }
         interface ProtocolFactoryServiceRequest$Companion { serializer(): any }
 

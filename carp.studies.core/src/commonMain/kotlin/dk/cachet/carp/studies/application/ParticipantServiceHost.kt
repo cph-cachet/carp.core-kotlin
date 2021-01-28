@@ -4,29 +4,52 @@ import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.InputDataType
+import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
+import dk.cachet.carp.common.ddd.subscribe
 import dk.cachet.carp.common.users.AccountIdentity
-import dk.cachet.carp.common.users.EmailAccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.ParticipationService
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.studies.domain.ParticipantGroupStatus
-import dk.cachet.carp.studies.domain.Study
-import dk.cachet.carp.studies.domain.StudyRepository
+import dk.cachet.carp.studies.domain.users.Recruitment
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.ParticipantRepository
-import dk.cachet.carp.studies.domain.users.deviceRoles
 import dk.cachet.carp.studies.domain.users.participantIds
 
 
 class ParticipantServiceHost(
-    private val studyRepository: StudyRepository,
     private val participantRepository: ParticipantRepository,
     private val deploymentService: DeploymentService,
-    private val participationService: ParticipationService
+    private val participationService: ParticipationService,
+    private val eventBus: ApplicationServiceEventBus<ParticipantService, ParticipantService.Event>
 ) : ParticipantService
 {
+    init
+    {
+        // Create a recruitment per study.
+        eventBus.subscribe { created: StudyService.Event.StudyCreated ->
+            val recruitment = Recruitment( created.study.studyId )
+            participantRepository.addRecruitment( recruitment )
+        }
+
+        // Once a study goes live, its study protocol locks in and participant groups may be deployed.
+        eventBus.subscribe { goneLive: StudyService.Event.StudyGoneLive ->
+            val recruitment = participantRepository.getRecruitment( goneLive.study.studyId )
+            checkNotNull( recruitment )
+            checkNotNull( goneLive.study.protocolSnapshot )
+            recruitment.lockInStudy( goneLive.study.protocolSnapshot, goneLive.study.invitation )
+            participantRepository.updateRecruitment( recruitment )
+        }
+
+        // Propagate removal of all data related to a study.
+        eventBus.subscribe { removed: StudyService.Event.StudyRemoved ->
+            participantRepository.removeStudy( removed.studyId )
+        }
+    }
+
+
     /**
      * Add a [Participant] to the study with the specified [studyId], identified by the specified [email] address.
      * In case the [email] was already added before, the same [Participant] is returned.
@@ -35,18 +58,10 @@ class ParticipantServiceHost(
      */
     override suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant
     {
-        getStudyOrThrow( studyId )
+        val recruitment = getRecruitmentOrThrow( studyId )
 
-        // Verify whether participant was already added.
-        val identity = EmailAccountIdentity( email )
-        var participant = participantRepository.getParticipants( studyId ).firstOrNull { it.accountIdentity == identity }
-
-        // Add new participant in case it was not added before.
-        if ( participant == null )
-        {
-            participant = Participant( identity )
-            participantRepository.addParticipant( studyId, participant )
-        }
+        val participant = recruitment.addParticipant( email )
+        participantRepository.updateRecruitment( recruitment )
 
         return participant
     }
@@ -58,12 +73,10 @@ class ParticipantServiceHost(
      */
     override suspend fun getParticipant( studyId: UUID, participantId: UUID ): Participant
     {
-        getStudyOrThrow( studyId )
+        val recruitment = getRecruitmentOrThrow( studyId )
 
-        // Load participant from repository.
-        // We don't expect massive amounts of participants for now, so loading all from repo is fine for now.
-        val participant = participantRepository.getParticipants( studyId ).firstOrNull { it.id == participantId }
-        requireNotNull( participant )
+        val participant = recruitment.participants.firstOrNull { it.id == participantId }
+        requireNotNull( participant ) { "Participant with ID \"$participantId\" not found." }
 
         return participant
     }
@@ -74,7 +87,7 @@ class ParticipantServiceHost(
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
     override suspend fun getParticipants( studyId: UUID ): List<Participant> =
-        getStudyOrThrow( studyId ).let { participantRepository.getParticipants( studyId ) }
+        getRecruitmentOrThrow( studyId ).let { it.participants.toList() }
 
     /**
      * Deploy the study with the given [studyId] to a [group] of previously added participants.
@@ -91,45 +104,32 @@ class ParticipantServiceHost(
      */
     override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus
     {
-        require( group.isNotEmpty() ) { "No participants to deploy specified." }
-
-        // Verify whether the study is ready for deployment.
-        val study: Study = getStudyOrThrow( studyId )
-        check( study.canDeployToParticipants ) { "Study is not yet ready to be deployed to participants." }
-        val protocolSnapshot = study.protocolSnapshot!!
-
-        // Verify whether the master device roles to deploy exist in the protocol.
-        val masterDevices = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
-        require( group.deviceRoles().all { it in masterDevices } )
-            { "One of the specified device roles is not part of the configured study protocol." }
-
-        // Verify whether all master devices in the study protocol have been assigned to a participant.
-        require( group.deviceRoles().containsAll( masterDevices ) )
-            { "Not all devices required for this study have been assigned to a participant." }
+        val recruitment = getRecruitmentOrThrow( studyId )
+        val recruitmentStatus = recruitment.verifyReadyForDeployment( group )
 
         // In case the same participants have been invited before,
         // and that deployment is still running, return the existing group.
         // TODO: The same participants might be invited for different role names, which we currently cannot differentiate between.
         val toDeployParticipantIds = group.map { it.participantId }.toSet()
-        val deployedStatus = study.participations.entries
+        val deployedStatus = recruitment.participations.entries
             .firstOrNull { p -> p.value.map { it.participantId }.toSet() == toDeployParticipantIds }
             ?.let { deploymentService.getStudyDeploymentStatus( it.key ) }
         if ( deployedStatus != null && deployedStatus !is StudyDeploymentStatus.Stopped )
         {
-            val participants = study.getParticipations( deployedStatus.studyDeploymentId )
+            val participants = recruitment.getParticipations( deployedStatus.studyDeploymentId )
             val participantData = participationService.getParticipantData( deployedStatus.studyDeploymentId )
             return ParticipantGroupStatus( deployedStatus, participants, participantData.data )
         }
 
         // Get participant information.
-        val allParticipants = participantRepository.getParticipants( studyId ).associateBy { it.id }
+        val allParticipants = recruitment.participants.associateBy { it.id }
         require( group.participantIds().all { it in allParticipants } )
             { "One of the specified participants is not part of this study." }
 
         // Create deployment and add participations to study.
         // TODO: How to deal with failing or partially succeeding requests?
         //       In a distributed setup, deploymentService would be network calls.
-        val deploymentStatus = deploymentService.createStudyDeployment( protocolSnapshot )
+        val deploymentStatus = deploymentService.createStudyDeployment( recruitmentStatus.studyProtocol )
         for ( toAssign in group )
         {
             val identity: AccountIdentity = allParticipants.getValue( toAssign.participantId ).accountIdentity
@@ -137,16 +137,16 @@ class ParticipantServiceHost(
                 deploymentStatus.studyDeploymentId,
                 toAssign.deviceRoleNames,
                 identity,
-                study.invitation )
+                recruitmentStatus.invitation )
 
-            study.addParticipation(
+            recruitment.addParticipation(
                 deploymentStatus.studyDeploymentId,
                 DeanonymizedParticipation( toAssign.participantId, participation.id ) )
         }
 
-        studyRepository.update( study )
+        participantRepository.updateRecruitment( recruitment )
 
-        val participants = study.getParticipations( deploymentStatus.studyDeploymentId )
+        val participants = recruitment.getParticipations( deploymentStatus.studyDeploymentId )
         val participantData = participationService.getParticipantData( deploymentStatus.studyDeploymentId )
         return ParticipantGroupStatus( deploymentStatus, participants, participantData.data )
     }
@@ -158,10 +158,10 @@ class ParticipantServiceHost(
      */
     override suspend fun getParticipantGroupStatusList( studyId: UUID ): List<ParticipantGroupStatus>
     {
-        val study: Study = getStudyOrThrow( studyId )
+        val recruitment: Recruitment = getRecruitmentOrThrow( studyId )
 
         // Get study deployment statuses.
-        val studyDeploymentIds = study.participations.keys
+        val studyDeploymentIds = recruitment.participations.keys
         val studyDeploymentStatuses: List<StudyDeploymentStatus> =
             if ( studyDeploymentIds.isEmpty() ) emptyList()
             else deploymentService.getStudyDeploymentStatusList( studyDeploymentIds )
@@ -169,7 +169,7 @@ class ParticipantServiceHost(
         // Map each study deployment status to a deanonymized participant group status.
         val participantDataList = participationService.getParticipantDataList( studyDeploymentIds )
         return studyDeploymentStatuses.map { deployment ->
-            val participants = study.getParticipations( deployment.studyDeploymentId )
+            val participants = recruitment.getParticipations( deployment.studyDeploymentId )
             val participantData = participantDataList.first { it.studyDeploymentId == deployment.studyDeploymentId }
             ParticipantGroupStatus( deployment, participants, participantData.data )
         }
@@ -184,7 +184,7 @@ class ParticipantServiceHost(
      */
     override suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ): ParticipantGroupStatus
     {
-        val participations = getStudyParticipationsOrThrow( studyId, groupId )
+        val participations = getParticipationsOrThrow( studyId, groupId )
 
         val deploymentStatus = deploymentService.stop( groupId )
         val participantData = participationService.getParticipantData( deploymentStatus.studyDeploymentId )
@@ -202,22 +202,22 @@ class ParticipantServiceHost(
      */
     override suspend fun setParticipantGroupData( studyId: UUID, groupId: UUID, inputDataType: InputDataType, data: Data? ): ParticipantGroupStatus
     {
-        val participations = getStudyParticipationsOrThrow( studyId, groupId )
+        val participations = getParticipationsOrThrow( studyId, groupId )
 
         val deploymentStatus = deploymentService.getStudyDeploymentStatus( groupId )
         val newData = participationService.setParticipantData( groupId, inputDataType, data )
         return ParticipantGroupStatus( deploymentStatus, participations, newData.data )
     }
 
-    private suspend fun getStudyOrThrow( studyId: UUID ): Study = studyRepository.getById( studyId )
-        ?: throw IllegalArgumentException( "Study with the specified studyId does not exist." )
-
-    private suspend fun getStudyParticipationsOrThrow( studyId: UUID, groupId: UUID ): Set<DeanonymizedParticipation>
+    private suspend fun getParticipationsOrThrow( studyId: UUID, groupId: UUID ): Set<DeanonymizedParticipation>
     {
-        val study: Study = getStudyOrThrow( studyId )
-        val participations = study.participations[ groupId ]
+        val recruitment: Recruitment = getRecruitmentOrThrow( studyId )
+        val participations = recruitment.participations[ groupId ]
         requireNotNull( participations ) { "Study deployment with the specified groupId not found." }
 
         return participations
     }
+
+    private suspend fun getRecruitmentOrThrow( studyId: UUID ): Recruitment = participantRepository.getRecruitment( studyId )
+        ?: throw IllegalArgumentException( "Study with ID \"$studyId\" not found." )
 }

@@ -16,6 +16,7 @@ import kotlin.test.*
 class ProtocolsCodeSamples
 {
     @Test
+    @Suppress( "UnusedPrivateMember" )
     fun readme() = runSuspendTest {
         // Create a new study protocol.
         val owner = ProtocolOwner()
@@ -53,5 +54,6 @@ class ProtocolsCodeSamples
         protocol.addTriggeredTask( phone.atStartOfStudy(), camsTask, phone )
 
         val json: String = protocol.getSnapshot().toJson()
+        assertTrue( json.isNotEmpty() )
     }
 }

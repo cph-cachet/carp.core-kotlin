@@ -2,6 +2,8 @@ package dk.cachet.carp.studies
 
 import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.SingleThreadedEventBus
+import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.application.ParticipationServiceHost
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
@@ -18,10 +20,10 @@ import dk.cachet.carp.studies.application.ParticipantService
 import dk.cachet.carp.studies.application.ParticipantServiceHost
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceHost
-import dk.cachet.carp.studies.domain.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.StudyOwner
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
@@ -32,6 +34,7 @@ import kotlin.test.*
 class StudiesCodeSamples
 {
     @Test
+    @Suppress( "UnusedPrivateMember" )
     fun readme() = runSuspendTest {
         val (studyService, participantService) = createEndpoints()
 
@@ -71,8 +74,9 @@ class StudiesCodeSamples
 
     private fun createEndpoints(): Pair<StudyService, ParticipantService>
     {
+        val eventBus = SingleThreadedEventBus()
         val studyRepo = InMemoryStudyRepository()
-        val studyService = StudyServiceHost( studyRepo )
+        val studyService = StudyServiceHost( studyRepo, eventBus.createApplicationServiceAdapter( StudyService::class ) )
 
         val deploymentRepository = InMemoryDeploymentRepository()
         val deploymentService = DeploymentServiceHost( deploymentRepository )
@@ -84,10 +88,10 @@ class StudiesCodeSamples
             InMemoryAccountService() )
 
         val participantService = ParticipantServiceHost(
-            studyRepo,
             InMemoryParticipantRepository(),
             deploymentService,
-            participationService )
+            participationService,
+            eventBus.createApplicationServiceAdapter( ParticipantService::class ) )
 
         return Pair( studyService, participantService )
     }

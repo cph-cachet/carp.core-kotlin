@@ -13,7 +13,7 @@ class AccountTest
     @Test
     fun can_serialize_and_deserialize_account_using_JSON()
     {
-        var account = Account.withUsernameIdentity( "Test" )
+        val account = Account.withUsernameIdentity( "Test" )
 
         val json = createDefaultJSON()
         val serialized = json.encodeToString( Account.serializer(), account )

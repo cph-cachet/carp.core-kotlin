@@ -14,7 +14,7 @@ data class NoOptionsSamplingConfiguration(
      *       Remove once fixed: https://github.com/cph-cachet/carp.core-kotlin/issues/121
      */
     @Transient
-    private val ignore: String = ""
+    private val ignored: String = ""
 ) : SamplingConfiguration
 
 

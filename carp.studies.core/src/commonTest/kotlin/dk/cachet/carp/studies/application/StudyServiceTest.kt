@@ -235,6 +235,31 @@ interface StudyServiceTest
         assertFailsWith<IllegalStateException> { service.goLive( status.studyId ) }
     }
 
+    @Test
+    fun remove_succeeds() = runSuspendTest {
+        val service = createService()
+        val owner = StudyOwner()
+        val status = service.createStudy( owner, "Test" )
+
+        val isRemoved = service.remove( status.studyId )
+
+        assertTrue( isRemoved )
+        val studies = service.getStudiesOverview( owner )
+        assertTrue( studies.isEmpty() )
+    }
+
+    @Test
+    fun remove_returns_false_when_already_removed() = runSuspendTest {
+        val service = createService()
+        val owner = StudyOwner()
+        val status = service.createStudy( owner, "Test" )
+        service.remove( status.studyId )
+
+        val isRemoved = service.remove( status.studyId )
+
+        assertFalse( isRemoved )
+    }
+
 
     private fun createDeployableProtocol(): StudyProtocolSnapshot
     {

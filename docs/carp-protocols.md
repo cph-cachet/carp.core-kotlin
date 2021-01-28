@@ -111,7 +111,8 @@ In case you want to support organizations this could be the ID of the organizati
 | Endpoint | Description | Require | Grant |
 | --- | --- | --- | --- |
 | `add` | Add a study protocol. | protocol owner: `protocol.ownerId` |  |
-| `update` | Store an updated version of a specified study protocol. | protocol owner: `protocol.ownerId` | |
+| `addVersion` | Add a new version for a specified study protocol. | protocol owner: `protocol.ownerId` | |
+| `updateParticipantDataConfiguration` | Replace expected participant data for a specified study protocol. | protocol owner: `protocol.ownerId` | |
 | `getBy` | Find the study protocol with a specified protocol name owned by a specific owner. | protocol owner: `owner.id` | |
 | `getAllFor` | Find all study protocols owned by a specific owner. | protocol owner: `owner.id` | |
 | `getVersionHistoryFor` | Returns all stored versions for the study protocol with a given name owned by a specific owner. |  protocol owner: `owner.id` | |

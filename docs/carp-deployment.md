@@ -54,4 +54,5 @@ and managing data related to participants which is input by users.
 | `addParticipation` | Let a person with a specified identity participate in a study deployment, using a specified master device. | manage deployment: `studyDeploymentId` | in deployment (to account with `identity`): `studyDeploymentId` |
 | `getActiveParticipationInvitations` | Get all participations of active study deployments a specified account has been invited to. | authenticated: `accountId` | |
 | `getParticipantData` | Get currently set data for all expected participant data. | in deployment: `studyDeploymentId` | |
+| `getParticipantDataList` |  Get currently set data for all expected participant data for a set of study deployments. | in deployment: `studyDeploymentId` | |
 | `setParticipantData` | Set participant data for a specified study deployment. | in deployment: `studyDeploymentId` | |

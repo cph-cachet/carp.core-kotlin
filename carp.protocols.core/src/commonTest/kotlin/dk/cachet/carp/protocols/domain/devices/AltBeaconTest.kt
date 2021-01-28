@@ -16,11 +16,11 @@ class AltBeaconTest
     fun registration_deviceId_is_unique()
     {
         val registration1 = AltBeaconDeviceRegistration(
-                0, UUID( "00000000-0000-0000-0000-000000000000" ),
-                1, 1 )
+            0, UUID( "00000000-0000-0000-0000-000000000000" ),
+            1, 1 )
         val registration2 = AltBeaconDeviceRegistration(
-                0, UUID( "00000000-0000-0000-0000-000000000000" ),
-                1, 2 )
+            0, UUID( "00000000-0000-0000-0000-000000000000" ),
+            1, 2 )
 
         assertNotEquals( registration1.deviceId, registration2.deviceId )
     }

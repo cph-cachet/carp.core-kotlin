@@ -60,4 +60,9 @@ sealed class StudyServiceRequest
     data class GoLive( val studyId: UUID ) :
         StudyServiceRequest(),
         Invoker<StudyStatus> by createServiceInvoker( Service::goLive, studyId )
+
+    @Serializable
+    data class Remove( val studyId: UUID ) :
+        StudyServiceRequest(),
+        Invoker<Boolean> by createServiceInvoker( Service::remove, studyId )
 }

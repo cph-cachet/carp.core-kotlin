@@ -29,5 +29,6 @@ internal expect object Reflection
      * Determines whether [klass] extends from [T].
      */
     @PublishedApi
+    @Suppress( "UnusedPrivateMember" ) // TODO: Remove once detekt bug is fixed: https://github.com/detekt/detekt/issues/3415
     internal inline fun <reified T> extendsType( klass: KClass<*> ): Boolean
 }

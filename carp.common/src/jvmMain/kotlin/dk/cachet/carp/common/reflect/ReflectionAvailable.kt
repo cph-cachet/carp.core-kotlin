@@ -12,6 +12,7 @@ import kotlin.reflect.KClass
 @PublishedApi
 internal actual object Reflection
 {
+    @Suppress( "SwallowedException" )
     actual val isReflectionAvailable: Boolean =
         try
         {

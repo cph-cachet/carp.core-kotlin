@@ -1,29 +1,48 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.domain.users.Recruitment
+import dk.cachet.carp.studies.domain.users.RecruitmentSnapshot
 import dk.cachet.carp.studies.domain.users.ParticipantRepository
 
 
 class InMemoryParticipantRepository : ParticipantRepository
 {
-    private val participants: MutableMap<UUID, MutableList<Participant>> = mutableMapOf()
+    private val recruitments: MutableMap<UUID, RecruitmentSnapshot> = mutableMapOf()
 
 
     /**
-     * Adds a new [participant] for the study with [studyId] to the repository.
+     * Add a new [Recruitment] to the repository.
      *
-     * @throws IllegalArgumentException when a participant with the specified ID already exists within the study.
+     * @throws IllegalArgumentException when a recruitment with the same studyId already exists.
      */
-    override suspend fun addParticipant( studyId: UUID, participant: Participant )
+    override suspend fun addRecruitment( recruitment: Recruitment )
     {
-        val studyParticipants = participants.getOrPut( studyId ) { mutableListOf() }
-        require( studyParticipants.none { it.id == participant.id } )
-        studyParticipants.add( participant )
+        require( recruitment.studyId !in recruitments )
+        recruitments[ recruitment.studyId ] = recruitment.getSnapshot()
     }
 
     /**
-     * Returns the participants which were added to the study with the specified [studyId].
+     * Returns the [Recruitment] for the specified [studyId], or null when no recruitment is found.
      */
-    override suspend fun getParticipants( studyId: UUID ): List<Participant> = participants[ studyId ] ?: listOf()
+    override suspend fun getRecruitment( studyId: UUID ): Recruitment? =
+        recruitments[ studyId ]?.let { Recruitment.fromSnapshot( it ) }
+
+    /**
+     * Update a [Recruitment] which is already stored in this repository.
+     *
+     * @throws IllegalArgumentException when no previous version of this recruitment is stored in the repository.
+     */
+    override suspend fun updateRecruitment( recruitment: Recruitment )
+    {
+        require( recruitment.studyId in recruitments )
+        recruitments[ recruitment.studyId ] = recruitment.getSnapshot()
+    }
+
+    /**
+     * Remove all data (only recruitment for now) for the study with [studyId].
+     *
+     * @return True when data was removed; false when no data for the study is present in the repository.
+     */
+    override suspend fun removeStudy( studyId: UUID ): Boolean = recruitments.remove( studyId ) != null
 }

@@ -29,7 +29,8 @@ class StudyServiceRequestsTest
             StudyServiceRequest.GetStudiesOverview( StudyOwner() ),
             StudyServiceRequest.SetInvitation( studyId, StudyInvitation.empty() ),
             StudyServiceRequest.SetProtocol( studyId, StudyProtocol( ProtocolOwner(), "Test" ).getSnapshot() ),
-            StudyServiceRequest.GoLive( studyId )
+            StudyServiceRequest.GoLive( studyId ),
+            StudyServiceRequest.Remove( studyId )
         )
     }
 

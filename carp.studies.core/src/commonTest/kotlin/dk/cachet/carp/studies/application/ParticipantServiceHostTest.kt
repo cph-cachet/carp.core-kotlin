@@ -1,5 +1,7 @@
 package dk.cachet.carp.studies.application
 
+import dk.cachet.carp.common.ddd.SingleThreadedEventBus
+import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.application.ParticipationServiceHost
 import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
@@ -16,9 +18,11 @@ class ParticipantServiceHostTest : ParticipantServiceTest
 {
     override fun createService(): Pair<ParticipantService, StudyService>
     {
+        val eventBus = SingleThreadedEventBus()
+
         // Create dependent study service.
         val studyRepo = InMemoryStudyRepository()
-        val studyService = StudyServiceHost( studyRepo )
+        val studyService = StudyServiceHost( studyRepo, eventBus.createApplicationServiceAdapter( StudyService::class ) )
 
         // Create dependent deployment service.
         val deploymentRepo = InMemoryDeploymentRepository()
@@ -30,10 +34,10 @@ class ParticipantServiceHostTest : ParticipantServiceTest
         val participationService = ParticipationServiceHost( deploymentRepo, participationRepository, accountService )
 
         val participantService = ParticipantServiceHost(
-            studyRepo,
             InMemoryParticipantRepository(),
             deploymentService,
-            participationService )
+            participationService,
+            eventBus.createApplicationServiceAdapter( ParticipantService::class ) )
 
         return Pair( participantService, studyService )
     }
