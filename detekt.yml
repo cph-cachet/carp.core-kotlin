@@ -33,9 +33,6 @@ potential-bugs:
     active: false
   UnsafeCallOnNullableType:
     active: false
-  UnnecessarySafeCall:
-    # TODO: Re-enable once detekt bug is fixed: https://github.com/detekt/detekt/issues/3414
-    active: true
 
 style:
   EqualsNullCall:
@@ -75,7 +72,7 @@ verify-implementation:
     includes: ['**/domain/**']
     assumeImmutable: [
       'dk.cachet.carp.common.DateTime',
-      'Json'
+      'kotlinx.serialization.json.Json'
     ]
 
 carp:

@@ -1,26 +1,5 @@
 group = 'dk.cachet.carp.protocols'
 
-apply plugin: 'io.gitlab.arturbosch.detekt'
-
-detekt {
-    dependencies {
-        detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:${versions.detektPlugin}"
-        detektPlugins project(":carp.detekt") // Add custom project-specific rules.
-        detektPlugins "dk.cachet.detekt.extensions:detekt-verify-implementation:${versions.detektVerifyImplementation}"
-    }
-}
-
-tasks.register('detektWithCorrectClasspath', io.gitlab.arturbosch.detekt.Detekt) {
-    setSource(files("src/"))
-    config.setFrom(files("$rootDir/detekt.yml"))
-    classpath.setFrom(project.configurations.getByName("jvmCompileClasspath") + project.configurations.getByName("detekt"))
-    debug = true
-    include '**/*.kt'
-    include '**/*.kts'
-    exclude 'resources/'
-    exclude 'build/'
-}
-
 publishing {
     publications {
         all {
