@@ -326,12 +326,14 @@ configure( rootProject )
         source = fileTree("$rootDir")
         {
             include('**/src/**')
-            exclude('**/node_modules/**')
+            exclude('**/node_modules/**', '**/resources/**')
         }
         config.from("$rootDir/detekt.yml")
         buildUponDefaultConfig = true
         ignoreFailures = false
-        classpath.setFrom(project.configurations.getByName("detekt"))
+        def classPaths = project.configurations.getByName("detekt")
+        coreModules.each { classPaths += it.configurations.getByName("jvmCompileClasspath") }
+        classpath.setFrom(classPaths)
     }
     tasks.detekt.jvmTarget = "1.8"
     tasks.detekt.dependsOn ":carp.detekt:assemble" // Ensure 'carp.detekt' is build prior to running code analysis.
