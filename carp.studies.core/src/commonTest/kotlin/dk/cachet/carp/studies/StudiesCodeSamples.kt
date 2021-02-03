@@ -4,7 +4,9 @@ import dk.cachet.carp.common.EmailAddress
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.SingleThreadedEventBus
 import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
+import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
+import dk.cachet.carp.deployment.application.ParticipationService
 import dk.cachet.carp.deployment.application.ParticipationServiceHost
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
@@ -75,17 +77,23 @@ class StudiesCodeSamples
     private fun createEndpoints(): Pair<StudyService, ParticipantService>
     {
         val eventBus = SingleThreadedEventBus()
+
         val studyRepo = InMemoryStudyRepository()
-        val studyService = StudyServiceHost( studyRepo, eventBus.createApplicationServiceAdapter( StudyService::class ) )
+        val studyService = StudyServiceHost(
+            studyRepo,
+            eventBus.createApplicationServiceAdapter( StudyService::class ) )
 
         val deploymentRepository = InMemoryDeploymentRepository()
-        val deploymentService = DeploymentServiceHost( deploymentRepository )
+        val deploymentService = DeploymentServiceHost(
+            deploymentRepository,
+            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
         val participationRepository = InMemoryParticipationRepository()
         val participationService = ParticipationServiceHost(
             deploymentRepository,
             participationRepository,
-            InMemoryAccountService() )
+            InMemoryAccountService(),
+            eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
         val participantService = ParticipantServiceHost(
             InMemoryParticipantRepository(),

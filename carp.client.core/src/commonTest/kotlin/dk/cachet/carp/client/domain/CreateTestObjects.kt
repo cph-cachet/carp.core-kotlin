@@ -6,6 +6,8 @@ import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.client.domain.data.StubDeviceDataCollector
 import dk.cachet.carp.client.domain.data.StubDeviceDataCollectorFactory
 import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.common.ddd.SingleThreadedEventBus
+import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
@@ -60,7 +62,11 @@ fun createDependentSmartphoneStudy(): StudyProtocol
  */
 suspend fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentService, StudyDeploymentStatus>
 {
-    val deploymentService = DeploymentServiceHost( InMemoryDeploymentRepository() )
+    val eventBus = SingleThreadedEventBus()
+
+    val deploymentService = DeploymentServiceHost(
+        InMemoryDeploymentRepository(),
+        eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
     val status = deploymentService.createStudyDeployment( protocol.getSnapshot() )
     return Pair( deploymentService, status )
 }

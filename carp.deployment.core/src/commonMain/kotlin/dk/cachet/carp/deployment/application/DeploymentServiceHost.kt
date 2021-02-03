@@ -2,6 +2,7 @@ package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
 import dk.cachet.carp.deployment.domain.DeploymentRepository
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.RegistrableDevice
@@ -18,7 +19,10 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
  * Application service which allows deploying [StudyProtocol]'s
  * and retrieving [MasterDeviceDeployment]'s for participating master devices as defined in the protocol.
  */
-class DeploymentServiceHost( private val repository: DeploymentRepository ) : DeploymentService
+class DeploymentServiceHost(
+    private val repository: DeploymentRepository,
+    private val eventBus: ApplicationServiceEventBus<DeploymentService, DeploymentService.Event>
+) : DeploymentService
 {
     /**
      * Instantiate a study deployment for a given [StudyProtocolSnapshot].

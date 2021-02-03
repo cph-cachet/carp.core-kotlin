@@ -7,6 +7,8 @@ import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.CarpDataTypes
+import dk.cachet.carp.common.ddd.SingleThreadedEventBus
+import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
@@ -69,10 +71,19 @@ class ClientCodeSamples
 
     private suspend fun createEndpoints(): Pair<ParticipationService, DeploymentService>
     {
+        val eventBus = SingleThreadedEventBus()
+
         val deploymentRepository = InMemoryDeploymentRepository()
-        val deploymentService = DeploymentServiceHost( deploymentRepository )
+        val deploymentService = DeploymentServiceHost(
+            deploymentRepository,
+            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
+
         val participationRepository = InMemoryParticipationRepository()
-        val participationService = ParticipationServiceHost( deploymentRepository, participationRepository, accountService )
+        val participationService = ParticipationServiceHost(
+            deploymentRepository,
+            participationRepository,
+            accountService,
+            eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
         // Create deployment for the example protocol.
         val protocol = createExampleProtocol()

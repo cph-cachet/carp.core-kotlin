@@ -2,6 +2,8 @@ package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.SingleThreadedEventBus
+import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
@@ -19,7 +21,11 @@ interface ClientRepositoryTest
 
     private fun createDependencies(): Triple<ClientRepository, DeploymentService, DataListener>
     {
-        val deploymentService = DeploymentServiceHost( InMemoryDeploymentRepository() )
+        val eventBus = SingleThreadedEventBus()
+
+        val deploymentService = DeploymentServiceHost(
+            InMemoryDeploymentRepository(),
+            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
         return Triple( createRepository(), deploymentService, createDataListener() )
     }
 

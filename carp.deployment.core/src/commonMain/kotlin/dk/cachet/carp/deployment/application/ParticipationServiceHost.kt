@@ -5,6 +5,7 @@ import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.data.input.InputDataTypeList
+import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.DeploymentRepository
 import dk.cachet.carp.deployment.domain.users.AccountService
@@ -28,6 +29,7 @@ class ParticipationServiceHost(
     private val deploymentRepository: DeploymentRepository,
     private val participationRepository: ParticipationRepository,
     private val accountService: AccountService,
+    private val eventBus: ApplicationServiceEventBus<ParticipationService, ParticipationService.Event>,
     /**
      * Supported [InputDataType]'s for participant data input by users.
      */

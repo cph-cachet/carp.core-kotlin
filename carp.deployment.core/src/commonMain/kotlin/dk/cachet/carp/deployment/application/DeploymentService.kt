@@ -2,18 +2,25 @@ package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.ApplicationService
+import dk.cachet.carp.common.ddd.IntegrationEvent
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import kotlinx.serialization.Serializable
 
 
 /**
  * Application service which allows deploying [StudyProtocol]'s
  * and retrieving [MasterDeviceDeployment]'s for participating master devices as defined in the protocol.
  */
-interface DeploymentService
+interface DeploymentService : ApplicationService<DeploymentService, DeploymentService.Event>
 {
+    @Serializable
+    sealed class Event : IntegrationEvent<DeploymentService>()
+
+
     /**
      * Instantiate a study deployment for a given [StudyProtocolSnapshot].
      *
