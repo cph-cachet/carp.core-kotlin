@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.DateTime
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 
 
@@ -10,4 +11,4 @@ import kotlinx.serialization.Serializable
  * @param date The date when this version of the protocol was created.
  */
 @Serializable
-data class ProtocolVersion( val tag: String, val date: DateTime = DateTime.now() )
+data class ProtocolVersion( val tag: String, @Required val date: DateTime = DateTime.now() )
