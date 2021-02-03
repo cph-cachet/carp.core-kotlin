@@ -38,7 +38,7 @@ class InMemoryParticipationRepository : ParticipationRepository
         participantGroups[ studyDeploymentId ]?.let { ParticipantGroup.fromSnapshot( it ) }
 
     /**
-     * Return all [ParticipantGroup]s maching the specified [studyDeploymentIds].
+     * Return all [ParticipantGroup]s matching the specified [studyDeploymentIds].
      * Ids that are not found are ignored.
      */
     override suspend fun getParticipantGroupList( studyDeploymentIds: Set<UUID> ): List<ParticipantGroup> =

@@ -22,7 +22,8 @@ import kotlin.test.*
 
 
 /**
- * Tests whether different application service hosts are correctly integrated through integration events.
+ * Tests whether different application service hosts in the studies subsystem
+ * are correctly integrated through integration events.
  */
 class HostsIntegrationTest
 {

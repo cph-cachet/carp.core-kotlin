@@ -5,6 +5,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.ApplicationService
 import dk.cachet.carp.common.ddd.IntegrationEvent
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
+import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
@@ -19,6 +20,10 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
 {
     @Serializable
     sealed class Event : IntegrationEvent<DeploymentService>()
+    {
+        @Serializable
+        data class StudyDeploymentCreated( val deployment: StudyDeploymentSnapshot ) : Event()
+    }
 
 
     /**

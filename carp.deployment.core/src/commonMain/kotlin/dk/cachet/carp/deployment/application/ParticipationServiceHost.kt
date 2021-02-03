@@ -6,6 +6,7 @@ import dk.cachet.carp.common.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.data.input.InputDataTypeList
 import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
+import dk.cachet.carp.common.ddd.subscribe
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.DeploymentRepository
 import dk.cachet.carp.deployment.domain.users.AccountService
@@ -36,6 +37,16 @@ class ParticipationServiceHost(
     private val participantDataInputTypes: InputDataTypeList = CarpInputDataTypes
 ) : ParticipationService
 {
+    init
+    {
+        // Create a ParticipantGroup per study deployment.
+        eventBus.subscribe { created: DeploymentService.Event.StudyDeploymentCreated ->
+            val group = ParticipantGroup.fromDeployment( created.deployment.toObject() )
+            participationRepository.putParticipantGroup( group )
+        }
+    }
+
+
     /**
      * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId],
      * using the master devices with the specified [deviceRoleNames].
@@ -129,11 +140,9 @@ class ParticipationServiceHost(
      */
     override suspend fun getParticipantData( studyDeploymentId: UUID ): ParticipantData
     {
-        val deployment = deploymentRepository.getStudyDeploymentOrThrowBy( studyDeploymentId )
-        val group = participationRepository.getParticipantGroup( studyDeploymentId )
-            ?: ParticipantGroup.fromDeployment( deployment )
+        val group = participationRepository.getParticipantGroupOrThrowBy( studyDeploymentId )
 
-        return ParticipantData( deployment.id, group.data.toMap() )
+        return ParticipantData( group.studyDeploymentId, group.data.toMap() )
     }
 
     /**
@@ -144,17 +153,9 @@ class ParticipationServiceHost(
      */
     override suspend fun getParticipantDataList( studyDeploymentIds: Set<UUID> ): List<ParticipantData>
     {
-        val deployments = deploymentRepository.getStudyDeploymentsOrThrowBy( studyDeploymentIds )
-        require( deployments.size == studyDeploymentIds.size )
-            { "A study deployment ID has been passed for which no deployment exists." }
+        val groups = participationRepository.getParticipantGroupListOrThrow( studyDeploymentIds )
 
-        val groups = participationRepository.getParticipantGroupList( studyDeploymentIds )
-
-        return deployments.map { deployment ->
-            val group = groups.firstOrNull { it.studyDeploymentId == deployment.id }
-                ?: ParticipantGroup.fromDeployment( deployment )
-            ParticipantData( deployment.id, group.data.toMap() )
-        }
+        return groups.map { ParticipantData( it.studyDeploymentId, it.data.toMap() ) }
     }
 
     /**
@@ -168,12 +169,7 @@ class ParticipationServiceHost(
      */
     override suspend fun setParticipantData( studyDeploymentId: UUID, inputDataType: InputDataType, data: Data? ): ParticipantData
     {
-        // Verify whether data is expected.
-        val deployment = deploymentRepository.getStudyDeploymentOrThrowBy( studyDeploymentId )
-
-        // Set data in participant group.
-        val group = participationRepository.getParticipantGroup( studyDeploymentId )
-            ?: ParticipantGroup.fromDeployment( deployment )
+        val group = participationRepository.getParticipantGroupOrThrowBy( studyDeploymentId )
         group.setData( participantDataInputTypes, inputDataType, data )
         participationRepository.putParticipantGroup( group )
 

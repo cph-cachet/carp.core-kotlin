@@ -35,6 +35,7 @@ class DeploymentServiceHost(
         val newDeployment = StudyDeployment( protocol )
 
         repository.add( newDeployment )
+        eventBus.publish( DeploymentService.Event.StudyDeploymentCreated( newDeployment.getSnapshot() ) )
 
         return newDeployment.getStatus()
     }
