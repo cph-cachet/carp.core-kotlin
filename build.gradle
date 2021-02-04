@@ -261,7 +261,7 @@ task verifyTsDeclarations(type: NodeTask, dependsOn: compileTs) {
     ]
 }
 
-// Add common dependencies:
+// Add common dependencies and configuration:
 // - `carp.test` for testing
 // - reflection for testing on JVM
 // TODO: unknown polymorphic serializers are only expected to be used on the server-side. Can this feature be made optional or refactored?
@@ -287,6 +287,11 @@ configure( coreModules + commonModule ) {
                 dependencies {
                     implementation kotlin('reflect')
                 }
+            }
+
+            all {
+                // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
+                languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
             }
         }
     }
