@@ -3,6 +3,7 @@ package dk.cachet.carp.common.serialization
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -17,7 +18,7 @@ import kotlin.test.*
  */
 class UnknownPolymorphicSerializerTest
 {
-    val SERIAL_MODULE = SerializersModule {
+    private val testModule = SerializersModule {
         polymorphic( BaseType::class )
         {
             subclass( DerivingType::class )
@@ -55,10 +56,9 @@ class UnknownPolymorphicSerializerTest
         by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomBaseType( className, json, serializer ) } )
 
 
-    private fun initializeJson() = Json {
-        // TODO: Rather than hardcoding the class discriminator, get it from the `json.configuration`.
-        classDiscriminator = CLASS_DISCRIMINATOR
-        serializersModule = SERIAL_MODULE
+    private fun initializeJson( classDiscriminator: String = "type" ) = Json {
+        this.classDiscriminator = classDiscriminator
+        serializersModule = testModule
         // TODO: `encodeDefaults` changed in kotlinx.serialization 1.0.0-RC2 to false by default
         //  which caused unknown polymorphic serializer tests to fail. Verify whether we need this.
         encodeDefaults = true
@@ -89,5 +89,33 @@ class UnknownPolymorphicSerializerTest
         val expectedJsonSource = json.encodeToString( BaseType.serializer(), toSerialize )
             .replace( DerivingType::class.simpleName!!, "UnknownType" )
         assertEquals( expectedJsonSource, parsed.jsonSource )
+    }
+
+    @Test
+    fun custom_class_discriminator_is_supported()
+    {
+        val classDiscriminator = "---type---"
+        val json = initializeJson( classDiscriminator )
+        val toSerialize = DerivingType( "Test" )
+
+        val serialized = json.encodeToString( UnknownBaseTypeSerializer, toSerialize )
+        assertTrue( serialized.contains( classDiscriminator ) )
+
+        val unknownSerialized = serialized.replace( DerivingType::class.simpleName!!, "UnknownType" )
+        val parsed = json.decodeFromString( UnknownBaseTypeSerializer, unknownSerialized )
+        assertTrue( parsed is CustomBaseType )
+    }
+
+    @Test
+    fun fail_when_array_polymorphism_is_configured()
+    {
+        val toSerialize = DerivingType( "Test" )
+
+        val invalidJson = Json {
+            useArrayPolymorphism = true
+            serializersModule = testModule
+        }
+        assertFailsWith<SerializationException> { invalidJson.encodeToString( UnknownBaseTypeSerializer, toSerialize ) }
+        assertFailsWith<SerializationException> { invalidJson.decodeFromString( UnknownBaseTypeSerializer, "Irrelevant" ) }
     }
 }

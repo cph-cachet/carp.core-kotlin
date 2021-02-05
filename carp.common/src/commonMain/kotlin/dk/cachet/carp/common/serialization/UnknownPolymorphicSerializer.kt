@@ -26,15 +26,16 @@ import kotlin.reflect.KClass
  *  However, ensure that all deriving classes of this base type implement [UnknownPolymorphicWrapper], otherwise serialization will not output the original JSON found upon deserializing.
  */
 abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
-    private val baseClass: KClass<P>,
+    baseClass: KClass<P>,
     wrapperClass: KClass<W>,
     verifyUnknownPolymorphicWrapper: Boolean = true
 ) : KSerializer<P>
 {
     companion object
     {
-        private val unsupportedException =
-            SerializationException( "${UnknownPolymorphicSerializer::class.simpleName} only supports JSON serialization." )
+        private val unsupportedException = SerializationException(
+            "${UnknownPolymorphicSerializer::class.simpleName} only supports JSON serialization" +
+            " with a class discriminator configured (no array polymorphism)." )
     }
 
     init
@@ -52,6 +53,7 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         }
     }
 
+
     private val polymorphicSerializer: PolymorphicSerializer<P> = PolymorphicSerializer( baseClass )
     override val descriptor: SerialDescriptor = polymorphicSerializer.descriptor
 
@@ -62,6 +64,7 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         {
             throw unsupportedException
         }
+        getClassDiscriminator( encoder.json ) // Throws on incorrect Json configuration.
 
         if ( value is UnknownPolymorphicWrapper )
         {
@@ -84,11 +87,11 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         {
             throw unsupportedException
         }
+        val classDiscriminator = getClassDiscriminator( decoder.json )
 
         // Determine class to be loaded and whether it is available at runtime.
-        // TODO: Can CLASS_DISCRIMINATOR be loaded from the configuration to remove this dependency (without relying on reflection)?
         val jsonElement = decoder.decodeJsonElement()
-        val className = jsonElement.jsonObject[ CLASS_DISCRIMINATOR ]!!.jsonPrimitive.content
+        val className = jsonElement.jsonObject[ classDiscriminator ]!!.jsonPrimitive.content
         val registeredSerializer = polymorphicSerializer.findPolymorphicSerializerOrNull( decoder, className )
         val canLoadClass = registeredSerializer != null
 
@@ -96,6 +99,19 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         val jsonSource = jsonElement.toString()
         return if ( canLoadClass ) decoder.json.decodeFromString( polymorphicSerializer, jsonSource )
         else createWrapper( className, jsonSource, decoder.json )
+    }
+
+    // HACK: Since `Json.configuration` is internal, this is a workaround to find the configured class discriminator.
+    //   I requested it to be public: https://github.com/Kotlin/kotlinx.serialization/issues/1323
+    private fun getClassDiscriminator( json: Json ): String
+    {
+        var extractedDiscriminator: String? = null
+        Json( json )
+        {
+            if ( useArrayPolymorphism ) throw unsupportedException
+            extractedDiscriminator = classDiscriminator
+        }
+        return extractedDiscriminator!!
     }
 
     /**
