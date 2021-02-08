@@ -17,6 +17,7 @@ data class ParticipantGroupSnapshot(
     override val creationDate: DateTime,
     val studyDeploymentId: UUID,
     val expectedData: Set<ParticipantAttribute>,
+    val participations: Set<AccountParticipation>,
     val data: Map<InputDataType, Data?>
 ) : Snapshot<ParticipantGroup>
 {
@@ -30,6 +31,7 @@ data class ParticipantGroupSnapshot(
                 group.creationDate,
                 group.studyDeploymentId,
                 group.expectedData.toSet(),
+                group.participations.toSet(),
                 group.data.toMap()
             )
     }

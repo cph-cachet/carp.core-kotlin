@@ -6,6 +6,7 @@ import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.data.input.InputDataTypeList
 import dk.cachet.carp.common.ddd.AggregateRoot
 import dk.cachet.carp.common.ddd.DomainEvent
+import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.protocols.domain.isValidParticipantData
@@ -16,8 +17,6 @@ import dk.cachet.carp.protocols.domain.isValidParticipantData
  * Consent and participant data is managed here.
  *
  * TODO: Implement consent.
- * TODO: Participation management should be moved from `StudyDeployment` to here.
- *   This will require updating diagrams in the documentation.
  */
 class ParticipantGroup private constructor( val studyDeploymentId: UUID, val expectedData: Set<ParticipantAttribute> ) :
     AggregateRoot<ParticipantGroup, ParticipantGroupSnapshot, ParticipantGroup.Event>()
@@ -25,6 +24,7 @@ class ParticipantGroup private constructor( val studyDeploymentId: UUID, val exp
     sealed class Event : DomainEvent()
     {
         data class DataSet( val inputDataType: InputDataType, val data: Data? ) : Event()
+        data class ParticipationAdded( val accountParticipation: AccountParticipation ) : Event()
     }
 
     companion object
@@ -39,6 +39,13 @@ class ParticipantGroup private constructor( val studyDeploymentId: UUID, val exp
         {
             val group = ParticipantGroup( snapshot.studyDeploymentId, snapshot.expectedData )
             group.creationDate = snapshot.creationDate
+
+            // Add participations.
+            snapshot.participations.forEach { p ->
+                group._participations.add( AccountParticipation( p.accountId, p.participationId ) )
+            }
+
+            // Add participant data.
             snapshot.data.forEach { (inputType, data) ->
                 group._data[ inputType ] = data
             }
@@ -47,6 +54,42 @@ class ParticipantGroup private constructor( val studyDeploymentId: UUID, val exp
         }
     }
 
+
+    /**
+     * The account IDs participating in this study group and the pseudonym IDs assigned to them.
+     */
+    val participations: Set<AccountParticipation>
+        get() = _participations
+
+    private val _participations: MutableSet<AccountParticipation> = mutableSetOf()
+
+    /**
+     * Let an [account] participate in the deployment of this participant group.
+     *
+     * @throws IllegalArgumentException if the specified [account] already participates in this participant group,
+     * or if the [participation] details do not match the study deployment of this participant group.
+     */
+    fun addParticipation( account: Account, participation: Participation )
+    {
+        require( studyDeploymentId == participation.studyDeploymentId )
+            { "The specified participation details do not match the study deployment of this participant group." }
+        require( _participations.none { it.accountId == account.id } )
+            { "The specified account already participates in this study deployment." }
+
+        val accountParticipation = AccountParticipation( account.id, participation.id )
+        _participations.add( accountParticipation )
+        event( Event.ParticipationAdded( accountParticipation ) )
+    }
+
+    /**
+     * Get the participation details for a given [account] in this study group,
+     * or null in case the [account] does not participate in this study group.
+     */
+    fun getParticipation( account: Account ): Participation? =
+        _participations
+            .filter { it.accountId == account.id }
+            .map { Participation( studyDeploymentId, it.participationId ) }
+            .singleOrNull()
 
     /**
      * Data pertaining to participants in this group which is input by users.
