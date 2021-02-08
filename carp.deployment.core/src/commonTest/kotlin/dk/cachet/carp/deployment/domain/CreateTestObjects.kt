@@ -83,6 +83,7 @@ fun createComplexParticipantGroup(): ParticipantGroup
         addParticipation( Account.withEmailIdentity( "test@test.com" ), Participation( studyDeploymentId ) )
         setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
         setData( CarpInputDataTypes, customAttribute.inputType, CustomInput( "Steven" ) )
+        studyDeploymentStopped()
     }
 }
 

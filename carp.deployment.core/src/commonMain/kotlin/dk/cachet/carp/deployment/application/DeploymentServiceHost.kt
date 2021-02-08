@@ -173,6 +173,7 @@ class DeploymentServiceHost(
         {
             deployment.stop()
             repository.update( deployment )
+            eventBus.publish( DeploymentService.Event.StudyDeploymentStopped( studyDeploymentId ) )
         }
 
         return deployment.getStatus()

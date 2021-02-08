@@ -25,6 +25,7 @@ class ParticipantGroup private constructor( val studyDeploymentId: UUID, val exp
     {
         data class DataSet( val inputDataType: InputDataType, val data: Data? ) : Event()
         data class ParticipationAdded( val accountParticipation: AccountParticipation ) : Event()
+        object StudyDeploymentStopped : Event()
     }
 
     companion object
@@ -38,6 +39,7 @@ class ParticipantGroup private constructor( val studyDeploymentId: UUID, val exp
         fun fromSnapshot( snapshot: ParticipantGroupSnapshot ): ParticipantGroup
         {
             val group = ParticipantGroup( snapshot.studyDeploymentId, snapshot.expectedData )
+            group.isStudyDeploymentStopped = snapshot.isStudyDeploymentStopped
             group.creationDate = snapshot.creationDate
 
             // Add participations.
@@ -68,6 +70,7 @@ class ParticipantGroup private constructor( val studyDeploymentId: UUID, val exp
      *
      * @throws IllegalArgumentException if the specified [account] already participates in this participant group,
      * or if the [participation] details do not match the study deployment of this participant group.
+     * @throws IllegalStateException when the study deployment of this participant group has stopped.
      */
     fun addParticipation( account: Account, participation: Participation )
     {
@@ -75,6 +78,7 @@ class ParticipantGroup private constructor( val studyDeploymentId: UUID, val exp
             { "The specified participation details do not match the study deployment of this participant group." }
         require( _participations.none { it.accountId == account.id } )
             { "The specified account already participates in this study deployment." }
+        check( !isStudyDeploymentStopped )
 
         val accountParticipation = AccountParticipation( account.id, participation.id )
         _participations.add( accountParticipation )
@@ -90,6 +94,22 @@ class ParticipantGroup private constructor( val studyDeploymentId: UUID, val exp
             .filter { it.accountId == account.id }
             .map { Participation( studyDeploymentId, it.participationId ) }
             .singleOrNull()
+
+    /**
+     * Determines whether the study deployment of this participant group has been stopped
+     * and no further participations can be added
+     */
+    var isStudyDeploymentStopped: Boolean = false
+        private set
+
+    fun studyDeploymentStopped()
+    {
+        if ( !isStudyDeploymentStopped )
+        {
+            isStudyDeploymentStopped = true
+            event( Event.StudyDeploymentStopped )
+        }
+    }
 
     /**
      * Data pertaining to participants in this group which is input by users.

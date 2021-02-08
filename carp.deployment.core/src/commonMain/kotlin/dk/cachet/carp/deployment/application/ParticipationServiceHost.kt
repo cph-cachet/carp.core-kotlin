@@ -44,6 +44,14 @@ class ParticipationServiceHost(
             val group = ParticipantGroup.fromDeployment( created.deployment.toObject() )
             participationRepository.putParticipantGroup( group )
         }
+
+        // Notify participant group that associated study deployment has stopped.
+        eventBus.subscribe { stopped: DeploymentService.Event.StudyDeploymentStopped ->
+            val group = participationRepository.getParticipantGroup( stopped.studyDeploymentId )
+            checkNotNull( group )
+            group.studyDeploymentStopped()
+            participationRepository.putParticipantGroup( group )
+        }
     }
 
 

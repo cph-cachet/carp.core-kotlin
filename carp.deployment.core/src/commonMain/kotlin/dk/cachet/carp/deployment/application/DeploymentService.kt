@@ -23,6 +23,8 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
     {
         @Serializable
         data class StudyDeploymentCreated( val deployment: StudyDeploymentSnapshot ) : Event()
+        @Serializable
+        data class StudyDeploymentStopped( val studyDeploymentId: UUID ) : Event()
     }
 
 

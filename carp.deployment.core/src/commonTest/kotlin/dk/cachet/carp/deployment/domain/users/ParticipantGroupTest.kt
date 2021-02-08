@@ -44,6 +44,7 @@ class ParticipantGroupTest
 
         assertEquals( group.creationDate, fromSnapshot.creationDate )
         assertEquals( group.studyDeploymentId, fromSnapshot.studyDeploymentId )
+        assertEquals( group.isStudyDeploymentStopped, fromSnapshot.isStudyDeploymentStopped )
         assertEquals( group.participations, fromSnapshot.participations )
         assertEquals( group.expectedData, fromSnapshot.expectedData )
         assertEquals(
@@ -101,6 +102,21 @@ class ParticipantGroupTest
     }
 
     @Test
+    fun addParticipation_fails_when_deployment_stopped()
+    {
+        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        val deployment = StudyDeployment( protocol.getSnapshot() )
+        val group = ParticipantGroup.fromDeployment( deployment )
+        group.studyDeploymentStopped()
+
+        val account = Account.withUsernameIdentity( "test" )
+        assertFailsWith<IllegalStateException>
+        {
+            group.addParticipation( account, Participation( group.studyDeploymentId ) )
+        }
+    }
+
+    @Test
     fun getParticipation_for_non_participating_account_returns_null()
     {
         val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
@@ -110,6 +126,19 @@ class ParticipantGroupTest
         val account = Account.withUsernameIdentity( "test" )
         val participation = group.getParticipation( account )
         assertNull( participation )
+    }
+
+    @Test
+    fun studyDeploymentStopped_succeeds()
+    {
+        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        val deployment = StudyDeployment( protocol.getSnapshot() )
+        val group = ParticipantGroup.fromDeployment( deployment )
+
+        group.studyDeploymentStopped()
+
+        assertTrue( group.isStudyDeploymentStopped )
+        assertEquals( 1, group.consumeEvents().filterIsInstance<ParticipantGroup.Event.StudyDeploymentStopped>().count() )
     }
 
     @Test

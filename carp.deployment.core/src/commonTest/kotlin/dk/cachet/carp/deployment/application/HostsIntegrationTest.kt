@@ -3,6 +3,8 @@ package dk.cachet.carp.deployment.application
 import dk.cachet.carp.common.ddd.EventBus
 import dk.cachet.carp.common.ddd.SingleThreadedEventBus
 import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
+import dk.cachet.carp.common.users.AccountIdentity
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployment.infrastructure.InMemoryParticipationRepository
@@ -57,5 +59,31 @@ class HostsIntegrationTest
 
         assertEquals( deployment.studyDeploymentId, deploymentCreated?.deployment?.studyDeploymentId )
         assertEquals( protocol.expectedParticipantData.size, participantGroupData.data.size )
+    }
+
+    @Test
+    fun stopping_deployment_stops_participant_group() = runSuspendTest {
+        var studyDeploymentStopped: DeploymentService.Event.StudyDeploymentStopped? = null
+        eventBus.subscribe( DeploymentService::class, DeploymentService.Event.StudyDeploymentStopped::class )
+        {
+            studyDeploymentStopped = it
+        }
+
+        val protocol = createComplexProtocol().getSnapshot()
+        val deployment = deploymentService.createStudyDeployment( protocol )
+        val deploymentId = deployment.studyDeploymentId
+        deploymentService.stop( deploymentId )
+
+        assertEquals( deploymentId, studyDeploymentStopped?.studyDeploymentId )
+        val deviceRoles = setOf( protocol.masterDevices.first().roleName )
+        assertFailsWith<IllegalStateException> // Can no longer add participations once deployment stopped.
+        {
+            participationService.addParticipation(
+                deploymentId,
+                deviceRoles,
+                AccountIdentity.fromUsername( "Test" ),
+                StudyInvitation.empty()
+            )
+        }
     }
 }
