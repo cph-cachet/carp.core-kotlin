@@ -8,6 +8,7 @@ import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import kotlinx.serialization.Serializable
 
@@ -25,6 +26,12 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
         data class StudyDeploymentCreated( val deployment: StudyDeploymentSnapshot ) : Event()
         @Serializable
         data class StudyDeploymentStopped( val studyDeploymentId: UUID ) : Event()
+        @Serializable
+        data class DeviceRegistrationChanged(
+            val studyDeploymentId: UUID,
+            val device: AnyDeviceDescriptor,
+            val registration: DeviceRegistration?
+        ) : Event()
     }
 
 

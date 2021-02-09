@@ -9,22 +9,28 @@ import dk.cachet.carp.common.ddd.DomainEvent
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.deployment.domain.StudyDeployment
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.isValidParticipantData
 
 
 /**
- * A group of participants participating in a study deployment.
+ * A group of participants participating in a study deployment using the [assignedMasterDevices].
  * Consent and participant data is managed here.
  *
  * TODO: Implement consent.
  */
-class ParticipantGroup private constructor( val studyDeploymentId: UUID, val expectedData: Set<ParticipantAttribute> ) :
-    AggregateRoot<ParticipantGroup, ParticipantGroupSnapshot, ParticipantGroup.Event>()
+class ParticipantGroup private constructor(
+    val studyDeploymentId: UUID,
+    assignedMasterDevices: Set<AssignedMasterDevice>,
+    val expectedData: Set<ParticipantAttribute>
+) : AggregateRoot<ParticipantGroup, ParticipantGroupSnapshot, ParticipantGroup.Event>()
 {
     sealed class Event : DomainEvent()
     {
         data class DataSet( val inputDataType: InputDataType, val data: Data? ) : Event()
         data class ParticipationAdded( val accountParticipation: AccountParticipation ) : Event()
+        data class DeviceRegistrationChanged( val assignedMasterDevice: AssignedMasterDevice ) : Event()
         object StudyDeploymentStopped : Event()
     }
 
@@ -34,11 +40,14 @@ class ParticipantGroup private constructor( val studyDeploymentId: UUID, val exp
          * Initialize a [ParticipantGroup] with default values for a study [deployment].
          */
         fun fromDeployment( deployment: StudyDeployment ): ParticipantGroup =
-            ParticipantGroup( deployment.id, deployment.protocol.expectedParticipantData )
+            ParticipantGroup(
+                deployment.id,
+                deployment.protocol.masterDevices.map { AssignedMasterDevice( it, null ) }.toSet(),
+                deployment.protocol.expectedParticipantData )
 
         fun fromSnapshot( snapshot: ParticipantGroupSnapshot ): ParticipantGroup
         {
-            val group = ParticipantGroup( snapshot.studyDeploymentId, snapshot.expectedData )
+            val group = ParticipantGroup( snapshot.studyDeploymentId, snapshot.assignedMasterDevices, snapshot.expectedData )
             group.isStudyDeploymentStopped = snapshot.isStudyDeploymentStopped
             group.creationDate = snapshot.creationDate
 
@@ -94,6 +103,33 @@ class ParticipantGroup private constructor( val studyDeploymentId: UUID, val exp
             .filter { it.accountId == account.id }
             .map { Participation( studyDeploymentId, it.participationId ) }
             .singleOrNull()
+
+    /**
+     * The assigned master devices to participants in this group and their device registrations, if any.
+     */
+    val assignedMasterDevices: Set<AssignedMasterDevice>
+        get() = _assignedMasterDevices
+
+    private val _assignedMasterDevices: MutableSet<AssignedMasterDevice> = assignedMasterDevices.toMutableSet()
+
+    /**
+     * Update the device [registration] for the given assigned [masterDevice].
+     *
+     * @throws IllegalArgumentException when [masterDevice] is not part of this participant group.
+     */
+    fun updateDeviceRegistration( masterDevice: AnyMasterDeviceDescriptor, registration: DeviceRegistration? )
+    {
+        val assignedDevice = _assignedMasterDevices.firstOrNull { it.device == masterDevice }
+        requireNotNull( assignedDevice ) { "The passed master device is not part of this participant group." }
+
+        if ( assignedDevice.registration != registration )
+        {
+            _assignedMasterDevices.remove( assignedDevice )
+            val updatedRegistrationDevice = assignedDevice.copy( registration = registration )
+            _assignedMasterDevices.add( updatedRegistrationDevice )
+            event( Event.DeviceRegistrationChanged( updatedRegistrationDevice ) )
+        }
+    }
 
     /**
      * Determines whether the study deployment of this participant group has been stopped

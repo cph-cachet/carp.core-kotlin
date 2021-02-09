@@ -78,18 +78,20 @@ class DeploymentServiceHost(
     override suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
     {
         val deployment: StudyDeployment = repository.getStudyDeploymentOrThrowBy( studyDeploymentId )
-        val device: RegistrableDevice = getRegistrableDevice( deployment, deviceRoleName )
+        val device: AnyDeviceDescriptor = getRegistrableDevice( deployment, deviceRoleName ).device
 
         // Early out when the device is already registered.
-        val priorRegistration = deployment.registeredDevices[ device.device ]
+        val priorRegistration = deployment.registeredDevices[ device ]
         if ( !deployment.isStopped && priorRegistration == registration )
         {
             return deployment.getStatus()
         }
 
-        // Register device and save changes.
-        deployment.registerDevice( device.device, registration )
+        // Register device and save/distribute changes.
+        deployment.registerDevice( device, registration )
         repository.update( deployment )
+        val registered = DeploymentService.Event.DeviceRegistrationChanged( studyDeploymentId, device, registration )
+        eventBus.publish( registered )
 
         return deployment.getStatus()
     }
@@ -112,6 +114,8 @@ class DeploymentServiceHost(
         {
             deployment.unregisterDevice( device )
             repository.update( deployment )
+            val unregistered = DeploymentService.Event.DeviceRegistrationChanged( studyDeploymentId, device, null )
+            eventBus.publish( unregistered )
         }
 
         return deployment.getStatus()

@@ -18,6 +18,7 @@ import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.ParticipationRepository
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.deployment.domain.users.filterActiveParticipationInvitations
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 
 
 /**
@@ -50,6 +51,16 @@ class ParticipationServiceHost(
             val group = participationRepository.getParticipantGroup( stopped.studyDeploymentId )
             checkNotNull( group )
             group.studyDeploymentStopped()
+            participationRepository.putParticipantGroup( group )
+        }
+
+        // Keep track of master device registration changes.
+        eventBus.subscribe { registrationChange: DeploymentService.Event.DeviceRegistrationChanged ->
+            if ( registrationChange.device !is AnyMasterDeviceDescriptor ) return@subscribe
+
+            val group = participationRepository.getParticipantGroup( registrationChange.studyDeploymentId )
+            checkNotNull( group )
+            group.updateDeviceRegistration( registrationChange.device, registrationChange.registration )
             participationRepository.putParticipantGroup( group )
         }
     }

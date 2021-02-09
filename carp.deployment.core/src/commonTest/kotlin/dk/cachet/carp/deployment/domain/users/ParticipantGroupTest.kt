@@ -9,8 +9,8 @@ import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.createComplexParticipantGroup
-import dk.cachet.carp.deployment.domain.studyDeploymentFor
 import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import kotlin.test.*
 
@@ -30,6 +30,10 @@ class ParticipantGroupTest
         val group = ParticipantGroup.fromDeployment( deployment )
 
         assertEquals( deployment.id, group.studyDeploymentId )
+        val expectedAssignedMasterDevices = protocol.masterDevices
+            .map { AssignedMasterDevice( it, null ) }
+            .toSet()
+        assertEquals( expectedAssignedMasterDevices, group.assignedMasterDevices )
         assertEquals( mapOf( expectedData to null ), group.data )
         assertEquals( 0, group.participations.size )
         assertEquals( 0, group.consumeEvents().size )
@@ -44,6 +48,7 @@ class ParticipantGroupTest
 
         assertEquals( group.creationDate, fromSnapshot.creationDate )
         assertEquals( group.studyDeploymentId, fromSnapshot.studyDeploymentId )
+        assertEquals( group.assignedMasterDevices, fromSnapshot.assignedMasterDevices )
         assertEquals( group.isStudyDeploymentStopped, fromSnapshot.isStudyDeploymentStopped )
         assertEquals( group.participations, fromSnapshot.participations )
         assertEquals( group.expectedData, fromSnapshot.expectedData )
@@ -57,9 +62,7 @@ class ParticipantGroupTest
     @Test
     fun addParticipation_and_retrieving_it_succeeds()
     {
-        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
-        val deployment = StudyDeployment( protocol.getSnapshot() )
-        val group = ParticipantGroup.fromDeployment( deployment )
+        val group = createParticipantGroup()
 
         val account = Account.withUsernameIdentity( "test" )
         val participation = Participation( group.studyDeploymentId )
@@ -74,9 +77,7 @@ class ParticipantGroupTest
     @Test
     fun addParticipation_for_incorrect_study_deployment_fails()
     {
-        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
-        val deployment = studyDeploymentFor( protocol )
-        val group = ParticipantGroup.fromDeployment( deployment )
+        val group = createParticipantGroup()
 
         val account = Account.withUsernameIdentity( "test" )
         val incorrectDeploymentId = UUID.randomUUID()
@@ -88,9 +89,7 @@ class ParticipantGroupTest
     @Test
     fun addParticipation_for_existing_account_fails()
     {
-        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
-        val deployment = StudyDeployment( protocol.getSnapshot() )
-        val group = ParticipantGroup.fromDeployment( deployment )
+        val group = createParticipantGroup()
         val account = Account.withUsernameIdentity( "test" )
         group.addParticipation( account, Participation( group.studyDeploymentId ) )
 
@@ -104,9 +103,7 @@ class ParticipantGroupTest
     @Test
     fun addParticipation_fails_when_deployment_stopped()
     {
-        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
-        val deployment = StudyDeployment( protocol.getSnapshot() )
-        val group = ParticipantGroup.fromDeployment( deployment )
+        val group = createParticipantGroup()
         group.studyDeploymentStopped()
 
         val account = Account.withUsernameIdentity( "test" )
@@ -119,9 +116,7 @@ class ParticipantGroupTest
     @Test
     fun getParticipation_for_non_participating_account_returns_null()
     {
-        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
-        val deployment = StudyDeployment( protocol.getSnapshot() )
-        val group = ParticipantGroup.fromDeployment( deployment )
+        val group = createParticipantGroup()
 
         val account = Account.withUsernameIdentity( "test" )
         val participation = group.getParticipation( account )
@@ -129,11 +124,53 @@ class ParticipantGroupTest
     }
 
     @Test
+    fun updateDeviceRegistration_succeeds()
+    {
+        val protocol = createSingleMasterDeviceProtocol()
+        val device = protocol.masterDevices.first()
+        val group = createParticipantGroup( protocol )
+
+        val registration = device.createRegistration()
+        group.updateDeviceRegistration( device, registration )
+        val assignedDevice = group.assignedMasterDevices.firstOrNull { it.device == device }
+
+        assertEquals( registration, assignedDevice?.registration )
+        val registrationEvent = group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DeviceRegistrationChanged>().singleOrNull()
+        assertNotNull( registrationEvent )
+        assertEquals( AssignedMasterDevice( device, registration ), registrationEvent.assignedMasterDevice )
+    }
+
+    @Test
+    fun updateDeviceRegistration_does_not_trigger_event_for_unchanged_registration()
+    {
+        val protocol = createSingleMasterDeviceProtocol()
+        val device = protocol.masterDevices.first()
+        val group = createParticipantGroup( protocol )
+        val registration = device.createRegistration()
+        group.updateDeviceRegistration( device, registration )
+
+        group.consumeEvents()
+        group.updateDeviceRegistration( device, registration )
+        assertEquals( 0, group.consumeEvents().size )
+    }
+
+    @Test
+    fun updateDeviceRegistration_fails_for_unknown_device()
+    {
+        val group = createParticipantGroup()
+
+        val unknownDevice = StubMasterDeviceDescriptor()
+        assertFailsWith<IllegalArgumentException>
+        {
+            group.updateDeviceRegistration( unknownDevice, null )
+        }
+        assertEquals( 0, group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DeviceRegistrationChanged>().count() )
+    }
+
+    @Test
     fun studyDeploymentStopped_succeeds()
     {
-        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
-        val deployment = StudyDeployment( protocol.getSnapshot() )
-        val group = ParticipantGroup.fromDeployment( deployment )
+        val group = createParticipantGroup()
 
         group.studyDeploymentStopped()
 
@@ -146,9 +183,8 @@ class ParticipantGroupTest
     {
         val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
         protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
-        val deployment = StudyDeployment( protocol.getSnapshot() )
 
-        val group = ParticipantGroup.fromDeployment( deployment )
+        val group = createParticipantGroup( protocol )
 
         group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
         assertEquals( Sex.Male, group.data[ CarpInputDataTypes.SEX ] )
@@ -157,9 +193,7 @@ class ParticipantGroupTest
     @Test
     fun setData_fails_for_unexpected_data()
     {
-        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
-        val deployment = StudyDeployment( protocol.getSnapshot() )
-        val group = ParticipantGroup.fromDeployment( deployment )
+        val group = createParticipantGroup()
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -172,13 +206,18 @@ class ParticipantGroupTest
     {
         val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
         protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
-        val deployment = StudyDeployment( protocol.getSnapshot() )
-        val group = ParticipantGroup.fromDeployment( deployment )
+        val group = createParticipantGroup( protocol )
 
         val wrongData = object : Data { }
         assertFailsWith<IllegalArgumentException>
         {
             group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, wrongData )
         }
+    }
+
+    private fun createParticipantGroup( protocol: StudyProtocol = createSingleMasterDeviceProtocol() ): ParticipantGroup
+    {
+        val deployment = StudyDeployment( protocol.getSnapshot() )
+        return ParticipantGroup.fromDeployment( deployment )
     }
 }

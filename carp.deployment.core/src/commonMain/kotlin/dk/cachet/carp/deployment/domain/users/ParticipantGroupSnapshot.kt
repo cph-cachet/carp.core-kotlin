@@ -16,6 +16,7 @@ import kotlinx.serialization.Serializable
 data class ParticipantGroupSnapshot(
     override val creationDate: DateTime,
     val studyDeploymentId: UUID,
+    val assignedMasterDevices: Set<AssignedMasterDevice>,
     val isStudyDeploymentStopped: Boolean,
     val expectedData: Set<ParticipantAttribute>,
     val participations: Set<AccountParticipation>,
@@ -31,6 +32,7 @@ data class ParticipantGroupSnapshot(
             ParticipantGroupSnapshot(
                 group.creationDate,
                 group.studyDeploymentId,
+                group.assignedMasterDevices.toSet(),
                 group.isStudyDeploymentStopped,
                 group.expectedData.toSet(),
                 group.participations.toSet(),
