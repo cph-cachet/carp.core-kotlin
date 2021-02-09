@@ -73,15 +73,12 @@ class ClientCodeSamples
     {
         val eventBus = SingleThreadedEventBus()
 
-        val deploymentRepository = InMemoryDeploymentRepository()
         val deploymentService = DeploymentServiceHost(
-            deploymentRepository,
+            InMemoryDeploymentRepository(),
             eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
-        val participationRepository = InMemoryParticipationRepository()
         val participationService = ParticipationServiceHost(
-            deploymentRepository,
-            participationRepository,
+            InMemoryParticipationRepository(),
             accountService,
             eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 

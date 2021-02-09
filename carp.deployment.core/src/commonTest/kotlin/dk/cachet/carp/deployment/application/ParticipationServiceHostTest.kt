@@ -21,17 +21,14 @@ class ParticipationServiceHostTest : ParticipationServiceTest()
     {
         val eventBus: EventBus = SingleThreadedEventBus()
 
-        val deploymentRepository = InMemoryDeploymentRepository()
         val deploymentService = DeploymentServiceHost(
-            deploymentRepository,
+            InMemoryDeploymentRepository(),
             eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
         val accountService = InMemoryAccountService()
 
-        val participationRepository = InMemoryParticipationRepository()
         val participationService = ParticipationServiceHost(
-            deploymentRepository,
-            participationRepository,
+            InMemoryParticipationRepository(),
             accountService,
             eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 

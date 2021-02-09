@@ -8,7 +8,6 @@ import dk.cachet.carp.common.data.input.InputDataTypeList
 import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
 import dk.cachet.carp.common.ddd.subscribe
 import dk.cachet.carp.common.users.AccountIdentity
-import dk.cachet.carp.deployment.domain.DeploymentRepository
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.ParticipantData
@@ -24,11 +23,8 @@ import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 /**
  * Application service which allows inviting participants, retrieving participations for study deployments,
  * and managing data related to participants which is input by users.
- *
- * TODO: Replace dependency on [deploymentRepository] with a dependency on [DeploymentService].
  */
 class ParticipationServiceHost(
-    private val deploymentRepository: DeploymentRepository,
     private val participationRepository: ParticipationRepository,
     private val accountService: AccountService,
     private val eventBus: ApplicationServiceEventBus<ParticipationService, ParticipationService.Event>,
@@ -87,21 +83,21 @@ class ParticipationServiceHost(
         invitation: StudyInvitation
     ): Participation
     {
-        val studyDeployment = deploymentRepository.getStudyDeploymentOrThrowBy( studyDeploymentId )
-        val masterDeviceRoleNames = studyDeployment.protocol.masterDevices.map { it.roleName }
+        val group = participationRepository.getParticipantGroupOrThrowBy( studyDeploymentId )
+        val masterDeviceRoleNames = group.assignedMasterDevices.map { it.device.roleName }
         require( masterDeviceRoleNames.containsAll( deviceRoleNames ) )
 
         var account = accountService.findAccount( identity )
 
         // Retrieve or create participation.
-        var participation = account?.let { studyDeployment.getParticipation( it ) }
+        var participation = account?.let { group.getParticipation( it ) }
         val isNewParticipation = participation == null
         participation = participation ?: Participation( studyDeploymentId )
 
         // Ensure an account exists for the given identity and an invitation has been sent out.
         var invitationSent = false
         val deviceDescriptors = deviceRoleNames.map { roleToUse ->
-            studyDeployment.protocol.masterDevices.first { it.roleName == roleToUse } }
+            group.assignedMasterDevices.first { it.device.roleName == roleToUse } }.map { it.device }
         if ( account == null )
         {
             account = accountService.inviteNewAccount( identity, invitation, participation, deviceDescriptors )
@@ -116,15 +112,15 @@ class ParticipationServiceHost(
         // Store the invitation so that users can also query for it later.
         if ( invitationSent )
         {
-            val invitation = ParticipationInvitation( participation, invitation, deviceRoleNames )
-            participationRepository.addInvitation( account.id, invitation )
+            val participationInvitation = ParticipationInvitation( participation, invitation, deviceRoleNames )
+            participationRepository.addInvitation( account.id, participationInvitation )
         }
 
         // Add participation to study deployment.
         if ( isNewParticipation )
         {
-            studyDeployment.addParticipation( account, participation )
-            deploymentRepository.update( studyDeployment )
+            group.addParticipation( account, participation )
+            participationRepository.putParticipantGroup( group )
         }
         else
         {
@@ -143,12 +139,12 @@ class ParticipationServiceHost(
      */
     override suspend fun getActiveParticipationInvitations( accountId: UUID ): Set<ActiveParticipationInvitation>
     {
-        // Get deployment status for each of the account's invitations.
+        // Get participant group for each of the account's invitations.
         val invitations = participationRepository.getInvitations( accountId )
         val deploymentIds = invitations.map { it.participation.studyDeploymentId }.toSet()
-        val deployments = deploymentRepository.getStudyDeploymentsBy( deploymentIds )
+        val groups = participationRepository.getParticipantGroupList( deploymentIds )
 
-        return filterActiveParticipationInvitations( invitations, deployments )
+        return filterActiveParticipationInvitations( invitations, groups )
     }
 
     /**

@@ -83,15 +83,12 @@ class StudiesCodeSamples
             studyRepo,
             eventBus.createApplicationServiceAdapter( StudyService::class ) )
 
-        val deploymentRepository = InMemoryDeploymentRepository()
         val deploymentService = DeploymentServiceHost(
-            deploymentRepository,
+            InMemoryDeploymentRepository(),
             eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
-        val participationRepository = InMemoryParticipationRepository()
         val participationService = ParticipationServiceHost(
-            deploymentRepository,
-            participationRepository,
+            InMemoryParticipationRepository(),
             InMemoryAccountService(),
             eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 

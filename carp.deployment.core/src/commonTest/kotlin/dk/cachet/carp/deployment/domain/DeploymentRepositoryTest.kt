@@ -1,8 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.users.Account
-import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
@@ -113,8 +111,6 @@ interface DeploymentRepositoryTest
 
             val deviceDeployment = deployment.getDeviceDeploymentFor( masterDevice )
             deviceDeployed( masterDevice, deviceDeployment.lastUpdateDate )
-
-            addParticipation( Account.withUsernameIdentity( "Test" ), Participation( deployment.id ) )
 
             stop()
         }

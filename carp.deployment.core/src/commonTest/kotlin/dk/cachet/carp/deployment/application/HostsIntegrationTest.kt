@@ -32,17 +32,14 @@ class HostsIntegrationTest
         eventBus = SingleThreadedEventBus()
 
         // Create deployment service.
-        val deploymentRepo = InMemoryDeploymentRepository()
         deploymentService = DeploymentServiceHost(
-            deploymentRepo,
+            InMemoryDeploymentRepository(),
             eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
         // Create participation service.
         accountService = InMemoryAccountService()
-        val participationRepository = InMemoryParticipationRepository()
         participationService = ParticipationServiceHost(
-            deploymentRepo,
-            participationRepository,
+            InMemoryParticipationRepository(),
             accountService,
             eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
     }
