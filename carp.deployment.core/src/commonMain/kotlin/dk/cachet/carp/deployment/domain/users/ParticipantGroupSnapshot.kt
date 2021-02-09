@@ -5,6 +5,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.ddd.Snapshot
+import dk.cachet.carp.common.serialization.MapAsArraySerializer
 import dk.cachet.carp.common.users.ParticipantAttribute
 import kotlinx.serialization.Serializable
 
@@ -20,6 +21,7 @@ data class ParticipantGroupSnapshot(
     val isStudyDeploymentStopped: Boolean,
     val expectedData: Set<ParticipantAttribute>,
     val participations: Set<AccountParticipation>,
+    @Serializable( MapAsArraySerializer::class )
     val data: Map<InputDataType, Data?>
 ) : Snapshot<ParticipantGroup>
 {

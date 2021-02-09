@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.serialization
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
@@ -18,6 +19,7 @@ import kotlinx.serialization.encoding.encodeStructure
  * Use this serializer to register the enum in the serializers module, e.g.:
  * `subclass( <enum>::class, PolymorphicEnumSerializer( <enum>.serializer() )`
  */
+@OptIn( ExperimentalSerializationApi::class )
 class PolymorphicEnumSerializer<T : Enum<T>>( private val enumSerializer: KSerializer<T> ) : KSerializer<T>
 {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor( enumSerializer.descriptor.serialName )
