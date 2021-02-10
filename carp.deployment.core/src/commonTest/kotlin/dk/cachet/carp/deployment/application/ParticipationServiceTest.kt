@@ -10,6 +10,7 @@ import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
+import dk.cachet.carp.deployment.domain.users.AssignedMasterDevice
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
@@ -138,8 +139,8 @@ abstract class ParticipationServiceTest
         assertNotNull( account )
         val retrievedInvitations = participationService.getActiveParticipationInvitations( account.id )
         val masterDevice = protocol.masterDevices.single()
-        val expectedDeviceInvitation = ActiveParticipationInvitation.DeviceInvitation( masterDevice, false )
-        assertEquals( ActiveParticipationInvitation( participation, invitation, setOf( expectedDeviceInvitation ) ), retrievedInvitations.single() )
+        val expectedAssignedDevice = AssignedMasterDevice( masterDevice, null )
+        assertEquals( ActiveParticipationInvitation( participation, invitation, setOf( expectedAssignedDevice ) ), retrievedInvitations.single() )
     }
 
     @Test

@@ -30,7 +30,7 @@ class ActiveParticipationInvitationTest
     }
 
     @Test
-    fun filterActiveParticipationInvitations_includes_device_registration_state()
+    fun filterActiveParticipationInvitations_includes_device_registration()
     {
         val deviceRole = "Participant's phone"
         val deployment = createActiveDeployment( deviceRole )
@@ -44,16 +44,19 @@ class ActiveParticipationInvitationTest
             setOf( invitation ),
             listOf( group )
         ).first()
-        assertFalse( activeInvitation.devices.first { it.masterDevice.roleName == deviceRole }.isRegistered )
+        var retrievedRegistration = activeInvitation.assignedDevices.first { it.device.roleName == deviceRole }.registration
+        assertNull( retrievedRegistration )
 
         // Once the device is registered, this is communicated in the active invitation.
         val toRegister = group.assignedMasterDevices.first { it.device.roleName == deviceRole }.device
-        group.updateDeviceRegistration( toRegister, toRegister.createRegistration() )
+        val deviceRegistration = toRegister.createRegistration()
+        group.updateDeviceRegistration( toRegister, deviceRegistration )
         activeInvitation = filterActiveParticipationInvitations(
             setOf( invitation ),
             listOf( group )
         ).first()
-        assertTrue( activeInvitation.devices.first { it.masterDevice.roleName == deviceRole }.isRegistered )
+        retrievedRegistration = activeInvitation.assignedDevices.first { it.device.roleName == deviceRole }.registration
+        assertEquals( deviceRegistration, retrievedRegistration )
     }
 
     @Test
