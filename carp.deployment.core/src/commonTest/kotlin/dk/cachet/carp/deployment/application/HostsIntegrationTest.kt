@@ -117,13 +117,13 @@ class HostsIntegrationTest
         assertEquals( assignedDevice, registrationChanged?.device )
         assertEquals( registration, registrationChanged?.registration )
         var invitations = participationService.getActiveParticipationInvitations( account.id ).single()
-        assertTrue( invitations.devices.single().isRegistered )
+        assertEquals( registration, invitations.assignedDevices.single().registration )
 
         // Remove registration for the assigned device.
         deploymentService.unregisterDevice( deploymentId, assignedDevice.roleName )
         assertEquals( assignedDevice, registrationChanged?.device )
         assertNull( registrationChanged?.registration )
         invitations = participationService.getActiveParticipationInvitations( account.id ).single()
-        assertFalse( invitations.devices.single().isRegistered )
+        assertNull( invitations.assignedDevices.single().registration )
     }
 }

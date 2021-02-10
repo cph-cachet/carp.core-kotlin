@@ -2,6 +2,7 @@ package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
+import dk.cachet.carp.deployment.domain.users.AssignedMasterDevice
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
@@ -25,7 +26,7 @@ class ActiveParticipationInvitationTest
         val invitation = ActiveParticipationInvitation(
             Participation( UUID.randomUUID() ),
             StudyInvitation.empty(),
-            setOf( ActiveParticipationInvitation.DeviceInvitation( masterDevice, false ) )
+            setOf( AssignedMasterDevice( masterDevice, null ) )
         )
 
         val serialized = json.encodeToString( invitation )
@@ -44,7 +45,7 @@ class ActiveParticipationInvitationTest
         val invitation = ActiveParticipationInvitation(
             Participation( UUID.randomUUID() ),
             StudyInvitation.empty(),
-            setOf( ActiveParticipationInvitation.DeviceInvitation( unknownMasterDevice, false ) )
+            setOf( AssignedMasterDevice( unknownMasterDevice, null ) )
         )
 
         val serialized = json.encodeToString( invitation )

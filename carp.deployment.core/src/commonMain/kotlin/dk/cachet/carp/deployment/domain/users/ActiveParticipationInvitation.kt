@@ -1,12 +1,10 @@
 package dk.cachet.carp.deployment.domain.users
 
-import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptorSerializer
 import kotlinx.serialization.Serializable
 
 
 /**
- * An [invitation] to participate in an active study deployment using the specified master [devices].
+ * An [invitation] to participate in an active study deployment using the [assignedDevices].
  * Some of the devices which the participant is invited to might already be registered.
  * If the participant wants to use a different device, they will need to unregister the existing device first.
  */
@@ -14,20 +12,8 @@ import kotlinx.serialization.Serializable
 data class ActiveParticipationInvitation(
     val participation: Participation,
     val invitation: StudyInvitation,
-    val devices: Set<DeviceInvitation>
+    val assignedDevices: Set<AssignedMasterDevice>
 )
-{
-    @Serializable
-    data class DeviceInvitation(
-        @Serializable( MasterDeviceDescriptorSerializer::class )
-        val masterDevice: AnyMasterDeviceDescriptor,
-        /**
-         * True when the device is already registered in the study deployment; false otherwise.
-         * In case a device is registered, it needs to be unregistered first before a new device can be registered.
-         */
-        val isRegistered: Boolean
-    )
-}
 
 
 /**
@@ -48,18 +34,12 @@ internal fun filterActiveParticipationInvitations(
             groups.firstOrNull { g -> g.studyDeploymentId == it.participation.studyDeploymentId }
                 ?: throw IllegalArgumentException( "No deployment is passed to pair with one of the given invitations." )
         ) }
-        .filter { !it.second.isStudyDeploymentStopped }
-        .map {
+        .filter { (_, group) -> !group.isStudyDeploymentStopped }
+        .map { (invitation, group) ->
             ActiveParticipationInvitation(
-                it.first.participation,
-                it.first.invitation,
-                it.first.deviceRoleNames.map { deviceRoleName ->
-                    val assignedDevice = it.second.getAssignedMasterDevice( deviceRoleName )
-                    ActiveParticipationInvitation.DeviceInvitation(
-                        assignedDevice.device,
-                        assignedDevice.registration != null
-                    )
-                }.toSet()
+                invitation.participation,
+                invitation.invitation,
+                invitation.deviceRoleNames.map { group.getAssignedMasterDevice( it ) }.toSet()
             )
         }.toSet()
 }
