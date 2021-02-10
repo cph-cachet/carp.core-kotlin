@@ -67,9 +67,9 @@ describe( "carp.studies.core", () => {
     describe( "AssignParticipantDevices", () => {
         it( "initializes deviceRoleNames as set", () => {
             const uuid = UUID.Companion.randomUUID()
-            const deviceRoleNames = toSet( [ "Test" ] )
-            const assigned = new AssignParticipantDevices( uuid, deviceRoleNames )
-            expect( assigned.deviceRoleNames ).equals( deviceRoleNames )
+            const masterDeviceRoleNames = toSet( [ "Test" ] )
+            const assigned = new AssignParticipantDevices( uuid, masterDeviceRoleNames )
+            expect( assigned.masterDeviceRoleNames ).equals( masterDeviceRoleNames )
         } )
 
         it( "getAssigned participantIds and devices works", () => {

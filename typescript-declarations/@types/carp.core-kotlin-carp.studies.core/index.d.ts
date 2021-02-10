@@ -95,12 +95,12 @@ declare module 'carp.core-kotlin-carp.studies.core'
     {
         class AssignParticipantDevices
         {
-            constructor( participantId: UUID, deviceRoleNames: HashSet<string> )
+            constructor( participantId: UUID, masterDeviceRoleNames: HashSet<string> )
 
             static get Companion(): AssignParticipantDevices$Companion
 
             readonly participantId: UUID
-            readonly deviceRoleNames: HashSet<string>
+            readonly masterDeviceRoleNames: HashSet<string>
         }
         function participantIds_nvx6bb$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<UUID>
         function deviceRoles_nvx6bb$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<string>
