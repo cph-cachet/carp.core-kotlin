@@ -25,7 +25,7 @@ data class ActiveParticipationInvitation(
  * or when the device roles specified in [invitations] do not match the assigned devices.
  */
 internal fun filterActiveParticipationInvitations(
-    invitations: Set<ParticipationInvitation>,
+    invitations: Set<AccountParticipation>,
     groups: List<ParticipantGroup>
 ): Set<ActiveParticipationInvitation>
 {
@@ -39,7 +39,7 @@ internal fun filterActiveParticipationInvitations(
             ActiveParticipationInvitation(
                 invitation.participation,
                 invitation.invitation,
-                invitation.deviceRoleNames.map { group.getAssignedMasterDevice( it ) }.toSet()
+                invitation.assignedMasterDeviceRoleNames.map { group.getAssignedMasterDevice( it ) }.toSet()
             )
         }.toSet()
 }
