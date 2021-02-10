@@ -8,6 +8,7 @@ import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.deployment.domain.users.ParticipantGroup
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
@@ -78,6 +79,7 @@ fun createComplexParticipantGroup(): ParticipantGroup
         addParticipation(
             Account.withEmailIdentity( "test@test.com" ),
             Participation( studyDeploymentId ),
+            StudyInvitation.empty(),
             setOf( protocol.masterDevices.first() )
         )
         setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )

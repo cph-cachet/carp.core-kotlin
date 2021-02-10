@@ -13,7 +13,6 @@ import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.ParticipantData
 import dk.cachet.carp.deployment.domain.users.ParticipantGroup
 import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.ParticipationRepository
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.deployment.domain.users.filterActiveParticipationInvitations
@@ -94,40 +93,30 @@ class ParticipationServiceHost(
         participation = participation ?: Participation( studyDeploymentId )
 
         // Ensure an account exists for the given identity and an invitation has been sent out.
-        var invitationSent = false
         val deviceDescriptors = assignedMasterDeviceRoleNames.map { roleToUse ->
             group.assignedMasterDevices.first { it.device.roleName == roleToUse } }.map { it.device }
         if ( account == null )
         {
             account = accountService.inviteNewAccount( identity, invitation, participation, deviceDescriptors )
-            invitationSent = true
         }
         else if ( isNewParticipation )
         {
             accountService.inviteExistingAccount( account.id, invitation, participation, deviceDescriptors )
-            invitationSent = true
-        }
-
-        // Store the invitation so that users can also query for it later.
-        if ( invitationSent )
-        {
-            val participationInvitation = ParticipationInvitation( participation, invitation, assignedMasterDeviceRoleNames )
-            participationRepository.addInvitation( account.id, participationInvitation )
         }
 
         // Add participation to study deployment.
         if ( isNewParticipation )
         {
             val masterDevices = assignedMasterDevices.map { it.device }.toSet()
-            group.addParticipation( account, participation, masterDevices )
+            group.addParticipation( account, participation, invitation, masterDevices )
             participationRepository.putParticipantGroup( group )
         }
         else
         {
             // This participation was already added and an invitation has been sent.
             // Ensure the request is the same, otherwise, an 'update' might be expected, which is not supported.
-            val previousInvitation = participationRepository.getInvitations( account.id ).first { it.participation.id == participation.id }
-            check( previousInvitation.invitation == invitation && previousInvitation.deviceRoleNames == assignedMasterDeviceRoleNames )
+            val previousInvitation = participationRepository.getParticipationInvitations( account.id ).first { it.participation == participation }
+            check( previousInvitation.invitation == invitation && previousInvitation.assignedMasterDeviceRoleNames == assignedMasterDeviceRoleNames )
                 { "This person is already invited to participate in this study and the current invite deviates from the previous one." }
         }
 
@@ -140,7 +129,7 @@ class ParticipationServiceHost(
     override suspend fun getActiveParticipationInvitations( accountId: UUID ): Set<ActiveParticipationInvitation>
     {
         // Get participant group for each of the account's invitations.
-        val invitations = participationRepository.getInvitations( accountId )
+        val invitations = participationRepository.getParticipationInvitations( accountId )
         val deploymentIds = invitations.map { it.participation.studyDeploymentId }.toSet()
         val groups = participationRepository.getParticipantGroupList( deploymentIds )
 

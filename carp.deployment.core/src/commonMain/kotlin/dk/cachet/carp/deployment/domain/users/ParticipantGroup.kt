@@ -79,7 +79,12 @@ class ParticipantGroup private constructor(
      * or if the [participation] details do not match the study deployment of this participant group.
      * @throws IllegalStateException when the study deployment of this participant group has stopped.
      */
-    fun addParticipation( account: Account, participation: Participation, assignedMasterDevices: Set<AnyMasterDeviceDescriptor> )
+    fun addParticipation(
+        account: Account,
+        participation: Participation,
+        invitation: StudyInvitation,
+        assignedMasterDevices: Set<AnyMasterDeviceDescriptor>
+    )
     {
         require( studyDeploymentId == participation.studyDeploymentId )
             { "The specified participation details do not match the study deployment of this participant group." }
@@ -88,7 +93,11 @@ class ParticipantGroup private constructor(
         check( !isStudyDeploymentStopped )
 
         val assignedMasterDeviceRoleNames = assignedMasterDevices.map { it.roleName }.toSet()
-        val accountParticipation = AccountParticipation( account.id, participation.id, assignedMasterDeviceRoleNames )
+        val accountParticipation = AccountParticipation(
+            account.id,
+            Participation( studyDeploymentId, participation.id ),
+            invitation,
+            assignedMasterDeviceRoleNames )
         _participations.add( accountParticipation )
         event( Event.ParticipationAdded( accountParticipation ) )
     }
@@ -100,7 +109,7 @@ class ParticipantGroup private constructor(
     fun getParticipation( account: Account ): Participation? =
         _participations
             .filter { it.accountId == account.id }
-            .map { Participation( studyDeploymentId, it.participationId ) }
+            .map { it.participation }
             .singleOrNull()
 
     /**
