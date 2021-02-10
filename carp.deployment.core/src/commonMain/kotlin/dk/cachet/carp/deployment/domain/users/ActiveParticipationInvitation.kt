@@ -1,5 +1,7 @@
 package dk.cachet.carp.deployment.domain.users
 
+import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptorSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -17,7 +19,8 @@ data class ActiveParticipationInvitation(
 {
     @Serializable
     data class DeviceInvitation(
-        val deviceRoleName: String,
+        @Serializable( MasterDeviceDescriptorSerializer::class )
+        val masterDevice: AnyMasterDeviceDescriptor,
         /**
          * True when the device is already registered in the study deployment; false otherwise.
          * In case a device is registered, it needs to be unregistered first before a new device can be registered.
@@ -55,7 +58,7 @@ internal fun filterActiveParticipationInvitations(
                         it.second.assignedMasterDevices.firstOrNull { a -> a.device.roleName == deviceRoleName }
                     requireNotNull( assignedDevice ) { "Device in invitation with role name \"$deviceRoleName\" is not an assigned device." }
                     ActiveParticipationInvitation.DeviceInvitation(
-                        deviceRoleName,
+                        assignedDevice.device,
                         assignedDevice.registration != null
                     )
                 }.toSet()

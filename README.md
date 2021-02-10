@@ -250,7 +250,7 @@ val account: Account = getLoggedInUser()
 val invitation: ActiveParticipationInvitation =
     participationService.getActiveParticipationInvitations( account.id ).first()
 val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
-val deviceToUse: String = invitation.devices.first().deviceRoleName // This matches "Patient's phone".
+val deviceToUse: String = invitation.devices.first().masterDevice.roleName // This matches "Patient's phone".
 
 // Create a study runtime for the study.
 val clientRepository = createRepository()

@@ -44,7 +44,7 @@ class ActiveParticipationInvitationTest
             setOf( invitation ),
             listOf( group )
         ).first()
-        assertFalse( activeInvitation.devices.first { it.deviceRoleName == deviceRole }.isRegistered )
+        assertFalse( activeInvitation.devices.first { it.masterDevice.roleName == deviceRole }.isRegistered )
 
         // Once the device is registered, this is communicated in the active invitation.
         val toRegister = group.assignedMasterDevices.first { it.device.roleName == deviceRole }.device
@@ -53,7 +53,7 @@ class ActiveParticipationInvitationTest
             setOf( invitation ),
             listOf( group )
         ).first()
-        assertTrue( activeInvitation.devices.first { it.deviceRoleName == deviceRole }.isRegistered )
+        assertTrue( activeInvitation.devices.first { it.masterDevice.roleName == deviceRole }.isRegistered )
     }
 
     @Test
