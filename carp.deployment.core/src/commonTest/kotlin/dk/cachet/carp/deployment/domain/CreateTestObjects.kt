@@ -75,7 +75,11 @@ fun createComplexParticipantGroup(): ParticipantGroup
     val deployment = StudyDeployment( protocol.getSnapshot() )
 
     return ParticipantGroup.fromDeployment( deployment ).apply {
-        addParticipation( Account.withEmailIdentity( "test@test.com" ), Participation( studyDeploymentId ) )
+        addParticipation(
+            Account.withEmailIdentity( "test@test.com" ),
+            Participation( studyDeploymentId ),
+            setOf( protocol.masterDevices.first() )
+        )
         setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
         setData( CarpInputDataTypes, customAttribute.inputType, CustomInput( "Steven" ) )
         studyDeploymentStopped()

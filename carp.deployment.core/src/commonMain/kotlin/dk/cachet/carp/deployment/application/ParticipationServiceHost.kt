@@ -64,28 +64,27 @@ class ParticipationServiceHost(
 
     /**
      * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId],
-     * using the master devices with the specified [deviceRoleNames].
+     * using the master devices with the specified [assignedMasterDeviceRoleNames].
      * In case no account is associated to the specified [identity], a new account is created.
      * An [invitation] (and account details) is delivered to the person managing the [identity],
      * or should be handed out manually to the relevant participant by the person managing the specified [identity].
      *
      * @throws IllegalArgumentException when:
      * - there is no study deployment with [studyDeploymentId]
-     * - any of the [deviceRoleNames] are not part of the study protocol deployment
+     * - any of the [assignedMasterDeviceRoleNames] are not part of the study protocol deployment
      * @throws IllegalStateException when:
      * - the specified [identity] was already invited to participate in this deployment and a different [invitation] is specified than a previous request
      * - this deployment has stopped
      */
     override suspend fun addParticipation(
         studyDeploymentId: UUID,
-        deviceRoleNames: Set<String>,
+        assignedMasterDeviceRoleNames: Set<String>,
         identity: AccountIdentity,
         invitation: StudyInvitation
     ): Participation
     {
         val group = participationRepository.getParticipantGroupOrThrowBy( studyDeploymentId )
-        val masterDeviceRoleNames = group.assignedMasterDevices.map { it.device.roleName }
-        require( masterDeviceRoleNames.containsAll( deviceRoleNames ) )
+        val assignedMasterDevices = assignedMasterDeviceRoleNames.map { group.getAssignedMasterDevice( it ) }
 
         var account = accountService.findAccount( identity )
 
@@ -96,7 +95,7 @@ class ParticipationServiceHost(
 
         // Ensure an account exists for the given identity and an invitation has been sent out.
         var invitationSent = false
-        val deviceDescriptors = deviceRoleNames.map { roleToUse ->
+        val deviceDescriptors = assignedMasterDeviceRoleNames.map { roleToUse ->
             group.assignedMasterDevices.first { it.device.roleName == roleToUse } }.map { it.device }
         if ( account == null )
         {
@@ -112,14 +111,15 @@ class ParticipationServiceHost(
         // Store the invitation so that users can also query for it later.
         if ( invitationSent )
         {
-            val participationInvitation = ParticipationInvitation( participation, invitation, deviceRoleNames )
+            val participationInvitation = ParticipationInvitation( participation, invitation, assignedMasterDeviceRoleNames )
             participationRepository.addInvitation( account.id, participationInvitation )
         }
 
         // Add participation to study deployment.
         if ( isNewParticipation )
         {
-            group.addParticipation( account, participation )
+            val masterDevices = assignedMasterDevices.map { it.device }.toSet()
+            group.addParticipation( account, participation, masterDevices )
             participationRepository.putParticipantGroup( group )
         }
         else
@@ -127,7 +127,7 @@ class ParticipationServiceHost(
             // This participation was already added and an invitation has been sent.
             // Ensure the request is the same, otherwise, an 'update' might be expected, which is not supported.
             val previousInvitation = participationRepository.getInvitations( account.id ).first { it.participation.id == participation.id }
-            check( previousInvitation.invitation == invitation && previousInvitation.deviceRoleNames == deviceRoleNames )
+            check( previousInvitation.invitation == invitation && previousInvitation.deviceRoleNames == assignedMasterDeviceRoleNames )
                 { "This person is already invited to participate in this study and the current invite deviates from the previous one." }
         }
 

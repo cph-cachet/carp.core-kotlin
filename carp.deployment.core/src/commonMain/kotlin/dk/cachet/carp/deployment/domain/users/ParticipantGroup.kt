@@ -52,9 +52,7 @@ class ParticipantGroup private constructor(
             group.creationDate = snapshot.creationDate
 
             // Add participations.
-            snapshot.participations.forEach { p ->
-                group._participations.add( AccountParticipation( p.accountId, p.participationId ) )
-            }
+            snapshot.participations.forEach { p -> group._participations.add( p.copy() ) }
 
             // Add participant data.
             snapshot.data.forEach { (inputType, data) ->
@@ -81,7 +79,7 @@ class ParticipantGroup private constructor(
      * or if the [participation] details do not match the study deployment of this participant group.
      * @throws IllegalStateException when the study deployment of this participant group has stopped.
      */
-    fun addParticipation( account: Account, participation: Participation )
+    fun addParticipation( account: Account, participation: Participation, assignedMasterDevices: Set<AnyMasterDeviceDescriptor> )
     {
         require( studyDeploymentId == participation.studyDeploymentId )
             { "The specified participation details do not match the study deployment of this participant group." }
@@ -89,7 +87,8 @@ class ParticipantGroup private constructor(
             { "The specified account already participates in this study deployment." }
         check( !isStudyDeploymentStopped )
 
-        val accountParticipation = AccountParticipation( account.id, participation.id )
+        val assignedMasterDeviceRoleNames = assignedMasterDevices.map { it.roleName }.toSet()
+        val accountParticipation = AccountParticipation( account.id, participation.id, assignedMasterDeviceRoleNames )
         _participations.add( accountParticipation )
         event( Event.ParticipationAdded( accountParticipation ) )
     }
@@ -111,6 +110,15 @@ class ParticipantGroup private constructor(
         get() = _assignedMasterDevices
 
     private val _assignedMasterDevices: MutableSet<AssignedMasterDevice> = assignedMasterDevices.toMutableSet()
+
+    /**
+     * Return the [AssignedMasterDevice] with the specified [roleName].
+     *
+     * @throws IllegalArgumentException when no assigned device with [roleName] exists for this participant group.
+     */
+    fun getAssignedMasterDevice( roleName: String ) =
+        assignedMasterDevices.firstOrNull { it.device.roleName == roleName }
+            ?: throw IllegalArgumentException( "There is no assigned device with role name \"$roleName\" for this participant group." )
 
     /**
      * Update the device [registration] for the given assigned [masterDevice].

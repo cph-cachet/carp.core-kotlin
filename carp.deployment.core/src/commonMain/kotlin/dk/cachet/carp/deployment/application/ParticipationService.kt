@@ -25,19 +25,24 @@ interface ParticipationService : ApplicationService<ParticipationService, Partic
 
     /**
      * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId],
-     * using the master devices with the specified [deviceRoleNames].
+     * using the master devices with the specified [assignedMasterDeviceRoleNames].
      * In case no account is associated to the specified [identity], a new account is created.
      * An [invitation] (and account details) is delivered to the person managing the [identity],
      * or should be handed out manually to the relevant participant by the person managing the specified [identity].
      *
      * @throws IllegalArgumentException when:
      * - there is no study deployment with [studyDeploymentId]
-     * - any of the [deviceRoleNames] are not part of the study protocol deployment
+     * - any of the [assignedMasterDeviceRoleNames] are not part of the study protocol deployment
      * @throws IllegalStateException when:
      * - the specified [identity] was already invited to participate in this deployment and a different [invitation] is specified than a previous request
      * - this deployment has stopped
      */
-    suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ): Participation
+    suspend fun addParticipation(
+        studyDeploymentId: UUID,
+        assignedMasterDeviceRoleNames: Set<String>,
+        identity: AccountIdentity,
+        invitation: StudyInvitation
+    ): Participation
 
     /**
      * Get all participations of active study deployments the account with the given [accountId] has been invited to.
