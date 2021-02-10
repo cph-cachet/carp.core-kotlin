@@ -2,6 +2,7 @@ package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
 import dk.cachet.carp.deployment.domain.DeploymentRepository
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.RegistrableDevice
@@ -18,7 +19,10 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
  * Application service which allows deploying [StudyProtocol]'s
  * and retrieving [MasterDeviceDeployment]'s for participating master devices as defined in the protocol.
  */
-class DeploymentServiceHost( private val repository: DeploymentRepository ) : DeploymentService
+class DeploymentServiceHost(
+    private val repository: DeploymentRepository,
+    private val eventBus: ApplicationServiceEventBus<DeploymentService, DeploymentService.Event>
+) : DeploymentService
 {
     /**
      * Instantiate a study deployment for a given [StudyProtocolSnapshot].
@@ -31,6 +35,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository ) : De
         val newDeployment = StudyDeployment( protocol )
 
         repository.add( newDeployment )
+        eventBus.publish( DeploymentService.Event.StudyDeploymentCreated( newDeployment.getSnapshot() ) )
 
         return newDeployment.getStatus()
     }
@@ -73,18 +78,20 @@ class DeploymentServiceHost( private val repository: DeploymentRepository ) : De
     override suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
     {
         val deployment: StudyDeployment = repository.getStudyDeploymentOrThrowBy( studyDeploymentId )
-        val device: RegistrableDevice = getRegistrableDevice( deployment, deviceRoleName )
+        val device: AnyDeviceDescriptor = getRegistrableDevice( deployment, deviceRoleName ).device
 
         // Early out when the device is already registered.
-        val priorRegistration = deployment.registeredDevices[ device.device ]
+        val priorRegistration = deployment.registeredDevices[ device ]
         if ( !deployment.isStopped && priorRegistration == registration )
         {
             return deployment.getStatus()
         }
 
-        // Register device and save changes.
-        deployment.registerDevice( device.device, registration )
+        // Register device and save/distribute changes.
+        deployment.registerDevice( device, registration )
         repository.update( deployment )
+        val registered = DeploymentService.Event.DeviceRegistrationChanged( studyDeploymentId, device, registration )
+        eventBus.publish( registered )
 
         return deployment.getStatus()
     }
@@ -107,6 +114,8 @@ class DeploymentServiceHost( private val repository: DeploymentRepository ) : De
         {
             deployment.unregisterDevice( device )
             repository.update( deployment )
+            val unregistered = DeploymentService.Event.DeviceRegistrationChanged( studyDeploymentId, device, null )
+            eventBus.publish( unregistered )
         }
 
         return deployment.getStatus()
@@ -168,6 +177,7 @@ class DeploymentServiceHost( private val repository: DeploymentRepository ) : De
         {
             deployment.stop()
             repository.update( deployment )
+            eventBus.publish( DeploymentService.Event.StudyDeploymentStopped( studyDeploymentId ) )
         }
 
         return deployment.getStatus()

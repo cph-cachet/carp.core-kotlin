@@ -22,7 +22,8 @@ import kotlin.test.*
 
 
 /**
- * Tests whether different application service hosts are correctly integrated through integration events.
+ * Tests whether different application service hosts in the studies subsystem
+ * are correctly integrated through integration events.
  */
 class HostsIntegrationTest
 {
@@ -44,13 +45,16 @@ class HostsIntegrationTest
         studyService = StudyServiceHost( studyRepo, eventBus.createApplicationServiceAdapter( StudyService::class ) )
 
         // Create deployment service.
-        val deploymentRepo = InMemoryDeploymentRepository()
-        deploymentService = DeploymentServiceHost( deploymentRepo )
+        deploymentService = DeploymentServiceHost(
+            InMemoryDeploymentRepository(),
+            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
         // Create dependent participation service.
         val accountService = InMemoryAccountService()
-        val participationRepository = InMemoryParticipationRepository()
-        participationService = ParticipationServiceHost( deploymentRepo, participationRepository, accountService )
+        participationService = ParticipationServiceHost(
+            InMemoryParticipationRepository(),
+            accountService,
+            eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
         participantService = ParticipantServiceHost(
             InMemoryParticipantRepository(),

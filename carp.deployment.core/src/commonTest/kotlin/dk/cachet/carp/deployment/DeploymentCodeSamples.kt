@@ -1,6 +1,9 @@
 package dk.cachet.carp.deployment
 
 import dk.cachet.carp.common.DateTime
+import dk.cachet.carp.common.ddd.EventBus
+import dk.cachet.carp.common.ddd.SingleThreadedEventBus
+import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
@@ -67,5 +70,8 @@ class DeploymentCodeSamples
         return protocol
     }
 
-    private fun createDeploymentEndpoint(): DeploymentService = DeploymentServiceHost( InMemoryDeploymentRepository() )
+    private val eventBus: EventBus = SingleThreadedEventBus()
+    private fun createDeploymentEndpoint(): DeploymentService = DeploymentServiceHost(
+        InMemoryDeploymentRepository(),
+        eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 }

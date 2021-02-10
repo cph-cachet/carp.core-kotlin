@@ -78,7 +78,10 @@ interface ParticipationRepositoryTest
         repo.putParticipantGroup( group2 )
 
         val groups = repo.getParticipantGroupList( setOf( deployment1.id, deployment2.id ) )
-        assertEquals( setOf( group1, group2 ), groups.toSet() )
+        assertEquals( // ParticipantGroup does not implement equals, but snapshot does.
+            arrayOf( group1, group2 ).map { it.getSnapshot() }.toSet(),
+            groups.map { it.getSnapshot() }.toSet()
+        )
     }
 
     @Test
@@ -97,8 +100,7 @@ interface ParticipationRepositoryTest
         val noPrevious = repo.putParticipantGroup( group )
         assertNull( noPrevious )
 
-        val group2 = createComplexParticipantGroup()
-        val previous = repo.putParticipantGroup( group2 )
+        val previous = repo.putParticipantGroup( group )
         assertNotNull( previous )
         assertEquals( group.creationDate, previous.creationDate )
     }

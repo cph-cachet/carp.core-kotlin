@@ -34,11 +34,6 @@ fun createComplexDeployment(): StudyDeployment
     deployment.registerDevice( master, master.createRegistration() )
     deployment.registerDevice( connected, connected.createRegistration() )
 
-    // Add a participation.
-    val account = Account.withUsernameIdentity( "test" )
-    val participation = Participation( deployment.id )
-    deployment.addParticipation( account, participation )
-
     // Deploy a device.
     val deviceDeployment = deployment.getDeviceDeploymentFor( master )
     deployment.deviceDeployed( master, deviceDeployment.lastUpdateDate )
@@ -80,8 +75,10 @@ fun createComplexParticipantGroup(): ParticipantGroup
     val deployment = StudyDeployment( protocol.getSnapshot() )
 
     return ParticipantGroup.fromDeployment( deployment ).apply {
+        addParticipation( Account.withEmailIdentity( "test@test.com" ), Participation( studyDeploymentId ) )
         setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
         setData( CarpInputDataTypes, customAttribute.inputType, CustomInput( "Steven" ) )
+        studyDeploymentStopped()
     }
 }
 

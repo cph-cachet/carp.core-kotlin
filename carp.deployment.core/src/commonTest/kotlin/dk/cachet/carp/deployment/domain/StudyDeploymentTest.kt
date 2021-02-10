@@ -4,9 +4,6 @@ import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.DataType
 import dk.cachet.carp.common.serialization.createDefaultJSON
-import dk.cachet.carp.common.users.Account
-import dk.cachet.carp.deployment.domain.users.AccountParticipation
-import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
@@ -288,9 +285,6 @@ class StudyDeploymentTest
             deployment.invalidatedDeployedDevices.intersect( fromSnapshot.invalidatedDeployedDevices ).count() )
         assertEquals( deployment.startTime, fromSnapshot.startTime )
         assertEquals( deployment.isStopped, fromSnapshot.isStopped )
-        assertEquals(
-            deployment.participations.count(),
-            deployment.participations.intersect( fromSnapshot.participations ).count() )
         assertEquals( 0, fromSnapshot.consumeEvents().size )
     }
 
@@ -689,63 +683,5 @@ class StudyDeploymentTest
         assertFailsWith<IllegalStateException> { deployment.unregisterDevice( master ) }
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
         assertFailsWith<IllegalStateException> { deployment.deviceDeployed( master, deviceDeployment.lastUpdateDate ) }
-        val account = Account.withUsernameIdentity( "Test" )
-        val participation = Participation( deployment.id )
-        assertFailsWith<IllegalStateException> { deployment.addParticipation( account, participation ) }
-    }
-
-    @Test
-    fun addParticipation_and_retrieving_it_succeeds()
-    {
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment = studyDeploymentFor( protocol )
-
-        val account = Account.withUsernameIdentity( "test" )
-        val participation = Participation( deployment.id )
-        deployment.addParticipation( account, participation )
-        val retrievedParticipation = deployment.getParticipation( account )
-
-        assertEquals( participation, retrievedParticipation )
-        val expectedParticipation = AccountParticipation( account.id, participation.id )
-        assertEquals( StudyDeployment.Event.ParticipationAdded( expectedParticipation ), deployment.consumeEvents().last() )
-    }
-
-    @Test
-    fun addParticipation_for_incorrect_study_deployment_fails()
-    {
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment = studyDeploymentFor( protocol )
-        val account = Account.withUsernameIdentity( "test" )
-        val incorrectDeploymentId = UUID.randomUUID()
-        val participation = Participation( incorrectDeploymentId )
-
-        assertFailsWith<IllegalArgumentException> { deployment.addParticipation( account, participation ) }
-        assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.ParticipationAdded>().count() )
-    }
-
-    @Test
-    fun addParticipation_for_existing_account_fails()
-    {
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment = studyDeploymentFor( protocol )
-        val account = Account.withUsernameIdentity( "test" )
-        deployment.addParticipation( account, Participation( deployment.id ) )
-
-        assertFailsWith<IllegalArgumentException>
-        {
-            deployment.addParticipation( account, Participation( deployment.id ) )
-        }
-        assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.ParticipationAdded>().count() )
-    }
-
-    @Test
-    fun getParticipation_for_non_participating_account_returns_null()
-    {
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val deployment = studyDeploymentFor( protocol )
-        val account = Account.withUsernameIdentity( "test" )
-
-        val participation = deployment.getParticipation( account )
-        assertNull( participation )
     }
 }

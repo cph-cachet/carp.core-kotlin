@@ -3,19 +3,26 @@ package dk.cachet.carp.deployment.application
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.InputDataType
+import dk.cachet.carp.common.ddd.ApplicationService
+import dk.cachet.carp.common.ddd.IntegrationEvent
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.ParticipantData
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import kotlinx.serialization.Serializable
 
 
 /**
  * Application service which allows inviting participants, retrieving participations for study deployments,
  * and managing data related to participants which is input by users.
  */
-interface ParticipationService
+interface ParticipationService : ApplicationService<ParticipationService, ParticipationService.Event>
 {
+    @Serializable
+    sealed class Event : IntegrationEvent<ParticipationService>()
+
+
     /**
      * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId],
      * using the master devices with the specified [deviceRoleNames].

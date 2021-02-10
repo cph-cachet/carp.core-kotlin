@@ -17,8 +17,11 @@ import kotlinx.serialization.Serializable
 data class ParticipantGroupSnapshot(
     override val creationDate: DateTime,
     val studyDeploymentId: UUID,
+    val assignedMasterDevices: Set<AssignedMasterDevice>,
+    val isStudyDeploymentStopped: Boolean,
     val expectedData: Set<ParticipantAttribute>,
-    @Serializable( with = MapAsArraySerializer::class )
+    val participations: Set<AccountParticipation>,
+    @Serializable( MapAsArraySerializer::class )
     val data: Map<InputDataType, Data?>
 ) : Snapshot<ParticipantGroup>
 {
@@ -31,7 +34,10 @@ data class ParticipantGroupSnapshot(
             ParticipantGroupSnapshot(
                 group.creationDate,
                 group.studyDeploymentId,
+                group.assignedMasterDevices.toSet(),
+                group.isStudyDeploymentStopped,
                 group.expectedData.toSet(),
+                group.participations.toSet(),
                 group.data.toMap()
             )
     }
