@@ -54,9 +54,7 @@ internal fun filterActiveParticipationInvitations(
                 it.first.participation,
                 it.first.invitation,
                 it.first.deviceRoleNames.map { deviceRoleName ->
-                    val assignedDevice =
-                        it.second.assignedMasterDevices.firstOrNull { a -> a.device.roleName == deviceRoleName }
-                    requireNotNull( assignedDevice ) { "Device in invitation with role name \"$deviceRoleName\" is not an assigned device." }
+                    val assignedDevice = it.second.getAssignedMasterDevice( deviceRoleName )
                     ActiveParticipationInvitation.DeviceInvitation(
                         assignedDevice.device,
                         assignedDevice.registration != null

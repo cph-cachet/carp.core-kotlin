@@ -63,14 +63,18 @@ class ParticipantGroupTest
     fun addParticipation_and_retrieving_it_succeeds()
     {
         val group = createParticipantGroup()
+        val devicesToAssign = group.assignedMasterDevices.map { it.device }.toSet()
 
         val account = Account.withUsernameIdentity( "test" )
         val participation = Participation( group.studyDeploymentId )
-        group.addParticipation( account, participation )
+        group.addParticipation( account, participation, devicesToAssign )
         val retrievedParticipation = group.getParticipation( account )
 
         assertEquals( participation, retrievedParticipation )
-        val expectedParticipation = AccountParticipation( account.id, participation.id )
+        val expectedParticipation = AccountParticipation(
+            account.id,
+            participation.id,
+            devicesToAssign.map { it.roleName }.toSet() )
         assertEquals( ParticipantGroup.Event.ParticipationAdded( expectedParticipation ), group.consumeEvents().last() )
     }
 
@@ -78,11 +82,12 @@ class ParticipantGroupTest
     fun addParticipation_for_incorrect_study_deployment_fails()
     {
         val group = createParticipantGroup()
+        val devicesToAssign = group.assignedMasterDevices.map { it.device }.toSet()
 
         val account = Account.withUsernameIdentity( "test" )
         val incorrectDeploymentId = UUID.randomUUID()
         val participation = Participation( incorrectDeploymentId )
-        assertFailsWith<IllegalArgumentException> { group.addParticipation( account, participation ) }
+        assertFailsWith<IllegalArgumentException> { group.addParticipation( account, participation, devicesToAssign ) }
         assertEquals( 0, group.consumeEvents().filterIsInstance<ParticipantGroup.Event.ParticipationAdded>().count() )
     }
 
@@ -90,12 +95,13 @@ class ParticipantGroupTest
     fun addParticipation_for_existing_account_fails()
     {
         val group = createParticipantGroup()
+        val devicesToAssign = group.assignedMasterDevices.map { it.device }.toSet()
         val account = Account.withUsernameIdentity( "test" )
-        group.addParticipation( account, Participation( group.studyDeploymentId ) )
+        group.addParticipation( account, Participation( group.studyDeploymentId ), devicesToAssign )
 
         assertFailsWith<IllegalArgumentException>
         {
-            group.addParticipation( account, Participation( group.studyDeploymentId ) )
+            group.addParticipation( account, Participation( group.studyDeploymentId ), devicesToAssign )
         }
         assertEquals( 1, group.consumeEvents().filterIsInstance<ParticipantGroup.Event.ParticipationAdded>().count() )
     }
@@ -104,12 +110,13 @@ class ParticipantGroupTest
     fun addParticipation_fails_when_deployment_stopped()
     {
         val group = createParticipantGroup()
+        val devicesToAssign = group.assignedMasterDevices.map { it.device }.toSet()
         group.studyDeploymentStopped()
 
         val account = Account.withUsernameIdentity( "test" )
         assertFailsWith<IllegalStateException>
         {
-            group.addParticipation( account, Participation( group.studyDeploymentId ) )
+            group.addParticipation( account, Participation( group.studyDeploymentId ), devicesToAssign )
         }
     }
 
@@ -121,6 +128,25 @@ class ParticipantGroupTest
         val account = Account.withUsernameIdentity( "test" )
         val participation = group.getParticipation( account )
         assertNull( participation )
+    }
+
+    @Test
+    fun getAssignedMasterDevice_succeeds()
+    {
+        val masterDeviceRoleName = "Master"
+        val protocol = createSingleMasterDeviceProtocol( masterDeviceRoleName )
+        val group = createParticipantGroup( protocol )
+
+        val assignedDevice = group.getAssignedMasterDevice( masterDeviceRoleName )
+        assertEquals( protocol.masterDevices.single(), assignedDevice.device )
+    }
+
+    @Test
+    fun getAssignedMasterDevice_fails_for_unknown_device()
+    {
+        val group = createParticipantGroup()
+
+        assertFailsWith<IllegalArgumentException> { group.getAssignedMasterDevice( "Unknown" ) }
     }
 
     @Test
