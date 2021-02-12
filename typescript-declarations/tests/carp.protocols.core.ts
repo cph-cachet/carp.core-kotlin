@@ -6,6 +6,8 @@ import Json = kotlinx.serialization.json.Json
 import { dk as dkc } from 'carp.core-kotlin-carp.common'
 import UUID = dkc.cachet.carp.common.UUID
 import { dk } from 'carp.core-kotlin-carp.protocols.core'
+import DeviceRegistration = dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import DefaultDeviceRegistration = dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import ProtocolId = dk.cachet.carp.protocols.domain.StudyProtocol.Id
 import ProtocolOwner = dk.cachet.carp.protocols.domain.ProtocolOwner
 import ProtocolVersion = dk.cachet.carp.protocols.domain.ProtocolVersion
@@ -29,6 +31,8 @@ describe( "carp.protocols.core", () => {
             [ "Id$Companion", ProtocolId.Companion ],
             studyProtocolSnapshot,
             StudyProtocolSnapshot.Companion,
+            [ "DeviceRegistration", new DefaultDeviceRegistration( "some device id" ) ],
+            DeviceRegistration.Companion,
             new ProtocolVersion( "Version" ),
             ProtocolVersion.Companion,
             ProtocolServiceRequest.Companion,
