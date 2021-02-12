@@ -2,10 +2,18 @@ declare module 'carp.core-kotlin-carp.deployment.core'
 {
     import { kotlin } from 'kotlin'
     import ArrayList = kotlin.collections.ArrayList
+    import HashMap = kotlin.collections.HashMap
     import HashSet = kotlin.collections.HashSet
+    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
+    import Json = kotlinx.serialization.json.Json
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
-    import UUID = cdk.cachet.carp.common.UUID
+    import AccountIdentity = cdk.cachet.carp.common.users.AccountIdentity
     import DateTime = cdk.cachet.carp.common.DateTime
+    import NamespacedId = cdk.cachet.carp.common.NamespacedId
+    import UUID = cdk.cachet.carp.common.UUID
+    import { dk as pdk } from 'carp.core-kotlin-carp.protocols.core'
+    import DeviceRegistration = pdk.cachet.carp.protocols.domain.devices.DeviceRegistration
+    import StudyProtocolSnapshot = pdk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 
 
     namespace dk.cachet.carp.deployment.domain
@@ -81,6 +89,30 @@ declare module 'carp.core-kotlin-carp.deployment.core'
         }
 
 
+        class MasterDeviceDeployment
+        {
+            constructor(
+                deviceDescriptor: any,
+                configuration: DeviceRegistration,
+                connectedDevices: HashSet<any>,
+                connectedDeviceConfigurations: HashMap<string, DeviceRegistration>,
+                tasks: HashSet<any>,
+                triggers: HashMap<number, any>,
+                triggeredTasks: HashSet<any> )
+
+                static get Companion(): MasterDeviceDeployment$Companion
+
+                readonly deviceDescriptor: any
+                readonly configuration: DeviceRegistration
+                readonly connectedDevices: HashSet<any>
+                readonly connectedDeviceConfigurations: HashMap<string, DeviceRegistration>
+                readonly tasks: HashSet<any>
+                readonly triggers: HashMap<number, any>
+                readonly triggeredTasks: HashSet<any>
+        }
+        interface MasterDeviceDeployment$Companion { serializer(): any }
+
+
         class StudyDeploymentStatus
         {
             static get Companion(): StudyDeploymentStatus$Companion
@@ -127,6 +159,32 @@ declare module 'carp.core-kotlin-carp.deployment.core'
 
     namespace dk.cachet.carp.deployment.domain.users
     {
+        class ActiveParticipationInvitation
+        {
+            constructor( participation: Participation, invitation: StudyInvitation, device: HashSet<ActiveParticipationInvitation.DeviceInvitation> )
+
+            static get Companion(): ActiveParticipationInvitation$Companion
+
+            readonly participation: Participation
+            readonly invitation: StudyInvitation
+            readonly devices: HashSet<ActiveParticipationInvitation.DeviceInvitation>
+        }
+        interface ActiveParticipationInvitation$Companion { serializer(): any }
+
+        namespace ActiveParticipationInvitation
+        {
+            class DeviceInvitation
+            {
+                constructor( deviceRoleName: string, isRegistered: Boolean )
+    
+                static get Companion(): DeviceInvitation$Companion
+    
+                readonly deviceRoleName: any
+                readonly isRegistered: Boolean
+            }
+            interface DeviceInvitation$Companion { serializer(): any }
+        }
+
         class Participation
         {
             constructor( studyDeploymentId: UUID, id?: UUID )
@@ -138,6 +196,16 @@ declare module 'carp.core-kotlin-carp.deployment.core'
         }
         interface Participation$Companion { serializer(): any }
 
+        class ParticipantData
+        {
+            constructor( studyDeploymentId: UUID, data: HashMap<NamespacedId, any> )
+
+            static get Companion(): ParticipantData$Companion
+
+            readonly studyDeploymentId: UUID
+            readonly data: HashMap<NamespacedId, any>
+        }
+        interface ParticipantData$Companion { serializer(): any }
 
         class StudyInvitation
         {
@@ -154,5 +222,88 @@ declare module 'carp.core-kotlin-carp.deployment.core'
             serializer(): any;
             empty(): StudyInvitation;
         }
+    }
+
+
+    namespace dk.cachet.carp.deployment.infrastructure
+    {
+        import StudyInvitation = dk.cachet.carp.deployment.domain.users.StudyInvitation
+
+
+        abstract class DeploymentServiceRequest
+        {
+            static get Companion(): DeploymentServiceRequest$Companion
+        }
+        interface DeploymentServiceRequest$Companion { serializer(): any }
+
+        namespace DeploymentServiceRequest
+        {
+            class CreateStudyDeployment extends DeploymentServiceRequest
+            {
+                constructor( protocol: StudyProtocolSnapshot )
+            }
+            class GetStudyDeploymentStatus extends DeploymentServiceRequest
+            {
+                constructor( studyDeploymentId: UUID )
+            }
+            class GetStudyDeploymentStatusList extends DeploymentServiceRequest
+            {
+                constructor( studyDeploymentIds: HashSet<UUID> )
+            }
+            class RegisterDevice extends DeploymentServiceRequest
+            {
+                constructor( studyDeploymentId: UUID, deviceRoleName: string, registration: DeviceRegistration )
+            }
+            class UnregisterDevice extends DeploymentServiceRequest
+            {
+                constructor( studyDeploymentId: UUID, deviceRoleName: string )
+            }
+            class GetDeviceDeploymentFor extends DeploymentServiceRequest
+            {
+                constructor( studyDeploymentId: UUID, masterDeviceRoleName: string )
+            }
+            class DeploymentSuccessful extends DeploymentServiceRequest
+            {
+                constructor( studyDeploymentId: UUID, masterDeviceRoleName: string, deviceDeploymentLastUpdateDate: DateTime )
+            }
+            class Stop extends DeploymentServiceRequest
+            {
+                constructor( studyDeploymentId: UUID )
+            }
+        }
+
+
+        abstract class ParticipationServiceRequest
+        {
+            static get Companion(): ParticipationServiceRequest$Companion
+        }
+        interface ParticipationServiceRequest$Companion { serializer(): any }
+
+        namespace ParticipationServiceRequest
+        {
+            class AddParticipation extends ParticipationServiceRequest
+            {
+                constructor( studyDeploymentId: UUID, deviceRoleNames: HashSet<String>, identity: AccountIdentity, invitation: StudyInvitation )
+            }
+            class GetActiveParticipationInvitations extends ParticipationServiceRequest
+            {
+                constructor( accountId: UUID )
+            }
+            class GetParticipantData extends ParticipationServiceRequest
+            {
+                constructor( studyDeploymentId: UUID )
+            }
+            class GetParticipantDataList extends ParticipationServiceRequest
+            {
+                constructor( studyDeploymentIds: HashSet<UUID> )
+            }
+            class SetParticipantData extends ParticipationServiceRequest
+            {
+                constructor( studyDeploymentId: UUID, inputDataType: NamespacedId, data: any | null )
+            }
+        }
+
+        
+        function createDeploymentSerializer_18xi4u$(): Json
     }
 }
