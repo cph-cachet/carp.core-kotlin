@@ -3,10 +3,13 @@ declare module 'carp.core-kotlin-carp.protocols.core'
     import { kotlin } from 'kotlin'
     import ArrayList = kotlin.collections.ArrayList
     import HashSet = kotlin.collections.HashSet
+    import HashMap = kotlin.collections.HashMap
+
     import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
     import Json = kotlinx.serialization.json.Json
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import DateTime = cdk.cachet.carp.common.DateTime
+    import NamespacedId = cdk.cachet.carp.common.NamespacedId
     import UUID = cdk.cachet.carp.common.UUID
     import ParticipantAttribute = cdk.cachet.carp.common.users.ParticipantAttribute
 
@@ -62,6 +65,28 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             readonly expectedParticipantData: ArrayList<ParticipantAttribute>
         }
         interface StudyProtocolSnapshot$Companion { serializer(): any }
+    }
+
+    namespace dk.cachet.carp.protocols.domain.devices
+    {
+        abstract class DeviceRegistration
+        {
+            static get Companion(): DeviceRegistration$Companion  
+            
+            readonly deviceId: string
+            readonly registrationCreationDate: DateTime
+        }
+        interface DeviceRegistration$Companion { serializer(): any }
+
+        class DefaultDeviceRegistration extends DeviceRegistration
+        {
+            constructor( deviceId: string )
+        }
+
+        class Smartphone
+        {
+            constructor( roleName: string, samplingConfiguration: HashMap<NamespacedId, any> )
+        }
     }
 
 
