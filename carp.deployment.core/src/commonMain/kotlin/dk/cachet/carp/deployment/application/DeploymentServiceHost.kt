@@ -41,6 +41,19 @@ class DeploymentServiceHost(
     }
 
     /**
+     * Remove study deployments with the given [studyDeploymentIds].
+     * This also removes all data related to the study deployments managed by [ParticipationService].
+     *
+     * @return The IDs of study deployments which were removed. IDs for which no study deployment exists are ignored.
+     */
+    override suspend fun removeStudyDeployments( studyDeploymentIds: Set<UUID> ): Set<UUID>
+    {
+        val removedIds = repository.remove( studyDeploymentIds )
+        eventBus.publish( DeploymentService.Event.StudyDeploymentsRemoved( studyDeploymentIds ) )
+        return removedIds
+    }
+
+    /**
      * Get the status for a study deployment with the given [studyDeploymentId].
      *
      * @param studyDeploymentId The id of the [StudyDeployment] to return [StudyDeploymentStatus] for.

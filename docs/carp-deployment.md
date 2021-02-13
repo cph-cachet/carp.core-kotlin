@@ -36,6 +36,7 @@ Allows deploying study protocols and retrieving master device deployments for pa
 | Endpoint | Description | Require | Grant |
 | --- | --- | --- | --- |
 | `createStudyDeployment` | Instantiate a study deployment for a given protocol. | | manage deployment: `studyDeploymentId`, in deployment: `studyDeploymentId` |
+| `removeStudyDeployments` | Remove study deployments and all related data to it. | manage deployment: `studyDeploymentId`| |
 | `getStudyDeploymentStatus` | Get the status for a study deployment. | in deployment: `studyDeploymentId` | |
 | `getStudyDeploymentStatusList` | Get the statuses for a set of deployments. | in deployment: (all) `studyDeploymentIds` | |
 | `registerDevice` | Register a device for a study deployment. | in deployment: `studyDeploymentId` | |

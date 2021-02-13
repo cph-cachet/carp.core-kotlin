@@ -35,10 +35,13 @@ class ParticipationServiceHost(
 {
     init
     {
-        // Create a ParticipantGroup per study deployment.
+        // Create a ParticipantGroup per study deployment (as long as it exists).
         eventBus.subscribe { created: DeploymentService.Event.StudyDeploymentCreated ->
             val group = ParticipantGroup.fromDeployment( created.deployment.toObject() )
             participationRepository.putParticipantGroup( group )
+        }
+        eventBus.subscribe { removed: DeploymentService.Event.StudyDeploymentsRemoved ->
+            participationRepository.removeParticipantGroups( removed.deploymentIds )
         }
 
         // Notify participant group that associated study deployment has stopped.

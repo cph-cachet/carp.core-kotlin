@@ -1,6 +1,8 @@
 complexity:
   LongParameterList:
     excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
+  TooManyFunctions:
+    ignorePrivate: true
 
 formatting:
   Filename:

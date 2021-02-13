@@ -15,6 +15,7 @@ private typealias Service = DeploymentService
 
 class DeploymentServiceMock(
     private val createStudyDeploymentResult: StudyDeploymentStatus = emptyStatus,
+    private val removeStudyDeploymentsResult: Set<UUID> = emptySet(),
     private val getStudyDeploymentStatusResult: StudyDeploymentStatus = emptyStatus,
     private val getStudyDeploymentStatusListResult: List<StudyDeploymentStatus> = emptyList(),
     private val registerDeviceResult: StudyDeploymentStatus = emptyStatus,
@@ -39,6 +40,10 @@ class DeploymentServiceMock(
     override suspend fun createStudyDeployment( protocol: StudyProtocolSnapshot ) =
         createStudyDeploymentResult
         .also { trackSuspendCall( Service::createStudyDeployment, protocol ) }
+
+    override suspend fun removeStudyDeployments( studyDeploymentIds: Set<UUID> ) =
+        removeStudyDeploymentsResult
+        .also { trackSuspendCall( Service::removeStudyDeployments, studyDeploymentIds ) }
 
     override suspend fun getStudyDeploymentStatus( studyDeploymentId: UUID ) =
         getStudyDeploymentStatusResult

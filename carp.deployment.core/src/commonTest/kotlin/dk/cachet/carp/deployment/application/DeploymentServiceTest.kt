@@ -22,6 +22,30 @@ abstract class DeploymentServiceTest
 
 
     @Test
+    fun removeStudyDeployments_succeeds() = runSuspendTest {
+        val deploymentService = createService()
+        val deploymentId1 = addTestDeployment( deploymentService, "Test device" )
+        val deploymentId2 = addTestDeployment( deploymentService, "Test device" )
+        val deploymentIds = setOf( deploymentId1, deploymentId2 )
+
+        val removedIds = deploymentService.removeStudyDeployments( deploymentIds )
+        assertEquals( deploymentIds, removedIds )
+        assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatus( deploymentId1 ) }
+        assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatus( deploymentId2 ) }
+    }
+
+    @Test
+    fun removeStudyDeployments_ignores_unknown_ids() = runSuspendTest {
+        val deploymentService = createService()
+        val deploymentId = addTestDeployment( deploymentService, "Test device" )
+        val unknownId = UUID.randomUUID()
+        val deploymentIds = setOf( deploymentId, unknownId )
+
+        val removedIds = deploymentService.removeStudyDeployments( deploymentIds )
+        assertEquals( setOf( deploymentId ), removedIds )
+    }
+
+    @Test
     fun getStudyDeploymentStatus_succeeds() = runSuspendTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
