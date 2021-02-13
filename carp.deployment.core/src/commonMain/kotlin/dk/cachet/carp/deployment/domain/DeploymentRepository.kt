@@ -51,4 +51,11 @@ interface DeploymentRepository
      * @throws IllegalArgumentException when no previous version of this study deployment is stored in the repository.
      */
     suspend fun update( studyDeployment: StudyDeployment )
+
+    /**
+     * Remove the [StudyDeployment]s with the specified [studyDeploymentIds].
+     *
+     * @return The IDs of study deployments which were removed. IDs for which no study deployment exists are ignored.
+     */
+    suspend fun remove( studyDeploymentIds: Set<UUID> ): Set<UUID>
 }

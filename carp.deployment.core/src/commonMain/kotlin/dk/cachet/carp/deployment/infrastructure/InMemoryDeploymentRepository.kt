@@ -21,7 +21,8 @@ class InMemoryDeploymentRepository : DeploymentRepository
      */
     override suspend fun add( studyDeployment: StudyDeployment )
     {
-        require( !studyDeployments.contains( studyDeployment.id ) ) { "The repository already contains a study deployment with ID '${studyDeployment.id}'." }
+        require( !studyDeployments.contains( studyDeployment.id ) )
+            { "The repository already contains a study deployment with ID '${studyDeployment.id}'." }
 
         studyDeployments[ studyDeployment.id ] = studyDeployment.getSnapshot()
     }
@@ -44,8 +45,20 @@ class InMemoryDeploymentRepository : DeploymentRepository
      */
     override suspend fun update( studyDeployment: StudyDeployment )
     {
-        require( studyDeployments.contains( studyDeployment.id ) ) { "The repository does not contain an existing study deployment with ID '${studyDeployment.id}'." }
+        require( studyDeployments.contains( studyDeployment.id ) )
+            { "The repository does not contain an existing study deployment with ID '${studyDeployment.id}'." }
 
         studyDeployments[ studyDeployment.id ] = studyDeployment.getSnapshot()
     }
+
+    /**
+     * Remove the [StudyDeployment]s with the specified [studyDeploymentIds].
+     *
+     * @return The IDs of study deployments which were removed. IDs for which no study deployment exists are ignored.
+     */
+    override suspend fun remove( studyDeploymentIds: Set<UUID> ): Set<UUID> =
+        studyDeploymentIds
+            .mapNotNull { studyDeployments.remove( it ) }
+            .map { it.studyDeploymentId }
+            .toSet()
 }
