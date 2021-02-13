@@ -49,4 +49,11 @@ interface ParticipationRepository
      * @return the previous [ParticipantGroup] stored in the repository, or null if it was not present before.
      */
     suspend fun putParticipantGroup( group: ParticipantGroup ): ParticipantGroup?
+
+    /**
+     * Remove the [ParticipantGroup]s matching the specified [studyDeploymentIds].
+     *
+     * @return The IDs of study deployments for which participant groups were removed. IDs for which no participant group exists are ignored.
+     */
+    suspend fun removeParticipantGroups( studyDeploymentIds: Set<UUID> ): Set<UUID>
 }

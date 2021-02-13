@@ -47,4 +47,15 @@ class InMemoryParticipationRepository : ParticipationRepository
         participantGroups
             .put( group.studyDeploymentId, group.getSnapshot() )
             ?.let { ParticipantGroup.fromSnapshot( it ) }
+
+    /**
+     * Remove the [ParticipantGroup]s matching the specified [studyDeploymentIds].
+     *
+     * @return The IDs of study deployments for which participant groups were removed. IDs for which no participant group exists are ignored.
+     */
+    override suspend fun removeParticipantGroups( studyDeploymentIds: Set<UUID> ): Set<UUID> =
+        studyDeploymentIds
+            .mapNotNull { participantGroups.remove( it ) }
+            .map { it.studyDeploymentId }
+            .toSet()
 }
