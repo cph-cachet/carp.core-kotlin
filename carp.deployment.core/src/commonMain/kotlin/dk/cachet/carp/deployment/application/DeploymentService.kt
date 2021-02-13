@@ -25,6 +25,8 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
         @Serializable
         data class StudyDeploymentCreated( val deployment: StudyDeploymentSnapshot ) : Event()
         @Serializable
+        data class StudyDeploymentsRemoved( val deploymentIds: Set<UUID> ) : Event()
+        @Serializable
         data class StudyDeploymentStopped( val studyDeploymentId: UUID ) : Event()
         @Serializable
         data class DeviceRegistrationChanged(
@@ -42,6 +44,14 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
     suspend fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus
+
+    /**
+     * Remove study deployments with the given [studyDeploymentIds].
+     * This also removes all data related to the study deployments managed by [ParticipationService].
+     *
+     * @return The IDs of study deployments which were removed. IDs for which no study deployment exists are ignored.
+     */
+    suspend fun removeStudyDeployments( studyDeploymentIds: Set<UUID> ): Set<UUID>
 
     /**
      * Get the status for a study deployment with the given [studyDeploymentId].

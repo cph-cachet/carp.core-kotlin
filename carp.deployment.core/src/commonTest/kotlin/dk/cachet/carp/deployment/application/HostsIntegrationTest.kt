@@ -61,6 +61,25 @@ class HostsIntegrationTest
     }
 
     @Test
+    fun removing_deployment_removes_participant_group() = runSuspendTest {
+        var deploymentsRemoved: DeploymentService.Event.StudyDeploymentsRemoved? = null
+        eventBus.subscribe( DeploymentService::class, DeploymentService.Event.StudyDeploymentsRemoved::class )
+        {
+            deploymentsRemoved = it
+        }
+
+        val protocol = createComplexProtocol().getSnapshot()
+        val deployment = deploymentService.createStudyDeployment( protocol )
+
+        deploymentService.removeStudyDeployments( setOf( deployment.studyDeploymentId ) )
+        assertEquals( setOf( deployment.studyDeploymentId ), deploymentsRemoved?.deploymentIds )
+        assertFailsWith<IllegalArgumentException>
+        {
+            participationService.getParticipantData( deployment.studyDeploymentId )
+        }
+    }
+
+    @Test
     fun stopping_deployment_stops_participant_group() = runSuspendTest {
         var studyDeploymentStopped: DeploymentService.Event.StudyDeploymentStopped? = null
         eventBus.subscribe( DeploymentService::class, DeploymentService.Event.StudyDeploymentStopped::class )

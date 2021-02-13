@@ -28,6 +28,11 @@ sealed class DeploymentServiceRequest
         Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::createStudyDeployment, protocol )
 
     @Serializable
+    data class RemoveStudyDeployments( val studyDeploymentIds: Set<UUID> ) :
+        DeploymentServiceRequest(),
+        Invoker<Set<UUID>> by createServiceInvoker( Service::removeStudyDeployments, studyDeploymentIds )
+
+    @Serializable
     data class GetStudyDeploymentStatus( val studyDeploymentId: UUID ) :
         DeploymentServiceRequest(),
         Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::getStudyDeploymentStatus, studyDeploymentId )
