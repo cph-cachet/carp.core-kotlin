@@ -24,7 +24,7 @@ private val protocolInstances = listOf(
 
     // Sampling configurations.
     IntervalSamplingConfiguration( TimeSpan.fromMilliseconds( 1000.0 ) ),
-    NoOptionsSamplingConfiguration(),
+    NoOptionsSamplingConfiguration,
 
     // Device registrations.
     AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 ),
