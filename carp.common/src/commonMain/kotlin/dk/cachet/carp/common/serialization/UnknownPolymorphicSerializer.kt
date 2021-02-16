@@ -33,9 +33,12 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
 {
     companion object
     {
-        private val unsupportedException = SerializationException(
-            "${UnknownPolymorphicSerializer::class.simpleName} only supports JSON serialization" +
-            " with a class discriminator configured (no array polymorphism)." )
+        private fun unsupportedException( cause: Throwable? = null ) =
+            SerializationException(
+                "${UnknownPolymorphicSerializer::class.simpleName} only supports JSON serialization" +
+                " with a class discriminator configured (no array polymorphism) when serializing unknown types.",
+                cause
+            )
     }
 
     init
@@ -59,13 +62,24 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
 
     override fun serialize( encoder: Encoder, value: P )
     {
-        // This serializer assumes JSON serialization.
+        // An encoder-agnostic fallback allows serialization only if the type is known.
         if ( encoder !is JsonEncoder )
         {
-            throw unsupportedException
+            try
+            {
+                encoder.encodeSerializableValue( polymorphicSerializer, value )
+                return
+            }
+            catch ( ex: SerializationException )
+            {
+                // Serialization likely failed because the type is not registered for polymorphic serialization.
+                throw unsupportedException( ex )
+            }
         }
-        getClassDiscriminator( encoder.json ) // Throws on incorrect Json configuration.
 
+        // For JSON with class discriminators, we can verify whether the type is known and handle unknown types.
+        // TODO: It should also be possible to support array polymorphism, but that is not a priority now.
+        getClassDiscriminator( encoder.json ) // Throws on incorrect Json configuration.
         if ( value is UnknownPolymorphicWrapper )
         {
             // Output raw JSON as originally wrapped for unknown types.
@@ -82,11 +96,22 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
     @InternalSerializationApi
     override fun deserialize( decoder: Decoder ): P
     {
-        // This serializer assumes JSON serialization.
+        // An encoder-agnostic fallback allows deserialization only if the type is known.
         if ( decoder !is JsonDecoder )
         {
-            throw unsupportedException
+            try
+            {
+                return decoder.decodeSerializableValue( polymorphicSerializer )
+            }
+            catch ( ex: SerializationException )
+            {
+                // Deserialization likely failed because the type is not registered for polymorphic serialization.
+                throw unsupportedException( ex )
+            }
         }
+
+        // For JSON with class discriminators, we can verify whether the type is known and handle unknown types.
+        // TODO: It should also be possible to support array polymorphism, but that is not a priority now.
         val classDiscriminator = getClassDiscriminator( decoder.json )
 
         // Determine class to be loaded and whether it is available at runtime.
@@ -108,7 +133,7 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         var extractedDiscriminator: String? = null
         Json( json )
         {
-            if ( useArrayPolymorphism ) throw unsupportedException
+            if ( useArrayPolymorphism ) throw unsupportedException()
             extractedDiscriminator = classDiscriminator
         }
         return extractedDiscriminator!!

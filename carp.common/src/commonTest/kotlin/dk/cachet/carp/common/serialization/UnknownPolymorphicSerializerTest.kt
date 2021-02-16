@@ -4,12 +4,15 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.decodeFromHexString
+import kotlinx.serialization.encodeToHexString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.subclass
+import kotlinx.serialization.protobuf.ProtoBuf
 import kotlin.test.*
 
 
@@ -35,7 +38,7 @@ class UnknownPolymorphicSerializerTest
     }
 
     @Serializable
-    class DerivingType( override val toOverrideProperty: String ) : BaseType()
+    data class DerivingType( override val toOverrideProperty: String ) : BaseType()
 
     data class CustomBaseType( override val className: String, override val jsonSource: String, val serializer: Json ) :
         BaseType(), UnknownPolymorphicWrapper
@@ -117,5 +120,26 @@ class UnknownPolymorphicSerializerTest
         }
         assertFailsWith<SerializationException> { invalidJson.encodeToString( UnknownBaseTypeSerializer, toSerialize ) }
         assertFailsWith<SerializationException> { invalidJson.decodeFromString( UnknownBaseTypeSerializer, "Irrelevant" ) }
+    }
+
+    @Test
+    fun supports_non_json_encoders_for_known_types()
+    {
+        val toSerialize = DerivingType( "Test" )
+
+        val protobuf = ProtoBuf { serializersModule = testModule }
+        val encoded = protobuf.encodeToHexString( UnknownBaseTypeSerializer, toSerialize )
+        val decoded = protobuf.decodeFromHexString( UnknownBaseTypeSerializer, encoded )
+        assertEquals( toSerialize, decoded )
+    }
+
+    @Test
+    fun does_not_support_non_json_encoders_for_unknown_types()
+    {
+        class UnregisteredType( override val toOverrideProperty: String ) : BaseType()
+        val unregistered = UnregisteredType( "Test" )
+
+        val protobuf = ProtoBuf { serializersModule = testModule }
+        assertFailsWith<SerializationException> { protobuf.encodeToHexString( unregistered ) }
     }
 }
