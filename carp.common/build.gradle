@@ -13,6 +13,11 @@ publishing {
 
 kotlin {
     sourceSets {
+        commonTest {
+            dependencies {
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:${versions.serialization}"
+            }
+        }
         jvmTest {
             dependencies {
                 implementation "org.reflections:reflections:${versions.reflections}"
