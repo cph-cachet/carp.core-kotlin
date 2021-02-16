@@ -30,7 +30,9 @@ inline fun <reified T : Any> verifyTypesAreRegistered( serializersModule: Serial
             // Wrappers for unknown types are only used at runtime and don't need to be serializable.
             serializable.interfaces.none { it.simpleName == "UnknownPolymorphicWrapper" } &&
             // Only verify concrete types.
-            !Modifier.isAbstract( serializable.modifiers ) && !Modifier.isInterface( serializable.modifiers )
+            !Modifier.isAbstract( serializable.modifiers ) && !Modifier.isInterface( serializable.modifiers ) &&
+            // Ignore private types since they are not part of the API.
+            Modifier.isPublic( serializable.modifiers )
         }
         .forEach {
             val kotlinClass = Reflection.createKotlinClass( it )

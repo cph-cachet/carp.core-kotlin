@@ -7,8 +7,6 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromHexString
 import kotlinx.serialization.encodeToHexString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.subclass
@@ -43,15 +41,16 @@ class UnknownPolymorphicSerializerTest
     data class CustomBaseType( override val className: String, override val jsonSource: String, val serializer: Json ) :
         BaseType(), UnknownPolymorphicWrapper
     {
+        @Serializable
+        private class BaseMembers( override val toOverrideProperty: String ) : BaseType()
+
         override val toOverrideProperty: String
 
         init
         {
-            val json = serializer.parseToJsonElement( jsonSource ) as JsonObject
-
-            val toOverridePropertyField = BaseType::toOverrideProperty.name
-            require( json.containsKey( toOverridePropertyField ) ) { "No '$toOverridePropertyField' defined." }
-            toOverrideProperty = json[ toOverridePropertyField ]!!.jsonPrimitive.content
+            val json = Json( serializer ) { ignoreUnknownKeys = true }
+            val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
+            toOverrideProperty = baseMembers.toOverrideProperty
         }
     }
 

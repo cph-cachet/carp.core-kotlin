@@ -8,13 +8,9 @@ import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.sampling.SamplingConfigurationSerializer
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.builtins.MapSerializer
-import kotlinx.serialization.builtins.SetSerializer
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import kotlin.reflect.KClass
 
 
@@ -30,10 +26,11 @@ data class CustomDeviceDescriptor( override val className: String, override val 
 
     init
     {
-        val parsed = parseDeviceDescriptorFields( jsonSource, serializer )
-        roleName = parsed.roleName
-        supportedDataTypes = parsed.supportedDataTypes
-        samplingConfiguration = parsed.samplingConfiguration
+        val json = Json( serializer ) { ignoreUnknownKeys = true }
+        val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
+        roleName = baseMembers.roleName
+        supportedDataTypes = baseMembers.supportedDataTypes
+        samplingConfiguration = baseMembers.samplingConfiguration
     }
 
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
@@ -60,10 +57,11 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
 
     init
     {
-        val parsed = parseDeviceDescriptorFields( jsonSource, serializer )
-        roleName = parsed.roleName
-        supportedDataTypes = parsed.supportedDataTypes
-        samplingConfiguration = parsed.samplingConfiguration
+        val json = Json( serializer ) { ignoreUnknownKeys = true }
+        val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
+        roleName = baseMembers.roleName
+        supportedDataTypes = baseMembers.supportedDataTypes
+        samplingConfiguration = baseMembers.samplingConfiguration
     }
 
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
@@ -78,41 +76,19 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
 }
 
 
-private data class DeviceDescriptorFields(
-    val roleName: String,
-    val supportedDataTypes: Set<DataType>,
-    val samplingConfiguration: Map<DataType, SamplingConfiguration>
-)
-
-private fun parseDeviceDescriptorFields( jsonSource: String, serializer: Json ): DeviceDescriptorFields
+@Serializable
+private data class BaseMembers(
+    override val roleName: String,
+    override val supportedDataTypes: Set<DataType>,
+    override val samplingConfiguration: Map<DataType, @Serializable( SamplingConfigurationSerializer::class ) SamplingConfiguration>
+) : DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>()
 {
-    val json = serializer.parseToJsonElement( jsonSource ) as JsonObject
-
-    val roleNameField = AnyDeviceDescriptor::roleName.name
-    require( roleNameField in json.keys ) { "No '$roleNameField' defined." }
-    val roleName = json[ roleNameField ]!!.jsonPrimitive.content
-
-    val supportedDataTypesField = AnyDeviceDescriptor::supportedDataTypes.name
-    val supportedDataTypes =
-        if ( supportedDataTypesField in json.keys )
-        {
-            val supportedTypesJson = json[ supportedDataTypesField ]!!.jsonArray.toString()
-            val supportedTypesSerializer = SetSerializer( DataType.serializer() )
-            serializer.decodeFromString( supportedTypesSerializer, supportedTypesJson )
-        }
-        else emptySet()
-
-    val samplingConfigurationField = AnyDeviceDescriptor::samplingConfiguration.name
-    val samplingConfiguration =
-        if ( samplingConfigurationField in json.keys )
-        {
-            val configurationJson: String = json[ samplingConfigurationField ]!!.jsonObject.toString()
-            val configurationSerializer = MapSerializer( DataType.serializer(), SamplingConfigurationSerializer )
-            serializer.decodeFromString( configurationSerializer, configurationJson )
-        }
-        else emptyMap()
-
-    return DeviceDescriptorFields( roleName, supportedDataTypes, samplingConfiguration )
+    override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
+        throw UnsupportedOperationException()
+    override fun getRegistrationClass(): KClass<DeviceRegistration> =
+        throw UnsupportedOperationException()
+    override fun isValidConfiguration( registration: DeviceRegistration ): Trilean =
+        throw UnsupportedOperationException()
 }
 
 
@@ -150,15 +126,16 @@ object MasterDeviceDescriptorSerializer : KSerializer<AnyMasterDeviceDescriptor>
 data class CustomDeviceRegistration( override val className: String, override val jsonSource: String, val serializer: Json ) :
     DeviceRegistration(), UnknownPolymorphicWrapper
 {
+    @Serializable
+    private data class BaseMembers( override val deviceId: String ) : DeviceRegistration()
+
     override val deviceId: String
 
     init
     {
-        val json = serializer.parseToJsonElement( jsonSource ) as JsonObject
-
-        val deviceIdField = DeviceRegistration::deviceId.name
-        require( json.containsKey( deviceIdField ) ) { "No '$deviceIdField' defined." }
-        deviceId = json[ deviceIdField ]!!.jsonPrimitive.content
+        val json = Json( serializer ) { ignoreUnknownKeys = true }
+        val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
+        deviceId = baseMembers.deviceId
     }
 }
 
