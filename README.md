@@ -85,6 +85,7 @@ You are not required to use these, but they remove some of the boilerplate code 
 
 To facilitate easy exchange of requests across the different subsystems, all objects that are passed through application services are serializable to JSON using built-in serializers.
 This works for both the Java runtime and JavaScript, which is achieved by relying on the [`kotlinx.serialization`](https://github.com/Kotlin/kotlinx.serialization) library and compiler plugin.
+In fact, `kotlinx.serialization` [also supports other formats](https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/formats.md), such as ProtoBuf and CBOR, but we have not tested those extensively.
 
 In addition, domain objects which need to be persisted (aggregate roots) implement [the snapshot pattern](https://howtodoinjava.com/design-patterns/behavioral/memento-design-pattern/).
 All snapshots are fully serializable to JSON, making it straightforward to store them in a document store.

@@ -20,6 +20,9 @@ When serializing unknown types, the original serialized form is output again.
 Thus, the **'wrapper' is only ever present while the custom domain objects are held in memory on a runtime which does not have the concrete type available**.
 We envision this will greatly facilitate dealing with (or simply ignoring) such objects, making the codebase more stable and maintainable.
 
+Serializing unknown types is currently only supported when using Json.
+Other formats, such as ProtoBuf or CBOR, will throw a `SerializationException` when trying to serialize types which are not registered for polymorphic serialization.
+
 To facilitate the creation of these custom serializers, the abstract base class `UnknownPolymorphicSerializer<P: Any, W: P>` can be used (suggestions for a better name are still welcome).
 This is a _"serializer for polymorph objects of type [P] which wraps extending types unknown at runtime as instances of type [W]."_
 A helper function `createUnknownPolymorphicSerializer` simplifies creating these concrete classes by only having to pass a method which constructs the custom wrapper based on incoming JSON data.
