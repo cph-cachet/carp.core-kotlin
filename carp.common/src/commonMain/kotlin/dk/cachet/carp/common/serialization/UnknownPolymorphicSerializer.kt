@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.serialization
 
+import dk.cachet.carp.common.reflect.AccessInternals
 import dk.cachet.carp.common.reflect.reflectIfAvailable
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
@@ -7,14 +8,10 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.descriptors.buildSerialDescriptor
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonDecoder
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonEncoder
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
@@ -76,29 +73,18 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         {
             throw unsupportedException
         }
-        val classDiscriminator = getClassDiscriminator( encoder.json )
+        getClassDiscriminator( encoder.json ) // Throws error in case array polymorphism is used.
 
         // Get the unknown JSON object.
         check( value is UnknownPolymorphicWrapper )
         val unknown = Json.parseToJsonElement( value.jsonSource ) as JsonObject
 
-        // Output all elements in the JSON object.
-        // HACK: This abuses kotlinx.serialization internals and only works when this serializer is used during polymorphic serialization.
-        //  The `serialName` of `mapDescriptor` is used as the class discriminator when calling `beginStructure`.
-        //  Therefore, wrappers can't be serialized as top-level objects (the first object to be serialized).
-        val mapDescriptor = buildSerialDescriptor( value.className, StructureKind.MAP )
-        {
-            element( "key", String.serializer().descriptor )
-            element( "value", JsonElement.serializer().descriptor )
-        }
-        val mapEncoder = encoder.beginStructure( mapDescriptor )
-        var index = 0
-        for ( (key, value) in unknown.filter { it.key != classDiscriminator } )
-        {
-            mapEncoder.encodeSerializableElement( mapDescriptor, index++, String.serializer(), key )
-            mapEncoder.encodeSerializableElement( mapDescriptor, index++, JsonElement.serializer(), value )
-        }
-        mapEncoder.endStructure( mapDescriptor )
+        // HACK: Modify kotlinx.serialization internals to ensure the encoder is not in polymorphic mode.
+        //  Otherwise, `encoder.encodeJsonElement` encodes type information, but this is already represented in the wrapped unknown object.
+        AccessInternals.setField( encoder, "writePolymorphic", false )
+
+        // Output the originally wrapped JSON.
+        encoder.encodeJsonElement( unknown )
     }
 
     @InternalSerializationApi
@@ -115,10 +101,6 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         // Get raw JSON for the unknown type.
         val jsonElement = decoder.decodeJsonElement()
         val jsonSource = jsonElement.toString()
-
-        // TODO: `className` is already inferred by kotlinx.serialization at this point,
-        //  which is why this serializer, which should be registered as `default`, is triggered.
-        //  We might be able to intercept the className there (in the `default` lambda), rather than parsing it here.
         val className = jsonElement.jsonObject[ classDiscriminator ]!!.jsonPrimitive.content
 
         return createWrapper( className, jsonSource, decoder.json )
