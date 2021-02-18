@@ -1,7 +1,6 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -14,7 +13,6 @@ sealed class DeviceDeploymentStatus
     /**
      * The description of the device.
      */
-    @Serializable( DeviceDescriptorSerializer::class )
     abstract val device: AnyDeviceDescriptor
 
     /**
@@ -62,7 +60,6 @@ sealed class DeviceDeploymentStatus
      */
     @Serializable
     data class Unregistered(
-        @Serializable( DeviceDescriptorSerializer::class )
         override val device: AnyDeviceDescriptor,
         override val requiresDeployment: Boolean,
         override val remainingDevicesToRegisterToObtainDeployment: Set<String>,
@@ -74,7 +71,6 @@ sealed class DeviceDeploymentStatus
      */
     @Serializable
     data class Registered(
-        @Serializable( DeviceDescriptorSerializer::class )
         override val device: AnyDeviceDescriptor,
         override val requiresDeployment: Boolean,
         override val remainingDevicesToRegisterToObtainDeployment: Set<String>,
@@ -86,7 +82,6 @@ sealed class DeviceDeploymentStatus
      */
     @Serializable
     data class Deployed(
-        @Serializable( DeviceDescriptorSerializer::class )
         override val device: AnyDeviceDescriptor
     ) : DeviceDeploymentStatus()
     {
@@ -99,7 +94,6 @@ sealed class DeviceDeploymentStatus
      */
     @Serializable
     data class NeedsRedeployment(
-        @Serializable( DeviceDescriptorSerializer::class )
         override val device: AnyDeviceDescriptor,
         override val remainingDevicesToRegisterToObtainDeployment: Set<String>,
         override val remainingDevicesToRegisterBeforeDeployment: Set<String>

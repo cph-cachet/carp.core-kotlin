@@ -33,17 +33,27 @@ object TaskDescriptorSerializer : KSerializer<TaskDescriptor>
     by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) } )
 ```
 
-The `CustomTaskDescriptor` needs to extend from the base class, and in addition also implement `UnknownPolymorphicWrapper` (simply providing access to class name and original JSON source). The only real work thus lies in extracting the base properties using traditional JSON parsing.
-The `kotlinx.serialization` multiplatform JSON parser can be used to this end, as exemplified in [`CustomTaskDescriptor`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/tasks/UnknownTaskSerializers.kt).
+The custom wrapper needs to:
 
-The custom serializer _should not be specified as the serializer to use on the class it is intended for_. The `UnknownPolymorphicSerializer` relies on the original serializer internaly, so this would create a chicken and egg problem.
-Instead, apply the custom serializer wherever the type is used:
+ 1. Extend from the base class. E.g., `TaskDescriptor`.
+ 2. Implement `UnknownPolymorphicWrapper`, which simply provides access to the class name and original JSON source.
+ 3. Apply `@Serializable` to use the custom serializer. E.g, `@Serializable( TaskDescriptorSerializer::class )`.
 
+The only real work lies in extracting the base properties using traditional JSON parsing.
+This can easily be done using a serializer of an intermediate concrete type, as exemplified in [`CustomTaskDescriptor`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/tasks/UnknownTaskSerializers.kt).
+
+The custom serializer should be configured as the `default` serializer for the expected base type in the `SerializersModule`,
+and the wrapper should be registered as a subclass.
+For example, `TaskDescriptorSerializer` is the `UnknownPolymorphicSerializer` for the `Taskdescriptor` base class,
+which is registered [in the protocols subsystem `SerializersModule`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/infrastructure/Serialization.kt):
 ```
-data class StudyProtocolSnapshot(
+polymorphic( TaskDescriptor::class )
+{
+    subclass( ConcurrentTask::class )
     ...
-    val tasks: List<@Serializable( TaskDescriptorSerializer::class ) TaskDescriptor>,
-    ...
+    subclass( CustomTaskDescriptor::class )
+    default { TaskDescriptorSerializer }
+}
 ```
 
 ## JavaScript compiler plugin limitations

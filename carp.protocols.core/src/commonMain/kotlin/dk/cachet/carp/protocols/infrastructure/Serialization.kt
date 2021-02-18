@@ -27,6 +27,8 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
     {
         subclass( CustomProtocolDevice::class )
         subclass( Smartphone::class )
+
+        subclass( CustomMasterDeviceDescriptor::class )
     }
 
     polymorphic( DeviceDescriptor::class )
@@ -34,15 +36,23 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
         subclass( AltBeacon::class )
         subclass( BLEHeartRateSensor::class )
         registerMasterDeviceDescriptorSubclasses()
+
+        subclass( CustomDeviceDescriptor::class )
+        default { DeviceDescriptorSerializer }
     }
     polymorphic( MasterDeviceDescriptor::class )
     {
         registerMasterDeviceDescriptorSubclasses()
+
+        default { MasterDeviceDescriptorSerializer }
     }
     polymorphic( SamplingConfiguration::class )
     {
         subclass( IntervalSamplingConfiguration::class )
         subclass( NoOptionsSamplingConfiguration::class )
+
+        subclass( CustomSamplingConfiguration::class )
+        default { SamplingConfigurationSerializer }
     }
     polymorphic( DeviceRegistration::class )
     {
@@ -50,22 +60,34 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
         subclass( BLESerialNumberDeviceRegistration::class )
         subclass( DefaultDeviceRegistration::class )
         subclass( MACAddressDeviceRegistration::class )
+
+        subclass( CustomDeviceRegistration::class )
+        default { DeviceRegistrationSerializer }
     }
     polymorphic( TaskDescriptor::class )
     {
         subclass( ConcurrentTask::class )
         subclass( CustomProtocolTask::class )
+
+        subclass( CustomTaskDescriptor::class )
+        default { TaskDescriptorSerializer }
     }
     polymorphic( Measure::class )
     {
         subclass( DataTypeMeasure::class )
         subclass( PhoneSensorMeasure::class )
+
+        subclass( CustomMeasure::class )
+        default { MeasureSerializer }
     }
     polymorphic( Trigger::class )
     {
         subclass( ElapsedTimeTrigger::class )
         subclass( ManualTrigger::class )
         subclass( ScheduledTrigger::class )
+
+        subclass( CustomTrigger::class )
+        default { TriggerSerializer }
     }
 }
 
@@ -131,10 +153,10 @@ fun StudyProtocolSnapshot.toJson(): String =
  * Create a [DeviceRegistration] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
  */
 fun DeviceRegistration.Companion.fromJson( json: String ): DeviceRegistration =
-    JSON.decodeFromString( DeviceRegistrationSerializer, json )
+    JSON.decodeFromString( serializer(), json )
 
 /**
  * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
  */
 fun DeviceRegistration.toJson(): String =
-    JSON.encodeToString( DeviceRegistrationSerializer, this )
+    JSON.encodeToString( DeviceRegistration.serializer(), this )

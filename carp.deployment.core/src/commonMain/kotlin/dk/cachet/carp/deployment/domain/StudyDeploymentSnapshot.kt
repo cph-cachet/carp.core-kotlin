@@ -5,7 +5,6 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.Snapshot
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -18,7 +17,7 @@ data class StudyDeploymentSnapshot(
     override val creationDate: DateTime,
     val studyProtocolSnapshot: StudyProtocolSnapshot,
     val registeredDevices: Set<String>,
-    val deviceRegistrationHistory: Map<String, List<@Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration>>,
+    val deviceRegistrationHistory: Map<String, List<DeviceRegistration>>,
     val deployedDevices: Set<String>,
     val invalidatedDeployedDevices: Set<String>,
     val startTime: DateTime?,

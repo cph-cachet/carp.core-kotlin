@@ -9,7 +9,6 @@ import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
 import kotlinx.serialization.Serializable
 
 private typealias Service = DeploymentService
@@ -46,7 +45,6 @@ sealed class DeploymentServiceRequest
     data class RegisterDevice(
         val studyDeploymentId: UUID,
         val deviceRoleName: String,
-        @Serializable( DeviceRegistrationSerializer::class )
         val registration: DeviceRegistration
     ) : DeploymentServiceRequest(),
         Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::registerDevice, studyDeploymentId, deviceRoleName, registration )
