@@ -90,7 +90,10 @@ fun getPolymorphicSerializers( serialModule: SerializersModule ): Map<KClass<*>,
             override fun <Base : Any> polymorphicDefault(
                 baseClass: KClass<Base>,
                 defaultSerializerProvider: (className: String?) -> DeserializationStrategy<out Base>?
-            ) = throw UnsupportedOperationException()
+            )
+            {
+                // The default serializer is not returned by this method.
+            }
         }
 
     serialModule.dumpTo( collector )

@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromHexString
 import kotlinx.serialization.encodeToHexString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.SerializersModule
@@ -23,6 +24,9 @@ class UnknownPolymorphicSerializerTest
         polymorphic( BaseType::class )
         {
             subclass( DerivingType::class )
+
+            subclass( CustomBaseType::class )
+            default { UnknownBaseTypeSerializer }
         }
     }
 
@@ -38,6 +42,7 @@ class UnknownPolymorphicSerializerTest
     @Serializable
     data class DerivingType( override val toOverrideProperty: String ) : BaseType()
 
+    @Serializable( UnknownBaseTypeSerializer::class )
     data class CustomBaseType( override val className: String, override val jsonSource: String, val serializer: Json ) :
         BaseType(), UnknownPolymorphicWrapper
     {
@@ -70,9 +75,9 @@ class UnknownPolymorphicSerializerTest
     fun base_properties_are_serialized()
     {
         val json = initializeJson()
-        val knownType: BaseType = DerivingType( "Test" )
+        val knownType = DerivingType( "Test" )
 
-        val serialized = json.encodeToString( UnknownBaseTypeSerializer, knownType )
+        val serialized = json.encodeToString<BaseType>( knownType )
 
         assertTrue( serialized.contains( BaseType::baseProperty.name ) )
     }
@@ -82,15 +87,30 @@ class UnknownPolymorphicSerializerTest
     {
         val json = initializeJson()
         val toSerialize = DerivingType( "Test" )
-        val serialized = json.encodeToString( UnknownBaseTypeSerializer, toSerialize )
+        val serialized = json.encodeToString<BaseType>( toSerialize )
         val unknownSerialized = serialized.replace( DerivingType::class.simpleName!!, "UnknownType" )
 
-        val parsed = json.decodeFromString( UnknownBaseTypeSerializer, unknownSerialized )
+        val parsed = json.decodeFromString( BaseType.serializer(), unknownSerialized )
         assertTrue( parsed is CustomBaseType )
         assertEquals( "dk.cachet.carp.common.serialization.UnknownPolymorphicSerializerTest.UnknownType", parsed.className )
-        val expectedJsonSource = json.encodeToString( BaseType.serializer(), toSerialize )
+        val expectedJsonSource = json.encodeToString<BaseType>( toSerialize )
             .replace( DerivingType::class.simpleName!!, "UnknownType" )
         assertEquals( expectedJsonSource, parsed.jsonSource )
+    }
+
+    @Test
+    fun unknown_types_are_unpacked_when_serializing()
+    {
+        val json = initializeJson()
+
+        // Create unknown type as represented at runtime.
+        val knownType = DerivingType( "Test" )
+        val serialized = json.encodeToString<BaseType>( knownType )
+        val unknownSerialized = serialized.replace( DerivingType::class.simpleName!!, "UnknownType" )
+        val unknown = CustomBaseType( "dk.cachet.carp.common.serialization.UnknownPolymorphicSerializerTest.UnknownType", unknownSerialized, json )
+
+        val unpacked = json.encodeToString<BaseType>( unknown )
+        assertEquals( unknownSerialized, unpacked )
     }
 
     @Test
@@ -100,25 +120,26 @@ class UnknownPolymorphicSerializerTest
         val json = initializeJson( classDiscriminator )
         val toSerialize = DerivingType( "Test" )
 
-        val serialized = json.encodeToString( UnknownBaseTypeSerializer, toSerialize )
+        val serialized = json.encodeToString<BaseType>( toSerialize )
         assertTrue( serialized.contains( classDiscriminator ) )
 
         val unknownSerialized = serialized.replace( DerivingType::class.simpleName!!, "UnknownType" )
-        val parsed = json.decodeFromString( UnknownBaseTypeSerializer, unknownSerialized )
+        val parsed = json.decodeFromString( BaseType.serializer(), unknownSerialized )
         assertTrue( parsed is CustomBaseType )
     }
 
     @Test
-    fun fail_when_array_polymorphism_is_configured()
+    fun decoding_unknown_types_fails_when_array_polymorphism_is_configured()
     {
-        val toSerialize = DerivingType( "Test" )
-
         val invalidJson = Json {
             useArrayPolymorphism = true
             serializersModule = testModule
         }
-        assertFailsWith<SerializationException> { invalidJson.encodeToString( UnknownBaseTypeSerializer, toSerialize ) }
-        assertFailsWith<SerializationException> { invalidJson.decodeFromString( UnknownBaseTypeSerializer, "Irrelevant" ) }
+        val toSerialize = DerivingType( "Test" )
+        val serialized = invalidJson.encodeToString<BaseType>( toSerialize )
+        val unknownSerialized = serialized.replace( DerivingType::class.simpleName!!, "UnknownType" )
+
+        assertFailsWith<SerializationException> { invalidJson.decodeFromString( BaseType.serializer(), unknownSerialized ) }
     }
 
     @Test
@@ -127,8 +148,8 @@ class UnknownPolymorphicSerializerTest
         val toSerialize = DerivingType( "Test" )
 
         val protobuf = ProtoBuf { serializersModule = testModule }
-        val encoded = protobuf.encodeToHexString( UnknownBaseTypeSerializer, toSerialize )
-        val decoded = protobuf.decodeFromHexString( UnknownBaseTypeSerializer, encoded )
+        val encoded = protobuf.encodeToHexString<BaseType>( toSerialize )
+        val decoded = protobuf.decodeFromHexString( BaseType.serializer(), encoded )
         assertEquals( toSerialize, decoded )
     }
 
@@ -139,6 +160,6 @@ class UnknownPolymorphicSerializerTest
         val unregistered = UnregisteredType( "Test" )
 
         val protobuf = ProtoBuf { serializersModule = testModule }
-        assertFailsWith<SerializationException> { protobuf.encodeToHexString( unregistered ) }
+        assertFailsWith<SerializationException> { protobuf.encodeToHexString<BaseType>( unregistered ) }
     }
 }

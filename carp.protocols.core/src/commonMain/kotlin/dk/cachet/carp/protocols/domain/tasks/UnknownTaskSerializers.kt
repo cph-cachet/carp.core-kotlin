@@ -6,21 +6,18 @@ import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
 
 /**
  * A wrapper used to load extending types from [TaskDescriptor] serialized as JSON which are unknown at runtime.
  */
+@Serializable( TaskDescriptorSerializer::class )
 data class CustomTaskDescriptor( override val className: String, override val jsonSource: String, val serializer: Json ) :
     TaskDescriptor, UnknownPolymorphicWrapper
 {
     @Serializable
-    private class BaseMembers(
-        override val name: String,
-        override val measures: List<@Serializable( MeasureSerializer::class ) Measure>
-    ) : TaskDescriptor
+    private class BaseMembers( override val name: String, override val measures: List<Measure> ) : TaskDescriptor
 
     override val name: String
     override val measures: List<Measure>
@@ -44,6 +41,7 @@ object TaskDescriptorSerializer : KSerializer<TaskDescriptor>
 /**
  * A wrapper used to load extending types from [Measure] serialized as JSON which are unknown at runtime.
  */
+@Serializable( MeasureSerializer::class )
 data class CustomMeasure( override val className: String, override val jsonSource: String, val serializer: Json ) :
     Measure, UnknownPolymorphicWrapper
 {
@@ -65,8 +63,3 @@ data class CustomMeasure( override val className: String, override val jsonSourc
  */
 object MeasureSerializer : KSerializer<Measure>
     by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomMeasure( className, json, serializer ) } )
-
-/**
- * Custom serializer for a list of [Measure]s which enables deserializing types that are unknown at runtime, yet extend from [Measure].
- */
-object MeasuresSerializer : KSerializer<List<Measure>> by ListSerializer( MeasureSerializer )

@@ -6,7 +6,6 @@ import dk.cachet.carp.common.ddd.Snapshot
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -14,7 +13,6 @@ import kotlinx.serialization.Serializable
 data class StudyRuntimeSnapshot(
     val studyDeploymentId: UUID,
     override val creationDate: DateTime,
-    @Serializable( DeviceDescriptorSerializer::class )
     val device: AnyMasterDeviceDescriptor,
     val isDeployed: Boolean,
     val deploymentInformation: MasterDeviceDeployment?,

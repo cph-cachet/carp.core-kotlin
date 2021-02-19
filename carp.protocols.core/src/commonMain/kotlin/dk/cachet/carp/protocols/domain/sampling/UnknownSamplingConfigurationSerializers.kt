@@ -3,12 +3,14 @@ package dk.cachet.carp.protocols.domain.sampling
 import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.common.serialization.createUnknownPolymorphicSerializer
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 
 /**
  * A wrapper used to load extending types from [SamplingConfiguration] serialized as JSON which are unknown at runtime.
  */
+@Serializable( SamplingConfigurationSerializer::class )
 data class CustomSamplingConfiguration( override val className: String, override val jsonSource: String, val serializer: Json ) :
     SamplingConfiguration, UnknownPolymorphicWrapper
 

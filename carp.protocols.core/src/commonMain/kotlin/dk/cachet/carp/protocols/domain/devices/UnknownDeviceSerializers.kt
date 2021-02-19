@@ -6,7 +6,6 @@ import dk.cachet.carp.common.serialization.createUnknownPolymorphicSerializer
 import dk.cachet.carp.common.serialization.UnknownPolymorphicSerializer
 import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
-import dk.cachet.carp.protocols.domain.sampling.SamplingConfigurationSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -17,6 +16,7 @@ import kotlin.reflect.KClass
 /**
  * A wrapper used to load extending types from [DeviceDescriptor] serialized as JSON which are unknown at runtime.
  */
+@Serializable( DeviceDescriptorSerializer::class )
 data class CustomDeviceDescriptor( override val className: String, override val jsonSource: String, val serializer: Json ) :
     DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
@@ -48,6 +48,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
 /**
  * A wrapper used to load extending types from [MasterDeviceDescriptor] serialized as JSON which are unknown at runtime.
  */
+@Serializable( MasterDeviceDescriptorSerializer::class )
 data class CustomMasterDeviceDescriptor( override val className: String, override val jsonSource: String, val serializer: Json ) :
     MasterDeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
@@ -80,7 +81,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
 private data class BaseMembers(
     override val roleName: String,
     override val supportedDataTypes: Set<DataType>,
-    override val samplingConfiguration: Map<DataType, @Serializable( SamplingConfigurationSerializer::class ) SamplingConfiguration>
+    override val samplingConfiguration: Map<DataType, SamplingConfiguration>
 ) : DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>()
 {
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
@@ -123,6 +124,7 @@ object MasterDeviceDescriptorSerializer : KSerializer<AnyMasterDeviceDescriptor>
 /**
  * A wrapper used to load extending types from [DeviceRegistration] serialized as JSON which are unknown at runtime.
  */
+@Serializable( DeviceRegistrationSerializer::class )
 data class CustomDeviceRegistration( override val className: String, override val jsonSource: String, val serializer: Json ) :
     DeviceRegistration(), UnknownPolymorphicWrapper
 {

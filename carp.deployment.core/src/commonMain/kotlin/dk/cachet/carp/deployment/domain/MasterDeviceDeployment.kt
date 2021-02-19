@@ -3,13 +3,9 @@ package dk.cachet.carp.deployment.domain
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationSerializer
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
-import dk.cachet.carp.protocols.domain.tasks.TaskDescriptorSerializer
 import dk.cachet.carp.protocols.domain.triggers.Trigger
-import dk.cachet.carp.protocols.domain.triggers.TriggerSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -25,24 +21,23 @@ data class MasterDeviceDeployment(
     /**
      * Configuration for this master device.
      */
-    @Serializable( DeviceRegistrationSerializer::class )
     val configuration: DeviceRegistration,
     /**
      * The devices this device needs to connect to.
      */
-    val connectedDevices: Set<@Serializable( DeviceDescriptorSerializer::class ) AnyDeviceDescriptor>,
+    val connectedDevices: Set<AnyDeviceDescriptor>,
     /**
      * Preregistration of connected devices, including configuration such as connection properties, stored per role name.
      */
-    val connectedDeviceConfigurations: Map<String, @Serializable( DeviceRegistrationSerializer::class ) DeviceRegistration>,
+    val connectedDeviceConfigurations: Map<String, DeviceRegistration>,
     /**
      * All tasks which should be able to be executed on this or connected devices.
      */
-    val tasks: Set<@Serializable( TaskDescriptorSerializer::class ) TaskDescriptor>,
+    val tasks: Set<TaskDescriptor>,
     /**
      * All triggers originating from this device and connected devices, stored per assigned id unique within the study protocol.
      */
-    val triggers: Map<Int, @Serializable( TriggerSerializer::class ) Trigger>,
+    val triggers: Map<Int, Trigger>,
     /**
      * The specification of tasks triggered and the devices they are sent to.
      */
