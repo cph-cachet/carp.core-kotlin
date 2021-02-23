@@ -20,7 +20,7 @@ Typically, a desktop computer, smartphone, or web server.
 Describes requested `Measure`s and/or output to be presented on a device.
 - [`Measure`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/tasks/measures/Measure.kt):
 Defines data that needs to be measured/collected for a supported `DataType`.
-- [`DataType`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/data/DataType.kt):
+- [`DataType`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/data/DataType.kt):
 Defines a type of data which can be processed by the platform (e.g., measured/collected/uploaded).
 - [`Trigger`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/triggers/Trigger.kt):
 Any condition on a device which starts or stops tasks at certain points in time when the condition applies.
@@ -28,9 +28,9 @@ The condition can either be time-bound, based on incoming data, initiated by a u
 - [`TriggeredTask`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/triggers/TriggeredTask.kt):
 Specifies a task which at some point during a `StudyProtocol` gets sent to a specific device.
 This allows modeling triggers which trigger multiple tasks targeting multiple devices.
-- [`SamplingConfiguration`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/data/SamplingConfiguration.kt):
+- [`SamplingConfiguration`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/sampling/SamplingConfiguration.kt):
 Contains configuration on how to sample data.
-- [`DataTypeSamplingScheme`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/data/DataTypeSamplingScheme.kt):
+- [`DataTypeSamplingScheme`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/sampling/DataTypeSamplingScheme.kt):
 Specifies the possible sampling configuration options for a `DataType`, including defaults and constraints.
 
 ## Built-in types
@@ -44,8 +44,8 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 
 | Name | Description |
 | --- | --- |
-| [geolocation](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/data/carp/Geolocation.kt) | Geographic location data, representing longitude and latitude. |
-| [stepcount](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/data/carp/Stepcount.kt) | The number of steps a participant has taken in a specified time interval. |
+| [geolocation](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/data/Geolocation.kt) | Geographic location data, representing longitude and latitude. |
+| [stepcount](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/data/StepCount.kt) | The number of steps a participant has taken in a specified time interval. |
 
 ### Device descriptors
 
@@ -88,7 +88,7 @@ Example: [`AltBeacon`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/ca
 - Extend `TaskDescriptor` to provide custom logic on how to schedule the containing `Measure`s, or if you need to trigger custom tasks unrelated to the study protocol in your client application.
 - Extend `Measure` in case you need to specify custom options on _what_ to measure for a given `DataType`.
 - Specify new `DataType`s by extending from `DataTypeSamplingScheme`, and optionally extend from `SamplingConfiguration` to specify a custom configuration on _how_ your new data type can be measured.
-Example: [`Geolocation`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/data/carp/Geolocation.kt)
+Example: [`Geolocation`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/data/Geolocation.kt)
 - Extend `Trigger` to describe custom conditions which you want to use to trigger tasks.
 
 All extending classes (except `DataTypeSamplingScheme`) should be **immutable data classes**.
