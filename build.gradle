@@ -27,7 +27,7 @@ buildscript {
             nodePlugin:'3.0.0-rc7',
 
             // DevOps versions.
-            detektPlugin:'1.16.0-RC1',
+            detektPlugin:'1.16.0-RC2',
             detektVerifyImplementation:'1.0.0',
             nexusReleasePlugin:'0.22.0'
         ]
