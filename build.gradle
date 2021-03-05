@@ -9,7 +9,7 @@ buildscript {
         // Version used for all submodule artifacts.
         // Snapshot publishing changes (or adds) the suffix after '-' with 'SNAPSHOT' prior to publishing.
         // The 'publishSigned' task publishes to SonaType's staging repo and 'publishSnapshot' instantly uploads to the snapshots repo.
-        globalVersion = '1.0.0-alpha.29'
+        globalVersion = '1.0.0-alpha.29.1'
 
         versions = [
             // Kotlin multiplatform versions.
