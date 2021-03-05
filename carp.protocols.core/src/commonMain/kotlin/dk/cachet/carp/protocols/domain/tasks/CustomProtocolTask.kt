@@ -19,6 +19,5 @@ data class CustomProtocolTask(
     /**
      * This list is empty, since measures are defined in [studyProtocol] in a different format.
      */
-    @Serializable( MeasuresSerializer::class )
     override val measures: List<Measure> = emptyList()
 }

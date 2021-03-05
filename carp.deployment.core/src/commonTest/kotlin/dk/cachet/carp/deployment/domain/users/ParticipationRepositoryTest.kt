@@ -118,4 +118,30 @@ interface ParticipationRepositoryTest
         assertNotNull( previous )
         assertEquals( group.creationDate, previous.creationDate )
     }
+
+    @Test
+    fun removeParticipantGroups_succeeds() = runSuspendTest {
+        val repo = createRepository()
+        val group1 = createComplexParticipantGroup()
+        val group2 = createComplexParticipantGroup()
+        repo.putParticipantGroup( group1 )
+        repo.putParticipantGroup( group2 )
+
+        val groupIds = setOf( group1.studyDeploymentId, group2.studyDeploymentId )
+        val removedIds = repo.removeParticipantGroups( groupIds )
+        assertEquals( groupIds, removedIds )
+        assertNull( repo.getParticipantGroup( group1.studyDeploymentId ) )
+        assertNull( repo.getParticipantGroup( group2.studyDeploymentId ) )
+    }
+
+    @Test
+    fun removeParticipantGroups_ignores_unknown_ids() = runSuspendTest {
+        val repo = createRepository()
+        val group = createComplexParticipantGroup()
+        repo.putParticipantGroup( group )
+
+        val deploymentIds = setOf( group.studyDeploymentId, unknownId )
+        val removed = repo.removeParticipantGroups( deploymentIds )
+        assertEquals( setOf( group.studyDeploymentId ), removed )
+    }
 }

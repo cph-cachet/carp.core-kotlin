@@ -22,8 +22,7 @@ import kotlin.test.*
 
 
 /**
- * Tests whether different application service hosts in the studies subsystem
- * are correctly integrated through integration events.
+ * Tests whether different application service hosts are correctly integrated through integration events.
  */
 class HostsIntegrationTest
 {
@@ -96,21 +95,36 @@ class HostsIntegrationTest
     }
 
     @Test
-    fun remove_study_removes_recruitment() = runSuspendTest {
+    fun remove_study_removes_recruitment_and_deployment() = runSuspendTest {
+        // Create study with protocol and go live.
         val owner = StudyOwner()
         val studyStatus = studyService.createStudy( owner, "Test" )
         val studyId = studyStatus.studyId
-        participantService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val deviceRole = "Device"
+        val protocol = createSingleMasterDeviceProtocol( deviceRole )
+        studyService.setProtocol( studyId, protocol.getSnapshot() )
+        studyService.goLive( studyId )
 
-        var removedEvent: StudyService.Event.StudyRemoved? = null
-        eventBus.subscribe( StudyService::class, StudyService.Event.StudyRemoved::class ) { removedEvent = it }
+        // Add participant and deploy participant group.
+        val participant = participantService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val assignDevices = AssignParticipantDevices( participant.id, setOf( deviceRole ) )
+        val group = participantService.deployParticipantGroup( studyId, setOf( assignDevices ) )
+        val deploymentId = group.studyDeploymentStatus.studyDeploymentId
+
+        var studyRemovedEvent: StudyService.Event.StudyRemoved? = null
+        eventBus.subscribe( StudyService::class, StudyService.Event.StudyRemoved::class ) { studyRemovedEvent = it }
+        var deploymentsRemovedEvent: DeploymentService.Event.StudyDeploymentsRemoved? = null
+        eventBus.subscribe( DeploymentService::class, DeploymentService.Event.StudyDeploymentsRemoved::class ) { deploymentsRemovedEvent = it }
         studyService.remove( studyId )
 
-        assertEquals( studyId, removedEvent?.studyId )
+        assertEquals( studyId, studyRemovedEvent?.studyId )
+        assertEquals( setOf( deploymentId ), deploymentsRemovedEvent?.deploymentIds )
 
          // Data related to study no longer exists.
         assertFailsWith<IllegalArgumentException> { participantService.getParticipantGroupStatusList( studyId ) }
         assertFailsWith<IllegalArgumentException> { participantService.getParticipants( studyId ) }
+        assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatus( deploymentId ) }
+        assertFailsWith<IllegalArgumentException> { participationService.getParticipantData( deploymentId ) }
     }
 
     @Test

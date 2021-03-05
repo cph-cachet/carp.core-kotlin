@@ -108,7 +108,7 @@ interface StudyService : ApplicationService<StudyService, StudyService.Event>
     suspend fun goLive( studyId: UUID ): StudyStatus
 
     /**
-     * Remove the study with the specified [studyId].
+     * Remove the study with the specified [studyId] and all related data.
      *
      * @return True when the study has been deleted, or false when there is no study to delete.
      */
