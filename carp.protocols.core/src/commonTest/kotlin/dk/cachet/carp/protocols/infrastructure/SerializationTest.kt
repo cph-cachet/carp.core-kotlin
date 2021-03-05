@@ -42,7 +42,7 @@ private val protocolInstances = listOf(
 
     // Sampling configurations.
     IntervalSamplingConfiguration( TimeSpan.fromMilliseconds( 1000.0 ) ),
-    NoOptionsSamplingConfiguration(),
+    NoOptionsSamplingConfiguration,
     unknown( StubSamplingConfiguration( "" ) ) { CustomSamplingConfiguration( it.first, it.second, it.third ) },
 
     // Device registrations.

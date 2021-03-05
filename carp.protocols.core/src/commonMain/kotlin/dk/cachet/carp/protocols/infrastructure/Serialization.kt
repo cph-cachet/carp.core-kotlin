@@ -49,7 +49,7 @@ val PROTOCOLS_SERIAL_MODULE = SerializersModule {
     polymorphic( SamplingConfiguration::class )
     {
         subclass( IntervalSamplingConfiguration::class )
-        subclass( NoOptionsSamplingConfiguration::class )
+        subclass( NoOptionsSamplingConfiguration::class, NoOptionsSamplingConfiguration.serializer() )
 
         subclass( CustomSamplingConfiguration::class )
         default { SamplingConfigurationSerializer }

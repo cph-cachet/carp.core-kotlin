@@ -28,7 +28,7 @@ buildscript {
 
             // DevOps versions.
             detektPlugin:'1.16.0-RC2',
-            detektVerifyImplementation:'1.0.0',
+            detektVerifyImplementation:'1.1.1',
             nexusReleasePlugin:'0.22.0' // TODO: Migrate to `gradle-nexus-publish-plugin`.
         ]
     }
@@ -337,7 +337,8 @@ configure( rootProject )
         buildUponDefaultConfig = true
         ignoreFailures = false
         def classPaths = project.configurations.getByName("detekt")
-        coreModules.each { classPaths += it.configurations.getByName("jvmCompileClasspath") }
+        def multiplatformModules = coreModules + commonModule
+        multiplatformModules.each { classPaths += it.configurations.getByName("jvmCompileClasspath") }
         classpath.setFrom(classPaths)
     }
     tasks.detekt.jvmTarget = "1.8"
