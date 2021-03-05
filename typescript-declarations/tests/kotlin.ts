@@ -33,11 +33,11 @@ describe( "kotlin", () => {
 
 
     describe( "ArrayList", () => {
-        it( "access internal array", () => {
-            const array = [ 1, 2 ]
-            const list = new ArrayList( array )
+        it( "toArray succeeds", () => {
+            const list = new ArrayList( [ 1, 2, 3 ] )
+            const array = list.toArray()
 
-            expect( list.array_hd7ov6$_0 ).equals( array )
+            expect( array.length ).equals( 3 )
         } )
 
         it( "size returns length of array", () => {
@@ -48,8 +48,23 @@ describe( "kotlin", () => {
     } )
 
 
-    describe( "Set", () => {
-        it ( "can convert array to set", () => {
+    describe( "HashSet", () => {
+        it( "toArray succeeds", () => {
+            const answers = toSet( [ "42" ] )
+            const answersArray = answers.toArray()
+
+            expect( answersArray.length ).equals( 1 )
+            expect( answersArray[ 0 ] ).equals( "42" )
+        } )
+
+        it( "contains succeeds", () => {
+            const answers = toSet( [ "42" ] )
+
+            expect( answers.contains_11rb$( "42" ) ).is.true
+            expect( answers.contains_11rb$( "nope" ) ).is.false
+        } )
+
+        it( "can convert array to set", () => {
             const elements = [ "One", "Two", "Three" ]
             const set = toSet( elements )
             expect( set ).is.not.undefined
