@@ -66,36 +66,22 @@ style:
 verify-implementation:
   DataClass:
     active: true
-    # TODO: These need to be excluded because base class sources can't be analyzed. Can we include them in the classpath?
-    #   Alternatively, this new feature could help: https://github.com/cph-cachet/detekt-verify-implementation/issues/20
     excludes: &verify-implementation-excludes
-        - '**/carp/detekt/**'
-        - '**/carp/common/*'
-        - '**/carp/common/data/CarpDataTypes.kt'
-        - '**/carp/common/data/input/CarpInputDataTypes.kt'
-        - '**/carp/common/data/input/CustomInput.kt'
-        - '**/carp/common/data/input/InputDataTypeList.kt'
-        - '**/carp/common/data/input/InputDataTypeListTest.kt'
-        - '**/carp/common/serialization/**'
-        - '**/carp/common/users/ParticipantAttributeTest.kt'
-        - '**/carp/protocols/domain/sampling/DataTypeSamplingScheme.kt'
-        - '**/carp/test/serialization/ConcreteTypesSerializationTest.kt'
+      - '**/carp/detekt/**'
 
-        # TODO: enums may be valid for `DataClass`. At least, the following comply with the expectations.
-        - '**/carp/common/data/input/Sex.kt'
-
-        # TODO: these are the exact classes we are trying to check! Only the inner classes and serializers should be ignored.
-        - '**/carp/protocols/domain/devices/BLEHeartRateSensor.kt'
-        - '**/carp/protocols/domain/devices/UnknownDeviceSerializers.kt'
-        - '**/carp/protocols/domain/sampling/UnknownSamplingConfigurationSerializers.kt'
-        - '**/carp/protocols/domain/tasks/UnknownTaskSerializers.kt'
-        - '**/carp/protocols/domain/triggers/UnknownTriggerSerializers.kt'
-        - '**/carp/protocols/domain/tasks/measures/PhoneSensorMeasure.kt'
+      # TODO: enums may be valid for `DataClass`. At least, the following comply with the expectations.
+      - '**/carp/common/data/input/Sex.kt'
     annotationClass: "dk.cachet.carp.common.ImplementAsDataClass"
+    assumeNoAnnotations: &assume-no-annotations
+      - 'kotlin.collections.List'
+      - 'kotlin.collections.Map'
+      - 'kotlinx.serialization.KSerializer'
+      - 'kotlinx.serialization.modules.SerializersModuleCollector'
   Immutable:
     active: true
     excludes: *verify-implementation-excludes
     annotationClass: "dk.cachet.carp.common.Immutable"
+    assumeNoAnnotations: *assume-no-annotations
     assumeImmutable: [
       'dk.cachet.carp.common.DateTime',
       'dk.cachet.carp.common.data.input.CustomInput.T',

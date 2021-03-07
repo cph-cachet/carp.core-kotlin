@@ -17,7 +17,7 @@ data class CustomTaskDescriptor( override val className: String, override val js
     TaskDescriptor, UnknownPolymorphicWrapper
 {
     @Serializable
-    private class BaseMembers( override val name: String, override val measures: List<Measure> ) : TaskDescriptor
+    private data class BaseMembers( override val name: String, override val measures: List<Measure> ) : TaskDescriptor
 
     override val name: String
     override val measures: List<Measure>
@@ -46,7 +46,7 @@ data class CustomMeasure( override val className: String, override val jsonSourc
     Measure, UnknownPolymorphicWrapper
 {
     @Serializable
-    private class BaseMembers( override val type: DataType ) : Measure
+    private data class BaseMembers( override val type: DataType ) : Measure
 
     override val type: DataType
 

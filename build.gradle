@@ -28,7 +28,7 @@ buildscript {
 
             // DevOps versions.
             detektPlugin:'1.16.0-RC2',
-            detektVerifyImplementation:'1.1.1',
+            detektVerifyImplementation:'1.2.1',
             nexusReleasePlugin:'0.22.0' // TODO: Migrate to `gradle-nexus-publish-plugin`.
         ]
     }
