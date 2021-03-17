@@ -5,7 +5,7 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
-import dk.cachet.carp.common.ddd.subscribe
+import dk.cachet.carp.common.ddd.registerHandler
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.ParticipationService
@@ -29,13 +29,13 @@ class ParticipantServiceHost(
     init
     {
         // Create a recruitment per study.
-        eventBus.subscribe { created: StudyService.Event.StudyCreated ->
+        eventBus.registerHandler { created: StudyService.Event.StudyCreated ->
             val recruitment = Recruitment( created.study.studyId )
             participantRepository.addRecruitment( recruitment )
         }
 
         // Once a study goes live, its study protocol locks in and participant groups may be deployed.
-        eventBus.subscribe { goneLive: StudyService.Event.StudyGoneLive ->
+        eventBus.registerHandler { goneLive: StudyService.Event.StudyGoneLive ->
             val recruitment = participantRepository.getRecruitment( goneLive.study.studyId )
             checkNotNull( recruitment )
             checkNotNull( goneLive.study.protocolSnapshot )
@@ -44,7 +44,7 @@ class ParticipantServiceHost(
         }
 
         // Propagate removal of all data related to a study.
-        eventBus.subscribe { removed: StudyService.Event.StudyRemoved ->
+        eventBus.registerHandler { removed: StudyService.Event.StudyRemoved ->
             // Remove deployments in the deployment subsystem.
             val recruitment = participantRepository.getRecruitment( removed.studyId )
             checkNotNull( recruitment )
@@ -53,6 +53,8 @@ class ParticipantServiceHost(
 
             participantRepository.removeStudy( removed.studyId )
         }
+
+        eventBus.activateHandlers()
     }
 
 

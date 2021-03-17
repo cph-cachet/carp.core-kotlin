@@ -66,7 +66,8 @@ class HostsIntegrationTest
     @Test
     fun create_study_creates_recruitment() = runSuspendTest {
         var studyCreated: StudyService.Event.StudyCreated? = null
-        eventBus.subscribe( StudyService::class, StudyService.Event.StudyCreated::class ) { studyCreated = it }
+        eventBus.registerHandler( StudyService::class, StudyService.Event.StudyCreated::class, this ) { studyCreated = it }
+        eventBus.activateHandlers( this )
 
         val study = studyService.createStudy( StudyOwner(), "Test" )
         val participants = participantService.getParticipants( study.studyId )
@@ -83,7 +84,8 @@ class HostsIntegrationTest
         studyService.setProtocol( studyId, protocol.getSnapshot() )
 
         var studyGoneLive: StudyService.Event.StudyGoneLive? = null
-        eventBus.subscribe( StudyService::class, StudyService.Event.StudyGoneLive::class ) { studyGoneLive = it }
+        eventBus.registerHandler( StudyService::class, StudyService.Event.StudyGoneLive::class, this ) { studyGoneLive = it }
+        eventBus.activateHandlers( this )
         studyService.goLive( studyId )
         val participant = participantService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
@@ -112,9 +114,10 @@ class HostsIntegrationTest
         val deploymentId = group.studyDeploymentStatus.studyDeploymentId
 
         var studyRemovedEvent: StudyService.Event.StudyRemoved? = null
-        eventBus.subscribe( StudyService::class, StudyService.Event.StudyRemoved::class ) { studyRemovedEvent = it }
+        eventBus.registerHandler( StudyService::class, StudyService.Event.StudyRemoved::class, this ) { studyRemovedEvent = it }
         var deploymentsRemovedEvent: DeploymentService.Event.StudyDeploymentsRemoved? = null
-        eventBus.subscribe( DeploymentService::class, DeploymentService.Event.StudyDeploymentsRemoved::class ) { deploymentsRemovedEvent = it }
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentsRemoved::class, this ) { deploymentsRemovedEvent = it }
+        eventBus.activateHandlers( this )
         studyService.remove( studyId )
 
         assertEquals( studyId, studyRemovedEvent?.studyId )
@@ -130,7 +133,8 @@ class HostsIntegrationTest
     @Test
     fun remove_study_does_not_trigger_event_when_study_does_not_exist() = runSuspendTest {
         var removedEvent: StudyService.Event.StudyRemoved? = null
-        eventBus.subscribe( StudyService::class, StudyService.Event.StudyRemoved::class ) { removedEvent = it }
+        eventBus.registerHandler( StudyService::class, StudyService.Event.StudyRemoved::class, this ) { removedEvent = it }
+        eventBus.activateHandlers( this )
         studyService.remove( UUID.randomUUID() )
 
         assertNull( removedEvent )
