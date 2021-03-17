@@ -18,25 +18,36 @@ class ApplicationServiceEventBus<
     suspend fun publish( event: TEvent ) = eventBus.publish( serviceKlass, event )
 
     /**
-     * Subscribe to events of [eventType] belonging to [applicationServiceKlass] and handle them using [handler].
+     * Register a [handler] for events of [eventType] belonging to [applicationServiceKlass].
+     *
+     * @throws IllegalStateException when [activateHandlers] has already been called.
      */
     fun <
         TOtherService : ApplicationService<TOtherService, TOtherServiceEvent>,
-        TOtherServiceEvent : IntegrationEvent<TOtherService>> subscribe(
+        TOtherServiceEvent : IntegrationEvent<TOtherService>> registerHandler(
         applicationServiceKlass: KClass<TOtherService>,
         eventType: KClass<TOtherServiceEvent>,
         handler: suspend (TOtherServiceEvent) -> Unit
-    ) = eventBus.subscribe( applicationServiceKlass, eventType, handler )
+    ) = eventBus.registerHandler( applicationServiceKlass, eventType, serviceKlass, handler )
+
+    /**
+     * Start the event subscription for all registered handlers of the application service linked to this event bus.
+     *
+     * TODO: This should be abstracted away.
+     */
+    fun activateHandlers() = eventBus.activateHandlers( serviceKlass )
 }
 
 /**
- * Subscribe to events of type [TEvent] on this [ApplicationServiceEventBus] and handle them using [handler].
+ * Register a [handler] for events of type [TEvent] on this [ApplicationServiceEventBus].
+ * 
+ * @throws IllegalStateException when `activateHandlers` has already been called.
  */
 inline fun <
     reified TService : ApplicationService<TService, TEvent>,
     reified TEvent : IntegrationEvent<TService>
-> ApplicationServiceEventBus<*, *>.subscribe( noinline handler: suspend (TEvent) -> Unit ) =
-    this.subscribe( TService::class, TEvent::class, handler )
+> ApplicationServiceEventBus<*, *>.registerHandler( noinline handler: suspend (TEvent) -> Unit ) =
+    this.registerHandler( TService::class, TEvent::class, handler )
 
 
 /**

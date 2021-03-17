@@ -47,10 +47,11 @@ class HostsIntegrationTest
     @Test
     fun create_deployment_creates_participant_group() = runSuspendTest {
         var deploymentCreated: DeploymentService.Event.StudyDeploymentCreated? = null
-        eventBus.subscribe( DeploymentService::class, DeploymentService.Event.StudyDeploymentCreated::class )
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentCreated::class, this )
         {
             deploymentCreated = it
         }
+        eventBus.activateHandlers( this )
 
         val protocol = createComplexProtocol().getSnapshot()
         val deployment = deploymentService.createStudyDeployment( protocol )
@@ -63,10 +64,11 @@ class HostsIntegrationTest
     @Test
     fun removing_deployment_removes_participant_group() = runSuspendTest {
         var deploymentsRemoved: DeploymentService.Event.StudyDeploymentsRemoved? = null
-        eventBus.subscribe( DeploymentService::class, DeploymentService.Event.StudyDeploymentsRemoved::class )
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentsRemoved::class, this )
         {
             deploymentsRemoved = it
         }
+        eventBus.activateHandlers( this )
 
         val protocol = createComplexProtocol().getSnapshot()
         val deployment = deploymentService.createStudyDeployment( protocol )
@@ -82,10 +84,11 @@ class HostsIntegrationTest
     @Test
     fun stopping_deployment_stops_participant_group() = runSuspendTest {
         var studyDeploymentStopped: DeploymentService.Event.StudyDeploymentStopped? = null
-        eventBus.subscribe( DeploymentService::class, DeploymentService.Event.StudyDeploymentStopped::class )
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentStopped::class, this )
         {
             studyDeploymentStopped = it
         }
+        eventBus.activateHandlers( this )
 
         val protocol = createComplexProtocol().getSnapshot()
         val deployment = deploymentService.createStudyDeployment( protocol )
@@ -125,10 +128,11 @@ class HostsIntegrationTest
 
         // Subscribe to registration changes to test whether integration events are sent.
         var registrationChanged: DeploymentService.Event.DeviceRegistrationChanged? = null
-        eventBus.subscribe( DeploymentService::class, DeploymentService.Event.DeviceRegistrationChanged::class )
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.DeviceRegistrationChanged::class, this )
         {
             registrationChanged = it
         }
+        eventBus.activateHandlers( this )
 
         // Change registration for the assigned device.
         val registration = assignedDevice.createRegistration()

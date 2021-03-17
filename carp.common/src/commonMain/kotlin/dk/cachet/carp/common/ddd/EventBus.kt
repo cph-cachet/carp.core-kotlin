@@ -17,12 +17,27 @@ interface EventBus
     > publish( applicationServiceKlass: KClass<TService>, event: TEvent )
 
     /**
-     * Subscribe to events of [eventType] belonging to [applicationServiceKlass] and handle them using [handler].
+     * Register a [handler] for events of [eventType] belonging to [publishingServiceKlass],
+     * to be received by [consumingService].
+     *
+     * @throws IllegalStateException when trying to register a handler for a [consumingService]
+     *   for which [activateHandlers] has already been called.
      */
     fun <
         TService : ApplicationService<TService, TEvent>,
-        TEvent : IntegrationEvent<TService>
-    > subscribe( applicationServiceKlass: KClass<TService>, eventType: KClass<TEvent>, handler: suspend (TEvent) -> Unit )
+        TEvent : IntegrationEvent<TService>> registerHandler(
+        publishingServiceKlass: KClass<TService>,
+        eventType: KClass<TEvent>,
+        consumingService: Any,
+        handler: suspend (TEvent) -> Unit
+    )
+
+    /**
+     * Start the event subscription for all registered handlers of [consumingService].
+     *
+     * @throws IllegalStateException when this is called more than once.
+     */
+    fun activateHandlers( consumingService: Any )
 }
 
 
@@ -32,14 +47,16 @@ interface EventBus
 suspend inline fun <
     reified TService : ApplicationService<TService, TEvent>,
     reified TEvent : IntegrationEvent<TService>
-> EventBus.publish( event: TEvent ) =
-    this.publish( TService::class, event )
+> EventBus.publish( event: TEvent ) = this.publish( TService::class, event )
 
 /**
- * Subscribe to events of type [TEvent] on this [EventBus] and handle them using [handler].
+ * Register a [handler] to be received by [consumingService] for events of type [TEvent] on this [EventBus].
+ *
+ * @throws IllegalStateException when trying to register a handler for a [consumingService]
+ *   for which `activateHandlers` has already been called.
  */
 inline fun <
     reified TService : ApplicationService<TService, TEvent>,
     reified TEvent : IntegrationEvent<TService>
-> EventBus.subscribe( noinline handler: suspend (TEvent) -> Unit ) =
-    this.subscribe( TService::class, TEvent::class, handler )
+> EventBus.registerHandler( consumingService: Any, noinline handler: suspend (TEvent) -> Unit ) =
+    this.registerHandler( TService::class, TEvent::class, consumingService, handler )

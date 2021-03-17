@@ -24,13 +24,14 @@ class SingleThreadedEventBusTest
 
 
     @Test
-    fun published_events_are_received_by_subscribers() = runSuspendTest {
+    fun published_events_are_received_by_handlers() = runSuspendTest {
         val bus = SingleThreadedEventBus()
 
         var receivedEventData: String? = null
-        bus.subscribe( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class ) { event ->
+        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { event ->
             receivedEventData = event.data
         }
+        bus.activateHandlers( this )
         val sentData = "Data"
 
         bus.publish( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent( sentData ) )
@@ -38,24 +39,42 @@ class SingleThreadedEventBusTest
     }
 
     @Test
-    fun subscribers_only_receive_requested_events() = runSuspendTest {
+    fun handlers_only_receive_events_when_activated() = runSuspendTest {
+        val bus = SingleThreadedEventBus()
+
+        var receivedEventData: String? = null
+        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { event ->
+            receivedEventData = event.data
+        }
+
+        bus.publish( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent( "Data" ) )
+        assertNull( receivedEventData )
+    }
+
+    @Test
+    fun handlers_only_receive_requested_events() = runSuspendTest {
         val bus = SingleThreadedEventBus()
 
         var eventReceived = false
-        bus.subscribe( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class ) { eventReceived = true }
+        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this ) {
+            eventReceived = true
+        }
+        bus.activateHandlers( this )
 
         bus.publish( TestService::class, BaseIntegrationEvent.AnotherIntegrationEvent( "Test" ) )
         assertFalse( eventReceived )
     }
 
+
     @Test
-    fun multiple_subscribers_are_possible() = runSuspendTest {
+    fun multiple_handlers_are_possible() = runSuspendTest {
         val bus = SingleThreadedEventBus()
 
         var receivedBySubscriber1 = false
-        bus.subscribe( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class ) { receivedBySubscriber1 = true }
+        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { receivedBySubscriber1 = true }
         var receivedBySubscriber2 = false
-        bus.subscribe( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class ) { receivedBySubscriber2 = true }
+        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { receivedBySubscriber2 = true }
+        bus.activateHandlers( this )
 
         bus.publish( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent( "Test" ) )
         assertTrue( receivedBySubscriber1 )
@@ -63,17 +82,38 @@ class SingleThreadedEventBusTest
     }
 
     @Test
-    fun polymorphic_subscribers_are_possible() = runSuspendTest {
+    fun polymorphic_handlers_are_possible() = runSuspendTest {
         val bus = SingleThreadedEventBus()
 
         var receivedEvent = false
-        bus.subscribe( TestService::class, BaseIntegrationEvent::class )
+        bus.registerHandler( TestService::class, BaseIntegrationEvent::class, this )
         {
             if ( it is BaseIntegrationEvent.SomeIntegrationEvent ) receivedEvent = true
         }
+        bus.activateHandlers( this )
 
         bus.publish( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent( "Test" ) )
         assertTrue( receivedEvent )
+    }
+
+    @Test
+    fun registerHandler_fails_for_consumingService_with_activated_handlers()
+    {
+        val bus = SingleThreadedEventBus()
+        bus.activateHandlers( this )
+
+        assertFailsWith<IllegalStateException> {
+            bus.registerHandler( TestService::class, BaseIntegrationEvent::class, this ) { }
+        }
+    }
+
+    @Test
+    fun activateHandlers_fails_when_already_activated()
+    {
+        val bus = SingleThreadedEventBus()
+        bus.activateHandlers( this )
+
+        assertFailsWith<IllegalStateException> { bus.activateHandlers( this ) }
     }
 
     @Test
@@ -81,11 +121,23 @@ class SingleThreadedEventBusTest
         val bus = SingleThreadedEventBus()
 
         var receivedData: String? = null
-        bus.subscribe { event: BaseIntegrationEvent.SomeIntegrationEvent ->
+        bus.registerHandler( this ) { event: BaseIntegrationEvent.SomeIntegrationEvent ->
             receivedData = event.data
         }
+        bus.activateHandlers( this )
         bus.publish( BaseIntegrationEvent.SomeIntegrationEvent( "Test" ) )
 
         assertEquals( "Test", receivedData )
+    }
+
+    @Test
+    fun registerHandler_extension_method_fails_for_consumingService_with_activated_handlers()
+    {
+        val bus = SingleThreadedEventBus()
+        bus.activateHandlers( this )
+
+        assertFailsWith<IllegalStateException> {
+            bus.registerHandler( this ) { _: BaseIntegrationEvent -> }
+        }
     }
 }
