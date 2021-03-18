@@ -6,7 +6,6 @@ import dk.cachet.carp.common.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.data.input.InputDataTypeList
 import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
-import dk.cachet.carp.common.ddd.registerHandler
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
@@ -35,34 +34,34 @@ class ParticipationServiceHost(
 {
     init
     {
-        // Create a ParticipantGroup per study deployment (as long as it exists).
-        eventBus.registerHandler { created: DeploymentService.Event.StudyDeploymentCreated ->
-            val group = ParticipantGroup.fromDeployment( created.deployment.toObject() )
-            participationRepository.putParticipantGroup( group )
-        }
-        eventBus.registerHandler { removed: DeploymentService.Event.StudyDeploymentsRemoved ->
-            participationRepository.removeParticipantGroups( removed.deploymentIds )
-        }
+        eventBus.subscribe {
+            // Create a ParticipantGroup per study deployment (as long as it exists).
+            event { created: DeploymentService.Event.StudyDeploymentCreated ->
+                val group = ParticipantGroup.fromDeployment( created.deployment.toObject() )
+                participationRepository.putParticipantGroup( group )
+            }
+            event { removed: DeploymentService.Event.StudyDeploymentsRemoved ->
+                participationRepository.removeParticipantGroups( removed.deploymentIds )
+            }
 
-        // Notify participant group that associated study deployment has stopped.
-        eventBus.registerHandler { stopped: DeploymentService.Event.StudyDeploymentStopped ->
-            val group = participationRepository.getParticipantGroup( stopped.studyDeploymentId )
-            checkNotNull( group )
-            group.studyDeploymentStopped()
-            participationRepository.putParticipantGroup( group )
+            // Notify participant group that associated study deployment has stopped.
+            event { stopped: DeploymentService.Event.StudyDeploymentStopped ->
+                val group = participationRepository.getParticipantGroup( stopped.studyDeploymentId )
+                checkNotNull( group )
+                group.studyDeploymentStopped()
+                participationRepository.putParticipantGroup( group )
+            }
+
+            // Keep track of master device registration changes.
+            event { registrationChange: DeploymentService.Event.DeviceRegistrationChanged ->
+                if ( registrationChange.device !is AnyMasterDeviceDescriptor ) return@event
+
+                val group = participationRepository.getParticipantGroup( registrationChange.studyDeploymentId )
+                checkNotNull( group )
+                group.updateDeviceRegistration( registrationChange.device, registrationChange.registration )
+                participationRepository.putParticipantGroup( group )
+            }
         }
-
-        // Keep track of master device registration changes.
-        eventBus.registerHandler { registrationChange: DeploymentService.Event.DeviceRegistrationChanged ->
-            if ( registrationChange.device !is AnyMasterDeviceDescriptor ) return@registerHandler
-
-            val group = participationRepository.getParticipantGroup( registrationChange.studyDeploymentId )
-            checkNotNull( group )
-            group.updateDeviceRegistration( registrationChange.device, registrationChange.registration )
-            participationRepository.putParticipantGroup( group )
-        }
-
-        eventBus.activateHandlers()
     }
 
 

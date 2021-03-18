@@ -50,13 +50,14 @@ class ApplicationServiceEventBusTest
     }
 
     @Test
-    fun registerHandler_succeeds() = runSuspendTest {
+    fun subscribe_succeeds() = runSuspendTest {
         val bus = SingleThreadedEventBus()
         val serviceBus = bus.createApplicationServiceAdapter( TestService::class )
 
         var eventReceived = false
-        serviceBus.registerHandler { _: OtherEvent -> eventReceived = true }
-        bus.activateHandlers( TestService::class )
+        serviceBus.subscribe {
+            event { _: OtherEvent -> eventReceived = true }
+        }
         bus.publish( OtherEvent.SomeOtherEvent )
 
         assertTrue( eventReceived )

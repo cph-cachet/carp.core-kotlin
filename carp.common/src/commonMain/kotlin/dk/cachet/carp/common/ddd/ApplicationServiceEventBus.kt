@@ -18,36 +18,44 @@ class ApplicationServiceEventBus<
     suspend fun publish( event: TEvent ) = eventBus.publish( serviceKlass, event )
 
     /**
-     * Register a [handler] for events of [eventType] belonging to [applicationServiceKlass].
+     * Subscribe to a set of events, registered by calling `event`.
+     * This can only be called once.
      *
-     * @throws IllegalStateException when [activateHandlers] has already been called.
+     * @throws IllegalStateException when subscribe has already been called.
      */
-    fun <
-        TOtherService : ApplicationService<TOtherService, TOtherServiceEvent>,
-        TOtherServiceEvent : IntegrationEvent<TOtherService>> registerHandler(
-        applicationServiceKlass: KClass<TOtherService>,
-        eventType: KClass<TOtherServiceEvent>,
-        handler: suspend (TOtherServiceEvent) -> Unit
-    ) = eventBus.registerHandler( applicationServiceKlass, eventType, serviceKlass, handler )
-
-    /**
-     * Start the event subscription for all registered handlers of the application service linked to this event bus.
-     *
-     * TODO: This should be abstracted away.
-     */
-    fun activateHandlers() = eventBus.activateHandlers( serviceKlass )
+    fun subscribe( registerHandlers: EventSubscriptionBuilder.() -> Unit )
+    {
+        val builder = EventSubscriptionBuilder( serviceKlass, eventBus )
+        builder.registerHandlers()
+        eventBus.activateHandlers( serviceKlass )
+    }
 }
 
-/**
- * Register a [handler] for events of type [TEvent] on this [ApplicationServiceEventBus].
- * 
- * @throws IllegalStateException when `activateHandlers` has already been called.
- */
-inline fun <
-    reified TService : ApplicationService<TService, TEvent>,
-    reified TEvent : IntegrationEvent<TService>
-> ApplicationServiceEventBus<*, *>.registerHandler( noinline handler: suspend (TEvent) -> Unit ) =
-    this.registerHandler( TService::class, TEvent::class, handler )
+
+@DslMarker
+annotation class EventSubscriptionDsl
+
+// TODO: Apply the DSL marker to `event` to disallow calling `event` from inside `event`.
+//  For that to work `event` should be a builder itself to which the marker can be applied.
+//  That is currently impossible since we cannot extend from `suspend (TEvent) -> Unit`:
+//  https://youtrack.jetbrains.com/issue/KT-18707
+@EventSubscriptionDsl
+class EventSubscriptionBuilder(
+    @PublishedApi
+    internal val consumingService: Any,
+    @PublishedApi
+    internal val eventBus: EventBus
+)
+{
+    /**
+     * Register a [handler] for events of type [TEvent] on this [ApplicationServiceEventBus].
+     */
+    inline fun <
+        reified TService : ApplicationService<TService, TEvent>,
+        reified TEvent : IntegrationEvent<TService>> event(
+        noinline handler: suspend (TEvent) -> Unit
+    ) = eventBus.registerHandler( TService::class, TEvent::class, consumingService, handler )
+}
 
 
 /**
