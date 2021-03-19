@@ -42,7 +42,7 @@ annotation class EventSubscriptionDsl
 @EventSubscriptionDsl
 class EventSubscriptionBuilder(
     @PublishedApi
-    internal val consumingService: Any,
+    internal val subscriber: Any,
     @PublishedApi
     internal val eventBus: EventBus
 )
@@ -54,7 +54,7 @@ class EventSubscriptionBuilder(
         reified TService : ApplicationService<TService, TEvent>,
         reified TEvent : IntegrationEvent<TService>> event(
         noinline handler: suspend (TEvent) -> Unit
-    ) = eventBus.registerHandler( TService::class, TEvent::class, consumingService, handler )
+    ) = eventBus.registerHandler( TEvent::class, subscriber, handler )
 }
 
 
