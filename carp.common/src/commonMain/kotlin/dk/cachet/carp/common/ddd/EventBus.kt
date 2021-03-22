@@ -9,9 +9,13 @@ import kotlin.reflect.KClass
 abstract class EventBus
 {
     /**
-     * A [handler] and the associated [eventType] describing which events it handles.
+     * A [handler] and the associated [eventType] and [eventSource] describing which events it handles.
      */
-    protected class Handler( val eventType: KClass<*>, val handler: suspend (IntegrationEvent<*>) -> Unit )
+    protected class Handler(
+        val eventSource: KClass<*>,
+        val eventType: KClass<*>,
+        val handler: suspend (IntegrationEvent<*>) -> Unit
+    )
 
     /**
      * Holds the [eventHandlers] of a subscriber and whether or not the subscriber [isActivated].
@@ -32,7 +36,7 @@ abstract class EventBus
         get() = _subscribers.toMap()
 
     /**
-     * Register a [handler] for events of [eventType] to be received by [subscriber].
+     * Register a [handler] for events of [eventType] emitted by [eventSource] to be received by [subscriber].
      *
      * @throws IllegalStateException when trying to register a handler for a [subscriber]
      *   for which [activateHandlers] has already been called.
@@ -40,6 +44,7 @@ abstract class EventBus
     fun <
         TService : ApplicationService<TService, TEvent>,
         TEvent : IntegrationEvent<TService>> registerHandler(
+        eventSource: KClass<TService>,
         eventType: KClass<TEvent>,
         subscriber: Any,
         handler: suspend (TEvent) -> Unit
@@ -52,7 +57,7 @@ abstract class EventBus
         @Suppress("UNCHECKED_CAST")
         val baseHandler = handler as suspend (IntegrationEvent<*>) -> Unit
 
-        subscriberState.eventHandlers.add( Handler( eventType, baseHandler ) )
+        subscriberState.eventHandlers.add( Handler( eventSource, eventType, baseHandler ) )
     }
 
     /**
@@ -105,4 +110,4 @@ inline fun <
     reified TService : ApplicationService<TService, TEvent>,
     reified TEvent : IntegrationEvent<TService>
 > EventBus.registerHandler( subscriber: Any, noinline handler: suspend (TEvent) -> Unit ) =
-    this.registerHandler( TEvent::class, subscriber, handler )
+    this.registerHandler( TService::class, TEvent::class, subscriber, handler )

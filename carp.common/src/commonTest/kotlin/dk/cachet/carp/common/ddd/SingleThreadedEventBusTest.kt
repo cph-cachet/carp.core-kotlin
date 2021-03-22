@@ -28,14 +28,14 @@ class SingleThreadedEventBusTest
         val bus = SingleThreadedEventBus()
 
         var receivedEventData: String? = null
-        bus.registerHandler( BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { event ->
+        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { event ->
             receivedEventData = event.data
         }
         bus.activateHandlers( this )
         val sentData = "Data"
 
         bus.publish( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent( sentData ) )
-        assertEquals( "Data", receivedEventData )
+        assertEquals( sentData, receivedEventData )
     }
 
     @Test
@@ -43,7 +43,7 @@ class SingleThreadedEventBusTest
         val bus = SingleThreadedEventBus()
 
         var receivedEventData: String? = null
-        bus.registerHandler( BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { event ->
+        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { event ->
             receivedEventData = event.data
         }
 
@@ -56,7 +56,7 @@ class SingleThreadedEventBusTest
         val bus = SingleThreadedEventBus()
 
         var eventReceived = false
-        bus.registerHandler( BaseIntegrationEvent.SomeIntegrationEvent::class, this ) {
+        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this ) {
             eventReceived = true
         }
         bus.activateHandlers( this )
@@ -71,9 +71,9 @@ class SingleThreadedEventBusTest
         val bus = SingleThreadedEventBus()
 
         var receivedBySubscriber1 = false
-        bus.registerHandler( BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { receivedBySubscriber1 = true }
+        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { receivedBySubscriber1 = true }
         var receivedBySubscriber2 = false
-        bus.registerHandler( BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { receivedBySubscriber2 = true }
+        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { receivedBySubscriber2 = true }
         bus.activateHandlers( this )
 
         bus.publish( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent( "Test" ) )
@@ -86,7 +86,7 @@ class SingleThreadedEventBusTest
         val bus = SingleThreadedEventBus()
 
         var receivedEvent = false
-        bus.registerHandler( BaseIntegrationEvent::class, this )
+        bus.registerHandler( TestService::class, BaseIntegrationEvent::class, this )
         {
             if ( it is BaseIntegrationEvent.SomeIntegrationEvent ) receivedEvent = true
         }
@@ -103,7 +103,7 @@ class SingleThreadedEventBusTest
         bus.activateHandlers( this )
 
         assertFailsWith<IllegalStateException> {
-            bus.registerHandler( BaseIntegrationEvent::class, this ) { }
+            bus.registerHandler( TestService::class, BaseIntegrationEvent::class, this ) { }
         }
     }
 

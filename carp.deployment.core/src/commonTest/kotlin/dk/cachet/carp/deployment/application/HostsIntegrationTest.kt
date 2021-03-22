@@ -47,7 +47,7 @@ class HostsIntegrationTest
     @Test
     fun create_deployment_creates_participant_group() = runSuspendTest {
         var deploymentCreated: DeploymentService.Event.StudyDeploymentCreated? = null
-        eventBus.registerHandler( DeploymentService.Event.StudyDeploymentCreated::class, this )
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentCreated::class, this )
         {
             deploymentCreated = it
         }
@@ -64,7 +64,7 @@ class HostsIntegrationTest
     @Test
     fun removing_deployment_removes_participant_group() = runSuspendTest {
         var deploymentsRemoved: DeploymentService.Event.StudyDeploymentsRemoved? = null
-        eventBus.registerHandler( DeploymentService.Event.StudyDeploymentsRemoved::class, this )
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentsRemoved::class, this )
         {
             deploymentsRemoved = it
         }
@@ -84,7 +84,7 @@ class HostsIntegrationTest
     @Test
     fun stopping_deployment_stops_participant_group() = runSuspendTest {
         var studyDeploymentStopped: DeploymentService.Event.StudyDeploymentStopped? = null
-        eventBus.registerHandler( DeploymentService.Event.StudyDeploymentStopped::class, this )
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentStopped::class, this )
         {
             studyDeploymentStopped = it
         }
@@ -128,7 +128,7 @@ class HostsIntegrationTest
 
         // Subscribe to registration changes to test whether integration events are sent.
         var registrationChanged: DeploymentService.Event.DeviceRegistrationChanged? = null
-        eventBus.registerHandler( DeploymentService.Event.DeviceRegistrationChanged::class, this )
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.DeviceRegistrationChanged::class, this )
         {
             registrationChanged = it
         }
