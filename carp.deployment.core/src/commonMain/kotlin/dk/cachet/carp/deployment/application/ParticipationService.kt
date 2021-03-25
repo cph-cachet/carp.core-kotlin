@@ -3,34 +3,46 @@ package dk.cachet.carp.deployment.application
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.InputDataType
+import dk.cachet.carp.common.ddd.ApplicationService
+import dk.cachet.carp.common.ddd.IntegrationEvent
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.ParticipantData
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import kotlinx.serialization.Serializable
 
 
 /**
  * Application service which allows inviting participants, retrieving participations for study deployments,
  * and managing data related to participants which is input by users.
  */
-interface ParticipationService
+interface ParticipationService : ApplicationService<ParticipationService, ParticipationService.Event>
 {
+    @Serializable
+    sealed class Event : IntegrationEvent<ParticipationService>()
+
+
     /**
      * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId],
-     * using the master devices with the specified [deviceRoleNames].
+     * using the master devices with the specified [assignedMasterDeviceRoleNames].
      * In case no account is associated to the specified [identity], a new account is created.
      * An [invitation] (and account details) is delivered to the person managing the [identity],
      * or should be handed out manually to the relevant participant by the person managing the specified [identity].
      *
      * @throws IllegalArgumentException when:
      * - there is no study deployment with [studyDeploymentId]
-     * - any of the [deviceRoleNames] are not part of the study protocol deployment
+     * - any of the [assignedMasterDeviceRoleNames] are not part of the study protocol deployment
      * @throws IllegalStateException when:
      * - the specified [identity] was already invited to participate in this deployment and a different [invitation] is specified than a previous request
      * - this deployment has stopped
      */
-    suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ): Participation
+    suspend fun addParticipation(
+        studyDeploymentId: UUID,
+        assignedMasterDeviceRoleNames: Set<String>,
+        identity: AccountIdentity,
+        invitation: StudyInvitation
+    ): Participation
 
     /**
      * Get all participations of active study deployments the account with the given [accountId] has been invited to.

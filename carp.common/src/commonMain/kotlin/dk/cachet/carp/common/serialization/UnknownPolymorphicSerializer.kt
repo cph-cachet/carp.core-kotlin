@@ -1,16 +1,19 @@
 package dk.cachet.carp.common.serialization
 
+import dk.cachet.carp.common.reflect.AccessInternals
 import dk.cachet.carp.common.reflect.reflectIfAvailable
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonEncoder
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.reflect.KClass
@@ -25,8 +28,9 @@ import kotlin.reflect.KClass
  *  In case it is impossible for a base return type to implement this interface you can disable the runtime verification by setting this to false.
  *  However, ensure that all deriving classes of this base type implement [UnknownPolymorphicWrapper], otherwise serialization will not output the original JSON found upon deserializing.
  */
+@OptIn( ExperimentalSerializationApi::class )
 abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
-    private val baseClass: KClass<P>,
+    baseClass: KClass<P>,
     wrapperClass: KClass<W>,
     verifyUnknownPolymorphicWrapper: Boolean = true
 ) : KSerializer<P>
@@ -34,7 +38,10 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
     companion object
     {
         private val unsupportedException =
-            SerializationException( "${UnknownPolymorphicSerializer::class.simpleName} only supports JSON serialization." )
+            SerializationException(
+                "${UnknownPolymorphicSerializer::class.simpleName} only supports JSON serialization, " +
+                "configured to use a class discriminator for polymorphism."
+            )
     }
 
     init
@@ -52,50 +59,64 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         }
     }
 
-    private val polymorphicSerializer: PolymorphicSerializer<P> = PolymorphicSerializer( baseClass )
-    override val descriptor: SerialDescriptor = polymorphicSerializer.descriptor
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor(
+        "dk.cachet.carp.common.serialization.UnknownPolymorphicSerializer<${baseClass.simpleName}>"
+    )
 
+
+    @InternalSerializationApi
     override fun serialize( encoder: Encoder, value: P )
     {
-        // This serializer assumes JSON serialization.
+        // This serializer assumes JSON serialization with class discriminator configured for polymorphism.
+        // TODO: It should also be possible to support array polymorphism, but that is not a priority now.
         if ( encoder !is JsonEncoder )
         {
             throw unsupportedException
         }
+        getClassDiscriminator( encoder.json ) // Throws error in case array polymorphism is used.
 
-        if ( value is UnknownPolymorphicWrapper )
-        {
-            // Output raw JSON as originally wrapped for unknown types.
-            val jsonElement = Json.parseToJsonElement( value.jsonSource )
-            encoder.encodeJsonElement( jsonElement )
-        }
-        else
-        {
-            // Normal polymorphic serialization for known types.
-            encoder.encodeSerializableValue( polymorphicSerializer, value )
-        }
+        // Get the unknown JSON object.
+        check( value is UnknownPolymorphicWrapper )
+        val unknown = Json.parseToJsonElement( value.jsonSource ) as JsonObject
+
+        // HACK: Modify kotlinx.serialization internals to ensure the encoder is not in polymorphic mode.
+        //  Otherwise, `encoder.encodeJsonElement` encodes type information, but this is already represented in the wrapped unknown object.
+        AccessInternals.setField( encoder, "writePolymorphic", false )
+
+        // Output the originally wrapped JSON.
+        encoder.encodeJsonElement( unknown )
     }
 
     @InternalSerializationApi
     override fun deserialize( decoder: Decoder ): P
     {
-        // This serializer assumes JSON serialization.
+        // This serializer assumes JSON serialization with class discriminator configured for polymorphism.
+        // TODO: It should also be possible to support array polymorphism, but that is not a priority now.
         if ( decoder !is JsonDecoder )
         {
             throw unsupportedException
         }
+        val classDiscriminator = getClassDiscriminator( decoder.json )
 
-        // Determine class to be loaded and whether it is available at runtime.
-        // TODO: Can CLASS_DISCRIMINATOR be loaded from the configuration to remove this dependency (without relying on reflection)?
+        // Get raw JSON for the unknown type.
         val jsonElement = decoder.decodeJsonElement()
-        val className = jsonElement.jsonObject[ CLASS_DISCRIMINATOR ]!!.jsonPrimitive.content
-        val registeredSerializer = polymorphicSerializer.findPolymorphicSerializerOrNull( decoder, className )
-        val canLoadClass = registeredSerializer != null
-
-        // Deserialize object when serializer is available, or wrap in case type is unknown.
         val jsonSource = jsonElement.toString()
-        return if ( canLoadClass ) decoder.json.decodeFromString( polymorphicSerializer, jsonSource )
-        else createWrapper( className, jsonSource, decoder.json )
+        val className = jsonElement.jsonObject[ classDiscriminator ]!!.jsonPrimitive.content
+
+        return createWrapper( className, jsonSource, decoder.json )
+    }
+
+    // HACK: Since `Json.configuration` is internal, this is a workaround to find the configured class discriminator.
+    //   I requested it to be public: https://github.com/Kotlin/kotlinx.serialization/issues/1323
+    private fun getClassDiscriminator( json: Json ): String
+    {
+        var extractedDiscriminator: String? = null
+        Json( json )
+        {
+            if ( useArrayPolymorphism ) throw unsupportedException
+            extractedDiscriminator = classDiscriminator
+        }
+        return extractedDiscriminator!!
     }
 
     /**

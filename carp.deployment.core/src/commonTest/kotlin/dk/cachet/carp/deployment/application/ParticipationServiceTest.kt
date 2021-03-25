@@ -10,6 +10,7 @@ import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
+import dk.cachet.carp.deployment.domain.users.AssignedMasterDevice
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
@@ -128,7 +129,8 @@ abstract class ParticipationServiceTest
     @Test
     fun addParticipation_and_retrieving_invitation_succeeds() = runSuspendTest {
         val (participationService, deploymentService, accountService) = createService()
-        val studyDeploymentId = addTestDeployment( deploymentService )
+        val protocol = createSingleMasterDeviceProtocol()
+        val studyDeploymentId = deploymentService.createStudyDeployment( protocol.getSnapshot() ).studyDeploymentId
         val identity = AccountIdentity.fromEmailAddress( "test@test.com" )
         val invitation = StudyInvitation( "Test study", "description", "Custom data" )
 
@@ -136,8 +138,9 @@ abstract class ParticipationServiceTest
         val account = accountService.findAccount( identity )
         assertNotNull( account )
         val retrievedInvitations = participationService.getActiveParticipationInvitations( account.id )
-        val expectedDeviceInvitation = ActiveParticipationInvitation.DeviceInvitation( deviceRoleName, false )
-        assertEquals( ActiveParticipationInvitation( participation, invitation, setOf( expectedDeviceInvitation ) ), retrievedInvitations.single() )
+        val masterDevice = protocol.masterDevices.single()
+        val expectedAssignedDevice = AssignedMasterDevice( masterDevice, null )
+        assertEquals( ActiveParticipationInvitation( participation, invitation, setOf( expectedAssignedDevice ) ), retrievedInvitations.single() )
     }
 
     @Test

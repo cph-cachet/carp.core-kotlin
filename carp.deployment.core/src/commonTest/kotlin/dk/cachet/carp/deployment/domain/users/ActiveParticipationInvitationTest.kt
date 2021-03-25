@@ -2,7 +2,6 @@ package dk.cachet.carp.deployment.domain.users
 
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.deployment.domain.createActiveDeployment
-import dk.cachet.carp.deployment.domain.createStoppedDeployment
 import kotlin.test.*
 
 
@@ -15,44 +14,51 @@ class ActiveParticipationInvitationTest
     fun filterActiveParticipationInvitations_only_returns_active_deployments()
     {
         val deviceRole = "Participant's phone"
-        val activeDeployment = createActiveDeployment( deviceRole )
-        val stoppedDeployment = createStoppedDeployment( deviceRole )
+        val activeGroup = ParticipantGroup.fromDeployment( createActiveDeployment( deviceRole ) )
+        val stoppedGroup = ParticipantGroup.fromDeployment( createActiveDeployment( deviceRole ) )
+        stoppedGroup.studyDeploymentStopped()
 
-        val participation = Participation( activeDeployment.id )
-        val invitation = ParticipationInvitation( participation, StudyInvitation.empty(), setOf( deviceRole ) )
+        val participation = Participation( activeGroup.studyDeploymentId )
+        val accountId = UUID.randomUUID()
+        val invitation = AccountParticipation( accountId, participation, StudyInvitation.empty(), setOf( deviceRole ) )
 
         val activeInvitations = filterActiveParticipationInvitations(
             setOf( invitation ),
-            listOf( activeDeployment, stoppedDeployment )
+            listOf( activeGroup, stoppedGroup )
         )
 
         assertEquals( participation, activeInvitations.single().participation )
     }
 
     @Test
-    fun filterActiveParticipationInvitations_includes_device_registration_state()
+    fun filterActiveParticipationInvitations_includes_device_registration()
     {
         val deviceRole = "Participant's phone"
         val deployment = createActiveDeployment( deviceRole )
+        val group = ParticipantGroup.fromDeployment( deployment )
 
-        val participation = Participation( deployment.id )
-        val invitation = ParticipationInvitation( participation, StudyInvitation.empty(), setOf( deviceRole ) )
+        val participation = Participation( group.studyDeploymentId )
+        val accountId = UUID.randomUUID()
+        val invitation = AccountParticipation( accountId, participation, StudyInvitation.empty(), setOf( deviceRole ) )
 
         // When the device is not registered in the deployment, this is communicated in the active invitation.
         var activeInvitation = filterActiveParticipationInvitations(
             setOf( invitation ),
-            listOf( deployment )
+            listOf( group )
         ).first()
-        assertFalse( activeInvitation.devices.first { it.deviceRoleName == deviceRole }.isRegistered )
+        var retrievedRegistration = activeInvitation.assignedDevices.first { it.device.roleName == deviceRole }.registration
+        assertNull( retrievedRegistration )
 
         // Once the device is registered, this is communicated in the active invitation.
-        val toRegister = deployment.registrableDevices.first { it.device.roleName == deviceRole }.device
-        deployment.registerDevice( toRegister, toRegister.createRegistration() )
+        val toRegister = group.assignedMasterDevices.first { it.device.roleName == deviceRole }.device
+        val deviceRegistration = toRegister.createRegistration()
+        group.updateDeviceRegistration( toRegister, deviceRegistration )
         activeInvitation = filterActiveParticipationInvitations(
             setOf( invitation ),
-            listOf( deployment )
+            listOf( group )
         ).first()
-        assertTrue( activeInvitation.devices.first { it.deviceRoleName == deviceRole }.isRegistered )
+        retrievedRegistration = activeInvitation.assignedDevices.first { it.device.roleName == deviceRole }.registration
+        assertEquals( deviceRegistration, retrievedRegistration )
     }
 
     @Test
@@ -60,7 +66,8 @@ class ActiveParticipationInvitationTest
     {
         val unknownDeployment = UUID.randomUUID()
         val participation = Participation( unknownDeployment )
-        val invitation = ParticipationInvitation( participation, StudyInvitation.empty(), setOf( "Smartphone" ) )
+        val accountId = UUID.randomUUID()
+        val invitation = AccountParticipation( accountId, participation, StudyInvitation.empty(), setOf( "Smartphone" ) )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -71,14 +78,15 @@ class ActiveParticipationInvitationTest
     @Test
     fun filterActiveParticipationInvitations_fails_when_participation_device_role_does_not_match()
     {
-        val deployment = createActiveDeployment( "Master" )
+        val group = ParticipantGroup.fromDeployment( createActiveDeployment( "Master" ) )
 
-        val participation = Participation( deployment.id )
-        val invitation = ParticipationInvitation( participation, StudyInvitation.empty(), setOf( "Incorrect device role" ) )
+        val participation = Participation( group.studyDeploymentId )
+        val accountId = UUID.randomUUID()
+        val invitation = AccountParticipation( accountId, participation, StudyInvitation.empty(), setOf( "Incorrect device role" ) )
 
         assertFailsWith<IllegalArgumentException>
         {
-            filterActiveParticipationInvitations( setOf( invitation ), listOf( deployment ) )
+            filterActiveParticipationInvitations( setOf( invitation ), listOf( group ) )
         }
     }
 }

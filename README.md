@@ -85,6 +85,7 @@ You are not required to use these, but they remove some of the boilerplate code 
 
 To facilitate easy exchange of requests across the different subsystems, all objects that are passed through application services are serializable to JSON using built-in serializers.
 This works for both the Java runtime and JavaScript, which is achieved by relying on the [`kotlinx.serialization`](https://github.com/Kotlin/kotlinx.serialization) library and compiler plugin.
+In fact, `kotlinx.serialization` [also supports other formats](https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/formats.md), such as ProtoBuf and CBOR, but we have not tested those extensively.
 
 In addition, domain objects which need to be persisted (aggregate roots) implement [the snapshot pattern](https://howtodoinjava.com/design-patterns/behavioral/memento-design-pattern/).
 All snapshots are fully serializable to JSON, making it straightforward to store them in a document store.
@@ -250,7 +251,7 @@ val account: Account = getLoggedInUser()
 val invitation: ActiveParticipationInvitation =
     participationService.getActiveParticipationInvitations( account.id ).first()
 val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
-val deviceToUse: String = invitation.devices.first().deviceRoleName // This matches "Patient's phone".
+val deviceToUse: String = invitation.assignedDevices.first().device.roleName // This matches "Patient's phone".
 
 // Create a study runtime for the study.
 val clientRepository = createRepository()
@@ -283,7 +284,7 @@ In case you want to contribute, please follow our [contribution guidelines](http
 We recommend using IntelliJ IDEA 2020, as this is the development environment we use and is therefore fully tested.
 
 - Open the project folder in IntelliJ 2020.
-- Install the Kotlin plugin for IntelliJ IDEA (203-1.4.21-release-IJ*): `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Install the Kotlin plugin for IntelliJ IDEA (203-1.4.31-release-IJ*): `Tools->Kotlin->Configure Kotlin Plugin Updates`
 - To build/test/publish, click "Edit Configurations" to add configurations for [the included Gradle tasks](#gradle-tasks), or run them from the Gradle tool window.
 
 ### Gradle tasks

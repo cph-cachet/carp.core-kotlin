@@ -25,22 +25,36 @@ interface ParticipationRepositoryTest
 
 
     @Test
-    fun addInvitation_and_retrieving_it_succeeds() = runSuspendTest {
+    fun getParticipations_succeeds() = runSuspendTest {
         val repo = createRepository()
+        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        val deployment = StudyDeployment( protocol.getSnapshot() )
+        val group = ParticipantGroup.fromDeployment( deployment )
 
-        val account = Account.withUsernameIdentity( "test" )
-        val participation = Participation( UUID.randomUUID() )
-        val invitation = ParticipationInvitation( participation, StudyInvitation.empty(), setOf( "Test device" ) )
-        repo.addInvitation( account.id, invitation )
-        val retrievedInvitations = repo.getInvitations( account.id )
-        assertEquals( invitation, retrievedInvitations.single() )
+        // Add participation.
+        val account = Account.withEmailIdentity( "test@test.com" )
+        val participation = Participation( deployment.id )
+        val invitation = StudyInvitation.empty()
+        group.addParticipation( account, participation, invitation, protocol.masterDevices )
+        repo.putParticipantGroup( group )
+
+        val expectedInvitations = setOf(
+            AccountParticipation(
+                account.id,
+                participation,
+                invitation,
+                protocol.masterDevices.map { it.roleName }.toSet()
+            )
+        )
+        val invitations = repo.getParticipationInvitations( account.id )
+        assertEquals( expectedInvitations, invitations )
     }
 
     @Test
-    fun getInvitations_is_empty_when_no_invitations() = runSuspendTest {
+    fun getParticipations_is_empty_when_no_participations() = runSuspendTest {
         val repo = createRepository()
 
-        val invitations = repo.getInvitations( unknownId )
+        val invitations = repo.getParticipationInvitations( unknownId )
         assertEquals( 0, invitations.count() )
     }
 
@@ -78,7 +92,10 @@ interface ParticipationRepositoryTest
         repo.putParticipantGroup( group2 )
 
         val groups = repo.getParticipantGroupList( setOf( deployment1.id, deployment2.id ) )
-        assertEquals( setOf( group1, group2 ), groups.toSet() )
+        assertEquals( // ParticipantGroup does not implement equals, but snapshot does.
+            arrayOf( group1, group2 ).map { it.getSnapshot() }.toSet(),
+            groups.map { it.getSnapshot() }.toSet()
+        )
     }
 
     @Test
@@ -97,9 +114,34 @@ interface ParticipationRepositoryTest
         val noPrevious = repo.putParticipantGroup( group )
         assertNull( noPrevious )
 
-        val group2 = createComplexParticipantGroup()
-        val previous = repo.putParticipantGroup( group2 )
+        val previous = repo.putParticipantGroup( group )
         assertNotNull( previous )
         assertEquals( group.creationDate, previous.creationDate )
+    }
+
+    @Test
+    fun removeParticipantGroups_succeeds() = runSuspendTest {
+        val repo = createRepository()
+        val group1 = createComplexParticipantGroup()
+        val group2 = createComplexParticipantGroup()
+        repo.putParticipantGroup( group1 )
+        repo.putParticipantGroup( group2 )
+
+        val groupIds = setOf( group1.studyDeploymentId, group2.studyDeploymentId )
+        val removedIds = repo.removeParticipantGroups( groupIds )
+        assertEquals( groupIds, removedIds )
+        assertNull( repo.getParticipantGroup( group1.studyDeploymentId ) )
+        assertNull( repo.getParticipantGroup( group2.studyDeploymentId ) )
+    }
+
+    @Test
+    fun removeParticipantGroups_ignores_unknown_ids() = runSuspendTest {
+        val repo = createRepository()
+        val group = createComplexParticipantGroup()
+        repo.putParticipantGroup( group )
+
+        val deploymentIds = setOf( group.studyDeploymentId, unknownId )
+        val removed = repo.removeParticipantGroups( deploymentIds )
+        assertEquals( setOf( group.studyDeploymentId ), removed )
     }
 }

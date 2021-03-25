@@ -42,7 +42,8 @@ class ApplicationServiceEventBusTest
         val serviceBus = bus.createApplicationServiceAdapter( TestService::class )
 
         var eventReceived = false
-        bus.subscribe { _: Event.SomeEvent -> eventReceived = true }
+        bus.registerHandler( this ) { _: Event.SomeEvent -> eventReceived = true }
+        bus.activateHandlers( this )
         serviceBus.publish( Event.SomeEvent )
 
         assertTrue( eventReceived )
@@ -54,7 +55,9 @@ class ApplicationServiceEventBusTest
         val serviceBus = bus.createApplicationServiceAdapter( TestService::class )
 
         var eventReceived = false
-        serviceBus.subscribe { _: OtherEvent -> eventReceived = true }
+        serviceBus.subscribe {
+            event { _: OtherEvent -> eventReceived = true }
+        }
         bus.publish( OtherEvent.SomeOtherEvent )
 
         assertTrue( eventReceived )

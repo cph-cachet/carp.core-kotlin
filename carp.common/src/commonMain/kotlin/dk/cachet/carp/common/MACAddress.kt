@@ -39,13 +39,13 @@ data class MACAddress(
          *
          * TODO: It might be useful to allow even more flexible [address] entry (e.g., no/any separators, three groups with dot separator, ...).
          */
+        @OptIn( ExperimentalStdlibApi::class )
         fun parse( address: String ): MACAddress
         {
             require( address.split( ':' ).size == GROUPS || address.split( '-' ).size == GROUPS )
                 { "Invalid MAC address string representation: expected six groups of two hexadecimal digits (upper or lower case), separated by hyphens (-) or colons (:)." }
 
-            @Suppress( "ImplicitDefaultLocale" ) // Does not cause a bug now, and API will be updated in next Kotlin release: https://youtrack.jetbrains.com/issue/KT-43023
-            val recommendedFormatting = address.toUpperCase().replace( ':', '-' )
+            val recommendedFormatting = address.uppercase().replace( ':', '-' )
             return MACAddress( recommendedFormatting )
         }
     }

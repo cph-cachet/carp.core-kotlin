@@ -7,6 +7,8 @@ import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.CarpDataTypes
+import dk.cachet.carp.common.ddd.SingleThreadedEventBus
+import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
 import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
@@ -40,7 +42,7 @@ class ClientCodeSamples
         val invitation: ActiveParticipationInvitation =
             participationService.getActiveParticipationInvitations( account.id ).first()
         val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
-        val deviceToUse: String = invitation.devices.first().deviceRoleName // This matches "Patient's phone".
+        val deviceToUse: String = invitation.assignedDevices.first().device.roleName // This matches "Patient's phone".
 
         // Create a study runtime for the study.
         val clientRepository = createRepository()
@@ -69,10 +71,16 @@ class ClientCodeSamples
 
     private suspend fun createEndpoints(): Pair<ParticipationService, DeploymentService>
     {
-        val deploymentRepository = InMemoryDeploymentRepository()
-        val deploymentService = DeploymentServiceHost( deploymentRepository )
-        val participationRepository = InMemoryParticipationRepository()
-        val participationService = ParticipationServiceHost( deploymentRepository, participationRepository, accountService )
+        val eventBus = SingleThreadedEventBus()
+
+        val deploymentService = DeploymentServiceHost(
+            InMemoryDeploymentRepository(),
+            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
+
+        val participationService = ParticipationServiceHost(
+            InMemoryParticipationRepository(),
+            accountService,
+            eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
         // Create deployment for the example protocol.
         val protocol = createExampleProtocol()

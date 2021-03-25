@@ -5,7 +5,6 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.data.Data
 import dk.cachet.carp.common.data.input.InputDataType
 import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
-import dk.cachet.carp.common.ddd.subscribe
 import dk.cachet.carp.common.users.AccountIdentity
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.ParticipationService
@@ -28,24 +27,32 @@ class ParticipantServiceHost(
 {
     init
     {
-        // Create a recruitment per study.
-        eventBus.subscribe { created: StudyService.Event.StudyCreated ->
-            val recruitment = Recruitment( created.study.studyId )
-            participantRepository.addRecruitment( recruitment )
-        }
+        eventBus.subscribe {
+            // Create a recruitment per study.
+            event { created: StudyService.Event.StudyCreated ->
+                val recruitment = Recruitment( created.study.studyId )
+                participantRepository.addRecruitment( recruitment )
+            }
 
-        // Once a study goes live, its study protocol locks in and participant groups may be deployed.
-        eventBus.subscribe { goneLive: StudyService.Event.StudyGoneLive ->
-            val recruitment = participantRepository.getRecruitment( goneLive.study.studyId )
-            checkNotNull( recruitment )
-            checkNotNull( goneLive.study.protocolSnapshot )
-            recruitment.lockInStudy( goneLive.study.protocolSnapshot, goneLive.study.invitation )
-            participantRepository.updateRecruitment( recruitment )
-        }
+            // Once a study goes live, its study protocol locks in and participant groups may be deployed.
+            event { goneLive: StudyService.Event.StudyGoneLive ->
+                val recruitment = participantRepository.getRecruitment( goneLive.study.studyId )
+                checkNotNull( recruitment )
+                checkNotNull( goneLive.study.protocolSnapshot )
+                recruitment.lockInStudy( goneLive.study.protocolSnapshot, goneLive.study.invitation )
+                participantRepository.updateRecruitment( recruitment )
+            }
 
-        // Propagate removal of all data related to a study.
-        eventBus.subscribe { removed: StudyService.Event.StudyRemoved ->
-            participantRepository.removeStudy( removed.studyId )
+            // Propagate removal of all data related to a study.
+            event { removed: StudyService.Event.StudyRemoved ->
+                // Remove deployments in the deployment subsystem.
+                val recruitment = participantRepository.getRecruitment( removed.studyId )
+                checkNotNull( recruitment )
+                val idsToRemove = recruitment.participations.keys
+                deploymentService.removeStudyDeployments( idsToRemove )
+
+                participantRepository.removeStudy( removed.studyId )
+            }
         }
     }
 
@@ -98,8 +105,8 @@ class ParticipantServiceHost(
      *  - a study with [studyId] does not exist
      *  - [group] is empty
      *  - any of the participants specified in [group] does not exist
-     *  - any of the device roles specified in [group] are not part of the configured study protocol
-     *  - not all devices part of the study have been assigned a participant
+     *  - any of the master device roles specified in [group] are not part of the configured study protocol
+     *  - not all master devices part of the study have been assigned a participant
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
     override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus
@@ -135,7 +142,7 @@ class ParticipantServiceHost(
             val identity: AccountIdentity = allParticipants.getValue( toAssign.participantId ).accountIdentity
             val participation = participationService.addParticipation(
                 deploymentStatus.studyDeploymentId,
-                toAssign.deviceRoleNames,
+                toAssign.masterDeviceRoleNames,
                 identity,
                 recruitmentStatus.invitation )
 

@@ -1,6 +1,8 @@
 complexity:
   LongParameterList:
     excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
+  TooManyFunctions:
+    ignorePrivate: true
 
 formatting:
   Filename:
@@ -33,9 +35,6 @@ potential-bugs:
     active: false
   UnsafeCallOnNullableType:
     active: false
-  UnnecessarySafeCall:
-    # TODO: Re-enable once detekt bug is fixed: https://github.com/detekt/detekt/issues/3414
-    active: false
 
 style:
   EqualsNullCall:
@@ -67,15 +66,26 @@ style:
 verify-implementation:
   DataClass:
     active: true
+    excludes: &verify-implementation-excludes
+      - '**/carp/detekt/**'
+
+      # TODO: enums may be valid for `DataClass`. At least, the following comply with the expectations.
+      - '**/carp/common/data/input/Sex.kt'
     annotationClass: "dk.cachet.carp.common.ImplementAsDataClass"
-    includes: ['**/domain/**']
+    assumeNoAnnotations: &assume-no-annotations
+      - 'kotlin.collections.List'
+      - 'kotlin.collections.Map'
+      - 'kotlinx.serialization.KSerializer'
+      - 'kotlinx.serialization.modules.SerializersModuleCollector'
   Immutable:
     active: true
+    excludes: *verify-implementation-excludes
     annotationClass: "dk.cachet.carp.common.Immutable"
-    includes: ['**/domain/**']
+    assumeNoAnnotations: *assume-no-annotations
     assumeImmutable: [
       'dk.cachet.carp.common.DateTime',
-      'Json'
+      'dk.cachet.carp.common.data.input.CustomInput.T',
+      'kotlinx.serialization.json.Json'
     ]
 
 carp:

@@ -23,13 +23,6 @@ class StudyDeploymentStatusTest
 {
     private val testId = UUID( "27c56423-b7cd-48dd-8b7f-f819621a34f0" )
 
-    private fun createSingleMasterWithConnectedDeviceDeployment(): StudyDeployment
-    {
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
-        return StudyDeployment( snapshot, testId )
-    }
-
 
     @BeforeTest
     fun initializeSerializer()
@@ -40,7 +33,14 @@ class StudyDeploymentStatusTest
     @Test
     fun can_serialize_and_deserialize_deployment_status_using_JSON()
     {
-        val deployment = createSingleMasterWithConnectedDeviceDeployment()
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val master = protocol.masterDevices.single()
+        val deployment = StudyDeployment( protocol.getSnapshot(), testId )
+        deployment.registrableDevices.forEach {
+            deployment.registerDevice( it.device, it.device.createRegistration() )
+        }
+        val masterDeviceDeployment = deployment.getDeviceDeploymentFor( master )
+        deployment.deviceDeployed( master, masterDeviceDeployment.lastUpdateDate )
         val status: StudyDeploymentStatus = deployment.getStatus()
 
         val serialized: String = status.toJson()

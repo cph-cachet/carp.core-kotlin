@@ -20,6 +20,7 @@ class DeploymentServiceRequestsTest
     {
         val requests: List<DeploymentServiceRequest> = listOf(
             DeploymentServiceRequest.CreateStudyDeployment( createEmptyProtocol().getSnapshot() ),
+            DeploymentServiceRequest.RemoveStudyDeployments( emptySet() ),
             DeploymentServiceRequest.GetStudyDeploymentStatus( UUID.randomUUID() ),
             DeploymentServiceRequest.GetStudyDeploymentStatusList( setOf( UUID.randomUUID() ) ),
             DeploymentServiceRequest.RegisterDevice( UUID.randomUUID(), "Test role", DefaultDeviceRegistration( "Device ID" ) ),

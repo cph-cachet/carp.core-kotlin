@@ -6,9 +6,6 @@ import dk.cachet.carp.common.UUID
 import dk.cachet.carp.common.ddd.AggregateRoot
 import dk.cachet.carp.common.ddd.DomainEvent
 import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
-import dk.cachet.carp.common.users.Account
-import dk.cachet.carp.deployment.domain.users.AccountParticipation
-import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
@@ -23,7 +20,6 @@ import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
  * I.e., a [StudyDeployment] is responsible for registering the physical devices described in the [StudyProtocol],
  * enabling a connection between them, tracking device connection issues, and assessing data quality.
  */
-@Suppress( "TooManyFunctions" ) // TODO: Can this be decomposed a bit? Participation management will be moved to `ParticipantGroup`.
 class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() ) :
     AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>()
 {
@@ -34,10 +30,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         data class DeviceDeployed( val device: AnyMasterDeviceDescriptor ) : Event()
         data class Started( val startTime: DateTime ) : Event()
         data class DeploymentInvalidated( val device: AnyMasterDeviceDescriptor ) : Event()
-        // TODO: Immutable base class does not allow this to be defined as `object Stopped : Event()`.
-        //       It requires a data class, but that does not make sense since an object would still be immutable.
-        data class Stopped( private val ignored: Unit = Unit ) : Event()
-        data class ParticipationAdded( val accountParticipation: AccountParticipation ) : Event()
+        object Stopped : Event()
     }
 
 
@@ -80,11 +73,6 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
                     ?: throw IllegalArgumentException( "Can't find deployed device with role name '$invalidatedRoleName' in snapshot." )
             }
             deployment._invalidatedDeployedDevices.addAll( invalidatedDevices )
-
-            // Add participations.
-            snapshot.participations.forEach { p ->
-                deployment._participations.add( AccountParticipation( p.accountId, p.participationId ) )
-            }
 
             // In case the deployment has been stopped, stop it.
             if ( snapshot.isStopped ) deployment.stop()
@@ -158,14 +146,6 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
      */
     var isStopped: Boolean = false
         private set
-
-    /**
-     * The account IDs participating in this study deployment and the pseudonym IDs assigned to them.
-     */
-    val participations: Set<AccountParticipation>
-        get() = _participations
-
-    private val _participations: MutableSet<AccountParticipation> = mutableSetOf()
 
     init
     {
@@ -423,37 +403,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         if ( !isStopped )
         {
             isStopped = true
-            event( Event.Stopped() )
+            event( Event.Stopped )
         }
     }
-
-    /**
-     * Add [participation] details for a given [account] to this study deployment.
-     *
-     * @throws IllegalArgumentException if the specified [account] already participates in this deployment,
-     * or if the [participation] details do not match this study deployment.
-     * @throws IllegalStateException when this deployment has stopped.
-     */
-    fun addParticipation( account: Account, participation: Participation )
-    {
-        require( id == participation.studyDeploymentId ) { "The specified participation details do not match this study deployment." }
-        require( _participations.none { it.accountId == account.id } ) { "The specified account already participates in this study deployment." }
-        check( !isStopped ) { "Cannot add participations after a study deployment has stopped." }
-
-        val accountParticipation = AccountParticipation( account.id, participation.id )
-        _participations.add( accountParticipation )
-        event( Event.ParticipationAdded( accountParticipation ) )
-    }
-
-    /**
-     * Get the participation details for a given [account] in this study deployment,
-     * or null in case the [account] does not participate in this study deployment.
-     */
-    fun getParticipation( account: Account ): Participation? =
-        _participations
-            .filter { it.accountId == account.id }
-            .map { Participation( id, it.participationId ) }
-            .singleOrNull()
 
 
     /**

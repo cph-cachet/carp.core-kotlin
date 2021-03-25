@@ -8,6 +8,7 @@ import dk.cachet.carp.common.users.Account
 import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.deployment.domain.users.ParticipantGroup
 import dk.cachet.carp.deployment.domain.users.Participation
+import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
@@ -33,11 +34,6 @@ fun createComplexDeployment(): StudyDeployment
     val connected = deployment.registrableDevices.first { it.device.roleName == "Connected" }.device
     deployment.registerDevice( master, master.createRegistration() )
     deployment.registerDevice( connected, connected.createRegistration() )
-
-    // Add a participation.
-    val account = Account.withUsernameIdentity( "test" )
-    val participation = Participation( deployment.id )
-    deployment.addParticipation( account, participation )
 
     // Deploy a device.
     val deviceDeployment = deployment.getDeviceDeploymentFor( master )
@@ -80,8 +76,15 @@ fun createComplexParticipantGroup(): ParticipantGroup
     val deployment = StudyDeployment( protocol.getSnapshot() )
 
     return ParticipantGroup.fromDeployment( deployment ).apply {
+        addParticipation(
+            Account.withEmailIdentity( "test@test.com" ),
+            Participation( studyDeploymentId ),
+            StudyInvitation.empty(),
+            setOf( protocol.masterDevices.first() )
+        )
         setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
         setData( CarpInputDataTypes, customAttribute.inputType, CustomInput( "Steven" ) )
+        studyDeploymentStopped()
     }
 }
 

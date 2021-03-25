@@ -2,7 +2,9 @@ package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.ddd.SingleThreadedEventBus
 import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
+import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
+import dk.cachet.carp.deployment.application.ParticipationService
 import dk.cachet.carp.deployment.application.ParticipationServiceHost
 import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
@@ -22,16 +24,21 @@ class ParticipantServiceHostTest : ParticipantServiceTest
 
         // Create dependent study service.
         val studyRepo = InMemoryStudyRepository()
-        val studyService = StudyServiceHost( studyRepo, eventBus.createApplicationServiceAdapter( StudyService::class ) )
+        val studyService = StudyServiceHost(
+            studyRepo,
+            eventBus.createApplicationServiceAdapter( StudyService::class ) )
 
         // Create dependent deployment service.
-        val deploymentRepo = InMemoryDeploymentRepository()
-        val deploymentService = DeploymentServiceHost( deploymentRepo )
+        val deploymentService = DeploymentServiceHost(
+            InMemoryDeploymentRepository(),
+            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
         // Create dependent participation service.
         val accountService = InMemoryAccountService()
-        val participationRepository = InMemoryParticipationRepository()
-        val participationService = ParticipationServiceHost( deploymentRepo, participationRepository, accountService )
+        val participationService = ParticipationServiceHost(
+            InMemoryParticipationRepository(),
+            accountService,
+            eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
         val participantService = ParticipantServiceHost(
             InMemoryParticipantRepository(),

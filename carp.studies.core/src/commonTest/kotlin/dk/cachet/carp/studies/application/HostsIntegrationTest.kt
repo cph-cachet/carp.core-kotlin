@@ -44,13 +44,16 @@ class HostsIntegrationTest
         studyService = StudyServiceHost( studyRepo, eventBus.createApplicationServiceAdapter( StudyService::class ) )
 
         // Create deployment service.
-        val deploymentRepo = InMemoryDeploymentRepository()
-        deploymentService = DeploymentServiceHost( deploymentRepo )
+        deploymentService = DeploymentServiceHost(
+            InMemoryDeploymentRepository(),
+            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
         // Create dependent participation service.
         val accountService = InMemoryAccountService()
-        val participationRepository = InMemoryParticipationRepository()
-        participationService = ParticipationServiceHost( deploymentRepo, participationRepository, accountService )
+        participationService = ParticipationServiceHost(
+            InMemoryParticipationRepository(),
+            accountService,
+            eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
         participantService = ParticipantServiceHost(
             InMemoryParticipantRepository(),
@@ -63,7 +66,8 @@ class HostsIntegrationTest
     @Test
     fun create_study_creates_recruitment() = runSuspendTest {
         var studyCreated: StudyService.Event.StudyCreated? = null
-        eventBus.subscribe( StudyService::class, StudyService.Event.StudyCreated::class ) { studyCreated = it }
+        eventBus.registerHandler( StudyService::class, StudyService.Event.StudyCreated::class, this ) { studyCreated = it }
+        eventBus.activateHandlers( this )
 
         val study = studyService.createStudy( StudyOwner(), "Test" )
         val participants = participantService.getParticipants( study.studyId )
@@ -80,7 +84,8 @@ class HostsIntegrationTest
         studyService.setProtocol( studyId, protocol.getSnapshot() )
 
         var studyGoneLive: StudyService.Event.StudyGoneLive? = null
-        eventBus.subscribe( StudyService::class, StudyService.Event.StudyGoneLive::class ) { studyGoneLive = it }
+        eventBus.registerHandler( StudyService::class, StudyService.Event.StudyGoneLive::class, this ) { studyGoneLive = it }
+        eventBus.activateHandlers( this )
         studyService.goLive( studyId )
         val participant = participantService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
@@ -92,27 +97,44 @@ class HostsIntegrationTest
     }
 
     @Test
-    fun remove_study_removes_recruitment() = runSuspendTest {
+    fun remove_study_removes_recruitment_and_deployment() = runSuspendTest {
+        // Create study with protocol and go live.
         val owner = StudyOwner()
         val studyStatus = studyService.createStudy( owner, "Test" )
         val studyId = studyStatus.studyId
-        participantService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val deviceRole = "Device"
+        val protocol = createSingleMasterDeviceProtocol( deviceRole )
+        studyService.setProtocol( studyId, protocol.getSnapshot() )
+        studyService.goLive( studyId )
 
-        var removedEvent: StudyService.Event.StudyRemoved? = null
-        eventBus.subscribe( StudyService::class, StudyService.Event.StudyRemoved::class ) { removedEvent = it }
+        // Add participant and deploy participant group.
+        val participant = participantService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val assignDevices = AssignParticipantDevices( participant.id, setOf( deviceRole ) )
+        val group = participantService.deployParticipantGroup( studyId, setOf( assignDevices ) )
+        val deploymentId = group.studyDeploymentStatus.studyDeploymentId
+
+        var studyRemovedEvent: StudyService.Event.StudyRemoved? = null
+        eventBus.registerHandler( StudyService::class, StudyService.Event.StudyRemoved::class, this ) { studyRemovedEvent = it }
+        var deploymentsRemovedEvent: DeploymentService.Event.StudyDeploymentsRemoved? = null
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentsRemoved::class, this ) { deploymentsRemovedEvent = it }
+        eventBus.activateHandlers( this )
         studyService.remove( studyId )
 
-        assertEquals( studyId, removedEvent?.studyId )
+        assertEquals( studyId, studyRemovedEvent?.studyId )
+        assertEquals( setOf( deploymentId ), deploymentsRemovedEvent?.deploymentIds )
 
          // Data related to study no longer exists.
         assertFailsWith<IllegalArgumentException> { participantService.getParticipantGroupStatusList( studyId ) }
         assertFailsWith<IllegalArgumentException> { participantService.getParticipants( studyId ) }
+        assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatus( deploymentId ) }
+        assertFailsWith<IllegalArgumentException> { participationService.getParticipantData( deploymentId ) }
     }
 
     @Test
     fun remove_study_does_not_trigger_event_when_study_does_not_exist() = runSuspendTest {
         var removedEvent: StudyService.Event.StudyRemoved? = null
-        eventBus.subscribe( StudyService::class, StudyService.Event.StudyRemoved::class ) { removedEvent = it }
+        eventBus.registerHandler( StudyService::class, StudyService.Event.StudyRemoved::class, this ) { removedEvent = it }
+        eventBus.activateHandlers( this )
         studyService.remove( UUID.randomUUID() )
 
         assertNull( removedEvent )

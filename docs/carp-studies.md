@@ -23,6 +23,7 @@ Allows creating and managing studies.
 | `setInvitation` | Specify an invitation, shared with participants once they are invited to a study. | manage study: `studyId` | |
 | `setProtocol` | Specify the study protocol to use for a study. | manage study: `studyId` | |
 | `goLive` | Lock in the current study protocol so that a study may be deployed to participants. | manage study: `studyId` | |
+| `remove` | Remove a study and all related data. | manage study: `studyId` | |
 
 ### [`ParticipantService`](../carp.studies.core/src/commonMain/kotlin/dk/cachet/carp/studies/application/ParticipantService.kt)
 

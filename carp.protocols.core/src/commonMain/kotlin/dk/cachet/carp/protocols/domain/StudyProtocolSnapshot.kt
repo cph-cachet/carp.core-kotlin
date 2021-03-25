@@ -6,12 +6,8 @@ import dk.cachet.carp.common.ddd.Snapshot
 import dk.cachet.carp.common.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorSerializer
-import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptorSerializer
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
-import dk.cachet.carp.protocols.domain.tasks.TaskDescriptorSerializer
 import dk.cachet.carp.protocols.domain.triggers.Trigger
-import dk.cachet.carp.protocols.domain.triggers.TriggerSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -24,11 +20,11 @@ data class StudyProtocolSnapshot(
     val name: String,
     val description: String,
     override val creationDate: DateTime,
-    val masterDevices: List<@Serializable( MasterDeviceDescriptorSerializer::class ) AnyMasterDeviceDescriptor>,
-    val connectedDevices: List<@Serializable( DeviceDescriptorSerializer::class ) AnyDeviceDescriptor>,
+    val masterDevices: List<AnyMasterDeviceDescriptor>,
+    val connectedDevices: List<AnyDeviceDescriptor>,
     val connections: List<DeviceConnection>,
-    val tasks: List<@Serializable( TaskDescriptorSerializer::class ) TaskDescriptor>,
-    val triggers: Map<Int, @Serializable( TriggerSerializer::class ) Trigger>,
+    val tasks: List<TaskDescriptor>,
+    val triggers: Map<Int, Trigger>,
     val triggeredTasks: List<TriggeredTask>,
     val expectedParticipantData: List<ParticipantAttribute>
 ) : Snapshot<StudyProtocol>

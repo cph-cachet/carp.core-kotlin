@@ -1,9 +1,9 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.deployment.domain.users.AccountParticipation
 import dk.cachet.carp.deployment.domain.users.ParticipantGroup
 import dk.cachet.carp.deployment.domain.users.ParticipantGroupSnapshot
-import dk.cachet.carp.deployment.domain.users.ParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.ParticipationRepository
 
 
@@ -12,24 +12,16 @@ import dk.cachet.carp.deployment.domain.users.ParticipationRepository
  */
 class InMemoryParticipationRepository : ParticipationRepository
 {
-    private val participationInvitations: MutableMap<UUID, MutableSet<ParticipationInvitation>> = mutableMapOf()
     private val participantGroups: MutableMap<UUID, ParticipantGroupSnapshot> = mutableMapOf()
 
 
     /**
-     * Add a participation [invitation] for an account with the given [accountId].
+     * Get all participations invitations for the account with the specified [accountId].
      */
-    override suspend fun addInvitation( accountId: UUID, invitation: ParticipationInvitation )
-    {
-        val invitations = participationInvitations.getOrPut( accountId ) { mutableSetOf() }
-        invitations.add( invitation )
-    }
-
-    /**
-     * Get all participation invitations for the account with the specified [accountId].
-     */
-    override suspend fun getInvitations( accountId: UUID ): Set<ParticipationInvitation> =
-        participationInvitations.getOrElse( accountId ) { setOf() }
+    override suspend fun getParticipationInvitations( accountId: UUID ): Set<AccountParticipation> = participantGroups
+        .flatMap { it.value.participations }
+        .filter { it.accountId == accountId }
+        .toSet()
 
     /**
      * Returns the [ParticipantGroup] for the specified [studyDeploymentId], or null when it is not found.
@@ -38,7 +30,7 @@ class InMemoryParticipationRepository : ParticipationRepository
         participantGroups[ studyDeploymentId ]?.let { ParticipantGroup.fromSnapshot( it ) }
 
     /**
-     * Return all [ParticipantGroup]s maching the specified [studyDeploymentIds].
+     * Return all [ParticipantGroup]s matching the specified [studyDeploymentIds].
      * Ids that are not found are ignored.
      */
     override suspend fun getParticipantGroupList( studyDeploymentIds: Set<UUID> ): List<ParticipantGroup> =
@@ -55,4 +47,15 @@ class InMemoryParticipationRepository : ParticipationRepository
         participantGroups
             .put( group.studyDeploymentId, group.getSnapshot() )
             ?.let { ParticipantGroup.fromSnapshot( it ) }
+
+    /**
+     * Remove the [ParticipantGroup]s matching the specified [studyDeploymentIds].
+     *
+     * @return The IDs of study deployments for which participant groups were removed. IDs for which no participant group exists are ignored.
+     */
+    override suspend fun removeParticipantGroups( studyDeploymentIds: Set<UUID> ): Set<UUID> =
+        studyDeploymentIds
+            .mapNotNull { participantGroups.remove( it ) }
+            .map { it.studyDeploymentId }
+            .toSet()
 }

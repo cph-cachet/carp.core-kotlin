@@ -20,13 +20,13 @@ interface StudyService : ApplicationService<StudyService, StudyService.Event>
     sealed class Event : IntegrationEvent<StudyService>()
     {
         @Serializable
-        class StudyCreated( val study: StudyDetails ) : Event()
+        data class StudyCreated( val study: StudyDetails ) : Event()
 
         @Serializable
-        class StudyGoneLive( val study: StudyDetails ) : Event()
+        data class StudyGoneLive( val study: StudyDetails ) : Event()
 
         @Serializable
-        class StudyRemoved( val studyId: UUID ) : Event()
+        data class StudyRemoved( val studyId: UUID ) : Event()
     }
 
 
@@ -108,7 +108,7 @@ interface StudyService : ApplicationService<StudyService, StudyService.Event>
     suspend fun goLive( studyId: UUID ): StudyStatus
 
     /**
-     * Remove the study with the specified [studyId].
+     * Remove the study with the specified [studyId] and all related data.
      *
      * @return True when the study has been deleted, or false when there is no study to delete.
      */

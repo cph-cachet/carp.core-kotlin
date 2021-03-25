@@ -2,18 +2,41 @@ package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.DateTime
 import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.ddd.ApplicationService
+import dk.cachet.carp.common.ddd.IntegrationEvent
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
+import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import kotlinx.serialization.Serializable
 
 
 /**
  * Application service which allows deploying [StudyProtocol]'s
  * and retrieving [MasterDeviceDeployment]'s for participating master devices as defined in the protocol.
  */
-interface DeploymentService
+interface DeploymentService : ApplicationService<DeploymentService, DeploymentService.Event>
 {
+    @Serializable
+    sealed class Event : IntegrationEvent<DeploymentService>()
+    {
+        @Serializable
+        data class StudyDeploymentCreated( val deployment: StudyDeploymentSnapshot ) : Event()
+        @Serializable
+        data class StudyDeploymentsRemoved( val deploymentIds: Set<UUID> ) : Event()
+        @Serializable
+        data class StudyDeploymentStopped( val studyDeploymentId: UUID ) : Event()
+        @Serializable
+        data class DeviceRegistrationChanged(
+            val studyDeploymentId: UUID,
+            val device: AnyDeviceDescriptor,
+            val registration: DeviceRegistration?
+        ) : Event()
+    }
+
+
     /**
      * Instantiate a study deployment for a given [StudyProtocolSnapshot].
      *
@@ -21,6 +44,14 @@ interface DeploymentService
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
     suspend fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus
+
+    /**
+     * Remove study deployments with the given [studyDeploymentIds].
+     * This also removes all data related to the study deployments managed by [ParticipationService].
+     *
+     * @return The IDs of study deployments which were removed. IDs for which no study deployment exists are ignored.
+     */
+    suspend fun removeStudyDeployments( studyDeploymentIds: Set<UUID> ): Set<UUID>
 
     /**
      * Get the status for a study deployment with the given [studyDeploymentId].
