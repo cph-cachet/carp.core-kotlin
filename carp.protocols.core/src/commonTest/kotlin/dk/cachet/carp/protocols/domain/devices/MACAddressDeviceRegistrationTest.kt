@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.MACAddress
-import dk.cachet.carp.common.serialization.createDefaultJSON
+import dk.cachet.carp.common.application.MACAddress
+import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.*

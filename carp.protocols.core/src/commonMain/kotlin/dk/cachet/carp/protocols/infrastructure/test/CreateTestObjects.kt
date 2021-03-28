@@ -1,16 +1,16 @@
 package dk.cachet.carp.protocols.infrastructure.test
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.data.input.InputDataType
-import dk.cachet.carp.common.users.ParticipantAttribute
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
+import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import dk.cachet.carp.protocols.domain.triggers.Trigger
@@ -20,9 +20,9 @@ import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.PolymorphicModuleBuilder
+import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
 import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.subclass
 import kotlin.reflect.KClass
 

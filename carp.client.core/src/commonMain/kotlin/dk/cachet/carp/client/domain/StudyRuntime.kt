@@ -1,11 +1,11 @@
 package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.client.domain.data.DataListener
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.data.Data
-import dk.cachet.carp.common.data.DataType
-import dk.cachet.carp.common.ddd.AggregateRoot
-import dk.cachet.carp.common.ddd.DomainEvent
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.Data
+import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.domain.AggregateRoot
+import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment

@@ -2,12 +2,12 @@
 
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.common.MACAddress
-import dk.cachet.carp.common.RecurrenceRule
-import dk.cachet.carp.common.TimeOfDay
-import dk.cachet.carp.common.TimeSpan
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.common.application.MACAddress
+import dk.cachet.carp.common.application.RecurrenceRule
+import dk.cachet.carp.common.application.TimeOfDay
+import dk.cachet.carp.common.application.TimeSpan
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.protocols.domain.sampling.*
 import dk.cachet.carp.protocols.domain.devices.*
 import dk.cachet.carp.protocols.domain.tasks.*

@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.TimeSpan
+import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.protocols.domain.triggers.ElapsedTimeTrigger
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable

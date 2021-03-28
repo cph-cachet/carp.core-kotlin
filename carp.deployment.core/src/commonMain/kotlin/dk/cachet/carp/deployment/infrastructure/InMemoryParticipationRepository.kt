@@ -1,6 +1,6 @@
 package dk.cachet.carp.deployment.infrastructure
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployment.domain.users.AccountParticipation
 import dk.cachet.carp.deployment.domain.users.ParticipantGroup
 import dk.cachet.carp.deployment.domain.users.ParticipantGroupSnapshot

@@ -1,12 +1,12 @@
 package dk.cachet.carp.deployment.domain.users
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.data.Data
-import dk.cachet.carp.common.data.input.InputDataType
-import dk.cachet.carp.common.ddd.Snapshot
-import dk.cachet.carp.common.serialization.MapAsArraySerializer
-import dk.cachet.carp.common.users.ParticipantAttribute
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.Data
+import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.domain.Snapshot
+import dk.cachet.carp.common.infrastructure.serialization.MapAsArraySerializer
 import kotlinx.serialization.Serializable
 
 

@@ -1,11 +1,11 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.Trilean
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.ddd.AggregateRoot
-import dk.cachet.carp.common.ddd.DomainEvent
-import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.common.application.Trilean
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.domain.AggregateRoot
+import dk.cachet.carp.common.domain.DomainEvent
+import dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor

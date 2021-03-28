@@ -1,10 +1,10 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.Trilean
-import dk.cachet.carp.common.data.DataType
-import dk.cachet.carp.common.serialization.createUnknownPolymorphicSerializer
-import dk.cachet.carp.common.serialization.UnknownPolymorphicSerializer
-import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.common.application.Trilean
+import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.infrastructure.serialization.createUnknownPolymorphicSerializer
+import dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicSerializer
+import dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable

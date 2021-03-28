@@ -1,11 +1,11 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.data.input.CarpInputDataTypes
-import dk.cachet.carp.common.data.input.CustomInput
-import dk.cachet.carp.common.data.input.InputDataType
-import dk.cachet.carp.common.data.input.Sex
-import dk.cachet.carp.common.data.input.element.Text
-import dk.cachet.carp.common.users.ParticipantAttribute
+import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.application.data.input.CustomInput
+import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.data.input.Sex
+import dk.cachet.carp.common.application.data.input.element.Text
+import dk.cachet.carp.common.application.users.ParticipantAttribute
 import kotlin.test.*
 
 

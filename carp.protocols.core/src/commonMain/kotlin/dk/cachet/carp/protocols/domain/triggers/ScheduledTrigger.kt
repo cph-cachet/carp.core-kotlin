@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.triggers
 
-import dk.cachet.carp.common.RecurrenceRule
-import dk.cachet.carp.common.TimeOfDay
+import dk.cachet.carp.common.application.RecurrenceRule
+import dk.cachet.carp.common.application.TimeOfDay
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient

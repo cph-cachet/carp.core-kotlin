@@ -1,9 +1,9 @@
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.studies.domain.users.ParticipantRepository
 import dk.cachet.carp.studies.domain.users.Recruitment
 import dk.cachet.carp.studies.domain.users.RecruitmentSnapshot
-import dk.cachet.carp.studies.domain.users.ParticipantRepository
 
 
 class InMemoryParticipantRepository : ParticipantRepository

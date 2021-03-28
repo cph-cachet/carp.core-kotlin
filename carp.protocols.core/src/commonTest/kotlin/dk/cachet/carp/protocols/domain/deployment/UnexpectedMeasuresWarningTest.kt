@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.deployment
 
-import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.protocols.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubMeasure

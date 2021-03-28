@@ -2,7 +2,7 @@
 
 package dk.cachet.carp.protocols.domain.triggers
 
-import dk.cachet.carp.common.serialization.createDefaultJSON
+import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json

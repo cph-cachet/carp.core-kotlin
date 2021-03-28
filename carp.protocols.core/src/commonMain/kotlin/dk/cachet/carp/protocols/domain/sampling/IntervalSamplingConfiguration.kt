@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.sampling
 
-import dk.cachet.carp.common.TimeSpan
+import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import kotlinx.serialization.Serializable
 

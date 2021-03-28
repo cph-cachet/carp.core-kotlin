@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.ExtractUniqueKeyMap
+import dk.cachet.carp.common.domain.ExtractUniqueKeyMap
 
 
 /**

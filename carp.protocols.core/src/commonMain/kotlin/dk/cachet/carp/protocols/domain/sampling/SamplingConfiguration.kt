@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.domain.sampling
 
-import dk.cachet.carp.common.Immutable
-import dk.cachet.carp.common.ImplementAsDataClass
-import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.common.application.Immutable
+import dk.cachet.carp.common.application.ImplementAsDataClass
+import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorBuilder
 import dk.cachet.carp.protocols.domain.devices.DeviceDescriptorBuilderDsl

@@ -1,12 +1,12 @@
 package dk.cachet.carp.deployment.domain.users
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.data.Data
-import dk.cachet.carp.common.data.input.CarpInputDataTypes
-import dk.cachet.carp.common.data.input.InputDataType
-import dk.cachet.carp.common.data.input.Sex
-import dk.cachet.carp.common.users.Account
-import dk.cachet.carp.common.users.ParticipantAttribute
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.Data
+import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.data.input.Sex
+import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.createComplexParticipantGroup
 import dk.cachet.carp.protocols.domain.StudyProtocol

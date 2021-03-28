@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.domain
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.UUID
 import kotlinx.serialization.Serializable
 
 

@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.tasks
 
-import dk.cachet.carp.common.Immutable
-import dk.cachet.carp.common.ImplementAsDataClass
+import dk.cachet.carp.common.application.Immutable
+import dk.cachet.carp.common.application.ImplementAsDataClass
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import kotlinx.serialization.Polymorphic
 

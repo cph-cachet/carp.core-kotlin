@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.application
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.users.ParticipantAttribute
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot

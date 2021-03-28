@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.common.ddd.ServiceInvoker
+import dk.cachet.carp.common.infrastructure.ServiceInvoker
 import dk.cachet.carp.protocols.application.ProtocolService
 import kotlin.test.*
 

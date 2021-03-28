@@ -12,13 +12,13 @@ import Json = kotlinx.serialization.json.Json
 import { kotlinx as kotlinxcore } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
 import ListSerializer = kotlinxcore.serialization.builtins.ListSerializer_swdriu$
 import { dk as cdk } from 'carp.core-kotlin-carp.common'
-import DateTime = cdk.cachet.carp.common.DateTime
-import NamespacedId = cdk.cachet.carp.common.NamespacedId
-import UUID = cdk.cachet.carp.common.UUID
-import UsernameIdentity = cdk.cachet.carp.common.users.UsernameAccountIdentity
-import ParticipantAttribute = cdk.cachet.carp.common.users.ParticipantAttribute
-import CarpInputDataTypes = cdk.cachet.carp.common.data.input.CarpInputDataTypes
-import Text = cdk.cachet.carp.common.data.input.element.Text
+import DateTime = cdk.cachet.carp.common.application.DateTime
+import NamespacedId = cdk.cachet.carp.common.application.NamespacedId
+import UUID = cdk.cachet.carp.common.application.UUID
+import UsernameIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
+import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
+import CarpInputDataTypes = cdk.cachet.carp.common.application.data.input.CarpInputDataTypes
+import Text = cdk.cachet.carp.common.application.data.input.element.Text
 import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
 import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
 import StudyDeploymentStatus = ddk.cachet.carp.deployment.domain.StudyDeploymentStatus
@@ -156,7 +156,7 @@ describe( "carp.studies.core", () => {
 
             // Initialize data through a participant attribute. TypeScript does not have to initialize data objects directly.
             const attribute = new ParticipantAttribute.CustomParticipantAttribute( new Text( "Name" ) )
-            const inputData = attribute.inputToData_jon1ci$( CarpInputDataTypes, "Steven" )
+            const inputData = attribute.inputToData_etkzhw$( CarpInputDataTypes, "Steven" )
             const data = toMap( [ new Pair( new NamespacedId( "namespace", "type" ), inputData ) ] )
 
             const group = new ParticipantGroupStatus( deploymentStatus, participants, data )

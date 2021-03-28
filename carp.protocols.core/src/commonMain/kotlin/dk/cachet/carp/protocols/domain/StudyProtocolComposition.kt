@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.ddd.AggregateRoot
+import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.protocols.domain.devices.DeviceConfiguration
 import dk.cachet.carp.protocols.domain.tasks.TaskConfiguration
 

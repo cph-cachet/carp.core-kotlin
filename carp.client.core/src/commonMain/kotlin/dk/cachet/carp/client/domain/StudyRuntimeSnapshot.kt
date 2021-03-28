@@ -1,8 +1,8 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.ddd.Snapshot
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor

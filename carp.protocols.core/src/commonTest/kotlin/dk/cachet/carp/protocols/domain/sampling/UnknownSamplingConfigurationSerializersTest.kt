@@ -2,7 +2,7 @@
 
 package dk.cachet.carp.protocols.domain.sampling
 
-import dk.cachet.carp.common.serialization.createDefaultJSON
+import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.test.*

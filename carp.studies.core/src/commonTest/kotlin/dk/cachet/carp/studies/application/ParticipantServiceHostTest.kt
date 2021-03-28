@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.application
 
-import dk.cachet.carp.common.ddd.SingleThreadedEventBus
-import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
+import dk.cachet.carp.common.infrastructure.SingleThreadedEventBus
+import dk.cachet.carp.common.application.createApplicationServiceAdapter
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.application.ParticipationService

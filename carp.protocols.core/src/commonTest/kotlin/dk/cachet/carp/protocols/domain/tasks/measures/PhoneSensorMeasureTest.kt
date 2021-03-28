@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.tasks.measures
 
-import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.common.application.data.DataType
 import kotlin.test.*
 
 

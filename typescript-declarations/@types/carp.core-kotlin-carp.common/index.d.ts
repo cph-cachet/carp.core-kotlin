@@ -7,7 +7,7 @@ declare module 'carp.core-kotlin-carp.common'
     import Json = kotlinx.serialization.json.Json
     
     
-    namespace dk.cachet.carp.common
+    namespace dk.cachet.carp.common.application
     {
         class DateTime
         {
@@ -25,7 +25,7 @@ declare module 'carp.core-kotlin-carp.common'
             fromString_61zpoe$( s: string ): DateTime
         }
 
-        
+
         class EmailAddress
         {
             constructor( address: string )
@@ -91,10 +91,10 @@ declare module 'carp.core-kotlin-carp.common'
     }
 
 
-    namespace dk.cachet.carp.common.users
+    namespace dk.cachet.carp.common.application.users
     {
-        import InputElement = dk.cachet.carp.common.data.input.InputElement
-        import InputDataTypeList = dk.cachet.carp.common.data.input.InputDataTypeList
+        import InputElement = dk.cachet.carp.common.application.data.input.InputElement
+        import InputDataTypeList = dk.cachet.carp.common.application.data.input.InputDataTypeList
 
 
         abstract class AccountIdentity
@@ -135,11 +135,11 @@ declare module 'carp.core-kotlin-carp.common'
 
             readonly inputType: NamespacedId
 
-            getInputElement_zbztje$( registeredInputDataTypes: InputDataTypeList ): InputElement
-            isValidInput_jon1ci$( registeredInputDataTypes: InputDataTypeList, input: any ): boolean
-            inputToData_jon1ci$( registeredInputDataTypes: InputDataTypeList, input: any ): any
-            isValidData_1evfk3$( registeredInputDataTypes: InputDataTypeList, data: any ): boolean
-            dataToInput_1evfk3$( registeredInputDataTypes: InputDataTypeList, data: any ): any
+            getInputElement_6eo89k$( registeredInputDataTypes: InputDataTypeList ): InputElement
+            isValidInput_etkzhw$( registeredInputDataTypes: InputDataTypeList, input: any ): boolean
+            inputToData_etkzhw$( registeredInputDataTypes: InputDataTypeList, input: any ): any
+            isValidData_bq34fz$( registeredInputDataTypes: InputDataTypeList, data: any ): boolean
+            dataToInput_bq34fz$( registeredInputDataTypes: InputDataTypeList, data: any ): any
         }
         interface ParticipantAttribute$Companion { serializer(): any }
 
@@ -158,7 +158,7 @@ declare module 'carp.core-kotlin-carp.common'
     }
 
 
-    namespace dk.cachet.carp.common.data.input
+    namespace dk.cachet.carp.common.application.data.input
     {
         interface InputElement
         {
@@ -172,9 +172,9 @@ declare module 'carp.core-kotlin-carp.common'
         const CarpInputDataTypes: InputDataTypeList
     }
 
-    namespace dk.cachet.carp.common.data.input.element
+    namespace dk.cachet.carp.common.application.data.input.element
     {
-        import InputElement = dk.cachet.carp.common.data.input.InputElement
+        import InputElement = dk.cachet.carp.common.application.data.input.InputElement
 
         
         class Text implements InputElement
@@ -202,7 +202,7 @@ declare module 'carp.core-kotlin-carp.common'
     }
 
 
-    namespace dk.cachet.carp.common.serialization
+    namespace dk.cachet.carp.common.infrastructure.serialization
     {
         function createDefaultJSON_18xi4u$(): Json
     }

@@ -1,10 +1,10 @@
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.EmailAddress
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.data.input.CustomInput
-import dk.cachet.carp.common.data.input.InputDataType
-import dk.cachet.carp.common.ddd.ServiceInvoker
+import dk.cachet.carp.common.application.EmailAddress
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.input.CustomInput
+import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.infrastructure.ServiceInvoker
 import dk.cachet.carp.studies.application.ParticipantService
 import dk.cachet.carp.studies.application.ParticipantServiceMock
 import dk.cachet.carp.test.runSuspendTest

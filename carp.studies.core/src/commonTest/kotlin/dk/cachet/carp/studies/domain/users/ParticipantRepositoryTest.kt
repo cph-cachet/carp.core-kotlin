@@ -1,6 +1,6 @@
 package dk.cachet.carp.studies.domain.users
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

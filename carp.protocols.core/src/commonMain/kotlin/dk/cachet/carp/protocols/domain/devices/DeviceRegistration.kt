@@ -1,9 +1,9 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.Immutable
-import dk.cachet.carp.common.ImplementAsDataClass
-import dk.cachet.carp.common.serialization.NotSerializable
+import dk.cachet.carp.common.application.Immutable
+import dk.cachet.carp.common.application.ImplementAsDataClass
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
