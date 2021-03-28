@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolRepository

@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.ddd.DomainEvent
-import dk.cachet.carp.common.users.ParticipantAttribute
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.protocols.domain.deployment.DeploymentError
 import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
 import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError

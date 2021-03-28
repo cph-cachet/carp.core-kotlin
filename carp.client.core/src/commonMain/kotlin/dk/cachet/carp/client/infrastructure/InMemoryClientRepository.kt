@@ -3,7 +3,7 @@ package dk.cachet.carp.client.infrastructure
 import dk.cachet.carp.client.domain.ClientRepository
 import dk.cachet.carp.client.domain.StudyRuntime
 import dk.cachet.carp.client.domain.StudyRuntimeSnapshot
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
 

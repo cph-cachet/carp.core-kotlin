@@ -1,8 +1,8 @@
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.data.input.CarpInputDataTypes
-import dk.cachet.carp.common.data.input.Sex
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus

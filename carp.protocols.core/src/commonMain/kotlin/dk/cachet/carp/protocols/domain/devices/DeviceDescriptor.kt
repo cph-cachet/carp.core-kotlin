@@ -1,9 +1,9 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.Immutable
-import dk.cachet.carp.common.ImplementAsDataClass
-import dk.cachet.carp.common.Trilean
-import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.common.application.Immutable
+import dk.cachet.carp.common.application.ImplementAsDataClass
+import dk.cachet.carp.common.application.Trilean
+import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.sampling.SamplingConfigurationMapBuilder
 import kotlinx.serialization.Polymorphic

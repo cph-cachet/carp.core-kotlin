@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.triggers
 
-import dk.cachet.carp.common.TimeSpan
+import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient

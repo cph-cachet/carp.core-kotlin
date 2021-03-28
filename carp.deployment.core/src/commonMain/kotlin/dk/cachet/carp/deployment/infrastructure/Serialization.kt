@@ -5,8 +5,8 @@ package dk.cachet.carp.deployment.infrastructure
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.common.users.Account
-import dk.cachet.carp.common.users.Username
+import dk.cachet.carp.common.domain.users.Account
+import dk.cachet.carp.common.application.users.Username
 import dk.cachet.carp.deployment.domain.users.ParticipantData
 import dk.cachet.carp.deployment.domain.users.ParticipantGroupSnapshot
 import dk.cachet.carp.deployment.domain.users.Participation

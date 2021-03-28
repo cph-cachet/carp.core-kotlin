@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.data.input.InputDataType
-import dk.cachet.carp.common.users.ParticipantAttribute
+import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
 import dk.cachet.carp.protocols.domain.deployment.UntriggeredTasksWarning
 import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning

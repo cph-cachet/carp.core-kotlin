@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.serialization.NotSerializable
+import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.serialization.Serializable
 
 

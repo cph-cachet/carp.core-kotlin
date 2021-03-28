@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.studies.domain.StudyStatus
 import kotlin.test.*
 

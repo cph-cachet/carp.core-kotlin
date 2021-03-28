@@ -1,7 +1,7 @@
 package dk.cachet.carp.deployment.infrastructure
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.serialization.CLASS_DISCRIMINATOR
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.infrastructure.serialization.CLASS_DISCRIMINATOR
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot

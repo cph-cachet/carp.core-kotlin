@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.serialization.createDefaultJSON
+import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import kotlinx.serialization.Serializable

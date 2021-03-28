@@ -1,9 +1,9 @@
 package dk.cachet.carp.deployment.infrastructure
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.ddd.createServiceInvoker
-import dk.cachet.carp.common.ddd.ServiceInvoker
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.infrastructure.ServiceInvoker
+import dk.cachet.carp.common.infrastructure.createServiceInvoker
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus

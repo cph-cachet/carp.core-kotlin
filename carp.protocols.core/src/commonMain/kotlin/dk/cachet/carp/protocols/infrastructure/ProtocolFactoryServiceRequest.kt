@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.ddd.ServiceInvoker
-import dk.cachet.carp.common.ddd.createServiceInvoker
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.infrastructure.ServiceInvoker
+import dk.cachet.carp.common.infrastructure.createServiceInvoker
 import dk.cachet.carp.protocols.application.ProtocolFactoryService
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import kotlinx.serialization.Serializable

@@ -1,9 +1,8 @@
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import kotlin.test.*
 
 
 /**

@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.application
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
+import dk.cachet.carp.common.application.ApplicationServiceEventBus
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.Study

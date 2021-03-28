@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.domain.users
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.users.AccountIdentity
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.studies.domain.Study
 import kotlinx.serialization.Serializable
 

@@ -1,6 +1,6 @@
 package dk.cachet.carp.deployment.domain.users
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.application.UUID
 
 
 interface ParticipationRepository

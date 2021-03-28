@@ -5,7 +5,7 @@ import ArrayList = kotlin.collections.ArrayList
 import toSet = kotlin.collections.toSet_us0mfu$
 import toMap = kotlin.collections.toMap_v2dak7$
 import { dk as dkc } from 'carp.core-kotlin-carp.common'
-import UUID = dkc.cachet.carp.common.UUID
+import UUID = dkc.cachet.carp.common.application.UUID
 import { dk as dkp } from 'carp.core-kotlin-carp.protocols.core'
 import Smartphone = dkp.cachet.carp.protocols.domain.devices.Smartphone
 import DefaultDeviceRegistration = dkp.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration

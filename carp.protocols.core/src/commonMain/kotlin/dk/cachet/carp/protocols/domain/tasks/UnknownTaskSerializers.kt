@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.domain.tasks
 
-import dk.cachet.carp.common.data.DataType
-import dk.cachet.carp.common.serialization.createUnknownPolymorphicSerializer
-import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.infrastructure.serialization.createUnknownPolymorphicSerializer
+import dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable

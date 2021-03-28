@@ -1,7 +1,7 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 import kotlinx.serialization.Serializable

@@ -5,8 +5,8 @@ import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.client.domain.data.StubConnectedDeviceDataCollectorFactory
 import dk.cachet.carp.client.domain.data.StubDeviceDataCollector
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration

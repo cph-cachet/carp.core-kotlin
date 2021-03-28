@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.devices
 
-import dk.cachet.carp.common.Trilean
-import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.common.application.Trilean
+import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
 import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure
 import dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorSamplingConfigurationMapBuilder

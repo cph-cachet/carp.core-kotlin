@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.deployment
 
-import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure

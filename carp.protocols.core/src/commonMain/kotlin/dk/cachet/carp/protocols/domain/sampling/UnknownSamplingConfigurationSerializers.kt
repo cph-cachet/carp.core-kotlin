@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.sampling
 
-import dk.cachet.carp.common.serialization.UnknownPolymorphicWrapper
-import dk.cachet.carp.common.serialization.createUnknownPolymorphicSerializer
+import dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.common.infrastructure.serialization.createUnknownPolymorphicSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json

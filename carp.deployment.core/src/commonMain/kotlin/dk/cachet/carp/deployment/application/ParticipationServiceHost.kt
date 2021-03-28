@@ -1,12 +1,12 @@
 package dk.cachet.carp.deployment.application
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.data.Data
-import dk.cachet.carp.common.data.input.CarpInputDataTypes
-import dk.cachet.carp.common.data.input.InputDataType
-import dk.cachet.carp.common.data.input.InputDataTypeList
-import dk.cachet.carp.common.ddd.ApplicationServiceEventBus
-import dk.cachet.carp.common.users.AccountIdentity
+import dk.cachet.carp.common.application.ApplicationServiceEventBus
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.Data
+import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.data.input.InputDataTypeList
+import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.domain.users.ParticipantData

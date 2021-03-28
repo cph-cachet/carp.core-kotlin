@@ -1,10 +1,10 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.data.Data
-import dk.cachet.carp.common.data.input.CustomInput
-import dk.cachet.carp.common.data.input.InputDataType
-import dk.cachet.carp.common.data.input.InputDataTypeList
-import dk.cachet.carp.common.users.ParticipantAttribute
+import dk.cachet.carp.common.application.data.Data
+import dk.cachet.carp.common.application.data.input.CustomInput
+import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.data.input.InputDataTypeList
+import dk.cachet.carp.common.application.users.ParticipantAttribute
 
 
 /**

@@ -1,7 +1,7 @@
 package dk.cachet.carp.client.domain.data
 
-import dk.cachet.carp.common.data.Data
-import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.common.application.data.Data
+import dk.cachet.carp.common.application.data.DataType
 
 
 /**

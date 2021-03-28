@@ -1,6 +1,6 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.common.ImplementAsDataClass
+import dk.cachet.carp.common.application.ImplementAsDataClass
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 

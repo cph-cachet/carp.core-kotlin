@@ -1,9 +1,9 @@
 package dk.cachet.carp.deployment.domain
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.data.DataType
-import dk.cachet.carp.common.serialization.createDefaultJSON
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
 import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor

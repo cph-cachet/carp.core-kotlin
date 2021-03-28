@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.tasks
 
-import dk.cachet.carp.common.serialization.createDefaultJSON
+import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 import dk.cachet.carp.protocols.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.protocols.infrastructure.test.STUB_DATA_TYPE

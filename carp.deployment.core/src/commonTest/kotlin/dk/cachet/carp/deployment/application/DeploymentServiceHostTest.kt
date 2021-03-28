@@ -1,8 +1,8 @@
 package dk.cachet.carp.deployment.application
 
-import dk.cachet.carp.common.ddd.EventBus
-import dk.cachet.carp.common.ddd.SingleThreadedEventBus
-import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
+import dk.cachet.carp.common.application.EventBus
+import dk.cachet.carp.common.infrastructure.SingleThreadedEventBus
+import dk.cachet.carp.common.application.createApplicationServiceAdapter
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
 
 

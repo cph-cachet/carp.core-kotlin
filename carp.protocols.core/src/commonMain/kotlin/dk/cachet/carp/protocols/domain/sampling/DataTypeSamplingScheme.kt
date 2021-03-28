@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.sampling
 
-import dk.cachet.carp.common.EnumObjectList
-import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.common.application.EnumObjectList
+import dk.cachet.carp.common.application.data.DataType
 
 
 /**

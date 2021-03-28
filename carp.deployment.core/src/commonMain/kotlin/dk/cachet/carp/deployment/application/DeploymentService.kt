@@ -1,9 +1,9 @@
 package dk.cachet.carp.deployment.application
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.ddd.ApplicationService
-import dk.cachet.carp.common.ddd.IntegrationEvent
+import dk.cachet.carp.common.application.ApplicationService
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.IntegrationEvent
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus

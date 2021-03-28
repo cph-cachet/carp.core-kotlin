@@ -105,7 +105,7 @@ For example, the deployment subsystem has a sealed class [`DeploymentServiceRequ
 Using these objects, all requests to a single application service can be handled by one endpoint using type checking.
 We recommend [using a when expression](https://kotlinlang.org/docs/reference/sealed-classes.html) so that the compiler can verify whether you have handled all requests.
 
-In addition, each request object implements [`ServiceInvoker`](carp.common/src/commonMain/kotlin/dk/cachet/carp/common/ddd/ServiceInvoker.kt) which allows calling the matching application service by passing it as an argument to `invokeOn`.
+In addition, each request object implements [`ServiceInvoker`](carp.common/src/commonMain/kotlin/dk/cachet/carp/common/infrastructure/ServiceInvoker.kt) which allows calling the matching application service by passing it as an argument to `invokeOn`.
 This allows a centralized implementation for any incoming request object to an application service.
 However, in practice you might want to perform additional actions depending on specific requests, e.g., [authorization which is currently not part of core](#authorization).
 

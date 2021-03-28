@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.infrastructure.test
 
-import dk.cachet.carp.common.data.CarpDataTypes
-import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.common.application.data.CarpDataTypes
+import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.protocols.domain.sampling.DataTypeSamplingScheme
 import dk.cachet.carp.protocols.domain.sampling.NoOptionsSamplingConfigurationBuilder
 

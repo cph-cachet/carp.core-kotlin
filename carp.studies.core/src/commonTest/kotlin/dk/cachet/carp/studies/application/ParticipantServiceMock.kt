@@ -1,10 +1,10 @@
 package dk.cachet.carp.studies.application
 
-import dk.cachet.carp.common.EmailAddress
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.data.Data
-import dk.cachet.carp.common.data.input.InputDataType
-import dk.cachet.carp.common.users.AccountIdentity
+import dk.cachet.carp.common.application.EmailAddress
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.Data
+import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.Participant

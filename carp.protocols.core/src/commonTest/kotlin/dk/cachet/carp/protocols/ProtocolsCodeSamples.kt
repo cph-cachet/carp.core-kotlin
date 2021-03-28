@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols
 
-import dk.cachet.carp.common.TimeSpan
+import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.devices.CustomProtocolDevice

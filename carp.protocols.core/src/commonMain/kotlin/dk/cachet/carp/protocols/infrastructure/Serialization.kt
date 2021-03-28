@@ -2,7 +2,7 @@
 
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.common.serialization.createDefaultJSON
+import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot

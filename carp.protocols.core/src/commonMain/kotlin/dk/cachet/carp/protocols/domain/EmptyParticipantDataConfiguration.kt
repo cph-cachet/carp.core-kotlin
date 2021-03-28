@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.ExtractUniqueKeyMap
-import dk.cachet.carp.common.data.input.InputDataType
-import dk.cachet.carp.common.users.ParticipantAttribute
+import dk.cachet.carp.common.domain.ExtractUniqueKeyMap
+import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.users.ParticipantAttribute
 
 
 /**

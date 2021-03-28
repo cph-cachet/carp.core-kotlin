@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.application.UUID
 import kotlin.test.*
 
 

@@ -1,6 +1,6 @@
 package dk.cachet.carp.client.domain
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.application.UUID
 
 
 /**

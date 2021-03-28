@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.common.DateTime
+import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import kotlin.test.*
 
