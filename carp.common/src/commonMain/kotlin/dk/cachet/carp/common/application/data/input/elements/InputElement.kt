@@ -1,4 +1,4 @@
-package dk.cachet.carp.common.application.data.input
+package dk.cachet.carp.common.application.data.input.elements
 
 import kotlin.reflect.KClass
 

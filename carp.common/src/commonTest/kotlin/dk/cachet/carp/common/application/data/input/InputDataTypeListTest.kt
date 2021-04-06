@@ -1,6 +1,6 @@
 package dk.cachet.carp.common.application.data.input
 
-import dk.cachet.carp.common.application.data.input.element.Text
+import dk.cachet.carp.common.application.data.input.elements.Text
 import kotlin.test.*
 
 

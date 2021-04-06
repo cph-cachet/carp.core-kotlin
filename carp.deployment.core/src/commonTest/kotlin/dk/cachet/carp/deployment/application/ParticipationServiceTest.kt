@@ -5,7 +5,7 @@ import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.data.input.Sex
-import dk.cachet.carp.common.application.data.input.element.Text
+import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.deployment.domain.users.AccountService

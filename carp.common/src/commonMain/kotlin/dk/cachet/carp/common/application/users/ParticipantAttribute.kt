@@ -2,12 +2,12 @@ package dk.cachet.carp.common.application.users
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
-import dk.cachet.carp.common.application.data.input.AnyInputElement
+import dk.cachet.carp.common.application.data.input.elements.AnyInputElement
 import dk.cachet.carp.common.application.data.input.CUSTOM_INPUT_TYPE_NAME
 import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
-import dk.cachet.carp.common.application.data.input.InputElement
+import dk.cachet.carp.common.application.data.input.elements.InputElement
 import kotlinx.serialization.Serializable
 
 

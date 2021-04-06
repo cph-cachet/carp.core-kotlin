@@ -18,7 +18,7 @@ import UUID = cdk.cachet.carp.common.application.UUID
 import UsernameIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
 import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
 import CarpInputDataTypes = cdk.cachet.carp.common.application.data.input.CarpInputDataTypes
-import Text = cdk.cachet.carp.common.application.data.input.element.Text
+import Text = cdk.cachet.carp.common.application.data.input.elements.Text
 import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
 import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
 import StudyDeploymentStatus = ddk.cachet.carp.deployment.domain.StudyDeploymentStatus

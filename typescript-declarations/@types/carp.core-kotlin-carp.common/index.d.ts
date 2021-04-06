@@ -93,7 +93,7 @@ declare module 'carp.core-kotlin-carp.common'
 
     namespace dk.cachet.carp.common.application.users
     {
-        import InputElement = dk.cachet.carp.common.application.data.input.InputElement
+        import InputElement = dk.cachet.carp.common.application.data.input.elements.InputElement
         import InputDataTypeList = dk.cachet.carp.common.application.data.input.InputDataTypeList
 
 
@@ -160,22 +160,19 @@ declare module 'carp.core-kotlin-carp.common'
 
     namespace dk.cachet.carp.common.application.data.input
     {
+        // No need to initialize this from TypeScript right now. Access to `CarpInputDataTypes` is sufficient.
+        class InputDataTypeList { constructor() }
+        const CarpInputDataTypes: InputDataTypeList
+    }
+
+    namespace dk.cachet.carp.common.application.data.input.elements
+    {
         interface InputElement
         {
             readonly name: string
 
             isValid_trkh7z$( input: any ): boolean
         }
-
-        // No need to initialize this from TypeScript right now. Access to `CarpInputDataTypes` is sufficient.
-        class InputDataTypeList { constructor() }
-        const CarpInputDataTypes: InputDataTypeList
-    }
-
-    namespace dk.cachet.carp.common.application.data.input.element
-    {
-        import InputElement = dk.cachet.carp.common.application.data.input.InputElement
-
         
         class Text implements InputElement
         {
