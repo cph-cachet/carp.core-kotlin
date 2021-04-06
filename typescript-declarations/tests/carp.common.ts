@@ -20,8 +20,8 @@ import emailAccountIdentityFromString = dk.cachet.carp.common.application.users.
 import UsernameAccountIdentity = dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import createDefaultJSON = dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
 import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute
-import SelectOne = dk.cachet.carp.common.application.data.input.element.SelectOne
-import Text = dk.cachet.carp.common.application.data.input.element.Text
+import SelectOne = dk.cachet.carp.common.application.data.input.elements.SelectOne
+import Text = dk.cachet.carp.common.application.data.input.elements.Text
 import CarpInputDataTypes = dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 
 

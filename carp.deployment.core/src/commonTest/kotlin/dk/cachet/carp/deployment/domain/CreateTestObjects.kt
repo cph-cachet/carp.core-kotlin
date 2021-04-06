@@ -3,7 +3,7 @@ package dk.cachet.carp.deployment.domain
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.Sex
-import dk.cachet.carp.common.application.data.input.element.Text
+import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.deployment.domain.users.ParticipantGroup

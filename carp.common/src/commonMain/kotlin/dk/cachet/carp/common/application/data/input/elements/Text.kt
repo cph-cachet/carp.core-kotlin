@@ -1,6 +1,5 @@
-package dk.cachet.carp.common.application.data.input.element
+package dk.cachet.carp.common.application.data.input.elements
 
-import dk.cachet.carp.common.application.data.input.InputElement
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 

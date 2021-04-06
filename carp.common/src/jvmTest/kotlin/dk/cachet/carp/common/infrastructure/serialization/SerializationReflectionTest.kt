@@ -3,7 +3,7 @@ package dk.cachet.carp.common.infrastructure.serialization
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.CUSTOM_INPUT_TYPE_NAME
 import dk.cachet.carp.common.application.data.input.CustomInputSerializer
-import dk.cachet.carp.common.application.data.input.InputElement
+import dk.cachet.carp.common.application.data.input.elements.InputElement
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.test.serialization.verifyTypesAreRegistered
 import kotlinx.serialization.ExperimentalSerializationApi
