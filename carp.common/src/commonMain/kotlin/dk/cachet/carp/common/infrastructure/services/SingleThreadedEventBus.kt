@@ -1,8 +1,8 @@
-package dk.cachet.carp.common.infrastructure
+package dk.cachet.carp.common.infrastructure.services
 
-import dk.cachet.carp.common.application.ApplicationService
-import dk.cachet.carp.common.application.EventBus
-import dk.cachet.carp.common.application.IntegrationEvent
+import dk.cachet.carp.common.application.services.ApplicationService
+import dk.cachet.carp.common.application.services.EventBus
+import dk.cachet.carp.common.application.services.IntegrationEvent
 import kotlin.reflect.KClass
 
 

@@ -1,6 +1,6 @@
-package dk.cachet.carp.common.application
+package dk.cachet.carp.common.application.services
 
-import dk.cachet.carp.common.infrastructure.SingleThreadedEventBus
+import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.test.runSuspendTest
 import kotlinx.serialization.Serializable
 import kotlin.test.*

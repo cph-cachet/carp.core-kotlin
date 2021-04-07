@@ -1,6 +1,6 @@
 @file:Suppress( "LongParameterList" )
 
-package dk.cachet.carp.common.infrastructure
+package dk.cachet.carp.common.infrastructure.services
 
 import kotlin.reflect.*
 

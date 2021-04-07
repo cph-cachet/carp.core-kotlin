@@ -1,6 +1,6 @@
 package dk.cachet.carp.deployment.infrastructure
 
-import dk.cachet.carp.common.infrastructure.ServiceInvoker
+import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.deployment.application.ParticipationService
 import kotlin.test.*
 

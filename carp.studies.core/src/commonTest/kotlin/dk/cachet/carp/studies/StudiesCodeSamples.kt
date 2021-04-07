@@ -2,8 +2,8 @@ package dk.cachet.carp.studies
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.createApplicationServiceAdapter
-import dk.cachet.carp.common.infrastructure.SingleThreadedEventBus
+import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
+import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.application.ParticipationService

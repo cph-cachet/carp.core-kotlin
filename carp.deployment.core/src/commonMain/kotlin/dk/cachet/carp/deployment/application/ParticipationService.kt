@@ -1,7 +1,7 @@
 package dk.cachet.carp.deployment.application
 
-import dk.cachet.carp.common.application.ApplicationService
-import dk.cachet.carp.common.application.IntegrationEvent
+import dk.cachet.carp.common.application.services.ApplicationService
+import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType

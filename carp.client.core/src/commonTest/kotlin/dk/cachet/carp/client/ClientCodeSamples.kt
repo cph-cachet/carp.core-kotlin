@@ -6,11 +6,11 @@ import dk.cachet.carp.client.domain.createDataCollectorFactory
 import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.client.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.createApplicationServiceAdapter
+import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.domain.users.Account
-import dk.cachet.carp.common.infrastructure.SingleThreadedEventBus
+import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.application.ParticipationService

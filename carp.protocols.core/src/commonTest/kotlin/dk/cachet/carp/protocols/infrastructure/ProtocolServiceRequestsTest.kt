@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.ServiceInvoker
+import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.application.ProtocolServiceMock
 import dk.cachet.carp.protocols.domain.StudyProtocol

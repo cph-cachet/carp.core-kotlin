@@ -6,8 +6,8 @@ import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.client.domain.data.StubDeviceDataCollector
 import dk.cachet.carp.client.domain.data.StubDeviceDataCollectorFactory
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.infrastructure.SingleThreadedEventBus
-import dk.cachet.carp.common.application.createApplicationServiceAdapter
+import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
+import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus

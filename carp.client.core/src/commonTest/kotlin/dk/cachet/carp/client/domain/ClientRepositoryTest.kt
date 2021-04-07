@@ -2,8 +2,8 @@ package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.createApplicationServiceAdapter
-import dk.cachet.carp.common.infrastructure.SingleThreadedEventBus
+import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
+import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository

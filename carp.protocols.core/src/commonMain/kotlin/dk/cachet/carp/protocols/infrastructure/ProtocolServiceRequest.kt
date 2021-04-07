@@ -3,8 +3,8 @@ package dk.cachet.carp.protocols.infrastructure
 import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.ParticipantAttribute
-import dk.cachet.carp.common.infrastructure.ServiceInvoker
-import dk.cachet.carp.common.infrastructure.createServiceInvoker
+import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
+import dk.cachet.carp.common.infrastructure.services.createServiceInvoker
 import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocol
