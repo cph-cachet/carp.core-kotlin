@@ -2,7 +2,7 @@ package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.ServiceInvoker
+import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceMock
 import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration

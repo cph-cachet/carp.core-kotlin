@@ -1,5 +1,7 @@
-package dk.cachet.carp.common.application
+package dk.cachet.carp.common.application.services
 
+import dk.cachet.carp.common.application.Immutable
+import dk.cachet.carp.common.application.ImplementAsDataClass
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 

@@ -1,4 +1,4 @@
-package dk.cachet.carp.common.application
+package dk.cachet.carp.common.application.services
 
 import kotlin.reflect.KClass
 

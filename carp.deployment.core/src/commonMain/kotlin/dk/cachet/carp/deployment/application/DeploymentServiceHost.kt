@@ -1,6 +1,6 @@
 package dk.cachet.carp.deployment.application
 
-import dk.cachet.carp.common.application.ApplicationServiceEventBus
+import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployment.domain.DeploymentRepository
