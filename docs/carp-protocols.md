@@ -20,7 +20,7 @@ Typically, a desktop computer, smartphone, or web server.
 Describes requested `Measure`s and/or output to be presented on a device.
 - [`Measure`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/tasks/measures/Measure.kt):
 Defines data that needs to be measured/collected for a supported `DataType`.
-- [`DataType`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/data/DataType.kt):
+- [`DataType`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/DataType.kt):
 Defines a type of data which can be processed by the platform (e.g., measured/collected/uploaded).
 - [`Trigger`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/triggers/Trigger.kt):
 Any condition on a device which starts or stops tasks at certain points in time when the condition applies.
@@ -44,8 +44,8 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 
 | Name | Description |
 | --- | --- |
-| [geolocation](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/data/Geolocation.kt) | Geographic location data, representing longitude and latitude. |
-| [stepcount](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/data/StepCount.kt) | The number of steps a participant has taken in a specified time interval. |
+| [geolocation](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Geolocation.kt) | Geographic location data, representing longitude and latitude. |
+| [stepcount](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/StepCount.kt) | The number of steps a participant has taken in a specified time interval. |
 
 ### Device descriptors
 
