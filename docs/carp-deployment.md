@@ -5,7 +5,7 @@ To start collecting data, participants need to be invited, devices need to be re
 
 ## Deployment sequence
 
-The following diagram depicts a typical sequence of calls to [application services in the deployment subsystem](#application-service) to create a study deployment, invite participants, and deploy it successfully on a client device.
+The following diagram depicts a typical sequence of calls to [application services in the deployment subsystem](#application-services) to create a study deployment, invite participants, and deploy it successfully on a client device.
 The events between `DeploymentService` and `ParticipationService` are opaque to the user and are merely an implementation detail.
 The application and domain services in `carp.studies` and `carp.client` abstract away this entire sequence.
 Matching code for these calls can be found in the main README as part of the [carp.deployment](../README.md#example-deployment) and [carp.client](../README.md#example-client) examples.
@@ -14,7 +14,7 @@ Matching code for these calls can be found in the main README as part of the [ca
 
 ## Study and device deployment state
 
-Most of the [the `DeploymentService` endpoints](#application-service) return the current status of a study deployment after the requested operation has been executed.
+Most of the [the `DeploymentService` endpoints](#application-services) return the current status of a study deployment after the requested operation has been executed.
 Depending on the current state of the deployment, different operations are available.
 This is represented by [`StudyDeploymentStatus`](../carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/domain/StudyDeploymentStatus.kt), which reflects the underlying state machine:
 
