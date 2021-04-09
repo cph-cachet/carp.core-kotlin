@@ -9,7 +9,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
     import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
 
 
-    namespace dk.cachet.carp.protocols.domain
+    namespace dk.cachet.carp.protocols.application
     {
         class ProtocolVersion
         {

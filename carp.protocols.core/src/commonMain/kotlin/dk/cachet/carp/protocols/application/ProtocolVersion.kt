@@ -1,6 +1,7 @@
-package dk.cachet.carp.protocols.domain
+package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.domain.StudyProtocol
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 

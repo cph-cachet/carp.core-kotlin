@@ -9,7 +9,7 @@ import StudyProtocolSnapshot = cdk.cachet.carp.common.application.StudyProtocolS
 import createProtocolsSerializer = cdk.cachet.carp.common.infrastructure.serialization.createProtocolsSerializer_18xi4u$
 
 import { dk } from 'carp.core-kotlin-carp.protocols.core'
-import ProtocolVersion = dk.cachet.carp.protocols.domain.ProtocolVersion
+import ProtocolVersion = dk.cachet.carp.protocols.application.ProtocolVersion
 import ProtocolFactoryServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceRequest
 import ProtocolServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest
 

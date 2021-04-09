@@ -5,7 +5,6 @@ import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.ProtocolVersion
 
 
 /**

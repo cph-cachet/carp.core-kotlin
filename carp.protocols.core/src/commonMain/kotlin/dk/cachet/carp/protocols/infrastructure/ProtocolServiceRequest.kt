@@ -8,7 +8,7 @@ import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.createServiceInvoker
 import dk.cachet.carp.protocols.application.ProtocolService
-import dk.cachet.carp.protocols.domain.ProtocolVersion
+import dk.cachet.carp.protocols.application.ProtocolVersion
 import kotlinx.serialization.Serializable
 
 
