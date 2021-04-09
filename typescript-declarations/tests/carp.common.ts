@@ -4,29 +4,44 @@ import VerifyModule from './VerifyModule'
 import { kotlin } from 'kotlin'
 import { Long } from 'kotlin'
 import toSet = kotlin.collections.toSet_us0mfu$
+
 import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
 import Json = kotlinx.serialization.json.Json
+
 import { dk } from 'carp.core-kotlin-carp.common'
 import DateTime = dk.cachet.carp.common.application.DateTime
 import EmailAddress = dk.cachet.carp.common.application.EmailAddress
 import NamespacedId = dk.cachet.carp.common.application.NamespacedId
+import StudyProtocolSnapshot = dk.cachet.carp.common.application.StudyProtocolSnapshot
 import TimeSpan = dk.cachet.carp.common.application.TimeSpan
 import Trilean = dk.cachet.carp.common.application.Trilean
-import toTrilean = dk.cachet.carp.common.application.toTrilean_1v8dcc$
 import UUID = dk.cachet.carp.common.application.UUID
-import AccountIdentity = dk.cachet.carp.common.application.users.AccountIdentity
-import EmailAccountIdentity = dk.cachet.carp.common.application.users.EmailAccountIdentity
-import emailAccountIdentityFromString = dk.cachet.carp.common.application.users.EmailAccountIdentity_init_61zpoe$
-import UsernameAccountIdentity = dk.cachet.carp.common.application.users.UsernameAccountIdentity
-import createDefaultJSON = dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
-import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute
+import toTrilean = dk.cachet.carp.common.application.toTrilean_1v8dcc$
+import DefaultDeviceRegistration = dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
+import CarpInputDataTypes = dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import SelectOne = dk.cachet.carp.common.application.data.input.elements.SelectOne
 import Text = dk.cachet.carp.common.application.data.input.elements.Text
-import CarpInputDataTypes = dk.cachet.carp.common.application.data.input.CarpInputDataTypes
+import DeviceRegistration = dk.cachet.carp.common.application.devices.DeviceRegistration
+import AccountIdentity = dk.cachet.carp.common.application.users.AccountIdentity
+import EmailAccountIdentity = dk.cachet.carp.common.application.users.EmailAccountIdentity
+import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute
+import UsernameAccountIdentity = dk.cachet.carp.common.application.users.UsernameAccountIdentity
+import emailAccountIdentityFromString = dk.cachet.carp.common.application.users.EmailAccountIdentity_init_61zpoe$
+import ProtocolOwner = dk.cachet.carp.common.domain.ProtocolOwner
+import ProtocolId = dk.cachet.carp.common.domain.StudyProtocol.Id
+import createDefaultJSON = dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
+import createProtocolsSerializer = dk.cachet.carp.common.infrastructure.serialization.createProtocolsSerializer_18xi4u$
+
+const serializedSnapshot = `{"ownerId":"27879e75-ccc1-4866-9ab3-4ece1b735052","name":"Test protocol","description":"Test description","creationDate":"2020-12-05T21:55:59.454Z","masterDevices":[{"$type":"dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor","isMasterDevice":true,"roleName":"Stub master device","samplingConfiguration":{},"supportedDataTypes":["dk.cachet.carp.stub"]}],"connectedDevices":[{"$type":"dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor","roleName":"Stub device","samplingConfiguration":{},"supportedDataTypes":["dk.cachet.carp.stub"]},{"$type":"dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor","isMasterDevice":true,"roleName":"Chained master","samplingConfiguration":{},"supportedDataTypes":["dk.cachet.carp.stub"]},{"$type":"dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor","roleName":"Chained connected","samplingConfiguration":{},"supportedDataTypes":["dk.cachet.carp.stub"]}],"connections":[{"roleName":"Stub device","connectedToRoleName":"Stub master device"},{"roleName":"Chained master","connectedToRoleName":"Stub master device"},{"roleName":"Chained connected","connectedToRoleName":"Chained master"}],"tasks":[{"$type":"dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor","name":"Task","measures":[{"$type":"dk.cachet.carp.common.infrastructure.test.StubMeasure","type":"dk.cachet.carp.stub","uniqueProperty":"Unique"}]}],"triggers":{"0":{"$type":"dk.cachet.carp.common.infrastructure.test.StubTrigger","sourceDeviceRoleName":"Stub device","uniqueProperty":"Unique"}},"triggeredTasks":[{"triggerId":0,"taskName":"Task","targetDeviceRoleName":"Stub master device"}],"expectedParticipantData":[{"$type":"dk.cachet.carp.common.application.users.ParticipantAttribute.DefaultParticipantAttribute","inputType":"some.type"}]}`
 
 
 describe( "carp.common", () => {
     it( "verify module declarations", async () => {
+        // Create `StudyProtocolSnapshot` instance.
+        const json: Json = createProtocolsSerializer()
+        const serializer = StudyProtocolSnapshot.Companion.serializer()
+        const studyProtocolSnapshot = json.decodeFromString_awif5v$( serializer, serializedSnapshot )
+
         const instances = [
             DateTime.Companion.now(),
             DateTime.Companion,
@@ -34,10 +49,19 @@ describe( "carp.common", () => {
             EmailAddress.Companion,
             new NamespacedId( "namespace", "type" ),
             NamespacedId.Companion,
+            studyProtocolSnapshot,
+            StudyProtocolSnapshot.Companion,
             TimeSpan.Companion.INFINITE,
             TimeSpan.Companion,
             UUID.Companion.randomUUID(),
             UUID.Companion,
+            [ "InputElement", new Text( "How are you feeling?" ) ],
+            new SelectOne( "Sex", toSet( [ "Male", "Female" ] ) ),
+            SelectOne.Companion,
+            new Text( "How are you feeling?" ),
+            Text.Companion,
+            [ "DeviceRegistration", new DefaultDeviceRegistration( "some device id" ) ],
+            DeviceRegistration.Companion,
             AccountIdentity.Factory,
             new EmailAccountIdentity( new EmailAddress( "test@test.com" ) ),
             EmailAccountIdentity.Companion,
@@ -45,17 +69,25 @@ describe( "carp.common", () => {
             UsernameAccountIdentity.Companion,
             [ "ParticipantAttribute", new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ) ],
             ParticipantAttribute.Companion,
-            [ "InputElement", new Text( "How are you feeling?" ) ],
-            SelectOne.Companion,
-            new SelectOne( "Sex", toSet( [ "Male", "Female" ] ) ),
-            Text.Companion,
-            new Text( "How are you feeling?" )
+            new ProtocolOwner(),
+            ProtocolOwner.Companion,
+            new ProtocolId( UUID.Companion.randomUUID(), "Name" ),
+            [ "Id$Companion", ProtocolId.Companion ],
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.common', instances )
         await moduleVerifier.verify()
     } )
 
+
+    describe( "StudyProtocolSnapshot", () => {
+        it( "can deserialize", () => {
+            const json: Json = createProtocolsSerializer()
+            const serializer = StudyProtocolSnapshot.Companion.serializer()
+            const parsed = json.decodeFromString_awif5v$( serializer, serializedSnapshot )
+            expect( parsed ).is.instanceOf( StudyProtocolSnapshot )
+        } )
+    } )
 
     describe( "DateTime", () => {
         it( "serializes as string", () => {

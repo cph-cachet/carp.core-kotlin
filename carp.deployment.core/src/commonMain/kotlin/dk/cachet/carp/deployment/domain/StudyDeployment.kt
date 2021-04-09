@@ -2,16 +2,16 @@ package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.DeviceDescriptor
+import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
+import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicWrapper
-import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 
 
 /**

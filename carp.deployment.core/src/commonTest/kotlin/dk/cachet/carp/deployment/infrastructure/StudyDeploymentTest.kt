@@ -1,16 +1,16 @@
 package dk.cachet.carp.deployment.infrastructure
 
+import dk.cachet.carp.common.application.StudyProtocolSnapshot
+import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
+import dk.cachet.carp.common.infrastructure.serialization.fromJson
+import dk.cachet.carp.common.infrastructure.serialization.toJson
+import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
+import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.createEmptyProtocol
+import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployment.domain.studyDeploymentFor
-import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
-import dk.cachet.carp.protocols.infrastructure.fromJson
-import dk.cachet.carp.protocols.infrastructure.test.STUBS_SERIAL_MODULE
-import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
-import dk.cachet.carp.protocols.infrastructure.test.makeUnknown
-import dk.cachet.carp.protocols.infrastructure.toJson
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.*
 

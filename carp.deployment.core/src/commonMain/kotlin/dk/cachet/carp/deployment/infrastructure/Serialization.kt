@@ -2,16 +2,16 @@
 
 package dk.cachet.carp.deployment.infrastructure
 
+import dk.cachet.carp.common.domain.users.Account
+import dk.cachet.carp.common.application.users.Username
+import dk.cachet.carp.common.infrastructure.serialization.createProtocolsSerializer
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.common.domain.users.Account
-import dk.cachet.carp.common.application.users.Username
 import dk.cachet.carp.deployment.domain.users.ParticipantData
 import dk.cachet.carp.deployment.domain.users.ParticipantGroupSnapshot
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
-import dk.cachet.carp.protocols.infrastructure.createProtocolsSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 

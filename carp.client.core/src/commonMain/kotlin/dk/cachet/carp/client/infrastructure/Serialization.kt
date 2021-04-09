@@ -1,7 +1,7 @@
 package dk.cachet.carp.client.infrastructure
 
 import dk.cachet.carp.client.domain.StudyRuntimeSnapshot
-import dk.cachet.carp.protocols.infrastructure.JSON
+import dk.cachet.carp.common.infrastructure.serialization.JSON
 
 
 /**

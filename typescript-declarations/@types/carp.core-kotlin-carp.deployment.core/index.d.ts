@@ -4,16 +4,17 @@ declare module 'carp.core-kotlin-carp.deployment.core'
     import ArrayList = kotlin.collections.ArrayList
     import HashMap = kotlin.collections.HashMap
     import HashSet = kotlin.collections.HashSet
+
     import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
     import Json = kotlinx.serialization.json.Json
+
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
-    import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
     import DateTime = cdk.cachet.carp.common.application.DateTime
     import NamespacedId = cdk.cachet.carp.common.application.NamespacedId
+    import StudyProtocolSnapshot = cdk.cachet.carp.common.application.StudyProtocolSnapshot
     import UUID = cdk.cachet.carp.common.application.UUID
-    import { dk as pdk } from 'carp.core-kotlin-carp.protocols.core'
-    import DeviceRegistration = pdk.cachet.carp.protocols.domain.devices.DeviceRegistration
-    import StudyProtocolSnapshot = pdk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+    import DeviceRegistration = cdk.cachet.carp.common.application.devices.DeviceRegistration
+    import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity    
 
 
     namespace dk.cachet.carp.deployment.domain

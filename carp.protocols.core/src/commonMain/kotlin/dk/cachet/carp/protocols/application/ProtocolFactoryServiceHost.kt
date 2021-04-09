@@ -1,11 +1,11 @@
 package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.protocols.domain.ProtocolOwner
-import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.devices.CustomProtocolDevice
-import dk.cachet.carp.protocols.domain.tasks.CustomProtocolTask
+import dk.cachet.carp.common.application.StudyProtocolSnapshot
+import dk.cachet.carp.common.application.devices.CustomProtocolDevice
+import dk.cachet.carp.common.application.tasks.CustomProtocolTask
+import dk.cachet.carp.common.domain.ProtocolOwner
+import dk.cachet.carp.common.domain.StudyProtocol
 
 
 /**

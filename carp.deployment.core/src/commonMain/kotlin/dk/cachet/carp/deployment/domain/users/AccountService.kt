@@ -2,8 +2,8 @@ package dk.cachet.carp.deployment.domain.users
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.domain.users.Account
-import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 
 
 /**

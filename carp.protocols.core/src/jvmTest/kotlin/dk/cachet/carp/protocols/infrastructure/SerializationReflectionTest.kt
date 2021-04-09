@@ -1,11 +1,12 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
-import dk.cachet.carp.protocols.domain.sampling.SamplingConfiguration
-import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
-import dk.cachet.carp.protocols.domain.tasks.measures.Measure
-import dk.cachet.carp.protocols.domain.triggers.Trigger
+import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
+import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.sampling.SamplingConfiguration
+import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.tasks.measures.Measure
+import dk.cachet.carp.common.application.triggers.Trigger
+import dk.cachet.carp.common.infrastructure.serialization.PROTOCOLS_SERIAL_MODULE
 import dk.cachet.carp.test.serialization.verifyTypesAreRegistered
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.*

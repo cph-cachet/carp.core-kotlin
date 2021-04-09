@@ -4,14 +4,14 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
+import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
+import dk.cachet.carp.common.domain.isValidParticipantData
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.deployment.domain.StudyDeployment
-import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
-import dk.cachet.carp.protocols.domain.isValidParticipantData
 
 
 /**

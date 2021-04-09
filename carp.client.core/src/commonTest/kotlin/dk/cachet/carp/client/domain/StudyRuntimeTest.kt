@@ -7,15 +7,15 @@ import dk.cachet.carp.client.domain.data.StubConnectedDeviceDataCollectorFactory
 import dk.cachet.carp.client.domain.data.StubDeviceDataCollector
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.devices.AltBeaconDeviceRegistration
+import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.devices.DeviceType
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubMeasure
+import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
 import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.protocols.domain.devices.AltBeaconDeviceRegistration
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
-import dk.cachet.carp.protocols.domain.devices.DeviceType
-import dk.cachet.carp.protocols.infrastructure.test.STUB_DATA_TYPE
-import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
-import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
+import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.deployment.domain.users.AccountService
 import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
@@ -15,7 +16,6 @@ import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.ParticipationRepository
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.deployment.domain.users.filterActiveParticipationInvitations
-import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 
 
 /**

@@ -2,20 +2,21 @@ declare module 'carp.core-kotlin-carp.studies.core'
 {
     import { kotlin } from 'kotlin'
     import ArrayList = kotlin.collections.ArrayList
-    import HashSet = kotlin.collections.HashSet
     import HashMap = kotlin.collections.HashMap
+    import HashSet = kotlin.collections.HashSet
+
     import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
     import Json = kotlinx.serialization.json.Json
+
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import DateTime = cdk.cachet.carp.common.application.DateTime
     import EmailAddress = cdk.cachet.carp.common.application.EmailAddress
     import NamespacedId = cdk.cachet.carp.common.application.NamespacedId
+    import StudyProtocolSnapshot = cdk.cachet.carp.common.application.StudyProtocolSnapshot
     import UUID = cdk.cachet.carp.common.application.UUID
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
-    import { dk as pdk } from 'carp.core-kotlin-carp.protocols.core'
-    import StudyProtocolSnapshot = pdk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-    import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
 
+    import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
     import StudyDeploymentStatus = ddk.cachet.carp.deployment.domain.StudyDeploymentStatus
     import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
 
@@ -23,7 +24,6 @@ declare module 'carp.core-kotlin-carp.studies.core'
     namespace dk.cachet.carp.studies.domain
     {
         import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
-        import DeanonymizedParticipation = dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
 
 
         class StudyDetails

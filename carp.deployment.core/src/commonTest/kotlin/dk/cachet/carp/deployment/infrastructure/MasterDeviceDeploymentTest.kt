@@ -1,11 +1,11 @@
 package dk.cachet.carp.deployment.infrastructure
 
+import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
+import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
-import dk.cachet.carp.protocols.infrastructure.test.STUBS_SERIAL_MODULE
-import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
 import kotlin.test.*
 
 

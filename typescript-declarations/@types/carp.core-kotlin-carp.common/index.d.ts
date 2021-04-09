@@ -2,13 +2,35 @@ declare module 'carp.core-kotlin-carp.common'
 {
     import { kotlin } from 'kotlin'
     import { Long } from 'kotlin'
+    import ArrayList = kotlin.collections.ArrayList
+    import HashMap = kotlin.collections.HashMap
     import HashSet = kotlin.collections.HashSet
+
     import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
     import Json = kotlinx.serialization.json.Json
     
     
     namespace dk.cachet.carp.common.application
     {
+        import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute
+
+
+        class StudyProtocolSnapshot
+        {
+            // No manual initialization needed in TypeScript. Serialization should be used.
+            private constructor()
+
+            static get Companion(): StudyProtocolSnapshot$Companion
+
+            readonly ownerId: UUID
+            readonly name: string
+            readonly description: string
+            readonly creationDate: DateTime
+            readonly expectedParticipantData: ArrayList<ParticipantAttribute>
+        }
+        interface StudyProtocolSnapshot$Companion { serializer(): any }
+
+
         class DateTime
         {
             constructor( msSinceUTC: Long )
@@ -87,6 +109,29 @@ declare module 'carp.core-kotlin-carp.common'
         {
             serializer(): any;
             randomUUID(): UUID;
+        }
+    }
+
+
+    namespace dk.cachet.carp.common.application.devices
+    {
+        abstract class DeviceRegistration
+        {
+            static get Companion(): DeviceRegistration$Companion  
+            
+            readonly deviceId: string
+            readonly registrationCreationDate: DateTime
+        }
+        interface DeviceRegistration$Companion { serializer(): any }
+
+        class DefaultDeviceRegistration extends DeviceRegistration
+        {
+            constructor( deviceId: string )
+        }
+
+        class Smartphone
+        {
+            constructor( roleName: string, samplingConfiguration: HashMap<NamespacedId, any> )
         }
     }
 
@@ -199,8 +244,40 @@ declare module 'carp.core-kotlin-carp.common'
     }
 
 
+    namespace dk.cachet.carp.common.domain
+    {
+        import UUID = dk.cachet.carp.common.application.UUID
+
+
+        namespace StudyProtocol
+        {
+            class Id
+            {
+                constructor( ownerId: UUID, name: string )
+
+                static get Companion(): Id$Companion
+    
+                readonly ownerId: UUID
+                readonly name: string
+            }
+            interface Id$Companion { serializer(): any }
+        }
+
+        class ProtocolOwner
+        {
+            constructor( id?: UUID )
+
+            static get Companion(): ProtocolOwner$Companion
+
+            readonly id: UUID
+        }
+        interface ProtocolOwner$Companion { serializer(): any }
+    }
+
+
     namespace dk.cachet.carp.common.infrastructure.serialization
     {
         function createDefaultJSON_18xi4u$(): Json
+        function createProtocolsSerializer_18xi4u$(): Json
     }
 }

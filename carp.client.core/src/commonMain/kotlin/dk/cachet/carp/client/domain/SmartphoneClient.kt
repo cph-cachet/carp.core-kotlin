@@ -3,10 +3,10 @@ package dk.cachet.carp.client.domain
 import dk.cachet.carp.client.domain.data.ConnectedDeviceDataCollector
 import dk.cachet.carp.client.domain.data.DeviceDataCollector
 import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
+import dk.cachet.carp.common.application.devices.Smartphone
+import dk.cachet.carp.common.application.devices.SmartphoneDeviceRegistration
+import dk.cachet.carp.common.application.devices.SmartphoneDeviceRegistrationBuilder
 import dk.cachet.carp.deployment.application.DeploymentService
-import dk.cachet.carp.protocols.domain.devices.Smartphone
-import dk.cachet.carp.protocols.domain.devices.SmartphoneDeviceRegistration
-import dk.cachet.carp.protocols.domain.devices.SmartphoneDeviceRegistrationBuilder
 
 
 /**

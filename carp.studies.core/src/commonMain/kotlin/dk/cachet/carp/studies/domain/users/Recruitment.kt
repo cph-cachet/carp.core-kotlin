@@ -1,13 +1,13 @@
 package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.application.EmailAddress
+import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
-import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 
 
 /**

@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.infrastructure.serialization.JSON
 import kotlin.test.*
 
 

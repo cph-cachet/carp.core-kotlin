@@ -1,10 +1,10 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.domain.Snapshot
-import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
 import kotlinx.serialization.Serializable
 
 

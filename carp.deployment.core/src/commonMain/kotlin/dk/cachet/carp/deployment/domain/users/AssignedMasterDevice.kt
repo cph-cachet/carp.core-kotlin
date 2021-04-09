@@ -1,7 +1,7 @@
 package dk.cachet.carp.deployment.domain.users
 
-import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.DeviceRegistration
 import kotlinx.serialization.Serializable
 
 
