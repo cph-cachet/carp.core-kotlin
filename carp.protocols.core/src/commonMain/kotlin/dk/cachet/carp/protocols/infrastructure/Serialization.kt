@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.protocols.domain.ProtocolVersion
+import dk.cachet.carp.protocols.application.ProtocolVersion
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 
 
