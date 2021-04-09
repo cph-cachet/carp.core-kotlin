@@ -1,11 +1,12 @@
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.domain.StudyProtocol
+import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
+import dk.cachet.carp.common.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.application.ProtocolServiceMock
-import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

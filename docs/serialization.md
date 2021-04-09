@@ -5,7 +5,7 @@ This is achieved by relying on the [`kotlinx.serialization`](https://github.com/
 Classes are made serializable by applying a `@Serializable` annotation to the class definition.
 Custom serializers for classes and properties can be specified through an optional `KClass` parameter of `@Serializable` which specifies the custom `KSerializer<T>` to use, e.g., `@Serializable( CustomSerializer::class )`.
 
-Most of this is self-explanatory when looking at the codebase. [`StudyProtocolSnapshot`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/StudyProtocolSnapshot.kt) is a good starting point to see how composite objects with complicated hierarchies of inheriting objects, including collections, can be serialized.
+Most of this is self-explanatory when looking at the codebase. [`StudyProtocolSnapshot`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/StudyProtocolSnapshot.kt) is a good starting point to see how composite objects with complicated hierarchies of inheriting objects, including collections, can be serialized.
 But, what follows are pointers on how to use this library specific to CARP, which might be useful **in case you need to understand the codebase, extend on base types, or introduce new ones**.
 
 ## UnknownPolymorphicSerializer: (De)serializing unknown types
@@ -40,7 +40,7 @@ The custom wrapper needs to:
  3. Apply `@Serializable` to use the custom serializer. E.g, `@Serializable( TaskDescriptorSerializer::class )`.
 
 The only real work lies in extracting the base properties using traditional JSON parsing.
-This can easily be done using a serializer of an intermediate concrete type, as exemplified in [`CustomTaskDescriptor`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/tasks/UnknownTaskSerializers.kt).
+This can easily be done using a serializer of an intermediate concrete type, as exemplified in [`CustomTaskDescriptor`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/infrastructure/serialization/UnknownTaskSerializers.kt).
 
 The custom serializer should be configured as the `default` serializer for the expected base type in the `SerializersModule`,
 and the wrapper should be registered as a subclass.

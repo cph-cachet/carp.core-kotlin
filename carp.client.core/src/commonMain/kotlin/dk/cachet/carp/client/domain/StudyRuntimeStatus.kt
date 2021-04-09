@@ -1,8 +1,8 @@
 package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.common.application.ImplementAsDataClass
+import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
-import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
 
 
 /**

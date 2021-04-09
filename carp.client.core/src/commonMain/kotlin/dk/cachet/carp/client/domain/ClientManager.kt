@@ -5,10 +5,10 @@ import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.client.domain.data.DeviceDataCollector
 import dk.cachet.carp.client.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.devices.DeviceRegistrationBuilder
+import dk.cachet.carp.common.application.devices.MasterDeviceDescriptor
 import dk.cachet.carp.deployment.application.DeploymentService
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistration
-import dk.cachet.carp.protocols.domain.devices.DeviceRegistrationBuilder
-import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
 
 
 /**

@@ -4,15 +4,15 @@ import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
-import dk.cachet.carp.common.domain.users.Account
+import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.domain.StudyProtocol
+import dk.cachet.carp.common.domain.users.Account
+import dk.cachet.carp.common.infrastructure.test.createSingleMasterDeviceProtocol
+import dk.cachet.carp.common.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import dk.cachet.carp.deployment.domain.users.ParticipantGroup
 import dk.cachet.carp.deployment.domain.users.Participation
 import dk.cachet.carp.deployment.domain.users.StudyInvitation
-import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
-import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 
 
 fun studyDeploymentFor( protocol: StudyProtocol ): StudyDeployment

@@ -6,7 +6,7 @@ import dk.cachet.carp.client.domain.smartphone
 import dk.cachet.carp.client.domain.StudyRuntime
 import dk.cachet.carp.client.domain.StudyRuntimeSnapshot
 import dk.cachet.carp.client.domain.createDataListener
-import dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistrationBuilder
+import dk.cachet.carp.common.application.devices.DefaultDeviceRegistrationBuilder
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

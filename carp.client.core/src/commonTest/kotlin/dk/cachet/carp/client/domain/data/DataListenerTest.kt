@@ -1,8 +1,8 @@
 package dk.cachet.carp.client.domain.data
 
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.protocols.infrastructure.test.STUB_DATA_TYPE
-import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import kotlin.test.*
 
 

@@ -1,45 +1,16 @@
 declare module 'carp.core-kotlin-carp.protocols.core'
 {
     import { kotlin } from 'kotlin'
-    import ArrayList = kotlin.collections.ArrayList
     import HashSet = kotlin.collections.HashSet
-    import HashMap = kotlin.collections.HashMap
 
-    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
-    import Json = kotlinx.serialization.json.Json
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import DateTime = cdk.cachet.carp.common.application.DateTime
-    import NamespacedId = cdk.cachet.carp.common.application.NamespacedId
     import UUID = cdk.cachet.carp.common.application.UUID
     import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
 
 
     namespace dk.cachet.carp.protocols.domain
     {
-        namespace StudyProtocol
-        {
-            class Id
-            {
-                constructor( ownerId: UUID, name: string )
-
-                static get Companion(): Id$Companion
-    
-                readonly ownerId: UUID
-                readonly name: string
-            }
-            interface Id$Companion { serializer(): any }
-        }
-
-        class ProtocolOwner
-        {
-            constructor( id?: UUID )
-
-            static get Companion(): ProtocolOwner$Companion
-
-            readonly id: UUID
-        }
-        interface ProtocolOwner$Companion { serializer(): any }
-
         class ProtocolVersion
         {
             constructor( tag: string, date?: DateTime )
@@ -50,50 +21,13 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             readonly date: DateTime
         }
         interface ProtocolVersion$Companion { serializer(): any }
-
-        class StudyProtocolSnapshot
-        {
-            // No manual initialization needed in TypeScript. Serialization should be used.
-            private constructor()
-
-            static get Companion(): StudyProtocolSnapshot$Companion
-
-            readonly ownerId: UUID
-            readonly name: string
-            readonly description: string
-            readonly creationDate: DateTime
-            readonly expectedParticipantData: ArrayList<ParticipantAttribute>
-        }
-        interface StudyProtocolSnapshot$Companion { serializer(): any }
-    }
-
-    namespace dk.cachet.carp.protocols.domain.devices
-    {
-        abstract class DeviceRegistration
-        {
-            static get Companion(): DeviceRegistration$Companion  
-            
-            readonly deviceId: string
-            readonly registrationCreationDate: DateTime
-        }
-        interface DeviceRegistration$Companion { serializer(): any }
-
-        class DefaultDeviceRegistration extends DeviceRegistration
-        {
-            constructor( deviceId: string )
-        }
-
-        class Smartphone
-        {
-            constructor( roleName: string, samplingConfiguration: HashMap<NamespacedId, any> )
-        }
     }
 
 
     namespace dk.cachet.carp.protocols.infrastructure
     {
-        import ProtocolId = dk.cachet.carp.protocols.domain.StudyProtocol.Id
-        import StudyProtocolSnapshot = dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+        import ProtocolId = cdk.cachet.carp.common.domain.StudyProtocol.Id
+        import StudyProtocolSnapshot = cdk.cachet.carp.common.application.StudyProtocolSnapshot
 
         
         abstract class ProtocolServiceRequest
@@ -144,8 +78,5 @@ declare module 'carp.core-kotlin-carp.protocols.core'
                 constructor( ownerId: UUID, name: string, customProtocol: string, description: string )
             }
         }
-
-
-        function createProtocolsSerializer_18xi4u$(): Json
     }
 }

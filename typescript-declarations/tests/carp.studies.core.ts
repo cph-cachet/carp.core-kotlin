@@ -5,58 +5,62 @@ import { kotlin } from 'kotlin'
 import Pair = kotlin.Pair
 import ArrayList = kotlin.collections.ArrayList
 import HashSet = kotlin.collections.HashSet
-import toSet = kotlin.collections.toSet_us0mfu$
 import toMap = kotlin.collections.toMap_v2dak7$
+import toSet = kotlin.collections.toSet_us0mfu$
+
 import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
 import Json = kotlinx.serialization.json.Json
 import { kotlinx as kotlinxcore } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
 import ListSerializer = kotlinxcore.serialization.builtins.ListSerializer_swdriu$
+
 import { dk as cdk } from 'carp.core-kotlin-carp.common'
 import DateTime = cdk.cachet.carp.common.application.DateTime
 import NamespacedId = cdk.cachet.carp.common.application.NamespacedId
 import UUID = cdk.cachet.carp.common.application.UUID
-import UsernameIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
-import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
 import CarpInputDataTypes = cdk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import Text = cdk.cachet.carp.common.application.data.input.elements.Text
+import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
+import UsernameIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
+
 import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
-import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
 import StudyDeploymentStatus = ddk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
+
 import { dk } from 'carp.core-kotlin-carp.studies.core'
-import AssignParticipantDevices = dk.cachet.carp.studies.domain.users.AssignParticipantDevices
-import getAssignedParticipantIds = dk.cachet.carp.studies.domain.users.participantIds_nvx6bb$
-import getAssignedDeviceRoles = dk.cachet.carp.studies.domain.users.deviceRoles_nvx6bb$
-import DeanonymizedParticipant = dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
-import Participant = dk.cachet.carp.studies.domain.users.Participant
-import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
-import ParticipantGroupStatus = dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
 import StudyDetails = dk.cachet.carp.studies.domain.StudyDetails
 import StudyStatus = dk.cachet.carp.studies.domain.StudyStatus
-import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
+import AssignParticipantDevices = dk.cachet.carp.studies.domain.users.AssignParticipantDevices
+import DeanonymizedParticipant = dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
+import Participant = dk.cachet.carp.studies.domain.users.Participant
+import ParticipantGroupStatus = dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
+import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
+import getAssignedParticipantIds = dk.cachet.carp.studies.domain.users.participantIds_nvx6bb$
+import getAssignedDeviceRoles = dk.cachet.carp.studies.domain.users.deviceRoles_nvx6bb$
 import ParticipantServiceRequest = dk.cachet.carp.studies.infrastructure.ParticipantServiceRequest
+import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
 import createStudiesSerializer = dk.cachet.carp.studies.infrastructure.createStudiesSerializer_18xi4u$
 
 
 describe( "carp.studies.core", () => {
     it( "verify module declarations", async () => {
         const instances = [
+            new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", DateTime.Companion.now(), "Description", StudyInvitation.Companion.empty(), null ),
+            StudyDetails.Companion,
+            new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, true, false, true ),
+            new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, false, true ),
+            StudyStatus.Companion,
             new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Test" ] ) ),
             AssignParticipantDevices.Companion,
             new DeanonymizedParticipant( UUID.Companion.randomUUID(), UUID.Companion.randomUUID() ),
             DeanonymizedParticipant.Companion,
             new Participant( new UsernameIdentity( "Test" ) ),
             Participant.Companion,
-            new StudyOwner(),
-            StudyOwner.Companion,
             new ParticipantGroupStatus( new StudyDeploymentStatus(), new HashSet<DeanonymizedParticipant>(), toMap( [] ) ),
             ParticipantGroupStatus.Companion,
-            new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", DateTime.Companion.now(), "Description", StudyInvitation.Companion.empty(), null ),
-            StudyDetails.Companion,
-            new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, true, false, true ),
-            new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, false, true ),
-            StudyStatus.Companion,
+            new StudyOwner(),
+            StudyOwner.Companion,
+            ParticipantServiceRequest.Companion,
             StudyServiceRequest.Companion,
-            ParticipantServiceRequest.Companion
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.studies.core', instances )

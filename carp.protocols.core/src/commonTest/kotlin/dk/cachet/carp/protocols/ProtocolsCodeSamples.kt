@@ -1,14 +1,14 @@
 package dk.cachet.carp.protocols
 
 import dk.cachet.carp.common.application.TimeSpan
-import dk.cachet.carp.protocols.domain.ProtocolOwner
-import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.devices.CustomProtocolDevice
-import dk.cachet.carp.protocols.domain.devices.Smartphone
-import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
-import dk.cachet.carp.protocols.domain.tasks.CustomProtocolTask
-import dk.cachet.carp.protocols.domain.tasks.measures.Measure
-import dk.cachet.carp.protocols.infrastructure.toJson
+import dk.cachet.carp.common.application.devices.CustomProtocolDevice
+import dk.cachet.carp.common.application.devices.Smartphone
+import dk.cachet.carp.common.application.tasks.ConcurrentTask
+import dk.cachet.carp.common.application.tasks.CustomProtocolTask
+import dk.cachet.carp.common.application.tasks.measures.Measure
+import dk.cachet.carp.common.domain.ProtocolOwner
+import dk.cachet.carp.common.domain.StudyProtocol
+import dk.cachet.carp.common.infrastructure.serialization.toJson
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

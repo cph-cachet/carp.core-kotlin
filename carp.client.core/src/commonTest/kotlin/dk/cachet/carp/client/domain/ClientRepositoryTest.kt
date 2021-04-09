@@ -2,12 +2,12 @@ package dk.cachet.carp.client.domain
 
 import dk.cachet.carp.client.domain.data.DataListener
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.devices.SmartphoneDeviceRegistration
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
-import dk.cachet.carp.protocols.domain.devices.SmartphoneDeviceRegistration
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

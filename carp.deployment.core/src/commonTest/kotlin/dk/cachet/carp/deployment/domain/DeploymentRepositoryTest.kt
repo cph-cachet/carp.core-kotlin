@@ -1,7 +1,7 @@
 package dk.cachet.carp.deployment.domain
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
+import dk.cachet.carp.common.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
