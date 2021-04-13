@@ -27,15 +27,15 @@ import StudyDeploymentStatus = ddk.cachet.carp.deployment.application.StudyDeplo
 import StudyInvitation = ddk.cachet.carp.deployment.application.users.StudyInvitation
 
 import { dk } from 'carp.core-kotlin-carp.studies.core'
-import StudyDetails = dk.cachet.carp.studies.domain.StudyDetails
-import StudyStatus = dk.cachet.carp.studies.domain.StudyStatus
-import AssignParticipantDevices = dk.cachet.carp.studies.domain.users.AssignParticipantDevices
-import DeanonymizedParticipant = dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
-import Participant = dk.cachet.carp.studies.domain.users.Participant
-import ParticipantGroupStatus = dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
-import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
-import getAssignedParticipantIds = dk.cachet.carp.studies.domain.users.participantIds_nvx6bb$
-import getAssignedDeviceRoles = dk.cachet.carp.studies.domain.users.deviceRoles_nvx6bb$
+import StudyDetails = dk.cachet.carp.studies.application.StudyDetails
+import StudyStatus = dk.cachet.carp.studies.application.StudyStatus
+import AssignParticipantDevices = dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import DeanonymizedParticipant = dk.cachet.carp.studies.application.users.DeanonymizedParticipation
+import Participant = dk.cachet.carp.studies.application.users.Participant
+import ParticipantGroupStatus = dk.cachet.carp.studies.application.users.ParticipantGroupStatus
+import StudyOwner = dk.cachet.carp.studies.application.users.StudyOwner
+import getAssignedParticipantIds = dk.cachet.carp.studies.application.users.participantIds_ttprz$
+import getAssignedDeviceRoles = dk.cachet.carp.studies.application.users.deviceRoles_ttprz$
 import ParticipantServiceRequest = dk.cachet.carp.studies.infrastructure.ParticipantServiceRequest
 import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
 import createStudiesSerializer = dk.cachet.carp.studies.infrastructure.createStudiesSerializer_18xi4u$

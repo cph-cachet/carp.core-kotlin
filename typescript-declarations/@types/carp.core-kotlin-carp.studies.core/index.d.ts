@@ -21,9 +21,9 @@ declare module 'carp.core-kotlin-carp.studies.core'
     import StudyInvitation = ddk.cachet.carp.deployment.application.users.StudyInvitation
 
 
-    namespace dk.cachet.carp.studies.domain
+    namespace dk.cachet.carp.studies.application
     {
-        import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
+        import StudyOwner = dk.cachet.carp.studies.application.users.StudyOwner
 
 
         class StudyDetails
@@ -91,7 +91,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
     }
 
 
-    namespace dk.cachet.carp.studies.domain.users
+    namespace dk.cachet.carp.studies.application.users
     {
         class AssignParticipantDevices
         {
@@ -102,8 +102,8 @@ declare module 'carp.core-kotlin-carp.studies.core'
             readonly participantId: UUID
             readonly masterDeviceRoleNames: HashSet<string>
         }
-        function participantIds_nvx6bb$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<UUID>
-        function deviceRoles_nvx6bb$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<string>
+        function participantIds_ttprz$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<UUID>
+        function deviceRoles_ttprz$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<string>
         interface AssignParticipantDevices$Companion { serializer(): any }
 
 
@@ -158,8 +158,8 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
     namespace dk.cachet.carp.studies.infrastructure
     {
-        import AssignParticipantDevices = dk.cachet.carp.studies.domain.users.AssignParticipantDevices
-        import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
+        import AssignParticipantDevices = dk.cachet.carp.studies.application.users.AssignParticipantDevices
+        import StudyOwner = dk.cachet.carp.studies.application.users.StudyOwner
 
 
         abstract class StudyServiceRequest

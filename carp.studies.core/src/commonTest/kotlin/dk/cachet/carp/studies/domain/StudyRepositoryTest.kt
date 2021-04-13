@@ -2,7 +2,7 @@ package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployment.application.users.StudyInvitation
-import dk.cachet.carp.studies.domain.users.StudyOwner
+import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

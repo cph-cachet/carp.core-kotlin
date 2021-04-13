@@ -1,6 +1,6 @@
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.studies.domain.users.StudyOwner
+import dk.cachet.carp.studies.application.users.StudyOwner
 import kotlin.test.*
 
 

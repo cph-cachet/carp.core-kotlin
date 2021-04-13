@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.users.AccountIdentity
-import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.studies.application.users.Participant
 import kotlin.test.*
 
 

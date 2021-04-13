@@ -6,8 +6,7 @@ import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.domain.ProtocolOwner
 import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.deployment.application.users.StudyInvitation
-import dk.cachet.carp.studies.domain.StudyStatus
-import dk.cachet.carp.studies.domain.users.StudyOwner
+import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

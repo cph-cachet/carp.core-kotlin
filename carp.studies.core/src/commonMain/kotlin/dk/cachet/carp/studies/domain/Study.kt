@@ -6,7 +6,9 @@ import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.deployment.application.users.StudyInvitation
-import dk.cachet.carp.studies.domain.users.StudyOwner
+import dk.cachet.carp.studies.application.StudyDetails
+import dk.cachet.carp.studies.application.StudyStatus
+import dk.cachet.carp.studies.application.users.StudyOwner
 
 
 /**

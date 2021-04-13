@@ -1,4 +1,4 @@
-package dk.cachet.carp.studies.domain
+package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID

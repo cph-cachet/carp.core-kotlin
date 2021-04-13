@@ -5,9 +5,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.deployment.application.users.StudyInvitation
-import dk.cachet.carp.studies.domain.StudyDetails
-import dk.cachet.carp.studies.domain.StudyStatus
-import dk.cachet.carp.studies.domain.users.StudyOwner
+import dk.cachet.carp.studies.application.users.StudyOwner
 import kotlinx.serialization.Serializable
 
 
