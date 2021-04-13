@@ -7,7 +7,7 @@ import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.deployment.application.ParticipationService
 import dk.cachet.carp.deployment.application.ParticipationServiceMock
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

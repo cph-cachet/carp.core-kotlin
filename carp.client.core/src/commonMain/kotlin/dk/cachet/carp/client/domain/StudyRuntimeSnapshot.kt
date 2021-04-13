@@ -5,7 +5,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.domain.Snapshot
-import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
+import dk.cachet.carp.deployment.application.MasterDeviceDeployment
 import kotlinx.serialization.Serializable
 
 

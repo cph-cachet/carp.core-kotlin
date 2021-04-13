@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.common.infrastructure.serialization.MapAsArraySerializer
+import dk.cachet.carp.deployment.application.users.AssignedMasterDevice
 import kotlinx.serialization.Serializable
 
 

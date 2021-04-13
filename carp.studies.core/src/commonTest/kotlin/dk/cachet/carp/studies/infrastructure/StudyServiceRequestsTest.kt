@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.domain.ProtocolOwner
 import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceMock
 import dk.cachet.carp.studies.domain.users.StudyOwner

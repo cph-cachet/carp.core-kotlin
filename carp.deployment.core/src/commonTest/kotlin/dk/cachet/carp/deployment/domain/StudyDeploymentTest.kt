@@ -17,6 +17,9 @@ import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.common.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.common.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
+import dk.cachet.carp.deployment.application.DeviceDeploymentStatus
+import dk.cachet.carp.deployment.application.MasterDeviceDeployment
+import dk.cachet.carp.deployment.application.StudyDeploymentStatus
 import kotlinx.serialization.json.Json
 import kotlin.test.*
 

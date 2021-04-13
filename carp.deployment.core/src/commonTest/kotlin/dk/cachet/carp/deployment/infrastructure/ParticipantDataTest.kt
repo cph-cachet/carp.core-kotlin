@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
-import dk.cachet.carp.deployment.domain.users.ParticipantData
+import dk.cachet.carp.deployment.application.users.ParticipantData
 import kotlin.test.*
 
 

@@ -5,7 +5,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.common.domain.StudyProtocol
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.studies.domain.users.StudyOwner
 
 

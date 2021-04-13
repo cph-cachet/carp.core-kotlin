@@ -11,14 +11,14 @@ import DefaultDeviceRegistration = dkc.cachet.carp.common.application.devices.De
 import Smartphone = dkc.cachet.carp.common.application.devices.Smartphone
 
 import { dk } from 'carp.core-kotlin-carp.deployment.core'
-import DeviceDeploymentStatus = dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
-import MasterDeviceDeployment = dk.cachet.carp.deployment.domain.MasterDeviceDeployment
-import StudyDeploymentStatus = dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import ActiveParticipationInvitation = dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
-import AssignedMasterDevice = dk.cachet.carp.deployment.domain.users.AssignedMasterDevice
-import ParticipantData = dk.cachet.carp.deployment.domain.users.ParticipantData
-import Participation = dk.cachet.carp.deployment.domain.users.Participation
-import StudyInvitation = dk.cachet.carp.deployment.domain.users.StudyInvitation
+import DeviceDeploymentStatus = dk.cachet.carp.deployment.application.DeviceDeploymentStatus
+import MasterDeviceDeployment = dk.cachet.carp.deployment.application.MasterDeviceDeployment
+import StudyDeploymentStatus = dk.cachet.carp.deployment.application.StudyDeploymentStatus
+import ActiveParticipationInvitation = dk.cachet.carp.deployment.application.users.ActiveParticipationInvitation
+import AssignedMasterDevice = dk.cachet.carp.deployment.application.users.AssignedMasterDevice
+import ParticipantData = dk.cachet.carp.deployment.application.users.ParticipantData
+import Participation = dk.cachet.carp.deployment.application.users.Participation
+import StudyInvitation = dk.cachet.carp.deployment.application.users.StudyInvitation
 import DeploymentServiceRequest = dk.cachet.carp.deployment.infrastructure.DeploymentServiceRequest
 import ParticipationServiceRequest = dk.cachet.carp.deployment.infrastructure.ParticipationServiceRequest
 

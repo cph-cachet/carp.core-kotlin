@@ -4,9 +4,9 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.domain.users.Account
+import dk.cachet.carp.deployment.application.users.Participation
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.deployment.domain.users.AccountService
-import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
 
 
 /**

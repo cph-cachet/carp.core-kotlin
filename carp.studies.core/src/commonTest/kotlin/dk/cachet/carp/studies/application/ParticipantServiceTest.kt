@@ -10,7 +10,7 @@ import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.ProtocolOwner
 import dk.cachet.carp.common.domain.StudyProtocol
-import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.deployment.application.StudyDeploymentStatus
 import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
 import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.StudyOwner

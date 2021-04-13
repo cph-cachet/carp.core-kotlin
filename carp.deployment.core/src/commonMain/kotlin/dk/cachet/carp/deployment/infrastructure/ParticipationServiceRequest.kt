@@ -7,10 +7,10 @@ import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.createServiceInvoker
 import dk.cachet.carp.deployment.application.ParticipationService
-import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
-import dk.cachet.carp.deployment.domain.users.ParticipantData
-import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.deployment.application.users.ActiveParticipationInvitation
+import dk.cachet.carp.deployment.application.users.ParticipantData
+import dk.cachet.carp.deployment.application.users.Participation
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import kotlinx.serialization.Serializable
 
 // TODO: Due to a bug, `Service` and `Invoker` cannot be used here, although that would be preferred.

@@ -17,8 +17,8 @@ declare module 'carp.core-kotlin-carp.studies.core'
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
 
     import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
-    import StudyDeploymentStatus = ddk.cachet.carp.deployment.domain.StudyDeploymentStatus
-    import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
+    import StudyDeploymentStatus = ddk.cachet.carp.deployment.application.StudyDeploymentStatus
+    import StudyInvitation = ddk.cachet.carp.deployment.application.users.StudyInvitation
 
 
     namespace dk.cachet.carp.studies.domain

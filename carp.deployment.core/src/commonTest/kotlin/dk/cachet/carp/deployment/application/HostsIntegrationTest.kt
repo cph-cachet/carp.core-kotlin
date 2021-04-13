@@ -5,8 +5,8 @@ import dk.cachet.carp.common.application.services.createApplicationServiceAdapte
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.infrastructure.test.createComplexProtocol
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.deployment.domain.users.AccountService
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployment.infrastructure.InMemoryParticipationRepository

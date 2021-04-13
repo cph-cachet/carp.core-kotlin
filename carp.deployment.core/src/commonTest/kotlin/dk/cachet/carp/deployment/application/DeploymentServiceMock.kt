@@ -6,8 +6,6 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
-import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import dk.cachet.carp.test.Mock
 
 private typealias Service = DeploymentService

@@ -9,11 +9,11 @@ import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.test.createSingleMasterDeviceProtocol
+import dk.cachet.carp.deployment.application.users.ActiveParticipationInvitation
+import dk.cachet.carp.deployment.application.users.AssignedMasterDevice
+import dk.cachet.carp.deployment.application.users.Participation
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.deployment.domain.users.AccountService
-import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
-import dk.cachet.carp.deployment.domain.users.AssignedMasterDevice
-import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

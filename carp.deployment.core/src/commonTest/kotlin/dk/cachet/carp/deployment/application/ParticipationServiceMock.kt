@@ -4,10 +4,10 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.users.AccountIdentity
-import dk.cachet.carp.deployment.domain.users.ActiveParticipationInvitation
-import dk.cachet.carp.deployment.domain.users.ParticipantData
-import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.deployment.application.users.ActiveParticipationInvitation
+import dk.cachet.carp.deployment.application.users.ParticipantData
+import dk.cachet.carp.deployment.application.users.Participation
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.test.Mock
 
 // TODO: Due to a bug, `Service` cannot be used here, although that would be preferred.

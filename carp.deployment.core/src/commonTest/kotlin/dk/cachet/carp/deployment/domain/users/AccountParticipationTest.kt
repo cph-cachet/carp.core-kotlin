@@ -1,14 +1,16 @@
 package dk.cachet.carp.deployment.domain.users
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.deployment.application.users.Participation
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.deployment.domain.createActiveDeployment
 import kotlin.test.*
 
 
 /**
- * Tests for [ActiveParticipationInvitation].
+ * Tests for [AccountParticipation].
  */
-class ActiveParticipationInvitationTest
+class AccountParticipationTest
 {
     @Test
     fun filterActiveParticipationInvitations_only_returns_active_deployments()

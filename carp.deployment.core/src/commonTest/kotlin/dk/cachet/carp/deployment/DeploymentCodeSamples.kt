@@ -10,9 +10,9 @@ import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
-import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
-import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
-import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.deployment.application.DeviceDeploymentStatus
+import dk.cachet.carp.deployment.application.MasterDeviceDeployment
+import dk.cachet.carp.deployment.application.StudyDeploymentStatus
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
