@@ -34,8 +34,7 @@ declare module 'carp.core-kotlin-carp.common'
 
             static get Companion(): StudyProtocolSnapshot$Companion
 
-            readonly ownerId: UUID
-            readonly name: string
+            readonly id: StudyProtocolId
             readonly description: string
             readonly creationDate: DateTime
             readonly expectedParticipantData: ArrayList<ParticipantAttribute>

@@ -15,8 +15,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class StudyProtocolSnapshot(
-    val ownerId: UUID,
-    val name: String,
+    val id: StudyProtocolId,
     val description: String,
     override val creationDate: DateTime,
     val masterDevices: List<AnyMasterDeviceDescriptor>,
@@ -50,8 +49,7 @@ data class StudyProtocolSnapshot(
                 .associateBy { curTriggerId++ }
 
             return StudyProtocolSnapshot(
-                ownerId = protocol.ownerId,
-                name = protocol.name,
+                protocol.id,
                 description = protocol.description,
                 creationDate = protocol.creationDate,
                 masterDevices = protocol.masterDevices.toList(),
@@ -90,8 +88,7 @@ data class StudyProtocolSnapshot(
         if ( this === other ) return true
         if ( other !is StudyProtocolSnapshot ) return false
 
-        if ( ownerId != other.ownerId ) return false
-        if ( name != other.name ) return false
+        if ( id != other.id ) return false
         if ( description != other.description ) return false
         if ( creationDate != other.creationDate ) return false
 
@@ -118,8 +115,7 @@ data class StudyProtocolSnapshot(
 
     override fun hashCode(): Int
     {
-        var result = ownerId.hashCode()
-        result = 31 * result + name.hashCode()
+        var result = id.hashCode()
         result = 31 * result + description.hashCode()
         result = 31 * result + creationDate.hashCode()
         result = 31 * result + masterDevices.sortedWith( compareBy { it.roleName } ).toTypedArray().contentDeepHashCode()

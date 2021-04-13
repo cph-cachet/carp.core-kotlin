@@ -97,13 +97,16 @@ class StudyProtocolSnapshotTest
 
         val ownerId = UUID( "ef26be3f-2de8-4779-a608-bb6e027e4b75" )
         val creationDate = DateTime.now()
+        val protocolId = StudyProtocolId( ownerId, "Study" )
         val snapshot = StudyProtocolSnapshot(
-            ownerId, "Study", "Description",
+            protocolId,
+            "Description",
             creationDate,
             masterDevices, connectedDevices, connections,
             tasks, triggers, triggeredTasks, expectedParticipantData )
         val reorganizedSnapshot = StudyProtocolSnapshot(
-            ownerId, "Study", "Description",
+            protocolId,
+            "Description",
             creationDate,
             masterDevices.reversed(), connectedDevices.reversed(), connections.reversed(),
             tasks.reversed(), triggers, triggeredTasks.reversed(), expectedParticipantData.reversed() )
