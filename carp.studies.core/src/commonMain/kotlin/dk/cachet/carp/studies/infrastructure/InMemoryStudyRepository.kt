@@ -4,8 +4,8 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudySnapshot
+import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.studies.domain.users.ParticipantRepository
-import dk.cachet.carp.studies.domain.users.StudyOwner
 
 
 /**

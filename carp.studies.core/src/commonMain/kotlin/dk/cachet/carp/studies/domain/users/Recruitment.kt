@@ -8,6 +8,10 @@ import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.deployment.application.users.Participation
 import dk.cachet.carp.deployment.application.users.StudyInvitation
+import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.DeanonymizedParticipation
+import dk.cachet.carp.studies.application.users.Participant
+import dk.cachet.carp.studies.application.users.deviceRoles
 
 
 /**

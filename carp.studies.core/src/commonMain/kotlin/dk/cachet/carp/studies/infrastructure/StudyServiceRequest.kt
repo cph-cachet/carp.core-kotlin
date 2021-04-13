@@ -6,9 +6,9 @@ import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.createServiceInvoker
 import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.studies.application.StudyService
-import dk.cachet.carp.studies.domain.StudyDetails
-import dk.cachet.carp.studies.domain.StudyStatus
-import dk.cachet.carp.studies.domain.users.StudyOwner
+import dk.cachet.carp.studies.application.StudyDetails
+import dk.cachet.carp.studies.application.StudyStatus
+import dk.cachet.carp.studies.application.users.StudyOwner
 import kotlinx.serialization.Serializable
 
 private typealias Service = StudyService

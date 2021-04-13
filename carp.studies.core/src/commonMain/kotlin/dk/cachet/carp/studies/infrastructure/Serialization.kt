@@ -3,11 +3,11 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.infrastructure.serialization.createProtocolsSerializer
+import dk.cachet.carp.studies.application.StudyStatus
+import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.Participant
+import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.studies.domain.StudySnapshot
-import dk.cachet.carp.studies.domain.StudyStatus
-import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
-import dk.cachet.carp.studies.domain.users.Participant
-import dk.cachet.carp.studies.domain.users.StudyOwner
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 

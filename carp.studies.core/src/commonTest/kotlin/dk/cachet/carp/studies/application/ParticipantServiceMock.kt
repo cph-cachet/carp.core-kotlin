@@ -6,9 +6,9 @@ import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.deployment.application.StudyDeploymentStatus
-import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
-import dk.cachet.carp.studies.domain.users.Participant
-import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
+import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.Participant
+import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.test.Mock
 
 // TODO: Due to a bug, `Service` cannot be used here, although that would be preferred.
