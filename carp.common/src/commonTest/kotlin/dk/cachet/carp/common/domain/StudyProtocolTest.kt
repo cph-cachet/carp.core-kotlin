@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.domain
 
+import dk.cachet.carp.common.application.StudyProtocolId
 import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.deployment.NoMasterDeviceError
@@ -108,7 +109,7 @@ class StudyProtocolTest
         val owner = ProtocolOwner()
         val protocol = StudyProtocol( owner, "Name" )
 
-        assertEquals( StudyProtocol.Id( owner.id, "Name" ), protocol.id )
+        assertEquals( StudyProtocolId( owner.id, "Name" ), protocol.id )
     }
 
     @Test

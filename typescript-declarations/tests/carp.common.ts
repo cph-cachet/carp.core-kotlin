@@ -12,6 +12,7 @@ import { dk } from 'carp.core-kotlin-carp.common'
 import DateTime = dk.cachet.carp.common.application.DateTime
 import EmailAddress = dk.cachet.carp.common.application.EmailAddress
 import NamespacedId = dk.cachet.carp.common.application.NamespacedId
+import StudyProtocolId = dk.cachet.carp.common.application.StudyProtocolId
 import StudyProtocolSnapshot = dk.cachet.carp.common.application.StudyProtocolSnapshot
 import TimeSpan = dk.cachet.carp.common.application.TimeSpan
 import Trilean = dk.cachet.carp.common.application.Trilean
@@ -28,7 +29,6 @@ import ParticipantAttribute = dk.cachet.carp.common.application.users.Participan
 import UsernameAccountIdentity = dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import emailAccountIdentityFromString = dk.cachet.carp.common.application.users.EmailAccountIdentity_init_61zpoe$
 import ProtocolOwner = dk.cachet.carp.common.domain.ProtocolOwner
-import ProtocolId = dk.cachet.carp.common.domain.StudyProtocol.Id
 import createDefaultJSON = dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
 import createProtocolsSerializer = dk.cachet.carp.common.infrastructure.serialization.createProtocolsSerializer_18xi4u$
 
@@ -71,8 +71,8 @@ describe( "carp.common", () => {
             ParticipantAttribute.Companion,
             new ProtocolOwner(),
             ProtocolOwner.Companion,
-            new ProtocolId( UUID.Companion.randomUUID(), "Name" ),
-            [ "Id$Companion", ProtocolId.Companion ],
+            new StudyProtocolId( UUID.Companion.randomUUID(), "Name" ),
+            StudyProtocolId.Companion,
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.common', instances )

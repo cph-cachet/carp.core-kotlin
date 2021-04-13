@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.StudyProtocolId
 import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.domain.ProtocolOwner
@@ -152,7 +153,7 @@ interface StudyProtocolRepositoryTest
     fun getBy_returns_null_for_owner_which_does_not_exist() = runSuspendTest {
         val repo = createRepository()
 
-        val unknownId = StudyProtocol.Id( UUID.randomUUID(), "Study" )
+        val unknownId = StudyProtocolId( UUID.randomUUID(), "Study" )
         assertNull( repo.getBy( unknownId, "Study" ) )
     }
 
@@ -163,7 +164,7 @@ interface StudyProtocolRepositoryTest
         val protocol = StudyProtocol( owner, "Study" )
         repo.add( protocol, ProtocolVersion( "Initial" ) )
 
-        val idWithUnknownName = StudyProtocol.Id( owner.id, "Non-existing name" )
+        val idWithUnknownName = StudyProtocolId( owner.id, "Non-existing name" )
         assertNull( repo.getBy( idWithUnknownName ) )
     }
 
@@ -229,7 +230,7 @@ interface StudyProtocolRepositoryTest
     fun getVersionHistoryFor_fails_when_protocol_does_not_exist() = runSuspendTest {
         val repo = createRepository()
 
-        val unknownId = StudyProtocol.Id( UUID.randomUUID(), "Unknown" )
+        val unknownId = StudyProtocolId( UUID.randomUUID(), "Unknown" )
         assertFailsWith<IllegalArgumentException> { repo.getVersionHistoryFor( unknownId ) }
     }
 }
