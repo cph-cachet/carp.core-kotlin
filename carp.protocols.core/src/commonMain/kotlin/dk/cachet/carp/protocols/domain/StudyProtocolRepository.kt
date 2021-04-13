@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.application.StudyProtocolId
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.domain.ProtocolOwner
 import dk.cachet.carp.common.domain.StudyProtocol
@@ -44,14 +45,14 @@ interface StudyProtocolRepository
      *
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      */
-    suspend fun getBy( id: StudyProtocol.Id, versionTag: String? = null ): StudyProtocol?
+    suspend fun getBy( id: StudyProtocolId, versionTag: String? = null ): StudyProtocol?
 
     /**
      * Return the [StudyProtocol] with the specified [id].
      *
      * @throws IllegalArgumentException when the requested protocol is not found.
      */
-    suspend fun getByOrThrow( id: StudyProtocol.Id, versionTag: String? = null ): StudyProtocol =
+    suspend fun getByOrThrow( id: StudyProtocolId, versionTag: String? = null ): StudyProtocol =
         getBy( id, versionTag )
             ?: throw IllegalArgumentException( "A protocol named \"${id.name}\" for owner with ID \"${id.ownerId}\" with the specified version tag does not exist." )
 
@@ -67,5 +68,5 @@ interface StudyProtocolRepository
      *
      * @throws IllegalArgumentException when a protocol with the specified [id] does not exist.
      */
-    suspend fun getVersionHistoryFor( id: StudyProtocol.Id ): List<ProtocolVersion>
+    suspend fun getVersionHistoryFor( id: StudyProtocolId ): List<ProtocolVersion>
 }

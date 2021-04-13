@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.application
 
+import dk.cachet.carp.common.application.StudyProtocolId
 import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.InputDataType
@@ -116,7 +117,7 @@ interface ProtocolServiceTest
         val service = createService()
 
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
-        val unknownId = StudyProtocol.Id( ProtocolOwner().id, "Unknown protocol" )
+        val unknownId = StudyProtocolId( ProtocolOwner().id, "Unknown protocol" )
         assertFailsWith<IllegalArgumentException>
         {
             service.updateParticipantDataConfiguration( unknownId, "Unknown version", setOf( attribute ) )
@@ -140,7 +141,7 @@ interface ProtocolServiceTest
     fun getBy_fails_for_nonexisting_protocol() = runSuspendTest {
         val service = createService()
 
-        val unknownId = StudyProtocol.Id( UUID.randomUUID(), "Unknown" )
+        val unknownId = StudyProtocolId( UUID.randomUUID(), "Unknown" )
         assertFailsWith<IllegalArgumentException> { service.getBy( unknownId, "Nope" ) }
     }
 
@@ -183,7 +184,7 @@ interface ProtocolServiceTest
     fun getVersionHistoryFor_fails_when_protocol_not_found() = runSuspendTest {
         val service = createService()
 
-        val unknown = StudyProtocol.Id( UUID.randomUUID(), "Unknown" )
+        val unknown = StudyProtocolId( UUID.randomUUID(), "Unknown" )
         assertFailsWith<IllegalArgumentException> { service.getVersionHistoryFor( unknown ) }
     }
 

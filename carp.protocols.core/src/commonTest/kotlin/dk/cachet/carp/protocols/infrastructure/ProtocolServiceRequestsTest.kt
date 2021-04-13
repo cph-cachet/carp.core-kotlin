@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.infrastructure
 
+import dk.cachet.carp.common.application.StudyProtocolId
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.common.infrastructure.test.createComplexProtocol
@@ -21,10 +21,10 @@ class ProtocolServiceRequestsTest
         val requests: List<ProtocolServiceRequest> = listOf(
             ProtocolServiceRequest.Add( createComplexProtocol().getSnapshot(), "Initial" ),
             ProtocolServiceRequest.AddVersion( createComplexProtocol().getSnapshot(), "Updated" ),
-            ProtocolServiceRequest.UpdateParticipantDataConfiguration( StudyProtocol.Id( UUID.randomUUID(), "Name" ), "Version", emptySet() ),
-            ProtocolServiceRequest.GetBy( StudyProtocol.Id( UUID.randomUUID(), "Name" ), "Version" ),
+            ProtocolServiceRequest.UpdateParticipantDataConfiguration( StudyProtocolId( UUID.randomUUID(), "Name" ), "Version", emptySet() ),
+            ProtocolServiceRequest.GetBy( StudyProtocolId( UUID.randomUUID(), "Name" ), "Version" ),
             ProtocolServiceRequest.GetAllFor( UUID.randomUUID() ),
-            ProtocolServiceRequest.GetVersionHistoryFor( StudyProtocol.Id( UUID.randomUUID(), "Name" ) )
+            ProtocolServiceRequest.GetVersionHistoryFor( StudyProtocolId( UUID.randomUUID(), "Name" ) )
         )
     }
 

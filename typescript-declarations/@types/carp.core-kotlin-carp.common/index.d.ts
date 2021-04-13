@@ -15,6 +15,18 @@ declare module 'carp.core-kotlin-carp.common'
         import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute
 
 
+        class StudyProtocolId
+        {
+            constructor( ownerId: UUID, name: string )
+
+            static get Companion(): StudyProtocolId$Companion
+
+            readonly ownerId: UUID
+            readonly name: string
+        }
+        interface StudyProtocolId$Companion { serializer(): any }
+
+
         class StudyProtocolSnapshot
         {
             // No manual initialization needed in TypeScript. Serialization should be used.
@@ -247,21 +259,6 @@ declare module 'carp.core-kotlin-carp.common'
     namespace dk.cachet.carp.common.domain
     {
         import UUID = dk.cachet.carp.common.application.UUID
-
-
-        namespace StudyProtocol
-        {
-            class Id
-            {
-                constructor( ownerId: UUID, name: string )
-
-                static get Companion(): Id$Companion
-    
-                readonly ownerId: UUID
-                readonly name: string
-            }
-            interface Id$Companion { serializer(): any }
-        }
 
         class ProtocolOwner
         {

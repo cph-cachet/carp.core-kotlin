@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.StudyProtocolId
 import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.ParticipantAttribute
@@ -45,7 +46,7 @@ interface ProtocolService
      * @return The updated [StudyProtocolSnapshot].
      */
     suspend fun updateParticipantDataConfiguration(
-        protocolId: StudyProtocol.Id,
+        protocolId: StudyProtocolId,
         versionTag: String,
         expectedParticipantData: Set<ParticipantAttribute>
     ): StudyProtocolSnapshot
@@ -56,7 +57,7 @@ interface ProtocolService
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      * @throws IllegalArgumentException when a protocol with [protocolId] or [versionTag] does not exist.
      */
-    suspend fun getBy( protocolId: StudyProtocol.Id, versionTag: String? = null ): StudyProtocolSnapshot
+    suspend fun getBy( protocolId: StudyProtocolId, versionTag: String? = null ): StudyProtocolSnapshot
 
     /**
      * Find all [StudyProtocolSnapshot]'s owned by the owner with [ownerId].
@@ -71,5 +72,5 @@ interface ProtocolService
      *
      * @throws IllegalArgumentException when a protocol with [protocolId] does not exist.
      */
-    suspend fun getVersionHistoryFor( protocolId: StudyProtocol.Id ): List<ProtocolVersion>
+    suspend fun getVersionHistoryFor( protocolId: StudyProtocolId ): List<ProtocolVersion>
 }

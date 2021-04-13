@@ -26,7 +26,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
     namespace dk.cachet.carp.protocols.infrastructure
     {
-        import ProtocolId = cdk.cachet.carp.common.domain.StudyProtocol.Id
+        import StudyProtocolId = cdk.cachet.carp.common.application.StudyProtocolId
         import StudyProtocolSnapshot = cdk.cachet.carp.common.application.StudyProtocolSnapshot
 
         
@@ -48,11 +48,11 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             }
             class UpdateParticipantDataConfiguration extends ProtocolServiceRequest
             {
-                constructor( protocolId: ProtocolId, versionTag: string, expectedParticipantData: HashSet<ParticipantAttribute> )
+                constructor( protocolId: StudyProtocolId, versionTag: string, expectedParticipantData: HashSet<ParticipantAttribute> )
             }
             class GetBy extends ProtocolServiceRequest
             {
-                constructor( protocolId: ProtocolId, versionTag?: string )
+                constructor( protocolId: StudyProtocolId, versionTag?: string )
             }
             class GetAllFor extends ProtocolServiceRequest
             {
@@ -60,7 +60,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             }
             class GetVersionHistoryFor extends ProtocolServiceRequest
             {
-                constructor( protocolId: ProtocolId )
+                constructor( protocolId: StudyProtocolId )
             }
         }
 
