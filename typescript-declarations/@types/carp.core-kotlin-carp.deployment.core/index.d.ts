@@ -17,7 +17,7 @@ declare module 'carp.core-kotlin-carp.deployment.core'
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity    
 
 
-    namespace dk.cachet.carp.deployment.domain
+    namespace dk.cachet.carp.deployment.application
     {
         class DeviceDeploymentStatus
         {
@@ -158,7 +158,7 @@ declare module 'carp.core-kotlin-carp.deployment.core'
     }
 
 
-    namespace dk.cachet.carp.deployment.domain.users
+    namespace dk.cachet.carp.deployment.application.users
     {
         class ActiveParticipationInvitation
         {
@@ -225,7 +225,7 @@ declare module 'carp.core-kotlin-carp.deployment.core'
 
     namespace dk.cachet.carp.deployment.infrastructure
     {
-        import StudyInvitation = dk.cachet.carp.deployment.domain.users.StudyInvitation
+        import StudyInvitation = dk.cachet.carp.deployment.application.users.StudyInvitation
 
 
         abstract class DeploymentServiceRequest

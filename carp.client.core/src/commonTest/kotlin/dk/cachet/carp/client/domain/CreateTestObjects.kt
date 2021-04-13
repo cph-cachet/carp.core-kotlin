@@ -15,7 +15,7 @@ import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceHost
-import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.deployment.application.StudyDeploymentStatus
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
 
 

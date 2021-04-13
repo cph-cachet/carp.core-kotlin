@@ -23,8 +23,8 @@ import ParticipantAttribute = cdk.cachet.carp.common.application.users.Participa
 import UsernameIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
 
 import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
-import StudyDeploymentStatus = ddk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
+import StudyDeploymentStatus = ddk.cachet.carp.deployment.application.StudyDeploymentStatus
+import StudyInvitation = ddk.cachet.carp.deployment.application.users.StudyInvitation
 
 import { dk } from 'carp.core-kotlin-carp.studies.core'
 import StudyDetails = dk.cachet.carp.studies.domain.StudyDetails

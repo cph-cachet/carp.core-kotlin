@@ -10,8 +10,8 @@ import dk.cachet.carp.common.infrastructure.test.createSingleMasterWithConnected
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import dk.cachet.carp.common.infrastructure.serialization.toJson
 import dk.cachet.carp.common.infrastructure.serialization.CLASS_DISCRIMINATOR
+import dk.cachet.carp.deployment.application.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.StudyDeployment
-import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.*
 

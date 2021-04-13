@@ -1,6 +1,6 @@
 package dk.cachet.carp.deployment.infrastructure
 
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import kotlin.test.*
 
 

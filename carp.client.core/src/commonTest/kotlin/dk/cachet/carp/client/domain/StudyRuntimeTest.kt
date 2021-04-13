@@ -14,8 +14,8 @@ import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMeasure
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
-import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.deployment.application.DeviceDeploymentStatus
+import dk.cachet.carp.deployment.application.StudyDeploymentStatus
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

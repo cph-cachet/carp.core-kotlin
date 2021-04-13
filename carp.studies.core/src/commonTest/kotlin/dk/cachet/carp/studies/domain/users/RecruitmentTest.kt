@@ -5,7 +5,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.common.infrastructure.test.createSingleMasterDeviceProtocol
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import kotlin.test.*
 
 

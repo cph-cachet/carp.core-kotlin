@@ -10,9 +10,9 @@ import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.deployment.application.DeploymentService
-import dk.cachet.carp.deployment.domain.DeviceDeploymentStatus
-import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
-import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
+import dk.cachet.carp.deployment.application.DeviceDeploymentStatus
+import dk.cachet.carp.deployment.application.MasterDeviceDeployment
+import dk.cachet.carp.deployment.application.StudyDeploymentStatus
 
 
 /**

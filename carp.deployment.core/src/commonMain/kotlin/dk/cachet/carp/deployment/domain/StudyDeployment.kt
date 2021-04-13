@@ -12,6 +12,9 @@ import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.deployment.application.DeviceDeploymentStatus
+import dk.cachet.carp.deployment.application.MasterDeviceDeployment
+import dk.cachet.carp.deployment.application.StudyDeploymentStatus
 
 
 /**

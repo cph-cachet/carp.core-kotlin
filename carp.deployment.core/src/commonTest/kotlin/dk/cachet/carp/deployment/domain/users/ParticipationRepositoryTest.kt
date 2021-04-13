@@ -4,6 +4,8 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.common.infrastructure.test.createSingleMasterDeviceProtocol
+import dk.cachet.carp.deployment.application.users.Participation
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.createComplexParticipantGroup
 import dk.cachet.carp.test.runSuspendTest

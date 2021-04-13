@@ -9,10 +9,8 @@ import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.deployment.domain.DeploymentRepository
-import dk.cachet.carp.deployment.domain.MasterDeviceDeployment
 import dk.cachet.carp.deployment.domain.RegistrableDevice
 import dk.cachet.carp.deployment.domain.StudyDeployment
-import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
 
 
 /**

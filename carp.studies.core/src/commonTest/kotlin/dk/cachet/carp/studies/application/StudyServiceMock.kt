@@ -3,7 +3,7 @@ package dk.cachet.carp.studies.application
 import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.studies.domain.StudyDetails
 import dk.cachet.carp.studies.domain.StudyStatus
 import dk.cachet.carp.studies.domain.createComplexStudy

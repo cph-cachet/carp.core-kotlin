@@ -11,6 +11,9 @@ import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.common.domain.isValidParticipantData
 import dk.cachet.carp.common.domain.users.Account
+import dk.cachet.carp.deployment.application.users.AssignedMasterDevice
+import dk.cachet.carp.deployment.application.users.Participation
+import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.deployment.domain.StudyDeployment
 
 
