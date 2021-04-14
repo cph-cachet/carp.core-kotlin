@@ -5,11 +5,14 @@ import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLega
 import Json = kotlinx.serialization.json.Json
 
 import { dk as cdk } from 'carp.core-kotlin-carp.common'
-import StudyProtocolSnapshot = cdk.cachet.carp.common.application.StudyProtocolSnapshot
+import UUID = cdk.cachet.carp.common.application.UUID
 import createProtocolsSerializer = cdk.cachet.carp.common.infrastructure.serialization.createProtocolsSerializer_18xi4u$
 
 import { dk } from 'carp.core-kotlin-carp.protocols.core'
 import ProtocolVersion = dk.cachet.carp.protocols.application.ProtocolVersion
+import StudyProtocolId = dk.cachet.carp.protocols.application.StudyProtocolId
+import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import ProtocolOwner = dk.cachet.carp.protocols.domain.ProtocolOwner
 import ProtocolFactoryServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceRequest
 import ProtocolServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest
 
@@ -18,15 +21,35 @@ const serializedSnapshot = `{"id":{"ownerId":"27879e75-ccc1-4866-9ab3-4ece1b7350
 
 describe( "carp.protocols.core", () => {
     it( "verify module declarations", async () => {
+        // Create `StudyProtocolSnapshot` instance.
+        const json: Json = createProtocolsSerializer()
+        const serializer = StudyProtocolSnapshot.Companion.serializer()
+        const studyProtocolSnapshot = json.decodeFromString_awif5v$( serializer, serializedSnapshot )
+
         const instances = [
             new ProtocolVersion( "Version" ),
             ProtocolVersion.Companion,
+            new StudyProtocolId( UUID.Companion.randomUUID(), "Name" ),
+            StudyProtocolId.Companion,
+            studyProtocolSnapshot,
+            StudyProtocolSnapshot.Companion,
+            new ProtocolOwner(),
+            ProtocolOwner.Companion,
             ProtocolFactoryServiceRequest.Companion,
             ProtocolServiceRequest.Companion,
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.protocols.core', instances )
         await moduleVerifier.verify()
+    } )
+
+    describe( "StudyProtocolSnapshot", () => {
+        it( "can deserialize", () => {
+            const json: Json = createProtocolsSerializer()
+            const serializer = StudyProtocolSnapshot.Companion.serializer()
+            const parsed = json.decodeFromString_awif5v$( serializer, serializedSnapshot )
+            expect( parsed ).is.instanceOf( StudyProtocolSnapshot )
+        } )
     } )
 
     describe( "ProtocolServiceRequest", () => {

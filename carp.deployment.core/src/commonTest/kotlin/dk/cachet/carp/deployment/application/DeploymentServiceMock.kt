@@ -1,11 +1,11 @@
 package dk.cachet.carp.deployment.application
 
 import dk.cachet.carp.common.application.DateTime
-import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.test.Mock
 
 private typealias Service = DeploymentService

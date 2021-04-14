@@ -5,7 +5,7 @@ This is achieved by relying on the [`kotlinx.serialization`](https://github.com/
 Classes are made serializable by applying a `@Serializable` annotation to the class definition.
 Custom serializers for classes and properties can be specified through an optional `KClass` parameter of `@Serializable` which specifies the custom `KSerializer<T>` to use, e.g., `@Serializable( CustomSerializer::class )`.
 
-Most of this is self-explanatory when looking at the codebase. [`StudyProtocolSnapshot`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/StudyProtocolSnapshot.kt) is a good starting point to see how composite objects with complicated hierarchies of inheriting objects, including collections, can be serialized.
+Most of this is self-explanatory when looking at the codebase. [`StudyProtocolSnapshot`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/application/StudyProtocolSnapshot.kt) is a good starting point to see how composite objects with complicated hierarchies of inheriting objects, including collections, can be serialized.
 But, what follows are pointers on how to use this library specific to CARP, which might be useful **in case you need to understand the codebase, extend on base types, or introduce new ones**.
 
 ## UnknownPolymorphicSerializer: (De)serializing unknown types

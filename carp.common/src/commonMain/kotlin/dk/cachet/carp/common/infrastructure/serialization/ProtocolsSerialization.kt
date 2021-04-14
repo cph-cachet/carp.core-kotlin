@@ -2,13 +2,11 @@
 
 package dk.cachet.carp.common.infrastructure.serialization
 
-import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.devices.*
 import dk.cachet.carp.common.application.sampling.*
 import dk.cachet.carp.common.application.tasks.*
 import dk.cachet.carp.common.application.tasks.measures.*
 import dk.cachet.carp.common.application.triggers.*
-import dk.cachet.carp.common.domain.ProtocolOwner
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.PolymorphicModuleBuilder
 import kotlinx.serialization.modules.plus
@@ -110,30 +108,6 @@ fun createProtocolsSerializer( module: SerializersModule? = null ): Json
  */
 var JSON: Json = createProtocolsSerializer()
 
-
-/**
- * Create a [ProtocolOwner] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
- */
-fun ProtocolOwner.Companion.fromJson( json: String ): ProtocolOwner =
-    JSON.decodeFromString( serializer(), json )
-
-/**
- * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
- */
-fun ProtocolOwner.toJson(): String =
-    JSON.encodeToString( ProtocolOwner.serializer(), this )
-
-/**
- * Create a [StudyProtocolSnapshot] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
- */
-fun StudyProtocolSnapshot.Companion.fromJson( json: String ): StudyProtocolSnapshot =
-    JSON.decodeFromString( serializer(), json )
-
-/**
- * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
- */
-fun StudyProtocolSnapshot.toJson(): String =
-    JSON.encodeToString( StudyProtocolSnapshot.serializer(), this )
 
 /**
  * Create a [DeviceRegistration] from JSON, serialized using the globally set infrastructure serializer ([JSON]).

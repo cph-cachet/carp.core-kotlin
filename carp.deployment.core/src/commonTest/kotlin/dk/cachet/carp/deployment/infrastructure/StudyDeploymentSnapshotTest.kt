@@ -4,11 +4,11 @@ import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceRegistration
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployment.domain.createComplexDeployment
 import dk.cachet.carp.deployment.domain.studyDeploymentFor
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.*
 

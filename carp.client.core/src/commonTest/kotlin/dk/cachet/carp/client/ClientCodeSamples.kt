@@ -11,8 +11,6 @@ import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.application.tasks.ConcurrentTask
 import dk.cachet.carp.common.application.users.AccountIdentity
-import dk.cachet.carp.common.domain.ProtocolOwner
-import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
@@ -25,6 +23,8 @@ import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployment.infrastructure.InMemoryParticipationRepository
+import dk.cachet.carp.protocols.domain.ProtocolOwner
+import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

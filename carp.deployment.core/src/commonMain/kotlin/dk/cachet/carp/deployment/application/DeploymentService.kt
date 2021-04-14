@@ -7,7 +7,7 @@ import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.deployment.domain.StudyDeploymentSnapshot
-import dk.cachet.carp.common.application.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.serialization.Serializable
 
 

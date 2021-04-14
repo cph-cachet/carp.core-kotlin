@@ -9,7 +9,7 @@ To configure a `StudyProtocol`, the following domain objects are involved:
 
 ![Protocols Domain Objects](https://i.imgur.com/Qy9KIWS.png)
 
-- [`StudyProtocol`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/domain/StudyProtocol.kt):
+- [`StudyProtocol`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/StudyProtocol.kt):
 A description of how a study is to be executed, defining the 'master' devices responsible for aggregating data, the optional devices connected to them, and the `Trigger`s which lead to data collection on said devices.
 - [`DeviceDescriptor`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/DeviceDescriptor.kt):
 Describes any type of electronic device, such as a sensor, video camera, desktop computer, or smartphone that collects data which can be incorporated into the platform after it has been processed by a 'master device' (potentially itself).

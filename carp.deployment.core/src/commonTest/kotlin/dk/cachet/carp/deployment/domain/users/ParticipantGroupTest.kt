@@ -6,15 +6,15 @@ import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.users.ParticipantAttribute
-import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.createSingleMasterDeviceProtocol
 import dk.cachet.carp.deployment.application.users.AssignedMasterDevice
 import dk.cachet.carp.deployment.application.users.Participation
 import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.deployment.domain.createComplexParticipantGroup
+import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import kotlin.test.*
 
 /**

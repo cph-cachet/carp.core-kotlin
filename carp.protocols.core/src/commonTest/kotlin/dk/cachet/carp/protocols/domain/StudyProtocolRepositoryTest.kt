@@ -1,13 +1,11 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.application.DateTime
-import dk.cachet.carp.common.application.StudyProtocolId
-import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.domain.ProtocolOwner
-import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.application.ProtocolVersion
+import dk.cachet.carp.protocols.application.StudyProtocolId
+import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
