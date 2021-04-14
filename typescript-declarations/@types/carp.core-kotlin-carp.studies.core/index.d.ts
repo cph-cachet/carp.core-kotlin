@@ -12,13 +12,15 @@ declare module 'carp.core-kotlin-carp.studies.core'
     import DateTime = cdk.cachet.carp.common.application.DateTime
     import EmailAddress = cdk.cachet.carp.common.application.EmailAddress
     import NamespacedId = cdk.cachet.carp.common.application.NamespacedId
-    import StudyProtocolSnapshot = cdk.cachet.carp.common.application.StudyProtocolSnapshot
     import UUID = cdk.cachet.carp.common.application.UUID
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
 
     import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
     import StudyDeploymentStatus = ddk.cachet.carp.deployment.application.StudyDeploymentStatus
     import StudyInvitation = ddk.cachet.carp.deployment.application.users.StudyInvitation
+
+    import { dk as pdk } from 'carp.core-kotlin-carp.protocols.core'
+    import StudyProtocolSnapshot = pdk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
 
     namespace dk.cachet.carp.studies.application

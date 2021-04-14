@@ -3,14 +3,13 @@ package dk.cachet.carp.common.application.devices
 import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
 import dk.cachet.carp.common.application.DateTime
-import dk.cachet.carp.common.domain.StudyProtocol
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 
 
 /**
- * A [DeviceRegistration] configures a [DeviceDescriptor] as part of the deployment of a [StudyProtocol].
+ * A [DeviceRegistration] configures a [DeviceDescriptor] as part of the deployment of a study protocol.
  */
 @Serializable
 @Polymorphic

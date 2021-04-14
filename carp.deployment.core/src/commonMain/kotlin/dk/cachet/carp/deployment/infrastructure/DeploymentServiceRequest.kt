@@ -1,7 +1,6 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.application.DateTime
-import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
@@ -9,6 +8,7 @@ import dk.cachet.carp.common.infrastructure.services.createServiceInvoker
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.MasterDeviceDeployment
 import dk.cachet.carp.deployment.application.StudyDeploymentStatus
+import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.serialization.Serializable
 
 private typealias Service = DeploymentService

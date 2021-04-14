@@ -4,9 +4,9 @@ import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
-import dk.cachet.carp.common.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceMock
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

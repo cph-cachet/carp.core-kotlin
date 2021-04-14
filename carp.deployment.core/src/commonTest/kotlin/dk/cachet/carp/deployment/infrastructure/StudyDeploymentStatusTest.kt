@@ -1,17 +1,17 @@
 package dk.cachet.carp.deployment.infrastructure
 
-import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.serialization.fromJson
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.createEmptyProtocol
-import dk.cachet.carp.common.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
-import dk.cachet.carp.common.infrastructure.serialization.toJson
 import dk.cachet.carp.common.infrastructure.serialization.CLASS_DISCRIMINATOR
 import dk.cachet.carp.deployment.application.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.StudyDeployment
+import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.infrastructure.fromJson
+import dk.cachet.carp.protocols.infrastructure.toJson
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.*
 

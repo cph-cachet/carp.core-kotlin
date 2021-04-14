@@ -1,7 +1,5 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.common.domain.StudyProtocol
-import dk.cachet.carp.common.application.StudyProtocolSnapshot
 import dk.cachet.carp.common.application.devices.MasterDeviceDescriptor
 import dk.cachet.carp.common.application.tasks.measures.Measure
 import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceDescriptor
@@ -9,8 +7,6 @@ import dk.cachet.carp.common.infrastructure.serialization.CustomMasterDeviceDesc
 import dk.cachet.carp.common.infrastructure.serialization.CustomMeasure
 import dk.cachet.carp.common.infrastructure.serialization.CustomTaskDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.CustomTrigger
-import dk.cachet.carp.common.infrastructure.serialization.fromJson
-import dk.cachet.carp.common.infrastructure.serialization.toJson
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
@@ -18,9 +14,11 @@ import dk.cachet.carp.common.infrastructure.test.StubMeasure
 import dk.cachet.carp.common.infrastructure.test.StubSamplingConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
-import dk.cachet.carp.common.infrastructure.test.createComplexProtocol
-import dk.cachet.carp.common.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
+import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.test.*
 

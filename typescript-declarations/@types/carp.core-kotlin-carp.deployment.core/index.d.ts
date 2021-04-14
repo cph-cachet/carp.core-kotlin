@@ -11,10 +11,12 @@ declare module 'carp.core-kotlin-carp.deployment.core'
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import DateTime = cdk.cachet.carp.common.application.DateTime
     import NamespacedId = cdk.cachet.carp.common.application.NamespacedId
-    import StudyProtocolSnapshot = cdk.cachet.carp.common.application.StudyProtocolSnapshot
     import UUID = cdk.cachet.carp.common.application.UUID
     import DeviceRegistration = cdk.cachet.carp.common.application.devices.DeviceRegistration
-    import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity    
+    import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
+
+    import { dk as pdk } from 'carp.core-kotlin-carp.protocols.core'
+    import StudyProtocolSnapshot = pdk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
 
     namespace dk.cachet.carp.deployment.application

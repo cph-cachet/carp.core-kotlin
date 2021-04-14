@@ -1,7 +1,5 @@
 package dk.cachet.carp.common.infrastructure.test
 
-import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
@@ -11,12 +9,7 @@ import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.tasks.measures.Measure
 import dk.cachet.carp.common.application.triggers.Trigger
-import dk.cachet.carp.common.application.users.ParticipantAttribute
-import dk.cachet.carp.common.domain.ProtocolOwner
-import dk.cachet.carp.common.domain.StudyProtocol
-import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.serialization.PROTOCOLS_SERIAL_MODULE
-import dk.cachet.carp.common.infrastructure.serialization.createProtocolsSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.PolymorphicModuleBuilder
@@ -63,71 +56,6 @@ val STUBS_SERIAL_MODULE = SerializersModule {
     }
 }
 
-
-/**
- * Creates a study protocol using the default initialization (no devices, tasks, or triggers),
- * and initializes the infrastructure serializer to be aware about polymorph stub testing classes.
- */
-fun createEmptyProtocol( name: String = "Test protocol" ): StudyProtocol
-{
-    JSON = createProtocolsSerializer( STUBS_SERIAL_MODULE )
-
-    val alwaysSameOwner = ProtocolOwner( UUID( "27879e75-ccc1-4866-9ab3-4ece1b735052" ) )
-    return StudyProtocol( alwaysSameOwner, name, "Test description" )
-}
-
-/**
- * Creates a study protocol with a single master device.
- */
-fun createSingleMasterDeviceProtocol( masterDeviceName: String = "Master" ): StudyProtocol
-{
-    val protocol = createEmptyProtocol()
-    val master = StubMasterDeviceDescriptor( masterDeviceName )
-    protocol.addMasterDevice( master )
-    return protocol
-}
-
-/**
- * Creates a study protocol with a single master device which has a single connected device.
- */
-fun createSingleMasterWithConnectedDeviceProtocol(
-    masterDeviceName: String = "Master",
-    connectedDeviceName: String = "Connected"
-): StudyProtocol
-{
-    val protocol = createEmptyProtocol()
-    val master = StubMasterDeviceDescriptor( masterDeviceName )
-    protocol.addMasterDevice( master )
-    protocol.addConnectedDevice( StubDeviceDescriptor( connectedDeviceName ), master )
-    return protocol
-}
-
-/**
- * Creates a study protocol with a couple of devices and tasks added.
- */
-fun createComplexProtocol(): StudyProtocol
-{
-    val protocol = createEmptyProtocol()
-    val masterDevice = StubMasterDeviceDescriptor()
-    val connectedDevice = StubDeviceDescriptor()
-    val chainedMasterDevice = StubMasterDeviceDescriptor( "Chained master" )
-    val chainedConnectedDevice = StubDeviceDescriptor( "Chained connected" )
-    val trigger = StubTrigger( connectedDevice )
-    val measures = listOf( StubMeasure() )
-    val task = StubTaskDescriptor( "Task", measures )
-    val expectedParticipantData = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
-    with ( protocol )
-    {
-        addMasterDevice( masterDevice )
-        addConnectedDevice( connectedDevice, masterDevice )
-        addConnectedDevice( chainedMasterDevice, masterDevice )
-        addConnectedDevice( chainedConnectedDevice, chainedMasterDevice )
-        addTriggeredTask( trigger, task, masterDevice )
-        addExpectedParticipantData( expectedParticipantData )
-    }
-
-    return protocol
-}
 
 /**
  * Replace the type name of [deviceDescriptor] in this JSON string with [unknownTypeName].
