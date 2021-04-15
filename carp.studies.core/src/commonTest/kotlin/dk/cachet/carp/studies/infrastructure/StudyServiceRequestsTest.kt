@@ -1,6 +1,7 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.deployment.application.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.ProtocolOwner

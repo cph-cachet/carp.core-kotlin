@@ -1,10 +1,11 @@
 package dk.cachet.carp.deployment.infrastructure
 
-import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
+import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.deployment.application.MasterDeviceDeployment
 import kotlin.test.*
 
@@ -17,7 +18,7 @@ class MasterDeviceDeploymentTest
     @BeforeTest
     fun initializeSerializer()
     {
-        JSON = createDeploymentSerializer( STUBS_SERIAL_MODULE )
+        JSON = createTestJSON()
     }
 
     @Test

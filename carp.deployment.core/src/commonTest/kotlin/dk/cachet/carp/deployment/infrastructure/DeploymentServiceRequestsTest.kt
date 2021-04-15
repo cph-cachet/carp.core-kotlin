@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
+import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.deployment.application.DeploymentService
 import dk.cachet.carp.deployment.application.DeploymentServiceMock
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
@@ -37,10 +38,12 @@ class DeploymentServiceRequestsTest
     @Test
     fun can_serialize_and_deserialize_requests()
     {
+        val json = createTestJSON()
+
         requests.forEach { request ->
             val serializer = DeploymentServiceRequest.serializer()
-            val serialized = JSON.encodeToString( serializer, request )
-            val parsed = JSON.decodeFromString( serializer, serialized )
+            val serialized = json.encodeToString( serializer, request )
+            val parsed = json.decodeFromString( serializer, serialized )
             assertEquals( request, parsed )
         }
     }

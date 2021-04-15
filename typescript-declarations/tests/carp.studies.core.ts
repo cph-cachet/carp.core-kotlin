@@ -21,6 +21,7 @@ import CarpInputDataTypes = cdk.cachet.carp.common.application.data.input.CarpIn
 import Text = cdk.cachet.carp.common.application.data.input.elements.Text
 import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
 import UsernameIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
+import createDefaultJSON = cdk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
 
 import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
 import StudyDeploymentStatus = ddk.cachet.carp.deployment.application.StudyDeploymentStatus
@@ -38,7 +39,6 @@ import getAssignedParticipantIds = dk.cachet.carp.studies.application.users.part
 import getAssignedDeviceRoles = dk.cachet.carp.studies.application.users.deviceRoles_ttprz$
 import ParticipantServiceRequest = dk.cachet.carp.studies.infrastructure.ParticipantServiceRequest
 import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
-import createStudiesSerializer = dk.cachet.carp.studies.infrastructure.createStudiesSerializer_18xi4u$
 
 
 describe( "carp.studies.core", () => {
@@ -120,7 +120,7 @@ describe( "carp.studies.core", () => {
                 StudyInvitation.Companion.empty()
             )
 
-            const json: Json = createStudiesSerializer()
+            const json: Json = createDefaultJSON()
             const serializer = StudyServiceRequest.Companion.serializer()
             const serialized = json.encodeToString_tf03ej$( serializer, createStudy )
             expect( serialized ).has.string( "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.CreateStudy" )
@@ -130,7 +130,7 @@ describe( "carp.studies.core", () => {
             const status = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, true, false, true )
             const statusList = new ArrayList( [ status ] )
 
-            const json: Json = createStudiesSerializer()
+            const json: Json = createDefaultJSON()
             const serializer = ListSerializer( StudyStatus.Companion.serializer() )
             expect( serializer ).is.not.undefined
             const serialized = json.encodeToString_tf03ej$( serializer, statusList )
@@ -148,7 +148,7 @@ describe( "carp.studies.core", () => {
                 ] )
             )
 
-            const json: Json = createStudiesSerializer()
+            const json: Json = createDefaultJSON()
             const serializer = ParticipantServiceRequest.Companion.serializer()
             const serialized = json.encodeToString_tf03ej$( serializer, deployGroup )
             expect( serialized ).is.not.undefined
@@ -165,7 +165,7 @@ describe( "carp.studies.core", () => {
 
             const group = new ParticipantGroupStatus( deploymentStatus, participants, data )
 
-            const json: Json = createStudiesSerializer()
+            const json: Json = createDefaultJSON()
             const serializer = ParticipantGroupStatus.Companion.serializer()
             const serialized = json.encodeToString_tf03ej$( serializer, group )
             expect( serialized ).is.not.undefined

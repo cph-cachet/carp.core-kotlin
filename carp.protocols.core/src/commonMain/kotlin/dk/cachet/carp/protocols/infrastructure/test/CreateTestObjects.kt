@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.serialization.JSON
-import dk.cachet.carp.common.infrastructure.serialization.createProtocolsSerializer
+import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
@@ -21,7 +21,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocol
  */
 fun createEmptyProtocol( name: String = "Test protocol" ): StudyProtocol
 {
-    JSON = createProtocolsSerializer( STUBS_SERIAL_MODULE )
+    JSON = createDefaultJSON( STUBS_SERIAL_MODULE )
 
     val alwaysSameOwner = ProtocolOwner( UUID( "27879e75-ccc1-4866-9ab3-4ece1b735052" ) )
     return StudyProtocol( alwaysSameOwner, name, "Test description" )

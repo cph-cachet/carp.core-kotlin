@@ -248,8 +248,5 @@ declare module 'carp.core-kotlin-carp.studies.core'
                 constructor( studyId: UUID, groupId: UUID, inputDataType: NamespacedId, data?: any )
             }
         }
-
-
-        function createStudiesSerializer_18xi4u$(): Json
     }
 }

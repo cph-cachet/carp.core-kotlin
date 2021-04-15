@@ -2,8 +2,8 @@ package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.serialization.CustomMasterDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.deployment.application.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployment.application.users.AssignedMasterDevice
 import dk.cachet.carp.deployment.application.users.Participation
@@ -19,9 +19,9 @@ import kotlin.test.*
 class ActiveParticipationInvitationTest
 {
     @Test
-    fun can_serialize_and_deserialize_active_participatoin_invitation_using_JSON()
+    fun can_serialize_and_deserialize_active_participation_invitation_using_JSON()
     {
-        val json = createDeploymentSerializer( STUBS_SERIAL_MODULE )
+        val json = createTestJSON()
         val masterDevice = StubMasterDeviceDescriptor()
         val invitation = ActiveParticipationInvitation(
             Participation( UUID.randomUUID() ),
@@ -38,7 +38,7 @@ class ActiveParticipationInvitationTest
     @Test
     fun serializing_unknown_master_device_removes_the_wrapper()
     {
-        val json = createDeploymentSerializer( STUBS_SERIAL_MODULE )
+        val json = createTestJSON()
         val masterDevice = StubMasterDeviceDescriptor()
         val masterDeviceJson = json.encodeToString( masterDevice )
         val unknownMasterDevice = CustomMasterDeviceDescriptor( "unknown.device", masterDeviceJson, json )

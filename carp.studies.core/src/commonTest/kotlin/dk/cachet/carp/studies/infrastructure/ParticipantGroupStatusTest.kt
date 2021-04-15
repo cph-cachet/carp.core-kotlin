@@ -3,6 +3,7 @@ package dk.cachet.carp.studies.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.Sex
+import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.deployment.application.StudyDeploymentStatus
 import dk.cachet.carp.studies.application.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus

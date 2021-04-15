@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
+import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.deployment.application.ParticipationService
 import dk.cachet.carp.deployment.application.ParticipationServiceMock
 import dk.cachet.carp.deployment.application.users.StudyInvitation
@@ -34,10 +35,12 @@ class ParticipationServiceRequestsTest
     @Test
     fun can_serialize_and_deserialize_requests()
     {
+        val json = createTestJSON()
+
         requests.forEach { request ->
             val serializer = ParticipationServiceRequest.serializer()
-            val serialized = JSON.encodeToString( serializer, request )
-            val parsed = JSON.decodeFromString( serializer, serialized )
+            val serialized = json.encodeToString( serializer, request )
+            val parsed = json.decodeFromString( serializer, serialized )
             assertEquals( request, parsed )
         }
     }
