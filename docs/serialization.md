@@ -45,7 +45,7 @@ This can easily be done using a serializer of an intermediate concrete type, as 
 The custom serializer should be configured as the `default` serializer for the expected base type in the `SerializersModule`,
 and the wrapper should be registered as a subclass.
 For example, `TaskDescriptorSerializer` is the `UnknownPolymorphicSerializer` for the `Taskdescriptor` base class,
-which is registered [in the protocols subsystem `SerializersModule`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/infrastructure/Serialization.kt):
+which is registered [in the common subsystem `SerializersModule`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/infrastructure/serialization/Serialization.kt):
 ```
 polymorphic( TaskDescriptor::class )
 {

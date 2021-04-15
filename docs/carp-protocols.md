@@ -5,7 +5,7 @@ Essentially, this subsystem has no technical dependencies on any particular sens
 
 ## Domain objects
 
-To configure a `StudyProtocol`, the following domain objects are involved:
+To configure a `StudyProtocol`, the following domain objects and [common CARP types](carp-common.md) are involved:
 
 ![Protocols Domain Objects](https://i.imgur.com/Qy9KIWS.png)
 
@@ -25,7 +25,7 @@ Defines a type of data which can be processed by the platform (e.g., measured/co
 - [`Trigger`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/triggers/Trigger.kt):
 Any condition on a device which starts or stops tasks at certain points in time when the condition applies.
 The condition can either be time-bound, based on incoming data, initiated by a user of the platform, or a combination of these.
-- [`TriggeredTask`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/domain/triggers/TriggeredTask.kt):
+- [`TriggeredTask`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/TriggeredTask.kt):
 Specifies a task which at some point during a `StudyProtocol` gets sent to a specific device.
 This allows modeling triggers which trigger multiple tasks targeting multiple devices.
 - [`SamplingConfiguration`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/SamplingConfiguration.kt):
@@ -33,55 +33,11 @@ Contains configuration on how to sample data.
 - [`DataTypeSamplingScheme`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/DataTypeSamplingScheme.kt):
 Specifies the possible sampling configuration options for a `DataType`, including defaults and constraints.
 
-## Built-in types
-
-### Data types
-
-`DataType`s are identified by a given _name_ within a _namespace_ and prescribe the data contained within each data point when measured.
-When a data type describes data over the course of a time interval, the time interval is stored within the header (shared by all data types) and not in data-type specific data.
-
-All of the built-in data types belong to the namespace: **dk.cachet.carp**.
-
-| Name | Description |
-| --- | --- |
-| [geolocation](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Geolocation.kt) | Geographic location data, representing longitude and latitude. |
-| [stepcount](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/StepCount.kt) | The number of steps a participant has taken in a specified time interval. |
-
-### Device descriptors
-
-| Class | Master | Description |
-| --- | :---: | --- |
-| [Smartphone](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/Smartphone.kt) | Yes | An internet-connected phone with built-in sensors. |
-| [AltBeacon](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt) | | A beacon meeting the open AltBeacon standard. |
-| [BLEHeartRateSensor](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/BLEHeartRateSensor.kt) | | A Bluetooth device which implements a Heart Rate service. |
-| [CustomProtocolDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/CustomProtocolDevice.kt) | Yes | A master device which uses a single `CustomProtocolTask` to determine how to run a study on the device. |
-
-### Tasks
-
-| Class | Description |
-| --- | --- |
-| [ConcurrentTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/ConcurrentTask.kt) | Specifies that all containing measures should start immediately once triggered and run indefinitely until all containing measures have completed. |
-| [CustomProtocolTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/CustomProtocolTask.kt) | Contains a definition on how to run tasks, measures, and triggers which differs from the CARP domain model. |
-
-### Measures
-
-| Class | Description |
-| --- | --- |
-| [DataTypeMeasure](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/measures/DataTypeMeasure.kt) | Defined by nothing else but a `DataType` identifier. It is up to the client to determine how to handle this measure. |
-| [PhoneSensorMeasure](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/measures/PhoneSensorMeasure.kt) | Measures any of the sensors typically integrated in smartphones (e.g., accelerometer), or data which is derived from them using vendor-specific APIs (e.g., stepcount, or mode of transport). |
-
-### Triggers
-
-| Class | Description |
-| --- | --- |
-| [ElapsedTimeTrigger](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/triggers/ElapsedTimeTrigger.kt) | Triggers after a specified amount of time has elapsed since the start of a study deployment. |
-| [ScheduledTrigger](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/triggers/ScheduledTrigger.kt) | Trigger using a recurring schedule starting on the date that the study starts, specified using [the iCalendar recurrence rule standard](https://icalendar.org/iCalendar-RFC-5545/3-8-5-3-recurrence-rule.html). |
-| [ManualTrigger](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/triggers/ManualTrigger.kt) | Initiated by a user, i.e., the user decides when to start a task. |
+Most of these are abstract base types. For information on concrete types extending on these, check the [common subsystem documentation](carp-common.md).
 
 ## Extending domain objects
 
-CARP contains default implementations of the [domain objects which make up a study protocol](#domain-objects) which represent common use cases that have currently been implemented.
-In case these do not provide the functionality you require, the following abstract classes can be extended to model your own custom study logic:
+In case the [currently supported built-in types](carp-common.md#built-in-types) do not provide the functionality you require, the following abstract classes can be extended to model your own custom study logic:
 
 - Extend `DeviceDescriptor` or `MasterDeviceDescriptor` to add support for a new type of device, and extend `DeviceRegistration` to specify how a single instance of this device should be uniquely identified, the capabilities it has, and device-specific configuration options needed for the device to operate.
 Example: [`AltBeacon`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt).  
