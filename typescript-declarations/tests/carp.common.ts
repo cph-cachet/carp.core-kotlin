@@ -27,7 +27,6 @@ import ParticipantAttribute = dk.cachet.carp.common.application.users.Participan
 import UsernameAccountIdentity = dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import emailAccountIdentityFromString = dk.cachet.carp.common.application.users.EmailAccountIdentity_init_61zpoe$
 import createDefaultJSON = dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
-import createProtocolsSerializer = dk.cachet.carp.common.infrastructure.serialization.createProtocolsSerializer_18xi4u$
 
 
 describe( "carp.common", () => {

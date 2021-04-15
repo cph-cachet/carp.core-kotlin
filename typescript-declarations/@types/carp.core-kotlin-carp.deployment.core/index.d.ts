@@ -302,8 +302,5 @@ declare module 'carp.core-kotlin-carp.deployment.core'
                 constructor( studyDeploymentId: UUID, inputDataType: NamespacedId, data: any | null )
             }
         }
-
-        
-        function createDeploymentSerializer_18xi4u$(): Json
     }
 }

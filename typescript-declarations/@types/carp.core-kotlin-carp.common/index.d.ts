@@ -231,6 +231,5 @@ declare module 'carp.core-kotlin-carp.common'
     namespace dk.cachet.carp.common.infrastructure.serialization
     {
         function createDefaultJSON_18xi4u$(): Json
-        function createProtocolsSerializer_18xi4u$(): Json
     }
 }

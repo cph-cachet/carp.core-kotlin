@@ -1,10 +1,11 @@
 package dk.cachet.carp.deployment.infrastructure
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import dk.cachet.carp.common.infrastructure.serialization.CLASS_DISCRIMINATOR
+import dk.cachet.carp.common.infrastructure.serialization.JSON
+import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.deployment.application.StudyDeploymentStatus
 import dk.cachet.carp.deployment.domain.StudyDeployment
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
@@ -27,7 +28,7 @@ class StudyDeploymentStatusTest
     @BeforeTest
     fun initializeSerializer()
     {
-        JSON = createDeploymentSerializer( STUBS_SERIAL_MODULE )
+        JSON = createTestJSON()
     }
 
     @Test
