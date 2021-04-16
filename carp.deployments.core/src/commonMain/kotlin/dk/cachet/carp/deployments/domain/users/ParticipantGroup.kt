@@ -14,6 +14,7 @@ import dk.cachet.carp.deployments.application.users.AssignedMasterDevice
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
+import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.configuration.isValidParticipantData
 
 
@@ -40,13 +41,20 @@ class ParticipantGroup private constructor(
     companion object
     {
         /**
-         * Initialize a [ParticipantGroup] with default values for a study [deployment].
+         * Initialize a [ParticipantGroup] with default values for a newly created deployment with [studyDeploymentId]
+         * which was just created for the specified study [protocol].
          */
-        fun fromDeployment( deployment: StudyDeployment ): ParticipantGroup =
+        fun fromNewDeployment( studyDeploymentId: UUID, protocol: StudyProtocol ): ParticipantGroup =
             ParticipantGroup(
-                deployment.id,
-                deployment.protocol.masterDevices.map { AssignedMasterDevice( it, null ) }.toSet(),
-                deployment.protocol.expectedParticipantData )
+                studyDeploymentId,
+                protocol.masterDevices.map { AssignedMasterDevice( it, null ) }.toSet(),
+                protocol.expectedParticipantData )
+
+        /**
+         * Initialize a [ParticipantGroup] with default values for a newly created [deployment].
+         */
+        fun fromNewDeployment( deployment: StudyDeployment ): ParticipantGroup =
+            fromNewDeployment( deployment.id, deployment.protocol )
 
         fun fromSnapshot( snapshot: ParticipantGroupSnapshot ): ParticipantGroup
         {

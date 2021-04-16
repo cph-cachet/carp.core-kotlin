@@ -57,7 +57,7 @@ class HostsIntegrationTest
         val deployment = deploymentService.createStudyDeployment( protocol )
         val participantGroupData = participationService.getParticipantData( deployment.studyDeploymentId )
 
-        assertEquals( deployment.studyDeploymentId, deploymentCreated?.deployment?.studyDeploymentId )
+        assertEquals( deployment.studyDeploymentId, deploymentCreated?.studyDeploymentId )
         assertEquals( protocol.expectedParticipantData.size, participantGroupData.data.size )
     }
 
