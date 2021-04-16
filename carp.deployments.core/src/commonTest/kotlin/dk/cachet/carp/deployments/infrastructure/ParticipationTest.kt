@@ -1,7 +1,10 @@
 package dk.cachet.carp.deployments.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.deployments.application.users.Participation
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -15,8 +18,8 @@ class ParticipationTest
     {
         val participation = Participation( UUID.randomUUID() )
 
-        val serialized = participation.toJson()
-        val parsed = Participation.fromJson( serialized )
+        val serialized = JSON.encodeToString( participation )
+        val parsed: Participation = JSON.decodeFromString( serialized )
 
         assertEquals( participation, parsed )
     }

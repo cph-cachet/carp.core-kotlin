@@ -9,11 +9,11 @@ import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.infrastructure.fromJson
-import dk.cachet.carp.protocols.infrastructure.toJson
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -44,8 +44,8 @@ class StudyDeploymentStatusTest
         deployment.deviceDeployed( master, masterDeviceDeployment.lastUpdateDate )
         val status: StudyDeploymentStatus = deployment.getStatus()
 
-        val serialized: String = status.toJson()
-        val parsed: StudyDeploymentStatus = StudyDeploymentStatus.fromJson( serialized )
+        val serialized: String = JSON.encodeToString( status )
+        val parsed: StudyDeploymentStatus = JSON.decodeFromString( serialized )
 
         assertEquals( status, parsed )
     }
@@ -58,15 +58,15 @@ class StudyDeploymentStatusTest
         val master = StubMasterDeviceDescriptor( "Unknown" )
         protocol.addMasterDevice( master )
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
-        var serialized: String = snapshot.toJson()
+        var serialized: String = JSON.encodeToString( snapshot )
 
         // Mimic an unknown device type.
         serialized = serialized.makeUnknown( master, "com.unknown.UnknownMasterDevice" )
 
         // Create deployment based on protocol with custom types and serialize its status.
-        val snapshotWithCustom = StudyProtocolSnapshot.fromJson( serialized )
+        val snapshotWithCustom: StudyProtocolSnapshot = JSON.decodeFromString( serialized )
         val deployment = StudyDeployment( snapshotWithCustom, testId )
-        val status = deployment.getStatus().toJson()
+        val status = JSON.encodeToString( deployment.getStatus() )
 
         // This verifies whether the 'CustomMasterDeviceDescriptor' wrapper is removed in JSON output.
         assertTrue { status.contains( "\"device\":{\"$CLASS_DISCRIMINATOR\":\"com.unknown.UnknownMasterDevice\"" ) }

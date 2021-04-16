@@ -7,6 +7,8 @@ import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -39,8 +41,8 @@ class MasterDeviceDeploymentTest
             setOf( MasterDeviceDeployment.TriggeredTask( 0, task.name, connected.roleName ) )
         )
 
-        val json = deployment.toJson()
-        val parsed = MasterDeviceDeployment.fromJson( json )
+        val json = JSON.encodeToString( deployment )
+        val parsed: MasterDeviceDeployment = JSON.decodeFromString( json )
         assertEquals( deployment, parsed )
     }
 }

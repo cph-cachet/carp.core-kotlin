@@ -5,6 +5,8 @@ import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.deployments.domain.createComplexParticipantGroup
 import dk.cachet.carp.deployments.domain.users.ParticipantGroup
 import dk.cachet.carp.deployments.domain.users.ParticipantGroupSnapshot
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -21,8 +23,8 @@ class ParticipantGroupSnapshotTest
         val group: ParticipantGroup = createComplexParticipantGroup()
         val snapshot: ParticipantGroupSnapshot = group.getSnapshot()
 
-        val serialized: String = snapshot.toJson()
-        val parsed: ParticipantGroupSnapshot = ParticipantGroupSnapshot.fromJson( serialized )
+        val serialized: String = JSON.encodeToString( snapshot )
+        val parsed: ParticipantGroupSnapshot = JSON.decodeFromString( serialized )
 
         assertEquals( snapshot, parsed )
     }

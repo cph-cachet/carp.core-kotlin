@@ -1,6 +1,9 @@
 package dk.cachet.carp.deployments.infrastructure
 
+import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.deployments.application.users.StudyInvitation
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -15,8 +18,8 @@ class StudyInvitationTest
         val applicationData = """{"extraData":"42"}"""
         val invitation = StudyInvitation( "Test", "Description", applicationData )
 
-        val serialized = invitation.toJson()
-        val parsed = StudyInvitation.fromJson( serialized )
+        val serialized = JSON.encodeToString( invitation )
+        val parsed: StudyInvitation = JSON.decodeFromString( serialized )
 
         assertEquals( invitation, parsed )
     }
@@ -26,6 +29,6 @@ class StudyInvitationTest
     {
         val serialized = """{"name":"Test","description":"Description"}"""
 
-        StudyInvitation.fromJson( serialized )
+        JSON.decodeFromString<StudyInvitation>( serialized )
     }
 }

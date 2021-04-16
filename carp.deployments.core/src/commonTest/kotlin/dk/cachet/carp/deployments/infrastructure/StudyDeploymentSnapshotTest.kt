@@ -11,6 +11,8 @@ import dk.cachet.carp.deployments.domain.createComplexDeployment
 import dk.cachet.carp.deployments.domain.studyDeploymentFor
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -31,8 +33,8 @@ class StudyDeploymentSnapshotTest
         val deployment = createComplexDeployment()
         val snapshot: StudyDeploymentSnapshot = deployment.getSnapshot()
 
-        val serialized: String = snapshot.toJson()
-        val parsed: StudyDeploymentSnapshot = StudyDeploymentSnapshot.fromJson( serialized )
+        val serialized: String = JSON.encodeToString( snapshot )
+        val parsed: StudyDeploymentSnapshot = JSON.decodeFromString( serialized )
 
         assertEquals( snapshot, parsed )
     }
@@ -45,7 +47,7 @@ class StudyDeploymentSnapshotTest
     fun unknown_types_are_wrapped_when_deserializing()
     {
         val serialized = serializeDeploymentSnapshotIncludingUnknownRegistration()
-        val parsed = StudyDeploymentSnapshot.fromJson( serialized )
+        val parsed: StudyDeploymentSnapshot = JSON.decodeFromString( serialized )
 
         val allRegistrations = parsed.deviceRegistrationHistory.values.flatten()
         assertEquals( 1, allRegistrations.filterIsInstance<CustomDeviceRegistration>().count() )
@@ -59,9 +61,9 @@ class StudyDeploymentSnapshotTest
     fun serializing_unknown_types_removes_the_wrapper()
     {
         val serialized: String = serializeDeploymentSnapshotIncludingUnknownRegistration()
-        val snapshot = StudyDeploymentSnapshot.fromJson( serialized )
+        val snapshot: StudyDeploymentSnapshot = JSON.decodeFromString( serialized )
 
-        val customSerialized = snapshot.toJson()
+        val customSerialized = JSON.encodeToString( snapshot )
         assertEquals( serialized, customSerialized )
     }
 
@@ -78,7 +80,7 @@ class StudyDeploymentSnapshotTest
         val registration = DefaultDeviceRegistration( "0" )
         deployment.registerDevice( master, registration )
 
-        var serialized: String = deployment.getSnapshot().toJson()
+        var serialized: String = JSON.encodeToString( deployment.getSnapshot() )
         serialized = serialized.makeUnknown( registration )
 
         return serialized

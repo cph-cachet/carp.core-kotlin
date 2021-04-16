@@ -9,10 +9,10 @@ import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.deployments.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployments.domain.studyDeploymentFor
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.infrastructure.fromJson
-import dk.cachet.carp.protocols.infrastructure.toJson
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -40,9 +40,9 @@ class StudyDeploymentTest
         val snapshot = protocol.getSnapshot()
 
         // Create invalid snapshot by editing JSON.
-        val json = snapshot.toJson()
+        val json = JSON.encodeToString( snapshot )
         val invalidJson = json.replaceFirst( "\"Master\"", "\"Non-existing device\"" )
-        val invalidSnapshot = StudyProtocolSnapshot.fromJson( invalidJson )
+        val invalidSnapshot: StudyProtocolSnapshot = JSON.decodeFromString( invalidJson )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -62,11 +62,11 @@ class StudyDeploymentTest
         deployment.registerDevice( master, registration )
 
         // Mimic unknown device and registration.
-        var serialized: String = deployment.getSnapshot().toJson()
+        var serialized: String = JSON.encodeToString( deployment.getSnapshot() )
         serialized = serialized.makeUnknown( master, "Unknown" )
         serialized = serialized.makeUnknown( registration )
 
-        val snapshot = StudyDeploymentSnapshot.fromJson( serialized )
+        val snapshot: StudyDeploymentSnapshot = JSON.decodeFromString( serialized )
         StudyDeployment.fromSnapshot( snapshot )
     }
 }
