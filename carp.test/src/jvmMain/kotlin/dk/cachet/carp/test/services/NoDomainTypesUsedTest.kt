@@ -2,8 +2,10 @@ package dk.cachet.carp.test.services
 
 import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 import kotlin.reflect.KVisibility
-import kotlin.reflect.jvm.javaType
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.jvmErasure
 
 
 private val disallowedMatch = Regex( """dk\.cachet\.carp\..+\.domain\..+""" )
@@ -26,11 +28,32 @@ private fun verifyNoDomainTypesUsedIn( klass: KClass<*> )
         .flatMap { c -> c.parameters.map { it.type }.plus( c.returnType ) }
         .distinct()
 
-    // Verify for each whether the type is defined in a disallowed namespace.
-    val typeNames = allUsedTypes.map { it.javaType.typeName }
-    for ( type in typeNames )
+    val verifiedTypes: MutableSet<KType> = mutableSetOf()
+    allUsedTypes.forEach { verifyType( it, klass, verifiedTypes ) }
+}
+
+private fun verifyType( type: KType, usedInInterface: KClass<*>, verifiedTypes: MutableSet<KType> )
+{
+    // Early out in case the type has already been verified.
+    if ( verifiedTypes.contains( type ) ) return
+
+    val typeName = type.toString()
+
+    // Early out for base types.
+    if ( typeName.startsWith( "kotlin" ) || typeName.startsWith( "java" ) )
     {
-        assert( !disallowedMatch.matches( type ) )
-            { "`$type` is in a disallowed namespace for types exposed on the public interface of `${klass.simpleName}`." }
+        verifiedTypes.add( type )
+        return
     }
+
+    // Verify whether the type is defined in a disallowed namespace.
+    assert( !disallowedMatch.matches( typeName ) )
+        { "`$type` is in a disallowed namespace for types exposed on the public interface of `${usedInInterface.simpleName}`." }
+    verifiedTypes.add( type )
+
+    // Recursive verification of all public properties.
+    type.jvmErasure
+        .memberProperties.filter { it.visibility == KVisibility.PUBLIC }
+        .map { it.returnType }
+        .forEach { verifyType( it, usedInInterface, verifiedTypes ) }
 }
