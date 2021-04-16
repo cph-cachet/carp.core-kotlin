@@ -16,7 +16,7 @@ kotlin {
         commonMain {
             dependencies {
                 api project(':carp.protocols.core')
-                api project(':carp.deployment.core')
+                api project(':carp.deployments.core')
             }
         }
     }
@@ -34,12 +34,14 @@ dokka {
         path = project(':carp.protocols.core').kotlin.sourceSets.jvmMain.kotlin.srcDirs[0] // There is only one source dir.
         platforms = ["JVM"]
     }
+
+    // Add source sets of 'carp.deployments.core'.
     sourceRoot {
-        path = project(':carp.deployment.core').kotlin.sourceSets.commonMain.kotlin.srcDirs[0] // There is only one source dir.
+        path = project(':carp.deployments.core').kotlin.sourceSets.commonMain.kotlin.srcDirs[0] // There is only one source dir.
         platforms = ["Common"]
     }
     sourceRoot {
-        path = project(':carp.deployment.core').kotlin.sourceSets.jvmMain.kotlin.srcDirs[0] // There is only one source dir.
+        path = project(':carp.deployments.core').kotlin.sourceSets.jvmMain.kotlin.srcDirs[0] // There is only one source dir.
         platforms = ["JVM"]
     }
 }

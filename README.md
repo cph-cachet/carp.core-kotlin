@@ -24,11 +24,11 @@ Two key **design goals** differentiate this project from similar projects:
     - [Extending domain objects](docs/carp-protocols.md#extending-domain-objects)
   - [Studies](docs/carp-studies.md)
     - [Application services](docs/carp-studies.md#application-services)
-  - [Deployment](docs/carp-deployment.md)
-    - [Study and device deployment state](docs/carp-deployment.md#study-and-device-deployment-state)
-    - [Application services](docs/carp-deployment.md#application-services)
-  - [Client](docs/carp-client.md)
-    - [Study runtime state](docs/carp-client.md#study-runtime-state)
+  - [Deployments](docs/carp-deployments.md)
+    - [Study and device deployment state](docs/carp-deployments.md#study-and-device-deployment-state)
+    - [Application services](docs/carp-deployments.md#application-services)
+  - [Clients](docs/carp-clients.md)
+    - [Study runtime state](docs/carp-clients.md#study-runtime-state)
   - [Common](docs/carp-common.md)
     - [Built-in types](docs/carp-common.md#built-in-types)
 - [Infrastructure helpers](#infrastructure-helpers)
@@ -43,23 +43,23 @@ Two key **design goals** differentiate this project from similar projects:
 
 ## Architecture
 
-![Subsystem decomposition](https://i.imgur.com/qexzTej.png)
+![Subsystem decomposition](https://i.imgur.com/hEsTHNk.png)
 
 - [**Protocols**](docs/carp-protocols.md): Implements open standards which can describe a study protocol—how a study should be run. Essentially, this subsystem has no _technical_ dependencies on any particular sensor technology or application as it merely describes why, when, and what data should be collected.
 
   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.protocols/carp.protocols.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.protocols) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.protocols/carp.protocols.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/protocols/)
 
-- [**Studies**](docs/carp-studies.md): Supports management of research studies, including the recruitment of participants and assigning metadata (e.g., contact information). This subsystem maps pseudonymized data (managed by the 'deployment' subsystem) to actual participants.
+- [**Studies**](docs/carp-studies.md): Supports management of research studies, including the recruitment of participants and assigning metadata (e.g., contact information). This subsystem maps pseudonymized data (managed by the 'deployments' subsystem) to actual participants.
 
   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.studies/carp.studies.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.studies) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.studies/carp.studies.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/studies/)
 
-- [**Deployment**](docs/carp-deployment.md): Maps the information specified in a study protocol to runtime configurations used by the 'client' subystem to run the protocol on concrete devices (e.g., a smartphone) and allow researchers to monitor their state. To start collecting data, participants need to be invited, devices need to be registered, and consent needs to be given to collect the requested data.
+- [**Deployments**](docs/carp-deployments.md): Maps the information specified in a study protocol to runtime configurations used by the 'clients' subystem to run the protocol on concrete devices (e.g., a smartphone) and allow researchers to monitor their state. To start collecting data, participants need to be invited, devices need to be registered, and consent needs to be given to collect the requested data.
 
-  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.deployment/carp.deployment.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.deployment) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.deployment/carp.deployment.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/deployment/)
+  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.deployments/carp.deployments.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.deployments) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.deployments/carp.deployments.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/deployments/)
 
-- [**Client**](docs/carp-client.md): The runtime which performs the actual data collection on a device (e.g., desktop computer or smartphone). This subsystem contains reusable components which understand the runtime configuration derived from a study protocol by the ‘deployment’ subsystem. Integrations with sensors are loaded through a 'device data collector' plug-in system to decouple sensing—not part of core⁠—from sensing logic.
+- [**Client**](docs/carp-clients.md): The runtime which performs the actual data collection on a device (e.g., desktop computer or smartphone). This subsystem contains reusable components which understand the runtime configuration derived from a study protocol by the ‘deployment’ subsystem. Integrations with sensors are loaded through a 'device data collector' plug-in system to decouple sensing—not part of core—from sensing logic.
 
-   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.client/carp.client.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.client) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.client/carp.client.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/client/)
+   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.client/carp.clients.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.clients) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.clients/carp.clients.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/clients/)
 
 - **Resources**: Contains a simple file store for resources (such as images, videos, and text documents) which can be referenced from within study protocols to be used during a study.
 - **Data**: Contains all pseudonymized data. In combination with the original study protocol, the full provenance of the data (when/why it was collected) is known.
@@ -67,7 +67,7 @@ Two key **design goals** differentiate this project from similar projects:
 - **Supporting subystems**:
    - [**Common**](docs/carp-common.md): Implements helper classes and base types relied upon by all subsystems.
 Primarily, this contains the built-in types used to define study protocols
-which subsequently get passed to the deployment and client subsystem.
+which subsequently get passed to the deployments and clients subsystem.
    
      [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.common/carp.common/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.common) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.common/carp.common?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/common/)
      
@@ -77,7 +77,7 @@ which subsequently get passed to the deployment and client subsystem.
      
    - **carp.detekt**: Includes static code analysis extensions for [detekt](https://github.com/arturbosch/detekt), used when building this project to ensure conventions are followed.
 
-Not all subsystems are implemented yet. Currently this project contains an unstable (not backwards compatible) alpha version of the protocols, deployment, client, and studies subsystems. Many changes will happen as the rest of the infrastructure is implemented.
+Not all subsystems are implemented yet. Currently, this project contains an unstable (not backwards compatible) alpha version of the protocols, deployments, client, and studies subsystems. Many changes will happen as the rest of the infrastructure is implemented.
 
 ## Infrastructure helpers
 
@@ -104,7 +104,7 @@ More detailed information on how this works can be found in [the documentation o
 ### Request objects
 
 To help implementing remote procedure calls (RPCs), each application service has matching polymorphic serializable 'request objects'.
-For example, the deployment subsystem has a sealed class [`DeploymentServiceRequest`](carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/infrastructure/DeploymentServiceRequest.kt) and each subclass represents a request to `DeploymentService`.
+For example, the deployments subsystem has a sealed class [`DeploymentServiceRequest`](carp.deployments.core/src/commonMain/kotlin/dk/cachet/carp/deployments/infrastructure/DeploymentServiceRequest.kt) and each subclass represents a request to `DeploymentService`.
 Using these objects, all requests to a single application service can be handled by one endpoint using type checking.
 We recommend [using a when expression](https://kotlinlang.org/docs/reference/sealed-classes.html) so that the compiler can verify whether you have handled all requests.
 
@@ -210,8 +210,8 @@ if ( studyStatus.canDeployToParticipants )
 }
 ```
 
-<a name="example-deployment"></a>
-**carp.deployment**: Most calls to this subsystem are abstracted away by the 'studies' and 'client' subsystems, so you wouldn't call its endpoints directly. Example code which is called when a study is created and accessed by a client:
+<a name="example-deployments"></a>
+**carp.deployments**: Most calls to this subsystem are abstracted away by the 'studies' and 'clients' subsystems, so you wouldn't call its endpoints directly. Example code which is called when a study is created and accessed by a client:
 
 ```kotlin
 val deploymentService: DeploymentService = createDeploymentEndpoint()

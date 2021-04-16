@@ -15,9 +15,9 @@ declare module 'carp.core-kotlin-carp.studies.core'
     import UUID = cdk.cachet.carp.common.application.UUID
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
 
-    import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
-    import StudyDeploymentStatus = ddk.cachet.carp.deployment.application.StudyDeploymentStatus
-    import StudyInvitation = ddk.cachet.carp.deployment.application.users.StudyInvitation
+    import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
+    import StudyDeploymentStatus = ddk.cachet.carp.deployments.application.StudyDeploymentStatus
+    import StudyInvitation = ddk.cachet.carp.deployments.application.users.StudyInvitation
 
     import { dk as pdk } from 'carp.core-kotlin-carp.protocols.core'
     import StudyProtocolSnapshot = pdk.cachet.carp.protocols.application.StudyProtocolSnapshot

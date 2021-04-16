@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.application.users
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.deployment.application.users.Participation
+import dk.cachet.carp.deployments.application.users.Participation
 import kotlinx.serialization.Serializable
 
 

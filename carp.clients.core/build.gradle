@@ -1,0 +1,49 @@
+group = 'dk.cachet.carp.clients'
+
+publishing {
+    publications {
+        all {
+            pom {
+                name = 'Clients Domain Model and Application Services'
+                description =
+                    'A domain model and application services to manage the runtime logic for studies on client devices (e.g., smartphone). ' +
+                    'What to run as part of an overarching study is retrieved via the deployments subsystem.'
+            }
+        }
+    }
+}
+
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                api project(':carp.deployments.core')
+                api project(':carp.protocols.core')
+            }
+        }
+    }
+}
+
+// HACK: Dokka currently does not work for multiplatform projects.
+// The following is a workaround to load dependent sources manually.
+dokka {
+    // Add source sets of 'carp.protocols.core'.
+    sourceRoot {
+        path = project(':carp.protocols.core').kotlin.sourceSets.commonMain.kotlin.srcDirs[0] // There is only one source dir.
+        platforms = ["Common"]
+    }
+    sourceRoot {
+        path = project(':carp.protocols.core').kotlin.sourceSets.jvmMain.kotlin.srcDirs[0] // There is only one source dir.
+        platforms = ["JVM"]
+    }
+
+    // Add source sets of 'carp.deployment.core'.
+    sourceRoot {
+        path = project(':carp.deployments.core').kotlin.sourceSets.commonMain.kotlin.srcDirs[0] // There is only one source dir.
+        platforms = ["Common"]
+    }
+    sourceRoot {
+        path = project(':carp.deployments.core').kotlin.sourceSets.jvmMain.kotlin.srcDirs[0] // There is only one source dir.
+        platforms = ["JVM"]
+    }
+}

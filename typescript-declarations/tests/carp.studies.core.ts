@@ -23,9 +23,9 @@ import ParticipantAttribute = cdk.cachet.carp.common.application.users.Participa
 import UsernameIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
 import createDefaultJSON = cdk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
 
-import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
-import StudyDeploymentStatus = ddk.cachet.carp.deployment.application.StudyDeploymentStatus
-import StudyInvitation = ddk.cachet.carp.deployment.application.users.StudyInvitation
+import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
+import StudyDeploymentStatus = ddk.cachet.carp.deployments.application.StudyDeploymentStatus
+import StudyInvitation = ddk.cachet.carp.deployments.application.users.StudyInvitation
 
 import { dk } from 'carp.core-kotlin-carp.studies.core'
 import StudyDetails = dk.cachet.carp.studies.application.StudyDetails

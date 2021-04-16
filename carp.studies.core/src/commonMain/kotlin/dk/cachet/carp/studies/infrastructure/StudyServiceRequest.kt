@@ -3,7 +3,7 @@ package dk.cachet.carp.studies.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.createServiceInvoker
-import dk.cachet.carp.deployment.application.users.StudyInvitation
+import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyDetails

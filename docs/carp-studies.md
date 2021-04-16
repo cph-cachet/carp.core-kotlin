@@ -1,7 +1,7 @@
 # carp.studies [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.studies/carp.studies.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.studies) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.studies/carp.studies.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/studies/) 
 
 Supports management of research studies, including the recruitment of participants and assigning metadata (e.g., contact information).
-This subsystem maps pseudonymized data (managed by the 'deployment' subsystem) to actual participants.
+This subsystem maps pseudonymized data (managed by the 'deployments' subsystem) to actual participants.
 
 ## Application services
 

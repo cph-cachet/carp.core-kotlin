@@ -6,9 +6,9 @@ import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.common.application.users.AccountIdentity
-import dk.cachet.carp.deployment.application.DeploymentService
-import dk.cachet.carp.deployment.application.ParticipationService
-import dk.cachet.carp.deployment.application.StudyDeploymentStatus
+import dk.cachet.carp.deployments.application.DeploymentService
+import dk.cachet.carp.deployments.application.ParticipationService
+import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.application.users.Participant
@@ -45,7 +45,7 @@ class ParticipantServiceHost(
 
             // Propagate removal of all data related to a study.
             event { removed: StudyService.Event.StudyRemoved ->
-                // Remove deployments in the deployment subsystem.
+                // Remove deployments in the deployments subsystem.
                 val recruitment = participantRepository.getRecruitment( removed.studyId )
                 checkNotNull( recruitment )
                 val idsToRemove = recruitment.participations.keys
