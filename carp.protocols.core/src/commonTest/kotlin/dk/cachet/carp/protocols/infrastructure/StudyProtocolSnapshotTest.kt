@@ -7,6 +7,7 @@ import dk.cachet.carp.common.infrastructure.serialization.CustomMasterDeviceDesc
 import dk.cachet.carp.common.infrastructure.serialization.CustomMeasure
 import dk.cachet.carp.common.infrastructure.serialization.CustomTaskDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.CustomTrigger
+import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
@@ -20,6 +21,8 @@ import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -34,8 +37,8 @@ class StudyProtocolSnapshotTest
         val protocol: StudyProtocol = createComplexProtocol()
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
 
-        val serialized: String = snapshot.toJson()
-        val parsed: StudyProtocolSnapshot = StudyProtocolSnapshot.fromJson( serialized )
+        val serialized: String = JSON.encodeToString( snapshot )
+        val parsed: StudyProtocolSnapshot = JSON.decodeFromString( serialized )
 
         assertEquals( snapshot, parsed )
     }
@@ -49,7 +52,7 @@ class StudyProtocolSnapshotTest
     {
         val serialized: String = serializeProtocolSnapshotIncludingUnknownTypes()
 
-        val parsed = StudyProtocolSnapshot.fromJson( serialized )
+        val parsed: StudyProtocolSnapshot = JSON.decodeFromString( serialized )
         val masterDevice = parsed.masterDevices.filterIsInstance<CustomMasterDeviceDescriptor>().singleOrNull()
         assertNotNull( masterDevice )
         assertEquals( 1, masterDevice.samplingConfiguration.count() )
@@ -71,10 +74,10 @@ class StudyProtocolSnapshotTest
         protocol.addConnectedDevice( unknownMaster, master )
 
         // Mimic unknown connected master device.
-        var serialized = protocol.getSnapshot().toJson()
+        var serialized = JSON.encodeToString( protocol.getSnapshot() )
         serialized = serialized.makeUnknown( unknownMaster, "Unknown master" )
 
-        val parsed = StudyProtocolSnapshot.fromJson( serialized )
+        val parsed: StudyProtocolSnapshot = JSON.decodeFromString( serialized )
         assertTrue { parsed.connectedDevices.single() is MasterDeviceDescriptor }
     }
 
@@ -86,9 +89,9 @@ class StudyProtocolSnapshotTest
     fun serializing_unknown_types_removes_the_wrapper()
     {
         val serialized: String = serializeProtocolSnapshotIncludingUnknownTypes()
-        val snapshot = StudyProtocolSnapshot.fromJson( serialized )
+        val snapshot: StudyProtocolSnapshot = JSON.decodeFromString( serialized )
 
-        val customSerialized = snapshot.toJson()
+        val customSerialized = JSON.encodeToString( snapshot )
         assertEquals( serialized, customSerialized )
     }
 
@@ -97,7 +100,7 @@ class StudyProtocolSnapshotTest
     fun create_protocol_fromSnapshot_with_custom_extending_types_succeeds()
     {
         val serialized = serializeProtocolSnapshotIncludingUnknownTypes()
-        val snapshot = StudyProtocolSnapshot.fromJson( serialized )
+        val snapshot: StudyProtocolSnapshot = JSON.decodeFromString( serialized )
 
         StudyProtocol.fromSnapshot( snapshot )
     }
@@ -137,7 +140,7 @@ class StudyProtocolSnapshotTest
         protocol.addTriggeredTask( trigger, task2, master )
 
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
-        var serialized: String = snapshot.toJson()
+        var serialized: String = JSON.encodeToString( snapshot )
 
         // Replace the strings which identify the types to load by the PolymorphicSerializer.
         // This will cause the types not to be found while deserializing, hence mimicking 'custom' types.

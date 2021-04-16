@@ -7,7 +7,10 @@ import dk.cachet.carp.clients.domain.StudyRuntime
 import dk.cachet.carp.clients.domain.StudyRuntimeSnapshot
 import dk.cachet.carp.clients.domain.createDataListener
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistrationBuilder
+import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.test.runSuspendTest
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -27,8 +30,8 @@ class StudyRuntimeSnapshotTest
             deploymentStatus.studyDeploymentId, smartphone.roleName, deviceRegistration )
         val snapshot = StudyRuntimeSnapshot.fromStudyRuntime( runtime )
 
-        val serialized = snapshot.toJson()
-        val parsed = StudyRuntimeSnapshot.fromJson( serialized )
+        val serialized = JSON.encodeToString( snapshot )
+        val parsed: StudyRuntimeSnapshot = JSON.decodeFromString( serialized )
         assertEquals( snapshot, parsed )
     }
 }

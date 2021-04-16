@@ -1,6 +1,9 @@
 package dk.cachet.carp.protocols.infrastructure
 
+import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.protocols.domain.ProtocolOwner
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -14,8 +17,8 @@ class ProtocolOwnerTest
     {
         val owner = ProtocolOwner()
 
-        val serialized: String = owner.toJson()
-        val parsed: ProtocolOwner = ProtocolOwner.fromJson( serialized )
+        val serialized: String = JSON.encodeToString( owner )
+        val parsed: ProtocolOwner = JSON.decodeFromString( serialized )
 
         assertEquals( owner, parsed )
     }

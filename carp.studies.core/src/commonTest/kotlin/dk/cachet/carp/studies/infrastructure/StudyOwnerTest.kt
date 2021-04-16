@@ -1,6 +1,9 @@
 package dk.cachet.carp.studies.infrastructure
 
+import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.studies.application.users.StudyOwner
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -14,8 +17,8 @@ class StudyOwnerTest
     {
         val owner = StudyOwner()
 
-        val serialized: String = owner.toJson()
-        val parsed: StudyOwner = StudyOwner.fromJson( serialized )
+        val serialized: String = JSON.encodeToString( owner )
+        val parsed: StudyOwner = JSON.decodeFromString( serialized )
 
         assertEquals( owner, parsed )
     }

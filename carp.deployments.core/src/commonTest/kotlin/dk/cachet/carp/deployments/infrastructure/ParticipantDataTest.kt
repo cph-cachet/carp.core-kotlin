@@ -6,6 +6,8 @@ import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.deployments.application.users.ParticipantData
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -22,8 +24,8 @@ class ParticipantDataTest
         val data = mapOf( CarpInputDataTypes.SEX to Sex.Male )
         val participantData = ParticipantData( UUID.randomUUID(), data )
 
-        val serialized: String = participantData.toJson()
-        val parsed: ParticipantData = ParticipantData.fromJson( serialized )
+        val serialized: String = JSON.encodeToString( participantData )
+        val parsed: ParticipantData = JSON.decodeFromString( serialized )
 
         assertEquals( participantData, parsed )
     }
