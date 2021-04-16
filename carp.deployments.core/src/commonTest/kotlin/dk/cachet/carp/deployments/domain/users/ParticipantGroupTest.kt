@@ -30,7 +30,7 @@ class ParticipantGroupTest
         protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( expectedData ) )
         val deployment = StudyDeployment( protocol.getSnapshot() )
 
-        val group = ParticipantGroup.fromDeployment( deployment )
+        val group = ParticipantGroup.fromNewDeployment( deployment )
 
         assertEquals( deployment.id, group.studyDeploymentId )
         val expectedAssignedMasterDevices = protocol.masterDevices
@@ -261,6 +261,6 @@ class ParticipantGroupTest
     private fun createParticipantGroup( protocol: StudyProtocol = createSingleMasterDeviceProtocol() ): ParticipantGroup
     {
         val deployment = StudyDeployment( protocol.getSnapshot() )
-        return ParticipantGroup.fromDeployment( deployment )
+        return ParticipantGroup.fromNewDeployment( deployment )
     }
 }

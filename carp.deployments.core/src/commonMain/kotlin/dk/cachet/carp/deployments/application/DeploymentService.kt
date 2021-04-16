@@ -6,7 +6,6 @@ import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
-import dk.cachet.carp.deployments.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.serialization.Serializable
 
@@ -21,7 +20,10 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
     sealed class Event : IntegrationEvent<DeploymentService>()
     {
         @Serializable
-        data class StudyDeploymentCreated( val deployment: StudyDeploymentSnapshot ) : Event()
+        data class StudyDeploymentCreated(
+            val studyDeploymentId: UUID,
+            val protocol: StudyProtocolSnapshot
+        ) : Event()
         @Serializable
         data class StudyDeploymentsRemoved( val deploymentIds: Set<UUID> ) : Event()
         @Serializable

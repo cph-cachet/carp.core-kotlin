@@ -75,7 +75,7 @@ fun createComplexParticipantGroup(): ParticipantGroup
     protocol.addExpectedParticipantData( customAttribute )
     val deployment = StudyDeployment( protocol.getSnapshot() )
 
-    return ParticipantGroup.fromDeployment( deployment ).apply {
+    return ParticipantGroup.fromNewDeployment( deployment ).apply {
         addParticipation(
             Account.withEmailIdentity( "test@test.com" ),
             Participation( studyDeploymentId ),
@@ -87,5 +87,3 @@ fun createComplexParticipantGroup(): ParticipantGroup
         studyDeploymentStopped()
     }
 }
-
-

@@ -16,8 +16,8 @@ class AccountParticipationTest
     fun filterActiveParticipationInvitations_only_returns_active_deployments()
     {
         val deviceRole = "Participant's phone"
-        val activeGroup = ParticipantGroup.fromDeployment( createActiveDeployment( deviceRole ) )
-        val stoppedGroup = ParticipantGroup.fromDeployment( createActiveDeployment( deviceRole ) )
+        val activeGroup = ParticipantGroup.fromNewDeployment( createActiveDeployment( deviceRole ) )
+        val stoppedGroup = ParticipantGroup.fromNewDeployment( createActiveDeployment( deviceRole ) )
         stoppedGroup.studyDeploymentStopped()
 
         val participation = Participation( activeGroup.studyDeploymentId )
@@ -37,7 +37,7 @@ class AccountParticipationTest
     {
         val deviceRole = "Participant's phone"
         val deployment = createActiveDeployment( deviceRole )
-        val group = ParticipantGroup.fromDeployment( deployment )
+        val group = ParticipantGroup.fromNewDeployment( deployment )
 
         val participation = Participation( group.studyDeploymentId )
         val accountId = UUID.randomUUID()
@@ -80,7 +80,7 @@ class AccountParticipationTest
     @Test
     fun filterActiveParticipationInvitations_fails_when_participation_device_role_does_not_match()
     {
-        val group = ParticipantGroup.fromDeployment( createActiveDeployment( "Master" ) )
+        val group = ParticipantGroup.fromNewDeployment( createActiveDeployment( "Master" ) )
 
         val participation = Participation( group.studyDeploymentId )
         val accountId = UUID.randomUUID()

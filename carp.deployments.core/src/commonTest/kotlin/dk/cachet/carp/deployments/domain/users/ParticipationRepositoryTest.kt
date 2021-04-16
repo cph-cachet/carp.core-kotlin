@@ -31,7 +31,7 @@ interface ParticipationRepositoryTest
         val repo = createRepository()
         val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
         val deployment = StudyDeployment( protocol.getSnapshot() )
-        val group = ParticipantGroup.fromDeployment( deployment )
+        val group = ParticipantGroup.fromNewDeployment( deployment )
 
         // Add participation.
         val account = Account.withEmailIdentity( "test@test.com" )
@@ -86,11 +86,11 @@ interface ParticipationRepositoryTest
         val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
 
         val deployment1 = StudyDeployment( protocol.getSnapshot() )
-        val group1 = ParticipantGroup.fromDeployment( deployment1 )
+        val group1 = ParticipantGroup.fromNewDeployment( deployment1 )
         repo.putParticipantGroup( group1 )
 
         val deployment2 = StudyDeployment( protocol.getSnapshot() )
-        val group2 = ParticipantGroup.fromDeployment( deployment2 )
+        val group2 = ParticipantGroup.fromNewDeployment( deployment2 )
         repo.putParticipantGroup( group2 )
 
         val groups = repo.getParticipantGroupList( setOf( deployment1.id, deployment2.id ) )
