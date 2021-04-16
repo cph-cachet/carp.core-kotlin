@@ -286,6 +286,7 @@ configure( coreModules + commonModule ) {
             jvmTest {
                 dependencies {
                     implementation kotlin('reflect')
+                    implementation "org.reflections:reflections:${versions.reflections}"
                 }
             }
 

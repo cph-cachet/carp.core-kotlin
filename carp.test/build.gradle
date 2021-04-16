@@ -25,6 +25,7 @@ kotlin {
             dependencies {
                 implementation kotlin('test')
                 implementation kotlin('test-junit5')
+                implementation kotlin('reflect')
                 implementation "org.reflections:reflections:${versions.reflections}"
             }
         }
