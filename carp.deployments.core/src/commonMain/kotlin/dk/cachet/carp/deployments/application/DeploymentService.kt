@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Application service which allows deploying [StudyProtocol]'s
+ * Application service which allows deploying study protocols
  * and retrieving [MasterDeviceDeployment]'s for participating master devices as defined in the protocol.
  */
 interface DeploymentService : ApplicationService<DeploymentService, DeploymentService.Event>
