@@ -5,8 +5,8 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
-import dk.cachet.carp.deployment.application.users.Participation
-import dk.cachet.carp.deployment.application.users.StudyInvitation
+import dk.cachet.carp.deployments.application.users.Participation
+import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.DeanonymizedParticipation

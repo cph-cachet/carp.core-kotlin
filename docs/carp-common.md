@@ -2,7 +2,7 @@
 
 Implements helper classes and base types relied upon by all subsystems.
 Primarily, this contains the [built-in types](#built-in-types) used to [define study protocols](carp-protocols.md#domain-objects)
-which subsequently get passed to the deployment and client subsystem.
+which subsequently get passed to the deployments and clients subsystem.
 
 ## Built-in types
 

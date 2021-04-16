@@ -2,13 +2,13 @@ package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
-import dk.cachet.carp.deployment.application.DeploymentService
-import dk.cachet.carp.deployment.application.DeploymentServiceHost
-import dk.cachet.carp.deployment.application.ParticipationService
-import dk.cachet.carp.deployment.application.ParticipationServiceHost
-import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
-import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
-import dk.cachet.carp.deployment.infrastructure.InMemoryParticipationRepository
+import dk.cachet.carp.deployments.application.DeploymentService
+import dk.cachet.carp.deployments.application.DeploymentServiceHost
+import dk.cachet.carp.deployments.application.ParticipationService
+import dk.cachet.carp.deployments.application.ParticipationServiceHost
+import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
+import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
+import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
 

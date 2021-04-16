@@ -3,8 +3,8 @@ package dk.cachet.carp.studies.application.users
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
-import dk.cachet.carp.deployment.application.StudyDeploymentStatus
-import dk.cachet.carp.deployment.domain.StudyDeployment
+import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.deployments.domain.StudyDeployment
 import kotlinx.serialization.Serializable
 
 
