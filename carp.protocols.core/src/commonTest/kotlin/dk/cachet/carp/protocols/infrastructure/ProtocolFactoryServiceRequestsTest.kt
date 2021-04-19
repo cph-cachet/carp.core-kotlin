@@ -1,31 +1,25 @@
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.serialization.JSON
-import kotlin.test.*
+import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
+import dk.cachet.carp.protocols.application.ProtocolFactoryService
+import dk.cachet.carp.protocols.application.ProtocolFactoryServiceMock
 
 
 /**
  * Tests for [ProtocolFactoryServiceRequest]'s.
  */
-class ProtocolFactoryServiceRequestsTest
+class ProtocolFactoryServiceRequestsTest : ApplicationServiceRequestsTest<ProtocolFactoryService, ProtocolFactoryServiceRequest>(
+    ProtocolFactoryService::class,
+    ProtocolFactoryServiceMock(),
+    ProtocolFactoryServiceRequest.serializer(),
+    REQUESTS
+)
 {
     companion object
     {
-        val requests: List<ProtocolFactoryServiceRequest> = listOf(
+        val REQUESTS: List<ProtocolFactoryServiceRequest> = listOf(
             ProtocolFactoryServiceRequest.CreateCustomProtocol( UUID.randomUUID(), "Name", "...", "Description" )
         )
-    }
-
-
-    @Test
-    fun can_serialize_and_deserialize_requests()
-    {
-        requests.forEach { request ->
-            val serializer = ProtocolFactoryServiceRequest.serializer()
-            val serialized = JSON.encodeToString( serializer, request )
-            val parsed = JSON.decodeFromString( serializer, serialized )
-            assertEquals( request, parsed )
-        }
     }
 }

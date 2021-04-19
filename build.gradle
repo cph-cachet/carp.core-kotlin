@@ -308,6 +308,11 @@ configure( coreModules ) {
                     api project(':carp.common')
                 }
             }
+            commonTest {
+                dependencies {
+                    implementation project(':carp.common.test')
+                }
+            }
         }
     }
 }

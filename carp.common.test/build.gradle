@@ -1,21 +1,23 @@
-group = 'dk.cachet.carp.test'
+group = 'dk.cachet.carp.common.test'
 
 publishing {
     publications {
         all {
             pom {
-                name = 'Test Library'
-                description = 'Helper classes relied upon by test projects of all subsystems. E.g., to disable tests specified in common part of projects for the JavaScript runtime only.'
+                name = 'Common Test Library'
+                description = 'Helper classes relied upon by test projects of all core subsystems depending on types defined in common.'
             }
         }
     }
 }
 
-// `carp.test` extends test libraries, thus has a dependency on them in the main components.
+// `carp.common.test` extends test libraries, thus has a dependency on them in the main components.
 kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                api project(':carp.common')
+                implementation project(':carp.test')
                 implementation kotlin('test-common')
                 implementation kotlin('test-annotations-common')
                 implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
