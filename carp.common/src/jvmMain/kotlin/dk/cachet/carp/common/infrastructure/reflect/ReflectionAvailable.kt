@@ -6,6 +6,7 @@
 
 package dk.cachet.carp.common.infrastructure.reflect
 
+import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 
 
@@ -28,4 +29,6 @@ internal actual object Reflection
         val baseTypes = klass.supertypes.map { it.classifier as KClass<*> }
         return baseTypes.contains( T::class )
     }
+
+    internal actual fun members( klass: KClass<*> ): Collection<KCallable<*>> = klass.members
 }

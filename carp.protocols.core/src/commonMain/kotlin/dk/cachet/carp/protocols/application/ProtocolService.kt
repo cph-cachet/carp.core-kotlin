@@ -2,16 +2,23 @@ package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.services.ApplicationService
+import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.StudyProtocol
+import kotlinx.serialization.Serializable
 
 
 /**
  * Application service which allows managing (multiple versions of) [StudyProtocolSnapshot]'s,
  * which can be instantiated locally through [StudyProtocol].
  */
-interface ProtocolService
+interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.Event>
 {
+    @Serializable
+    sealed class Event : IntegrationEvent<ProtocolService>()
+
+
     /**
      * Add the specified study [protocol].
      *

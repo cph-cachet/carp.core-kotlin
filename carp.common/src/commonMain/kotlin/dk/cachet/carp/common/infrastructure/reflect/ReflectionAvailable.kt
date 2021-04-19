@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.infrastructure.reflect
 
+import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 
 
@@ -14,6 +15,9 @@ fun reflectIfAvailable(): ReflectionAvailable? =
 class ReflectionAvailable internal constructor()
 {
     inline fun <reified T> extendsType( klass: KClass<*> ): Boolean = Reflection.extendsType<T>( klass )
+
+    inline fun <reified T> members(): Collection<KCallable<*>> = members( T::class )
+    fun members( klass: KClass<*> ): Collection<KCallable<*>> = Reflection.members( klass )
 }
 
 
@@ -30,4 +34,10 @@ internal expect object Reflection
      */
     @PublishedApi
     internal inline fun <reified T> extendsType( klass: KClass<*> ): Boolean
+
+    /**
+     * All functions and properties accessible in this class, including those declared in this class and all of its
+     * superclasses. Does not include constructors.
+     */
+    internal fun members( klass: KClass<*> ): Collection<KCallable<*>>
 }

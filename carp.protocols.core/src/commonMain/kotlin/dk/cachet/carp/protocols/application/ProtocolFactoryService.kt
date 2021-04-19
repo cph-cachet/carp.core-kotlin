@@ -2,14 +2,21 @@ package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.CustomProtocolDevice
+import dk.cachet.carp.common.application.services.ApplicationService
+import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
+import kotlinx.serialization.Serializable
 
 
 /**
  * Factory methods to create [StudyProtocolSnapshot]'s according to predefined templates.
  */
-interface ProtocolFactoryService
+interface ProtocolFactoryService : ApplicationService<ProtocolFactoryService, ProtocolFactoryService.Event>
 {
+    @Serializable
+    sealed class Event : IntegrationEvent<ProtocolFactoryService>()
+
+
     /**
      * Create a study protocol to be deployed to a single device which has its own way of describing study protocols that
      * deviates from the CARP core study protocol model.
