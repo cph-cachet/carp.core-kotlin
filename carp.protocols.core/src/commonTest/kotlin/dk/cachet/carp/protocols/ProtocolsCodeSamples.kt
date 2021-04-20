@@ -5,7 +5,6 @@ import dk.cachet.carp.common.application.devices.CustomProtocolDevice
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.tasks.PassiveMeasureTask
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
-import dk.cachet.carp.common.application.tasks.measures.Measure
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -34,7 +33,7 @@ class ProtocolsCodeSamples
         protocol.addMasterDevice( phone )
 
         // Define what needs to be measured, on which device, when.
-        val measures: List<Measure> = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
+        val measures = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
         val startMeasures = PassiveMeasureTask( "Start measures", measures )
         protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 

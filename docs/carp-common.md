@@ -39,7 +39,7 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | Class | Description |
 | --- | --- |
 | [DataTypeMeasure](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/measures/DataTypeMeasure.kt) | Defined by nothing else but a `DataType` identifier. It is up to the client to determine how to handle this measure. |
-| [PhoneSensorMeasure](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/measures/PhoneSensorMeasure.kt) | Measures any of the sensors typically integrated in smartphones (e.g., accelerometer), or data which is derived from them using vendor-specific APIs (e.g., stepcount, or mode of transport). |
+| [PassiveMeasure](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/measures/PassiveMeasure.kt) | Measures any sensor which does not require user input (e.g., accelerometer), or data which is derived from such measures using vendor-specific APIs (e.g., stepcount, or mode of transport). |
 
 ### Triggers
 

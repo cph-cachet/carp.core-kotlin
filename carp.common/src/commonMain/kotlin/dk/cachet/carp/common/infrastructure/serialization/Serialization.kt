@@ -107,7 +107,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     polymorphic( Measure::class )
     {
         subclass( DataTypeMeasure::class )
-        subclass( PhoneSensorMeasure::class )
+        subclass( PassiveMeasure::class )
 
         subclass( CustomMeasure::class )
         default { MeasureSerializer }

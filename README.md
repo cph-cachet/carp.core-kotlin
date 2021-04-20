@@ -165,7 +165,7 @@ val phone = Smartphone( "Patient's phone" )
 protocol.addMasterDevice( phone )
 
 // Define what needs to be measured, on which device, when.
-val measures: List<Measure> = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
+val measures = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
 val startMeasures = PassiveMeasureTask( "Start measures", measures )
 protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
