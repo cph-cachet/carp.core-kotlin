@@ -166,7 +166,7 @@ protocol.addMasterDevice( phone )
 
 // Define what needs to be measured, on which device, when.
 val measures: List<Measure> = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
-val startMeasures = ConcurrentTask( "Start measures", measures )
+val startMeasures = PassiveMeasureTask( "Start measures", measures )
 protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
 // JSON output of the study protocol, compatible with the rest of the CARP infrastructure.

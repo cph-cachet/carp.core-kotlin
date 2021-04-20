@@ -7,15 +7,10 @@ import dk.cachet.carp.common.application.data.*
 import dk.cachet.carp.common.application.data.input.*
 import dk.cachet.carp.common.application.data.input.elements.*
 import dk.cachet.carp.common.application.devices.*
-import dk.cachet.carp.common.application.sampling.IntervalSamplingConfiguration
-import dk.cachet.carp.common.application.sampling.NoOptionsSamplingConfiguration
-import dk.cachet.carp.common.application.tasks.ConcurrentTask
-import dk.cachet.carp.common.application.tasks.CustomProtocolTask
-import dk.cachet.carp.common.application.tasks.measures.DataTypeMeasure
-import dk.cachet.carp.common.application.tasks.measures.PhoneSensorMeasure
-import dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger
-import dk.cachet.carp.common.application.triggers.ManualTrigger
-import dk.cachet.carp.common.application.triggers.ScheduledTrigger
+import dk.cachet.carp.common.application.sampling.*
+import dk.cachet.carp.common.application.tasks.*
+import dk.cachet.carp.common.application.tasks.measures.*
+import dk.cachet.carp.common.application.triggers.*
 import dk.cachet.carp.common.application.users.*
 import dk.cachet.carp.common.infrastructure.test.*
 import dk.cachet.carp.test.serialization.ConcreteTypesSerializationTest
@@ -81,11 +76,11 @@ private val commonInstances = listOf(
     NoOptionsSamplingConfiguration,
 
     // `tasks` namespace.
-    ConcurrentTask( "Start measures", listOf() ),
     CustomProtocolTask(
         "Custom study runtime",
         "{ \"\$type\": \"Study\", \"custom\": \"protocol\" }"
     ),
+    PassiveMeasureTask( "Start measures", listOf() ),
 
     // `tasks.measures` namespace.
     DataTypeMeasure( "dk.cachet.carp", "SomeType" ),

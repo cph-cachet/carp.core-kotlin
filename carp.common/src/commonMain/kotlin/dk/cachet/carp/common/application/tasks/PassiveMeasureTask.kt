@@ -5,11 +5,10 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * A [TaskDescriptor] which specifies that all containing measures and/or outputs should start immediately once triggered
- * and run indefinitely until all containing measures have completed.
+ * A [TaskDescriptor] which solely contains [measures], all of which should start immediately once triggered.
  */
 @Serializable
-data class ConcurrentTask(
+data class PassiveMeasureTask(
     override val name: String,
     override val measures: List<Measure>
 ) : TaskDescriptor

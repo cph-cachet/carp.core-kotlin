@@ -49,7 +49,7 @@ which is registered [in the common subsystem `SerializersModule`](../carp.common
 ```
 polymorphic( TaskDescriptor::class )
 {
-    subclass( ConcurrentTask::class )
+    subclass( PassiveMeasureTask::class )
     ...
     subclass( CustomTaskDescriptor::class )
     default { TaskDescriptorSerializer }

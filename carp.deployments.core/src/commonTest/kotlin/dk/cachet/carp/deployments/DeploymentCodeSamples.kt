@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
-import dk.cachet.carp.common.application.tasks.ConcurrentTask
+import dk.cachet.carp.common.application.tasks.PassiveMeasureTask
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHost
@@ -64,7 +64,7 @@ class DeploymentCodeSamples
         protocol.addMasterDevice( phone )
 
         val measures = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
-        val startMeasures = ConcurrentTask( "Start measures", measures )
+        val startMeasures = PassiveMeasureTask( "Start measures", measures )
         protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
         return protocol
