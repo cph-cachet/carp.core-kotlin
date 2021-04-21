@@ -1,10 +1,18 @@
 package dk.cachet.carp.common.application.devices
 
+import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.common.application.Trilean
+import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.devices.Smartphone.SensorsSamplingSchemes.GEOLOCATION
+import dk.cachet.carp.common.application.sampling.DataTypeSamplingScheme
+import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeList
+import dk.cachet.carp.common.application.sampling.IntervalSamplingConfigurationBuilder
+import dk.cachet.carp.common.application.sampling.IntervalSamplingScheme
+import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
+import dk.cachet.carp.common.application.sampling.SamplingConfigurationMapBuilder
 import dk.cachet.carp.common.application.tasks.measures.PhoneSensorMeasure
-import dk.cachet.carp.common.application.tasks.measures.PhoneSensorSamplingConfigurationMapBuilder
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -25,17 +33,47 @@ data class Smartphone(
     constructor( roleName: String, builder: SmartphoneBuilder.() -> Unit = { } ) :
         this( roleName, SmartphoneBuilder().apply( builder ).buildSamplingConfiguration() )
 
-    companion object
+    /**
+     * All the data types and sampling schemes of sensors commonly available on smartphones.
+     */
+    object SensorsSamplingSchemes : DataTypeSamplingSchemeList()
     {
-        /**
-         * A factory to create measures for sensors commonly available on smartphones.
-         */
-        val Sensors: PhoneSensorMeasure.Companion = PhoneSensorMeasure.Companion
+        val GEOLOCATION = add(
+            IntervalSamplingScheme( CarpDataTypes.GEOLOCATION, TimeSpan.fromMinutes( 1.0 ) )
+        )
 
         /**
-         * All the data types and sampling schemes of sensor commonly available on smartphones.
+         * Steps within recorded time intervals as reported by a phone's dedicated hardware sensor.
+         * Data rate is determined by the sensor.
+         *
+         * Android (https://developer.android.com/guide/topics/sensors/sensors_motion#sensors-motion-stepcounter):
+         * - There is a latency of up to 10 s.
+         * - Only available starting from Android 4.4.
+         *
+         * TODO: Android can also 'listen' for steps, which has a delay of about 2 s but is less accurate.
+         *       Each 'step' is reported as an event, so this would map to a different DataType (e.g. `Step`).
+         *       Not certain this is available on iPhone.
          */
-        val SensorsSamplingSchemes = PhoneSensorMeasure.SamplingSchemes
+        val STEP_COUNT = add( NoOptionsSamplingScheme( CarpDataTypes.STEP_COUNT ) ) // No configuration options available.
+    }
+
+    /**
+     * A factory to create measures for sensors commonly available on smartphones.
+     */
+    object Sensors
+    {
+        private fun <T : DataTypeSamplingScheme<*>> measureOf( samplingScheme: T, duration: TimeSpan ) =
+            PhoneSensorMeasure( samplingScheme.type, duration )
+
+        /**
+         * Measure geographic location data (longitude and latitude).
+         */
+        fun geolocation( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( SensorsSamplingSchemes.GEOLOCATION, duration )
+
+        /**
+         * Measure number of steps a participant has taken in a recorded time interval.
+         */
+        fun stepCount( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( SensorsSamplingSchemes.STEP_COUNT, duration )
     }
 
     override val supportedDataTypes: Set<DataType> = SensorsSamplingSchemes.map { it.type }.toSet()
@@ -48,11 +86,22 @@ data class Smartphone(
 
 /**
  * A helper class to configure and construct immutable [Smartphone] classes.
- *
- * TODO: Once `Smartphone` supports additional measures (e.g., surveys), we will need to aggregate multiple builders.
  */
-class SmartphoneBuilder : DeviceDescriptorBuilder<PhoneSensorSamplingConfigurationMapBuilder>()
+class SmartphoneBuilder : DeviceDescriptorBuilder<SmartphoneSamplingConfigurationMapBuilder>()
 {
-    override fun createSamplingConfigurationMapBuilder(): PhoneSensorSamplingConfigurationMapBuilder =
-        PhoneSensorSamplingConfigurationMapBuilder()
+    override fun createSamplingConfigurationMapBuilder(): SmartphoneSamplingConfigurationMapBuilder =
+        SmartphoneSamplingConfigurationMapBuilder()
+}
+
+
+/**
+ * A helper class to construct sampling configurations for a [Smartphone].
+ */
+class SmartphoneSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilder()
+{
+    /**
+     * Configure sampling configuration for [CarpDataTypes.GEOLOCATION].
+     */
+    fun geolocation( builder: IntervalSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
+        addConfiguration( GEOLOCATION, builder )
 }
