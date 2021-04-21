@@ -17,13 +17,13 @@ class SmartphoneTest
 
         val phone = Smartphone( "Test" )
         {
-            samplingConfiguration {
+            defaultSamplingConfiguration {
                 geolocation { interval = measureInterval }
             }
         }
 
         val type = Smartphone.SensorsSamplingSchemes.GEOLOCATION.type
-        val configuration = phone.samplingConfiguration[ type ] as IntervalSamplingConfiguration
+        val configuration = phone.defaultSamplingConfiguration[ type ] as IntervalSamplingConfiguration
         assertEquals( measureInterval, configuration.interval )
     }
 }

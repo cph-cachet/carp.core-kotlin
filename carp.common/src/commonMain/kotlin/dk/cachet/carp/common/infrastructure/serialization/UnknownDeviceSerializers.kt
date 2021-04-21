@@ -25,7 +25,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
 {
     override val roleName: String
     override val supportedDataTypes: Set<DataType>
-    override val samplingConfiguration: Map<DataType, SamplingConfiguration>
+    override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 
     init
     {
@@ -33,7 +33,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
         val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
         roleName = baseMembers.roleName
         supportedDataTypes = baseMembers.supportedDataTypes
-        samplingConfiguration = baseMembers.samplingConfiguration
+        defaultSamplingConfiguration = baseMembers.defaultSamplingConfiguration
     }
 
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
@@ -57,7 +57,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
 {
     override val roleName: String
     override val supportedDataTypes: Set<DataType>
-    override val samplingConfiguration: Map<DataType, SamplingConfiguration>
+    override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 
     init
     {
@@ -65,7 +65,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
         val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
         roleName = baseMembers.roleName
         supportedDataTypes = baseMembers.supportedDataTypes
-        samplingConfiguration = baseMembers.samplingConfiguration
+        defaultSamplingConfiguration = baseMembers.defaultSamplingConfiguration
     }
 
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
@@ -84,7 +84,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
 private data class BaseMembers(
     override val roleName: String,
     override val supportedDataTypes: Set<DataType>,
-    override val samplingConfiguration: Map<DataType, SamplingConfiguration>
+    override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 ) : DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>()
 {
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =

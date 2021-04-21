@@ -19,7 +19,7 @@ data class AltBeacon( override val roleName: String ) : DeviceDescriptor<AltBeac
     // TODO: Some beacons do include information such as battery charge and temperature.
     override val supportedDataTypes: Set<DataType> = emptySet()
 
-    override val samplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
+    override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 
     override fun createDeviceRegistrationBuilder(): AltBeaconDeviceRegistrationBuilder = AltBeaconDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<AltBeaconDeviceRegistration> = AltBeaconDeviceRegistration::class
