@@ -1,12 +1,11 @@
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.Trilean
+import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeList
+import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.sampling.carp.HeartRateSamplingScheme
-import dk.cachet.carp.common.application.sampling.carp.RRIntervalSamplingScheme
-import dk.cachet.carp.common.application.sampling.carp.SensorSkinContactSamplingScheme
 import dk.cachet.carp.common.application.tasks.measures.DataTypeMeasure
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
@@ -40,9 +39,9 @@ data class BLEHeartRateSensor(
 
     object SamplingSchemes : DataTypeSamplingSchemeList()
     {
-        val HEART_RATE = add( HeartRateSamplingScheme ) // No configuration options available.
-        val RR_INTERVAL = add( RRIntervalSamplingScheme )
-        val SENSOR_SKIN_CONTACT = add( SensorSkinContactSamplingScheme )
+        val HEART_RATE = add( NoOptionsSamplingScheme( CarpDataTypes.HEART_RATE ) )
+        val RR_INTERVAL = add( NoOptionsSamplingScheme( CarpDataTypes.RR_INTERVAL ) )
+        val SENSOR_SKIN_CONTACT = add( NoOptionsSamplingScheme( CarpDataTypes.SENSOR_SKIN_CONTACT ) )
     }
 
 

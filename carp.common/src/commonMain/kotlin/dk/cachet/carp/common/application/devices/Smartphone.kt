@@ -2,15 +2,16 @@ package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.common.application.Trilean
+import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.Smartphone.SensorsSamplingSchemes.GEOLOCATION
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingScheme
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeList
+import dk.cachet.carp.common.application.sampling.IntervalSamplingConfigurationBuilder
+import dk.cachet.carp.common.application.sampling.IntervalSamplingScheme
+import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfigurationMapBuilder
-import dk.cachet.carp.common.application.sampling.carp.GeolocationSamplingConfigurationBuilder
-import dk.cachet.carp.common.application.sampling.carp.GeolocationSamplingScheme
-import dk.cachet.carp.common.application.sampling.carp.StepCountSamplingScheme
 import dk.cachet.carp.common.application.tasks.measures.PassiveMeasure
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
@@ -37,7 +38,9 @@ data class Smartphone(
      */
     object SensorsSamplingSchemes : DataTypeSamplingSchemeList()
     {
-        val GEOLOCATION = add( GeolocationSamplingScheme( TimeSpan.fromMinutes( 1.0 ) ) )
+        val GEOLOCATION = add(
+            IntervalSamplingScheme( CarpDataTypes.GEOLOCATION, TimeSpan.fromMinutes( 1.0 ) )
+        )
 
         /**
          * Steps within recorded time intervals as reported by a phone's dedicated hardware sensor.
@@ -51,7 +54,7 @@ data class Smartphone(
          *       Each 'step' is reported as an event, so this would map to a different DataType (e.g. `Step`).
          *       Not certain this is available on iPhone.
          */
-        val STEP_COUNT = add( StepCountSamplingScheme ) // No configuration options available.
+        val STEP_COUNT = add( NoOptionsSamplingScheme( CarpDataTypes.STEP_COUNT ) ) // No configuration options available.
     }
 
     /**
@@ -97,8 +100,8 @@ class SmartphoneBuilder : DeviceDescriptorBuilder<SmartphoneSamplingConfiguratio
 class SmartphoneSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilder()
 {
     /**
-     * Configure sampling configuration for [GeolocationSamplingScheme].
+     * Configure sampling configuration for [CarpDataTypes.GEOLOCATION].
      */
-    fun geolocation( builder: GeolocationSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
+    fun geolocation( builder: IntervalSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
         addConfiguration( GEOLOCATION, builder )
 }
