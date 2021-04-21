@@ -55,7 +55,7 @@ class StudyProtocolSnapshotTest
         val parsed: StudyProtocolSnapshot = JSON.decodeFromString( serialized )
         val masterDevice = parsed.masterDevices.filterIsInstance<CustomMasterDeviceDescriptor>().singleOrNull()
         assertNotNull( masterDevice )
-        assertEquals( 1, masterDevice.samplingConfiguration.count() )
+        assertEquals( 1, masterDevice.defaultSamplingConfiguration.count() )
         assertEquals( 1, parsed.connectedDevices.filterIsInstance<CustomDeviceDescriptor>().count() )
         assertEquals( 1, parsed.tasks.filterIsInstance<CustomTaskDescriptor>().count() )
         val allMeasures = parsed.tasks.flatMap{ t -> t.measures }

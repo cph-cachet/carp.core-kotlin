@@ -115,7 +115,7 @@ declare module 'carp.core-kotlin-carp.common'
 
         class Smartphone
         {
-            constructor( roleName: string, samplingConfiguration: HashMap<NamespacedId, any> )
+            constructor( roleName: string, defaultSamplingConfiguration: HashMap<NamespacedId, any> )
         }
     }
 
