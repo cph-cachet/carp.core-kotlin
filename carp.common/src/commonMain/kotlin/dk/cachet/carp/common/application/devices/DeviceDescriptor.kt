@@ -39,11 +39,11 @@ abstract class DeviceDescriptor<
     abstract val supportedDataTypes: Set<DataType>
 
     /**
-     * Sampling configurations for data types available on this device which override the default configuration.
+     * Sampling configurations which override the default configurations for data types available on this device.
      * TODO: Verify whether all configured data types are supported by this device (supported data streams), probably in init.
      *       We might also want to check whether the sampling configuration instances are valid.
      */
-    abstract val samplingConfiguration: Map<DataType, SamplingConfiguration>
+    abstract val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 
     protected abstract fun createDeviceRegistrationBuilder(): TRegistrationBuilder
 
@@ -81,7 +81,7 @@ abstract class DeviceDescriptorBuilder<TSamplingConfigurationMapBuilder : Sampli
     /**
      * Override default sampling configurations for data types available on this device.
      */
-    fun samplingConfiguration( builder: TSamplingConfigurationMapBuilder.() -> Unit )
+    fun defaultSamplingConfiguration( builder: TSamplingConfigurationMapBuilder.() -> Unit )
     {
         samplingConfigurationBuilder = builder
     }

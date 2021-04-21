@@ -27,7 +27,7 @@ class ProtocolsCodeSamples
         val phone = Smartphone( "Patient's phone" )
         {
             // Configure device-specific options, e.g., frequency to collect data at.
-            samplingConfiguration {
+            defaultSamplingConfiguration {
                 geolocation { interval = TimeSpan.fromMinutes( 15.0 ) }
             }
         }
