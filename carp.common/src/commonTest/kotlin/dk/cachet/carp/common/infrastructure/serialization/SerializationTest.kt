@@ -89,7 +89,7 @@ private val commonInstances = listOf(
 
     // `tasks.measures` namespace.
     DataTypeMeasure( "dk.cachet.carp", "SomeType" ),
-    PhoneSensorMeasure.geolocation(),
+    PhoneSensorMeasure( CarpDataTypes.GEOLOCATION ),
 
     // `triggers` namespace.
     ElapsedTimeTrigger( Smartphone( "User's phone" ), TimeSpan( 0 ) ),

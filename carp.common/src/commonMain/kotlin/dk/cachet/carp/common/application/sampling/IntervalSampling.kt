@@ -1,8 +1,20 @@
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.TimeSpan
+import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import kotlinx.serialization.Serializable
+
+
+/**
+ * Sampling scheme which allows configuring a time interval in between subsequent measurements.
+ */
+class IntervalSamplingScheme( dataType: DataType, val defaultMeasureInterval: TimeSpan ) :
+    DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>( dataType )
+{
+    override fun createSamplingConfigurationBuilder(): IntervalSamplingConfigurationBuilder =
+        IntervalSamplingConfigurationBuilder( defaultMeasureInterval )
+}
 
 
 /**
