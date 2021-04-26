@@ -18,7 +18,7 @@ A device which aggregates, synchronizes, and optionally uploads incoming data re
 Typically, a desktop computer, smartphone, or web server.
 - [`TaskDescriptor`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/TaskDescriptor.kt):
 Describes requested `Measure`s and/or output to be presented on a device.
-- [`Measure`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/measures/Measure.kt):
+- [`Measure`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/Measure.kt):
 Defines data that needs to be measured/collected for a supported `DataType`.
 - [`DataType`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/DataType.kt):
 Defines a type of data which can be processed by the platform (e.g., measured/collected/uploaded).
@@ -42,7 +42,6 @@ In case the [currently supported built-in types](carp-common.md#built-in-types) 
 - Extend `DeviceDescriptor` or `MasterDeviceDescriptor` to add support for a new type of device, and extend `DeviceRegistration` to specify how a single instance of this device should be uniquely identified, the capabilities it has, and device-specific configuration options needed for the device to operate.
 Example: [`AltBeacon`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt).  
 - Extend `TaskDescriptor` to provide custom logic on how to schedule the containing `Measure`s, or if you need to trigger custom tasks unrelated to the study protocol in your client application.
-- Extend `Measure` in case you need to specify custom options on _what_ to measure for a given `DataType`.
 - Specify new `DataType`s by extending from `DataTypeSamplingScheme`, and optionally extend from `SamplingConfiguration` to specify a custom configuration on _how_ your new data type can be measured.
 Example: [`Geolocation`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Geolocation.kt)
 - Extend `Trigger` to describe custom conditions which you want to use to trigger tasks.

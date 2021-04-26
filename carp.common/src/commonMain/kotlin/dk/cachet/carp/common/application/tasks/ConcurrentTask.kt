@@ -1,6 +1,5 @@
 package dk.cachet.carp.common.application.tasks
 
-import dk.cachet.carp.common.application.tasks.measures.Measure
 import kotlinx.serialization.Serializable
 
 

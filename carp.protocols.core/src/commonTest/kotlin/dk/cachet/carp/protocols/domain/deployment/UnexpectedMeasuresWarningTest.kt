@@ -1,9 +1,9 @@
 package dk.cachet.carp.protocols.domain.deployment
 
 import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubMeasure
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlin.test.*
@@ -17,8 +17,8 @@ class UnexpectedMeasuresWarningTest
         val protocol = createEmptyProtocol()
         val master = StubMasterDeviceDescriptor( supportedDataTypes = setOf( STUB_DATA_TYPE ) )
         protocol.addMasterDevice( master )
-        val expectedMeasure = StubMeasure( STUB_DATA_TYPE )
-        val unexpectedMeasure = StubMeasure( DataType( "namespace", "unexpected" ) )
+        val expectedMeasure = Measure( STUB_DATA_TYPE )
+        val unexpectedMeasure = Measure( DataType( "namespace", "unexpected" ) )
         val task = StubTaskDescriptor( "Task", listOf( expectedMeasure, unexpectedMeasure ) )
         protocol.addTriggeredTask( master.atStartOfStudy(), task, master )
 
@@ -38,7 +38,7 @@ class UnexpectedMeasuresWarningTest
         val protocol = createEmptyProtocol()
         val master = StubMasterDeviceDescriptor( supportedDataTypes = setOf( STUB_DATA_TYPE ) )
         protocol.addMasterDevice( master )
-        val measure = StubMeasure( STUB_DATA_TYPE )
+        val measure = Measure( STUB_DATA_TYPE )
         val task = StubTaskDescriptor( "Task", listOf( measure ) )
         protocol.addTriggeredTask( master.atStartOfStudy(), task, master )
 

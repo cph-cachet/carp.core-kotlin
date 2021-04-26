@@ -8,7 +8,6 @@ import dk.cachet.carp.common.application.data.input.elements.*
 import dk.cachet.carp.common.application.devices.*
 import dk.cachet.carp.common.application.sampling.*
 import dk.cachet.carp.common.application.tasks.*
-import dk.cachet.carp.common.application.tasks.measures.*
 import dk.cachet.carp.common.application.triggers.*
 import dk.cachet.carp.common.application.users.*
 import kotlinx.serialization.json.Json
@@ -103,14 +102,6 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 
         subclass( CustomTaskDescriptor::class )
         default { TaskDescriptorSerializer }
-    }
-    polymorphic( Measure::class )
-    {
-        subclass( DataTypeMeasure::class )
-        subclass( PhoneSensorMeasure::class )
-
-        subclass( CustomMeasure::class )
-        default { MeasureSerializer }
     }
 
 

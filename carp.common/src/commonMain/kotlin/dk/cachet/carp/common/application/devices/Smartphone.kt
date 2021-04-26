@@ -12,7 +12,7 @@ import dk.cachet.carp.common.application.sampling.IntervalSamplingScheme
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfigurationMapBuilder
-import dk.cachet.carp.common.application.tasks.measures.PhoneSensorMeasure
+import dk.cachet.carp.common.application.tasks.Measure
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -62,18 +62,17 @@ data class Smartphone(
      */
     object Sensors
     {
-        private fun <T : DataTypeSamplingScheme<*>> measureOf( samplingScheme: T, duration: TimeSpan ) =
-            PhoneSensorMeasure( samplingScheme.type, duration )
+        private fun <T : DataTypeSamplingScheme<*>> measureOf( samplingScheme: T ) = Measure( samplingScheme.type )
 
         /**
          * Measure geographic location data (longitude and latitude).
          */
-        fun geolocation( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( SensorsSamplingSchemes.GEOLOCATION, duration )
+        fun geolocation() = measureOf( SensorsSamplingSchemes.GEOLOCATION )
 
         /**
          * Measure number of steps a participant has taken in a recorded time interval.
          */
-        fun stepCount( duration: TimeSpan = TimeSpan.INFINITE ) = measureOf( SensorsSamplingSchemes.STEP_COUNT, duration )
+        fun stepCount() = measureOf( SensorsSamplingSchemes.STEP_COUNT )
     }
 
     override val supportedDataTypes: Set<DataType> = SensorsSamplingSchemes.map { it.type }.toSet()
