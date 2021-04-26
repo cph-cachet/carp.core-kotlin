@@ -34,13 +34,6 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | [ConcurrentTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/ConcurrentTask.kt) | Specifies that all containing measures should start immediately once triggered and run indefinitely until all containing measures have completed. |
 | [CustomProtocolTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/CustomProtocolTask.kt) | Contains a definition on how to run tasks, measures, and triggers which differs from the CARP domain model. |
 
-### Measures
-
-| Class | Description |
-| --- | --- |
-| [DataTypeMeasure](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/measures/DataTypeMeasure.kt) | Defined by nothing else but a `DataType` identifier. It is up to the client to determine how to handle this measure. |
-| [PhoneSensorMeasure](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/measures/PhoneSensorMeasure.kt) | Measures any of the sensors typically integrated in smartphones (e.g., accelerometer), or data which is derived from them using vendor-specific APIs (e.g., stepcount, or mode of transport). |
-
 ### Triggers
 
 | Class | Description |

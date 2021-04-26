@@ -7,12 +7,12 @@ import dk.cachet.carp.common.application.devices.AltBeaconDeviceRegistration
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
+import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.CustomMasterDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubMeasure
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
@@ -471,7 +471,7 @@ class StudyDeploymentTest
             addMasterDevice( sourceMaster )
             addMasterDevice( targetMaster )
         }
-        val measure = StubMeasure( DataType( "namespace", "type" ) )
+        val measure = Measure( DataType( "namespace", "type" ) )
         val task = StubTaskDescriptor( "Stub task", listOf( measure ) )
         protocol.addTriggeredTask( StubTrigger( sourceMaster ), task, targetMaster )
         val deployment = studyDeploymentFor( protocol )

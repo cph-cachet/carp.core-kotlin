@@ -6,7 +6,7 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeList
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.tasks.measures.DataTypeMeasure
+import dk.cachet.carp.common.application.tasks.Measure
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -24,17 +24,17 @@ data class BLEHeartRateSensor(
         /**
          * Measure the number of heart contractions (beats) per minute (bpm).
          */
-        fun heartRate() = DataTypeMeasure( SamplingSchemes.HEART_RATE.type )
+        fun heartRate() = Measure( SamplingSchemes.HEART_RATE.type )
 
         /**
          * Measure the time interval between consecutive heartbeats (R-R intervals).
          */
-        fun rrInterval() = DataTypeMeasure( SamplingSchemes.RR_INTERVAL.type )
+        fun rrInterval() = Measure( SamplingSchemes.RR_INTERVAL.type )
 
         /**
          * Measure whether the sensor is making proper skin contact.
          */
-        fun sensorSkinContact() = DataTypeMeasure( SamplingSchemes.SENSOR_SKIN_CONTACT.type )
+        fun sensorSkinContact() = Measure( SamplingSchemes.SENSOR_SKIN_CONTACT.type )
     }
 
     object SamplingSchemes : DataTypeSamplingSchemeList()

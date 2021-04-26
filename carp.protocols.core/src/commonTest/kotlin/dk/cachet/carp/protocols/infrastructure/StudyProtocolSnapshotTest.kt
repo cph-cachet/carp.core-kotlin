@@ -1,17 +1,15 @@
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.devices.MasterDeviceDescriptor
-import dk.cachet.carp.common.application.tasks.measures.Measure
+import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.CustomMasterDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.serialization.CustomMeasure
 import dk.cachet.carp.common.infrastructure.serialization.CustomTaskDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.CustomTrigger
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubMeasure
 import dk.cachet.carp.common.infrastructure.test.StubSamplingConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
@@ -59,7 +57,7 @@ class StudyProtocolSnapshotTest
         assertEquals( 1, parsed.connectedDevices.filterIsInstance<CustomDeviceDescriptor>().count() )
         assertEquals( 1, parsed.tasks.filterIsInstance<CustomTaskDescriptor>().count() )
         val allMeasures = parsed.tasks.flatMap{ t -> t.measures }
-        assertEquals( 2, allMeasures.filterIsInstance<CustomMeasure>().count() )
+        assertEquals( 2, allMeasures.count() )
         assertEquals( 1, parsed.triggers.filter { t -> t.value is CustomTrigger }.count() )
     }
 
@@ -127,17 +125,11 @@ class StudyProtocolSnapshotTest
         val connected = StubDeviceDescriptor( "Unknown 2" )
         protocol.addConnectedDevice( connected, master )
 
-        // (2) Add unknown task with unknown measure.
-        val unknownMeasure = StubMeasure( STUB_DATA_TYPE, "Unknown" )
-        val measures: List<Measure> = listOf( unknownMeasure, StubMeasure( STUB_DATA_TYPE ) )
+        // (2) Add unknown task.
+        val measures: List<Measure> = listOf( Measure( STUB_DATA_TYPE ) )
         val task = StubTaskDescriptor( "Unknown task", measures )
         val trigger = StubTrigger( master.roleName, "Unknown" )
         protocol.addTriggeredTask( trigger, task, master )
-
-        // (3) Add known task with unknown measure.
-        val unknownMeasure2 = StubMeasure( STUB_DATA_TYPE, "Unknown 2" )
-        val task2 = StubTaskDescriptor( "Known task", listOf( unknownMeasure2 ) )
-        protocol.addTriggeredTask( trigger, task2, master )
 
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
         var serialized: String = JSON.encodeToString( snapshot )
@@ -148,8 +140,6 @@ class StudyProtocolSnapshotTest
         serialized = serialized.makeUnknown( connected )
         serialized = serialized.makeUnknown( unknownSamplingConfiguration, "configuration", "Unknown" )
         serialized = serialized.makeUnknown( task )
-        serialized = serialized.makeUnknown( unknownMeasure, "uniqueProperty", "Unknown" )
-        serialized = serialized.makeUnknown( unknownMeasure, "uniqueProperty", "Unknown 2" )
         serialized = serialized.makeUnknown( trigger, "uniqueProperty", "Unknown" )
 
         return serialized

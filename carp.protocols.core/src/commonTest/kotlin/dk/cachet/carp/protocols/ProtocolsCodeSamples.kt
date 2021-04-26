@@ -5,7 +5,7 @@ import dk.cachet.carp.common.application.devices.CustomProtocolDevice
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.tasks.ConcurrentTask
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
-import dk.cachet.carp.common.application.tasks.measures.Measure
+import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol

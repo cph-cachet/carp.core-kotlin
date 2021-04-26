@@ -8,7 +8,6 @@ import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
-import dk.cachet.carp.common.application.tasks.measures.Measure
 import dk.cachet.carp.common.application.triggers.Trigger
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.test.serialization.verifyTypesAreRegistered
@@ -45,10 +44,6 @@ class SerializationReflectionTest
     @Test
     fun all_TaskDescriptor_types_registered_for_serialization() =
         verifyTypesAreRegistered<TaskDescriptor>()
-
-    @Test
-    fun all_Measure_types_registered_for_serialization() =
-        verifyTypesAreRegistered<Measure>()
 
     @Test
     fun all_Trigger_types_registered_for_serialization() =

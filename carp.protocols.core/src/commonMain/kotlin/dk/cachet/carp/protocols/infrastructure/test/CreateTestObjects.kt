@@ -2,15 +2,16 @@ package dk.cachet.carp.protocols.infrastructure.test
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
-import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubMeasure
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 
@@ -64,7 +65,7 @@ fun createComplexProtocol(): StudyProtocol
     val chainedMasterDevice = StubMasterDeviceDescriptor( "Chained master" )
     val chainedConnectedDevice = StubDeviceDescriptor( "Chained connected" )
     val trigger = StubTrigger( connectedDevice )
-    val measures = listOf( StubMeasure() )
+    val measures = listOf( Measure( STUB_DATA_TYPE ) )
     val task = StubTaskDescriptor( "Task", measures )
     val expectedParticipantData = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
     with ( protocol )

@@ -2,7 +2,7 @@ package dk.cachet.carp.protocols.domain.deployment
 
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
-import dk.cachet.carp.common.application.tasks.measures.Measure
+import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.protocols.domain.StudyProtocol
 
 

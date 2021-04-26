@@ -11,8 +11,6 @@ import dk.cachet.carp.common.application.sampling.IntervalSamplingConfiguration
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingConfiguration
 import dk.cachet.carp.common.application.tasks.ConcurrentTask
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
-import dk.cachet.carp.common.application.tasks.measures.DataTypeMeasure
-import dk.cachet.carp.common.application.tasks.measures.PhoneSensorMeasure
 import dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger
 import dk.cachet.carp.common.application.triggers.ManualTrigger
 import dk.cachet.carp.common.application.triggers.ScheduledTrigger
@@ -87,10 +85,6 @@ private val commonInstances = listOf(
         "{ \"\$type\": \"Study\", \"custom\": \"protocol\" }"
     ),
 
-    // `tasks.measures` namespace.
-    DataTypeMeasure( "dk.cachet.carp", "SomeType" ),
-    PhoneSensorMeasure( CarpDataTypes.GEOLOCATION ),
-
     // `triggers` namespace.
     ElapsedTimeTrigger( Smartphone( "User's phone" ), TimeSpan( 0 ) ),
     ManualTrigger(
@@ -113,7 +107,6 @@ private val commonInstances = listOf(
     unknown( DefaultDeviceRegistration( "id" ) ) { CustomDeviceRegistration( it.first, it.second, it.third ) },
     unknown( StubSamplingConfiguration( "" ) ) { CustomSamplingConfiguration( it.first, it.second, it.third ) },
     unknown( StubTaskDescriptor() ) { CustomTaskDescriptor( it.first, it.second, it.third ) },
-    unknown( StubMeasure() ) { CustomMeasure( it.first, it.second, it.third ) },
     unknown( StubTrigger( "source" ) ) { CustomTrigger( it.first, it.second, it.third ) },
 )
 

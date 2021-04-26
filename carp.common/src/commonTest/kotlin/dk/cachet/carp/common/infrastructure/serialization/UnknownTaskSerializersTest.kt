@@ -1,9 +1,10 @@
+@file:Suppress( "MatchingDeclarationName" )
+
 package dk.cachet.carp.common.infrastructure.serialization
 
-import dk.cachet.carp.common.application.tasks.measures.Measure
+import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
-import dk.cachet.carp.common.infrastructure.test.StubMeasure
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -24,7 +25,7 @@ class CustomTaskDescriptorTest
     @Test
     fun initialization_from_json_extracts_base_TaskDescriptor_properties()
     {
-        val measures: List<Measure> = listOf( StubMeasure() )
+        val measures: List<Measure> = listOf( Measure( STUB_DATA_TYPE ) )
         val task = StubTaskDescriptor( "Unknown", measures )
         val serialized: String = JSON.encodeToString( StubTaskDescriptor.serializer(), task )
 
@@ -45,44 +46,6 @@ class CustomTaskDescriptorTest
         assertFailsWith<IllegalArgumentException>
         {
             CustomTaskDescriptor( "Irrelevant", serialized, JSON )
-        }
-    }
-}
-
-
-/**
- * Tests for [CustomMeasure].
- */
-class CustomMeasureTest
-{
-    companion object
-    {
-        private val JSON: Json = createDefaultJSON()
-    }
-
-
-    @Test
-    fun initialization_from_json_extracts_base_Measure_properties()
-    {
-        val measure = StubMeasure( STUB_DATA_TYPE )
-        val serialized: String = JSON.encodeToString( StubMeasure.serializer(), measure )
-
-        val custom = CustomMeasure( "Irrelevant", serialized, JSON )
-        assertEquals( measure.type, custom.type )
-    }
-
-    @Serializable
-    internal data class IncorrectMeasure( val incorrect: String = "Not a measure." )
-
-    @Test
-    fun initialization_from_invalid_json_fails()
-    {
-        val incorrect = IncorrectMeasure()
-        val serialized: String = JSON.encodeToString( IncorrectMeasure.serializer(), incorrect )
-
-        assertFailsWith<IllegalArgumentException>
-        {
-            CustomMeasure( "Irrelevant", serialized, JSON )
         }
     }
 }
