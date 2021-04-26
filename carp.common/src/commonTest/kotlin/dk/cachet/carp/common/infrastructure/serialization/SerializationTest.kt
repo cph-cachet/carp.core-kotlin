@@ -9,7 +9,7 @@ import dk.cachet.carp.common.application.data.input.elements.*
 import dk.cachet.carp.common.application.devices.*
 import dk.cachet.carp.common.application.sampling.IntervalSamplingConfiguration
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingConfiguration
-import dk.cachet.carp.common.application.tasks.ConcurrentTask
+import dk.cachet.carp.common.application.tasks.BackgroundTask
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
 import dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger
 import dk.cachet.carp.common.application.triggers.ManualTrigger
@@ -79,7 +79,7 @@ private val commonInstances = listOf(
     NoOptionsSamplingConfiguration,
 
     // `tasks` namespace.
-    ConcurrentTask( "Start measures", listOf() ),
+    BackgroundTask( "Start measures", listOf() ),
     CustomProtocolTask(
         "Custom study runtime",
         "{ \"\$type\": \"Study\", \"custom\": \"protocol\" }"

@@ -31,7 +31,7 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 
 | Class | Description |
 | --- | --- |
-| [ConcurrentTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/ConcurrentTask.kt) | Specifies that all containing measures should start immediately once triggered and run indefinitely until all containing measures have completed. |
+| [BackgroundTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/BackgroundTask.kt) | Specifies that all containing measures and/or output should immediately start running in the background once triggered. |
 | [CustomProtocolTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/CustomProtocolTask.kt) | Contains a definition on how to run tasks, measures, and triggers which differs from the CARP domain model. |
 
 ### Triggers

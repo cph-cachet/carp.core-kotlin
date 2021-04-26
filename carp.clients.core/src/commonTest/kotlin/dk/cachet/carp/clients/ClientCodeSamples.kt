@@ -9,7 +9,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
-import dk.cachet.carp.common.application.tasks.ConcurrentTask
+import dk.cachet.carp.common.application.tasks.BackgroundTask
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
@@ -112,7 +112,7 @@ class ClientCodeSamples
         protocol.addConnectedDevice( connected, phone )
 
         val measures = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
-        val startMeasures = ConcurrentTask( "Start measures", measures )
+        val startMeasures = BackgroundTask( "Start measures", measures )
         protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
         return protocol
