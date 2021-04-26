@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.EnumObjectList
 import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.tasks.Measure
 
 
 /**
@@ -24,6 +25,13 @@ abstract class DataTypeSamplingScheme<TSamplingConfigurationBuilder : SamplingCo
      */
     fun samplingConfiguration( builder: TSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
         createSamplingConfigurationBuilder().apply( builder ).build()
+
+    /**
+     * Create a [Measure] for the [type] defined by this sampling scheme,
+     * and optionally override the device's default [SamplingConfiguration] for this [type].
+     */
+    fun measure( samplingConfigurationBuilder: (TSamplingConfigurationBuilder.() -> Unit)? = null ): Measure =
+        Measure( type, samplingConfigurationBuilder?.let { createSamplingConfigurationBuilder().apply( it ).build() } )
 }
 
 

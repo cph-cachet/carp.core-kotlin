@@ -42,8 +42,8 @@ In case the [currently supported built-in types](carp-common.md#built-in-types) 
 - Extend `DeviceDescriptor` or `MasterDeviceDescriptor` to add support for a new type of device, and extend `DeviceRegistration` to specify how a single instance of this device should be uniquely identified, the capabilities it has, and device-specific configuration options needed for the device to operate.
 Example: [`AltBeacon`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt).  
 - Extend `TaskDescriptor` to provide custom logic on how to schedule the containing `Measure`s, or if you need to trigger custom tasks unrelated to the study protocol in your client application.
-- Specify new `DataType`s by extending from `DataTypeSamplingScheme`, and optionally extend from `SamplingConfiguration` to specify a custom configuration on _how_ your new data type can be measured.
-Example: [`Geolocation`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Geolocation.kt)
+- Specify new `DataType`s by extending from `Data`, and optionally extend from `DataTypeSamplingScheme` and `SamplingConfiguration` to specify a custom configuration on _how_ your new data type can be measured on a specific device.
+Example: [`Geolocation`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Geolocation.kt) and [`IntervalSampling`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/IntervalSampling.kt).
 - Extend `Trigger` to describe custom conditions which you want to use to trigger tasks.
 
 All extending classes (except `DataTypeSamplingScheme`) should be **immutable data classes**.

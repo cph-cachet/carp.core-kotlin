@@ -22,7 +22,7 @@ class SmartphoneTest
             }
         }
 
-        val type = Smartphone.SensorsSamplingSchemes.GEOLOCATION.type
+        val type = Smartphone.Sensors.GEOLOCATION.type
         val configuration = phone.defaultSamplingConfiguration[ type ] as IntervalSamplingConfiguration
         assertEquals( measureInterval, configuration.interval )
     }

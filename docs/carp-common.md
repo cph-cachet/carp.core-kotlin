@@ -27,6 +27,13 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | [BLEHeartRateSensor](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/BLEHeartRateSensor.kt) | | A Bluetooth device which implements a Heart Rate service. |
 | [CustomProtocolDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/CustomProtocolDevice.kt) | Yes | A master device which uses a single `CustomProtocolTask` to determine how to run a study on the device. |
 
+### Sampling schemes
+
+| Class | Description |
+| --- | --- |
+| [IntervalSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/IntervalSampling.kt) | Specify a time interval in between subsequent measurements. |
+| [NoOptionsSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/NoOptionsSampling.kt) | Does not allow any sampling configuration. |
+
 ### Tasks
 
 | Class | Description |

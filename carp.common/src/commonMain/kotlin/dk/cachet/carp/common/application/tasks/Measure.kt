@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application.tasks
 
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
+import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import kotlinx.serialization.Serializable
 
 
@@ -14,5 +15,9 @@ data class Measure(
     /**
      * The type of data this measure collects.
      */
-    val type: DataType
+    val type: DataType,
+    /**
+     * Override the default configuration on how to sample the data stream of the matching [type] on the device.
+     */
+    val overrideSamplingConfiguration: SamplingConfiguration? = null
 )
