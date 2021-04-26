@@ -4,15 +4,12 @@ import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.application.devices.Smartphone.SensorsSamplingSchemes.GEOLOCATION
-import dk.cachet.carp.common.application.sampling.DataTypeSamplingScheme
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeList
 import dk.cachet.carp.common.application.sampling.IntervalSamplingConfigurationBuilder
 import dk.cachet.carp.common.application.sampling.IntervalSamplingScheme
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfigurationMapBuilder
-import dk.cachet.carp.common.application.tasks.Measure
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -34,10 +31,13 @@ data class Smartphone(
         this( roleName, SmartphoneBuilder().apply( builder ).buildSamplingConfiguration() )
 
     /**
-     * All the data types and sampling schemes of sensors commonly available on smartphones.
+     * All the sensors commonly available on smartphones.
      */
-    object SensorsSamplingSchemes : DataTypeSamplingSchemeList()
+    object Sensors : DataTypeSamplingSchemeList()
     {
+        /**
+         *  Geographic location data, representing latitude and longitude within the World Geodetic System 1984.
+         */
         val GEOLOCATION = add(
             IntervalSamplingScheme( CarpDataTypes.GEOLOCATION, TimeSpan.fromMinutes( 1.0 ) )
         )
@@ -57,25 +57,7 @@ data class Smartphone(
         val STEP_COUNT = add( NoOptionsSamplingScheme( CarpDataTypes.STEP_COUNT ) ) // No configuration options available.
     }
 
-    /**
-     * A factory to create measures for sensors commonly available on smartphones.
-     */
-    object Sensors
-    {
-        private fun <T : DataTypeSamplingScheme<*>> measureOf( samplingScheme: T ) = Measure( samplingScheme.type )
-
-        /**
-         * Measure geographic location data (longitude and latitude).
-         */
-        fun geolocation() = measureOf( SensorsSamplingSchemes.GEOLOCATION )
-
-        /**
-         * Measure number of steps a participant has taken in a recorded time interval.
-         */
-        fun stepCount() = measureOf( SensorsSamplingSchemes.STEP_COUNT )
-    }
-
-    override val supportedDataTypes: Set<DataType> = SensorsSamplingSchemes.map { it.type }.toSet()
+    override val supportedDataTypes: Set<DataType> = Sensors.map { it.type }.toSet()
 
     override fun createDeviceRegistrationBuilder(): SmartphoneDeviceRegistrationBuilder = SmartphoneDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<SmartphoneDeviceRegistration> = SmartphoneDeviceRegistration::class
@@ -102,5 +84,5 @@ class SmartphoneSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilde
      * Configure sampling configuration for [CarpDataTypes.GEOLOCATION].
      */
     fun geolocation( builder: IntervalSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
-        addConfiguration( GEOLOCATION, builder )
+        addConfiguration( Smartphone.Sensors.GEOLOCATION, builder )
 }
