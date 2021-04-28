@@ -21,3 +21,18 @@ data class BackgroundTask(
      */
     val duration: TimeSpan = TimeSpan.INFINITE
 ) : TaskDescriptor
+
+
+/**
+ * A helper class to configure and construct immutable [BackgroundTask] classes.
+ */
+class BackgroundTaskBuilder(
+    /**
+     * The optional duration over the course of which the [measures] need to be sampled.
+     * Infinite by default.
+     */
+    var duration: TimeSpan = TimeSpan.INFINITE
+) : TaskDescriptorBuilder<BackgroundTask>()
+{
+    override fun build( name: String ): BackgroundTask = BackgroundTask( name, measures, duration )
+}

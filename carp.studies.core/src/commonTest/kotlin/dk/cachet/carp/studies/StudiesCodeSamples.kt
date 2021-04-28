@@ -5,7 +5,6 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
-import dk.cachet.carp.common.application.tasks.BackgroundTask
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHost
@@ -113,8 +112,9 @@ class StudiesCodeSamples
         protocol.addMasterDevice( phone )
 
         val sensors = Smartphone.Sensors
-        val measures = listOf( sensors.GEOLOCATION.measure(), sensors.STEP_COUNT.measure() )
-        val startMeasures = BackgroundTask( "Start measures", measures )
+        val startMeasures = Smartphone.Tasks.BACKGROUND.create( "Start measures" ) {
+            measures = listOf( sensors.GEOLOCATION.measure(), sensors.STEP_COUNT.measure() )
+        }
         protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
         return protocol

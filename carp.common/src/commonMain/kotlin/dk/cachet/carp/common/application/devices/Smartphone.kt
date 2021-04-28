@@ -10,6 +10,7 @@ import dk.cachet.carp.common.application.sampling.IntervalSamplingScheme
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfigurationMapBuilder
+import dk.cachet.carp.common.application.tasks.TaskDescriptorList
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -56,6 +57,11 @@ data class Smartphone(
          */
         val STEP_COUNT = add( NoOptionsSamplingScheme( CarpDataTypes.STEP_COUNT ) ) // No configuration options available.
     }
+
+    /**
+     * ALl tasks commonly available on smartphones.
+     */
+    object Tasks : TaskDescriptorList()
 
     override fun getSupportedDataTypes(): Set<DataType> = Sensors.map { it.type }.toSet()
 
