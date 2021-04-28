@@ -24,3 +24,25 @@ interface TaskDescriptor
      */
     val measures: List<Measure>
 }
+
+
+/**
+ * A helper class to configure and construct immutable [TaskDescriptor] classes.
+ */
+@TaskDescriptorBuilderDsl
+abstract class TaskDescriptorBuilder<TTaskDescriptor : TaskDescriptor>
+{
+    /**
+     * The data which needs to be collected/measures as part of this task.
+     */
+    var measures: List<Measure> = emptyList()
+
+    abstract fun build( name: String ): TTaskDescriptor
+}
+
+/**
+ * Should be applied to all builders participating in building [TaskDescriptor]s to prevent misuse of internal DSL.
+ * For more information: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-dsl-marker/index.html
+ */
+@DslMarker
+annotation class TaskDescriptorBuilderDsl
