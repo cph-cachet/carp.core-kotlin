@@ -14,6 +14,8 @@ class IntervalSamplingScheme( dataType: DataType, val defaultMeasureInterval: Ti
 {
     override fun createSamplingConfigurationBuilder(): IntervalSamplingConfigurationBuilder =
         IntervalSamplingConfigurationBuilder( defaultMeasureInterval )
+
+    override fun isValid( configuration: SamplingConfiguration ) = configuration is IntervalSamplingConfiguration
 }
 
 
@@ -28,7 +30,8 @@ data class IntervalSamplingConfiguration( val interval: TimeSpan ) : SamplingCon
  * A helper class to configure and construct immutable [IntervalSamplingConfiguration] classes
  * as part of setting up a [DeviceDescriptor].
  */
-class IntervalSamplingConfigurationBuilder( var interval: TimeSpan ) : SamplingConfigurationBuilder
+class IntervalSamplingConfigurationBuilder( var interval: TimeSpan ) :
+    SamplingConfigurationBuilder<IntervalSamplingConfiguration>
 {
     override fun build(): IntervalSamplingConfiguration = IntervalSamplingConfiguration( interval )
 }

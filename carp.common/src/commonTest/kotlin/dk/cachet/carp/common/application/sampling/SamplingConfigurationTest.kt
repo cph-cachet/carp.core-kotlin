@@ -3,7 +3,6 @@
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.infrastructure.test.StubDataTypeSamplingScheme
-import dk.cachet.carp.common.infrastructure.test.StubSamplingConfigurationBuilder
 import kotlin.test.*
 
 
@@ -14,7 +13,7 @@ class SamplingConfigurationMapBuilderTest
 {
     class TestBuilder : SamplingConfigurationMapBuilder()
     {
-        fun someSampleConfiguration( builder: StubSamplingConfigurationBuilder.() -> Unit = { } ): SamplingConfiguration =
+        fun someSampleConfiguration( builder: NoOptionsSamplingConfigurationBuilder.() -> Unit = { } ): SamplingConfiguration =
             addConfiguration( StubDataTypeSamplingScheme(), builder )
     }
 

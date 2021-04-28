@@ -12,6 +12,8 @@ class NoOptionsSamplingScheme( dataType: DataType ) :
 {
     override fun createSamplingConfigurationBuilder(): NoOptionsSamplingConfigurationBuilder =
         NoOptionsSamplingConfigurationBuilder
+
+    override fun isValid( configuration: SamplingConfiguration ) = configuration is NoOptionsSamplingConfiguration
 }
 
 
@@ -25,7 +27,7 @@ object NoOptionsSamplingConfiguration : SamplingConfiguration
 /**
  * A [SamplingConfiguration] builder for [DataTypeSamplingScheme]s which cannot be configured.
  */
-object NoOptionsSamplingConfigurationBuilder : SamplingConfigurationBuilder
+object NoOptionsSamplingConfigurationBuilder : SamplingConfigurationBuilder<NoOptionsSamplingConfiguration>
 {
     override fun build(): NoOptionsSamplingConfiguration = NoOptionsSamplingConfiguration
 }

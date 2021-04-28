@@ -23,12 +23,27 @@ interface SamplingConfiguration
  * as part of setting up a [DeviceDescriptor].
 */
 @DeviceDescriptorBuilderDsl
-interface SamplingConfigurationBuilder
+interface SamplingConfigurationBuilder<TSamplingConfiguration : SamplingConfiguration>
 {
+    /**
+     * Build the immutable [SamplingConfiguration] using the current configuration of this [SamplingConfigurationBuilder]
+     * and verify whether the constraints specified in [samplingScheme] are followed.
+     *
+     * @throws IllegalArgumentException when the constructed sampling configuration breaks constraints specified in [samplingScheme].
+     */
+    fun build( samplingScheme: DataTypeSamplingScheme<*> ): TSamplingConfiguration
+    {
+        val configuration = build()
+        require( samplingScheme.isValid( configuration ) )
+            { "The configured sampling configuration is invalid for the corresponding sampling scheme." }
+
+        return configuration
+    }
+
     /**
      * Build the immutable [SamplingConfiguration] using the current configuration of this [SamplingConfigurationBuilder].
      */
-    fun build(): SamplingConfiguration
+    fun build(): TSamplingConfiguration
 }
 
 
@@ -40,7 +55,7 @@ open class SamplingConfigurationMapBuilder
 {
     private val samplingConfigurations: MutableMap<DataType, SamplingConfiguration> = mutableMapOf()
 
-    protected fun <TBuilder : SamplingConfigurationBuilder> addConfiguration(
+    protected fun <TBuilder : SamplingConfigurationBuilder<*>> addConfiguration(
         samplingScheme: DataTypeSamplingScheme<TBuilder>,
         builder: TBuilder.() -> Unit
     ): SamplingConfiguration
