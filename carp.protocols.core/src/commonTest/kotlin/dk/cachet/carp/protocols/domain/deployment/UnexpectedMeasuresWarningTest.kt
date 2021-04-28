@@ -15,7 +15,7 @@ class UnexpectedMeasuresWarningTest
     fun isIssuePresent_true_when_unexpected_measure_in_protocol()
     {
         val protocol = createEmptyProtocol()
-        val master = StubMasterDeviceDescriptor( supportedDataTypes = setOf( STUB_DATA_TYPE ) )
+        val master = StubMasterDeviceDescriptor() // Supports STUB_DATA_TYPE.
         protocol.addMasterDevice( master )
         val expectedMeasure = Measure( STUB_DATA_TYPE )
         val unexpectedMeasure = Measure( DataType( "namespace", "unexpected" ) )
@@ -36,7 +36,7 @@ class UnexpectedMeasuresWarningTest
     fun isIssuePresent_false_when_no_unexpected_measures_in_protocol()
     {
         val protocol = createEmptyProtocol()
-        val master = StubMasterDeviceDescriptor( supportedDataTypes = setOf( STUB_DATA_TYPE ) )
+        val master = StubMasterDeviceDescriptor() // Supports STUB_DATA_TYPE.
         protocol.addMasterDevice( master )
         val measure = Measure( STUB_DATA_TYPE )
         val task = StubTaskDescriptor( "Task", listOf( measure ) )

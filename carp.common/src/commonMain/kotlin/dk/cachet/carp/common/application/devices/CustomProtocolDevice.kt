@@ -16,7 +16,7 @@ data class CustomProtocolDevice( override val roleName: String ) :
     MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {
     // Measures and data types are defined in the custom `CustomProtocolTask.studyProtocol` and thus not managed by core.
-    override val supportedDataTypes: Set<DataType> = emptySet()
+    override fun getSupportedDataTypes(): Set<DataType> = emptySet()
 
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 

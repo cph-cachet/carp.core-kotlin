@@ -16,10 +16,10 @@ import kotlin.reflect.KClass
 @Serializable
 data class StubMasterDeviceDescriptor(
     override val roleName: String = "Stub master device",
-    override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap(),
-    override val supportedDataTypes: Set<DataType> = setOf( STUB_DATA_TYPE )
+    override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 ) : MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {
+    override fun getSupportedDataTypes(): Set<DataType> = setOf( STUB_DATA_TYPE )
     override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DefaultDeviceRegistration> = DefaultDeviceRegistration::class
     override fun isValidConfiguration( registration: DefaultDeviceRegistration ) = Trilean.TRUE

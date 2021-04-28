@@ -36,7 +36,7 @@ abstract class DeviceDescriptor<
     /**
      * The set of [DataType]s defining which data can be collected on this device.
      */
-    abstract val supportedDataTypes: Set<DataType>
+    abstract fun getSupportedDataTypes(): Set<DataType>
 
     /**
      * Sampling configurations which override the default configurations for data types available on this device.

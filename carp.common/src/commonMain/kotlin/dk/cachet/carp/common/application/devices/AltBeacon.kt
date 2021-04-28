@@ -17,7 +17,7 @@ data class AltBeacon( override val roleName: String ) : DeviceDescriptor<AltBeac
 {
     // The AltBeacon protocol does not expose any measures. Other devices measure proximity to the beacon.
     // TODO: Some beacons do include information such as battery charge and temperature.
-    override val supportedDataTypes: Set<DataType> = emptySet()
+    override fun getSupportedDataTypes(): Set<DataType> = emptySet()
 
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 

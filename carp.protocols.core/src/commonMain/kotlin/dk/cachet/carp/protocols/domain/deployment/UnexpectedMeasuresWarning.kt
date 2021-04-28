@@ -33,7 +33,7 @@ class UnexpectedMeasuresWarning internal constructor() : DeploymentWarning
             }
             // Filter out measures which are not supported on the device.
             .filter { (device, measure) ->
-                measure.type !in device.supportedDataTypes
+                measure.type !in device.getSupportedDataTypes()
             }
             .map { (device, measure) -> UnexpectedMeasure( device, measure ) }
             .toSet()
