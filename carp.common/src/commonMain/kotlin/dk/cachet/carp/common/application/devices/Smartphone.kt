@@ -57,7 +57,7 @@ data class Smartphone(
         val STEP_COUNT = add( NoOptionsSamplingScheme( CarpDataTypes.STEP_COUNT ) ) // No configuration options available.
     }
 
-    override val supportedDataTypes: Set<DataType> = Sensors.map { it.type }.toSet()
+    override fun getSupportedDataTypes(): Set<DataType> = Sensors.map { it.type }.toSet()
 
     override fun createDeviceRegistrationBuilder(): SmartphoneDeviceRegistrationBuilder = SmartphoneDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<SmartphoneDeviceRegistration> = SmartphoneDeviceRegistration::class

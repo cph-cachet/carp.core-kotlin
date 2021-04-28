@@ -24,15 +24,16 @@ data class CustomDeviceDescriptor( override val className: String, override val 
     DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
-    override val supportedDataTypes: Set<DataType>
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
+
+    // This information is not serialized. Therefore, the supported types are unknown.
+    override fun getSupportedDataTypes(): Set<DataType> = emptySet()
 
     init
     {
         val json = Json( serializer ) { ignoreUnknownKeys = true }
         val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
         roleName = baseMembers.roleName
-        supportedDataTypes = baseMembers.supportedDataTypes
         defaultSamplingConfiguration = baseMembers.defaultSamplingConfiguration
     }
 
@@ -56,15 +57,16 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
     MasterDeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
-    override val supportedDataTypes: Set<DataType>
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
+
+    // This information is not serialized. Therefore, the supported types are unknown.
+    override fun getSupportedDataTypes(): Set<DataType> = emptySet()
 
     init
     {
         val json = Json( serializer ) { ignoreUnknownKeys = true }
         val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
         roleName = baseMembers.roleName
-        supportedDataTypes = baseMembers.supportedDataTypes
         defaultSamplingConfiguration = baseMembers.defaultSamplingConfiguration
     }
 
@@ -83,10 +85,11 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
 @Serializable
 private data class BaseMembers(
     override val roleName: String,
-    override val supportedDataTypes: Set<DataType>,
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 ) : DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>()
 {
+    override fun getSupportedDataTypes(): Set<DataType> =
+        throw UnsupportedOperationException()
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
         throw UnsupportedOperationException()
     override fun getRegistrationClass(): KClass<DeviceRegistration> =
