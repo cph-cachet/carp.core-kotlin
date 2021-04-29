@@ -3,7 +3,9 @@ package dk.cachet.carp.common.application.devices
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeList
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
+import dk.cachet.carp.common.application.tasks.TaskDescriptorList
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
@@ -15,9 +17,13 @@ import kotlin.reflect.KClass
 @Serializable
 data class AltBeacon( override val roleName: String ) : DeviceDescriptor<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
 {
+    object Sensors : DataTypeSamplingSchemeList()
+    object Tasks : TaskDescriptorList()
+
+
     // The AltBeacon protocol does not expose any measures. Other devices measure proximity to the beacon.
     // TODO: Some beacons do include information such as battery charge and temperature.
-    override fun getSupportedDataTypes(): Set<DataType> = emptySet()
+    override fun getSupportedDataTypes(): Set<DataType> = Sensors.map { it.type }.toSet()
 
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 
