@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.triggers.Trigger
+import dk.cachet.carp.common.application.triggers.TaskControl.Control as Control
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.protocols.application.StudyProtocolId
@@ -53,8 +54,8 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
         data class TriggerAdded( val trigger: Trigger ) : Event()
         data class TaskAdded( val task: TaskDescriptor ) : Event()
         data class TaskRemoved( val task: TaskDescriptor ) : Event()
-        data class TriggeredTaskAdded( val triggeredTask: TriggeredTask ) : Event()
-        data class TriggeredTaskRemoved( val triggeredTask: TriggeredTask ) : Event()
+        data class TaskControlAdded( val control: TaskControl ) : Event()
+        data class TaskControlRemoved( val control: TaskControl ) : Event()
         data class ExpectedParticipantDataAdded( val attribute: ParticipantAttribute ) : Event()
         data class ExpectedParticipantDataRemoved( val attribute: ParticipantAttribute ) : Event()
     }
@@ -84,14 +85,14 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
             snapshot.tasks.forEach { protocol.addTask( it ) }
             snapshot.triggers.forEach { protocol.addTrigger( it.value ) }
 
-            // Add triggered tasks.
-            snapshot.triggeredTasks.forEach { triggeredTask ->
-                val triggerMatch = snapshot.triggers.entries.singleOrNull { it.key == triggeredTask.triggerId }
-                    ?: throw IllegalArgumentException( "Can't find trigger with id '${triggeredTask.triggerId}' in snapshot." )
-                val task: TaskDescriptor = protocol.tasks.singleOrNull { it.name == triggeredTask.taskName }
-                    ?: throw IllegalArgumentException( "Can't find task with name '${triggeredTask.taskName}' in snapshot." )
-                val device: AnyDeviceDescriptor = protocol.devices.singleOrNull { it.roleName == triggeredTask.targetDeviceRoleName }
-                    ?: throw IllegalArgumentException( "Can't find device with role name '${triggeredTask.targetDeviceRoleName}' in snapshot." )
+            // Add task controls.
+            snapshot.taskControls.forEach { control ->
+                val triggerMatch = snapshot.triggers.entries.singleOrNull { it.key == control.triggerId }
+                    ?: throw IllegalArgumentException( "Can't find trigger with id '${control.triggerId}' in snapshot." )
+                val task: TaskDescriptor = protocol.tasks.singleOrNull { it.name == control.taskName }
+                    ?: throw IllegalArgumentException( "Can't find task with name '${control.taskName}' in snapshot." )
+                val device: AnyDeviceDescriptor = protocol.devices.singleOrNull { it.roleName == control.destinationDeviceRoleName }
+                    ?: throw IllegalArgumentException( "Can't find device with role name '${control.destinationDeviceRoleName}' in snapshot." )
                 protocol.addTriggeredTask( triggerMatch.value, task, device )
             }
 
@@ -139,12 +140,15 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
     private val _triggers: MutableSet<Trigger> = mutableSetOf()
 
     /**
-     * The set of triggers which can trigger tasks in this study protocol.
+     * The set of triggers which can start or stop tasks in this study protocol.
      */
     val triggers: Set<Trigger>
         get() = _triggers
 
-    private val triggeredTasks: MutableMap<Trigger, MutableSet<TriggeredTask>> = mutableMapOf()
+    /**
+     * Stores which tasks need to be started or stopped when the conditions defined by [triggers] are met.
+     */
+    private val triggerControls: MutableMap<Trigger, MutableSet<TaskControl>> = mutableMapOf()
 
     /**
      * Add a [trigger] to this protocol.
@@ -167,7 +171,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
         return _triggers
             .add( trigger )
             .eventIf( true ) {
-                triggeredTasks[ trigger ] = mutableSetOf()
+                triggerControls[ trigger ] = mutableSetOf()
                 Event.TriggerAdded( trigger )
             }
     }
@@ -192,26 +196,26 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
         addTrigger( trigger )
         addTask( task )
 
-        // Add triggered task.
-        val triggeredTask = TriggeredTask( task, targetDevice )
-        return triggeredTasks[ trigger ]!!
-            .add( triggeredTask )
-            .eventIf( true ) { Event.TriggeredTaskAdded( triggeredTask ) }
+        // Add start task control.
+        val control = TaskControl( task, targetDevice, Control.Start )
+        return triggerControls[ trigger ]!!
+            .add( control )
+            .eventIf( true ) { Event.TaskControlAdded( control ) }
     }
 
     /**
-     * Gets all the tasks (and the devices they are triggered to) for the specified [trigger].
+     * Gets all conditions which control that tasks get started or stopped on devices in this protocol by the specified [trigger].
      *
      * @throws IllegalArgumentException when [trigger] is not part of this study protocol.
      */
-    fun getTriggeredTasks( trigger: Trigger ): Iterable<TriggeredTask>
+    fun getTaskControls( trigger: Trigger ): Iterable<TaskControl>
     {
         if ( trigger !in triggers )
         {
             throw IllegalArgumentException( "The passed trigger is not part of this study protocol." )
         }
 
-        return triggeredTasks[ trigger ]!!
+        return triggerControls[ trigger ]!!
     }
 
     /**
@@ -219,7 +223,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      */
     fun getTasksForDevice( device: AnyDeviceDescriptor ): Set<TaskDescriptor>
     {
-        return triggeredTasks
+        return triggerControls
             .flatMap { it.value }
             .filter { it.targetDevice == device }
             .map { it.task }
@@ -244,11 +248,11 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      */
     override fun removeTask( task: TaskDescriptor ): Boolean
     {
-        // Remove task from triggers.
-        triggeredTasks.map { it.value }.forEach {
-            val triggeredTasks = it.filter { triggered -> triggered.task == task }
-            it.removeAll( triggeredTasks )
-            triggeredTasks.forEach { event( Event.TriggeredTaskRemoved( it ) ) }
+        // Remove all controls which control this task.
+        triggerControls.values.forEach { controls ->
+            val taskControls = controls.filter { it.task == task }
+            controls.removeAll( taskControls )
+            taskControls.forEach { event( Event.TaskControlRemoved( it ) ) }
         }
 
         // Remove task itself.

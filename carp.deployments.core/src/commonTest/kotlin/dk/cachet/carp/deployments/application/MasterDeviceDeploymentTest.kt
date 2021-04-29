@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployments.application
 
+import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
@@ -54,9 +55,9 @@ class MasterDeviceDeploymentTest
             connectedDeviceConfigurations = mapOf( connected.roleName to connectedRegistration ),
             tasks = setOf( task ),
             triggers = mapOf( 0 to masterTrigger, 1 to connectedTrigger ),
-            triggeredTasks = setOf(
-                MasterDeviceDeployment.TriggeredTask( 0, task.name, device.roleName ),
-                MasterDeviceDeployment.TriggeredTask( 1, task.name, connected.roleName )
+            taskControls = setOf(
+                TaskControl( 0, task.name, device.roleName, TaskControl.Control.Start ),
+                TaskControl( 1, task.name, connected.roleName, TaskControl.Control.Start )
             )
         )
         val deviceTasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
@@ -88,7 +89,7 @@ class MasterDeviceDeploymentTest
             connectedDeviceConfigurations = emptyMap(),
             tasks = emptySet(),
             triggers = emptyMap(),
-            triggeredTasks = emptySet()
+            taskControls = emptySet()
         )
         val tasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 
@@ -116,9 +117,9 @@ class MasterDeviceDeploymentTest
             connectedDeviceConfigurations = emptyMap(),
             tasks = setOf( task ),
             triggers = mapOf( 0 to master1Trigger ),
-            triggeredTasks = setOf(
-                MasterDeviceDeployment.TriggeredTask( 0, task.name, master1.roleName ),
-                MasterDeviceDeployment.TriggeredTask( 0, "Task on Master 2", master2.roleName )
+            taskControls = setOf(
+                TaskControl( 0, task.name, master1.roleName, TaskControl.Control.Start ),
+                TaskControl( 0, "Task on Master 2", master2.roleName, TaskControl.Control.Start )
             )
         )
         val tasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()

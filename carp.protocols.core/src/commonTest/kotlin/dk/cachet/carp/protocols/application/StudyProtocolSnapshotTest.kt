@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.Trigger
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
@@ -89,8 +90,8 @@ class StudyProtocolSnapshotTest
             0 to StubTrigger( masterDevices[ 0 ] ),
             1 to StubTrigger( masterDevices[ 1 ] ) )
         val triggeredTasks = listOf(
-            StudyProtocolSnapshot.TriggeredTask( 0, "T1", "C1" ),
-            StudyProtocolSnapshot.TriggeredTask( 1, "T2", "C2" )
+            TaskControl( 0, "T1", "C1", TaskControl.Control.Start ),
+            TaskControl( 1, "T2", "C2", TaskControl.Control.Start )
         )
         val expectedParticipantData = listOf(
             ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) ),

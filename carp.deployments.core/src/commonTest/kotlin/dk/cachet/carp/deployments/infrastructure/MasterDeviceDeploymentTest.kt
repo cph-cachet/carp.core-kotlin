@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployments.infrastructure
 
+import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
@@ -38,7 +39,7 @@ class MasterDeviceDeploymentTest
             mapOf( connected.roleName to connected.createRegistration() ),
             setOf( task ),
             mapOf( 0 to trigger ),
-            setOf( MasterDeviceDeployment.TriggeredTask( 0, task.name, connected.roleName ) )
+            setOf( TaskControl( 0, task.name, connected.roleName, TaskControl.Control.Start ) )
         )
 
         val json = JSON.encodeToString( deployment )

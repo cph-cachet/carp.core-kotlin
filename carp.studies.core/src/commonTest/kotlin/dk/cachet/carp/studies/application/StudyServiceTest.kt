@@ -2,6 +2,7 @@ package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.Smartphone
+import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.ProtocolOwner
@@ -174,8 +175,8 @@ interface StudyServiceTest
 
         val validSnapshot = createDeployableProtocol()
         val invalidSnapshot = validSnapshot.copy(
-            triggeredTasks = listOf(
-                StudyProtocolSnapshot.TriggeredTask( 0, "Unknown task", "Unknown device" )
+            taskControls = listOf(
+                TaskControl( 0, "Unknown task", "Unknown device", TaskControl.Control.Start )
             )
         )
         assertFailsWith<IllegalArgumentException> { service.setProtocol( status.studyId, invalidSnapshot ) }
