@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicWrapper
@@ -343,10 +344,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val relevantDeviceRoles = relevantDevices.map { it.roleName }
         val usedTriggers = protocolSnapshot.triggers
             .filter { it.value.sourceDeviceRoleName in relevantDeviceRoles }
-        val triggeredTasks = usedTriggers
-            .map { it to protocol.getTriggeredTasks( it.value ) }
+        val taskControls = usedTriggers
+            .map { it to protocol.getTaskControls( it.value ) }
             .flatMap { pair -> pair.second.map {
-                MasterDeviceDeployment.TriggeredTask( pair.first.key, it.task.name, it.targetDevice.roleName ) } }
+                TaskControl( pair.first.key, it.task.name, it.targetDevice.roleName, it.control ) } }
             .toSet()
 
         return MasterDeviceDeployment(
@@ -356,7 +357,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             deviceRegistrations,
             tasks,
             usedTriggers,
-            triggeredTasks )
+            taskControls )
     }
 
     /**

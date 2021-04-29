@@ -8,6 +8,7 @@ import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.tasks.Measure
+import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.CustomMasterDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
@@ -428,9 +429,10 @@ class StudyDeploymentTest
         // Device deployment contains correct trigger information.
         assertEquals(1, deviceDeployment.triggers.count() )
         assertEquals( master.atStartOfStudy(), deviceDeployment.triggers[ 0 ] )
-        assertEquals(2, deviceDeployment.triggeredTasks.count() )
-        assertTrue( deviceDeployment.triggeredTasks.contains( MasterDeviceDeployment.TriggeredTask( 0, masterTask.name, master.roleName ) ) )
-        assertTrue( deviceDeployment.triggeredTasks.contains( MasterDeviceDeployment.TriggeredTask( 0, connectedTask.name, connected.roleName ) ) )
+        val taskControls = deviceDeployment.taskControls
+        assertEquals(2, taskControls.count() )
+        assertTrue( TaskControl( 0, masterTask.name, master.roleName, TaskControl.Control.Start ) in taskControls )
+        assertTrue( TaskControl( 0, connectedTask.name, connected.roleName, TaskControl.Control.Start ) in taskControls )
     }
 
     @Test
@@ -487,9 +489,9 @@ class StudyDeploymentTest
 
         // The task is triggered from the source and sent to the target.
         assertEquals( 1, sourceDeployment.triggers.size )
-        assertEquals( 1, sourceDeployment.triggeredTasks.size )
-        val triggeredTask = sourceDeployment.triggeredTasks.single()
-        assertEquals( task.name, triggeredTask.taskName )
+        assertEquals( 1, sourceDeployment.taskControls.size )
+        val control = sourceDeployment.taskControls.single()
+        assertEquals( task.name, control.taskName )
         assertEquals( 0, targetDeployment.triggers.size )
 
         // There are no connected devices, only master devices.

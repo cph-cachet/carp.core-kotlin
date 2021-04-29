@@ -22,7 +22,7 @@ class UntriggeredTasksWarning internal constructor() : DeploymentWarning
     fun getUntriggeredTasks( protocol: StudyProtocol ): Set<TaskDescriptor>
     {
         val triggeredTasks: List<TaskDescriptor> = protocol.triggers.flatMap { trigger ->
-            protocol.getTriggeredTasks( trigger ).map { it.task }
+            protocol.getTaskControls( trigger ).map { it.task }
         }
 
         return protocol.tasks.minus( triggeredTasks )

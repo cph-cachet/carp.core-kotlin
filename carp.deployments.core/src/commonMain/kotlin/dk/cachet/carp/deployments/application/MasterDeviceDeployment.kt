@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.Trigger
 import kotlinx.serialization.Serializable
 
@@ -39,30 +40,11 @@ data class MasterDeviceDeployment(
      */
     val triggers: Map<Int, Trigger>,
     /**
-     * The specification of tasks triggered and the devices they are sent to.
+     * Determines which tasks need to be started or stopped when the conditions defined by [triggers] are met.
      */
-    val triggeredTasks: Set<TriggeredTask>
+    val taskControls: Set<TaskControl>
 )
 {
-    /**
-     * Specifies the task with [taskName] which is sent to [destinationDeviceRoleName] when the condition of the trigger with [triggerId] is met.
-     */
-    @Serializable
-    data class TriggeredTask(
-        /**
-         * The id of the [Trigger] which describes the condition which when met sends the task with [taskName] to the device with [destinationDeviceRoleName].
-         */
-        val triggerId: Int,
-        /**
-         * The name of the task to send to [destinationDeviceRoleName] when the trigger condition is met.
-         */
-        val taskName: String,
-        /**
-         * The role name of the device to which to send the task with [taskName] when the [trigger] condition is met.
-         */
-        val destinationDeviceRoleName: String
-    )
-
     /**
      * A participating master or connected device in a deployment (determined by [isConnectedDevice])
      * with a matching [registration] in case the device has been registered.
@@ -106,7 +88,7 @@ data class MasterDeviceDeployment(
      */
     fun getTasksPerDevice(): List<DeviceTasks> = getAllDevicesAndRegistrations()
         .map { device ->
-            val tasks = triggeredTasks
+            val tasks = taskControls
                 .filter { it.destinationDeviceRoleName == device.descriptor.roleName }
                 .map { triggered -> tasks.first { it.name == triggered.taskName } }
             DeviceTasks( device, tasks.toSet() )

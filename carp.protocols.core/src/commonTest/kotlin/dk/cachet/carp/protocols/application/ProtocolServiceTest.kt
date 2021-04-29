@@ -2,6 +2,7 @@ package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.ProtocolOwner
@@ -82,8 +83,8 @@ interface ProtocolServiceTest
         service.add( protocol.getSnapshot() )
 
         val invalidSnapshot = protocol.getSnapshot().copy(
-            triggeredTasks = listOf(
-                StudyProtocolSnapshot.TriggeredTask( 0, "Non-existing", "Not a device" )
+            taskControls = listOf(
+                TaskControl( 0, "Non-existing", "Not a device", TaskControl.Control.Start )
             )
         )
 

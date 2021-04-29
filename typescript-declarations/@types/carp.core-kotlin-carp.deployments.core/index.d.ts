@@ -101,7 +101,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
                 connectedDeviceConfigurations: HashMap<string, DeviceRegistration>,
                 tasks: HashSet<any>,
                 triggers: HashMap<number, any>,
-                triggeredTasks: HashSet<any> )
+                taskControls: HashSet<any> )
 
                 static get Companion(): MasterDeviceDeployment$Companion
 
@@ -111,7 +111,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
                 readonly connectedDeviceConfigurations: HashMap<string, DeviceRegistration>
                 readonly tasks: HashSet<any>
                 readonly triggers: HashMap<number, any>
-                readonly triggeredTasks: HashSet<any>
+                readonly taskControls: HashSet<any>
         }
         interface MasterDeviceDeployment$Companion { serializer(): any }
 

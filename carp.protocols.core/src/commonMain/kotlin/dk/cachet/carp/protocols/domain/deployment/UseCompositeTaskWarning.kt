@@ -30,7 +30,7 @@ class UseCompositeTaskWarning internal constructor() : DeploymentWarning
     {
         return protocol.triggers.flatMap { trigger -> // For each trigger, ...
             protocol
-                .getTriggeredTasks( trigger )
+                .getTaskControls( trigger )
                 .groupBy { it.targetDevice } // ... group triggered tasks by target device, ...
                 .filter { it.value.count() > 1 } // ... select those with more than one task triggered (to a single target device).
                 .map { taskPerDevice ->
