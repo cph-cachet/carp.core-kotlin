@@ -3,9 +3,7 @@ package dk.cachet.carp.protocols
 import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.common.application.devices.CustomProtocolDevice
 import dk.cachet.carp.common.application.devices.Smartphone
-import dk.cachet.carp.common.application.tasks.BackgroundTask
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
-import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -35,8 +33,9 @@ class ProtocolsCodeSamples
 
         // Define what needs to be measured, on which device, when.
         val sensors = Smartphone.Sensors
-        val measures: List<Measure> = listOf( sensors.GEOLOCATION.measure(), sensors.STEP_COUNT.measure() )
-        val startMeasures = BackgroundTask( "Start measures", measures )
+        val startMeasures = Smartphone.Tasks.BACKGROUND.create( "Start measures" ) {
+            measures = listOf( sensors.GEOLOCATION.measure(), sensors.STEP_COUNT.measure() )
+        }
         protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
 
         // JSON output of the study protocol, compatible with the rest of the CARP infrastructure.
