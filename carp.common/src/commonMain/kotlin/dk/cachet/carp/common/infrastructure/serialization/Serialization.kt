@@ -59,7 +59,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     polymorphic( DeviceDescriptor::class )
     {
         subclass( AltBeacon::class )
-        subclass( BLEHeartRateSensor::class )
+        subclass( BLEHeartRateDevice::class )
         registerMasterDeviceDescriptorSubclasses()
 
         subclass( CustomDeviceDescriptor::class )

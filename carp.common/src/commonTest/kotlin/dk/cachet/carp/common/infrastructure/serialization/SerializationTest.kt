@@ -65,7 +65,7 @@ private val commonInstances = listOf(
     // Devices in `devices` namespace.
     AltBeacon( "Kitchen" ),
     AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 ),
-    BLEHeartRateSensor( "Polar" ),
+    BLEHeartRateDevice( "Polar" ),
     BLESerialNumberDeviceRegistration( "123456789" ),
     CustomProtocolDevice( "User's phone" ),
     Smartphone( "User's phone" ),
