@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlin.test.*
 
@@ -20,7 +21,7 @@ class UnexpectedMeasuresWarningTest
         val expectedMeasure = Measure( STUB_DATA_TYPE )
         val unexpectedMeasure = Measure( DataType( "namespace", "unexpected" ) )
         val task = StubTaskDescriptor( "Task", listOf( expectedMeasure, unexpectedMeasure ) )
-        protocol.addTriggeredTask( master.atStartOfStudy(), task, master )
+        protocol.addTaskControl( master.atStartOfStudy().start( task, master ) )
 
         val warning = UnexpectedMeasuresWarning()
         assertTrue( warning.isIssuePresent( protocol ) )
@@ -40,7 +41,7 @@ class UnexpectedMeasuresWarningTest
         protocol.addMasterDevice( master )
         val measure = Measure( STUB_DATA_TYPE )
         val task = StubTaskDescriptor( "Task", listOf( measure ) )
-        protocol.addTriggeredTask( master.atStartOfStudy(), task, master )
+        protocol.addTaskControl( master.atStartOfStudy().start( task, master ) )
 
         val warning = UnexpectedMeasuresWarning()
         assertFalse( warning.isIssuePresent( protocol ) )

@@ -4,6 +4,7 @@ import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlin.test.*
 
@@ -34,7 +35,7 @@ class UnusedDevicesWarningTest
         {
             addMasterDevice( master )
             addConnectedDevice( unusedConnected, master )
-            addTriggeredTask( StubTrigger( master ), StubTaskDescriptor(), master )
+            addTaskControl( StubTrigger( master ).start( StubTaskDescriptor(), master ) )
         }
 
         val warning = UnusedDevicesWarning()
@@ -54,7 +55,7 @@ class UnusedDevicesWarningTest
         {
             addMasterDevice( master )
             addConnectedDevice( connected, master )
-            addTriggeredTask( StubTrigger( connected ), StubTaskDescriptor(), connected )
+            addTaskControl( StubTrigger( connected ).start( StubTaskDescriptor(), connected ) )
         }
 
         val warning = UnusedDevicesWarning()
@@ -74,7 +75,7 @@ class UnusedDevicesWarningTest
             addMasterDevice( master1 )
             addConnectedDevice( master2, master1 )
             addConnectedDevice( connected, master2 )
-            addTriggeredTask( StubTrigger( connected ), StubTaskDescriptor(), connected )
+            addTaskControl( StubTrigger( connected ).start( StubTaskDescriptor(), connected ) )
         }
 
         val warning = UnusedDevicesWarning()
@@ -92,7 +93,7 @@ class UnusedDevicesWarningTest
         {
             addMasterDevice( device1 )
             addConnectedDevice( device2, device1 )
-            addTriggeredTask( StubTrigger( device1 ), StubTaskDescriptor(), device2 )
+            addTaskControl( StubTrigger( device1 ).start( StubTaskDescriptor(), device2 ) )
         }
 
         val warning = UnusedDevicesWarning()

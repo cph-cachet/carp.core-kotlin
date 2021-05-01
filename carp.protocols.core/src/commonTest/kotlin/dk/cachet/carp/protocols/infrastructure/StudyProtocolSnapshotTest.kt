@@ -16,6 +16,7 @@ import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -129,7 +130,7 @@ class StudyProtocolSnapshotTest
         val measures: List<Measure> = listOf( Measure( STUB_DATA_TYPE ) )
         val task = StubTaskDescriptor( "Unknown task", measures )
         val trigger = StubTrigger( master.roleName, "Unknown" )
-        protocol.addTriggeredTask( trigger, task, master )
+        protocol.addTaskControl( trigger.start( task, master ) )
 
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
         var serialized: String = JSON.encodeToString( snapshot )

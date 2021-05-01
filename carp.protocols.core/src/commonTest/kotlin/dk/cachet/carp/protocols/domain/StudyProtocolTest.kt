@@ -18,7 +18,7 @@ import dk.cachet.carp.protocols.domain.configuration.ParticipantDataConfiguratio
 import dk.cachet.carp.protocols.domain.configuration.TaskConfiguration
 import dk.cachet.carp.protocols.domain.configuration.TaskConfigurationTest
 import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
-import dk.cachet.carp.protocols.domain.deployment.UntriggeredTasksWarning
+import dk.cachet.carp.protocols.domain.deployment.UnstartedTasksWarning
 import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
 import dk.cachet.carp.protocols.domain.deployment.UseCompositeTaskWarning
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
@@ -189,7 +189,7 @@ class StudyProtocolTest
     }
 
     @Test
-    fun addTriggeredTask_succeeds()
+    fun addTaskControl_succeeds()
     {
         val protocol = createEmptyProtocol()
         val device = StubMasterDeviceDescriptor()
@@ -198,24 +198,24 @@ class StudyProtocolTest
         protocol.addMasterDevice( device )
         protocol.addTrigger( trigger )
 
-        val isAdded: Boolean = protocol.addTriggeredTask( trigger, task, device )
+        val isAdded: Boolean = protocol.addTaskControl( trigger, task, device, Control.Start )
         assertTrue( isAdded )
-        val control = TaskControl( task, device, Control.Start )
+        val control = trigger.start( task, device )
         assertTrue( control in protocol.getTaskControls( trigger ) )
         assertEquals( StudyProtocol.Event.TaskControlAdded( control ), protocol.consumeEvents().last() )
     }
 
     @Test
-    fun addTriggeredTasks_multiple_times_only_adds_first_time()
+    fun addTaskControl_multiple_times_only_adds_first_time()
     {
         val protocol = createEmptyProtocol()
         val device = StubMasterDeviceDescriptor()
         val trigger = StubTrigger( device )
         val task = StubTaskDescriptor()
         protocol.addMasterDevice( device )
-        protocol.addTriggeredTask( trigger, task, device )
+        protocol.addTaskControl( trigger.start( task, device ) )
 
-        val isAdded = protocol.addTriggeredTask( trigger, task, device )
+        val isAdded = protocol.addTaskControl( trigger.start( task, device ) )
         assertFalse( isAdded )
         assertEquals( 1, protocol.getTaskControls( trigger ).count() )
         val triggeredTaskEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TaskControlAdded>()
@@ -223,7 +223,7 @@ class StudyProtocolTest
     }
 
     @Test
-    fun addTriggeredTask_adds_triggers_which_are_not_yet_included_in_the_protocol()
+    fun addTaskControl_adds_triggers_which_are_not_yet_included_in_the_protocol()
     {
         val protocol = createEmptyProtocol()
         val device = StubMasterDeviceDescriptor()
@@ -232,14 +232,14 @@ class StudyProtocolTest
         protocol.addTask( task )
 
         val trigger = StubTrigger( device )
-        protocol.addTriggeredTask( trigger, task, device )
+        protocol.addTaskControl( trigger, task, device, Control.Start )
         assertTrue( protocol.triggers.contains( trigger ) )
         val triggerEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggerAdded>()
         assertEquals( StudyProtocol.Event.TriggerAdded( trigger ), triggerEvents.single() )
     }
 
     @Test
-    fun addTriggeredTask_adds_tasks_which_are_not_yet_included_in_the_protocol()
+    fun addTaskControl_adds_tasks_which_are_not_yet_included_in_the_protocol()
     {
         val protocol = createEmptyProtocol()
         val device = StubMasterDeviceDescriptor()
@@ -248,14 +248,14 @@ class StudyProtocolTest
         protocol.addTrigger( trigger )
 
         val task = StubTaskDescriptor()
-        protocol.addTriggeredTask( trigger, task, device )
+        protocol.addTaskControl( trigger, task, device, Control.Start )
         assertTrue( protocol.tasks.contains( task ) )
         val taskEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TaskAdded>()
         assertEquals( StudyProtocol.Event.TaskAdded( task ), taskEvents.single() )
     }
 
     @Test
-    fun cant_addTriggeredTask_for_device_not_included_in_the_protocol()
+    fun cant_addTaskControl_for_device_not_included_in_the_protocol()
     {
         val protocol = createEmptyProtocol()
         val device = StubMasterDeviceDescriptor()
@@ -270,13 +270,13 @@ class StudyProtocolTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            protocol.addTriggeredTask( trigger, task, StubDeviceDescriptor() )
+            protocol.addTaskControl( trigger.start( task, StubDeviceDescriptor() ) )
         }
         assertEquals( 0, protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TaskControlAdded>().count() )
     }
 
     @Test
-    fun getTriggeredTasks_succeeds()
+    fun getTaskControls_succeeds()
     {
         val protocol = createEmptyProtocol()
         val device = StubMasterDeviceDescriptor()
@@ -286,17 +286,17 @@ class StudyProtocolTest
         with ( protocol )
         {
             addMasterDevice( device )
-            addTriggeredTask( trigger, task, device )
-            addTriggeredTask( otherTrigger, StubTaskDescriptor( "Task two" ), device )
+            addTaskControl( trigger.start( task, device ) )
+            addTaskControl( otherTrigger.start( StubTaskDescriptor( "Task two" ), device ) )
         }
 
         val taskControls: List<TaskControl> = protocol.getTaskControls( trigger ).toList()
         assertEquals( 1, taskControls.count() )
-        assertTrue( TaskControl( task, device, Control.Start ) in taskControls )
+        assertTrue( TaskControl( trigger, task, device, Control.Start ) in taskControls )
     }
 
     @Test
-    fun cant_getTriggeredTasks_for_nonexisting_trigger()
+    fun cant_getTaskControls_for_nonexisting_trigger()
     {
         val protocol = createEmptyProtocol()
 
@@ -316,8 +316,8 @@ class StudyProtocolTest
         protocol.addConnectedDevice( connected, master )
         val masterTask = StubTaskDescriptor( "Master task" )
         val connectedTask = StubTaskDescriptor( "Connected task" )
-        protocol.addTriggeredTask( StubTrigger( master ), masterTask, master )
-        protocol.addTriggeredTask( StubTrigger( master ), connectedTask, connected )
+        protocol.addTaskControl( StubTrigger( master ).start( masterTask, master ) )
+        protocol.addTaskControl( StubTrigger( master ).start( connectedTask, connected ) )
 
         assertEquals( setOf( masterTask ), protocol.getTasksForDevice( master ) )
         assertEquals( setOf( connectedTask ), protocol.getTasksForDevice( connected ) )
@@ -332,8 +332,8 @@ class StudyProtocolTest
         val trigger = StubTrigger( device )
         with ( protocol ) {
             addMasterDevice( device )
-            addTriggeredTask( trigger, StubTaskDescriptor( "Task 1" ), device )
-            addTriggeredTask( trigger, StubTaskDescriptor( "Task 2" ), device )
+            addTaskControl( trigger, StubTaskDescriptor( "Task 1" ), device, Control.Start )
+            addTaskControl( trigger, StubTaskDescriptor( "Task 2" ), device, Control.Start )
         }
 
         // Therefore, a warning is issued.
@@ -351,7 +351,7 @@ class StudyProtocolTest
         {
             addMasterDevice( device )
             addConnectedDevice( unusedDevice, device )
-            addTriggeredTask( StubTrigger( device ), StubTaskDescriptor(), device )
+            addTaskControl( StubTrigger( device ), StubTaskDescriptor(), device, Control.Start )
         }
 
         // Therefore, a warning is issued.
@@ -370,8 +370,8 @@ class StudyProtocolTest
         with ( protocol )
         {
             addMasterDevice( device )
-            addTriggeredTask( trigger1, task, device )
-            addTriggeredTask( trigger2, task, device )
+            addTaskControl( trigger1.start( task, device ) )
+            addTaskControl( trigger2.stop( task, device ) )
         }
 
         protocol.removeTask( task )
@@ -388,7 +388,7 @@ class StudyProtocolTest
         protocol.addTask( StubTaskDescriptor() )
 
         // Therefore, a warning is issued.
-        assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<UntriggeredTasksWarning>().count() )
+        assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<UnstartedTasksWarning>().count() )
     }
 
     @Test

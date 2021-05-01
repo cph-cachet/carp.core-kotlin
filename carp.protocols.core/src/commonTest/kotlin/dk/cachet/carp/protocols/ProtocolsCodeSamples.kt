@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.tasks.CustomProtocolTask
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.test.runSuspendTest
 import kotlinx.serialization.encodeToString
 import kotlin.test.*
@@ -33,10 +34,10 @@ class ProtocolsCodeSamples
 
         // Define what needs to be measured, on which device, when.
         val sensors = Smartphone.Sensors
-        val startMeasures = Smartphone.Tasks.BACKGROUND.create( "Start measures" ) {
+        val measures = Smartphone.Tasks.BACKGROUND.create( "Start measures" ) {
             measures = listOf( sensors.GEOLOCATION.measure(), sensors.STEP_COUNT.measure() )
         }
-        protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
+        protocol.addTaskControl( phone.atStartOfStudy().start( measures, phone ) )
 
         // JSON output of the study protocol, compatible with the rest of the CARP infrastructure.
         val json: String = JSON.encodeToString( protocol.getSnapshot() )
@@ -52,7 +53,7 @@ class ProtocolsCodeSamples
 
         val camsProtocol = """{ "custom": "configuration" }""" // Anything which can be serialized to a string.
         val camsTask = CustomProtocolTask( "Monitor diabetes", camsProtocol )
-        protocol.addTriggeredTask( phone.atStartOfStudy(), camsTask, phone )
+        protocol.addTaskControl( phone.atStartOfStudy().start( camsTask, phone ) )
 
         val json: String = JSON.encodeToString( protocol.getSnapshot() )
         assertTrue( json.isNotEmpty() )

@@ -71,7 +71,7 @@ class StudyProtocolSnapshotTest
         assertTrue( newTriggerSnapshot.hashCode() != newTaskSnapshot.hashCode() )
 
         // New triggered task.
-        protocol.addTriggeredTask( trigger, task, masterDevice )
+        protocol.addTaskControl( trigger, task, masterDevice, TaskControl.Control.Start )
         val newTriggeredTaskSnapshot = protocol.getSnapshot()
         assertTrue( newTaskSnapshot != newTriggeredTaskSnapshot )
         assertTrue( newTaskSnapshot.hashCode() != newTriggeredTaskSnapshot.hashCode() )

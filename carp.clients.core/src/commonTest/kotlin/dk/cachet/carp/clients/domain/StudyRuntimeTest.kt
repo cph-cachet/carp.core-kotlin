@@ -16,6 +16,7 @@ import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -258,10 +259,10 @@ class StudyRuntimeTest
         // Create protocol that measures on smartphone and one connected device.
         val protocol = createSmartphoneWithConnectedDeviceStudy()
         val masterTask = StubTaskDescriptor( "Master measure", listOf( Measure( STUB_DATA_TYPE ) ) )
-        protocol.addTriggeredTask( smartphone.atStartOfStudy(), masterTask, smartphone )
+        protocol.addTaskControl( smartphone.atStartOfStudy().start( masterTask, smartphone ) )
         val connectedDataType = DataType( "custom", "type" )
         val connectedTask = StubTaskDescriptor( "Connected measure", listOf( Measure( connectedDataType ) ) )
-        protocol.addTriggeredTask( smartphone.atStartOfStudy(), connectedTask, connectedDevice )
+        protocol.addTaskControl( smartphone.atStartOfStudy().start( connectedTask, connectedDevice ) )
 
         // Create a data listener which supports the requested devices and types in the protocol
         val dataListener = DataListener( StubConnectedDeviceDataCollectorFactory(
@@ -289,7 +290,7 @@ class StudyRuntimeTest
         // Create a protocol that has one measure.
         val protocol = createSmartphoneStudy()
         val task = StubTaskDescriptor( "One measure", listOf( Measure( STUB_DATA_TYPE ) ) )
-        protocol.addTriggeredTask( smartphone.atStartOfStudy(), task, smartphone )
+        protocol.addTaskControl( smartphone.atStartOfStudy().start( task, smartphone ) )
 
         // Initializing study runtime for the smartphone deployment should fail since StubMeasure can't be collected.
         val (deploymentService, deploymentStatus) = createStudyDeployment( protocol )

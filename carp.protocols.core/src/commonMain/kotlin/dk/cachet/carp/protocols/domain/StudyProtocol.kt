@@ -18,7 +18,7 @@ import dk.cachet.carp.protocols.domain.deployment.DeploymentError
 import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
 import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
 import dk.cachet.carp.protocols.domain.deployment.UnexpectedMeasuresWarning
-import dk.cachet.carp.protocols.domain.deployment.UntriggeredTasksWarning
+import dk.cachet.carp.protocols.domain.deployment.UnstartedTasksWarning
 import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
 import dk.cachet.carp.protocols.domain.deployment.UseCompositeTaskWarning
 
@@ -93,7 +93,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
                     ?: throw IllegalArgumentException( "Can't find task with name '${control.taskName}' in snapshot." )
                 val device: AnyDeviceDescriptor = protocol.devices.singleOrNull { it.roleName == control.destinationDeviceRoleName }
                     ?: throw IllegalArgumentException( "Can't find device with role name '${control.destinationDeviceRoleName}' in snapshot." )
-                protocol.addTriggeredTask( triggerMatch.value, task, device )
+                protocol.addTaskControl( triggerMatch.value, task, device, control.control )
             }
 
             // Add expected participant data.
@@ -177,31 +177,44 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
     }
 
     /**
-     * Add a [task] to be sent to a [targetDevice] once a [trigger] within this protocol is initiated.
+     * Add a [task] to be started or stopped (determined by [control]) on a [destinationDevice]
+     * once a [trigger] within this protocol is initiated.
      * In case the [trigger] or [task] is not yet included in this study protocol, it will be added.
-     * The [targetDevice] needs to be added prior to this call since it needs to be set up as either a master device or connected device.
+     * The [destinationDevice] needs to be added prior to this call since it needs to be set up as
+     * either a master device or connected device.
      *
-     * @throws IllegalArgumentException when [targetDevice] is not included in this study protocol.
-     * @return True if the [task] to be triggered has been added; false if it is already triggered by the specified [trigger] to the specified [targetDevice].
+     * @throws IllegalArgumentException when [destinationDevice] is not included in this study protocol.
+     * @return True if the task control has been added; false if the same control is already present.
      */
-    fun addTriggeredTask( trigger: Trigger, task: TaskDescriptor, targetDevice: AnyDeviceDescriptor ): Boolean
+    fun addTaskControl( trigger: Trigger, task: TaskDescriptor, destinationDevice: AnyDeviceDescriptor, control: Control ): Boolean
     {
-        // The device needs to be included in the study protocol. We can not add it here since we do not know whether it should be a master or connected device.
-        if ( targetDevice !in devices )
-        {
-            throw IllegalArgumentException( "The passed device to which the task needs to be sent is not included in this study protocol." )
-        }
+        // The device needs to be included in the study protocol.
+        // We cannot add it here since we do not know whether it should be a master or connected device.
+        require( destinationDevice in devices )
+            { "The passed device to which the task needs to be sent is not included in this study protocol." }
 
         // Add trigger and task to ensure they are included in the protocol.
         addTrigger( trigger )
         addTask( task )
 
-        // Add start task control.
-        val control = TaskControl( task, targetDevice, Control.Start )
+        // Add task control.
+        val taskControl = TaskControl( trigger, task, destinationDevice, control )
         return triggerControls[ trigger ]!!
-            .add( control )
-            .eventIf( true ) { Event.TaskControlAdded( control ) }
+            .add( taskControl )
+            .eventIf( true ) { Event.TaskControlAdded( taskControl ) }
     }
+
+    /**
+     * Add a task to be started or stopped on a device once a trigger within this protocol is initiated.
+     * In case the trigger or task defined in [control] is not yet included in this study protocol, it will be added.
+     * The destination device defined in [control] needs to be added prior to this call since it needs to be set up as
+     * either a master device or connected device.
+     *
+     * @throws IllegalArgumentException when the destination device is not included in this study protocol.
+     * @return True if the task control has been added; false if the same control is already present.
+     */
+    fun addTaskControl( control: TaskControl ): Boolean =
+        addTaskControl( control.trigger, control.task, control.destinationDevice, control.control )
 
     /**
      * Gets all conditions which control that tasks get started or stopped on devices in this protocol by the specified [trigger].
@@ -210,10 +223,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      */
     fun getTaskControls( trigger: Trigger ): Iterable<TaskControl>
     {
-        if ( trigger !in triggers )
-        {
-            throw IllegalArgumentException( "The passed trigger is not part of this study protocol." )
-        }
+        require( trigger in triggers ) { "The passed trigger is not part of this study protocol." }
 
         return triggerControls[ trigger ]!!
     }
@@ -225,7 +235,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
     {
         return triggerControls
             .flatMap { it.value }
-            .filter { it.targetDevice == device }
+            .filter { it.destinationDevice == device }
             .map { it.task }
             .toSet()
     }
@@ -310,7 +320,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      */
     private val possibleDeploymentIssues: List<DeploymentIssue> = listOf(
         NoMasterDeviceError(),
-        UntriggeredTasksWarning(),
+        UnstartedTasksWarning(),
         UseCompositeTaskWarning(),
         UnusedDevicesWarning(),
         UnexpectedMeasuresWarning()
