@@ -169,7 +169,7 @@ val sensors = Smartphone.Sensors
 val startMeasures = Smartphone.Tasks.BACKGROUND.create( "Start measures" ) {
     measures = listOf( sensors.GEOLOCATION.measure(), sensors.STEP_COUNT.measure() )
 }
-protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
+protocol.addTaskControl( phone.atStartOfStudy().start( measures, phone ) )
 
 // JSON output of the study protocol, compatible with the rest of the CARP infrastructure.
 val json: String = protocol.getSnapshot().toJson()

@@ -17,6 +17,7 @@ import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.studies.application.ParticipantService
 import dk.cachet.carp.studies.application.ParticipantServiceHost
 import dk.cachet.carp.studies.application.StudyService
@@ -112,10 +113,10 @@ class StudiesCodeSamples
         protocol.addMasterDevice( phone )
 
         val sensors = Smartphone.Sensors
-        val startMeasures = Smartphone.Tasks.BACKGROUND.create( "Start measures" ) {
+        val measures = Smartphone.Tasks.BACKGROUND.create( "Start measures" ) {
             measures = listOf( sensors.GEOLOCATION.measure(), sensors.STEP_COUNT.measure() )
         }
-        protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
+        protocol.addTaskControl( phone.atStartOfStudy().start( measures, phone ) )
 
         return protocol
     }

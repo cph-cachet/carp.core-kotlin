@@ -19,6 +19,7 @@ import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import kotlinx.serialization.json.Json
@@ -406,8 +407,8 @@ class StudyDeploymentTest
         val connected = protocol.devices.first { it.roleName == "Connected" }
         val masterTask = StubTaskDescriptor( "Master task" )
         val connectedTask = StubTaskDescriptor( "Connected task" )
-        protocol.addTriggeredTask( master.atStartOfStudy(), masterTask, master )
-        protocol.addTriggeredTask( master.atStartOfStudy(), connectedTask, connected )
+        protocol.addTaskControl( master.atStartOfStudy().start( masterTask, master ) )
+        protocol.addTaskControl( master.atStartOfStudy().start( connectedTask, connected ) )
         val deployment = studyDeploymentFor( protocol )
         val registration = DefaultDeviceRegistration( "Registered master" )
         deployment.registerDevice( master, registration )
@@ -416,7 +417,7 @@ class StudyDeploymentTest
         // Include an additional master device with a trigger which should not impact the `DeviceDeployment` tested here.
         val ignoredMaster = StubMasterDeviceDescriptor( "Ignored" )
         protocol.addMasterDevice( ignoredMaster )
-        protocol.addTriggeredTask( ignoredMaster.atStartOfStudy(), masterTask, ignoredMaster )
+        protocol.addTaskControl( ignoredMaster.atStartOfStudy().start( masterTask, ignoredMaster ) )
 
         val deviceDeployment: MasterDeviceDeployment = deployment.getDeviceDeploymentFor( master )
         assertEquals( "Registered master", deviceDeployment.configuration.deviceId )
@@ -475,7 +476,7 @@ class StudyDeploymentTest
         }
         val measure = Measure( DataType( "namespace", "type" ) )
         val task = StubTaskDescriptor( "Stub task", listOf( measure ) )
-        protocol.addTriggeredTask( StubTrigger( sourceMaster ), task, targetMaster )
+        protocol.addTaskControl( StubTrigger( sourceMaster ).start( task, targetMaster ) )
         val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( sourceMaster, DefaultDeviceRegistration( "0" ) )
         deployment.registerDevice( targetMaster, DefaultDeviceRegistration( "1" ) )

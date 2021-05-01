@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.infrastructure.test
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.tasks.Measure
+import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
@@ -74,7 +75,7 @@ fun createComplexProtocol(): StudyProtocol
         addConnectedDevice( connectedDevice, masterDevice )
         addConnectedDevice( chainedMasterDevice, masterDevice )
         addConnectedDevice( chainedConnectedDevice, chainedMasterDevice )
-        addTriggeredTask( trigger, task, masterDevice )
+        addTaskControl( trigger, task, masterDevice, TaskControl.Control.Start )
         addExpectedParticipantData( expectedParticipantData )
     }
 

@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.devices.CustomProtocolDevice
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.domain.start
 
 
 /**
@@ -35,7 +36,7 @@ class ProtocolFactoryServiceHost : ProtocolFactoryService
         val customDevice = CustomProtocolDevice( "Custom device" )
         protocol.addMasterDevice( customDevice )
         val task = CustomProtocolTask( "Custom device task", customProtocol )
-        protocol.addTriggeredTask( customDevice.atStartOfStudy(), task, customDevice )
+        protocol.addTaskControl( customDevice.atStartOfStudy().start( task, customDevice ) )
 
         return protocol.getSnapshot()
     }

@@ -347,7 +347,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val taskControls = usedTriggers
             .map { it to protocol.getTaskControls( it.value ) }
             .flatMap { pair -> pair.second.map {
-                TaskControl( pair.first.key, it.task.name, it.targetDevice.roleName, it.control ) } }
+                TaskControl( pair.first.key, it.task.name, it.destinationDevice.roleName, it.control ) } }
             .toSet()
 
         return MasterDeviceDeployment(
