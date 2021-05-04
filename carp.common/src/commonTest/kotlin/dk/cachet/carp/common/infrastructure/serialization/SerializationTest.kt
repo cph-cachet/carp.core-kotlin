@@ -7,13 +7,9 @@ import dk.cachet.carp.common.application.data.*
 import dk.cachet.carp.common.application.data.input.*
 import dk.cachet.carp.common.application.data.input.elements.*
 import dk.cachet.carp.common.application.devices.*
-import dk.cachet.carp.common.application.sampling.IntervalSamplingConfiguration
-import dk.cachet.carp.common.application.sampling.NoOptionsSamplingConfiguration
-import dk.cachet.carp.common.application.tasks.BackgroundTask
-import dk.cachet.carp.common.application.tasks.CustomProtocolTask
-import dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger
-import dk.cachet.carp.common.application.triggers.ManualTrigger
-import dk.cachet.carp.common.application.triggers.ScheduledTrigger
+import dk.cachet.carp.common.application.sampling.*
+import dk.cachet.carp.common.application.tasks.*
+import dk.cachet.carp.common.application.triggers.*
 import dk.cachet.carp.common.application.users.*
 import dk.cachet.carp.common.infrastructure.test.*
 import dk.cachet.carp.test.serialization.ConcreteTypesSerializationTest
@@ -75,6 +71,7 @@ private val commonInstances = listOf(
     MACAddressDeviceRegistration( MACAddress( "00-00-00-00-00-00" ) ),
 
     // `sampling` namespace.
+    GranularitySamplingConfiguration( Granularity.Balanced ),
     IntervalSamplingConfiguration( TimeSpan.fromMilliseconds( 1000.0 ) ),
     NoOptionsSamplingConfiguration,
 

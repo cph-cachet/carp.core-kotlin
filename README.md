@@ -159,7 +159,7 @@ val phone = Smartphone( "Patient's phone" )
 {
     // Configure device-specific options, e.g., frequency to collect data at.
     defaultSamplingConfiguration {
-        geolocation { interval = TimeSpan.fromMinutes( 15.0 ) }
+        geolocation { granularity = Granularity.Normal }
     }
 }
 protocol.addMasterDevice( phone )

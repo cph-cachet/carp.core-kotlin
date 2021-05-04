@@ -86,6 +86,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     // `sampling` namespace.
     polymorphic( SamplingConfiguration::class )
     {
+        subclass( GranularitySamplingConfiguration::class )
         subclass( IntervalSamplingConfiguration::class )
         subclass( NoOptionsSamplingConfiguration::class, NoOptionsSamplingConfiguration.serializer() )
 

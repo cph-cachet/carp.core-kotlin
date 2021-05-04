@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols
 
-import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.common.application.devices.CustomProtocolDevice
 import dk.cachet.carp.common.application.devices.Smartphone
+import dk.cachet.carp.common.application.sampling.Granularity
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.protocols.domain.ProtocolOwner
@@ -27,7 +27,7 @@ class ProtocolsCodeSamples
         {
             // Configure device-specific options, e.g., frequency to collect data at.
             defaultSamplingConfiguration {
-                geolocation { interval = TimeSpan.fromMinutes( 15.0 ) }
+                geolocation { granularity = Granularity.Balanced }
             }
         }
         protocol.addMasterDevice( phone )
