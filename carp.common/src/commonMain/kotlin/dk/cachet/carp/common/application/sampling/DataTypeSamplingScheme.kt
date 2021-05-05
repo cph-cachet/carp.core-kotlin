@@ -8,7 +8,7 @@ import dk.cachet.carp.common.application.tasks.Measure
 /**
  * Specifies the sampling scheme for a [DataType], including possible options, defaults, and constraints.
  */
-abstract class DataTypeSamplingScheme<TSamplingConfigurationBuilder : SamplingConfigurationBuilder<*>>(
+abstract class DataTypeSamplingScheme<TConfigBuilder : SamplingConfigurationBuilder<*>>(
     /**
      * The [DataType] this sampling scheme relates to.
      */
@@ -18,14 +18,14 @@ abstract class DataTypeSamplingScheme<TSamplingConfigurationBuilder : SamplingCo
     /**
      * Create a [SamplingConfigurationBuilder] to help construct a matching [SamplingConfiguration] for [type].
      */
-    protected abstract fun createSamplingConfigurationBuilder(): TSamplingConfigurationBuilder
+    protected abstract fun createSamplingConfigurationBuilder(): TConfigBuilder
 
     /**
      * Create a [SamplingConfiguration] which can be used to configure measures of [type].
      *
      * @throws IllegalArgumentException when a sampling configuration is built which breaks constraints specified in this sampling scheme.
      */
-    fun samplingConfiguration( builder: TSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
+    fun samplingConfiguration( builder: TConfigBuilder.() -> Unit ): SamplingConfiguration =
         createSamplingConfigurationBuilder().apply( builder ).build( this )
 
     /**
@@ -34,7 +34,7 @@ abstract class DataTypeSamplingScheme<TSamplingConfigurationBuilder : SamplingCo
      *
      * @throws IllegalArgumentException when a sampling configuration is built which breaks constraints specified in this sampling scheme.
      */
-    fun measure( samplingConfigurationBuilder: (TSamplingConfigurationBuilder.() -> Unit)? = null ): Measure =
+    fun measure( samplingConfigurationBuilder: (TConfigBuilder.() -> Unit)? = null ): Measure =
         Measure( type, samplingConfigurationBuilder?.let { samplingConfiguration( it ) } )
 
     /**

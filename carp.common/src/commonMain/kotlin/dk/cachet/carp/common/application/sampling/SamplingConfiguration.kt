@@ -23,7 +23,7 @@ interface SamplingConfiguration
  * as part of setting up a [DeviceDescriptor].
 */
 @DeviceDescriptorBuilderDsl
-interface SamplingConfigurationBuilder<TSamplingConfiguration : SamplingConfiguration>
+interface SamplingConfigurationBuilder<TConfig : SamplingConfiguration>
 {
     /**
      * Build the immutable [SamplingConfiguration] using the current configuration of this [SamplingConfigurationBuilder]
@@ -31,7 +31,7 @@ interface SamplingConfigurationBuilder<TSamplingConfiguration : SamplingConfigur
      *
      * @throws IllegalArgumentException when the constructed sampling configuration breaks constraints specified in [samplingScheme].
      */
-    fun build( samplingScheme: DataTypeSamplingScheme<*> ): TSamplingConfiguration
+    fun build( samplingScheme: DataTypeSamplingScheme<*> ): TConfig
     {
         val configuration = build()
         require( samplingScheme.isValid( configuration ) )
@@ -43,7 +43,7 @@ interface SamplingConfigurationBuilder<TSamplingConfiguration : SamplingConfigur
     /**
      * Build the immutable [SamplingConfiguration] using the current configuration of this [SamplingConfigurationBuilder].
      */
-    fun build(): TSamplingConfiguration
+    fun build(): TConfig
 }
 
 
