@@ -10,6 +10,8 @@ import dk.cachet.carp.common.application.sampling.*
 import dk.cachet.carp.common.application.tasks.*
 import dk.cachet.carp.common.application.triggers.*
 import dk.cachet.carp.common.application.users.*
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.*
 
@@ -86,6 +88,12 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     // `sampling` namespace.
     polymorphic( SamplingConfiguration::class )
     {
+        @Suppress( "UNCHECKED_CAST" )
+        subclass(
+            BatteryAwareSamplingConfiguration::class,
+            BatteryAwareSamplingConfiguration.serializer( PolymorphicSerializer( SamplingConfiguration::class ) )
+                as KSerializer<BatteryAwareSamplingConfiguration<*>>
+        )
         subclass( GranularitySamplingConfiguration::class )
         subclass( IntervalSamplingConfiguration::class )
         subclass( NoOptionsSamplingConfiguration::class, NoOptionsSamplingConfiguration.serializer() )

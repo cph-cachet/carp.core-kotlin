@@ -31,6 +31,7 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 
 | Class | Description |
 | --- | --- |
+| [BatteryAwareSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/BatteryAwareSampling.kt) | Different sampling configuration depending on how much battery is left.|
 | [GranularitySampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/GranularitySampling.kt) | Specify a desired level of granularity, corresponding to expected degrees of power consumption.|
 | [IntervalSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/IntervalSampling.kt) | Specify a time interval in between subsequent measurements. |
 | [NoOptionsSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/NoOptionsSampling.kt) | Does not allow any sampling configuration. |
