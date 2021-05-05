@@ -29,12 +29,18 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 
 ### Sampling schemes
 
-| Class | Description |
-| --- | --- |
-| [BatteryAwareSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/BatteryAwareSampling.kt) | Different sampling configuration depending on how much battery is left.|
-| [GranularitySampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/GranularitySampling.kt) | Specify a desired level of granularity, corresponding to expected degrees of power consumption.|
-| [IntervalSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/IntervalSampling.kt) | Specify a time interval in between subsequent measurements. |
-| [NoOptionsSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/NoOptionsSampling.kt) | Does not allow any sampling configuration. |
+Supports specifying the sampling scheme for a [`DataType`](#data-types), including possible options, defaults, and constraints.
+
+Some sampling schemes support specifying a different sampling configuration depending on how much battery is left,
+indicated by the "Battery-aware" column.
+These extend from [BatteryAwareSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/BatteryAwareSampling.kt).
+
+| Class | Battery-aware | Description |
+| --- | :---: | --- |
+| [AdaptiveGranularitySampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/AdaptiveGranularitySampling.kt) | Yes | Specify a desired level of granularity at which to measure depending on the battery level. |
+| [GranularitySampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/GranularitySampling.kt) | | Specify a desired level of granularity, corresponding to expected degrees of power consumption. |
+| [IntervalSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/IntervalSampling.kt) | | Specify a time interval in between subsequent measurements. |
+| [NoOptionsSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/NoOptionsSampling.kt) | | Does not allow any sampling configuration. |
 
 ### Tasks
 

@@ -4,6 +4,8 @@ package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.StubSamplingConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubSamplingConfigurationBuilder
 import kotlin.test.*
 
 
@@ -12,19 +14,26 @@ import kotlin.test.*
  */
 class BatteryAwareSamplingSchemeTest
 {
+    class TestBatteryAwareSamplingScheme :
+        BatteryAwareSamplingScheme<StubSamplingConfiguration, StubSamplingConfigurationBuilder>(
+            STUB_DATA_TYPE,
+            { StubSamplingConfigurationBuilder( "Test" ) },
+            StubSamplingConfiguration( "Test" )
+        )
+    {
+        override fun isValidBatteryLevelConfiguration( configuration: StubSamplingConfiguration ): Boolean =
+            configuration.configuration != "Invalid"
+    }
+
     @Test
     fun isValid_true_for_correct_sampling_configuration_types()
     {
-        val scheme = BatteryAwareSamplingScheme(
-            STUB_DATA_TYPE,
-            builder = { GranularitySamplingConfigurationBuilder( Granularity.Balanced ) },
-            normal = GranularitySamplingConfiguration( Granularity.Balanced )
-        )
+        val scheme = TestBatteryAwareSamplingScheme()
 
         val validConfiguration = BatteryAwareSamplingConfiguration(
-            normal = GranularitySamplingConfiguration( Granularity.Balanced ),
-            low = GranularitySamplingConfiguration( Granularity.Coarse ),
-            critical = GranularitySamplingConfiguration( Granularity.Coarse )
+            normal = StubSamplingConfiguration( "Balanced" ),
+            low = StubSamplingConfiguration( "Coarse" ),
+            critical = StubSamplingConfiguration( "Off" )
         )
         assertTrue( scheme.isValid( validConfiguration ) )
     }
@@ -32,14 +41,10 @@ class BatteryAwareSamplingSchemeTest
     @Test
     fun isValid_true_when_some_configurations_are_not_set()
     {
-        val scheme = BatteryAwareSamplingScheme(
-            STUB_DATA_TYPE,
-            builder = { GranularitySamplingConfigurationBuilder( Granularity.Balanced ) },
-            normal = GranularitySamplingConfiguration( Granularity.Balanced )
-        )
+        val scheme = TestBatteryAwareSamplingScheme()
 
         val validConfiguration = BatteryAwareSamplingConfiguration(
-            normal = GranularitySamplingConfiguration( Granularity.Balanced )
+            normal = StubSamplingConfiguration( "Balanced" )
         )
         assertTrue( scheme.isValid( validConfiguration ) )
     }
@@ -47,16 +52,24 @@ class BatteryAwareSamplingSchemeTest
     @Test
     fun isValid_false_when_incorrect_sampling_configuration_type_is_included()
     {
-        val scheme = BatteryAwareSamplingScheme(
-            STUB_DATA_TYPE,
-            builder = { GranularitySamplingConfigurationBuilder( Granularity.Balanced ) },
-            normal = GranularitySamplingConfiguration( Granularity.Balanced )
-        )
+        val scheme = TestBatteryAwareSamplingScheme()
 
         val invalidConfiguration = BatteryAwareSamplingConfiguration(
-            normal = GranularitySamplingConfiguration( Granularity.Balanced ),
+            normal = StubSamplingConfiguration( "Balanced" ),
             low = IntervalSamplingConfiguration( TimeSpan.fromMinutes( 1.0 ) ),
-            critical = GranularitySamplingConfiguration( Granularity.Coarse )
+            critical = StubSamplingConfiguration( "Off" )
+        )
+        assertFalse( scheme.isValid( invalidConfiguration ) )
+    }
+
+    @Test
+    fun isValid_false_when_constraints_are_not_met()
+    {
+        val scheme = TestBatteryAwareSamplingScheme()
+
+        // "Invalid" breaks the constraint implemented in `TestBatteryAwareSamplingScheme`.
+        val invalidConfiguration = BatteryAwareSamplingConfiguration(
+            normal = StubSamplingConfiguration( "Invalid" )
         )
         assertFalse( scheme.isValid( invalidConfiguration ) )
     }
@@ -64,20 +77,16 @@ class BatteryAwareSamplingSchemeTest
     @Test
     fun samplingConfiguration_succeeds()
     {
-        val scheme = BatteryAwareSamplingScheme(
-            STUB_DATA_TYPE,
-            builder = { GranularitySamplingConfigurationBuilder( Granularity.Balanced ) },
-            normal = GranularitySamplingConfiguration( Granularity.Balanced )
-        )
+        val scheme = TestBatteryAwareSamplingScheme()
 
-        val expectedGranularity = Granularity.Coarse
-        val expected = GranularitySamplingConfiguration( expectedGranularity )
+        val expectedConfiguration = "Expected"
+        val expected = StubSamplingConfiguration( expectedConfiguration )
         assertBatteryAwareSamplingConfiguration( expected, expected, expected )
         {
             scheme.samplingConfiguration {
-                batteryNormal { granularity = expectedGranularity }
-                batteryLow { granularity = expectedGranularity }
-                batteryCritical { granularity = expectedGranularity }
+                batteryNormal { configuration = expectedConfiguration }
+                batteryLow { configuration = expectedConfiguration }
+                batteryCritical { configuration = expectedConfiguration }
             }
         }
     }
@@ -85,16 +94,12 @@ class BatteryAwareSamplingSchemeTest
     @Test
     fun samplingConfiguration_allBatteryLevels_succeeds()
     {
-        val scheme = BatteryAwareSamplingScheme(
-            STUB_DATA_TYPE,
-            builder = { GranularitySamplingConfigurationBuilder( Granularity.Balanced ) },
-            normal = GranularitySamplingConfiguration( Granularity.Balanced )
-        )
+        val scheme = TestBatteryAwareSamplingScheme()
 
-        val expectedGranularity = Granularity.Coarse
-        val expected = GranularitySamplingConfiguration( expectedGranularity )
+        val expectedConfiguration = "Expected"
+        val expected = StubSamplingConfiguration( expectedConfiguration )
         assertBatteryAwareSamplingConfiguration( expected, expected, expected ) {
-            scheme.samplingConfiguration { allBatteryLevels { granularity = expectedGranularity } }
+            scheme.samplingConfiguration { allBatteryLevels { configuration = expectedConfiguration } }
         }
     }
 

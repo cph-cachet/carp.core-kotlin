@@ -27,7 +27,7 @@ data class IntervalSamplingConfiguration( val interval: TimeSpan ) : SamplingCon
 
 
 /**
- * A helper class to configure and construct immutable [IntervalSamplingConfiguration] classes
+ * A helper class to configure and construct immutable [IntervalSamplingConfiguration] objects
  * as part of setting up a [DeviceDescriptor].
  */
 class IntervalSamplingConfigurationBuilder( var interval: TimeSpan ) :
