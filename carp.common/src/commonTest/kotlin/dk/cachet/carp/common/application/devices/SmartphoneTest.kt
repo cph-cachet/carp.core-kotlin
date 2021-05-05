@@ -14,20 +14,19 @@ class SmartphoneTest
     @Test
     fun builder_sets_sampling_configuration()
     {
-        val configuredGranularity = Granularity.Balanced
+        val expectedGranularity = Granularity.Balanced
 
         val phone = Smartphone( "Test" )
         {
             defaultSamplingConfiguration {
-                geolocation { allBatteryLevels { granularity = configuredGranularity } }
+                geolocation { allBatteryLevels { granularity = expectedGranularity } }
             }
         }
 
         val type = Smartphone.Sensors.GEOLOCATION.type
         val configuration = phone.defaultSamplingConfiguration[ type ] as? BatteryAwareSamplingConfiguration<*>
         assertNotNull( configuration )
-        val granularityConfiguration = configuration.normal as GranularitySamplingConfiguration
-        assertNotNull( granularityConfiguration )
-        assertEquals( configuredGranularity, granularityConfiguration.granularity )
+        val configuredGranularity = configuration.normal as GranularitySamplingConfiguration
+        assertEquals( expectedGranularity, configuredGranularity.granularity )
     }
 }

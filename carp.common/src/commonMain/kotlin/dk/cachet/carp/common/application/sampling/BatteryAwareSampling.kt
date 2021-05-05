@@ -9,13 +9,13 @@ import kotlin.reflect.KClass
 /**
  * A sampling scheme which changes based on how much battery the device has left.
  */
-class BatteryAwareSamplingScheme<
+abstract class BatteryAwareSamplingScheme<
     TConfiguration : SamplingConfiguration,
     TBuilder : SamplingConfigurationBuilder<TConfiguration>
 >(
     dataType: DataType,
     /**
-     * The builder to constructs [SamplingConfiguration]s when overriding configurations for different battery levels.
+     * The builder to construct [SamplingConfiguration]s when overriding configurations for different battery levels.
      */
     private val builder: () -> TBuilder,
     /**
@@ -39,11 +39,29 @@ class BatteryAwareSamplingScheme<
     override fun createSamplingConfigurationBuilder(): BatteryAwareSamplingConfigurationBuilder<TConfiguration, TBuilder> =
         BatteryAwareSamplingConfigurationBuilder( builder, normal, low, critical )
 
-    override fun isValid( configuration: SamplingConfiguration ): Boolean =
-        configuration is BatteryAwareSamplingConfiguration<*> &&
-        configurationKlass.isInstance( configuration.normal ) &&
-        ( configuration.low == null || configurationKlass.isInstance( configuration.low ) ) &&
-        ( configuration.critical == null || configurationKlass.isInstance( configuration.critical ) )
+    override fun isValid( configuration: SamplingConfiguration ): Boolean
+    {
+        if ( configuration !is BatteryAwareSamplingConfiguration<*> ) return false
+
+        // Verify whether battery-level-specific configurations are the expected type.
+        val correctTypes =
+            configurationKlass.isInstance( configuration.normal ) && // Normal configuration cannot be null.
+            ( configuration.low == null || configurationKlass.isInstance( configuration.low ) ) &&
+            ( configuration.critical == null || configurationKlass.isInstance( configuration.critical ) )
+        if ( !correctTypes ) return false
+
+        // Verify whether constraints for the battery-level-specific configurations are met.
+        @Suppress( "UNCHECKED_CAST" )
+        return isValidBatteryLevelConfiguration( configuration.normal as TConfiguration ) &&
+            ( configuration.low == null || isValidBatteryLevelConfiguration( configuration.low as TConfiguration ) ) &&
+            ( configuration.critical == null || isValidBatteryLevelConfiguration( configuration.critical as TConfiguration ) )
+    }
+
+    /**
+     * Determines whether the [configuration] assigned to a specific battery level in a [BatteryAwareSamplingConfiguration]
+     * is valid for the constraints defined in this sampling scheme.
+     */
+    abstract fun isValidBatteryLevelConfiguration( configuration: TConfiguration ): Boolean
 }
 
 

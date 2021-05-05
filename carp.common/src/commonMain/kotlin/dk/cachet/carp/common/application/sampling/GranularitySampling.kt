@@ -26,12 +26,12 @@ class GranularitySamplingScheme( dataType: DataType, val defaultGranularity: Gra
 enum class Granularity
 {
     /**
-     * Consumes a lot of power. Only use for short periods of time.
+     * Consumes a lot of power. Only use for short periods of time or when power consumption is not an issue.
      */
     Detailed,
 
     /**
-     * Balanced power consumption which aims not to require more than one recharge per day.
+     * Balanced power consumption. For battery-based devices this aims not to require more than one recharge per day.
      */
     Balanced,
 
@@ -51,7 +51,7 @@ data class GranularitySamplingConfiguration( val granularity: Granularity ) : Sa
 
 
 /**
-  * A helper class to configure and construct immutable [GranularitySamplingConfiguration] classes
+ * A helper class to configure and construct immutable [GranularitySamplingConfiguration] objects
  * as part of setting up a [DeviceDescriptor].
  */
 class GranularitySamplingConfigurationBuilder( var granularity: Granularity ) :

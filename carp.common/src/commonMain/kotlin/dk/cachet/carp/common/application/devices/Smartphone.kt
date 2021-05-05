@@ -35,14 +35,7 @@ data class Smartphone(
         /**
          *  Geographic location data, representing latitude and longitude within the World Geodetic System 1984.
          */
-        val GEOLOCATION = add(
-            BatteryAwareSamplingScheme(
-                CarpDataTypes.GEOLOCATION,
-                builder = { GranularitySamplingConfigurationBuilder( Granularity.Balanced ) },
-                normal = GranularitySamplingConfiguration( Granularity.Balanced ),
-                low = GranularitySamplingConfiguration( Granularity.Coarse )
-            )
-        )
+        val GEOLOCATION = add( AdaptiveGranularitySamplingScheme( CarpDataTypes.GEOLOCATION ) )
 
         /**
          * Steps within recorded time intervals as reported by a phone's dedicated hardware sensor.
@@ -90,6 +83,6 @@ class SmartphoneSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilde
     /**
      * Configure sampling configuration for [CarpDataTypes.GEOLOCATION].
      */
-    fun geolocation( builder: BatteryAwareSamplingConfigurationBuilder<GranularitySamplingConfiguration, GranularitySamplingConfigurationBuilder>.() -> Unit ): SamplingConfiguration =
+    fun geolocation( builder: AdaptiveGranularitySamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
         addConfiguration( Smartphone.Sensors.GEOLOCATION, builder )
 }
