@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.application.devices
 
+import dk.cachet.carp.common.application.sampling.BatteryAwareSamplingConfiguration
 import dk.cachet.carp.common.application.sampling.Granularity
 import dk.cachet.carp.common.application.sampling.GranularitySamplingConfiguration
 import kotlin.test.*
@@ -18,12 +19,15 @@ class SmartphoneTest
         val phone = Smartphone( "Test" )
         {
             defaultSamplingConfiguration {
-                geolocation { granularity = configuredGranularity }
+                geolocation { allBatteryLevels { granularity = configuredGranularity } }
             }
         }
 
         val type = Smartphone.Sensors.GEOLOCATION.type
-        val configuration = phone.defaultSamplingConfiguration[ type ] as GranularitySamplingConfiguration
-        assertEquals( configuredGranularity, configuration.granularity )
+        val configuration = phone.defaultSamplingConfiguration[ type ] as? BatteryAwareSamplingConfiguration<*>
+        assertNotNull( configuration )
+        val granularityConfiguration = configuration.normal as GranularitySamplingConfiguration
+        assertNotNull( granularityConfiguration )
+        assertEquals( configuredGranularity, granularityConfiguration.granularity )
     }
 }

@@ -1,16 +1,12 @@
+@file:Suppress( "WildcardImport" )
+
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeList
-import dk.cachet.carp.common.application.sampling.Granularity
-import dk.cachet.carp.common.application.sampling.GranularitySamplingConfigurationBuilder
-import dk.cachet.carp.common.application.sampling.GranularitySamplingScheme
-import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
-import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.sampling.SamplingConfigurationMapBuilder
-import dk.cachet.carp.common.application.tasks.TaskDescriptorList
+import dk.cachet.carp.common.application.sampling.*
+import dk.cachet.carp.common.application.tasks.*
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -39,7 +35,14 @@ data class Smartphone(
         /**
          *  Geographic location data, representing latitude and longitude within the World Geodetic System 1984.
          */
-        val GEOLOCATION = add( GranularitySamplingScheme( CarpDataTypes.GEOLOCATION, Granularity.Balanced ) )
+        val GEOLOCATION = add(
+            BatteryAwareSamplingScheme(
+                CarpDataTypes.GEOLOCATION,
+                builder = { GranularitySamplingConfigurationBuilder( Granularity.Balanced ) },
+                normal = GranularitySamplingConfiguration( Granularity.Balanced ),
+                low = GranularitySamplingConfiguration( Granularity.Coarse )
+            )
+        )
 
         /**
          * Steps within recorded time intervals as reported by a phone's dedicated hardware sensor.
@@ -87,6 +90,6 @@ class SmartphoneSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilde
     /**
      * Configure sampling configuration for [CarpDataTypes.GEOLOCATION].
      */
-    fun geolocation( builder: GranularitySamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
+    fun geolocation( builder: BatteryAwareSamplingConfigurationBuilder<GranularitySamplingConfiguration, GranularitySamplingConfigurationBuilder>.() -> Unit ): SamplingConfiguration =
         addConfiguration( Smartphone.Sensors.GEOLOCATION, builder )
 }
