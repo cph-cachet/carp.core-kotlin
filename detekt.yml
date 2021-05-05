@@ -85,6 +85,7 @@ verify-implementation:
     assumeImmutable: [
       'dk.cachet.carp.common.application.DateTime',
       'dk.cachet.carp.common.application.data.input.CustomInput.T',
+      'dk.cachet.carp.common.application.sampling.BatteryAwareSamplingConfiguration.TConfiguration',
       'kotlinx.serialization.json.Json'
     ]
 

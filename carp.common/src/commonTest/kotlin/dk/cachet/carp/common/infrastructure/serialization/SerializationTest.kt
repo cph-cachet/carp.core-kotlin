@@ -71,6 +71,7 @@ private val commonInstances = listOf(
     MACAddressDeviceRegistration( MACAddress( "00-00-00-00-00-00" ) ),
 
     // `sampling` namespace.
+    BatteryAwareSamplingConfiguration( GranularitySamplingConfiguration( Granularity.Balanced ) ),
     GranularitySamplingConfiguration( Granularity.Balanced ),
     IntervalSamplingConfiguration( TimeSpan.fromMilliseconds( 1000.0 ) ),
     NoOptionsSamplingConfiguration,
@@ -135,5 +136,17 @@ class SerializationTest : ConcreteTypesSerializationTest(
         val serialized = json.encodeToString( dataSerializer, data )
         val parsed = json.decodeFromString( dataSerializer, serialized )
         assertEquals( data, parsed )
+    }
+
+    @Test
+    fun can_serialize_polymorphic_BatteryAwareSamplingConfiguration()
+    {
+        val configuration: BatteryAwareSamplingConfiguration<GranularitySamplingConfiguration> =
+            BatteryAwareSamplingConfiguration( GranularitySamplingConfiguration( Granularity.Balanced ) )
+        val serializer = PolymorphicSerializer( SamplingConfiguration::class )
+
+        val serialized = json.encodeToString( serializer, configuration )
+        val parsed = json.decodeFromString( serializer, serialized )
+        assertEquals( configuration, parsed )
     }
 }
