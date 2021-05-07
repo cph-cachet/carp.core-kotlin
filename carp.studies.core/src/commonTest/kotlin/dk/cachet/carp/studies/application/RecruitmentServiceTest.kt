@@ -98,10 +98,10 @@ interface RecruitmentServiceTest
         val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
         val groupStatus = participantService.deployParticipantGroup( studyId, setOf( assignParticipant ) )
-        assertEquals( participant.id, groupStatus.participants.single().participantId )
+        assertEquals( participant.id, groupStatus.participants.single().externalId )
         assertNull( groupStatus.data[ CarpInputDataTypes.SEX ] ) // By default, the configured expected data is not set.
         val participantGroups = participantService.getParticipantGroupStatusList( studyId )
-        val participantIdInGroup = participantGroups.single().participants.single().participantId
+        val participantIdInGroup = participantGroups.single().participants.single().externalId
         assertEquals( participant.id, participantIdInGroup )
     }
 
@@ -206,10 +206,10 @@ interface RecruitmentServiceTest
         val assignedP2 = AssignParticipantDevices( p2.id, deviceRoles )
         participantService.deployParticipantGroup( studyId, setOf( assignedP2 ) )
 
-        val participantIds = participantService.getParticipantGroupStatusList( studyId )
-            .map { it.participants.single().participantId }
+        val externalIds = participantService.getParticipantGroupStatusList( studyId )
+            .map { it.participants.single().externalId }
             .toSet()
-        assertEquals( setOf( p1.id, p2.id ), participantIds )
+        assertEquals( setOf( p1.id, p2.id ), externalIds )
     }
 
     @Test

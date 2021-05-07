@@ -5,7 +5,7 @@ import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
-import dk.cachet.carp.studies.application.users.DeanonymizedParticipation
+import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import kotlin.test.*
 

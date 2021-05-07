@@ -9,8 +9,8 @@ import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
-import dk.cachet.carp.studies.application.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.ParticipantRepository
@@ -122,7 +122,7 @@ class RecruitmentServiceHost(
         val toDeployParticipantIds = group.map { it.participantId }.toSet()
         val deployedStatus = recruitment.participations.entries
             .firstOrNull { (_, participations) ->
-                participations.map { it.participantId }.toSet() == toDeployParticipantIds
+                participations.map { it.externalId }.toSet() == toDeployParticipantIds
             }
             ?.let { deploymentService.getStudyDeploymentStatus( it.key ) }
         if ( deployedStatus != null && deployedStatus !is StudyDeploymentStatus.Stopped )

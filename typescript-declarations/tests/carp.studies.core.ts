@@ -25,13 +25,13 @@ import createDefaultJSON = cdk.cachet.carp.common.infrastructure.serialization.c
 
 import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
 import StudyDeploymentStatus = ddk.cachet.carp.deployments.application.StudyDeploymentStatus
+import DeanonymizedParticipant = ddk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import StudyInvitation = ddk.cachet.carp.deployments.application.users.StudyInvitation
 
 import { dk } from 'carp.core-kotlin-carp.studies.core'
 import StudyDetails = dk.cachet.carp.studies.application.StudyDetails
 import StudyStatus = dk.cachet.carp.studies.application.StudyStatus
 import AssignParticipantDevices = dk.cachet.carp.studies.application.users.AssignParticipantDevices
-import DeanonymizedParticipant = dk.cachet.carp.studies.application.users.DeanonymizedParticipation
 import Participant = dk.cachet.carp.studies.application.users.Participant
 import ParticipantGroupStatus = dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import StudyOwner = dk.cachet.carp.studies.application.users.StudyOwner
@@ -51,8 +51,6 @@ describe( "carp.studies.core", () => {
             StudyStatus.Companion,
             new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Test" ] ) ),
             AssignParticipantDevices.Companion,
-            new DeanonymizedParticipant( UUID.Companion.randomUUID(), UUID.Companion.randomUUID() ),
-            DeanonymizedParticipant.Companion,
             new Participant( new UsernameIdentity( "Test" ) ),
             Participant.Companion,
             new ParticipantGroupStatus( new StudyDeploymentStatus(), new HashSet<DeanonymizedParticipant>(), toMap( [] ) ),
