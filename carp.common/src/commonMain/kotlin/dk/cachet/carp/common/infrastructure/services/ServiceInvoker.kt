@@ -1,4 +1,4 @@
-@file:Suppress( "LongParameterList" )
+@file:Suppress( "LongParameterList", "TooManyFunctions" )
 
 package dk.cachet.carp.common.infrastructure.services
 
@@ -97,4 +97,20 @@ fun <TService, T1, T2, T3, T4, TReturn> createServiceInvokerOverloaded( function
         override val function = function
         override val overloadIdentifier = overloadIdentifier
         override suspend fun invokeOn( service: TService ): TReturn = function.invoke( service, arg1, arg2, arg3, arg4 )
+    }
+
+fun <TService, T1, T2, T3, T4, T5, TReturn> createServiceInvoker( function: KSuspendFunction6<TService, T1, T2, T3, T4, T5, TReturn>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5 ): ServiceInvoker<TService, TReturn> =
+    object : ServiceInvoker<TService, TReturn>
+    {
+        override val function = function
+        override val overloadIdentifier: Nothing? = null
+        override suspend fun invokeOn( service: TService ): TReturn = function.invoke( service, arg1, arg2, arg3, arg4, arg5 )
+    }
+
+fun <TService, T1, T2, T3, T4, T5, TReturn> createServiceInvokerOverloaded( function: KSuspendFunction6<TService, T1, T2, T3, T4, T5, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5 ): ServiceInvoker<TService, TReturn> =
+    object : ServiceInvoker<TService, TReturn>
+    {
+        override val function = function
+        override val overloadIdentifier = overloadIdentifier
+        override suspend fun invokeOn( service: TService ): TReturn = function.invoke( service, arg1, arg2, arg3, arg4, arg5 )
     }
