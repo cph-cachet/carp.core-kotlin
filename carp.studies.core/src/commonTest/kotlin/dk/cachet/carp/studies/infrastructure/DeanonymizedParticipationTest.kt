@@ -2,7 +2,7 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.serialization.JSON
-import dk.cachet.carp.studies.application.users.DeanonymizedParticipation
+import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import kotlin.test.*
 
 

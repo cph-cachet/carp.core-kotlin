@@ -185,6 +185,17 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         }
         interface AssignedMasterDevice$Companion { serializer(): any }
 
+        class DeanonymizedParticipation
+        {
+            constructor( externalId: UUID, participationId: UUID )
+
+            static get Companion(): DeanonymizedParticipation$Companion
+
+            readonly externalId: UUID
+            readonly participationId: UUID
+        }
+        interface DeanonymizedParticipation$Companion { serializer(): any }
+
         class Participation
         {
             constructor( studyDeploymentId: UUID, id?: UUID )
