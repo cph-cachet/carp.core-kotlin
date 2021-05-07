@@ -25,9 +25,9 @@ Allows creating and managing studies.
 | `goLive` | Lock in the current study protocol so that a study may be deployed to participants. | manage study: `studyId` | |
 | `remove` | Remove a study and all related data. | manage study: `studyId` | |
 
-### [`ParticipantService`](../carp.studies.core/src/commonMain/kotlin/dk/cachet/carp/studies/application/ParticipantService.kt)
+### [`RecruitmentService`](../carp.studies.core/src/commonMain/kotlin/dk/cachet/carp/studies/application/RecruitmentService.kt)
 
-Allows adding participants to studies and creating deployments for them.
+Allows setting recruitment goals, adding participants to studies, and creating deployments for them.
 
 | Endpoint | Description | Require | Grant |
 | --- | --- | --- | --- |

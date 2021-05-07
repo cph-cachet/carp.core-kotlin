@@ -5,17 +5,17 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
-import dk.cachet.carp.studies.application.ParticipantService
-import dk.cachet.carp.studies.application.ParticipantServiceMock
+import dk.cachet.carp.studies.application.RecruitmentService
+import dk.cachet.carp.studies.application.RecruitmentServiceMock
 
 
 /**
- * Tests for [ParticipantServiceRequest]'s.
+ * Tests for [RecruitmentServiceRequest]'s.
  */
-class ParticipantServiceRequestsTest : ApplicationServiceRequestsTest<ParticipantService, ParticipantServiceRequest>(
-    ParticipantService::class,
-    ParticipantServiceMock(),
-    ParticipantServiceRequest.serializer(),
+class ParticipantServiceRequestsTest : ApplicationServiceRequestsTest<RecruitmentService, RecruitmentServiceRequest>(
+    RecruitmentService::class,
+    RecruitmentServiceMock(),
+    RecruitmentServiceRequest.serializer(),
     REQUESTS
 )
 {
@@ -23,14 +23,14 @@ class ParticipantServiceRequestsTest : ApplicationServiceRequestsTest<Participan
     {
         private val studyId = UUID.randomUUID()
 
-        val REQUESTS: List<ParticipantServiceRequest> = listOf(
-            ParticipantServiceRequest.AddParticipant( studyId, EmailAddress( "test@test.com" ) ),
-            ParticipantServiceRequest.GetParticipant( studyId, UUID.randomUUID() ),
-            ParticipantServiceRequest.GetParticipants( studyId ),
-            ParticipantServiceRequest.DeployParticipantGroup( studyId, setOf() ),
-            ParticipantServiceRequest.GetParticipantGroupStatusList( studyId ),
-            ParticipantServiceRequest.StopParticipantGroup( studyId, UUID.randomUUID() ),
-            ParticipantServiceRequest.SetParticipantGroupData( studyId, UUID.randomUUID(), InputDataType( "some", "type" ), CustomInput( "Test" ) )
+        val REQUESTS: List<RecruitmentServiceRequest> = listOf(
+            RecruitmentServiceRequest.AddParticipant( studyId, EmailAddress( "test@test.com" ) ),
+            RecruitmentServiceRequest.GetParticipant( studyId, UUID.randomUUID() ),
+            RecruitmentServiceRequest.GetParticipants( studyId ),
+            RecruitmentServiceRequest.DeployParticipantGroup( studyId, setOf() ),
+            RecruitmentServiceRequest.GetParticipantGroupStatusList( studyId ),
+            RecruitmentServiceRequest.StopParticipantGroup( studyId, UUID.randomUUID() ),
+            RecruitmentServiceRequest.SetParticipantGroupData( studyId, UUID.randomUUID(), InputDataType( "some", "type" ), CustomInput( "Test" ) )
         )
     }
 }

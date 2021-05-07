@@ -29,7 +29,7 @@ class HostsIntegrationTest
     lateinit var eventBus: EventBus
 
     lateinit var studyService: StudyService
-    lateinit var participantService: ParticipantService
+    lateinit var recruitmentService: RecruitmentService
 
     lateinit var deploymentService: DeploymentService
     lateinit var participationService: ParticipationService
@@ -55,11 +55,11 @@ class HostsIntegrationTest
             accountService,
             eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
-        participantService = ParticipantServiceHost(
+        recruitmentService = RecruitmentServiceHost(
             InMemoryParticipantRepository(),
             deploymentService,
             participationService,
-            eventBus.createApplicationServiceAdapter( ParticipantService::class ) )
+            eventBus.createApplicationServiceAdapter( RecruitmentService::class ) )
     }
 
 
@@ -70,7 +70,7 @@ class HostsIntegrationTest
         eventBus.activateHandlers( this )
 
         val study = studyService.createStudy( StudyOwner(), "Test" )
-        val participants = participantService.getParticipants( study.studyId )
+        val participants = recruitmentService.getParticipants( study.studyId )
 
         assertEquals( study.studyId, studyCreated?.study?.studyId )
         assertEquals( 0, participants.size )
@@ -87,11 +87,11 @@ class HostsIntegrationTest
         eventBus.registerHandler( StudyService::class, StudyService.Event.StudyGoneLive::class, this ) { studyGoneLive = it }
         eventBus.activateHandlers( this )
         studyService.goLive( studyId )
-        val participant = participantService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
         // Call succeeding means recruitment is ready for deployment.
         val assignDevices = setOf( AssignParticipantDevices( participant.id, setOf( "Device" ) ) )
-        participantService.deployParticipantGroup( study.studyId, assignDevices )
+        recruitmentService.deployParticipantGroup( study.studyId, assignDevices )
 
         assertEquals( study.studyId, studyGoneLive?.study?.studyId )
     }
@@ -108,9 +108,9 @@ class HostsIntegrationTest
         studyService.goLive( studyId )
 
         // Add participant and deploy participant group.
-        val participant = participantService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
         val assignDevices = AssignParticipantDevices( participant.id, setOf( deviceRole ) )
-        val group = participantService.deployParticipantGroup( studyId, setOf( assignDevices ) )
+        val group = recruitmentService.deployParticipantGroup( studyId, setOf( assignDevices ) )
         val deploymentId = group.studyDeploymentStatus.studyDeploymentId
 
         var studyRemovedEvent: StudyService.Event.StudyRemoved? = null
@@ -124,8 +124,8 @@ class HostsIntegrationTest
         assertEquals( setOf( deploymentId ), deploymentsRemovedEvent?.deploymentIds )
 
          // Data related to study no longer exists.
-        assertFailsWith<IllegalArgumentException> { participantService.getParticipantGroupStatusList( studyId ) }
-        assertFailsWith<IllegalArgumentException> { participantService.getParticipants( studyId ) }
+        assertFailsWith<IllegalArgumentException> { recruitmentService.getParticipantGroupStatusList( studyId ) }
+        assertFailsWith<IllegalArgumentException> { recruitmentService.getParticipants( studyId ) }
         assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatus( deploymentId ) }
         assertFailsWith<IllegalArgumentException> { participationService.getParticipantData( deploymentId ) }
     }

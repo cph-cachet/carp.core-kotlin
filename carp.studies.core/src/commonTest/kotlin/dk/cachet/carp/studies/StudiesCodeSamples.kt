@@ -18,8 +18,8 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
-import dk.cachet.carp.studies.application.ParticipantService
-import dk.cachet.carp.studies.application.ParticipantServiceHost
+import dk.cachet.carp.studies.application.RecruitmentService
+import dk.cachet.carp.studies.application.RecruitmentServiceHost
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceHost
 import dk.cachet.carp.studies.application.StudyStatus
@@ -38,7 +38,7 @@ class StudiesCodeSamples
     @Test
     @Suppress( "UnusedPrivateMember" )
     fun readme() = runSuspendTest {
-        val (studyService, participantService) = createEndpoints()
+        val (studyService, recruitmentService) = createEndpoints()
 
         // Create a new study.
         val studyOwner = StudyOwner()
@@ -53,7 +53,7 @@ class StudiesCodeSamples
 
         // Add a participant.
         val email = EmailAddress( "participant@email.com" )
-        val participant: Participant = participantService.addParticipant( studyId, email )
+        val participant: Participant = recruitmentService.addParticipant( studyId, email )
 
         // Once all necessary study options have been configured, the study can go live.
         if ( studyStatus is StudyStatus.Configuring && studyStatus.canGoLive )
@@ -68,13 +68,13 @@ class StudiesCodeSamples
             val participation = AssignParticipantDevices( participant.id, setOf( patientPhone.roleName ) )
             val participantGroup = setOf( participation )
 
-            val groupStatus: ParticipantGroupStatus = participantService.deployParticipantGroup( studyId, participantGroup )
+            val groupStatus: ParticipantGroupStatus = recruitmentService.deployParticipantGroup( studyId, participantGroup )
             val isInvited = groupStatus.studyDeploymentStatus is StudyDeploymentStatus.Invited // True.
         }
     }
 
 
-    private fun createEndpoints(): Pair<StudyService, ParticipantService>
+    private fun createEndpoints(): Pair<StudyService, RecruitmentService>
     {
         val eventBus = SingleThreadedEventBus()
 
@@ -92,13 +92,13 @@ class StudiesCodeSamples
             InMemoryAccountService(),
             eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
-        val participantService = ParticipantServiceHost(
+        val recruitmentService = RecruitmentServiceHost(
             InMemoryParticipantRepository(),
             deploymentService,
             participationService,
-            eventBus.createApplicationServiceAdapter( ParticipantService::class ) )
+            eventBus.createApplicationServiceAdapter( RecruitmentService::class ) )
 
-        return Pair( studyService, participantService )
+        return Pair( studyService, recruitmentService )
     }
 
     /**

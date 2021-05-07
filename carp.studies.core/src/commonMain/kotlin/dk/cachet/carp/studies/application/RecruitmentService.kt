@@ -12,11 +12,12 @@ import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 
 
 /**
- * Application service which allows adding participants to studies and creating deployments for them.
+ * Application service which allows setting recruitment goals,
+ * adding participants to studies, and creating deployments for them.
  */
-interface ParticipantService : ApplicationService<ParticipantService, ParticipantService.Event>
+interface RecruitmentService : ApplicationService<RecruitmentService, RecruitmentService.Event>
 {
-    sealed class Event : IntegrationEvent<ParticipantService>()
+    sealed class Event : IntegrationEvent<RecruitmentService>()
 
 
     /**

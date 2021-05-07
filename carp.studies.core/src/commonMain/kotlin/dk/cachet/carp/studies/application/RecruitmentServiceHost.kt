@@ -18,12 +18,14 @@ import dk.cachet.carp.studies.domain.users.Recruitment
 import dk.cachet.carp.studies.application.users.participantIds
 
 
-class ParticipantServiceHost(
+// TODO: Participant data is currently retrieved through `participationService` for individual service call.
+//  Instead, we need to subscribe to events from this service and copy the data locally.
+class RecruitmentServiceHost(
     private val participantRepository: ParticipantRepository,
     private val deploymentService: DeploymentService,
     private val participationService: ParticipationService,
-    private val eventBus: ApplicationServiceEventBus<ParticipantService, ParticipantService.Event>
-) : ParticipantService
+    private val eventBus: ApplicationServiceEventBus<RecruitmentService, RecruitmentService.Event>
+) : RecruitmentService
 {
     init
     {
@@ -119,7 +121,9 @@ class ParticipantServiceHost(
         // TODO: The same participants might be invited for different role names, which we currently cannot differentiate between.
         val toDeployParticipantIds = group.map { it.participantId }.toSet()
         val deployedStatus = recruitment.participations.entries
-            .firstOrNull { p -> p.value.map { it.participantId }.toSet() == toDeployParticipantIds }
+            .firstOrNull { (_, participations) ->
+                participations.map { it.participantId }.toSet() == toDeployParticipantIds
+            }
             ?.let { deploymentService.getStudyDeploymentStatus( it.key ) }
         if ( deployedStatus != null && deployedStatus !is StudyDeploymentStatus.Stopped )
         {

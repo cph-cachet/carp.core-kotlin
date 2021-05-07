@@ -14,11 +14,11 @@ import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
 
 
 /**
- * Tests for [ParticipantServiceHost].
+ * Tests for [RecruitmentServiceHost].
  */
-class ParticipantServiceHostTest : ParticipantServiceTest
+class RecruitmentServiceHostTest : RecruitmentServiceTest
 {
-    override fun createService(): Pair<ParticipantService, StudyService>
+    override fun createService(): Pair<RecruitmentService, StudyService>
     {
         val eventBus = SingleThreadedEventBus()
 
@@ -40,11 +40,11 @@ class ParticipantServiceHostTest : ParticipantServiceTest
             accountService,
             eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
-        val participantService = ParticipantServiceHost(
+        val participantService = RecruitmentServiceHost(
             InMemoryParticipantRepository(),
             deploymentService,
             participationService,
-            eventBus.createApplicationServiceAdapter( ParticipantService::class ) )
+            eventBus.createApplicationServiceAdapter( RecruitmentService::class ) )
 
         return Pair( participantService, studyService )
     }

@@ -211,39 +211,39 @@ declare module 'carp.core-kotlin-carp.studies.core'
         }
 
 
-        abstract class ParticipantServiceRequest
+        abstract class RecruitmentServiceRequest
         {
-            static get Companion(): ParticipantServiceRequest$Companion
+            static get Companion(): RecruitmentServiceRequest$Companion
         }
-        interface ParticipantServiceRequest$Companion { serializer(): any }
+        interface RecruitmentServiceRequest$Companion { serializer(): any }
 
-        namespace ParticipantServiceRequest
+        namespace RecruitmentServiceRequest
         {
-            class AddParticipant extends ParticipantServiceRequest
+            class AddParticipant extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID, email: EmailAddress )
             }
-            class GetParticipant extends ParticipantServiceRequest
+            class GetParticipant extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID, participantId: UUID )
             }
-            class GetParticipants extends ParticipantServiceRequest
+            class GetParticipants extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID )
             }
-            class DeployParticipantGroup extends ParticipantServiceRequest
+            class DeployParticipantGroup extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID, group: HashSet<AssignParticipantDevices> )
             }
-            class GetParticipantGroupStatusList extends ParticipantServiceRequest
+            class GetParticipantGroupStatusList extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID )
             }
-            class StopParticipantGroup extends ParticipantServiceRequest
+            class StopParticipantGroup extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID, groupId: UUID )
             }
-            class SetParticipantGroupData extends ParticipantServiceRequest
+            class SetParticipantGroupData extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID, groupId: UUID, inputDataType: NamespacedId, data?: any )
             }

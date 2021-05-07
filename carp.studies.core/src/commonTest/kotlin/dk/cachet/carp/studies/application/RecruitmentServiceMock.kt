@@ -13,10 +13,10 @@ import dk.cachet.carp.test.Mock
 
 // TODO: Due to a bug, `Service` cannot be used here, although that would be preferred.
 //       Change this once this is fixed: https://youtrack.jetbrains.com/issue/KT-24700
-// private typealias Service = ParticipantService
+// private typealias Service = RecruitmentService
 
 
-class ParticipantServiceMock(
+class RecruitmentServiceMock(
     private val addParticipantResult: Participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ),
     private val getParticipantResult: Participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ),
     private val getParticipantsResult: List<Participant> = emptyList(),
@@ -24,7 +24,7 @@ class ParticipantServiceMock(
     private val getParticipantGroupStatusListResult: List<ParticipantGroupStatus> = emptyList(),
     private val stopParticipantGroupResult: ParticipantGroupStatus = groupStatus,
     private val setParticipantGroupDataResult: ParticipantGroupStatus = groupStatus
-) : Mock<ParticipantService>(), ParticipantService
+) : Mock<RecruitmentService>(), RecruitmentService
 {
     companion object
     {
@@ -37,29 +37,29 @@ class ParticipantServiceMock(
 
     override suspend fun addParticipant( studyId: UUID, email: EmailAddress ) =
         addParticipantResult
-        .also { trackSuspendCall( ParticipantService::addParticipant, studyId, email ) }
+        .also { trackSuspendCall( RecruitmentService::addParticipant, studyId, email ) }
 
     override suspend fun getParticipant( studyId: UUID, participantId: UUID ) =
         getParticipantResult
-        .also { trackSuspendCall( ParticipantService::getParticipant, studyId, participantId ) }
+        .also { trackSuspendCall( RecruitmentService::getParticipant, studyId, participantId ) }
 
     override suspend fun getParticipants( studyId: UUID ) =
         getParticipantsResult
-        .also { trackSuspendCall( ParticipantService::getParticipants, studyId ) }
+        .also { trackSuspendCall( RecruitmentService::getParticipants, studyId ) }
 
     override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ) =
         deployParticipantResult
-        .also { trackSuspendCall( ParticipantService::deployParticipantGroup, studyId, group ) }
+        .also { trackSuspendCall( RecruitmentService::deployParticipantGroup, studyId, group ) }
 
     override suspend fun getParticipantGroupStatusList( studyId: UUID ) =
         getParticipantGroupStatusListResult
-        .also { trackSuspendCall( ParticipantService::getParticipantGroupStatusList, studyId ) }
+        .also { trackSuspendCall( RecruitmentService::getParticipantGroupStatusList, studyId ) }
 
     override suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ) =
         stopParticipantGroupResult
-        .also { trackSuspendCall( ParticipantService::stopParticipantGroup, studyId, groupId ) }
+        .also { trackSuspendCall( RecruitmentService::stopParticipantGroup, studyId, groupId ) }
 
     override suspend fun setParticipantGroupData( studyId: UUID, groupId: UUID, inputDataType: InputDataType, data: Data? ) =
         setParticipantGroupDataResult
-        .also { trackSuspendCall( ParticipantService::setParticipantGroupData, studyId, groupId, inputDataType, data ) }
+        .also { trackSuspendCall( RecruitmentService::setParticipantGroupData, studyId, groupId, inputDataType, data ) }
 }

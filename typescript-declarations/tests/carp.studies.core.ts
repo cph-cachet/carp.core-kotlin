@@ -37,7 +37,7 @@ import ParticipantGroupStatus = dk.cachet.carp.studies.application.users.Partici
 import StudyOwner = dk.cachet.carp.studies.application.users.StudyOwner
 import getAssignedParticipantIds = dk.cachet.carp.studies.application.users.participantIds_ttprz$
 import getAssignedDeviceRoles = dk.cachet.carp.studies.application.users.deviceRoles_ttprz$
-import ParticipantServiceRequest = dk.cachet.carp.studies.infrastructure.ParticipantServiceRequest
+import RecruitmentServiceRequest = dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest
 import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
 
 
@@ -59,7 +59,7 @@ describe( "carp.studies.core", () => {
             ParticipantGroupStatus.Companion,
             new StudyOwner(),
             StudyOwner.Companion,
-            ParticipantServiceRequest.Companion,
+            RecruitmentServiceRequest.Companion,
             StudyServiceRequest.Companion,
         ]
 
@@ -141,7 +141,7 @@ describe( "carp.studies.core", () => {
 
     describe( "ParticipantServiceRequest", () => {
         it( "can serialize DeployParticipantGroup", () => {
-            const deployGroup = new ParticipantServiceRequest.DeployParticipantGroup(
+            const deployGroup = new RecruitmentServiceRequest.DeployParticipantGroup(
                 UUID.Companion.randomUUID(),
                 toSet( [
                     new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Smartphone" ] ) )
@@ -149,7 +149,7 @@ describe( "carp.studies.core", () => {
             )
 
             const json: Json = createDefaultJSON()
-            const serializer = ParticipantServiceRequest.Companion.serializer()
+            const serializer = RecruitmentServiceRequest.Companion.serializer()
             const serialized = json.encodeToString_tf03ej$( serializer, deployGroup )
             expect( serialized ).is.not.undefined
         } )

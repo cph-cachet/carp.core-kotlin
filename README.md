@@ -179,7 +179,7 @@ val json: String = protocol.getSnapshot().toJson()
 **carp.studies**: Example creation of a study based on a study protocol, and adding and deploying a single participant:
 
 ```kotlin
-val (studyService, participantService) = createEndpoints()
+val (studyService, recruitmentService) = createEndpoints()
 
 // Create a new study.
 val studyOwner = StudyOwner()
@@ -194,7 +194,7 @@ studyStatus = studyService.setProtocol( studyId, protocolSnapshot )
 
 // Add a participant.
 val email = EmailAddress( "participant@email.com" )
-val participant: Participant = participantService.addParticipant( studyId, email )
+val participant: Participant = recruitmentService.addParticipant( studyId, email )
 
 // Once all necessary study options have been configured, the study can go live.
 if ( studyStatus is StudyStatus.Configuring && studyStatus.canGoLive )
@@ -209,7 +209,7 @@ if ( studyStatus.canDeployToParticipants )
     val participation = AssignParticipantDevices( participant.id, setOf( patientPhone.roleName ) )
     val participantGroup = setOf( participation )
 
-    val groupStatus: ParticipantGroupStatus = participantService.deployParticipantGroup( studyId, participantGroup )
+    val groupStatus: ParticipantGroupStatus = recruitmentService.deployParticipantGroup( studyId, participantGroup )
     val isInvited = groupStatus.studyDeploymentStatus is StudyDeploymentStatus.Invited // True.
 }
 ```

@@ -22,14 +22,14 @@ private val unknownId: UUID = UUID.randomUUID()
 
 
 /**
- * Tests for implementations of [ParticipantService].
+ * Tests for implementations of [RecruitmentService].
  */
-interface ParticipantServiceTest
+interface RecruitmentServiceTest
 {
     /**
-     * Create a participant service and study service it depends on to be used in the tests.
+     * Create a recruitment service and study service it depends on to be used in the tests.
      */
-    fun createService(): Pair<ParticipantService, StudyService>
+    fun createService(): Pair<RecruitmentService, StudyService>
 
 
     @Test
@@ -308,15 +308,15 @@ interface ParticipantServiceTest
     }
 
     private suspend fun createLiveGroup(
-        participantService: ParticipantService,
+        recruitmentService: RecruitmentService,
         studyId: UUID,
         protocolSnapshot: StudyProtocolSnapshot
     ): ParticipantGroupStatus
     {
-        val participant = participantService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
         val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
 
-        return participantService.deployParticipantGroup( studyId, setOf( assignParticipant ) )
+        return recruitmentService.deployParticipantGroup( studyId, setOf( assignParticipant ) )
     }
 }
