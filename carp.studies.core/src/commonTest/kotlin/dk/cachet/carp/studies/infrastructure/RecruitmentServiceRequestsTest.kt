@@ -12,7 +12,7 @@ import dk.cachet.carp.studies.application.RecruitmentServiceMock
 /**
  * Tests for [RecruitmentServiceRequest]'s.
  */
-class ParticipantServiceRequestsTest : ApplicationServiceRequestsTest<RecruitmentService, RecruitmentServiceRequest>(
+class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<RecruitmentService, RecruitmentServiceRequest>(
     RecruitmentService::class,
     RecruitmentServiceMock(),
     RecruitmentServiceRequest.serializer(),

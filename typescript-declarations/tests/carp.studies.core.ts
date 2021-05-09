@@ -26,7 +26,6 @@ import createDefaultJSON = cdk.cachet.carp.common.infrastructure.serialization.c
 
 import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
 import StudyDeploymentStatus = ddk.cachet.carp.deployments.application.StudyDeploymentStatus
-import DeanonymizedParticipant = ddk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import StudyInvitation = ddk.cachet.carp.deployments.application.users.StudyInvitation
 
 import { dk } from 'carp.core-kotlin-carp.studies.core'
@@ -54,7 +53,7 @@ describe( "carp.studies.core", () => {
             AssignParticipantDevices.Companion,
             new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ),
             Participant.Companion,
-            new ParticipantGroupStatus( new StudyDeploymentStatus(), new HashSet<DeanonymizedParticipant>(), toMap( [] ) ),
+            new ParticipantGroupStatus( new StudyDeploymentStatus(), new HashSet<Participant>(), toMap( [] ) ),
             ParticipantGroupStatus.Companion,
             new StudyOwner(),
             StudyOwner.Companion,
@@ -138,7 +137,7 @@ describe( "carp.studies.core", () => {
     } )
 
 
-    describe( "ParticipantServiceRequest", () => {
+    describe( "RecruitmentServiceRequest", () => {
         it( "can serialize DeployParticipantGroup", () => {
             const deployGroup = new RecruitmentServiceRequest.DeployParticipantGroup(
                 UUID.Companion.randomUUID(),
@@ -164,7 +163,7 @@ describe( "carp.studies.core", () => {
 
         it( "can serialize ParticipantGroupStatus", () => {
             const deploymentStatus = new StudyDeploymentStatus.DeploymentReady( UUID.Companion.randomUUID(), new ArrayList( [] ), DateTime.Companion.now() )
-            const participants = toSet( [ new DeanonymizedParticipant( UUID.Companion.randomUUID(), UUID.Companion.randomUUID() ) ] )
+            const participants = toSet( [ new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ) ] )
 
             // Initialize data through a participant attribute. TypeScript does not have to initialize data objects directly.
             const attribute = new ParticipantAttribute.CustomParticipantAttribute( new Text( "Name" ) )

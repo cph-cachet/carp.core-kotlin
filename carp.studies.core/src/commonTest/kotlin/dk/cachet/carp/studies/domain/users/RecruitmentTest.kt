@@ -3,7 +3,6 @@ package dk.cachet.carp.studies.domain.users
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
-import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
@@ -15,14 +14,20 @@ import kotlin.test.*
  */
 class RecruitmentTest
 {
+    private val studyId = UUID.randomUUID()
+    private val studyDeploymentId = UUID.randomUUID()
+    private val participantEmail = EmailAddress( "test@test.com" )
+
+
     @Test
     fun creating_recruitment_fromSnapshot_obtained_by_getSnapshot_is_the_same()
     {
-        val recruitment = Recruitment( UUID.randomUUID() )
+        val recruitment = Recruitment( studyId )
+        val participant = recruitment.addParticipant( participantEmail )
         val protocol = createEmptyProtocol()
         val invitation = StudyInvitation( "Test", "A study" )
         recruitment.lockInStudy( protocol.getSnapshot(), invitation )
-        recruitment.addParticipation( UUID.randomUUID(), DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() ) )
+        recruitment.addParticipation( participant, studyDeploymentId )
 
         val snapshot = recruitment.getSnapshot()
         val fromSnapshot = Recruitment.fromSnapshot( snapshot )
@@ -36,14 +41,13 @@ class RecruitmentTest
     @Test
     fun addParticipant_succeeds()
     {
-        val recruitment = Recruitment( UUID.randomUUID() )
+        val recruitment = Recruitment( studyId )
 
-        val email = EmailAddress( "test@test.com" )
-        val participant = recruitment.addParticipant( email )
+        val participant = recruitment.addParticipant( participantEmail )
         val participantEvents = recruitment.consumeEvents().filterIsInstance<Recruitment.Event.ParticipantAdded>()
         val retrievedParticipant = recruitment.participants
 
-        assertEquals( EmailAccountIdentity( email ), participant.accountIdentity )
+        assertEquals( EmailAccountIdentity( participantEmail ), participant.accountIdentity )
         assertEquals( participant, retrievedParticipant.single() )
         assertEquals( participant, participantEvents.single().participant )
     }
@@ -52,11 +56,10 @@ class RecruitmentTest
     @Test
     fun addParticipant_twice_returns_same_participant()
     {
-        val recruitment = Recruitment( UUID.randomUUID() )
-        val email = EmailAddress( "test@test.com" )
-        val p1 = recruitment.addParticipant( email )
+        val recruitment = Recruitment( studyId )
+        val p1 = recruitment.addParticipant( participantEmail )
 
-        val p2 = recruitment.addParticipant( email )
+        val p2 = recruitment.addParticipant( participantEmail )
         val participantEvents = recruitment.consumeEvents().filterIsInstance<Recruitment.Event.ParticipantAdded>()
 
         assertTrue( p1 == p2 )
@@ -66,7 +69,7 @@ class RecruitmentTest
     @Test
     fun lockInStudy_succeeds()
     {
-        val recruitment = Recruitment( UUID.randomUUID() )
+        val recruitment = Recruitment( studyId )
         assertTrue( recruitment.getStatus() is RecruitmentStatus.AwaitingStudyToGoLive )
 
         val protocol = createSingleMasterDeviceProtocol().getSnapshot()
@@ -82,7 +85,7 @@ class RecruitmentTest
     @Test
     fun lockInStudy_only_allowed_once()
     {
-        val recruitment = Recruitment( UUID.randomUUID() )
+        val recruitment = Recruitment( studyId )
         val protocol = createSingleMasterDeviceProtocol().getSnapshot()
         val invitation = StudyInvitation.empty()
         recruitment.lockInStudy( protocol, invitation )
@@ -93,29 +96,27 @@ class RecruitmentTest
     @Test
     fun addParticipation_succeeds()
     {
-        val recruitment = Recruitment( UUID.randomUUID() )
+        val recruitment = Recruitment( studyId )
+        val participant = recruitment.addParticipant( participantEmail )
         val protocol = createEmptyProtocol()
         recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation.empty() )
 
         assertTrue( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
 
-        val studyDeploymentId = UUID.randomUUID()
-        val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
-        recruitment.addParticipation( studyDeploymentId, participation )
-        assertEquals( Recruitment.Event.ParticipationAdded( studyDeploymentId, participation ), recruitment.consumeEvents().last() )
-        assertEquals( participation, recruitment.getParticipations( studyDeploymentId ).single() )
+        recruitment.addParticipation( participant, studyDeploymentId )
+        assertEquals( Recruitment.Event.ParticipationAdded( participant, studyDeploymentId ), recruitment.consumeEvents().last() )
+        assertEquals( participant, recruitment.getParticipations( studyDeploymentId ).single() )
     }
 
     @Test
     fun addParticipation_fails_when_study_protocol_not_locked_in()
     {
-        val recruitment = Recruitment( UUID.randomUUID() )
+        val recruitment = Recruitment( studyId )
+        val participant = recruitment.addParticipant( participantEmail )
 
         assertFalse( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
 
-        val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
-        val studyDeploymentId = UUID.randomUUID()
-        assertFailsWith<IllegalStateException> { recruitment.addParticipation( studyDeploymentId, participation ) }
+        assertFailsWith<IllegalStateException> { recruitment.addParticipation( participant, studyDeploymentId ) }
         val participationEvents = recruitment.consumeEvents().filterIsInstance<Recruitment.Event.ParticipationAdded>()
         assertEquals( 0, participationEvents.count() )
     }
@@ -123,7 +124,7 @@ class RecruitmentTest
     @Test
     fun getParticipations_fails_for_unknown_studyDeploymentId()
     {
-        val recruitment = Recruitment( UUID.randomUUID() )
+        val recruitment = Recruitment( studyId )
 
         val unknownId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException> { recruitment.getParticipations( unknownId ) }

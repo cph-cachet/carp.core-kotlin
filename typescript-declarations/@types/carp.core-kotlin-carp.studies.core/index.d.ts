@@ -17,7 +17,6 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
     import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
     import StudyDeploymentStatus = ddk.cachet.carp.deployments.application.StudyDeploymentStatus
-    import DeanonymizedParticipation = ddk.cachet.carp.deployments.application.users.DeanonymizedParticipation
     import StudyInvitation = ddk.cachet.carp.deployments.application.users.StudyInvitation
 
     import { dk as pdk } from 'carp.core-kotlin-carp.protocols.core'
@@ -124,12 +123,12 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
         class ParticipantGroupStatus
         {
-            constructor( studyDeploymentStatus: StudyDeploymentStatus, participants: HashSet<DeanonymizedParticipation>, data: HashMap<NamespacedId, any> )
+            constructor( studyDeploymentStatus: StudyDeploymentStatus, participants: HashSet<Participant>, data: HashMap<NamespacedId, any> )
 
             static get Companion(): ParticipantGroupStatus$Companion
 
             readonly studyDeploymentStatus: StudyDeploymentStatus
-            readonly participants: HashSet<DeanonymizedParticipation>
+            readonly participants: HashSet<Participant>
             readonly data: any
         }
         interface ParticipantGroupStatus$Companion { serializer(): any }

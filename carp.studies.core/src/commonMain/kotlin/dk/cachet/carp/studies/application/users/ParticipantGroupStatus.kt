@@ -4,7 +4,6 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
-import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import kotlinx.serialization.Serializable
 
@@ -19,9 +18,9 @@ data class ParticipantGroupStatus(
      */
     val studyDeploymentStatus: StudyDeploymentStatus,
     /**
-     * The participants and assigned anonymized participation IDs that are part of this deployment.
+     * The participants that are part of this deployment.
      */
-    val participants: Set<DeanonymizedParticipation>,
+    val participants: Set<Participant>,
     /**
      * Configurable data related to the participants in this participant group.
      * Data which is not set equals null.
