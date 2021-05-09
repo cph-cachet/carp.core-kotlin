@@ -21,8 +21,13 @@ class AccountParticipationTest
         stoppedGroup.studyDeploymentStopped()
 
         val participation = Participation( activeGroup.studyDeploymentId )
-        val accountId = UUID.randomUUID()
-        val invitation = AccountParticipation( accountId, participation, StudyInvitation.empty(), setOf( deviceRole ) )
+        val invitation = AccountParticipation(
+            externalParticipantId = UUID.randomUUID(),
+            accountId = UUID.randomUUID(),
+            participation,
+            StudyInvitation.empty(),
+            setOf( deviceRole )
+        )
 
         val activeInvitations = filterActiveParticipationInvitations(
             setOf( invitation ),
@@ -40,8 +45,13 @@ class AccountParticipationTest
         val group = ParticipantGroup.fromNewDeployment( deployment )
 
         val participation = Participation( group.studyDeploymentId )
-        val accountId = UUID.randomUUID()
-        val invitation = AccountParticipation( accountId, participation, StudyInvitation.empty(), setOf( deviceRole ) )
+        val invitation = AccountParticipation(
+            externalParticipantId = UUID.randomUUID(),
+            accountId = UUID.randomUUID(),
+            participation,
+            StudyInvitation.empty(),
+            setOf( deviceRole )
+        )
 
         // When the device is not registered in the deployment, this is communicated in the active invitation.
         var activeInvitation = filterActiveParticipationInvitations(
@@ -68,8 +78,13 @@ class AccountParticipationTest
     {
         val unknownDeployment = UUID.randomUUID()
         val participation = Participation( unknownDeployment )
-        val accountId = UUID.randomUUID()
-        val invitation = AccountParticipation( accountId, participation, StudyInvitation.empty(), setOf( "Smartphone" ) )
+        val invitation = AccountParticipation(
+            externalParticipantId = UUID.randomUUID(),
+            accountId = UUID.randomUUID(),
+            participation,
+            StudyInvitation.empty(),
+            setOf( "Smartphone" )
+        )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -83,8 +98,13 @@ class AccountParticipationTest
         val group = ParticipantGroup.fromNewDeployment( createActiveDeployment( "Master" ) )
 
         val participation = Participation( group.studyDeploymentId )
-        val accountId = UUID.randomUUID()
-        val invitation = AccountParticipation( accountId, participation, StudyInvitation.empty(), setOf( "Incorrect device role" ) )
+        val invitation = AccountParticipation(
+            externalParticipantId = UUID.randomUUID(),
+            accountId = UUID.randomUUID(),
+            participation,
+            StudyInvitation.empty(),
+            setOf( "Incorrect device role" )
+        )
 
         assertFailsWith<IllegalArgumentException>
         {

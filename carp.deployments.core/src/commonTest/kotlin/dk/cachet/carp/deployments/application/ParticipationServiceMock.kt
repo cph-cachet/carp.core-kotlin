@@ -22,9 +22,9 @@ class ParticipationServiceMock(
     private val setParticipantDataResult: ParticipantData = ParticipantData( UUID.randomUUID(), emptyMap() )
 ) : Mock<ParticipationService>(), ParticipationService
 {
-    override suspend fun addParticipation( studyDeploymentId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ) =
+    override suspend fun addParticipation( studyDeploymentId: UUID, externalParticipantId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ) =
         Participation( studyDeploymentId )
-        .also { trackSuspendCall( ParticipationService::addParticipation, studyDeploymentId, deviceRoleNames, identity, invitation ) }
+        .also { trackSuspendCall( ParticipationService::addParticipation, studyDeploymentId, externalParticipantId, deviceRoleNames, identity, invitation ) }
 
     override suspend fun getActiveParticipationInvitations( accountId: UUID ) =
         getActiveParticipationInvitationResult

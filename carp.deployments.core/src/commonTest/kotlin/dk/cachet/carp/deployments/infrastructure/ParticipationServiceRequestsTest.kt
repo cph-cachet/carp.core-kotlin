@@ -23,7 +23,7 @@ class ParticipationServiceRequestsTest : ApplicationServiceRequestsTest<Particip
     companion object
     {
         val REQUESTS: List<ParticipationServiceRequest> = listOf(
-            ParticipationServiceRequest.AddParticipation( UUID.randomUUID(), setOf( "Phone" ), UsernameAccountIdentity( "Test" ), StudyInvitation.empty() ),
+            ParticipationServiceRequest.AddParticipation( UUID.randomUUID(), UUID.randomUUID(), setOf( "Phone" ), UsernameAccountIdentity( "Test" ), StudyInvitation.empty() ),
             ParticipationServiceRequest.GetActiveParticipationInvitations( UUID.randomUUID() ),
             ParticipationServiceRequest.GetParticipantData( UUID.randomUUID() ),
             ParticipationServiceRequest.GetParticipantDataList( emptySet() ),

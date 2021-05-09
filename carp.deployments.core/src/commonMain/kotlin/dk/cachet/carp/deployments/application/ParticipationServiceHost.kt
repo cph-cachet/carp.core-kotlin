@@ -68,8 +68,11 @@ class ParticipationServiceHost(
 
 
     /**
-     * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId],
+     * Let the participant with [externalParticipantId], uniquely assigned by the calling service,
+     * participate in the study deployment with [studyDeploymentId],
      * using the master devices with the specified [assignedMasterDeviceRoleNames].
+     *
+     * The specified [identity] is used to invite and authenticate the participant.
      * In case no account is associated to the specified [identity], a new account is created.
      * An [invitation] (and account details) is delivered to the person managing the [identity],
      * or should be handed out manually to the relevant participant by the person managing the specified [identity].
@@ -78,11 +81,13 @@ class ParticipationServiceHost(
      * - there is no study deployment with [studyDeploymentId]
      * - any of the [assignedMasterDeviceRoleNames] are not part of the study protocol deployment
      * @throws IllegalStateException when:
-     * - the specified [identity] was already invited to participate in this deployment and a different [invitation] is specified than a previous request
+     * - the specified [externalParticipantId] was already invited to participate in this deployment
+     *  with different [assignedMasterDeviceRoleNames], [identity], or [invitation]
      * - this deployment has stopped
      */
     override suspend fun addParticipation(
         studyDeploymentId: UUID,
+        externalParticipantId: UUID,
         assignedMasterDeviceRoleNames: Set<String>,
         identity: AccountIdentity,
         invitation: StudyInvitation
@@ -91,14 +96,13 @@ class ParticipationServiceHost(
         val group = participationRepository.getParticipantGroupOrThrowBy( studyDeploymentId )
         val assignedMasterDevices = assignedMasterDeviceRoleNames.map { group.getAssignedMasterDevice( it ) }
 
-        var account = accountService.findAccount( identity )
-
         // Retrieve or create participation.
-        var participation = account?.let { group.getParticipation( it ) }
+        var participation = group.getParticipation( externalParticipantId )
         val isNewParticipation = participation == null
         participation = participation ?: Participation( studyDeploymentId )
 
         // Ensure an account exists for the given identity and an invitation has been sent out.
+        var account = accountService.findAccount( identity )
         val deviceDescriptors = assignedMasterDeviceRoleNames.map { roleToUse ->
             group.assignedMasterDevices.first { it.device.roleName == roleToUse } }.map { it.device }
         if ( account == null )
@@ -114,7 +118,7 @@ class ParticipationServiceHost(
         if ( isNewParticipation )
         {
             val masterDevices = assignedMasterDevices.map { it.device }.toSet()
-            group.addParticipation( account, participation, invitation, masterDevices )
+            group.addParticipation( externalParticipantId, account, participation, invitation, masterDevices )
             participationRepository.putParticipantGroup( group )
         }
         else

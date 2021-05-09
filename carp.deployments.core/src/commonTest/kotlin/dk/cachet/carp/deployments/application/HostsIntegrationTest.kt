@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployments.application
 
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.application.users.AccountIdentity
@@ -101,6 +102,7 @@ class HostsIntegrationTest
         {
             participationService.addParticipation(
                 deploymentId,
+                externalParticipantId = UUID.randomUUID(),
                 deviceRoles,
                 AccountIdentity.fromUsername( "Test" ),
                 StudyInvitation.empty()
@@ -120,6 +122,7 @@ class HostsIntegrationTest
         val assignedDevice = protocol.masterDevices.first()
         participationService.addParticipation(
             deploymentId,
+            externalParticipantId = UUID.randomUUID(),
             setOf( assignedDevice.roleName ),
             accountId,
             StudyInvitation.empty() )

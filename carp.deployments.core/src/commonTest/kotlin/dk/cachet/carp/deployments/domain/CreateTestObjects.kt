@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployments.domain
 
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.Sex
@@ -77,6 +78,7 @@ fun createComplexParticipantGroup(): ParticipantGroup
 
     return ParticipantGroup.fromNewDeployment( deployment ).apply {
         addParticipation(
+            externalParticipantId = UUID.randomUUID(),
             Account.withEmailIdentity( "test@test.com" ),
             Participation( studyDeploymentId ),
             StudyInvitation.empty(),

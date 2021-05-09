@@ -68,14 +68,16 @@ class ParticipantGroupTest
         val group = createParticipantGroup()
         val devicesToAssign = group.assignedMasterDevices.map { it.device }.toSet()
 
+        val externalParticipantId = UUID.randomUUID()
         val account = Account.withUsernameIdentity( "test" )
         val participation = Participation( group.studyDeploymentId )
         val invitation = StudyInvitation.empty()
-        group.addParticipation( account, participation, invitation, devicesToAssign )
-        val retrievedParticipation = group.getParticipation( account )
+        group.addParticipation( externalParticipantId, account, participation, invitation, devicesToAssign )
+        val retrievedParticipation = group.getParticipation( externalParticipantId )
 
         assertEquals( participation, retrievedParticipation )
         val expectedParticipation = AccountParticipation(
+            externalParticipantId,
             account.id,
             participation,
             invitation,
@@ -95,6 +97,7 @@ class ParticipantGroupTest
         assertFailsWith<IllegalArgumentException>
         {
             group.addParticipation(
+                externalParticipantId = UUID.randomUUID(),
                 account,
                 participation,
                 StudyInvitation.empty(),
@@ -104,17 +107,18 @@ class ParticipantGroupTest
     }
 
     @Test
-    fun addParticipation_for_existing_account_fails()
+    fun addParticipation_for_existing_externalParticipantId_fails()
     {
         val group = createParticipantGroup()
         val devicesToAssign = group.assignedMasterDevices.map { it.device }.toSet()
+        val externalParticipantId = UUID.randomUUID()
         val account = Account.withUsernameIdentity( "test" )
         val invitation = StudyInvitation.empty()
-        group.addParticipation( account, Participation( group.studyDeploymentId ), invitation, devicesToAssign )
+        group.addParticipation( externalParticipantId, account, Participation( group.studyDeploymentId ), invitation, devicesToAssign )
 
         assertFailsWith<IllegalArgumentException>
         {
-            group.addParticipation( account, Participation( group.studyDeploymentId ), invitation, devicesToAssign )
+            group.addParticipation( externalParticipantId, account, Participation( group.studyDeploymentId ), invitation, devicesToAssign )
         }
         assertEquals( 1, group.consumeEvents().filterIsInstance<ParticipantGroup.Event.ParticipationAdded>().count() )
     }
@@ -130,6 +134,7 @@ class ParticipantGroupTest
         assertFailsWith<IllegalStateException>
         {
             group.addParticipation(
+                externalParticipantId = UUID.randomUUID(),
                 account,
                 Participation( group.studyDeploymentId ),
                 StudyInvitation.empty(),
@@ -138,12 +143,12 @@ class ParticipantGroupTest
     }
 
     @Test
-    fun getParticipation_for_non_participating_account_returns_null()
+    fun getParticipation_for_nonexisting_external_participant_id_returns_null()
     {
         val group = createParticipantGroup()
 
-        val account = Account.withUsernameIdentity( "test" )
-        val participation = group.getParticipation( account )
+        val unknownId = UUID.randomUUID()
+        val participation = group.getParticipation( unknownId )
         assertNull( participation )
     }
 

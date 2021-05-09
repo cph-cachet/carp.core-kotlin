@@ -146,6 +146,7 @@ class RecruitmentServiceHost(
             val identity: AccountIdentity = allParticipants.getValue( toAssign.participantId ).accountIdentity
             val participation = participationService.addParticipation(
                 deploymentStatus.studyDeploymentId,
+                toAssign.participantId,
                 toAssign.masterDeviceRoleNames,
                 identity,
                 recruitmentStatus.invitation )

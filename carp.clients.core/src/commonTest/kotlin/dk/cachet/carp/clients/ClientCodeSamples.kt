@@ -89,7 +89,13 @@ class ClientCodeSamples
         // Invite a participant.
         val phone = protocol.masterDevices.first()
         val invitation = StudyInvitation.empty()
-        participationService.addParticipation( status.studyDeploymentId, setOf( phone.roleName ), accountIdentity, invitation )
+        participationService.addParticipation(
+            status.studyDeploymentId,
+            externalParticipantId = UUID.randomUUID(),
+            setOf( phone.roleName ),
+            accountIdentity,
+            invitation
+        )
         accountService.findAccount( accountIdentity )
 
         return Pair( participationService, deploymentService )

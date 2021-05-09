@@ -24,8 +24,11 @@ interface ParticipationService : ApplicationService<ParticipationService, Partic
 
 
     /**
-     * Let the person with the specified [identity] participate in the study deployment with [studyDeploymentId],
+     * Let the participant with [externalParticipantId], uniquely assigned by the calling service,
+     * participate in the study deployment with [studyDeploymentId],
      * using the master devices with the specified [assignedMasterDeviceRoleNames].
+     *
+     * The specified [identity] is used to invite and authenticate the participant.
      * In case no account is associated to the specified [identity], a new account is created.
      * An [invitation] (and account details) is delivered to the person managing the [identity],
      * or should be handed out manually to the relevant participant by the person managing the specified [identity].
@@ -34,11 +37,13 @@ interface ParticipationService : ApplicationService<ParticipationService, Partic
      * - there is no study deployment with [studyDeploymentId]
      * - any of the [assignedMasterDeviceRoleNames] are not part of the study protocol deployment
      * @throws IllegalStateException when:
-     * - the specified [identity] was already invited to participate in this deployment and a different [invitation] is specified than a previous request
+     * - the specified [externalParticipantId] was already invited to participate in this deployment
+     *  with different [assignedMasterDeviceRoleNames], [identity], or [invitation]
      * - this deployment has stopped
      */
     suspend fun addParticipation(
         studyDeploymentId: UUID,
+        externalParticipantId: UUID,
         assignedMasterDeviceRoleNames: Set<String>,
         identity: AccountIdentity,
         invitation: StudyInvitation
