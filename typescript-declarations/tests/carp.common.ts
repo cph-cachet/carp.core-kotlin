@@ -24,6 +24,7 @@ import DeviceRegistration = dk.cachet.carp.common.application.devices.DeviceRegi
 import AccountIdentity = dk.cachet.carp.common.application.users.AccountIdentity
 import EmailAccountIdentity = dk.cachet.carp.common.application.users.EmailAccountIdentity
 import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute
+import Username = dk.cachet.carp.common.application.users.Username
 import UsernameAccountIdentity = dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import emailAccountIdentityFromString = dk.cachet.carp.common.application.users.EmailAccountIdentity_init_61zpoe$
 import createDefaultJSON = dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
@@ -31,6 +32,8 @@ import createDefaultJSON = dk.cachet.carp.common.infrastructure.serialization.cr
 
 describe( "carp.common", () => {
     it( "verify module declarations", async () => {
+        const username = new Username( "Test" )
+
         const instances = [
             DateTime.Companion.now(),
             DateTime.Companion,
@@ -52,7 +55,9 @@ describe( "carp.common", () => {
             AccountIdentity.Factory,
             new EmailAccountIdentity( new EmailAddress( "test@test.com" ) ),
             EmailAccountIdentity.Companion,
-            new UsernameAccountIdentity( "Test" ),
+            username,
+            Username.Companion,
+            new UsernameAccountIdentity( username ),
             UsernameAccountIdentity.Companion,
             [ "ParticipantAttribute", new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ) ],
             ParticipantAttribute.Companion,

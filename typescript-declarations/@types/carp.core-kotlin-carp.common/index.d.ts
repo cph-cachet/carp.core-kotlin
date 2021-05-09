@@ -126,6 +126,16 @@ declare module 'carp.core-kotlin-carp.common'
         import InputDataTypeList = dk.cachet.carp.common.application.data.input.InputDataTypeList
 
 
+        class Username
+        {
+            constructor( name: string )
+
+            static get Companion(): Username$Companion
+
+            readonly name: string
+        }
+        interface Username$Companion { serializer(): any }
+
         abstract class AccountIdentity
         {
             static get Factory(): AccountIdentity$Factory
@@ -149,12 +159,13 @@ declare module 'carp.core-kotlin-carp.common'
 
         class UsernameAccountIdentity extends AccountIdentity
         {
-            constructor( username: string )
+            constructor( username: Username )
 
             static get Companion(): UsernameAccountIdentity$Companion
 
-            readonly username: string
-        } 
+            readonly username: Username
+        }
+        function UsernameAccountIdentity_init_61zpoe$( username: string ): UsernameAccountIdentity
         interface UsernameAccountIdentity$Companion { serializer(): any }
 
 
