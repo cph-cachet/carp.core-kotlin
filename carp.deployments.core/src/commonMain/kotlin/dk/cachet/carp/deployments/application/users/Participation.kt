@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Uniquely identifies the participation of an account in a study deployment.
+ * Uniquely identifies a participation of an account in a study deployment.
  */
 @Serializable
 data class Participation(

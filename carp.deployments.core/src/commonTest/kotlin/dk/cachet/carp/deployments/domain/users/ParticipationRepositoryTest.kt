@@ -34,14 +34,16 @@ interface ParticipationRepositoryTest
         val group = ParticipantGroup.fromNewDeployment( deployment )
 
         // Add participation.
+        val externalParticipantId = UUID.randomUUID()
         val account = Account.withEmailIdentity( "test@test.com" )
         val participation = Participation( deployment.id )
         val invitation = StudyInvitation.empty()
-        group.addParticipation( account, participation, invitation, protocol.masterDevices )
+        group.addParticipation( externalParticipantId, account, participation, invitation, protocol.masterDevices )
         repo.putParticipantGroup( group )
 
         val expectedInvitations = setOf(
             AccountParticipation(
+                externalParticipantId,
                 account.id,
                 participation,
                 invitation,

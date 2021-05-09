@@ -294,7 +294,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         {
             class AddParticipation extends ParticipationServiceRequest
             {
-                constructor( studyDeploymentId: UUID, deviceRoleNames: HashSet<String>, identity: AccountIdentity, invitation: StudyInvitation )
+                constructor( studyDeploymentId: UUID, externalParticipantId: UUID, deviceRoleNames: HashSet<String>, identity: AccountIdentity, invitation: StudyInvitation )
             }
             class GetActiveParticipationInvitations extends ParticipationServiceRequest
             {

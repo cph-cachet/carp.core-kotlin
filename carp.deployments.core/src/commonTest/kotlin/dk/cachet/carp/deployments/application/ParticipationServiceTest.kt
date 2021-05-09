@@ -33,6 +33,8 @@ abstract class ParticipationServiceTest
         participantDataInputTypes: InputDataTypeList = CarpInputDataTypes
     ): Triple<ParticipationService, DeploymentService, AccountService>
 
+    private val externalParticipantId = UUID.randomUUID()
+
 
     @Test
     fun addParticipation_after_stop_not_allowed() = runSuspendTest {
@@ -42,8 +44,15 @@ abstract class ParticipationServiceTest
 
         val accountId = AccountIdentity.fromUsername( "Test" )
         val invitation = StudyInvitation.empty()
-        assertFailsWith<IllegalStateException>
-            { participationService.addParticipation( studyDeploymentId, setOf( deviceRoleName ), accountId, invitation ) }
+        assertFailsWith<IllegalStateException> {
+            participationService.addParticipation(
+                studyDeploymentId,
+                externalParticipantId,
+                setOf( deviceRoleName ),
+                accountId,
+                invitation
+            )
+        }
     }
 
     @Test
@@ -53,7 +62,13 @@ abstract class ParticipationServiceTest
 
         val accountIdentity = AccountIdentity.fromUsername( "test" )
         val invitation = StudyInvitation.empty()
-        val participation = participationService.addParticipation( studyDeploymentId, setOf( deviceRoleName ), accountIdentity, invitation )
+        val participation = participationService.addParticipation(
+            studyDeploymentId,
+            externalParticipantId,
+            setOf( deviceRoleName ),
+            accountIdentity,
+            invitation
+        )
 
         assertEquals( studyDeploymentId, participation.studyDeploymentId )
     }
@@ -65,7 +80,13 @@ abstract class ParticipationServiceTest
 
         val emailIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
         val invitation = StudyInvitation.empty()
-        participationService.addParticipation( studyDeploymentId, setOf( deviceRoleName ), emailIdentity, invitation )
+        participationService.addParticipation(
+            studyDeploymentId,
+            externalParticipantId,
+            setOf( deviceRoleName ),
+            emailIdentity,
+            invitation
+        )
 
         // Verify whether account was added.
         val foundAccount = accountService.findAccount( emailIdentity )
@@ -74,7 +95,7 @@ abstract class ParticipationServiceTest
 
     @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
     @Test
-    fun addParticipation_with_same_studyDeploymentId_and_identity() = runSuspendTest {
+    fun addParticipation_with_same_parameters_returns_same_participation() = runSuspendTest {
         val (participationService, deploymentService, _) = createService()
         val studyDeploymentId = addTestDeployment( deploymentService )
 
@@ -82,9 +103,48 @@ abstract class ParticipationServiceTest
         val invitation = StudyInvitation.empty()
 
         // Adding the same identity to a deployment returns the same participation.
-        val p1: Participation = participationService.addParticipation( studyDeploymentId, setOf( deviceRoleName ), emailIdentity, invitation )
-        val p2: Participation = participationService.addParticipation( studyDeploymentId, setOf( deviceRoleName ), emailIdentity, invitation )
+        val p1: Participation = participationService.addParticipation(
+            studyDeploymentId,
+            externalParticipantId,
+            setOf( deviceRoleName ),
+            emailIdentity,
+            invitation
+        )
+        val p2: Participation = participationService.addParticipation(
+            studyDeploymentId,
+            externalParticipantId,
+            setOf( deviceRoleName ),
+            emailIdentity,
+            invitation
+        )
         assertTrue( p1.id == p2.id )
+    }
+
+    @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
+    @Test
+    fun addParticipation_multiple_times_per_account_returns_different_participations() = runSuspendTest {
+        val (participationService, deploymentService, _) = createService()
+        val studyDeploymentId = addTestDeployment( deploymentService )
+
+        val emailIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
+        val invitation = StudyInvitation.empty()
+
+        // Adding the same identity with a different externalParticipantId returns a different participation.
+        val p1: Participation = participationService.addParticipation(
+            studyDeploymentId,
+            externalParticipantId = UUID.randomUUID(),
+            setOf( deviceRoleName ),
+            emailIdentity,
+            invitation
+        )
+        val p2: Participation = participationService.addParticipation(
+            studyDeploymentId,
+            externalParticipantId = UUID.randomUUID(),
+            setOf( deviceRoleName ),
+            emailIdentity,
+            invitation
+        )
+        assertTrue( p1.id != p2.id )
     }
 
     @Test
@@ -93,12 +153,24 @@ abstract class ParticipationServiceTest
         val studyDeploymentId = addTestDeployment( deploymentService )
         val emailIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
         val invitation = StudyInvitation.empty()
-        participationService.addParticipation( studyDeploymentId, setOf( deviceRoleName ), emailIdentity, invitation )
+        participationService.addParticipation(
+            studyDeploymentId,
+            externalParticipantId,
+            setOf( deviceRoleName ),
+            emailIdentity,
+            invitation
+        )
 
         val differentInvitation = StudyInvitation( "Different", "New description" )
         assertFailsWith<IllegalStateException>
         {
-            participationService.addParticipation( studyDeploymentId, setOf( deviceRoleName ), emailIdentity, differentInvitation )
+            participationService.addParticipation(
+                studyDeploymentId,
+                externalParticipantId,
+                setOf( deviceRoleName ),
+                emailIdentity,
+                differentInvitation
+            )
         }
     }
 
@@ -109,7 +181,13 @@ abstract class ParticipationServiceTest
         val identity = AccountIdentity.fromUsername( "test" )
         assertFailsWith<IllegalArgumentException>
         {
-            participationService.addParticipation( unknownId, setOf( "Device" ), identity, StudyInvitation.empty() )
+            participationService.addParticipation(
+                unknownId,
+                externalParticipantId,
+                setOf( "Device" ),
+                identity,
+                StudyInvitation.empty()
+            )
         }
     }
 
@@ -122,7 +200,13 @@ abstract class ParticipationServiceTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            participationService.addParticipation( studyDeploymentId, setOf( "Wrong device" ), emailIdentity, invitation )
+            participationService.addParticipation(
+                studyDeploymentId,
+                externalParticipantId,
+                setOf( "Wrong device" ),
+                emailIdentity,
+                invitation
+            )
         }
     }
 
@@ -134,7 +218,13 @@ abstract class ParticipationServiceTest
         val identity = AccountIdentity.fromEmailAddress( "test@test.com" )
         val invitation = StudyInvitation( "Test study", "description", "Custom data" )
 
-        val participation = participationService.addParticipation( studyDeploymentId, setOf( deviceRoleName ), identity, invitation )
+        val participation = participationService.addParticipation(
+            studyDeploymentId,
+            externalParticipantId,
+            setOf( deviceRoleName ),
+            identity,
+            invitation
+        )
         val account = accountService.findAccount( identity )
         assertNotNull( account )
         val retrievedInvitations = participationService.getActiveParticipationInvitations( account.id )

@@ -64,9 +64,11 @@ abstract class AccountServiceTest
         val service = createService()
         val identity = UsernameAccountIdentity( "test" )
         val invitation = StudyInvitation.empty()
-        val account = service.inviteNewAccount( identity, invitation, Participation( UUID.randomUUID() ), listOf() )
+        val participation = Participation( UUID.randomUUID() )
+        val account = service.inviteNewAccount( identity, invitation, participation, listOf() )
 
-        service.inviteExistingAccount( account.id, invitation, Participation( UUID.randomUUID() ), listOf() )
+        val newParticipation = Participation( UUID.randomUUID() )
+        service.inviteExistingAccount( account.id, invitation, newParticipation, listOf() )
     }
 
     @Test
