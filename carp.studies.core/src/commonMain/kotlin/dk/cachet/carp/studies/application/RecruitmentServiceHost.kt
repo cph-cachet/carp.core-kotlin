@@ -9,7 +9,6 @@ import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
-import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
@@ -96,7 +95,7 @@ class RecruitmentServiceHost(
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
     override suspend fun getParticipants( studyId: UUID ): List<Participant> =
-        getRecruitmentOrThrow( studyId ).let { it.participants.toList() }
+        getRecruitmentOrThrow( studyId ).participants.toList()
 
     /**
      * Deploy the study with the given [studyId] to a [group] of previously added participants.
@@ -122,7 +121,7 @@ class RecruitmentServiceHost(
         val toDeployParticipantIds = group.map { it.participantId }.toSet()
         val deployedStatus = recruitment.participations.entries
             .firstOrNull { (_, participations) ->
-                participations.map { it.externalId }.toSet() == toDeployParticipantIds
+                participations.map { it.id }.toSet() == toDeployParticipantIds
             }
             ?.let { deploymentService.getStudyDeploymentStatus( it.key ) }
         if ( deployedStatus != null && deployedStatus !is StudyDeploymentStatus.Stopped )
@@ -144,16 +143,14 @@ class RecruitmentServiceHost(
         for ( toAssign in group )
         {
             val identity: AccountIdentity = allParticipants.getValue( toAssign.participantId ).accountIdentity
-            val participation = participationService.addParticipation(
+            participationService.addParticipation(
                 deploymentStatus.studyDeploymentId,
                 toAssign.participantId,
                 toAssign.masterDeviceRoleNames,
                 identity,
                 recruitmentStatus.invitation )
 
-            recruitment.addParticipation(
-                deploymentStatus.studyDeploymentId,
-                DeanonymizedParticipation( toAssign.participantId, participation.id ) )
+            recruitment.addParticipation( allParticipants[ toAssign.participantId ]!!, deploymentStatus.studyDeploymentId )
         }
 
         participantRepository.updateRecruitment( recruitment )
@@ -221,7 +218,7 @@ class RecruitmentServiceHost(
         return ParticipantGroupStatus( deploymentStatus, participations, newData.data )
     }
 
-    private suspend fun getParticipationsOrThrow( studyId: UUID, groupId: UUID ): Set<DeanonymizedParticipation>
+    private suspend fun getParticipationsOrThrow( studyId: UUID, groupId: UUID ): Set<Participant>
     {
         val recruitment: Recruitment = getRecruitmentOrThrow( studyId )
         val participations = recruitment.participations[ groupId ]
