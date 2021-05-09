@@ -20,7 +20,8 @@ import UUID = cdk.cachet.carp.common.application.UUID
 import CarpInputDataTypes = cdk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import Text = cdk.cachet.carp.common.application.data.input.elements.Text
 import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
-import UsernameIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
+import Username = cdk.cachet.carp.common.application.users.Username
+import UsernameAccountIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
 import createDefaultJSON = cdk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
 
 import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
@@ -51,7 +52,7 @@ describe( "carp.studies.core", () => {
             StudyStatus.Companion,
             new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Test" ] ) ),
             AssignParticipantDevices.Companion,
-            new Participant( new UsernameIdentity( "Test" ) ),
+            new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ),
             Participant.Companion,
             new ParticipantGroupStatus( new StudyDeploymentStatus(), new HashSet<DeanonymizedParticipant>(), toMap( [] ) ),
             ParticipantGroupStatus.Companion,
@@ -149,6 +150,15 @@ describe( "carp.studies.core", () => {
             const json: Json = createDefaultJSON()
             const serializer = RecruitmentServiceRequest.Companion.serializer()
             const serialized = json.encodeToString_tf03ej$( serializer, deployGroup )
+            expect( serialized ).is.not.undefined
+        } )
+
+        it( "can serialize Participant", () => {
+            const participant = new Participant( new UsernameAccountIdentity( new Username( "Test" ) ), UUID.Companion.randomUUID() )
+
+            const json: Json = createDefaultJSON()
+            const serializer = Participant.Companion.serializer()
+            const serialized = json.encodeToString_tf03ej$( serializer, participant )
             expect( serialized ).is.not.undefined
         } )
 
