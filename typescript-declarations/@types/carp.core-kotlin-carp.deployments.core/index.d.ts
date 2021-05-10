@@ -310,6 +310,10 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             {
                 constructor( studyDeploymentId: UUID, externalParticipantId: UUID, deviceRoleNames: HashSet<String>, identity: AccountIdentity, invitation: StudyInvitation )
             }
+            class DeanonymizeParticipations extends ParticipationServiceRequest
+            {
+                constructor( studyDeploymentId: UUID, externalParticipantIds: HashSet<UUID> )
+            }
             class GetActiveParticipationInvitations extends ParticipationServiceRequest
             {
                 constructor( accountId: UUID )
