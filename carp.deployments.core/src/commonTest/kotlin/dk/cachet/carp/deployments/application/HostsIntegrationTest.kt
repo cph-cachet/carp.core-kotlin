@@ -4,13 +4,16 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.users.AccountService
 import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -60,6 +63,30 @@ class HostsIntegrationTest
 
         assertEquals( deployment.studyDeploymentId, deploymentCreated?.studyDeploymentId )
         assertEquals( protocol.expectedParticipantData.size, participantGroupData.data.size )
+    }
+
+    @Test
+    fun create_deployment_adds_participations() = runSuspendTest {
+        val deviceRole = "Phone"
+        val protocol = createSingleMasterDeviceProtocol( deviceRole )
+
+        // Create deployment with one invitation.
+        val toInvite = EmailAccountIdentity( "test@test.com" )
+        val assignedDevices = setOf( deviceRole )
+        val studyInvitation = StudyInvitation.empty()
+        val invitations = listOf(
+            ParticipantInvitation( UUID.randomUUID(), assignedDevices, toInvite, studyInvitation )
+        )
+        val deploymentStatus = deploymentService.createStudyDeployment( protocol.getSnapshot(), invitations )
+
+        // Verify whether the invitation was sent.
+        val invitedAccount = accountService.findAccount( toInvite )
+        assertNotNull( invitedAccount )
+        val invitation = participationService.getActiveParticipationInvitations( invitedAccount.id ).singleOrNull()
+        assertNotNull( invitation )
+        assertEquals( deploymentStatus.studyDeploymentId, invitation.participation.studyDeploymentId )
+        assertEquals( assignedDevices, invitation.assignedDevices.map { it.device.roleName }.toSet() )
+        assertEquals( studyInvitation, invitation.invitation )
     }
 
     @Test

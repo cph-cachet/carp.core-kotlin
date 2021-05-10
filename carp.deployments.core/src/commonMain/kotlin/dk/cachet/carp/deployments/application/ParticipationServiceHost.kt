@@ -41,6 +41,18 @@ class ParticipationServiceHost(
                     created.studyDeploymentId,
                     created.protocol.toObject() )
                 participationRepository.putParticipantGroup( group )
+
+                // Add each invitation as a participation.
+                // TODO: With this refactoring, it seems `addParticipation` should no longer be an external endpoint.
+                created.invitations.forEach {
+                    addParticipation(
+                        created.studyDeploymentId,
+                        it.externalParticipantId,
+                        it.assignedMasterDeviceRoleNames,
+                        it.identity,
+                        it.invitation
+                    )
+                }
             }
             event { removed: DeploymentService.Event.StudyDeploymentsRemoved ->
                 participationRepository.removeParticipantGroups( removed.deploymentIds )

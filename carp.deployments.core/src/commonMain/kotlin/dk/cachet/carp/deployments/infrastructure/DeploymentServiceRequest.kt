@@ -8,6 +8,7 @@ import dk.cachet.carp.common.infrastructure.services.createServiceInvoker
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.serialization.Serializable
 
@@ -22,9 +23,9 @@ private typealias Invoker<T> = ServiceInvoker<DeploymentService, T>
 sealed class DeploymentServiceRequest
 {
     @Serializable
-    data class CreateStudyDeployment( val protocol: StudyProtocolSnapshot ) :
+    data class CreateStudyDeployment( val protocol: StudyProtocolSnapshot, val invitations: List<ParticipantInvitation> = emptyList() ) :
         DeploymentServiceRequest(),
-        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::createStudyDeployment, protocol )
+        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::createStudyDeployment, protocol, invitations )
 
     @Serializable
     data class RemoveStudyDeployments( val studyDeploymentIds: Set<UUID> ) :

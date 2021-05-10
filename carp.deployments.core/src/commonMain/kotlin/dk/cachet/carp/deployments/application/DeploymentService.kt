@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.serialization.Serializable
 
@@ -22,7 +23,8 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
         @Serializable
         data class StudyDeploymentCreated(
             val studyDeploymentId: UUID,
-            val protocol: StudyProtocolSnapshot
+            val protocol: StudyProtocolSnapshot,
+            val invitations: List<ParticipantInvitation>
         ) : Event()
         @Serializable
         data class StudyDeploymentsRemoved( val deploymentIds: Set<UUID> ) : Event()
@@ -38,12 +40,18 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
 
 
     /**
-     * Instantiate a study deployment for a given [StudyProtocolSnapshot].
+     * Instantiate a study deployment for a given [StudyProtocolSnapshot]
+     * and invite participants defined in [invitations].
      *
-     * @throws IllegalArgumentException when [protocol] is invalid.
+     * @throws IllegalArgumentException when:
+     *  - [protocol] is invalid
+     *  - any of the master devices a participant in [invitations] is invited to is not part of [protocol]
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
-    suspend fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus
+    suspend fun createStudyDeployment(
+        protocol: StudyProtocolSnapshot,
+        invitations: List<ParticipantInvitation> = emptyList()
+    ): StudyDeploymentStatus
 
     /**
      * Remove study deployments with the given [studyDeploymentIds].
