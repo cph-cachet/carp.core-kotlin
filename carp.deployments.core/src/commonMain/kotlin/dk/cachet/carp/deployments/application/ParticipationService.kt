@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
+import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import dk.cachet.carp.deployments.application.users.ParticipantData
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
@@ -48,6 +49,15 @@ interface ParticipationService : ApplicationService<ParticipationService, Partic
         identity: AccountIdentity,
         invitation: StudyInvitation
     ): Participation
+
+    /**
+     * Retrieve the pseudonym participation IDs for provided participant IDs, allowing to deanonymize data.
+     *
+     * @throws IllegalArgumentException when:
+     * - there is no study deployment with [studyDeploymentId]
+     * - one of the passed [externalParticipantIds] does not participate in the deployment
+     */
+    suspend fun deanonymizeParticipations( studyDeploymentId: UUID, externalParticipantIds: Set<UUID> ): Set<DeanonymizedParticipation>
 
     /**
      * Get all participations of active study deployments the account with the given [accountId] has been invited to.

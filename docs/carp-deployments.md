@@ -54,6 +54,7 @@ and managing data related to participants which is input by users.
 | Endpoint | Description | Require | Grant |
 | --- | --- | --- | --- |
 | `addParticipation` | Let a person with a specified identity participate in a study deployment, using a specified master device. | manage deployment: `studyDeploymentId` | in deployment (to account with `identity`): `studyDeploymentId` |
+| `deanonymizeParticipations` | Retrieve the pseudonym participation IDs for provided participant IDs, allowing to deanonymize data. | manage deployment: `studyDeploymentId` | |
 | `getActiveParticipationInvitations` | Get all participations of active study deployments a specified account has been invited to. | authenticated: `accountId` | |
 | `getParticipantData` | Get currently set data for all expected participant data. | in deployment: `studyDeploymentId` | |
 | `getParticipantDataList` |  Get currently set data for all expected participant data for a set of study deployments. | in deployment: `studyDeploymentId` | |

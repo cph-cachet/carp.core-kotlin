@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
+import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import dk.cachet.carp.deployments.application.users.ParticipantData
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
@@ -16,6 +17,7 @@ import dk.cachet.carp.test.Mock
 
 
 class ParticipationServiceMock(
+    private val deanonymizeParticipationsResult: Set<DeanonymizedParticipation> = emptySet(),
     private val getActiveParticipationInvitationResult: Set<ActiveParticipationInvitation> = emptySet(),
     private val getParticipantDataResult: ParticipantData = ParticipantData( UUID.randomUUID(), emptyMap() ),
     private val getParticipantDataListResult: List<ParticipantData> = emptyList(),
@@ -25,6 +27,10 @@ class ParticipationServiceMock(
     override suspend fun addParticipation( studyDeploymentId: UUID, externalParticipantId: UUID, deviceRoleNames: Set<String>, identity: AccountIdentity, invitation: StudyInvitation ) =
         Participation( studyDeploymentId )
         .also { trackSuspendCall( ParticipationService::addParticipation, studyDeploymentId, externalParticipantId, deviceRoleNames, identity, invitation ) }
+
+    override suspend fun deanonymizeParticipations( studyDeploymentId: UUID, externalParticipantIds: Set<UUID> ) =
+        deanonymizeParticipationsResult
+        .also { trackSuspendCall( ParticipationService::deanonymizeParticipations, studyDeploymentId, externalParticipantIds ) }
 
     override suspend fun getActiveParticipationInvitations( accountId: UUID ) =
         getActiveParticipationInvitationResult

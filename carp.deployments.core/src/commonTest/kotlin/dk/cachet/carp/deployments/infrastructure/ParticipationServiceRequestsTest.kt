@@ -24,6 +24,7 @@ class ParticipationServiceRequestsTest : ApplicationServiceRequestsTest<Particip
     {
         val REQUESTS: List<ParticipationServiceRequest> = listOf(
             ParticipationServiceRequest.AddParticipation( UUID.randomUUID(), UUID.randomUUID(), setOf( "Phone" ), UsernameAccountIdentity( "Test" ), StudyInvitation.empty() ),
+            ParticipationServiceRequest.DeanonymizeParticipations( UUID.randomUUID(), emptySet() ),
             ParticipationServiceRequest.GetActiveParticipationInvitations( UUID.randomUUID() ),
             ParticipationServiceRequest.GetParticipantData( UUID.randomUUID() ),
             ParticipationServiceRequest.GetParticipantDataList( emptySet() ),

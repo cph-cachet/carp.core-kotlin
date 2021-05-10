@@ -8,6 +8,7 @@ import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.createServiceInvoker
 import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
+import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import dk.cachet.carp.deployments.application.users.ParticipantData
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
@@ -30,6 +31,11 @@ sealed class ParticipationServiceRequest
     data class AddParticipation( val studyDeploymentId: UUID, val externalParticipantId: UUID, val deviceRoleNames: Set<String>, val identity: AccountIdentity, val invitation: StudyInvitation ) :
         ParticipationServiceRequest(),
         ParticipationServiceInvoker<Participation> by createServiceInvoker( ParticipationService::addParticipation, studyDeploymentId, externalParticipantId, deviceRoleNames, identity, invitation )
+
+    @Serializable
+    data class DeanonymizeParticipations( val studyDeploymentId: UUID, val externalParticipantIds: Set<UUID> ) :
+        ParticipationServiceRequest(),
+        ParticipationServiceInvoker<Set<DeanonymizedParticipation>> by createServiceInvoker( ParticipationService::deanonymizeParticipations, studyDeploymentId, externalParticipantIds )
 
     @Serializable
     data class GetActiveParticipationInvitations( val accountId: UUID ) :
