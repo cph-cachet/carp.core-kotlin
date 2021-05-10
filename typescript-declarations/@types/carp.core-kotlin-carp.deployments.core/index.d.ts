@@ -218,6 +218,19 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         }
         interface ParticipantData$Companion { serializer(): any }
 
+        class ParticipantInvitation
+        {
+            constructor( externalParticipantId: UUID, assignedMasterDeviceRoleNames: HashSet<string>, identity: AccountIdentity, invitation: StudyInvitation )
+
+            readonly externalParticipantId: UUID
+            readonly assignedMasterDeviceRoleNames: HashSet<string>
+            readonly identity: AccountIdentity
+            readonly invitation: StudyInvitation
+
+            static get Companion(): ParticipantInvitation$Companion
+        }
+        interface ParticipantInvitation$Companion { serializer(): any }
+
         class StudyInvitation
         {
             constructor( name: string, description: string, applicationData?: string )
@@ -238,6 +251,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
     namespace dk.cachet.carp.deployments.infrastructure
     {
+        import ParticipantInvitation = dk.cachet.carp.deployments.application.users.ParticipantInvitation
         import StudyInvitation = dk.cachet.carp.deployments.application.users.StudyInvitation
 
 
@@ -251,7 +265,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         {
             class CreateStudyDeployment extends DeploymentServiceRequest
             {
-                constructor( protocol: StudyProtocolSnapshot )
+                constructor( protocol: StudyProtocolSnapshot, invitations?: ArrayList<ParticipantInvitation> )
             }
             class GetStudyDeploymentStatus extends DeploymentServiceRequest
             {

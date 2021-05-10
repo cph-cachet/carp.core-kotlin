@@ -49,10 +49,9 @@ class HostsIntegrationTest
             eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
         // Create dependent participation service.
-        val accountService = InMemoryAccountService()
         participationService = ParticipationServiceHost(
             InMemoryParticipationRepository(),
-            accountService,
+            InMemoryAccountService(),
             eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
         recruitmentService = RecruitmentServiceHost(
@@ -98,14 +97,7 @@ class HostsIntegrationTest
 
     @Test
     fun remove_study_removes_recruitment_and_deployment() = runSuspendTest {
-        // Create study with protocol and go live.
-        val owner = StudyOwner()
-        val studyStatus = studyService.createStudy( owner, "Test" )
-        val studyId = studyStatus.studyId
-        val deviceRole = "Device"
-        val protocol = createSingleMasterDeviceProtocol( deviceRole )
-        studyService.setProtocol( studyId, protocol.getSnapshot() )
-        studyService.goLive( studyId )
+        val (studyId, deviceRole) = createLiveStudy()
 
         // Add participant and deploy participant group.
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
@@ -138,5 +130,21 @@ class HostsIntegrationTest
         studyService.remove( UUID.randomUUID() )
 
         assertNull( removedEvent )
+    }
+
+
+    /**
+     * Create a live study with a protocol containing one device.
+     */
+    private suspend fun createLiveStudy(): Pair<UUID, String>
+    {
+        val study = studyService.createStudy( StudyOwner(), "Test" )
+        val studyId = study.studyId
+        val deviceRole = "Phone"
+        val protocol = createSingleMasterDeviceProtocol( deviceRole )
+        studyService.setProtocol( studyId, protocol.getSnapshot() )
+        studyService.goLive( studyId )
+
+        return Pair( studyId, deviceRole )
     }
 }

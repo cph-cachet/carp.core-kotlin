@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.domain.DeploymentRepository
 import dk.cachet.carp.deployments.domain.RegistrableDevice
 import dk.cachet.carp.deployments.domain.StudyDeployment
@@ -23,18 +24,24 @@ class DeploymentServiceHost(
 ) : DeploymentService
 {
     /**
-     * Instantiate a study deployment for a given [StudyProtocolSnapshot].
+     * Instantiate a study deployment for a given [StudyProtocolSnapshot]
+     * and invite participants defined in [invitations].
      *
-     * @throws IllegalArgumentException when [protocol] is invalid.
+     * @throws IllegalArgumentException when:
+     *  - [protocol] is invalid
+     *  - any of the master devices a participant in [invitations] is invited to is not part of [protocol]
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
-    override suspend fun createStudyDeployment( protocol: StudyProtocolSnapshot ): StudyDeploymentStatus
+    override suspend fun createStudyDeployment(
+        protocol: StudyProtocolSnapshot,
+        invitations: List<ParticipantInvitation>
+    ): StudyDeploymentStatus
     {
         val newDeployment = StudyDeployment( protocol )
 
         repository.add( newDeployment )
         eventBus.publish(
-            DeploymentService.Event.StudyDeploymentCreated( newDeployment.id, newDeployment.protocolSnapshot )
+            DeploymentService.Event.StudyDeploymentCreated( newDeployment.id, newDeployment.protocolSnapshot, invitations )
         )
 
         return newDeployment.getStatus()

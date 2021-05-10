@@ -9,6 +9,8 @@ import { dk as dkc } from 'carp.core-kotlin-carp.common'
 import UUID = dkc.cachet.carp.common.application.UUID
 import DefaultDeviceRegistration = dkc.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import Smartphone = dkc.cachet.carp.common.application.devices.Smartphone
+import Username = dkc.cachet.carp.common.application.users.Username
+import UsernameAccountIdentity = dkc.cachet.carp.common.application.users.UsernameAccountIdentity
 
 import { dk } from 'carp.core-kotlin-carp.deployments.core'
 import DeviceDeploymentStatus = dk.cachet.carp.deployments.application.DeviceDeploymentStatus
@@ -19,6 +21,7 @@ import AssignedMasterDevice = dk.cachet.carp.deployments.application.users.Assig
 import DeanonymizedParticipation = dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import ParticipantData = dk.cachet.carp.deployments.application.users.ParticipantData
 import Participation = dk.cachet.carp.deployments.application.users.Participation
+import ParticipantInvitation = dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import StudyInvitation = dk.cachet.carp.deployments.application.users.StudyInvitation
 import DeploymentServiceRequest = dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest
 import ParticipationServiceRequest = dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest
@@ -52,6 +55,8 @@ describe( "carp.deployments.core", () => {
             DeanonymizedParticipation.Companion,
             new ParticipantData( UUID.Companion.randomUUID(), toMap( [] ) ),
             ParticipantData.Companion,
+            new ParticipantInvitation( UUID.Companion.randomUUID(), toSet( [] ), new UsernameAccountIdentity( new Username( "Test" ) ), StudyInvitation.Companion.empty() ),
+            ParticipantInvitation.Companion,
             new Participation( UUID.Companion.randomUUID() ),
             Participation.Companion,
             StudyInvitation.Companion.empty(),

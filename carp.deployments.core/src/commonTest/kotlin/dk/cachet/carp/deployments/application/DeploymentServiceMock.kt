@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.test.Mock
 
@@ -35,9 +36,9 @@ class DeploymentServiceMock(
     }
 
 
-    override suspend fun createStudyDeployment( protocol: StudyProtocolSnapshot ) =
+    override suspend fun createStudyDeployment( protocol: StudyProtocolSnapshot, invitations: List<ParticipantInvitation> ) =
         createStudyDeploymentResult
-        .also { trackSuspendCall( Service::createStudyDeployment, protocol ) }
+        .also { trackSuspendCall( Service::createStudyDeployment, protocol, invitations ) }
 
     override suspend fun removeStudyDeployments( studyDeploymentIds: Set<UUID> ) =
         removeStudyDeploymentsResult
