@@ -8,13 +8,11 @@ import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
-import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.ParticipantRepository
 import dk.cachet.carp.studies.domain.users.Recruitment
-import dk.cachet.carp.studies.application.users.participantIds
 
 
 // TODO: Participant data is currently retrieved through `participationService` for individual service call.
@@ -113,7 +111,7 @@ class RecruitmentServiceHost(
     override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus
     {
         val recruitment = getRecruitmentOrThrow( studyId )
-        val recruitmentStatus = recruitment.verifyReadyForDeployment( group )
+        val (protocol, invitations) = recruitment.createInvitations( group )
 
         // In case the same participants have been invited before,
         // and that deployment is still running, return the existing group.
@@ -131,30 +129,13 @@ class RecruitmentServiceHost(
             return ParticipantGroupStatus( deployedStatus, participants, participantData.data )
         }
 
-        // Create participant invitations.
-        val allParticipants = recruitment.participants.associateBy { it.id }
-        require( group.participantIds().all { it in allParticipants } )
-            { "One of the specified participants is not part of this study." }
-        val invitations: List<ParticipantInvitation> = group.map { toAssign ->
-            val participant = allParticipants.getValue( toAssign.participantId )
-            ParticipantInvitation(
-                participant.id,
-                toAssign.masterDeviceRoleNames,
-                participant.accountIdentity,
-                recruitmentStatus.invitation
-            )
-        }
-
         // Create deployment for the participant group and send invitations.
-        val deploymentStatus = deploymentService.createStudyDeployment(
-            recruitmentStatus.studyProtocol,
-            invitations
-        )
+        val deploymentStatus = deploymentService.createStudyDeployment( protocol, invitations )
 
         // Reflect that participants have been invited in the recruitment.
-        invitations.forEach {
+        invitations.forEach { invitation ->
             recruitment.addParticipation(
-                allParticipants.getValue( it.externalParticipantId ),
+                recruitment.participants.first { invitation.externalParticipantId == it.id },
                 deploymentStatus.studyDeploymentId
             )
         }
