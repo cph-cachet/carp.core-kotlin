@@ -23,7 +23,7 @@ import kotlin.test.*
 class ParticipantGroupTest
 {
     @Test
-    fun fromDeployment_succeeds()
+    fun fromNewDeployment_succeeds()
     {
         val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
         val expectedData = InputDataType( "some", "type" )

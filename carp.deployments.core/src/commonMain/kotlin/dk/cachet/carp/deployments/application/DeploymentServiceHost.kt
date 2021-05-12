@@ -12,11 +12,10 @@ import dk.cachet.carp.deployments.domain.DeploymentRepository
 import dk.cachet.carp.deployments.domain.RegistrableDevice
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.StudyProtocol
 
 
 /**
- * Application service which allows deploying [StudyProtocol]'s
+ * Application service which allows deploying study protocols to participants
  * and retrieving [MasterDeviceDeployment]'s for participating master devices as defined in the protocol.
  */
 class DeploymentServiceHost(
@@ -26,6 +25,11 @@ class DeploymentServiceHost(
 {
     /**
      * Instantiate a study deployment for a given [StudyProtocolSnapshot] with participants defined in [invitations].
+     *
+     * The identities specified in the invitations are used to invite and authenticate the participants.
+     * In case no account is associated to an identity, a new account is created for it.
+     * An invitation (and account details) is delivered to the person managing the identity,
+     * or should be handed out manually to the relevant participant by the person managing the identity.
      *
      * @throws IllegalArgumentException when:
      *  - [protocol] is invalid

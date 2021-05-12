@@ -7,25 +7,21 @@ import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import dk.cachet.carp.deployments.application.users.ParticipantData
-import dk.cachet.carp.deployments.application.users.Participation
-import dk.cachet.carp.deployments.application.users.StudyInvitation
-import dk.cachet.carp.deployments.domain.users.AccountService
-import dk.cachet.carp.deployments.domain.users.ParticipantGroup
+import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
 import dk.cachet.carp.deployments.domain.users.ParticipationRepository
 import dk.cachet.carp.deployments.domain.users.filterActiveParticipationInvitations
 
 
 /**
- * Application service which allows inviting participants, retrieving participations for study deployments,
+ * Application service which allows retrieving participations for study deployments,
  * and managing data related to participants which is input by users.
  */
 class ParticipationServiceHost(
     private val participationRepository: ParticipationRepository,
-    private val accountService: AccountService,
+    private val participantGroupService: ParticipantGroupService,
     private val eventBus: ApplicationServiceEventBus<ParticipationService, ParticipationService.Event>,
     /**
      * Supported [InputDataType]'s for participant data input by users.
@@ -38,22 +34,8 @@ class ParticipationServiceHost(
         eventBus.subscribe {
             // Create a ParticipantGroup per study deployment (as long as it exists).
             event { created: DeploymentService.Event.StudyDeploymentCreated ->
-                val group = ParticipantGroup.fromNewDeployment(
-                    created.studyDeploymentId,
-                    created.protocol.toObject() )
+                val group = participantGroupService.createAndInviteParticipantGroup( created )
                 participationRepository.putParticipantGroup( group )
-
-                // Add each invitation as a participation.
-                // TODO: With this refactoring, it seems `addParticipation` should no longer be an external endpoint.
-                created.invitations.forEach {
-                    addParticipation(
-                        created.studyDeploymentId,
-                        it.externalParticipantId,
-                        it.assignedMasterDeviceRoleNames,
-                        it.identity,
-                        it.invitation
-                    )
-                }
             }
             event { removed: DeploymentService.Event.StudyDeploymentsRemoved ->
                 participationRepository.removeParticipantGroups( removed.deploymentIds )
@@ -79,72 +61,6 @@ class ParticipationServiceHost(
         }
     }
 
-
-    /**
-     * Let the participant with [externalParticipantId], uniquely assigned by the calling service,
-     * participate in the study deployment with [studyDeploymentId],
-     * using the master devices with the specified [assignedMasterDeviceRoleNames].
-     *
-     * The specified [identity] is used to invite and authenticate the participant.
-     * In case no account is associated to the specified [identity], a new account is created.
-     * An [invitation] (and account details) is delivered to the person managing the [identity],
-     * or should be handed out manually to the relevant participant by the person managing the specified [identity].
-     *
-     * @throws IllegalArgumentException when:
-     * - there is no study deployment with [studyDeploymentId]
-     * - any of the [assignedMasterDeviceRoleNames] are not part of the study protocol deployment
-     * @throws IllegalStateException when:
-     * - the specified [externalParticipantId] was already invited to participate in this deployment
-     *  with different [assignedMasterDeviceRoleNames], [identity], or [invitation]
-     * - this deployment has stopped
-     */
-    override suspend fun addParticipation(
-        studyDeploymentId: UUID,
-        externalParticipantId: UUID,
-        assignedMasterDeviceRoleNames: Set<String>,
-        identity: AccountIdentity,
-        invitation: StudyInvitation
-    ): Participation
-    {
-        val group = participationRepository.getParticipantGroupOrThrowBy( studyDeploymentId )
-        val assignedMasterDevices = assignedMasterDeviceRoleNames.map { group.getAssignedMasterDevice( it ) }
-
-        // Retrieve or create participation.
-        var participation = group.getParticipation( externalParticipantId )
-        val isNewParticipation = participation == null
-        participation = participation ?: Participation( studyDeploymentId )
-
-        // Ensure an account exists for the given identity and an invitation has been sent out.
-        var account = accountService.findAccount( identity )
-        val deviceDescriptors = assignedMasterDeviceRoleNames.map { roleToUse ->
-            group.assignedMasterDevices.first { it.device.roleName == roleToUse } }.map { it.device }
-        if ( account == null )
-        {
-            account = accountService.inviteNewAccount( identity, invitation, participation, deviceDescriptors )
-        }
-        else if ( isNewParticipation )
-        {
-            accountService.inviteExistingAccount( account.id, invitation, participation, deviceDescriptors )
-        }
-
-        // Add participation to study deployment.
-        if ( isNewParticipation )
-        {
-            val masterDevices = assignedMasterDevices.map { it.device }.toSet()
-            group.addParticipation( externalParticipantId, account, participation, invitation, masterDevices )
-            participationRepository.putParticipantGroup( group )
-        }
-        else
-        {
-            // This participation was already added and an invitation has been sent.
-            // Ensure the request is the same, otherwise, an 'update' might be expected, which is not supported.
-            val previousInvitation = participationRepository.getParticipationInvitations( account.id ).first { it.participation == participation }
-            check( previousInvitation.invitation == invitation && previousInvitation.assignedMasterDeviceRoleNames == assignedMasterDeviceRoleNames )
-                { "This person is already invited to participate in this study and the current invite deviates from the previous one." }
-        }
-
-        return participation
-    }
 
     /**
      * Retrieve the pseudonym participation IDs for provided participant IDs, allowing to deanonymize data.
