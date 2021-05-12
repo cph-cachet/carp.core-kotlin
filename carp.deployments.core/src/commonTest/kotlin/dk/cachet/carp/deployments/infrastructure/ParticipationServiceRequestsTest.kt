@@ -3,11 +3,9 @@ package dk.cachet.carp.deployments.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.Sex
-import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.ParticipationServiceMock
-import dk.cachet.carp.deployments.application.users.StudyInvitation
 
 
 /**
@@ -23,7 +21,6 @@ class ParticipationServiceRequestsTest : ApplicationServiceRequestsTest<Particip
     companion object
     {
         val REQUESTS: List<ParticipationServiceRequest> = listOf(
-            ParticipationServiceRequest.AddParticipation( UUID.randomUUID(), UUID.randomUUID(), setOf( "Phone" ), UsernameAccountIdentity( "Test" ), StudyInvitation.empty() ),
             ParticipationServiceRequest.DeanonymizeParticipations( UUID.randomUUID(), emptySet() ),
             ParticipationServiceRequest.GetActiveParticipationInvitations( UUID.randomUUID() ),
             ParticipationServiceRequest.GetParticipantData( UUID.randomUUID() ),

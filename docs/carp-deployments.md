@@ -32,7 +32,7 @@ Respectively, the required claims and claims to grant upon a successful request.
 
 ### [`DeploymentService`](../carp.deployments.core/src/commonMain/kotlin/dk/cachet/carp/deployments/application/DeploymentService.kt)
 
-Allows deploying study protocols and retrieving master device deployments for participating master devices as defined in the protocol.
+Allows deploying study protocols to participants and retrieving master device deployments for participating master devices as defined in the protocol.
 
 | Endpoint | Description | Require | Grant |
 | --- | --- | --- | --- |
@@ -48,12 +48,11 @@ Allows deploying study protocols and retrieving master device deployments for pa
 
 ### [`ParticipationService`](../carp.deployments.core/src/commonMain/kotlin/dk/cachet/carp/deployments/application/ParticipationService.kt)
 
-Allows inviting participants, retrieving participations for study deployments,
+Allows retrieving participations for study deployments,
 and managing data related to participants which is input by users.
 
 | Endpoint | Description | Require | Grant |
 | --- | --- | --- | --- |
-| `addParticipation` | Let a person with a specified identity participate in a study deployment, using a specified master device. | manage deployment: `studyDeploymentId` | in deployment (to account with `identity`): `studyDeploymentId` |
 | `deanonymizeParticipations` | Retrieve the pseudonym participation IDs for provided participant IDs, allowing to deanonymize data. | manage deployment: `studyDeploymentId` | |
 | `getActiveParticipationInvitations` | Get all participations of active study deployments a specified account has been invited to. | authenticated: `accountId` | |
 | `getParticipantData` | Get currently set data for all expected participant data. | in deployment: `studyDeploymentId` | |

@@ -10,6 +10,7 @@ import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.createParticipantInvitation
 import dk.cachet.carp.deployments.domain.users.AccountService
+import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
 import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
@@ -45,7 +46,7 @@ class HostsIntegrationTest
         accountService = InMemoryAccountService()
         participationService = ParticipationServiceHost(
             InMemoryParticipationRepository(),
-            accountService,
+            ParticipantGroupService( accountService ),
             eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
     }
 
@@ -128,38 +129,16 @@ class HostsIntegrationTest
         deploymentService.stop( deploymentId )
 
         assertEquals( deploymentId, studyDeploymentStopped?.studyDeploymentId )
-        val deviceRoles = setOf( protocol.masterDevices.first().roleName )
-        assertFailsWith<IllegalStateException> // Can no longer add participations once deployment stopped.
-        {
-            participationService.addParticipation(
-                deploymentId,
-                externalParticipantId = UUID.randomUUID(),
-                deviceRoles,
-                AccountIdentity.fromUsername( "Test" ),
-                StudyInvitation.empty()
-            )
-        }
     }
 
     @Test
     fun registration_changes_in_deployment_are_passed_to_participant_group() = runSuspendTest {
         // Create a deployment.
-        val protocol = createComplexProtocol()
-        val invitation = createParticipantInvitation( protocol )
+        val protocol = createSingleMasterDeviceProtocol()
+        val identity = AccountIdentity.fromUsername( "Test" )
+        val invitation = createParticipantInvitation( protocol, identity )
         val deployment = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
         val deploymentId = deployment.studyDeploymentId
-
-        // Add a participation for a new account with an assigned device.
-        val accountId = AccountIdentity.fromEmailAddress( "test@test.com" )
-        val assignedDevice = protocol.masterDevices.first()
-        participationService.addParticipation(
-            deploymentId,
-            externalParticipantId = UUID.randomUUID(),
-            setOf( assignedDevice.roleName ),
-            accountId,
-            StudyInvitation.empty() )
-        val account = accountService.findAccount( accountId )
-        checkNotNull( account )
 
         // Subscribe to registration changes to test whether integration events are sent.
         var registrationChanged: DeploymentService.Event.DeviceRegistrationChanged? = null
@@ -170,6 +149,8 @@ class HostsIntegrationTest
         eventBus.activateHandlers( this )
 
         // Change registration for the assigned device.
+        val assignedDevice = protocol.masterDevices.single()
+        val account = accountService.findAccount( identity )!!
         val registration = assignedDevice.createRegistration()
         deploymentService.registerDevice( deploymentId, assignedDevice.roleName, registration )
         assertEquals( assignedDevice, registrationChanged?.device )
