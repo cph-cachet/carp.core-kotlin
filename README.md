@@ -229,16 +229,17 @@ val invitation = ParticipantInvitation(
     identity = AccountIdentity.fromEmailAddress( "test@test.com" ),
     invitation = StudyInvitation( "Movement study", "This study tracks your movements." )
 )
-var status: StudyDeploymentStatus = deploymentService.createStudyDeployment(
+val studyDeploymentId = UUID.randomUUID()
+deploymentService.createStudyDeployment(
+    studyDeploymentId,
     trackPatientStudy.getSnapshot(),
     listOf( invitation )
 )
-val studyDeploymentId = status.studyDeploymentId
 
 // What comes after is similar to what is called by the client in `carp.client`:
 // - Register the device to be deployed.
 val registration = patientPhone.createRegistration()
-status = deploymentService.registerDevice( studyDeploymentId, patientPhone.roleName, registration )
+var status = deploymentService.registerDevice( studyDeploymentId, patientPhone.roleName, registration )
 
 // - Retrieve information on what to run and indicate the device is ready to collect the requested data.
 val patientPhoneStatus: DeviceDeploymentStatus = status.getDeviceStatus( patientPhone )

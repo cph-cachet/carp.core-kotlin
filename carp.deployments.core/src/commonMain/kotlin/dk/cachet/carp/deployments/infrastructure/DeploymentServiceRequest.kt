@@ -23,9 +23,9 @@ private typealias Invoker<T> = ServiceInvoker<DeploymentService, T>
 sealed class DeploymentServiceRequest
 {
     @Serializable
-    data class CreateStudyDeployment( val protocol: StudyProtocolSnapshot, val invitations: List<ParticipantInvitation> ) :
+    data class CreateStudyDeployment( val id: UUID, val protocol: StudyProtocolSnapshot, val invitations: List<ParticipantInvitation> ) :
         DeploymentServiceRequest(),
-        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::createStudyDeployment, protocol, invitations )
+        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::createStudyDeployment, id, protocol, invitations )
 
     @Serializable
     data class RemoveStudyDeployments( val studyDeploymentIds: Set<UUID> ) :

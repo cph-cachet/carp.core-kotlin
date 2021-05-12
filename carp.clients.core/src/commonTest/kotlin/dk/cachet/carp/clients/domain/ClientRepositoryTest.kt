@@ -33,7 +33,7 @@ interface ClientRepositoryTest
     {
         val protocol = createSmartphoneStudy()
         val invitation = createParticipantInvitation( protocol )
-        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
+        val status = deploymentService.createStudyDeployment( UUID.randomUUID(), protocol.getSnapshot(), listOf( invitation ) )
 
         return status.studyDeploymentId
     }
@@ -99,8 +99,8 @@ interface ClientRepositoryTest
         val (repo, deploymentService, dataListener) = createDependencies()
         val protocol = createDependentSmartphoneStudy()
         val invitation = createParticipantInvitation( protocol )
-        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
-        val deploymentId = status.studyDeploymentId
+        val deploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
         val studyRuntime = StudyRuntime.initialize(
             deploymentService, dataListener,
             deploymentId, smartphone.roleName, smartphone.createRegistration() )

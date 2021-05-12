@@ -61,10 +61,11 @@ class HostsIntegrationTest
 
         val protocol = createComplexProtocol()
         val invitation = createParticipantInvitation( protocol )
-        val deployment = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
-        val participantGroupData = participationService.getParticipantData( deployment.studyDeploymentId )
+        val deploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
+        val participantGroupData = participationService.getParticipantData( deploymentId )
 
-        assertEquals( deployment.studyDeploymentId, deploymentCreated?.studyDeploymentId )
+        assertEquals( deploymentId, deploymentCreated?.studyDeploymentId )
         assertEquals( protocol.expectedParticipantData.size, participantGroupData.data.size )
     }
 
@@ -80,14 +81,15 @@ class HostsIntegrationTest
         val invitations = listOf(
             ParticipantInvitation( UUID.randomUUID(), assignedDevices, toInvite, studyInvitation )
         )
-        val deploymentStatus = deploymentService.createStudyDeployment( protocol.getSnapshot(), invitations )
+        val deploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), invitations )
 
         // Verify whether the invitation was sent.
         val invitedAccount = accountService.findAccount( toInvite )
         assertNotNull( invitedAccount )
         val invitation = participationService.getActiveParticipationInvitations( invitedAccount.id ).singleOrNull()
         assertNotNull( invitation )
-        assertEquals( deploymentStatus.studyDeploymentId, invitation.participation.studyDeploymentId )
+        assertEquals( deploymentId, invitation.participation.studyDeploymentId )
         assertEquals( assignedDevices, invitation.assignedDevices.map { it.device.roleName }.toSet() )
         assertEquals( studyInvitation, invitation.invitation )
     }
@@ -103,13 +105,14 @@ class HostsIntegrationTest
 
         val protocol = createComplexProtocol()
         val invitation = createParticipantInvitation( protocol )
-        val deployment = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
+        val deploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
-        deploymentService.removeStudyDeployments( setOf( deployment.studyDeploymentId ) )
-        assertEquals( setOf( deployment.studyDeploymentId ), deploymentsRemoved?.deploymentIds )
+        deploymentService.removeStudyDeployments( setOf( deploymentId ) )
+        assertEquals( setOf( deploymentId ), deploymentsRemoved?.deploymentIds )
         assertFailsWith<IllegalArgumentException>
         {
-            participationService.getParticipantData( deployment.studyDeploymentId )
+            participationService.getParticipantData( deploymentId )
         }
     }
 
@@ -124,8 +127,8 @@ class HostsIntegrationTest
 
         val protocol = createComplexProtocol()
         val invitation = createParticipantInvitation( protocol )
-        val deployment = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
-        val deploymentId = deployment.studyDeploymentId
+        val deploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
         deploymentService.stop( deploymentId )
 
         assertEquals( deploymentId, studyDeploymentStopped?.studyDeploymentId )
@@ -137,8 +140,8 @@ class HostsIntegrationTest
         val protocol = createSingleMasterDeviceProtocol()
         val identity = AccountIdentity.fromUsername( "Test" )
         val invitation = createParticipantInvitation( protocol, identity )
-        val deployment = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
-        val deploymentId = deployment.studyDeploymentId
+        val deploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
         // Subscribe to registration changes to test whether integration events are sent.
         var registrationChanged: DeploymentService.Event.DeviceRegistrationChanged? = null
