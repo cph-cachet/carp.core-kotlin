@@ -8,6 +8,7 @@ import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
+import dk.cachet.carp.deployments.domain.createParticipantInvitation
 import dk.cachet.carp.deployments.domain.users.AccountService
 import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
@@ -57,8 +58,9 @@ class HostsIntegrationTest
         }
         eventBus.activateHandlers( this )
 
-        val protocol = createComplexProtocol().getSnapshot()
-        val deployment = deploymentService.createStudyDeployment( protocol )
+        val protocol = createComplexProtocol()
+        val invitation = createParticipantInvitation( protocol )
+        val deployment = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
         val participantGroupData = participationService.getParticipantData( deployment.studyDeploymentId )
 
         assertEquals( deployment.studyDeploymentId, deploymentCreated?.studyDeploymentId )
@@ -98,8 +100,9 @@ class HostsIntegrationTest
         }
         eventBus.activateHandlers( this )
 
-        val protocol = createComplexProtocol().getSnapshot()
-        val deployment = deploymentService.createStudyDeployment( protocol )
+        val protocol = createComplexProtocol()
+        val invitation = createParticipantInvitation( protocol )
+        val deployment = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
 
         deploymentService.removeStudyDeployments( setOf( deployment.studyDeploymentId ) )
         assertEquals( setOf( deployment.studyDeploymentId ), deploymentsRemoved?.deploymentIds )
@@ -118,8 +121,9 @@ class HostsIntegrationTest
         }
         eventBus.activateHandlers( this )
 
-        val protocol = createComplexProtocol().getSnapshot()
-        val deployment = deploymentService.createStudyDeployment( protocol )
+        val protocol = createComplexProtocol()
+        val invitation = createParticipantInvitation( protocol )
+        val deployment = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
         val deploymentId = deployment.studyDeploymentId
         deploymentService.stop( deploymentId )
 
@@ -140,8 +144,9 @@ class HostsIntegrationTest
     @Test
     fun registration_changes_in_deployment_are_passed_to_participant_group() = runSuspendTest {
         // Create a deployment.
-        val protocol = createComplexProtocol().getSnapshot()
-        val deployment = deploymentService.createStudyDeployment( protocol )
+        val protocol = createComplexProtocol()
+        val invitation = createParticipantInvitation( protocol )
+        val deployment = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
         val deploymentId = deployment.studyDeploymentId
 
         // Add a participation for a new account with an assigned device.

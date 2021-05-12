@@ -1,6 +1,8 @@
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.deployments.domain.createParticipantInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
@@ -63,9 +65,14 @@ abstract class DeploymentServiceTest
     @Test
     fun getStudyDeploymentStatusList_succeeds() = runSuspendTest {
         val deploymentService = createService()
-        val snapshot = createSingleMasterWithConnectedDeviceProtocol().getSnapshot()
-        val status1 = deploymentService.createStudyDeployment( snapshot )
-        val status2 = deploymentService.createStudyDeployment( snapshot )
+        val deviceRoleName = "Master"
+        val protocol = createSingleMasterWithConnectedDeviceProtocol( deviceRoleName )
+        val protocolSnapshot = protocol.getSnapshot()
+
+        val invitation1 = createParticipantInvitation( protocol, AccountIdentity.fromUsername( "User 1" ) )
+        val status1 = deploymentService.createStudyDeployment( protocolSnapshot, listOf( invitation1 ) )
+        val invitation2 = createParticipantInvitation( protocol, AccountIdentity.fromUsername( "User 2" ) )
+        val status2 = deploymentService.createStudyDeployment( protocolSnapshot, listOf( invitation2 ) )
 
         // Actual testing of the status responses should already be covered adequately in StudyDeployment tests.
         deploymentService.getStudyDeploymentStatusList( setOf( status1.studyDeploymentId, status2.studyDeploymentId ) )
@@ -171,8 +178,8 @@ abstract class DeploymentServiceTest
     ): UUID
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol( masterDeviceRoleName, connectedDeviceRoleName )
-        val snapshot = protocol.getSnapshot()
-        val status = deploymentService.createStudyDeployment( snapshot )
+        val invitation = createParticipantInvitation( protocol )
+        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
 
         return status.studyDeploymentId
     }

@@ -40,17 +40,18 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
 
 
     /**
-     * Instantiate a study deployment for a given [StudyProtocolSnapshot]
-     * and invite participants defined in [invitations].
+     * Instantiate a study deployment for a given [StudyProtocolSnapshot] with participants defined in [invitations].
      *
      * @throws IllegalArgumentException when:
      *  - [protocol] is invalid
-     *  - any of the master devices a participant in [invitations] is invited to is not part of [protocol]
+     *  - [invitations] is empty
+     *  - any of the assigned device roles in [invitations] is not part of the study [protocol]
+     *  - not all master devices part of the study [protocol] have been assigned a participant
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
     suspend fun createStudyDeployment(
         protocol: StudyProtocolSnapshot,
-        invitations: List<ParticipantInvitation> = emptyList()
+        invitations: List<ParticipantInvitation>
     ): StudyDeploymentStatus
 
     /**

@@ -1,15 +1,19 @@
 package dk.cachet.carp.deployments
 
 import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
+import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHost
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
+import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -28,7 +32,16 @@ class DeploymentCodeSamples
         val patientPhone: Smartphone = trackPatientStudy.masterDevices.first() as Smartphone // "Patient's phone"
 
         // This is called by `StudyService` when deploying a participant group.
-        var status: StudyDeploymentStatus = deploymentService.createStudyDeployment( trackPatientStudy.getSnapshot() )
+        val invitation = ParticipantInvitation(
+            externalParticipantId = UUID.randomUUID(),
+            assignedMasterDeviceRoleNames = setOf( patientPhone.roleName ),
+            identity = AccountIdentity.fromEmailAddress( "test@test.com" ),
+            invitation = StudyInvitation( "Movement study", "This study tracks your movements." )
+        )
+        var status: StudyDeploymentStatus = deploymentService.createStudyDeployment(
+            trackPatientStudy.getSnapshot(),
+            listOf( invitation )
+        )
         val studyDeploymentId = status.studyDeploymentId
 
         // What comes after is similar to what is called by the client in `carp.client`:

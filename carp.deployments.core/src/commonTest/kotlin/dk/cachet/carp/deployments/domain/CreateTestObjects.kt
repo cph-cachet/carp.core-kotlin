@@ -6,8 +6,10 @@ import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.users.Account
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.users.ParticipantGroup
@@ -63,6 +65,18 @@ fun createActiveDeployment( masterDeviceRoleName: String ): StudyDeployment
  */
 fun createStoppedDeployment( masterDeviceRoleName: String ): StudyDeployment =
     createActiveDeployment( masterDeviceRoleName ).apply { stop() }
+
+/**
+ * Create a participant invitation for a specific [identity], or newly created identity when null,
+ * which is assigned all devices in [protocol].
+ */
+fun createParticipantInvitation( protocol: StudyProtocol, identity: AccountIdentity? = null ): ParticipantInvitation =
+    ParticipantInvitation(
+        UUID.randomUUID(),
+        protocol.masterDevices.map { it.roleName }.toSet(),
+        identity ?: AccountIdentity.fromUsername( "Test" ),
+        StudyInvitation.empty()
+    )
 
 /**
  * Creates a participant group with a default and custom expected participant attribute and sets the data.

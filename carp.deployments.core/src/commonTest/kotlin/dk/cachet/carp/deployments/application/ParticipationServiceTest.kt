@@ -8,11 +8,12 @@ import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.ParticipantAttribute
-import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployments.application.users.AssignedMasterDevice
 import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
+import dk.cachet.carp.deployments.domain.createParticipantInvitation
 import dk.cachet.carp.deployments.domain.users.AccountService
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import dk.cachet.carp.test.runSuspendTest
@@ -212,26 +213,31 @@ abstract class ParticipationServiceTest
     }
 
     @Test
-    fun addParticipation_and_retrieving_invitation_succeeds() = runSuspendTest {
+    fun getActiveParticipationInvitations_succeeds() = runSuspendTest {
         val (participationService, deploymentService, accountService) = createService()
         val protocol = createSingleMasterDeviceProtocol()
-        val studyDeploymentId = deploymentService.createStudyDeployment( protocol.getSnapshot() ).studyDeploymentId
         val identity = AccountIdentity.fromEmailAddress( "test@test.com" )
         val invitation = StudyInvitation( "Test study", "description", "Custom data" )
-
-        val participation = participationService.addParticipation(
-            studyDeploymentId,
-            externalParticipantId,
+        val participantId = UUID.randomUUID()
+        val participantInvitation = ParticipantInvitation(
+            participantId,
             setOf( deviceRoleName ),
             identity,
             invitation
         )
+        val studyDeploymentId = deploymentService.createStudyDeployment(
+            protocol.getSnapshot(),
+            listOf( participantInvitation )
+        ).studyDeploymentId
+
         val account = accountService.findAccount( identity )
         assertNotNull( account )
-        val retrievedInvitations = participationService.getActiveParticipationInvitations( account.id )
-        val masterDevice = protocol.masterDevices.single()
-        val expectedAssignedDevice = AssignedMasterDevice( masterDevice, null )
-        assertEquals( ActiveParticipationInvitation( participation, invitation, setOf( expectedAssignedDevice ) ), retrievedInvitations.single() )
+        val retrievedInvitation = participationService.getActiveParticipationInvitations( account.id ).singleOrNull()
+        assertNotNull( retrievedInvitation )
+        assertEquals( studyDeploymentId, retrievedInvitation.participation.studyDeploymentId )
+        assertEquals( invitation, retrievedInvitation.invitation )
+        val expectedAssignedDevice = AssignedMasterDevice( protocol.masterDevices.single(), null )
+        assertEquals( setOf( expectedAssignedDevice ), retrievedInvitation.assignedDevices )
     }
 
     @Test
@@ -296,8 +302,8 @@ abstract class ParticipationServiceTest
         protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
         val customAttribute = ParticipantAttribute.CustomParticipantAttribute( Text( "Custom" ) )
         protocol.addExpectedParticipantData( customAttribute )
-        val snapshot = protocol.getSnapshot()
-        val status = deploymentService.createStudyDeployment( snapshot )
+        val invitation = createParticipantInvitation( protocol )
+        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
 
         val participantData = participationService.getParticipantData( status.studyDeploymentId )
         assertEquals( status.studyDeploymentId, participantData.studyDeploymentId )
@@ -316,9 +322,11 @@ abstract class ParticipationServiceTest
     fun getParticipantDataList_succeeds() = runSuspendTest {
         val (participationService, deploymentService, _) = createService()
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
-        val snapshot = protocol.getSnapshot()
-        val deployment1 = deploymentService.createStudyDeployment( snapshot )
-        val deployment2 = deploymentService.createStudyDeployment( snapshot )
+        val protocolSnapshot = protocol.getSnapshot()
+        val invitation1 = createParticipantInvitation( protocol )
+        val deployment1 = deploymentService.createStudyDeployment( protocolSnapshot, listOf( invitation1 ) )
+        val invitation2 = createParticipantInvitation( protocol )
+        val deployment2 = deploymentService.createStudyDeployment( protocolSnapshot, listOf( invitation2 ) )
 
         val deploymentIds = setOf( deployment1.studyDeploymentId, deployment2.studyDeploymentId )
         val participantDataList = participationService.getParticipantDataList( deploymentIds )
@@ -341,8 +349,8 @@ abstract class ParticipationServiceTest
         // Create protocol with expected 'sex' participant data.
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
         protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
-        val snapshot = protocol.getSnapshot()
-        val status = deploymentService.createStudyDeployment( snapshot )
+        val invitation = createParticipantInvitation( protocol )
+        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
 
         val afterSet = participationService.setParticipantData( status.studyDeploymentId, CarpInputDataTypes.SEX, Sex.Male )
         assertEquals( Sex.Male, afterSet.data[ CarpInputDataTypes.SEX ] )
@@ -381,8 +389,8 @@ abstract class ParticipationServiceTest
         // Create protocol with expected 'sex' participant data.
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
         protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
-        val snapshot = protocol.getSnapshot()
-        val status = deploymentService.createStudyDeployment( snapshot )
+        val invitation = createParticipantInvitation( protocol )
+        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -400,8 +408,8 @@ abstract class ParticipationServiceTest
     private suspend fun addTestDeployment( deploymentService: DeploymentService ): UUID
     {
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
-        val snapshot = protocol.getSnapshot()
-        val status = deploymentService.createStudyDeployment( snapshot )
+        val invitation = createParticipantInvitation( protocol )
+        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
 
         return status.studyDeploymentId
     }

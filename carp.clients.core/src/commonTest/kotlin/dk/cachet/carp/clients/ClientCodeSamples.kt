@@ -3,6 +3,7 @@ package dk.cachet.carp.clients
 import dk.cachet.carp.clients.domain.SmartphoneClient
 import dk.cachet.carp.clients.domain.StudyRuntimeStatus
 import dk.cachet.carp.clients.domain.createDataCollectorFactory
+import dk.cachet.carp.clients.domain.createParticipantInvitation
 import dk.cachet.carp.clients.domain.data.DataListener
 import dk.cachet.carp.clients.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.application.UUID
@@ -18,7 +19,6 @@ import dk.cachet.carp.deployments.application.DeploymentServiceHost
 import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.ParticipationServiceHost
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
-import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
@@ -75,28 +75,19 @@ class ClientCodeSamples
 
         val deploymentService = DeploymentServiceHost(
             InMemoryDeploymentRepository(),
-            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
+            eventBus.createApplicationServiceAdapter( DeploymentService::class )
+        )
 
         val participationService = ParticipationServiceHost(
             InMemoryParticipationRepository(),
             accountService,
-            eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
+            eventBus.createApplicationServiceAdapter( ParticipationService::class )
+        )
 
         // Create deployment for the example protocol.
         val protocol = createExampleProtocol()
-        val status = deploymentService.createStudyDeployment( protocol.getSnapshot() )
-
-        // Invite a participant.
-        val phone = protocol.masterDevices.first()
-        val invitation = StudyInvitation.empty()
-        participationService.addParticipation(
-            status.studyDeploymentId,
-            externalParticipantId = UUID.randomUUID(),
-            setOf( phone.roleName ),
-            accountIdentity,
-            invitation
-        )
-        accountService.findAccount( accountIdentity )
+        val invitation = createParticipantInvitation( protocol, accountIdentity )
+        deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
 
         return Pair( participationService, deploymentService )
     }

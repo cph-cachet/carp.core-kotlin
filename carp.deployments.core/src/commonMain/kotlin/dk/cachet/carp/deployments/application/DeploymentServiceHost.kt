@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
+import dk.cachet.carp.deployments.application.users.throwIfInvalid
 import dk.cachet.carp.deployments.domain.DeploymentRepository
 import dk.cachet.carp.deployments.domain.RegistrableDevice
 import dk.cachet.carp.deployments.domain.StudyDeployment
@@ -24,12 +25,13 @@ class DeploymentServiceHost(
 ) : DeploymentService
 {
     /**
-     * Instantiate a study deployment for a given [StudyProtocolSnapshot]
-     * and invite participants defined in [invitations].
+     * Instantiate a study deployment for a given [StudyProtocolSnapshot] with participants defined in [invitations].
      *
      * @throws IllegalArgumentException when:
      *  - [protocol] is invalid
-     *  - any of the master devices a participant in [invitations] is invited to is not part of [protocol]
+     *  - [invitations] is empty
+     *  - any of the assigned device roles in [invitations] is not part of the study [protocol]
+     *  - not all master devices part of the study [protocol] have been assigned a participant
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
     override suspend fun createStudyDeployment(
@@ -37,6 +39,7 @@ class DeploymentServiceHost(
         invitations: List<ParticipantInvitation>
     ): StudyDeploymentStatus
     {
+        protocol.throwIfInvalid( invitations )
         val newDeployment = StudyDeployment( protocol )
 
         repository.add( newDeployment )

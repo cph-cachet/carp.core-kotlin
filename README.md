@@ -223,7 +223,16 @@ val trackPatientStudy: StudyProtocol = createExampleProtocol()
 val patientPhone: Smartphone = trackPatientStudy.masterDevices.first() as Smartphone // "Patient's phone"
 
 // This is called by `StudyService` when deploying a participant group.
-var status: StudyDeploymentStatus = deploymentService.createStudyDeployment( trackPatientStudy.getSnapshot() )
+val invitation = ParticipantInvitation(
+    externalParticipantId = UUID.randomUUID(),
+    assignedMasterDeviceRoleNames = setOf( patientPhone.roleName ),
+    identity = AccountIdentity.fromEmailAddress( "test@test.com" ),
+    invitation = StudyInvitation( "Movement study", "This study tracks your movements." )
+)
+var status: StudyDeploymentStatus = deploymentService.createStudyDeployment(
+    trackPatientStudy.getSnapshot(),
+    listOf( invitation )
+)
 val studyDeploymentId = status.studyDeploymentId
 
 // What comes after is similar to what is called by the client in `carp.client`:
