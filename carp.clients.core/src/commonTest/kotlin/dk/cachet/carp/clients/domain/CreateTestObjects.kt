@@ -5,15 +5,19 @@ import dk.cachet.carp.clients.domain.data.DeviceDataCollector
 import dk.cachet.carp.clients.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.clients.domain.data.StubDeviceDataCollector
 import dk.cachet.carp.clients.domain.data.StubDeviceDataCollectorFactory
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
+import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHost
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
+import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -67,9 +71,22 @@ suspend fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentSer
     val deploymentService = DeploymentServiceHost(
         InMemoryDeploymentRepository(),
         eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
-    val status = deploymentService.createStudyDeployment( protocol.getSnapshot() )
+    val invitation = createParticipantInvitation( protocol )
+    val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
     return Pair( deploymentService, status )
 }
+
+/**
+ * Create a participant invitation for a specific [identity], or newly created identity when null,
+ * which is assigned all devices in [protocol].
+ */
+fun createParticipantInvitation( protocol: StudyProtocol, identity: AccountIdentity? = null ): ParticipantInvitation =
+    ParticipantInvitation(
+        UUID.randomUUID(),
+        protocol.masterDevices.map { it.roleName }.toSet(),
+        identity ?: AccountIdentity.fromUsername( "Test" ),
+        StudyInvitation.empty()
+    )
 
 /**
  * Create a [DeviceDataCollectorFactory] which for all [DeviceDataCollector] instances

@@ -32,8 +32,8 @@ interface ClientRepositoryTest
     private suspend fun addTestDeployment( deploymentService: DeploymentService ): UUID
     {
         val protocol = createSmartphoneStudy()
-        val snapshot = protocol.getSnapshot()
-        val status = deploymentService.createStudyDeployment( snapshot )
+        val invitation = createParticipantInvitation( protocol )
+        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
 
         return status.studyDeploymentId
     }
@@ -98,8 +98,8 @@ interface ClientRepositoryTest
     fun updateStudyRuntime_succeeds() = runSuspendTest {
         val (repo, deploymentService, dataListener) = createDependencies()
         val protocol = createDependentSmartphoneStudy()
-        val snapshot = protocol.getSnapshot()
-        val status = deploymentService.createStudyDeployment( snapshot )
+        val invitation = createParticipantInvitation( protocol )
+        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
         val deploymentId = status.studyDeploymentId
         val studyRuntime = StudyRuntime.initialize(
             deploymentService, dataListener,

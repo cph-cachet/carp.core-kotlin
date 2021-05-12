@@ -265,7 +265,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         {
             class CreateStudyDeployment extends DeploymentServiceRequest
             {
-                constructor( protocol: StudyProtocolSnapshot, invitations?: ArrayList<ParticipantInvitation> )
+                constructor( protocol: StudyProtocolSnapshot, invitations: ArrayList<ParticipantInvitation> )
             }
             class GetStudyDeploymentStatus extends DeploymentServiceRequest
             {
