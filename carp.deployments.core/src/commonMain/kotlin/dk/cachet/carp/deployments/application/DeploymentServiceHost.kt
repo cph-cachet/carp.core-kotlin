@@ -32,6 +32,7 @@ class DeploymentServiceHost(
      * or should be handed out manually to the relevant participant by the person managing the identity.
      *
      * @throws IllegalArgumentException when:
+     *  - a deployment with [id] already exists
      *  - [protocol] is invalid
      *  - [invitations] is empty
      *  - any of the assigned device roles in [invitations] is not part of the study [protocol]
@@ -39,12 +40,13 @@ class DeploymentServiceHost(
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
     override suspend fun createStudyDeployment(
+        id: UUID,
         protocol: StudyProtocolSnapshot,
         invitations: List<ParticipantInvitation>
     ): StudyDeploymentStatus
     {
         protocol.throwIfInvalid( invitations )
-        val newDeployment = StudyDeployment( protocol )
+        val newDeployment = StudyDeployment( protocol, id )
 
         repository.add( newDeployment )
         eventBus.publish(

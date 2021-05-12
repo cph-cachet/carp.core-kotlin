@@ -48,6 +48,7 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
      * or should be handed out manually to the relevant participant by the person managing the identity.
      *
      * @throws IllegalArgumentException when:
+     *  - a deployment with [id] already exists
      *  - [protocol] is invalid
      *  - [invitations] is empty
      *  - any of the assigned device roles in [invitations] is not part of the study [protocol]
@@ -55,6 +56,7 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
     suspend fun createStudyDeployment(
+        id: UUID,
         protocol: StudyProtocolSnapshot,
         invitations: List<ParticipantInvitation>
     ): StudyDeploymentStatus

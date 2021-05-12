@@ -72,7 +72,7 @@ suspend fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentSer
         InMemoryDeploymentRepository(),
         eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
     val invitation = createParticipantInvitation( protocol )
-    val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
+    val status = deploymentService.createStudyDeployment( UUID.randomUUID(), protocol.getSnapshot(), listOf( invitation ) )
     return Pair( deploymentService, status )
 }
 

@@ -22,7 +22,7 @@ class DeploymentServiceRequestsTest : ApplicationServiceRequestsTest<DeploymentS
     companion object
     {
         private val REQUESTS: List<DeploymentServiceRequest> = listOf(
-            DeploymentServiceRequest.CreateStudyDeployment( createEmptyProtocol().getSnapshot(), listOf() ),
+            DeploymentServiceRequest.CreateStudyDeployment( UUID.randomUUID(), createEmptyProtocol().getSnapshot(), listOf() ),
             DeploymentServiceRequest.RemoveStudyDeployments( emptySet() ),
             DeploymentServiceRequest.GetStudyDeploymentStatus( UUID.randomUUID() ),
             DeploymentServiceRequest.GetStudyDeploymentStatusList( setOf( UUID.randomUUID() ) ),
