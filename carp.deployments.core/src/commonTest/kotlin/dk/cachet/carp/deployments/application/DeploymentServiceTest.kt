@@ -2,7 +2,10 @@ package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
+import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.createParticipantInvitation
+import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
@@ -21,6 +24,24 @@ abstract class DeploymentServiceTest
      */
     abstract fun createService(): DeploymentService
 
+
+    @Test
+    fun createStudyDeployment_fails_for_existing_id() = runSuspendTest {
+        val deploymentService = createService()
+        val studyDeploymentId = addTestDeployment( deploymentService, "Master" )
+
+        val deviceRole = "Test device"
+        val protocol = createSingleMasterDeviceProtocol( deviceRole )
+        val invitation = ParticipantInvitation(
+            UUID.randomUUID(),
+            setOf( deviceRole ),
+            AccountIdentity.fromUsername( "User" ),
+            StudyInvitation.empty()
+        )
+        assertFailsWith<IllegalArgumentException> {
+            deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
+        }
+    }
 
     @Test
     fun removeStudyDeployments_succeeds() = runSuspendTest {
@@ -70,12 +91,14 @@ abstract class DeploymentServiceTest
         val protocolSnapshot = protocol.getSnapshot()
 
         val invitation1 = createParticipantInvitation( protocol, AccountIdentity.fromUsername( "User 1" ) )
-        val status1 = deploymentService.createStudyDeployment( protocolSnapshot, listOf( invitation1 ) )
+        val deploymentId1 = UUID.randomUUID()
+        deploymentService.createStudyDeployment( deploymentId1, protocolSnapshot, listOf( invitation1 ) )
         val invitation2 = createParticipantInvitation( protocol, AccountIdentity.fromUsername( "User 2" ) )
-        val status2 = deploymentService.createStudyDeployment( protocolSnapshot, listOf( invitation2 ) )
+        val deploymentId2 = UUID.randomUUID()
+        deploymentService.createStudyDeployment( deploymentId2, protocolSnapshot, listOf( invitation2 ) )
 
         // Actual testing of the status responses should already be covered adequately in StudyDeployment tests.
-        deploymentService.getStudyDeploymentStatusList( setOf( status1.studyDeploymentId, status2.studyDeploymentId ) )
+        deploymentService.getStudyDeploymentStatusList( setOf( deploymentId1, deploymentId2 ) )
     }
 
     @Test
@@ -179,8 +202,9 @@ abstract class DeploymentServiceTest
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol( masterDeviceRoleName, connectedDeviceRoleName )
         val invitation = createParticipantInvitation( protocol )
-        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
+        val studyDeploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
-        return status.studyDeploymentId
+        return studyDeploymentId
     }
 }

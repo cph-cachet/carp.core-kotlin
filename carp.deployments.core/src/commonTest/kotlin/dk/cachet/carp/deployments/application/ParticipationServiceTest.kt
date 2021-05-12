@@ -48,10 +48,8 @@ abstract class ParticipationServiceTest
             identity,
             invitation
         )
-        val studyDeploymentId = deploymentService.createStudyDeployment(
-            protocol.getSnapshot(),
-            listOf( participantInvitation )
-        ).studyDeploymentId
+        val studyDeploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( participantInvitation ) )
 
         val account = accountService.findAccount( identity )
         assertNotNull( account )
@@ -77,7 +75,12 @@ abstract class ParticipationServiceTest
             identity,
             StudyInvitation.empty()
         )
-        val deploymentStatus = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
+        val studyDeploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment(
+            studyDeploymentId,
+            protocol.getSnapshot(),
+            listOf( invitation )
+        )
 
         val account = accountService.findAccount( identity )
         assertNotNull( account )
@@ -87,7 +90,7 @@ abstract class ParticipationServiceTest
             DeanonymizedParticipation( externalParticipantId, accountInvitation.participation.id )
         )
         val deanonymized = participationService.deanonymizeParticipations(
-            deploymentStatus.studyDeploymentId,
+            studyDeploymentId,
             setOf( externalParticipantId )
         )
         assertEquals( expectedDeanonymized, deanonymized )
@@ -115,11 +118,12 @@ abstract class ParticipationServiceTest
             AccountIdentity.fromUsername( "Test" ),
             StudyInvitation.empty()
         )
-        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
+        val studyDeploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
         assertFailsWith<IllegalArgumentException> {
             val includesUnknownId = setOf( participantId, unknownId )
-            participationService.deanonymizeParticipations( status.studyDeploymentId, includesUnknownId )
+            participationService.deanonymizeParticipations( studyDeploymentId, includesUnknownId )
         }
     }
 
@@ -134,10 +138,11 @@ abstract class ParticipationServiceTest
         val customAttribute = ParticipantAttribute.CustomParticipantAttribute( Text( "Custom" ) )
         protocol.addExpectedParticipantData( customAttribute )
         val invitation = createParticipantInvitation( protocol )
-        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
+        val studyDeploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
-        val participantData = participationService.getParticipantData( status.studyDeploymentId )
-        assertEquals( status.studyDeploymentId, participantData.studyDeploymentId )
+        val participantData = participationService.getParticipantData( studyDeploymentId )
+        assertEquals( studyDeploymentId, participantData.studyDeploymentId )
         assertEquals( setOf( CarpInputDataTypes.SEX, customAttribute.inputType ), participantData.data.keys )
         assertTrue( participantData.data.values.all { it == null } )
     }
@@ -155,11 +160,13 @@ abstract class ParticipationServiceTest
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
         val protocolSnapshot = protocol.getSnapshot()
         val invitation1 = createParticipantInvitation( protocol )
-        val deployment1 = deploymentService.createStudyDeployment( protocolSnapshot, listOf( invitation1 ) )
+        val deploymentId1 = UUID.randomUUID()
+        deploymentService.createStudyDeployment( deploymentId1, protocolSnapshot, listOf( invitation1 ) )
         val invitation2 = createParticipantInvitation( protocol )
-        val deployment2 = deploymentService.createStudyDeployment( protocolSnapshot, listOf( invitation2 ) )
+        val deploymentId2 = UUID.randomUUID()
+        deploymentService.createStudyDeployment( deploymentId2, protocolSnapshot, listOf( invitation2 ) )
 
-        val deploymentIds = setOf( deployment1.studyDeploymentId, deployment2.studyDeploymentId )
+        val deploymentIds = setOf( deploymentId1, deploymentId2 )
         val participantDataList = participationService.getParticipantDataList( deploymentIds )
         assertEquals( 2, participantDataList.size )
     }
@@ -181,12 +188,13 @@ abstract class ParticipationServiceTest
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
         protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
         val invitation = createParticipantInvitation( protocol )
-        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
+        val studyDeploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
-        val afterSet = participationService.setParticipantData( status.studyDeploymentId, CarpInputDataTypes.SEX, Sex.Male )
+        val afterSet = participationService.setParticipantData( studyDeploymentId, CarpInputDataTypes.SEX, Sex.Male )
         assertEquals( Sex.Male, afterSet.data[ CarpInputDataTypes.SEX ] )
 
-        val retrievedData = participationService.getParticipantData( status.studyDeploymentId )
+        val retrievedData = participationService.getParticipantData( studyDeploymentId )
         assertEquals( afterSet, retrievedData )
     }
 
@@ -221,12 +229,13 @@ abstract class ParticipationServiceTest
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
         protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
         val invitation = createParticipantInvitation( protocol )
-        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
+        val studyDeploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
         assertFailsWith<IllegalArgumentException>
         {
             val wrongData = object : Data { }
-            participationService.setParticipantData( status.studyDeploymentId, CarpInputDataTypes.SEX, wrongData )
+            participationService.setParticipantData( studyDeploymentId, CarpInputDataTypes.SEX, wrongData )
         }
     }
 
@@ -240,8 +249,9 @@ abstract class ParticipationServiceTest
     {
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
         val invitation = createParticipantInvitation( protocol )
-        val status = deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
+        val studyDeploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
-        return status.studyDeploymentId
+        return studyDeploymentId
     }
 }

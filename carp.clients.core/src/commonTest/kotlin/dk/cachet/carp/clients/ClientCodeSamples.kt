@@ -88,7 +88,7 @@ class ClientCodeSamples
         // Create deployment for the example protocol.
         val protocol = createExampleProtocol()
         val invitation = createParticipantInvitation( protocol, accountIdentity )
-        deploymentService.createStudyDeployment( protocol.getSnapshot(), listOf( invitation ) )
+        deploymentService.createStudyDeployment( UUID.randomUUID(), protocol.getSnapshot(), listOf( invitation ) )
 
         return Pair( participationService, deploymentService )
     }

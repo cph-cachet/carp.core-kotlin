@@ -130,7 +130,9 @@ class RecruitmentServiceHost(
         }
 
         // Create deployment for the participant group and send invitations.
-        val deploymentStatus = deploymentService.createStudyDeployment( protocol, invitations )
+        // TODO: Assign deployment ID from `ParticipantGroup` ID?
+        val studyDeploymentId = UUID.randomUUID()
+        val deploymentStatus = deploymentService.createStudyDeployment( studyDeploymentId, protocol, invitations )
 
         // Reflect that participants have been invited in the recruitment.
         invitations.forEach { invitation ->
@@ -141,8 +143,8 @@ class RecruitmentServiceHost(
         }
         participantRepository.updateRecruitment( recruitment )
 
-        val participants = recruitment.getParticipations( deploymentStatus.studyDeploymentId )
-        val participantData = participationService.getParticipantData( deploymentStatus.studyDeploymentId )
+        val participants = recruitment.getParticipations( studyDeploymentId )
+        val participantData = participationService.getParticipantData( studyDeploymentId )
         return ParticipantGroupStatus( deploymentStatus, participants, participantData.data )
     }
 
