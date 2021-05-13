@@ -8,7 +8,6 @@ import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
-import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import dk.cachet.carp.deployments.application.users.ParticipantData
 import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
 import dk.cachet.carp.deployments.domain.users.ParticipationRepository
@@ -61,26 +60,6 @@ class ParticipationServiceHost(
         }
     }
 
-
-    /**
-     * Retrieve the pseudonym participation IDs for provided participant IDs, allowing to deanonymize data.
-     *
-     * @throws IllegalArgumentException when:
-     * - there is no study deployment with [studyDeploymentId]
-     * - one of the passed [externalParticipantIds] does not participate in the deployment
-     */
-    override suspend fun deanonymizeParticipations( studyDeploymentId: UUID, externalParticipantIds: Set<UUID> ): Set<DeanonymizedParticipation>
-    {
-        val group = participationRepository.getParticipantGroupOrThrowBy( studyDeploymentId )
-
-        val deanonymized = externalParticipantIds.mapNotNull { participantId ->
-            group.getParticipation( participantId )?.let { DeanonymizedParticipation( participantId, it.id ) }
-        }.toSet()
-        require( deanonymized.size == externalParticipantIds.size )
-            { "One of the passed external participant IDs does not participate in the deployment." }
-
-        return deanonymized
-    }
 
     /**
      * Get all participations of active study deployments the account with the given [accountId] has been invited to.

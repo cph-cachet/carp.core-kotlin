@@ -7,7 +7,6 @@ import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.createServiceInvoker
 import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
-import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import dk.cachet.carp.deployments.application.users.ParticipantData
 import kotlinx.serialization.Serializable
 
@@ -24,11 +23,6 @@ private typealias ParticipationServiceInvoker<T> = ServiceInvoker<ParticipationS
 @Serializable
 sealed class ParticipationServiceRequest
 {
-    @Serializable
-    data class DeanonymizeParticipations( val studyDeploymentId: UUID, val externalParticipantIds: Set<UUID> ) :
-        ParticipationServiceRequest(),
-        ParticipationServiceInvoker<Set<DeanonymizedParticipation>> by createServiceInvoker( ParticipationService::deanonymizeParticipations, studyDeploymentId, externalParticipantIds )
-
     @Serializable
     data class GetActiveParticipationInvitations( val accountId: UUID ) :
         ParticipationServiceRequest(),

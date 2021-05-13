@@ -21,7 +21,6 @@ class ParticipationServiceRequestsTest : ApplicationServiceRequestsTest<Particip
     companion object
     {
         val REQUESTS: List<ParticipationServiceRequest> = listOf(
-            ParticipationServiceRequest.DeanonymizeParticipations( UUID.randomUUID(), emptySet() ),
             ParticipationServiceRequest.GetActiveParticipationInvitations( UUID.randomUUID() ),
             ParticipationServiceRequest.GetParticipantData( UUID.randomUUID() ),
             ParticipationServiceRequest.GetParticipantDataList( emptySet() ),
