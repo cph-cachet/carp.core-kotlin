@@ -14,7 +14,7 @@ data class ParticipantInvitation(
     /**
      * An ID for the participant, uniquely assigned by the calling service.
      */
-    val externalParticipantId: UUID,
+    val participantId: UUID,
     /**
      * The role names of the master devices in the study protocol which the participant is asked to use.
      */

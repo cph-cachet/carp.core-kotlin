@@ -185,25 +185,14 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         }
         interface AssignedMasterDevice$Companion { serializer(): any }
 
-        class DeanonymizedParticipation
-        {
-            constructor( externalId: UUID, participationId: UUID )
-
-            static get Companion(): DeanonymizedParticipation$Companion
-
-            readonly externalId: UUID
-            readonly participationId: UUID
-        }
-        interface DeanonymizedParticipation$Companion { serializer(): any }
-
         class Participation
         {
-            constructor( studyDeploymentId: UUID, id?: UUID )
+            constructor( studyDeploymentId: UUID, participantId?: UUID )
 
             static get Companion(): Participation$Companion
 
             readonly studyDeploymentId: UUID
-            readonly id: UUID
+            readonly participantId: UUID
         }
         interface Participation$Companion { serializer(): any }
 
@@ -220,9 +209,9 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
         class ParticipantInvitation
         {
-            constructor( externalParticipantId: UUID, assignedMasterDeviceRoleNames: HashSet<string>, identity: AccountIdentity, invitation: StudyInvitation )
+            constructor( participantId: UUID, assignedMasterDeviceRoleNames: HashSet<string>, identity: AccountIdentity, invitation: StudyInvitation )
 
-            readonly externalParticipantId: UUID
+            readonly participantId: UUID
             readonly assignedMasterDeviceRoleNames: HashSet<string>
             readonly identity: AccountIdentity
             readonly invitation: StudyInvitation

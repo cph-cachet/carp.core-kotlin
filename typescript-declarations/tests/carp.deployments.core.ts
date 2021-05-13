@@ -18,7 +18,6 @@ import MasterDeviceDeployment = dk.cachet.carp.deployments.application.MasterDev
 import StudyDeploymentStatus = dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import ActiveParticipationInvitation = dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
 import AssignedMasterDevice = dk.cachet.carp.deployments.application.users.AssignedMasterDevice
-import DeanonymizedParticipation = dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import ParticipantData = dk.cachet.carp.deployments.application.users.ParticipantData
 import Participation = dk.cachet.carp.deployments.application.users.Participation
 import ParticipantInvitation = dk.cachet.carp.deployments.application.users.ParticipantInvitation
@@ -51,8 +50,6 @@ describe( "carp.deployments.core", () => {
             ActiveParticipationInvitation.Companion,
             new AssignedMasterDevice( exampleDevice, null ),
             AssignedMasterDevice.Companion,
-            new DeanonymizedParticipation( UUID.Companion.randomUUID(), UUID.Companion.randomUUID() ),
-            DeanonymizedParticipation.Companion,
             new ParticipantData( UUID.Companion.randomUUID(), toMap( [] ) ),
             ParticipantData.Companion,
             new ParticipantInvitation( UUID.Companion.randomUUID(), toSet( [] ), new UsernameAccountIdentity( new Username( "Test" ) ), StudyInvitation.Companion.empty() ),

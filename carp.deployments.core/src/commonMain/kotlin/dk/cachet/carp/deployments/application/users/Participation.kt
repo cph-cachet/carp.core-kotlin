@@ -10,5 +10,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Participation(
     val studyDeploymentId: UUID,
-    val id: UUID = UUID.randomUUID()
+    val participantId: UUID = UUID.randomUUID()
 )

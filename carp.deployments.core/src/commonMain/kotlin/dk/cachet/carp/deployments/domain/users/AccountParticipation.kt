@@ -8,17 +8,15 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * A participant, uniquely identified by [externalParticipantId], linked to an account identified by [accountId],
- * which was invited to a study deployment (using [invitation])
- * with a pseudonym ID ([participation]) using the devices with [assignedMasterDeviceRoleNames].
+ * A participant, uniquely identified by [participation], linked to an account identified by [accountId],
+ * which was invited to a study deployment (using [invitation]) using the devices with [assignedMasterDeviceRoleNames].
  */
 @Serializable
 data class AccountParticipation(
-    val externalParticipantId: UUID,
-    val accountId: UUID,
     val participation: Participation,
-    val invitation: StudyInvitation,
-    val assignedMasterDeviceRoleNames: Set<String>
+    val assignedMasterDeviceRoleNames: Set<String>,
+    val accountId: UUID,
+    val invitation: StudyInvitation
 )
 
 

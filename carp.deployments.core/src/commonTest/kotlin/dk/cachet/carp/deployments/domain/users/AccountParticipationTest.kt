@@ -22,11 +22,10 @@ class AccountParticipationTest
 
         val participation = Participation( activeGroup.studyDeploymentId )
         val invitation = AccountParticipation(
-            externalParticipantId = UUID.randomUUID(),
-            accountId = UUID.randomUUID(),
             participation,
+            setOf( deviceRole ),
+            accountId = UUID.randomUUID(),
             StudyInvitation.empty(),
-            setOf( deviceRole )
         )
 
         val activeInvitations = filterActiveParticipationInvitations(
@@ -46,11 +45,10 @@ class AccountParticipationTest
 
         val participation = Participation( group.studyDeploymentId )
         val invitation = AccountParticipation(
-            externalParticipantId = UUID.randomUUID(),
-            accountId = UUID.randomUUID(),
             participation,
-            StudyInvitation.empty(),
-            setOf( deviceRole )
+            setOf( deviceRole ),
+            accountId = UUID.randomUUID(),
+            StudyInvitation.empty()
         )
 
         // When the device is not registered in the deployment, this is communicated in the active invitation.
@@ -79,11 +77,10 @@ class AccountParticipationTest
         val unknownDeployment = UUID.randomUUID()
         val participation = Participation( unknownDeployment )
         val invitation = AccountParticipation(
-            externalParticipantId = UUID.randomUUID(),
-            accountId = UUID.randomUUID(),
             participation,
-            StudyInvitation.empty(),
-            setOf( "Smartphone" )
+            setOf( "Smartphone" ),
+            accountId = UUID.randomUUID(),
+            StudyInvitation.empty()
         )
 
         assertFailsWith<IllegalArgumentException>
@@ -99,11 +96,10 @@ class AccountParticipationTest
 
         val participation = Participation( group.studyDeploymentId )
         val invitation = AccountParticipation(
-            externalParticipantId = UUID.randomUUID(),
-            accountId = UUID.randomUUID(),
             participation,
-            StudyInvitation.empty(),
-            setOf( "Incorrect device role" )
+            setOf( "Incorrect device role" ),
+            accountId = UUID.randomUUID(),
+            StudyInvitation.empty()
         )
 
         assertFailsWith<IllegalArgumentException>
