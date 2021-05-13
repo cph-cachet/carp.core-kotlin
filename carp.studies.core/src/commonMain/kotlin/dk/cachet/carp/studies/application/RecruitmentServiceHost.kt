@@ -137,7 +137,7 @@ class RecruitmentServiceHost(
         // Reflect that participants have been invited in the recruitment.
         invitations.forEach { invitation ->
             recruitment.addParticipation(
-                recruitment.participants.first { invitation.externalParticipantId == it.id },
+                recruitment.participants.first { invitation.participantId == it.id },
                 deploymentStatus.studyDeploymentId
             )
         }

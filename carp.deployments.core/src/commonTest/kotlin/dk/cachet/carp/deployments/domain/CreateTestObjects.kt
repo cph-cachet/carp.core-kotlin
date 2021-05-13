@@ -92,10 +92,9 @@ fun createComplexParticipantGroup(): ParticipantGroup
 
     return ParticipantGroup.fromNewDeployment( deployment ).apply {
         addParticipation(
-            externalParticipantId = UUID.randomUUID(),
             Account.withEmailIdentity( "test@test.com" ),
-            Participation( studyDeploymentId ),
             StudyInvitation.empty(),
+            Participation( studyDeploymentId ),
             setOf( protocol.masterDevices.first() )
         )
         setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )

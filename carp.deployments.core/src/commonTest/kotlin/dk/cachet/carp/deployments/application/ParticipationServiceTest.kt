@@ -40,9 +40,8 @@ abstract class ParticipationServiceTest
         val protocol = createSingleMasterDeviceProtocol()
         val identity = AccountIdentity.fromEmailAddress( "test@test.com" )
         val invitation = StudyInvitation( "Test study", "description", "Custom data" )
-        val participantId = UUID.randomUUID()
         val participantInvitation = ParticipantInvitation(
-            participantId,
+            participantId = UUID.randomUUID(),
             setOf( deviceRoleName ),
             identity,
             invitation

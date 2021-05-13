@@ -224,7 +224,7 @@ val patientPhone: Smartphone = trackPatientStudy.masterDevices.first() as Smartp
 
 // This is called by `StudyService` when deploying a participant group.
 val invitation = ParticipantInvitation(
-    externalParticipantId = UUID.randomUUID(),
+    participantId = UUID.randomUUID(),
     assignedMasterDeviceRoleNames = setOf( patientPhone.roleName ),
     identity = AccountIdentity.fromEmailAddress( "test@test.com" ),
     invitation = StudyInvitation( "Movement study", "This study tracks your movements." )
