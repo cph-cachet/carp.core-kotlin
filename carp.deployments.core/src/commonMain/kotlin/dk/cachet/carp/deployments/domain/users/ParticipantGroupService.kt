@@ -26,7 +26,7 @@ class ParticipantGroupService( val accountService: AccountService )
         // Send out invitations and add to group.
         for ( invitation in invitations )
         {
-            val participation = Participation( studyDeploymentId )
+            val participation = Participation( studyDeploymentId, invitation.participantId )
             val assignedDevices = invitation.assignedMasterDeviceRoleNames.map { role ->
                 protocol.masterDevices.first { it.roleName == role }
             }
@@ -44,7 +44,7 @@ class ParticipantGroupService( val accountService: AccountService )
                 accountService.inviteExistingAccount( account.id, studyInvitation, participation, assignedDevices )
             }
 
-            group.addParticipation( invitation.externalParticipantId, account, participation, studyInvitation, assignedDevices.toSet() )
+            group.addParticipation( account, studyInvitation, participation, assignedDevices.toSet() )
         }
 
         return group

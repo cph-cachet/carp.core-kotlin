@@ -84,47 +84,36 @@ class ParticipantGroup private constructor(
     private val _participations: MutableSet<AccountParticipation> = mutableSetOf()
 
     /**
-     * Specify that a participant, identified by [externalParticipantId] and linked to [account],
-     * participates in the deployment of this participant group.
+     * Specify that an [account] (invited using [invitation]) participates in this group, identified by [participation],
+     * and was requested to use the [assignedMasterDevices].
      *
-     * @throws IllegalArgumentException if the specified [externalParticipantId] is already added to this participant group,
+     * @throws IllegalArgumentException if [participation] is already added to this participant group,
      * or if the [participation] details do not match the study deployment of this participant group.
      * @throws IllegalStateException when the study deployment of this participant group has stopped.
      */
     fun addParticipation(
-        externalParticipantId: UUID,
         account: Account,
-        participation: Participation,
         invitation: StudyInvitation,
+        participation: Participation,
         assignedMasterDevices: Set<AnyMasterDeviceDescriptor>
     )
     {
         require( studyDeploymentId == participation.studyDeploymentId )
             { "The specified participation details do not match the study deployment of this participant group." }
-        require( _participations.none { it.externalParticipantId == externalParticipantId } )
-            { "The specified external participant ID is already added to this study deployment." }
+        require( _participations.none { it.participation.participantId == participation.participantId } )
+            { "The specified participant ID is already added to this study deployment." }
         check( !isStudyDeploymentStopped )
 
         val assignedMasterDeviceRoleNames = assignedMasterDevices.map { it.roleName }.toSet()
         val accountParticipation = AccountParticipation(
-            externalParticipantId,
+            Participation( studyDeploymentId, participation.participantId ),
+            assignedMasterDeviceRoleNames,
             account.id,
-            Participation( studyDeploymentId, participation.id ),
-            invitation,
-            assignedMasterDeviceRoleNames
+            invitation
         )
         _participations.add( accountParticipation )
         event( Event.ParticipationAdded( accountParticipation ) )
     }
-
-    /**
-     * Get the participation details for a given [externalParticipantId] in this study group,
-     * or null in case no participation with [externalParticipantId] is present.
-     */
-    fun getParticipation( externalParticipantId: UUID ): Participation? =
-        _participations
-            .firstOrNull { it.externalParticipantId == externalParticipantId }
-            ?.participation
 
     /**
      * The assigned master devices to participants in this group and their device registrations, if any.
