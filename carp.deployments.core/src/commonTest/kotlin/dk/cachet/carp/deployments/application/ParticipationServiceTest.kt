@@ -9,7 +9,6 @@ import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.deployments.application.users.AssignedMasterDevice
-import dk.cachet.carp.deployments.application.users.DeanonymizedParticipation
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.createParticipantInvitation
@@ -59,72 +58,6 @@ abstract class ParticipationServiceTest
         assertEquals( invitation, retrievedInvitation.invitation )
         val expectedAssignedDevice = AssignedMasterDevice( protocol.masterDevices.single(), null )
         assertEquals( setOf( expectedAssignedDevice ), retrievedInvitation.assignedDevices )
-    }
-
-    @Test
-    fun deanonymizeParticipations_succeeds() = runSuspendTest {
-        val (participationService, deploymentService, accountService) = createService()
-
-        // Add deployment with one participation.
-        val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
-        val externalParticipantId = UUID.randomUUID()
-        val identity = AccountIdentity.fromUsername( "Test" )
-        val invitation = ParticipantInvitation(
-            externalParticipantId,
-            setOf( deviceRoleName ),
-            identity,
-            StudyInvitation.empty()
-        )
-        val studyDeploymentId = UUID.randomUUID()
-        deploymentService.createStudyDeployment(
-            studyDeploymentId,
-            protocol.getSnapshot(),
-            listOf( invitation )
-        )
-
-        val account = accountService.findAccount( identity )
-        assertNotNull( account )
-        val accountInvitation = participationService.getActiveParticipationInvitations( account.id ).singleOrNull()
-        assertNotNull( accountInvitation )
-        val expectedDeanonymized = setOf(
-            DeanonymizedParticipation( externalParticipantId, accountInvitation.participation.id )
-        )
-        val deanonymized = participationService.deanonymizeParticipations(
-            studyDeploymentId,
-            setOf( externalParticipantId )
-        )
-        assertEquals( expectedDeanonymized, deanonymized )
-    }
-
-    @Test
-    fun deanonymizeParticipations_fails_for_unknown_studyDeploymentId() = runSuspendTest {
-        val (participationService, _, _) = createService()
-
-        assertFailsWith<IllegalArgumentException> {
-            participationService.deanonymizeParticipations( unknownId, emptySet() )
-        }
-    }
-
-    @Test
-    fun deanonymizeParticipations_fails_for_unknown_participant_ids() = runSuspendTest {
-        val (participationService, deploymentService, _) = createService()
-
-        // Add deployment with one participation.
-        val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
-        val participantId = UUID.randomUUID()
-        val invitation = ParticipantInvitation(
-            participantId,
-            setOf( deviceRoleName ),
-            AccountIdentity.fromUsername( "Test" ),
-            StudyInvitation.empty()
-        )
-        val studyDeploymentId = UUID.randomUUID()
-        deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
-
-        assertFailsWith<IllegalArgumentException> {
-            val includesUnknownId = setOf( participantId, unknownId )
-            participationService.deanonymizeParticipations( studyDeploymentId, includesUnknownId )
-        }
     }
 
     @Test
