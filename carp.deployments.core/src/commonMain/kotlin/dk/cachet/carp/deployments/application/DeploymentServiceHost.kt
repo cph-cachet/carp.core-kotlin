@@ -7,7 +7,6 @@ import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
-import dk.cachet.carp.deployments.application.users.throwIfInvalid
 import dk.cachet.carp.deployments.domain.DeploymentRepository
 import dk.cachet.carp.deployments.domain.RegistrableDevice
 import dk.cachet.carp.deployments.domain.StudyDeployment

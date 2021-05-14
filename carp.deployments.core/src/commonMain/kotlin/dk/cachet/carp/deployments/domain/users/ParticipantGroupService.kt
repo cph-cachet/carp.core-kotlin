@@ -2,7 +2,7 @@ package dk.cachet.carp.deployments.domain.users
 
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.users.Participation
-import dk.cachet.carp.deployments.application.users.throwIfInvalid
+import dk.cachet.carp.deployments.application.throwIfInvalid
 
 
 class ParticipantGroupService( val accountService: AccountService )

@@ -1,21 +1,22 @@
-package dk.cachet.carp.deployments.application.users
+package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
+import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
-import kotlin.test.Test
-import kotlin.test.assertFailsWith
+import kotlin.test.*
 
 
 /**
- * Tests for [ParticipantInvitation] and helper methods.
+ * Tests for helper methods in Validation.kt.
  */
-class ParticipantInvitationTest
+class ValidationTest
 {
     private val participantId = UUID.randomUUID()
     private val identity: AccountIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
