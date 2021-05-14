@@ -7,7 +7,7 @@ import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
-import dk.cachet.carp.deployments.application.users.throwIfInvalid
+import dk.cachet.carp.deployments.application.throwIfInvalid
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
