@@ -36,9 +36,9 @@ class DeploymentServiceMock(
     }
 
 
-    override suspend fun createStudyDeployment( id: UUID, protocol: StudyProtocolSnapshot, invitations: List<ParticipantInvitation> ) =
+    override suspend fun createStudyDeployment( id: UUID, protocol: StudyProtocolSnapshot, invitations: List<ParticipantInvitation>, connectedDevicePreregistrations: Map<String, DeviceRegistration> ) =
         createStudyDeploymentResult
-        .also { trackSuspendCall( Service::createStudyDeployment, id, protocol, invitations ) }
+        .also { trackSuspendCall( Service::createStudyDeployment, id, protocol, invitations, connectedDevicePreregistrations ) }
 
     override suspend fun removeStudyDeployments( studyDeploymentIds: Set<UUID> ) =
         removeStudyDeploymentsResult

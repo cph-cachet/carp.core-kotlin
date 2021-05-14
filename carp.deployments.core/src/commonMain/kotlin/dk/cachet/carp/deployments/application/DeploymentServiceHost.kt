@@ -42,15 +42,29 @@ class DeploymentServiceHost(
     override suspend fun createStudyDeployment(
         id: UUID,
         protocol: StudyProtocolSnapshot,
-        invitations: List<ParticipantInvitation>
+        invitations: List<ParticipantInvitation>,
+        /**
+         * Optional preregistrations for connected devices in the study [protocol].
+         */
+        connectedDevicePreregistrations: Map<String, DeviceRegistration>
     ): StudyDeploymentStatus
     {
-        protocol.throwIfInvalid( invitations )
+        protocol.throwIfInvalid( invitations, connectedDevicePreregistrations )
+
         val newDeployment = StudyDeployment( protocol, id )
+        connectedDevicePreregistrations.forEach { (connected, registration) ->
+            val device = protocol.connectedDevices.first { it.roleName == connected }
+            newDeployment.registerDevice( device, registration )
+        }
 
         repository.add( newDeployment )
         eventBus.publish(
-            DeploymentService.Event.StudyDeploymentCreated( newDeployment.id, newDeployment.protocolSnapshot, invitations )
+            DeploymentService.Event.StudyDeploymentCreated(
+                newDeployment.id,
+                newDeployment.protocolSnapshot,
+                invitations,
+                connectedDevicePreregistrations
+            )
         )
 
         return newDeployment.getStatus()

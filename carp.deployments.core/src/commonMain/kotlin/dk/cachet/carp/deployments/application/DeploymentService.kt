@@ -24,7 +24,8 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
         data class StudyDeploymentCreated(
             val studyDeploymentId: UUID,
             val protocol: StudyProtocolSnapshot,
-            val invitations: List<ParticipantInvitation>
+            val invitations: List<ParticipantInvitation>,
+            val connectedDevicePreregistrations: Map<String, DeviceRegistration>
         ) : Event()
         @Serializable
         data class StudyDeploymentsRemoved( val deploymentIds: Set<UUID> ) : Event()
@@ -58,7 +59,11 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
     suspend fun createStudyDeployment(
         id: UUID,
         protocol: StudyProtocolSnapshot,
-        invitations: List<ParticipantInvitation>
+        invitations: List<ParticipantInvitation>,
+        /**
+         * Optional preregistrations for connected devices in the study [protocol].
+         */
+        connectedDevicePreregistrations: Map<String, DeviceRegistration> = emptyMap()
     ): StudyDeploymentStatus
 
     /**
