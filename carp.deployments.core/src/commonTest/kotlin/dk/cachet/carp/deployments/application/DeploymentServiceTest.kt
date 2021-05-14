@@ -26,6 +26,27 @@ abstract class DeploymentServiceTest
 
 
     @Test
+    fun createStudyDeployment_registers_preregistered_devices() = runSuspendTest {
+        val deploymentService = createService()
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val masterDevice = protocol.masterDevices.single()
+        val connectedDevice = protocol.getConnectedDevices( masterDevice ).single()
+
+        val deploymentId = UUID.randomUUID()
+        val preregistration = connectedDevice.createRegistration()
+        deploymentService.createStudyDeployment(
+            deploymentId,
+            protocol.getSnapshot(),
+            listOf( createParticipantInvitation( protocol ) ),
+            mapOf( connectedDevice.roleName to preregistration )
+        )
+        deploymentService.registerDevice( deploymentId, masterDevice.roleName, masterDevice.createRegistration() )
+
+        val deployment = deploymentService.getDeviceDeploymentFor( deploymentId, masterDevice.roleName )
+        assertEquals( preregistration, deployment.connectedDeviceConfigurations[ connectedDevice.roleName ] )
+    }
+
+    @Test
     fun createStudyDeployment_fails_for_existing_id() = runSuspendTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Master" )

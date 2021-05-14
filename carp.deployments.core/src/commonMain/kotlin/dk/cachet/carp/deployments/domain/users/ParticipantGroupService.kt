@@ -17,7 +17,7 @@ class ParticipantGroupService( val accountService: AccountService )
         // Verify whether the participant group matches the requirements of the protocol.
         val studyDeploymentId = createdDeployment.studyDeploymentId
         val invitations = createdDeployment.invitations
-        createdDeployment.protocol.throwIfInvalid( invitations )
+        createdDeployment.protocol.throwIfInvalid( invitations, createdDeployment.connectedDevicePreregistrations )
 
         // Create group.
         val protocol = createdDeployment.protocol.toObject()

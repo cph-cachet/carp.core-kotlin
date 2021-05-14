@@ -40,7 +40,8 @@ class ParticipantGroupServiceTest
         val createdEvent = DeploymentService.Event.StudyDeploymentCreated(
             studyDeploymentId,
             protocol.getSnapshot(),
-            listOf( createParticipantInvitation( protocol ) )
+            listOf( createParticipantInvitation( protocol ) ),
+            connectedDevicePreregistrations = emptyMap()
         )
         val group = service.createAndInviteParticipantGroup( createdEvent )
 
@@ -54,7 +55,8 @@ class ParticipantGroupServiceTest
         val createdEvent = DeploymentService.Event.StudyDeploymentCreated(
             studyDeploymentId,
             protocol.getSnapshot(),
-            listOf( createParticipantInvitation( protocol, emailIdentity ) )
+            listOf( createParticipantInvitation( protocol, emailIdentity ) ),
+            connectedDevicePreregistrations = emptyMap()
         )
         service.createAndInviteParticipantGroup( createdEvent )
 
@@ -79,7 +81,8 @@ class ParticipantGroupServiceTest
         val createdEvent = DeploymentService.Event.StudyDeploymentCreated(
             studyDeploymentId,
             protocol.getSnapshot(),
-            listOf( invitation1, invitation2 )
+            listOf( invitation1, invitation2 ),
+            connectedDevicePreregistrations = emptyMap()
         )
         val group = service.createAndInviteParticipantGroup( createdEvent )
         assertEquals( 2, group.participations.count() )
@@ -96,7 +99,8 @@ class ParticipantGroupServiceTest
         val createdEvent = DeploymentService.Event.StudyDeploymentCreated(
             studyDeploymentId,
             protocol.getSnapshot(),
-            listOf( errorneousInvitation )
+            listOf( errorneousInvitation ),
+            connectedDevicePreregistrations = emptyMap()
         )
 
         assertFailsWith<IllegalArgumentException> { service.createAndInviteParticipantGroup( createdEvent ) }
