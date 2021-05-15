@@ -186,7 +186,12 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      * @throws IllegalArgumentException when [destinationDevice] is not included in this study protocol.
      * @return True if the task control has been added; false if the same control is already present.
      */
-    fun addTaskControl( trigger: Trigger, task: TaskDescriptor, destinationDevice: AnyDeviceDescriptor, control: Control ): Boolean
+    fun addTaskControl(
+        trigger: Trigger,
+        task: TaskDescriptor,
+        destinationDevice: AnyDeviceDescriptor,
+        control: Control
+    ): Boolean
     {
         // The device needs to be included in the study protocol.
         // We cannot add it here since we do not know whether it should be a master or connected device.

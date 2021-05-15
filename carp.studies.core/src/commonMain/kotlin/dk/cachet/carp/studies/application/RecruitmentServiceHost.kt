@@ -197,7 +197,12 @@ class RecruitmentServiceHost(
      *   - [inputDataType] is not configured as expected participant data in the study protocol
      *   - [data] is invalid data for [inputDataType]
      */
-    override suspend fun setParticipantGroupData( studyId: UUID, groupId: UUID, inputDataType: InputDataType, data: Data? ): ParticipantGroupStatus
+    override suspend fun setParticipantGroupData(
+        studyId: UUID,
+        groupId: UUID,
+        inputDataType: InputDataType,
+        data: Data?
+    ): ParticipantGroupStatus
     {
         val participations = getParticipationsOrThrow( studyId, groupId )
 

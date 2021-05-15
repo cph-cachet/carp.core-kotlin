@@ -1,3 +1,5 @@
+@file:Suppress( "ParameterListWrapping" )
+
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.EmailAddress

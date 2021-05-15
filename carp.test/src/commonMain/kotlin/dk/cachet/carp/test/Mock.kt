@@ -1,4 +1,4 @@
-@file:Suppress( "TooManyFunctions", "LongParameterList" )
+@file:Suppress( "TooManyFunctions", "ParameterListWrapping", "LongParameterList" )
 
 package dk.cachet.carp.test
 

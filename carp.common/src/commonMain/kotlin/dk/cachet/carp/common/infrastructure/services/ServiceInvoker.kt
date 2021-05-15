@@ -1,4 +1,4 @@
-@file:Suppress( "LongParameterList", "TooManyFunctions" )
+@file:Suppress( "LongParameterList", "ParameterListWrapping", "TooManyFunctions" )
 
 package dk.cachet.carp.common.infrastructure.services
 

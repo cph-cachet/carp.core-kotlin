@@ -29,8 +29,11 @@ sealed class ProtocolServiceRequest
         ServiceInvoker<ProtocolService, Unit> by createServiceInvoker( ProtocolService::addVersion, protocol, versionTag )
 
     @Serializable
-    data class UpdateParticipantDataConfiguration( val protocolId: StudyProtocolId, val versionTag: String, val expectedParticipantData: Set<ParticipantAttribute> ) :
-        ProtocolServiceRequest(),
+    data class UpdateParticipantDataConfiguration(
+        val protocolId: StudyProtocolId,
+        val versionTag: String,
+        val expectedParticipantData: Set<ParticipantAttribute>
+    ) : ProtocolServiceRequest(),
         ServiceInvoker<ProtocolService, StudyProtocolSnapshot> by createServiceInvoker( ProtocolService::updateParticipantDataConfiguration, protocolId, versionTag, expectedParticipantData )
 
     @Serializable

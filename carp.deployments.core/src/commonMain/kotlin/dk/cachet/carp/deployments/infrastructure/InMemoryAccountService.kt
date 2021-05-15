@@ -23,7 +23,12 @@ class InMemoryAccountService : AccountService
      *
      * @throws IllegalArgumentException when an account with a matching [AccountIdentity] already exists.
      */
-    override suspend fun inviteNewAccount( identity: AccountIdentity, invitation: StudyInvitation, participation: Participation, devices: List<AnyDeviceDescriptor> ): Account
+    override suspend fun inviteNewAccount(
+        identity: AccountIdentity,
+        invitation: StudyInvitation,
+        participation: Participation,
+        devices: List<AnyDeviceDescriptor>
+    ): Account
     {
         require( accounts.none { it.identity == identity } )
 
@@ -38,7 +43,12 @@ class InMemoryAccountService : AccountService
      *
      * @throws IllegalArgumentException when account with [accountId] does not exist.
      */
-    override suspend fun inviteExistingAccount( accountId: UUID, invitation: StudyInvitation, participation: Participation, devices: List<AnyDeviceDescriptor> )
+    override suspend fun inviteExistingAccount(
+        accountId: UUID,
+        invitation: StudyInvitation,
+        participation: Participation,
+        devices: List<AnyDeviceDescriptor>
+    )
     {
         require( accounts.any { it.id == accountId } )
     }

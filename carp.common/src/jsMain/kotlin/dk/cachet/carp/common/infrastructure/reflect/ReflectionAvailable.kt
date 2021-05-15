@@ -7,7 +7,6 @@ import kotlin.reflect.KClass
 
 
 @PublishedApi
-@Suppress( "UnusedPrivateMember" ) // TODO: Remove once detekt bug is fixed: https://github.com/detekt/detekt/issues/3415
 internal actual object Reflection
 {
     actual val isReflectionAvailable: Boolean = false

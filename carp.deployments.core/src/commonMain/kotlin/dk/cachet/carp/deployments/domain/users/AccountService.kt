@@ -19,14 +19,24 @@ interface AccountService
      *
      * @throws IllegalArgumentException when an account with a matching [AccountIdentity] already exists.
      */
-    suspend fun inviteNewAccount( identity: AccountIdentity, invitation: StudyInvitation, participation: Participation, devices: List<AnyDeviceDescriptor> ): Account
+    suspend fun inviteNewAccount(
+        identity: AccountIdentity,
+        invitation: StudyInvitation,
+        participation: Participation,
+        devices: List<AnyDeviceDescriptor>
+    ): Account
 
     /**
      * Send out a [participation] [invitation] and [devices] to use for a study, or make it available, to the account with [accountId].
      *
      * @throws IllegalArgumentException when account with [accountId] does not exist.
      */
-    suspend fun inviteExistingAccount( accountId: UUID, invitation: StudyInvitation, participation: Participation, devices: List<AnyDeviceDescriptor> )
+    suspend fun inviteExistingAccount(
+        accountId: UUID,
+        invitation: StudyInvitation,
+        participation: Participation,
+        devices: List<AnyDeviceDescriptor>
+    )
 
     /**
      * Returns the [Account] which has the specified [identity], or null when no account is found.

@@ -447,7 +447,11 @@ class StudyProtocolTest
     }
 
 
-    private fun connectedDevicesAreSame( protocol: StudyProtocol, fromSnapshot: StudyProtocol, masterDevice: AnyMasterDeviceDescriptor ): Boolean
+    private fun connectedDevicesAreSame(
+        protocol: StudyProtocol,
+        fromSnapshot: StudyProtocol,
+        masterDevice: AnyMasterDeviceDescriptor
+    ): Boolean
     {
         val protocolConnected = protocol.getConnectedDevices( masterDevice ).sortedWith( compareBy { it.roleName } )
         val snapshotConnected = fromSnapshot.getConnectedDevices( masterDevice ).sortedWith( compareBy { it.roleName } )

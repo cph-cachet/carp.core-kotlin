@@ -117,7 +117,11 @@ class DeploymentServiceHost(
      * - [registration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device
      * @throws IllegalStateException when this deployment has stopped.
      */
-    override suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
+    override suspend fun registerDevice(
+        studyDeploymentId: UUID,
+        deviceRoleName: String,
+        registration: DeviceRegistration
+    ): StudyDeploymentStatus
     {
         val deployment: StudyDeployment = repository.getStudyDeploymentOrThrowBy( studyDeploymentId )
         val device: AnyDeviceDescriptor = getRegistrableDevice( deployment, deviceRoleName ).device

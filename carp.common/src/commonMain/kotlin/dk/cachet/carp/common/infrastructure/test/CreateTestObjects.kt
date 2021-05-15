@@ -123,7 +123,13 @@ fun String.makeUnknown(
     this.makeUnknown( trigger, Trigger::class, key, value, unknownTypeName )
 
 @ExperimentalSerializationApi
-private fun <T : Any> String.makeUnknown( instance: T, klass: KClass<T>, key: String, value: String, unknownTypeName: String ): String
+private fun <T : Any> String.makeUnknown(
+    instance: T,
+    klass: KClass<T>,
+    key: String,
+    value: String,
+    unknownTypeName: String
+): String
 {
     // Get qualified type name.
     val serialModule = COMMON_SERIAL_MODULE + STUBS_SERIAL_MODULE

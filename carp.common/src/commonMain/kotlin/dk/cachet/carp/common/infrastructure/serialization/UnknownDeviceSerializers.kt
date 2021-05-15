@@ -20,8 +20,11 @@ import kotlin.reflect.KClass
  * A wrapper used to load extending types from [DeviceDescriptor] serialized as JSON which are unknown at runtime.
  */
 @Serializable( DeviceDescriptorSerializer::class )
-data class CustomDeviceDescriptor( override val className: String, override val jsonSource: String, val serializer: Json ) :
-    DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
+data class CustomDeviceDescriptor(
+    override val className: String,
+    override val jsonSource: String,
+    val serializer: Json
+) : DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
@@ -53,8 +56,11 @@ data class CustomDeviceDescriptor( override val className: String, override val 
  * A wrapper used to load extending types from [MasterDeviceDescriptor] serialized as JSON which are unknown at runtime.
  */
 @Serializable( MasterDeviceDescriptorSerializer::class )
-data class CustomMasterDeviceDescriptor( override val className: String, override val jsonSource: String, val serializer: Json ) :
-    MasterDeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
+data class CustomMasterDeviceDescriptor(
+    override val className: String,
+    override val jsonSource: String,
+    val serializer: Json
+) : MasterDeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
@@ -131,8 +137,11 @@ object MasterDeviceDescriptorSerializer : KSerializer<AnyMasterDeviceDescriptor>
  * A wrapper used to load extending types from [DeviceRegistration] serialized as JSON which are unknown at runtime.
  */
 @Serializable( DeviceRegistrationSerializer::class )
-data class CustomDeviceRegistration( override val className: String, override val jsonSource: String, val serializer: Json ) :
-    DeviceRegistration(), UnknownPolymorphicWrapper
+data class CustomDeviceRegistration(
+    override val className: String,
+    override val jsonSource: String,
+    val serializer: Json
+) : DeviceRegistration(), UnknownPolymorphicWrapper
 {
     @Serializable
     private data class BaseMembers( override val deviceId: String ) : DeviceRegistration()

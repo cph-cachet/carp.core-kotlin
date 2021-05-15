@@ -22,8 +22,12 @@ private typealias Invoker<T> = ServiceInvoker<StudyService, T>
 sealed class StudyServiceRequest
 {
     @Serializable
-    data class CreateStudy( val owner: StudyOwner, val name: String, val description: String = "", val invitation: StudyInvitation? = null ) :
-        StudyServiceRequest(),
+    data class CreateStudy(
+        val owner: StudyOwner,
+        val name: String,
+        val description: String = "",
+        val invitation: StudyInvitation? = null
+    ) : StudyServiceRequest(),
         Invoker<StudyStatus> by createServiceInvoker( Service::createStudy, owner, name, description, invitation )
 
     @Serializable

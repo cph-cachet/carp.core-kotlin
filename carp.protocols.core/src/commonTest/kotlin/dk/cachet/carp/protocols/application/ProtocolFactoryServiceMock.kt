@@ -10,7 +10,12 @@ class ProtocolFactoryServiceMock(
     private val createCustomProtocolResult: StudyProtocolSnapshot = StudyProtocol( ProtocolOwner(), "Mock" ).getSnapshot()
 ) : Mock<ProtocolFactoryService>(), ProtocolFactoryService
 {
-    override suspend fun createCustomProtocol( ownerId: UUID, name: String, customProtocol: String, description: String ): StudyProtocolSnapshot
+    override suspend fun createCustomProtocol(
+        ownerId: UUID,
+        name: String,
+        customProtocol: String,
+        description: String
+    ): StudyProtocolSnapshot
     {
         trackSuspendCall( ProtocolFactoryService::createCustomProtocol, ownerId, name, customProtocol, description )
         return createCustomProtocolResult

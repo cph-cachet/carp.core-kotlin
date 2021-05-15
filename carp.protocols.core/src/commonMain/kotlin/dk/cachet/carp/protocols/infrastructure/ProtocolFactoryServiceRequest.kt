@@ -15,7 +15,12 @@ import kotlinx.serialization.Serializable
 sealed class ProtocolFactoryServiceRequest
 {
     @Serializable
-    data class CreateCustomProtocol( val ownerId: UUID, val name: String, val customProtocol: String, val description: String ) :
+    data class CreateCustomProtocol(
+        val ownerId: UUID,
+        val name: String,
+        val customProtocol: String,
+        val description: String
+    ) :
         ProtocolFactoryServiceRequest(),
         ServiceInvoker<ProtocolFactoryService, StudyProtocolSnapshot> by createServiceInvoker( ProtocolFactoryService::createCustomProtocol, ownerId, name, customProtocol, description )
 }

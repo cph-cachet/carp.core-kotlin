@@ -56,7 +56,11 @@ sealed class RecruitmentServiceRequest
         RecruitmentServiceInvoker<ParticipantGroupStatus> by createServiceInvoker( RecruitmentService::stopParticipantGroup, studyId, groupId )
 
     @Serializable
-    data class SetParticipantGroupData( val studyId: UUID, val groupId: UUID, val inputDataType: InputDataType, val data: Data? ) :
-        RecruitmentServiceRequest(),
+    data class SetParticipantGroupData(
+        val studyId: UUID,
+        val groupId: UUID,
+        val inputDataType: InputDataType,
+        val data: Data?
+    ) : RecruitmentServiceRequest(),
         RecruitmentServiceInvoker<ParticipantGroupStatus> by createServiceInvoker( RecruitmentService::setParticipantGroupData, studyId, groupId, inputDataType, data )
 }

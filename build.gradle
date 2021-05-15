@@ -27,7 +27,7 @@ buildscript {
             nodePlugin:'3.0.1',
 
             // DevOps versions.
-            detektPlugin:'1.16.0',
+            detektPlugin:'1.17.0',
             detektVerifyImplementation:'1.2.1',
             nexusReleasePlugin:'0.22.0' // TODO: Migrate to `gradle-nexus-publish-plugin`.
         ]
@@ -348,7 +348,7 @@ configure( rootProject )
         classpath.setFrom(classPaths)
     }
     tasks.detekt.jvmTarget = "1.8"
-    tasks.detekt.dependsOn ":carp.detekt:assemble" // Ensure 'carp.detekt' is build prior to running code analysis.
+    tasks.detekt.dependsOn ":carp.detekt:assemble" // Ensure 'carp.detekt' is built prior to running code analysis.
 }
 
 
