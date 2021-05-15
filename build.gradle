@@ -19,12 +19,12 @@ buildscript {
 
             // JVM versions.
             jvmTarget:'1.6',
-            jUnit5:'5.7.1',
+            jUnit5:'5.7.2',
             dokkaPlugin:'0.9.18',
             reflections:'0.9.12',
 
             // JS versions.
-            nodePlugin:'3.0.1',
+            nodePlugin:'3.1.0',
 
             // DevOps versions.
             detektPlugin:'1.17.0',
@@ -50,7 +50,7 @@ buildscript {
     }
 
     repositories {
-        jcenter()
+        mavenCentral()
         gradlePluginPortal()
     }
 }
@@ -69,7 +69,7 @@ configure( subprojects - detektModule ) {
     version = globalVersion
 
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     // Specify platforms and test frameworks to use.
@@ -187,10 +187,7 @@ configure( subprojects - detektModule ) {
     // Configure the 'sign' task to sign all files part of the maven package.
     apply plugin: 'signing'
     signing {
-        sign publishing.publications.jvm
-        sign publishing.publications.js
-        sign publishing.publications.metadata
-        sign publishing.publications.kotlinMultiplatform
+        sign publishing.publications
     }
     task publishSigned {
         doFirst {
@@ -268,7 +265,7 @@ task verifyTsDeclarations(type: NodeTask, dependsOn: compileTs) {
 configure( coreModules + commonModule ) {
     buildscript {
         repositories {
-            jcenter()
+            mavenCentral()
         }
 
         dependencies {
@@ -322,7 +319,7 @@ configure( coreModules ) {
 configure( rootProject )
 {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     apply plugin: 'io.gitlab.arturbosch.detekt'

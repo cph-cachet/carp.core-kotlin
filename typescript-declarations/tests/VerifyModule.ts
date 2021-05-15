@@ -13,7 +13,7 @@ import {
     TSModuleDeclaration, 
     TSInterfaceBody,
     TypeElement }
-    from "@typescript-eslint/types/dist/ts-estree"
+    from "@typescript-eslint/types/dist/ast-spec"
 import * as fs from 'fs'
 import { getEffectiveTypeParameterDeclarations } from 'typescript'
 
