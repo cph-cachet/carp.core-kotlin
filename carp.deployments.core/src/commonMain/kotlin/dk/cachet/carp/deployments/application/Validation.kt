@@ -1,7 +1,5 @@
 package dk.cachet.carp.deployments.application
 
-import dk.cachet.carp.common.application.Trilean
-import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
@@ -36,11 +34,8 @@ fun StudyProtocolSnapshot.throwIfInvalid(
         val connectedDevice = connectedDevices.firstOrNull { it.roleName == roleName }
         requireNotNull( connectedDevice )
             { "The device with role name \"$roleName\" for which a preregistration was defined isn't a connected device in the study protocol." }
-        @Suppress( "UNCHECKED_CAST" )
-        val isValidConfiguration =
-            connectedDevice.getRegistrationClass().isInstance( registration ) &&
-            (connectedDevice as DeviceDescriptor<DeviceRegistration, *>).isValidConfiguration( registration ) != Trilean.FALSE
-        require( isValidConfiguration )
+        val isInvalidConfiguration = connectedDevice.isDefinitelyInvalidConfiguration( registration )
+        require( !isInvalidConfiguration )
             { "The preregistration for the connected device with role name \"$roleName\" is invalid." }
     }
 }

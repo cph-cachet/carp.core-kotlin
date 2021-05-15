@@ -1,11 +1,9 @@
 package dk.cachet.carp.deployments.domain
 
-import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.domain.AggregateRoot
@@ -247,17 +245,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val isAlreadyRegistered = device in _registeredDevices.keys
         require( !isAlreadyRegistered ) { "The passed device is already registered." }
 
-        // Verify whether the passed registration is known to be invalid for the given device.
-        // This may be 'UNKNOWN' when the device type is not known at runtime.
-        // In this case, simply forward as is assuming it to be valid (possibly failing on the 'client' later).
-        // TODO: `getRegistrationClass` is a trivial implementation in extending classes, but could this be enforced by using the type system instead?
-        //       On the JVM runtime, `isValidConfiguration` throws a `ClassCastException` when the wrong type were to be passed, but not on JS runtime.
-        val registrationClass = device.getRegistrationClass()
-        val isValidType = registrationClass.isInstance( registration )
-        @Suppress( "UNCHECKED_CAST" )
-        val anyDevice = device as DeviceDescriptor<DeviceRegistration, *>
-        val isValidConfiguration = isValidType && ( anyDevice.isValidConfiguration( registration ) != Trilean.FALSE )
-        require( isValidConfiguration ) { "The passed registration is not valid for the given device." }
+        // Fail for configurations which are known to be invalid.
+        // Configurations for which this is unknown are simply forwarded, possibly failing on the 'client' later.
+        val isInvalidConfiguration = device.isDefinitelyInvalidConfiguration( registration )
+        require( !isInvalidConfiguration ) { "The passed registration is not valid for the given device." }
 
         // Verify whether deviceId is unique for the given device type within this deployment.
         val isUnique = _registeredDevices.none {

@@ -64,6 +64,22 @@ abstract class DeviceDescriptor<
      * Devices rely on a concrete [DeviceRegistration] to determine the specific configuration needed for them.
      */
     abstract fun isValidConfiguration( registration: TRegistration ): Trilean
+
+    /**
+     * Verify whether the passed registration is known to be invalid for the given device.
+     * In case this is unknown since the the device type is not known at runtime, false is returned.
+     */
+    fun isDefinitelyInvalidConfiguration( registration: DeviceRegistration ): Boolean
+    {
+        // TODO: `getRegistrationClass` is a trivial implementation in extending classes, but could this be enforced by using the type system instead?
+        //  On the JVM runtime, `isValidConfiguration` throws a `ClassCastException` when the wrong type were to be passed, but not on JS runtime.
+        val isValidType = getRegistrationClass().isInstance( registration )
+
+        @Suppress( "UNCHECKED_CAST" )
+        val anyDevice = this as DeviceDescriptor<DeviceRegistration, *>
+
+        return !isValidType || ( anyDevice.isValidConfiguration( registration ) == Trilean.FALSE )
+    }
 }
 
 typealias AnyDeviceDescriptor = DeviceDescriptor<*, *>
