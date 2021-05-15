@@ -60,25 +60,25 @@ abstract class DeviceDescriptor<
     abstract fun getRegistrationClass(): KClass<TRegistration>
 
     /**
-     * Determines whether the given [registration] is configured correctly for this type of device.
-     * Devices rely on a concrete [DeviceRegistration] to determine the specific configuration needed for them.
+     * Determines whether the device specifications defined in [registration]
+     * live up to the minimum specifications defined by the researcher in this [DeviceDescriptor].
      */
-    abstract fun isValidConfiguration( registration: TRegistration ): Trilean
+    abstract fun isValidRegistration( registration: TRegistration ): Trilean
 
     /**
      * Verify whether the passed registration is known to be invalid for the given device.
      * In case this is unknown since the the device type is not known at runtime, false is returned.
      */
-    fun isDefinitelyInvalidConfiguration( registration: DeviceRegistration ): Boolean
+    fun isDefinitelyInvalidRegistration( registration: DeviceRegistration ): Boolean
     {
         // TODO: `getRegistrationClass` is a trivial implementation in extending classes, but could this be enforced by using the type system instead?
-        //  On the JVM runtime, `isValidConfiguration` throws a `ClassCastException` when the wrong type were to be passed, but not on JS runtime.
+        //  On the JVM runtime, `isValidRegistration` throws a `ClassCastException` when the wrong type were to be passed, but not on JS runtime.
         val isValidType = getRegistrationClass().isInstance( registration )
 
         @Suppress( "UNCHECKED_CAST" )
         val anyDevice = this as DeviceDescriptor<DeviceRegistration, *>
 
-        return !isValidType || ( anyDevice.isValidConfiguration( registration ) == Trilean.FALSE )
+        return !isValidType || ( anyDevice.isValidRegistration( registration ) == Trilean.FALSE )
     }
 }
 

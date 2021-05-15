@@ -23,5 +23,5 @@ data class StubDeviceDescriptor(
     override fun getSupportedDataTypes(): Set<DataType> = setOf( STUB_DATA_TYPE )
     override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DefaultDeviceRegistration> = DefaultDeviceRegistration::class
-    override fun isValidConfiguration( registration: DefaultDeviceRegistration ): Trilean = Trilean.TRUE
+    override fun isValidRegistration( registration: DefaultDeviceRegistration ): Trilean = Trilean.TRUE
 }

@@ -245,10 +245,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val isAlreadyRegistered = device in _registeredDevices.keys
         require( !isAlreadyRegistered ) { "The passed device is already registered." }
 
-        // Fail for configurations which are known to be invalid.
-        // Configurations for which this is unknown are simply forwarded, possibly failing on the 'client' later.
-        val isInvalidConfiguration = device.isDefinitelyInvalidConfiguration( registration )
-        require( !isInvalidConfiguration ) { "The passed registration is not valid for the given device." }
+        // Fail for device registrations which are known to be invalid.
+        // Registrations for which this is unknown are simply forwarded, possibly failing on the 'client' later.
+        val isInvalidRegistration = device.isDefinitelyInvalidRegistration( registration )
+        require( !isInvalidRegistration ) { "The passed registration is not valid for the given device." }
 
         // Verify whether deviceId is unique for the given device type within this deployment.
         val isUnique = _registeredDevices.none {

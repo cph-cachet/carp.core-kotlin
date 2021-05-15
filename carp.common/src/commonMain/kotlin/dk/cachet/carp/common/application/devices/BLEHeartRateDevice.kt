@@ -45,5 +45,5 @@ data class BLEHeartRateDevice(
 
     override fun createDeviceRegistrationBuilder(): MACAddressDeviceRegistrationBuilder = MACAddressDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<MACAddressDeviceRegistration> = MACAddressDeviceRegistration::class
-    override fun isValidConfiguration( registration: MACAddressDeviceRegistration ): Trilean = Trilean.TRUE
+    override fun isValidRegistration( registration: MACAddressDeviceRegistration ): Trilean = Trilean.TRUE
 }

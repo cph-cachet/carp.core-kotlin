@@ -29,7 +29,7 @@ data class AltBeacon( override val roleName: String ) : DeviceDescriptor<AltBeac
 
     override fun createDeviceRegistrationBuilder(): AltBeaconDeviceRegistrationBuilder = AltBeaconDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<AltBeaconDeviceRegistration> = AltBeaconDeviceRegistration::class
-    override fun isValidConfiguration( registration: AltBeaconDeviceRegistration ): Trilean = Trilean.TRUE
+    override fun isValidRegistration( registration: AltBeaconDeviceRegistration ): Trilean = Trilean.TRUE
 }
 
 

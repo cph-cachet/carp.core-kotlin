@@ -61,7 +61,7 @@ data class Smartphone(
 
     override fun createDeviceRegistrationBuilder(): SmartphoneDeviceRegistrationBuilder = SmartphoneDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<SmartphoneDeviceRegistration> = SmartphoneDeviceRegistration::class
-    override fun isValidConfiguration( registration: SmartphoneDeviceRegistration ) = Trilean.TRUE
+    override fun isValidRegistration( registration: SmartphoneDeviceRegistration ) = Trilean.TRUE
 }
 
 

@@ -9,7 +9,10 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * A [DeviceRegistration] configures a [DeviceDescriptor] as part of the deployment of a study protocol.
+ * A [DeviceRegistration] uniquely identifies a [DeviceDescriptor] once it is deployed in a study,
+ * contains the necessary details for the client on how to connect to the device,
+ * and stores device specifications which may be relevant to the researcher when interpreting collection data,
+ * such as brand/model name and operating system version.
  */
 @Serializable
 @Polymorphic

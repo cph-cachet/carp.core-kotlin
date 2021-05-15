@@ -45,7 +45,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
     /**
      * For unknown types, it cannot be determined whether or not a given registration is valid.
      */
-    override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.UNKNOWN
+    override fun isValidRegistration( registration: DeviceRegistration ) = Trilean.UNKNOWN
 }
 
 
@@ -78,7 +78,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
     /**
      * For unknown types, it cannot be determined whether or not a given registration is valid.
      */
-    override fun isValidConfiguration( registration: DeviceRegistration ) = Trilean.UNKNOWN
+    override fun isValidRegistration( registration: DeviceRegistration ) = Trilean.UNKNOWN
 }
 
 
@@ -94,7 +94,7 @@ private data class BaseMembers(
         throw UnsupportedOperationException()
     override fun getRegistrationClass(): KClass<DeviceRegistration> =
         throw UnsupportedOperationException()
-    override fun isValidConfiguration( registration: DeviceRegistration ): Trilean =
+    override fun isValidRegistration( registration: DeviceRegistration ): Trilean =
         throw UnsupportedOperationException()
 }
 

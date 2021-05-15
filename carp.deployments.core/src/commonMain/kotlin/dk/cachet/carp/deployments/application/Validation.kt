@@ -34,8 +34,8 @@ fun StudyProtocolSnapshot.throwIfInvalid(
         val connectedDevice = connectedDevices.firstOrNull { it.roleName == roleName }
         requireNotNull( connectedDevice )
             { "The device with role name \"$roleName\" for which a preregistration was defined isn't a connected device in the study protocol." }
-        val isInvalidConfiguration = connectedDevice.isDefinitelyInvalidConfiguration( registration )
-        require( !isInvalidConfiguration )
+        val isInvalidRegistration = connectedDevice.isDefinitelyInvalidRegistration( registration )
+        require( !isInvalidRegistration )
             { "The preregistration for the connected device with role name \"$roleName\" is invalid." }
     }
 }
