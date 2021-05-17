@@ -9,3 +9,9 @@ import dk.cachet.carp.common.application.NamespacedId
  * how to upload it, how to process it in a secondary data stream, or how triggers can act on it.
  */
 typealias DataType = NamespacedId
+
+
+/**
+ * Contains metadata about [type].
+ */
+data class DataTypeMetaData( val type: DataType )

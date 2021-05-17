@@ -1,6 +1,6 @@
 package dk.cachet.carp.common.application.sampling
 
-import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import kotlinx.serialization.Serializable
 
@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
  * Sampling scheme which provides only indirect control over how data is sampled by specifying a desired level of [Granularity].
  * The levels of granularity correspond to expected degrees of power consumption.
  */
-class GranularitySamplingScheme( dataType: DataType, val defaultGranularity: Granularity ) :
+class GranularitySamplingScheme( dataType: DataTypeMetaData, val defaultGranularity: Granularity ) :
     DataTypeSamplingScheme<GranularitySamplingConfigurationBuilder>( dataType )
 {
     override fun createSamplingConfigurationBuilder(): GranularitySamplingConfigurationBuilder =

@@ -1,6 +1,6 @@
 package dk.cachet.carp.common.application.sampling
 
-import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
@@ -13,7 +13,7 @@ abstract class BatteryAwareSamplingScheme<
     TConfig : SamplingConfiguration,
     TBuilder : SamplingConfigurationBuilder<TConfig>
 >(
-    dataType: DataType,
+    dataType: DataTypeMetaData,
     /**
      * The builder to construct [SamplingConfiguration]s when overriding configurations for different battery levels.
      */
