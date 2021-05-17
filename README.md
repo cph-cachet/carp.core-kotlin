@@ -166,10 +166,11 @@ protocol.addMasterDevice( phone )
 
 // Define what needs to be measured, on which device, when.
 val sensors = Smartphone.Sensors
-val startMeasures = Smartphone.Tasks.BACKGROUND.create( "Start measures" ) {
+val trackMovement = Smartphone.Tasks.BACKGROUND.create( "Track movement" ) {
     measures = listOf( sensors.GEOLOCATION.measure(), sensors.STEP_COUNT.measure() )
+    description = "Track activity level and number of places visited per day."
 }
-protocol.addTaskControl( phone.atStartOfStudy().start( measures, phone ) )
+protocol.addTaskControl( phone.atStartOfStudy().start( trackMovement, phone ) )
 
 // JSON output of the study protocol, compatible with the rest of the CARP infrastructure.
 val json: String = protocol.getSnapshot().toJson()

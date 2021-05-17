@@ -23,6 +23,11 @@ interface TaskDescriptor
      * The data which needs to be collected/measured as part of this task.
      */
     val measures: List<Measure>
+
+    /**
+     * A description of this task, emphasizing the reason why the data is collected.
+     */
+    val description: String?
 }
 
 
@@ -36,6 +41,11 @@ abstract class TaskDescriptorBuilder<TTaskDescriptor : TaskDescriptor>
      * The data which needs to be collected/measures as part of this task.
      */
     var measures: List<Measure> = emptyList()
+
+    /**
+     * A description of this task, emphasizing the reason why the data is collected.
+     */
+    var description: String? = null
 
     abstract fun build( name: String ): TTaskDescriptor
 }

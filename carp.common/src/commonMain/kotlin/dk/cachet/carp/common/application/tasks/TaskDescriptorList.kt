@@ -36,7 +36,8 @@ class SupportedTaskDescriptor<TTaskDescriptor : TaskDescriptor, TBuilder : TaskD
 )
 {
     /**
-     * Create a [TaskDescriptor] supported on this device with [name] which uniquely defines the task.
+     * Create a [TaskDescriptor] supported on this device with [name] which uniquely defines the task
+     * and [description] which explains why the data is collected.
      */
     fun create( name: String, builder: TBuilder.() -> Unit ): TTaskDescriptor =
         createBuilder()
