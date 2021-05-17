@@ -9,7 +9,7 @@ buildscript {
         // Version used for all submodule artifacts.
         // Snapshot publishing changes (or adds) the suffix after '-' with 'SNAPSHOT' prior to publishing.
         // The 'publishSigned' task publishes to SonaType's staging repo and 'publishSnapshot' instantly uploads to the snapshots repo.
-        globalVersion = '1.0.0-alpha.30'
+        globalVersion = '1.0.0-alpha.31'
 
         versions = [
             // Kotlin multiplatform versions.
@@ -19,15 +19,15 @@ buildscript {
 
             // JVM versions.
             jvmTarget:'1.6',
-            jUnit5:'5.7.1',
+            jUnit5:'5.7.2',
             dokkaPlugin:'0.9.18',
             reflections:'0.9.12',
 
             // JS versions.
-            nodePlugin:'3.0.1',
+            nodePlugin:'3.1.0',
 
             // DevOps versions.
-            detektPlugin:'1.16.0',
+            detektPlugin:'1.17.0',
             detektVerifyImplementation:'1.2.1',
             nexusReleasePlugin:'0.22.0' // TODO: Migrate to `gradle-nexus-publish-plugin`.
         ]
@@ -50,7 +50,7 @@ buildscript {
     }
 
     repositories {
-        jcenter()
+        mavenCentral()
         gradlePluginPortal()
     }
 }
@@ -69,7 +69,7 @@ configure( subprojects - detektModule ) {
     version = globalVersion
 
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     // Specify platforms and test frameworks to use.
@@ -187,10 +187,7 @@ configure( subprojects - detektModule ) {
     // Configure the 'sign' task to sign all files part of the maven package.
     apply plugin: 'signing'
     signing {
-        sign publishing.publications.jvm
-        sign publishing.publications.js
-        sign publishing.publications.metadata
-        sign publishing.publications.kotlinMultiplatform
+        sign publishing.publications
     }
     task publishSigned {
         doFirst {
@@ -268,7 +265,7 @@ task verifyTsDeclarations(type: NodeTask, dependsOn: compileTs) {
 configure( coreModules + commonModule ) {
     buildscript {
         repositories {
-            jcenter()
+            mavenCentral()
         }
 
         dependencies {
@@ -286,6 +283,7 @@ configure( coreModules + commonModule ) {
             jvmTest {
                 dependencies {
                     implementation kotlin('reflect')
+                    implementation "org.reflections:reflections:${versions.reflections}"
                 }
             }
 
@@ -307,6 +305,11 @@ configure( coreModules ) {
                     api project(':carp.common')
                 }
             }
+            commonTest {
+                dependencies {
+                    implementation project(':carp.common.test')
+                }
+            }
         }
     }
 }
@@ -316,7 +319,7 @@ configure( coreModules ) {
 configure( rootProject )
 {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     apply plugin: 'io.gitlab.arturbosch.detekt'
@@ -342,7 +345,7 @@ configure( rootProject )
         classpath.setFrom(classPaths)
     }
     tasks.detekt.jvmTarget = "1.8"
-    tasks.detekt.dependsOn ":carp.detekt:assemble" // Ensure 'carp.detekt' is build prior to running code analysis.
+    tasks.detekt.dependsOn ":carp.detekt:assemble" // Ensure 'carp.detekt' is built prior to running code analysis.
 }
 
 

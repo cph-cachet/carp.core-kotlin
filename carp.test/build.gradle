@@ -4,7 +4,7 @@ publishing {
     publications {
         all {
             pom {
-                name = 'Common Test Library'
+                name = 'Test Library'
                 description = 'Helper classes relied upon by test projects of all subsystems. E.g., to disable tests specified in common part of projects for the JavaScript runtime only.'
             }
         }
@@ -25,6 +25,7 @@ kotlin {
             dependencies {
                 implementation kotlin('test')
                 implementation kotlin('test-junit5')
+                implementation kotlin('reflect')
                 implementation "org.reflections:reflections:${versions.reflections}"
             }
         }

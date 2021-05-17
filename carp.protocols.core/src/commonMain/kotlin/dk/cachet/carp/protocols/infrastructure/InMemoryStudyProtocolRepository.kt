@@ -1,10 +1,11 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.protocols.domain.ProtocolVersion
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.protocols.application.ProtocolVersion
+import dk.cachet.carp.protocols.application.StudyProtocolId
+import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolRepository
-import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 
 
 /**
@@ -12,7 +13,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
  */
 class InMemoryStudyProtocolRepository : StudyProtocolRepository
 {
-    private val _protocols: MutableMap<StudyProtocol.Id, MutableMap<ProtocolVersion, StudyProtocolSnapshot>> = mutableMapOf()
+    private val _protocols: MutableMap<StudyProtocolId, MutableMap<ProtocolVersion, StudyProtocolSnapshot>> = mutableMapOf()
 
 
     /**
@@ -64,7 +65,7 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
      *
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      */
-    override suspend fun getBy( id: StudyProtocol.Id, versionTag: String? ): StudyProtocol?
+    override suspend fun getBy( id: StudyProtocolId, versionTag: String? ): StudyProtocol?
     {
         val versions = _protocols[ id ] ?: return null
 
@@ -98,7 +99,7 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
      *
      * @throws IllegalArgumentException when a protocol with the specified [id] does not exist.
      */
-    override suspend fun getVersionHistoryFor( id: StudyProtocol.Id ): List<ProtocolVersion>
+    override suspend fun getVersionHistoryFor( id: StudyProtocolId ): List<ProtocolVersion>
     {
         val versions = getVersionsOrThrow( id )
 
@@ -106,7 +107,7 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
     }
 
 
-    private fun getVersionsOrThrow( id: StudyProtocol.Id ) = _protocols[ id ]
+    private fun getVersionsOrThrow( id: StudyProtocolId ) = _protocols[ id ]
         ?: throw IllegalArgumentException( "The specified protocol is not stored in this repository" )
 
     private fun MutableMap<ProtocolVersion, StudyProtocolSnapshot>.getLatest() =

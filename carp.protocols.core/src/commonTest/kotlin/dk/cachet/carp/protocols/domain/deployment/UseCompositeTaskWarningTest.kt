@@ -1,9 +1,11 @@
 package dk.cachet.carp.protocols.domain.deployment
 
-import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.application.triggers.TaskControl
+import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlin.test.*
 
@@ -22,8 +24,8 @@ class UseCompositeTaskWarningTest
         with ( protocol )
         {
             addMasterDevice( device )
-            addTriggeredTask( trigger, StubTaskDescriptor( "Task 1" ), device )
-            addTriggeredTask( trigger, StubTaskDescriptor( "Task 2" ), device )
+            addTaskControl( trigger, StubTaskDescriptor( "Task 1" ), device, TaskControl.Control.Start )
+            addTaskControl( trigger, StubTaskDescriptor( "Task 2" ), device, TaskControl.Control.Start )
         }
 
         val warning = UseCompositeTaskWarning()
@@ -42,9 +44,9 @@ class UseCompositeTaskWarningTest
             addMasterDevice( device1 )
             addConnectedDevice( device2, device1 )
             val trigger1 = StubTrigger( device1 )
-            addTriggeredTask( trigger1, task, device1 )
-            addTriggeredTask( trigger1, task, device2 )
-            addTriggeredTask( StubTrigger( device2 ), task, device1 )
+            addTaskControl( trigger1.start( task, device1 ) )
+            addTaskControl( trigger1.start( task, device2 ) )
+            addTaskControl( StubTrigger( device2 ).start( task, device1 ) )
         }
 
         val warning = UseCompositeTaskWarning()
@@ -62,8 +64,8 @@ class UseCompositeTaskWarningTest
         with ( protocol )
         {
             addMasterDevice( device )
-            addTriggeredTask( trigger, task1, device )
-            addTriggeredTask( trigger, task2, device )
+            addTaskControl( trigger.start( task1, device ) )
+            addTaskControl( trigger.start( task2, device ) )
         }
 
         val warning = UseCompositeTaskWarning()

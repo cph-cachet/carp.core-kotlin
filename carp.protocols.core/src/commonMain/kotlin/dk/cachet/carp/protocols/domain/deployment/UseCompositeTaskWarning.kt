@@ -1,9 +1,9 @@
 package dk.cachet.carp.protocols.domain.deployment
 
+import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
+import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.triggers.Trigger
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
-import dk.cachet.carp.protocols.domain.tasks.TaskDescriptor
-import dk.cachet.carp.protocols.domain.triggers.Trigger
 
 
 /**
@@ -17,7 +17,11 @@ class UseCompositeTaskWarning internal constructor() : DeploymentWarning
      * Holds [tasks] which are send by a single [trigger] to a single [targetDevice] when initiated.
      * When the [trigger] is initiated, the tasks would thus be sent out simultaneously to the [targetDevice].
      */
-    data class OverlappingTasks( val trigger: Trigger, val targetDevice: AnyDeviceDescriptor, val tasks: List<TaskDescriptor> )
+    data class OverlappingTasks(
+        val trigger: Trigger,
+        val targetDevice: AnyDeviceDescriptor,
+        val tasks: List<TaskDescriptor>
+    )
 
     override val description: String =
         "The study protocol contains triggers which send multiple tasks to a single device. " +
@@ -30,8 +34,8 @@ class UseCompositeTaskWarning internal constructor() : DeploymentWarning
     {
         return protocol.triggers.flatMap { trigger -> // For each trigger, ...
             protocol
-                .getTriggeredTasks( trigger )
-                .groupBy { it.targetDevice } // ... group triggered tasks by target device, ...
+                .getTaskControls( trigger )
+                .groupBy { it.destinationDevice } // ... group triggered tasks by target device, ...
                 .filter { it.value.count() > 1 } // ... select those with more than one task triggered (to a single target device).
                 .map { taskPerDevice ->
                     // Transform to data class which holds the trigger, device, and overlapping tasks

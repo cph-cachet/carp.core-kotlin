@@ -12,7 +12,7 @@ Two key **design goals** differentiate this project from similar projects:
  Reference implementations [will be made available](https://github.com/cph-cachet/) (and hosted) by CACHET in the future. 
  - **Extensibility**: Where industry standards exist (such as [Open mHealth](https://www.openmhealth.org/)), the goal is to include them in CARP.
  However, we recognize that many study-specific requirements will always require parts of the infrastructure to be modified.
- Rather than having to fork the entire project and set up your own hosting, domain objects in the protocols subsystem [can be extended to describe study-specific requirements](docs/carp-protocols.md#extending-domain-objects).
+ Rather than having to fork the entire project and set up your own hosting, domain objects in the protocols subsystem [can be extended to describe study-specific requirements](docs/carp-common.md#extending-domain-objects).
  Your custom client (e.g., smartphone application) will need to know how to interpret them, but these additions _are transparent to, and compatible with, the rest of the framework_ when using the provided [built-in serializers](#serialization). 
 
 ## Table of Contents
@@ -20,16 +20,17 @@ Two key **design goals** differentiate this project from similar projects:
 - [Architecture](#architecture)
   - [Protocols](docs/carp-protocols.md)
     - [Domain objects](docs/carp-protocols.md#domain-objects)
-    - [Built-in types](docs/carp-protocols.md#built-in-types)
-    - [Extending domain objects](docs/carp-protocols.md#extending-domain-objects)
     - [Application services](docs/carp-protocols.md#application-services)
+    - [Extending domain objects](docs/carp-protocols.md#extending-domain-objects)
   - [Studies](docs/carp-studies.md)
     - [Application services](docs/carp-studies.md#application-services)
-  - [Deployment](docs/carp-deployment.md)
-    - [Study and device deployment state](docs/carp-deployment.md#study-and-device-deployment-state)
-    - [Application services](docs/carp-deployment.md#application-services)
-  - [Client](docs/carp-client.md)
-    - [Study runtime state](docs/carp-client.md#study-runtime-state)
+  - [Deployments](docs/carp-deployments.md)
+    - [Study and device deployment state](docs/carp-deployments.md#study-and-device-deployment-state)
+    - [Application services](docs/carp-deployments.md#application-services)
+  - [Clients](docs/carp-clients.md)
+    - [Study runtime state](docs/carp-clients.md#study-runtime-state)
+  - [Common](docs/carp-common.md)
+    - [Built-in types](docs/carp-common.md#built-in-types)
 - [Infrastructure helpers](#infrastructure-helpers)
   - [Serialization](#serialization)
   - [Request objects](#request-objects)
@@ -42,39 +43,43 @@ Two key **design goals** differentiate this project from similar projects:
 
 ## Architecture
 
-![Subsystem decomposition](https://i.imgur.com/qexzTej.png)
+![Subsystem decomposition](https://i.imgur.com/hEsTHNk.png)
 
 - [**Protocols**](docs/carp-protocols.md): Implements open standards which can describe a study protocol—how a study should be run. Essentially, this subsystem has no _technical_ dependencies on any particular sensor technology or application as it merely describes why, when, and what data should be collected.
 
   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.protocols/carp.protocols.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.protocols) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.protocols/carp.protocols.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/protocols/)
 
-- [**Studies**](docs/carp-studies.md): Supports management of research studies, including the recruitment of participants and assigning metadata (e.g., contact information). This subsystem maps pseudonymized data (managed by the 'deployment' subsystem) to actual participants.
+- [**Studies**](docs/carp-studies.md): Supports management of research studies, including the recruitment of participants and assigning metadata (e.g., contact information). This subsystem maps pseudonymized data (managed by the 'deployments' subsystem) to actual participants.
 
   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.studies/carp.studies.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.studies) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.studies/carp.studies.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/studies/)
 
-- [**Deployment**](docs/carp-deployment.md): Maps the information specified in a study protocol to runtime configurations used by the 'client' subystem to run the protocol on concrete devices (e.g., a smartphone) and allow researchers to monitor their state. To start collecting data, participants need to be invited, devices need to be registered, and consent needs to be given to collect the requested data.
+- [**Deployments**](docs/carp-deployments.md): Maps the information specified in a study protocol to runtime configurations used by the 'clients' subystem to run the protocol on concrete devices (e.g., a smartphone) and allow researchers to monitor their state. To start collecting data, participants need to be invited, devices need to be registered, and consent needs to be given to collect the requested data.
 
-  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.deployment/carp.deployment.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.deployment) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.deployment/carp.deployment.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/deployment/)
+  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.deployments/carp.deployments.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.deployments) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.deployments/carp.deployments.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/deployments/)
 
-- [**Client**](docs/carp-client.md): The runtime which performs the actual data collection on a device (e.g., desktop computer or smartphone). This subsystem contains reusable components which understand the runtime configuration derived from a study protocol by the ‘deployment’ subsystem. Integrations with sensors are loaded through a 'device data collector' plug-in system to decouple sensing—not part of core⁠—from sensing logic.
+- [**Clients**](docs/carp-clients.md): The runtime which performs the actual data collection on a device (e.g., desktop computer or smartphone). This subsystem contains reusable components which understand the runtime configuration derived from a study protocol by the ‘deployment’ subsystem. Integrations with sensors are loaded through a 'device data collector' plug-in system to decouple sensing—not part of core—from sensing logic.
 
-   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.client/carp.client.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.client) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.client/carp.client.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/client/)
+   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.client/carp.clients.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.clients) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.clients/carp.clients.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/clients/)
 
 - **Resources**: Contains a simple file store for resources (such as images, videos, and text documents) which can be referenced from within study protocols to be used during a study.
 - **Data**: Contains all pseudonymized data. In combination with the original study protocol, the full provenance of the data (when/why it was collected) is known.
 - **Analysis**: An analysis subsystem sits in between the data store and 'studies' subsystem, enabling common data analytics but also offering anonimity-preserving features such as k-anonymity.
 - **Supporting subystems**:
-   - **carp.common**: Helper classes and base types relied upon by all subsystems. This library does not contain any domain logic.
+   - [**Common**](docs/carp-common.md): Implements helper classes and base types relied upon by all subsystems.
+Primarily, this contains the built-in types used to define study protocols
+which subsequently get passed to the deployments and clients subsystem.
    
      [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.common/carp.common/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.common) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.common/carp.common?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/common/)
+   - **carp.common.test**: Helper classes relied upon by test projects of all _core_ subsystems depending on types defined in _common_. 
      
+     [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.common.test/carp.common.test/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.common.test) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.common.test/carp.common.test?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/common/test/)
    - **carp.test**: Helper classes relied upon by test projects of all subsystems. E.g., to disable tests specified in common part of projects for the JavaScript runtime only.
    
      [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.test/carp.test/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.test) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.test/carp.test?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/test/)
      
    - **carp.detekt**: Includes static code analysis extensions for [detekt](https://github.com/arturbosch/detekt), used when building this project to ensure conventions are followed.
 
-Not all subsystems are implemented yet. Currently this project contains an unstable (not backwards compatible) alpha version of the protocols, deployment, client, and studies subsystems. Many changes will happen as the rest of the infrastructure is implemented.
+Not all subsystems are implemented yet. Currently, this project contains an unstable (not backwards compatible) alpha version of the protocols, deployments, client, and studies subsystems. Many changes will happen as the rest of the infrastructure is implemented.
 
 ## Infrastructure helpers
 
@@ -91,7 +96,7 @@ In addition, domain objects which need to be persisted (aggregate roots) impleme
 All snapshots are fully serializable to JSON, making it straightforward to store them in a document store.
 But, if you prefer to use a relational database instead, you can call `consumeEvents()` to get all the modifications since the object was last stored.
 
-Lastly, custom serializers to the default ones generated by `kotlinx.serialization` are provided for [extendable types used in study protocols]((docs/carp-protocols.md#extending-domain-objects)) (e.g., `DeviceDescriptor`).
+Lastly, custom serializers to the default ones generated by `kotlinx.serialization` are provided for [extendable types used in study protocols](docs/carp-common.md#extending-domain-objects) (e.g., `DeviceDescriptor`).
 These 'magic' serializers support deserializing extending types which are unknown at runtime, allowing you to access the base properties seamlessly.
 Using the built-in serializers thus allows you to handle incoming requests and persistence of extending types you do not have available at compile time.
 They are used by default in all objects that need to be serialized for data transfer or snapshot storage.
@@ -101,11 +106,11 @@ More detailed information on how this works can be found in [the documentation o
 ### Request objects
 
 To help implementing remote procedure calls (RPCs), each application service has matching polymorphic serializable 'request objects'.
-For example, the deployment subsystem has a sealed class [`DeploymentServiceRequest`](carp.deployment.core/src/commonMain/kotlin/dk/cachet/carp/deployment/infrastructure/DeploymentServiceRequest.kt) and each subclass represents a request to `DeploymentService`.
+For example, the deployments subsystem has a sealed class [`DeploymentServiceRequest`](carp.deployments.core/src/commonMain/kotlin/dk/cachet/carp/deployments/infrastructure/DeploymentServiceRequest.kt) and each subclass represents a request to `DeploymentService`.
 Using these objects, all requests to a single application service can be handled by one endpoint using type checking.
 We recommend [using a when expression](https://kotlinlang.org/docs/reference/sealed-classes.html) so that the compiler can verify whether you have handled all requests.
 
-In addition, each request object implements [`ServiceInvoker`](carp.common/src/commonMain/kotlin/dk/cachet/carp/common/ddd/ServiceInvoker.kt) which allows calling the matching application service by passing it as an argument to `invokeOn`.
+In addition, each request object implements [`ServiceInvoker`](carp.common/src/commonMain/kotlin/dk/cachet/carp/common/infrastructure/services/ServiceInvoker.kt) which allows calling the matching application service by passing it as an argument to `invokeOn`.
 This allows a centralized implementation for any incoming request object to an application service.
 However, in practice you might want to perform additional actions depending on specific requests, e.g., [authorization which is currently not part of core](#authorization).
 
@@ -119,7 +124,7 @@ In a future release we might pass authorization as a dependent service to applic
 
 ### Stub classes
 
-Stub classes are available for the abstract domain objects of the protocols subsystem.
+Stub classes are available for the abstract domain objects defined in the common subsystem.
 These can be used to write unit tests in which you are not interested in testing the behavior of specific devices, triggers, etc., but rather how they are referenced from within a study protocol or deployment.
 
 In addition, `String` manipulation functions are available to convert type names of protocol domain objects within a JSON string to 'unknown' type names. This supports testing deserialization of domain objects unknown at runtime, e.g., as defined in an application-specific client. See [the section on serialization](#serialization) for more details.
@@ -153,16 +158,18 @@ val protocol = StudyProtocol( owner, "Track patient movement" )
 val phone = Smartphone( "Patient's phone" )
 {
     // Configure device-specific options, e.g., frequency to collect data at.
-    samplingConfiguration {
-        geolocation { interval = TimeSpan.fromMinutes( 15.0 ) }
+    defaultSamplingConfiguration {
+        geolocation { batteryNormal { granularity = Granularity.Balanced } }
     }
 }
 protocol.addMasterDevice( phone )
 
 // Define what needs to be measured, on which device, when.
-val measures: List<Measure> = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
-val startMeasures = ConcurrentTask( "Start measures", measures )
-protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
+val sensors = Smartphone.Sensors
+val startMeasures = Smartphone.Tasks.BACKGROUND.create( "Start measures" ) {
+    measures = listOf( sensors.GEOLOCATION.measure(), sensors.STEP_COUNT.measure() )
+}
+protocol.addTaskControl( phone.atStartOfStudy().start( measures, phone ) )
 
 // JSON output of the study protocol, compatible with the rest of the CARP infrastructure.
 val json: String = protocol.getSnapshot().toJson()
@@ -172,7 +179,7 @@ val json: String = protocol.getSnapshot().toJson()
 **carp.studies**: Example creation of a study based on a study protocol, and adding and deploying a single participant:
 
 ```kotlin
-val (studyService, participantService) = createEndpoints()
+val (studyService, recruitmentService) = createEndpoints()
 
 // Create a new study.
 val studyOwner = StudyOwner()
@@ -187,7 +194,7 @@ studyStatus = studyService.setProtocol( studyId, protocolSnapshot )
 
 // Add a participant.
 val email = EmailAddress( "participant@email.com" )
-val participant: Participant = participantService.addParticipant( studyId, email )
+val participant: Participant = recruitmentService.addParticipant( studyId, email )
 
 // Once all necessary study options have been configured, the study can go live.
 if ( studyStatus is StudyStatus.Configuring && studyStatus.canGoLive )
@@ -202,13 +209,13 @@ if ( studyStatus.canDeployToParticipants )
     val participation = AssignParticipantDevices( participant.id, setOf( patientPhone.roleName ) )
     val participantGroup = setOf( participation )
 
-    val groupStatus: ParticipantGroupStatus = participantService.deployParticipantGroup( studyId, participantGroup )
+    val groupStatus: ParticipantGroupStatus = recruitmentService.deployParticipantGroup( studyId, participantGroup )
     val isInvited = groupStatus.studyDeploymentStatus is StudyDeploymentStatus.Invited // True.
 }
 ```
 
-<a name="example-deployment"></a>
-**carp.deployment**: Most calls to this subsystem are abstracted away by the 'studies' and 'client' subsystems, so you wouldn't call its endpoints directly. Example code which is called when a study is created and accessed by a client:
+<a name="example-deployments"></a>
+**carp.deployments**: Most calls to this subsystem are abstracted away by the 'studies' and 'clients' subsystems, so you wouldn't call its endpoints directly. Example code which is called when a study is created and accessed by a client:
 
 ```kotlin
 val deploymentService: DeploymentService = createDeploymentEndpoint()
@@ -216,13 +223,23 @@ val trackPatientStudy: StudyProtocol = createExampleProtocol()
 val patientPhone: Smartphone = trackPatientStudy.masterDevices.first() as Smartphone // "Patient's phone"
 
 // This is called by `StudyService` when deploying a participant group.
-var status: StudyDeploymentStatus = deploymentService.createStudyDeployment( trackPatientStudy.getSnapshot() )
-val studyDeploymentId = status.studyDeploymentId
+val invitation = ParticipantInvitation(
+    participantId = UUID.randomUUID(),
+    assignedMasterDeviceRoleNames = setOf( patientPhone.roleName ),
+    identity = AccountIdentity.fromEmailAddress( "test@test.com" ),
+    invitation = StudyInvitation( "Movement study", "This study tracks your movements." )
+)
+val studyDeploymentId = UUID.randomUUID()
+deploymentService.createStudyDeployment(
+    studyDeploymentId,
+    trackPatientStudy.getSnapshot(),
+    listOf( invitation )
+)
 
 // What comes after is similar to what is called by the client in `carp.client`:
 // - Register the device to be deployed.
 val registration = patientPhone.createRegistration()
-status = deploymentService.registerDevice( studyDeploymentId, patientPhone.roleName, registration )
+var status = deploymentService.registerDevice( studyDeploymentId, patientPhone.roleName, registration )
 
 // - Retrieve information on what to run and indicate the device is ready to collect the requested data.
 val patientPhoneStatus: DeviceDeploymentStatus = status.getDeviceStatus( patientPhone )
@@ -294,6 +311,6 @@ For `carp.core-kotlin`:
 - **jvmTest**: Test the full project on a JVM runtime using JUnit5.
 - **jsTest**: Test the full project on a JavaScript runtime using a headless Chrome browser.
 - **verifyTsDeclarations**: Verify whether the TypeScript declarations of all modules, defined in `typescript-declarations`, match the compiled JS sources and work at runtime.
-- **detektPasses**:: Run code analysis. Output will list failure in case code smells are detected.
+- **detektPasses**: Run code analysis. Output will list failure in case code smells are detected.
 - **jsPackageJson publishSigned**: Publish all projects to Maven using the version number specified in `ext.globalVersion`. This includes documentation, sources, and signing. For this to work you need to configure a `publish.properties` file with a signing signature and repository user in the project root folder. See main `build.gradle` for details.
 - **jsPackageJson publishSnapshot**: Publish a snapshot build for all projects to Maven, substituting the suffix of the version specified in `ext.globalVersion` with `-SNAPSHOT`.

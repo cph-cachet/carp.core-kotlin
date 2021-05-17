@@ -4,29 +4,36 @@ import VerifyModule from './VerifyModule'
 import { kotlin } from 'kotlin'
 import { Long } from 'kotlin'
 import toSet = kotlin.collections.toSet_us0mfu$
+
 import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
 import Json = kotlinx.serialization.json.Json
+
 import { dk } from 'carp.core-kotlin-carp.common'
-import DateTime = dk.cachet.carp.common.DateTime
-import EmailAddress = dk.cachet.carp.common.EmailAddress
-import NamespacedId = dk.cachet.carp.common.NamespacedId
-import TimeSpan = dk.cachet.carp.common.TimeSpan
-import Trilean = dk.cachet.carp.common.Trilean
-import toTrilean = dk.cachet.carp.common.toTrilean_1v8dcc$
-import UUID = dk.cachet.carp.common.UUID
-import AccountIdentity = dk.cachet.carp.common.users.AccountIdentity
-import EmailAccountIdentity = dk.cachet.carp.common.users.EmailAccountIdentity
-import emailAccountIdentityFromString = dk.cachet.carp.common.users.EmailAccountIdentity_init_61zpoe$
-import UsernameAccountIdentity = dk.cachet.carp.common.users.UsernameAccountIdentity
-import createDefaultJSON = dk.cachet.carp.common.serialization.createDefaultJSON_18xi4u$
-import ParticipantAttribute = dk.cachet.carp.common.users.ParticipantAttribute
-import SelectOne = dk.cachet.carp.common.data.input.element.SelectOne
-import Text = dk.cachet.carp.common.data.input.element.Text
-import CarpInputDataTypes = dk.cachet.carp.common.data.input.CarpInputDataTypes
+import DateTime = dk.cachet.carp.common.application.DateTime
+import EmailAddress = dk.cachet.carp.common.application.EmailAddress
+import NamespacedId = dk.cachet.carp.common.application.NamespacedId
+import TimeSpan = dk.cachet.carp.common.application.TimeSpan
+import Trilean = dk.cachet.carp.common.application.Trilean
+import UUID = dk.cachet.carp.common.application.UUID
+import toTrilean = dk.cachet.carp.common.application.toTrilean_1v8dcc$
+import DefaultDeviceRegistration = dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
+import CarpInputDataTypes = dk.cachet.carp.common.application.data.input.CarpInputDataTypes
+import SelectOne = dk.cachet.carp.common.application.data.input.elements.SelectOne
+import Text = dk.cachet.carp.common.application.data.input.elements.Text
+import DeviceRegistration = dk.cachet.carp.common.application.devices.DeviceRegistration
+import AccountIdentity = dk.cachet.carp.common.application.users.AccountIdentity
+import EmailAccountIdentity = dk.cachet.carp.common.application.users.EmailAccountIdentity
+import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute
+import Username = dk.cachet.carp.common.application.users.Username
+import UsernameAccountIdentity = dk.cachet.carp.common.application.users.UsernameAccountIdentity
+import emailAccountIdentityFromString = dk.cachet.carp.common.application.users.EmailAccountIdentity_init_61zpoe$
+import createDefaultJSON = dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
 
 
 describe( "carp.common", () => {
     it( "verify module declarations", async () => {
+        const username = new Username( "Test" )
+
         const instances = [
             DateTime.Companion.now(),
             DateTime.Companion,
@@ -38,18 +45,22 @@ describe( "carp.common", () => {
             TimeSpan.Companion,
             UUID.Companion.randomUUID(),
             UUID.Companion,
+            [ "InputElement", new Text( "How are you feeling?" ) ],
+            new SelectOne( "Sex", toSet( [ "Male", "Female" ] ) ),
+            SelectOne.Companion,
+            new Text( "How are you feeling?" ),
+            Text.Companion,
+            [ "DeviceRegistration", new DefaultDeviceRegistration( "some device id" ) ],
+            DeviceRegistration.Companion,
             AccountIdentity.Factory,
             new EmailAccountIdentity( new EmailAddress( "test@test.com" ) ),
             EmailAccountIdentity.Companion,
-            new UsernameAccountIdentity( "Test" ),
+            username,
+            Username.Companion,
+            new UsernameAccountIdentity( username ),
             UsernameAccountIdentity.Companion,
             [ "ParticipantAttribute", new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ) ],
             ParticipantAttribute.Companion,
-            [ "InputElement", new Text( "How are you feeling?" ) ],
-            SelectOne.Companion,
-            new SelectOne( "Sex", toSet( [ "Male", "Female" ] ) ),
-            Text.Companion,
-            new Text( "How are you feeling?" )
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.common', instances )
@@ -109,20 +120,20 @@ describe( "carp.common", () => {
         const attribute = new ParticipantAttribute.CustomParticipantAttribute( new Text( "Name" ) )
 
         it( "getInputElement works", () => {
-            const inputElement = attribute.getInputElement_zbztje$( CarpInputDataTypes )
+            const inputElement = attribute.getInputElement_6eo89k$( CarpInputDataTypes )
             expect( inputElement ).instanceOf( Text )
         } )
 
         it( "isValidInput works", () => {
-            const isNumberValid = attribute.isValidInput_jon1ci$( CarpInputDataTypes, 42 )
+            const isNumberValid = attribute.isValidInput_etkzhw$( CarpInputDataTypes, 42 )
             expect( isNumberValid ).is.false
 
-            const isStringValid = attribute.isValidInput_jon1ci$( CarpInputDataTypes, "Steven" )
+            const isStringValid = attribute.isValidInput_etkzhw$( CarpInputDataTypes, "Steven" )
             expect( isStringValid ).is.true
         } )
 
         it( "inputToData works", () => {
-            const data = attribute.inputToData_jon1ci$( CarpInputDataTypes, "Steven" )
+            const data = attribute.inputToData_etkzhw$( CarpInputDataTypes, "Steven" )
             expect( data ).is.not.undefined
         } )
     } )

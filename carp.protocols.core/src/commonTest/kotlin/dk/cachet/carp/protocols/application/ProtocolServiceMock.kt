@@ -1,11 +1,9 @@
 package dk.cachet.carp.protocols.application
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.users.ParticipantAttribute
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.ProtocolOwner
-import dk.cachet.carp.protocols.domain.ProtocolVersion
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 import dk.cachet.carp.test.Mock
 
 
@@ -23,7 +21,7 @@ class ProtocolServiceMock(
         trackSuspendCall( ProtocolService::addVersion, protocol, versionTag )
 
     override suspend fun updateParticipantDataConfiguration(
-        protocolId: StudyProtocol.Id,
+        protocolId: StudyProtocolId,
         versionTag: String,
         expectedParticipantData: Set<ParticipantAttribute>
     ): StudyProtocolSnapshot
@@ -32,7 +30,7 @@ class ProtocolServiceMock(
         return updateParticipantDataConfigurationResult
     }
 
-    override suspend fun getBy( protocolId: StudyProtocol.Id, versionTag: String? ): StudyProtocolSnapshot
+    override suspend fun getBy( protocolId: StudyProtocolId, versionTag: String? ): StudyProtocolSnapshot
     {
         trackSuspendCall( ProtocolService::getBy, protocolId, versionTag )
         return getByResult
@@ -44,7 +42,7 @@ class ProtocolServiceMock(
         return getAllForResult
     }
 
-    override suspend fun getVersionHistoryFor( protocolId: StudyProtocol.Id ): List<ProtocolVersion>
+    override suspend fun getVersionHistoryFor( protocolId: StudyProtocolId ): List<ProtocolVersion>
     {
         trackSuspendCall( ProtocolService::getVersionHistoryFor, protocolId )
         return getVersionHistoryForResult

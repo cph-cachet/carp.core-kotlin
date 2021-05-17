@@ -1,7 +1,10 @@
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.infrastructure.serialization.JSON
+import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -15,8 +18,8 @@ class AssignParticipantDevicesTest
     {
         val assign = AssignParticipantDevices( UUID.randomUUID(), setOf( "Test device" ) )
 
-        val serialized: String = assign.toJson()
-        val parsed: AssignParticipantDevices = AssignParticipantDevices.fromJson( serialized )
+        val serialized: String = JSON.encodeToString( assign )
+        val parsed: AssignParticipantDevices = JSON.decodeFromString( serialized )
 
         assertEquals( assign, parsed )
     }

@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.application
 
-import dk.cachet.carp.common.UUID
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.tasks.CustomProtocolTask
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.tasks.CustomProtocolTask
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 

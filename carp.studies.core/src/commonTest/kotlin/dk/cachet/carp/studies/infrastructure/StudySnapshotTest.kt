@@ -1,8 +1,11 @@
 package dk.cachet.carp.studies.infrastructure
 
+import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.StudySnapshot
 import dk.cachet.carp.studies.domain.createComplexStudy
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -18,8 +21,8 @@ class StudySnapshotTest
         val study: Study = createComplexStudy()
         val snapshot: StudySnapshot = study.getSnapshot()
 
-        val serialized: String = snapshot.toJson()
-        val parsed: StudySnapshot = StudySnapshot.fromJson( serialized )
+        val serialized: String = JSON.encodeToString( snapshot )
+        val parsed: StudySnapshot = JSON.decodeFromString( serialized )
 
         assertEquals( snapshot, parsed )
     }

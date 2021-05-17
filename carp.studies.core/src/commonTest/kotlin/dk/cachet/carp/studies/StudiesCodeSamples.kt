@@ -1,32 +1,33 @@
 package dk.cachet.carp.studies
 
-import dk.cachet.carp.common.EmailAddress
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.ddd.SingleThreadedEventBus
-import dk.cachet.carp.common.ddd.createApplicationServiceAdapter
-import dk.cachet.carp.deployment.application.DeploymentService
-import dk.cachet.carp.deployment.application.DeploymentServiceHost
-import dk.cachet.carp.deployment.application.ParticipationService
-import dk.cachet.carp.deployment.application.ParticipationServiceHost
-import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.deployment.infrastructure.InMemoryAccountService
-import dk.cachet.carp.deployment.infrastructure.InMemoryDeploymentRepository
-import dk.cachet.carp.deployment.infrastructure.InMemoryParticipationRepository
+import dk.cachet.carp.common.application.EmailAddress
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.Smartphone
+import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
+import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
+import dk.cachet.carp.deployments.application.DeploymentService
+import dk.cachet.carp.deployments.application.DeploymentServiceHost
+import dk.cachet.carp.deployments.application.ParticipationService
+import dk.cachet.carp.deployments.application.ParticipationServiceHost
+import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
+import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
+import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
+import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
+import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.Smartphone
-import dk.cachet.carp.protocols.domain.tasks.ConcurrentTask
-import dk.cachet.carp.studies.application.ParticipantService
-import dk.cachet.carp.studies.application.ParticipantServiceHost
+import dk.cachet.carp.protocols.domain.start
+import dk.cachet.carp.studies.application.RecruitmentService
+import dk.cachet.carp.studies.application.RecruitmentServiceHost
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceHost
-import dk.cachet.carp.studies.domain.StudyStatus
-import dk.cachet.carp.studies.domain.users.AssignParticipantDevices
-import dk.cachet.carp.studies.domain.users.Participant
-import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
-import dk.cachet.carp.studies.domain.users.StudyOwner
+import dk.cachet.carp.studies.application.StudyStatus
+import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.Participant
+import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
+import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
 import dk.cachet.carp.test.runSuspendTest
@@ -38,7 +39,7 @@ class StudiesCodeSamples
     @Test
     @Suppress( "UnusedPrivateMember" )
     fun readme() = runSuspendTest {
-        val (studyService, participantService) = createEndpoints()
+        val (studyService, recruitmentService) = createEndpoints()
 
         // Create a new study.
         val studyOwner = StudyOwner()
@@ -53,7 +54,7 @@ class StudiesCodeSamples
 
         // Add a participant.
         val email = EmailAddress( "participant@email.com" )
-        val participant: Participant = participantService.addParticipant( studyId, email )
+        val participant: Participant = recruitmentService.addParticipant( studyId, email )
 
         // Once all necessary study options have been configured, the study can go live.
         if ( studyStatus is StudyStatus.Configuring && studyStatus.canGoLive )
@@ -68,13 +69,13 @@ class StudiesCodeSamples
             val participation = AssignParticipantDevices( participant.id, setOf( patientPhone.roleName ) )
             val participantGroup = setOf( participation )
 
-            val groupStatus: ParticipantGroupStatus = participantService.deployParticipantGroup( studyId, participantGroup )
+            val groupStatus: ParticipantGroupStatus = recruitmentService.deployParticipantGroup( studyId, participantGroup )
             val isInvited = groupStatus.studyDeploymentStatus is StudyDeploymentStatus.Invited // True.
         }
     }
 
 
-    private fun createEndpoints(): Pair<StudyService, ParticipantService>
+    private fun createEndpoints(): Pair<StudyService, RecruitmentService>
     {
         val eventBus = SingleThreadedEventBus()
 
@@ -87,18 +88,19 @@ class StudiesCodeSamples
             InMemoryDeploymentRepository(),
             eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
+        val accountService = InMemoryAccountService()
         val participationService = ParticipationServiceHost(
             InMemoryParticipationRepository(),
-            InMemoryAccountService(),
+            ParticipantGroupService( accountService ),
             eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
-        val participantService = ParticipantServiceHost(
+        val recruitmentService = RecruitmentServiceHost(
             InMemoryParticipantRepository(),
             deploymentService,
             participationService,
-            eventBus.createApplicationServiceAdapter( ParticipantService::class ) )
+            eventBus.createApplicationServiceAdapter( RecruitmentService::class ) )
 
-        return Pair( studyService, participantService )
+        return Pair( studyService, recruitmentService )
     }
 
     /**
@@ -112,9 +114,11 @@ class StudiesCodeSamples
         val phone = Smartphone( "Patient's phone" )
         protocol.addMasterDevice( phone )
 
-        val measures = listOf( Smartphone.Sensors.geolocation(), Smartphone.Sensors.stepCount() )
-        val startMeasures = ConcurrentTask( "Start measures", measures )
-        protocol.addTriggeredTask( phone.atStartOfStudy(), startMeasures, phone )
+        val sensors = Smartphone.Sensors
+        val measures = Smartphone.Tasks.BACKGROUND.create( "Start measures" ) {
+            measures = listOf( sensors.GEOLOCATION.measure(), sensors.STEP_COUNT.measure() )
+        }
+        protocol.addTaskControl( phone.atStartOfStudy().start( measures, phone ) )
 
         return protocol
     }

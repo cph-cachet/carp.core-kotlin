@@ -1,7 +1,7 @@
 group = 'dk.cachet.carp.detekt'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 apply {

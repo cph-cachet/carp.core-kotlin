@@ -1,17 +1,21 @@
 package dk.cachet.carp.studies.domain.users
 
-import dk.cachet.carp.common.EmailAddress
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.ddd.AggregateRoot
-import dk.cachet.carp.common.ddd.DomainEvent
-import dk.cachet.carp.common.users.EmailAccountIdentity
-import dk.cachet.carp.deployment.domain.users.Participation
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
-import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.common.application.EmailAddress
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.EmailAccountIdentity
+import dk.cachet.carp.common.domain.AggregateRoot
+import dk.cachet.carp.common.domain.DomainEvent
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
+import dk.cachet.carp.deployments.application.users.StudyInvitation
+import dk.cachet.carp.deployments.application.throwIfInvalid
+import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.Participant
+import dk.cachet.carp.studies.application.users.participantIds
 
 
 /**
- * Represents a set of [participants] recruited for a [Study] identified by [studyId].
+ * Represents a set of [participants] recruited for a study identified by [studyId].
  */
 class Recruitment( val studyId: UUID ) :
     AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>()
@@ -19,7 +23,7 @@ class Recruitment( val studyId: UUID ) :
     sealed class Event : DomainEvent()
     {
         data class ParticipantAdded( val participant: Participant ) : Event()
-        data class ParticipationAdded( val studyDeploymentId: UUID, val participation: DeanonymizedParticipation ) : Event()
+        data class ParticipationAdded( val participant: Participant, val studyDeploymentId: UUID ) : Event()
     }
 
 
@@ -34,9 +38,11 @@ class Recruitment( val studyId: UUID ) :
                 recruitment.lockInStudy( snapshot.studyProtocol, snapshot.invitation )
             }
             snapshot.participants.forEach { recruitment._participants.add( it ) }
-            for ( p in snapshot.participations )
+            for ( (deploymentId, participantIds) in snapshot.participations )
             {
-                recruitment._participations[ p.key ] = p.value.toMutableSet()
+                recruitment._participations[ deploymentId ] = participantIds
+                    .map { id -> recruitment.participants.first { it.id == id } }
+                    .toMutableSet()
             }
 
             return recruitment
@@ -101,67 +107,77 @@ class Recruitment( val studyId: UUID ) :
     }
 
     /**
-     * Verify whether this [Recruitment] is ready for deployment and participant [group] is configured correctly
-     * by evaluating preconditions and throwing exceptions in case preconditions are violated.
+     * Attempt creating [ParticipantInvitation]s for the specified participant [group],
+     * or throw exception in case preconditions are violated.
      *
      * @throws IllegalStateException when the study is not yet ready for deployment.
      * @throws IllegalArgumentException when:
-     *  - [group] is empty
      *  - any of the participants specified in [group] does not exist
+     *  - [group] is empty
      *  - any of the device roles specified in [group] are not part of the configured study protocol
-     *  - not all devices part of the study have been assigned a participant
+     *  - not all master devices part of the study protocol have been assigned a participant
      */
-    fun verifyReadyForDeployment( group: Set<AssignParticipantDevices> ): RecruitmentStatus.ReadyForDeployment
+    fun createInvitations( group: Set<AssignParticipantDevices> ): Pair<StudyProtocolSnapshot, List<ParticipantInvitation>>
     {
         val status = getStatus()
         check( status is RecruitmentStatus.ReadyForDeployment )
             { "Study is not yet ready to be deployed to participants." }
-        require( group.isNotEmpty() ) { "No participants to deploy specified." }
 
-        // Verify whether the master device roles to deploy exist in the protocol.
-        val masterDevices = status.studyProtocol.masterDevices.map { it.roleName }.toSet()
-        require( group.deviceRoles().all { it in masterDevices } )
-            { "One of the specified device roles is not part of the configured study protocol." }
+        // Verify participants.
+        val allParticipants = participants.associateBy { it.id }
+        require( group.participantIds().all { it in allParticipants } )
+            { "One of the specified participants is not part of this study." }
 
-        // Verify whether all master devices in the study protocol have been assigned to a participant.
-        require( group.deviceRoles().containsAll( masterDevices ) )
-            { "Not all devices required for this study have been assigned to a participant." }
+        // Verify whether invitations match the requirements of the protocol.
+        val invitations = group.map { toAssign ->
+            val participant = allParticipants.getValue( toAssign.participantId )
+            ParticipantInvitation(
+                participant.id,
+                toAssign.masterDeviceRoleNames,
+                participant.accountIdentity,
+                status.invitation
+            )
+        }
+        val protocol = status.studyProtocol
+        protocol.throwIfInvalid( invitations )
 
-        return status
+        return Pair( protocol, invitations )
     }
 
     /**
      * Per study deployment ID, the set of participants that participate in it.
      * TODO: Maybe this should be kept private and be replaced with clearer helper functions (e.g., getStudyDeploymentIds).
      */
-    val participations: Map<UUID, Set<DeanonymizedParticipation>>
+    val participations: Map<UUID, Set<Participant>>
         get() = _participations
 
-    private val _participations: MutableMap<UUID, MutableSet<DeanonymizedParticipation>> = mutableMapOf()
+    private val _participations: MutableMap<UUID, MutableSet<Participant>> = mutableMapOf()
 
     /**
-     * Specify that a [Participation] has been created for a [Participant] in this recruitment.
+     * Specify that [participant] of this recruitment participates in the study deployment with [studyDeploymentId].
      *
+     * @throws IllegalArgumentException when [participant] is not a participant in this recruitment.
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    fun addParticipation( studyDeploymentId: UUID, participation: DeanonymizedParticipation )
+    fun addParticipation( participant: Participant, studyDeploymentId: UUID )
     {
+        require( participant in participants ) { "The participant is not part of this recruitment." }
         check( getStatus() is RecruitmentStatus.ReadyForDeployment ) { "The study is not yet ready for deployment." }
 
         _participations
             .getOrPut( studyDeploymentId ) { mutableSetOf() }
-            .add( participation )
-            .eventIf( true ) { Event.ParticipationAdded( studyDeploymentId, participation ) }
+            .add( participant )
+            .eventIf( true ) { Event.ParticipationAdded( participant, studyDeploymentId ) }
     }
 
     /**
-     * Get all [DeanonymizedParticipation]s for a specific [studyDeploymentId].
+     * Get all [Participant]s for a specific [studyDeploymentId].
      *
      * @throws IllegalArgumentException when the given [studyDeploymentId] is not part of this recruitment.
      */
-    fun getParticipations( studyDeploymentId: UUID ): Set<DeanonymizedParticipation>
+    fun getParticipations( studyDeploymentId: UUID ): Set<Participant>
     {
-        val participations: Set<DeanonymizedParticipation> = _participations.getOrElse( studyDeploymentId ) { emptySet() }
+        val participations: Set<Participant> = _participations.getOrElse( studyDeploymentId ) { emptySet() }
         require( participations.isNotEmpty() ) { "The specified study deployment ID is not part of this recruitment." }
 
         return participations

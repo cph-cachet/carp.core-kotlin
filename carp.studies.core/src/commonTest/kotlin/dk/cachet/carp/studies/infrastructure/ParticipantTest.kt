@@ -1,7 +1,10 @@
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.users.AccountIdentity
-import dk.cachet.carp.studies.domain.users.Participant
+import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.infrastructure.serialization.JSON
+import dk.cachet.carp.studies.application.users.Participant
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -15,8 +18,8 @@ class ParticipantTest
     {
         val participant = Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) )
 
-        val serialized: String = participant.toJson()
-        val parsed: Participant = Participant.fromJson( serialized )
+        val serialized: String = JSON.encodeToString( participant )
+        val parsed: Participant = JSON.decodeFromString( serialized )
 
         assertEquals( participant, parsed )
     }

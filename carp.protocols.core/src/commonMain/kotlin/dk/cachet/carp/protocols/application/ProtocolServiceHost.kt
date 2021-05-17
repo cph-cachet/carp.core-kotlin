@@ -1,11 +1,9 @@
 package dk.cachet.carp.protocols.application
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.users.ParticipantAttribute
-import dk.cachet.carp.protocols.domain.ProtocolVersion
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolRepository
-import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
 
 
 /**
@@ -54,7 +52,7 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
      * @return The updated [StudyProtocolSnapshot].
      */
     override suspend fun updateParticipantDataConfiguration(
-        protocolId: StudyProtocol.Id,
+        protocolId: StudyProtocolId,
         versionTag: String,
         expectedParticipantData: Set<ParticipantAttribute>
     ): StudyProtocolSnapshot
@@ -79,7 +77,7 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      * @throws IllegalArgumentException when a protocol with [protocolId] or [versionTag] does not exist.
      */
-    override suspend fun getBy( protocolId: StudyProtocol.Id, versionTag: String? ): StudyProtocolSnapshot
+    override suspend fun getBy( protocolId: StudyProtocolId, versionTag: String? ): StudyProtocolSnapshot
     {
         val protocol: StudyProtocol? = repository.getBy( protocolId, versionTag )
         requireNotNull( protocol ) { "No protocol found for the specified owner with the given name and version." }
@@ -101,6 +99,6 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
      *
      * @throws IllegalArgumentException when a protocol with [protocolId] does not exist.
      */
-    override suspend fun getVersionHistoryFor( protocolId: StudyProtocol.Id ): List<ProtocolVersion> =
+    override suspend fun getVersionHistoryFor( protocolId: StudyProtocolId ): List<ProtocolVersion> =
         repository.getVersionHistoryFor( protocolId )
 }

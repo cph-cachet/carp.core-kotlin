@@ -1,7 +1,7 @@
 # carp.studies [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.studies/carp.studies.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.studies) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.studies/carp.studies.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/studies/) 
 
 Supports management of research studies, including the recruitment of participants and assigning metadata (e.g., contact information).
-This subsystem maps pseudonymized data (managed by the 'deployment' subsystem) to actual participants.
+This subsystem maps pseudonymized data (managed by the 'deployments' subsystem) to actual participants.
 
 ## Application services
 
@@ -25,9 +25,9 @@ Allows creating and managing studies.
 | `goLive` | Lock in the current study protocol so that a study may be deployed to participants. | manage study: `studyId` | |
 | `remove` | Remove a study and all related data. | manage study: `studyId` | |
 
-### [`ParticipantService`](../carp.studies.core/src/commonMain/kotlin/dk/cachet/carp/studies/application/ParticipantService.kt)
+### [`RecruitmentService`](../carp.studies.core/src/commonMain/kotlin/dk/cachet/carp/studies/application/RecruitmentService.kt)
 
-Allows adding participants to studies and creating deployments for them.
+Allows setting recruitment goals, adding participants to studies, and creating deployments for them.
 
 | Endpoint | Description | Require | Grant |
 | --- | --- | --- | --- |

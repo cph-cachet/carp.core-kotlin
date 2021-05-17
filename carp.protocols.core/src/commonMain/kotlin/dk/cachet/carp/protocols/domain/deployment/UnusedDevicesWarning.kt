@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.domain.deployment
 
+import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.AnyMasterDeviceDescriptor
 
 
 /**
@@ -24,7 +24,7 @@ class UnusedDevicesWarning internal constructor() : DeploymentWarning
         // Get all devices used in triggers.
         val usedDevices: Set<AnyDeviceDescriptor> = protocol.triggers.flatMap { trigger ->
             val usedInTrigger =
-                protocol.getTriggeredTasks( trigger ).map { it.targetDevice }.toMutableList()
+                protocol.getTaskControls( trigger ).map { it.destinationDevice }.toMutableList()
             usedInTrigger.add( protocol.devices.single { trigger.sourceDeviceRoleName == it.roleName } )
             usedInTrigger
         }.toSet()

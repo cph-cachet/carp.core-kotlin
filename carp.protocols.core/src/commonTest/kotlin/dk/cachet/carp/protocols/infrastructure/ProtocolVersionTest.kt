@@ -1,7 +1,10 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.protocols.domain.ProtocolVersion
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.infrastructure.serialization.JSON
+import dk.cachet.carp.protocols.application.ProtocolVersion
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -15,8 +18,8 @@ class ProtocolVersionTest
     {
         val version = ProtocolVersion( "Test", DateTime.now() )
 
-        val serialized: String = version.toJson()
-        val parsed: ProtocolVersion = ProtocolVersion.fromJson( serialized )
+        val serialized: String = JSON.encodeToString( version )
+        val parsed: ProtocolVersion = JSON.decodeFromString( serialized )
 
         assertEquals( version, parsed )
     }

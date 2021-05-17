@@ -1,8 +1,11 @@
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.studies.domain.StudyStatus
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.infrastructure.serialization.JSON
+import dk.cachet.carp.studies.application.StudyStatus
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -21,8 +24,8 @@ class StudyStatusTest
             canDeployToParticipants = false,
             canGoLive = false )
 
-        val serialized = status.toJson()
-        val parsed = StudyStatus.fromJson( serialized )
+        val serialized = JSON.encodeToString<StudyStatus>( status )
+        val parsed: StudyStatus = JSON.decodeFromString( serialized )
 
         assertEquals( status, parsed )
     }

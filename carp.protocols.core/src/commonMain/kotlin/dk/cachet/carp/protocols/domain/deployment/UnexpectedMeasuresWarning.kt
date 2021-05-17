@@ -1,9 +1,9 @@
 package dk.cachet.carp.protocols.domain.deployment
 
-import dk.cachet.carp.common.data.DataType
+import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
+import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.devices.AnyDeviceDescriptor
-import dk.cachet.carp.protocols.domain.tasks.measures.Measure
 
 
 /**
@@ -33,7 +33,7 @@ class UnexpectedMeasuresWarning internal constructor() : DeploymentWarning
             }
             // Filter out measures which are not supported on the device.
             .filter { (device, measure) ->
-                measure.type !in device.supportedDataTypes
+                measure.type !in device.getSupportedDataTypes()
             }
             .map { (device, measure) -> UnexpectedMeasure( device, measure ) }
             .toSet()

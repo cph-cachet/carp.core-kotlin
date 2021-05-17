@@ -1,25 +1,27 @@
 package dk.cachet.carp.protocols.infrastructure
 
+import dk.cachet.carp.common.application.devices.MasterDeviceDescriptor
+import dk.cachet.carp.common.application.tasks.Measure
+import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.serialization.CustomMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.serialization.CustomTaskDescriptor
+import dk.cachet.carp.common.infrastructure.serialization.CustomTrigger
+import dk.cachet.carp.common.infrastructure.serialization.JSON
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubSamplingConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.infrastructure.test.makeUnknown
+import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.devices.CustomDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.CustomMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.devices.MasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.tasks.CustomMeasure
-import dk.cachet.carp.protocols.domain.tasks.CustomTaskDescriptor
-import dk.cachet.carp.protocols.domain.tasks.measures.Measure
-import dk.cachet.carp.protocols.domain.triggers.CustomTrigger
-import dk.cachet.carp.protocols.infrastructure.test.STUB_DATA_TYPE
-import dk.cachet.carp.protocols.infrastructure.test.StubDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubMeasure
-import dk.cachet.carp.protocols.infrastructure.test.StubSamplingConfiguration
-import dk.cachet.carp.protocols.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.protocols.infrastructure.test.StubTrigger
+import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
-import dk.cachet.carp.protocols.infrastructure.test.makeUnknown
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -34,8 +36,8 @@ class StudyProtocolSnapshotTest
         val protocol: StudyProtocol = createComplexProtocol()
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
 
-        val serialized: String = snapshot.toJson()
-        val parsed: StudyProtocolSnapshot = StudyProtocolSnapshot.fromJson( serialized )
+        val serialized: String = JSON.encodeToString( snapshot )
+        val parsed: StudyProtocolSnapshot = JSON.decodeFromString( serialized )
 
         assertEquals( snapshot, parsed )
     }
@@ -49,14 +51,14 @@ class StudyProtocolSnapshotTest
     {
         val serialized: String = serializeProtocolSnapshotIncludingUnknownTypes()
 
-        val parsed = StudyProtocolSnapshot.fromJson( serialized )
+        val parsed: StudyProtocolSnapshot = JSON.decodeFromString( serialized )
         val masterDevice = parsed.masterDevices.filterIsInstance<CustomMasterDeviceDescriptor>().singleOrNull()
         assertNotNull( masterDevice )
-        assertEquals( 1, masterDevice.samplingConfiguration.count() )
+        assertEquals( 1, masterDevice.defaultSamplingConfiguration.count() )
         assertEquals( 1, parsed.connectedDevices.filterIsInstance<CustomDeviceDescriptor>().count() )
         assertEquals( 1, parsed.tasks.filterIsInstance<CustomTaskDescriptor>().count() )
         val allMeasures = parsed.tasks.flatMap{ t -> t.measures }
-        assertEquals( 2, allMeasures.filterIsInstance<CustomMeasure>().count() )
+        assertEquals( 2, allMeasures.count() )
         assertEquals( 1, parsed.triggers.filter { t -> t.value is CustomTrigger }.count() )
     }
 
@@ -71,10 +73,10 @@ class StudyProtocolSnapshotTest
         protocol.addConnectedDevice( unknownMaster, master )
 
         // Mimic unknown connected master device.
-        var serialized = protocol.getSnapshot().toJson()
+        var serialized = JSON.encodeToString( protocol.getSnapshot() )
         serialized = serialized.makeUnknown( unknownMaster, "Unknown master" )
 
-        val parsed = StudyProtocolSnapshot.fromJson( serialized )
+        val parsed: StudyProtocolSnapshot = JSON.decodeFromString( serialized )
         assertTrue { parsed.connectedDevices.single() is MasterDeviceDescriptor }
     }
 
@@ -86,9 +88,9 @@ class StudyProtocolSnapshotTest
     fun serializing_unknown_types_removes_the_wrapper()
     {
         val serialized: String = serializeProtocolSnapshotIncludingUnknownTypes()
-        val snapshot = StudyProtocolSnapshot.fromJson( serialized )
+        val snapshot: StudyProtocolSnapshot = JSON.decodeFromString( serialized )
 
-        val customSerialized = snapshot.toJson()
+        val customSerialized = JSON.encodeToString( snapshot )
         assertEquals( serialized, customSerialized )
     }
 
@@ -97,7 +99,7 @@ class StudyProtocolSnapshotTest
     fun create_protocol_fromSnapshot_with_custom_extending_types_succeeds()
     {
         val serialized = serializeProtocolSnapshotIncludingUnknownTypes()
-        val snapshot = StudyProtocolSnapshot.fromJson( serialized )
+        val snapshot: StudyProtocolSnapshot = JSON.decodeFromString( serialized )
 
         StudyProtocol.fromSnapshot( snapshot )
     }
@@ -124,20 +126,14 @@ class StudyProtocolSnapshotTest
         val connected = StubDeviceDescriptor( "Unknown 2" )
         protocol.addConnectedDevice( connected, master )
 
-        // (2) Add unknown task with unknown measure.
-        val unknownMeasure = StubMeasure( STUB_DATA_TYPE, "Unknown" )
-        val measures: List<Measure> = listOf( unknownMeasure, StubMeasure( STUB_DATA_TYPE ) )
+        // (2) Add unknown task.
+        val measures: List<Measure> = listOf( Measure( STUB_DATA_TYPE ) )
         val task = StubTaskDescriptor( "Unknown task", measures )
         val trigger = StubTrigger( master.roleName, "Unknown" )
-        protocol.addTriggeredTask( trigger, task, master )
-
-        // (3) Add known task with unknown measure.
-        val unknownMeasure2 = StubMeasure( STUB_DATA_TYPE, "Unknown 2" )
-        val task2 = StubTaskDescriptor( "Known task", listOf( unknownMeasure2 ) )
-        protocol.addTriggeredTask( trigger, task2, master )
+        protocol.addTaskControl( trigger.start( task, master ) )
 
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
-        var serialized: String = snapshot.toJson()
+        var serialized: String = JSON.encodeToString( snapshot )
 
         // Replace the strings which identify the types to load by the PolymorphicSerializer.
         // This will cause the types not to be found while deserializing, hence mimicking 'custom' types.
@@ -145,8 +141,6 @@ class StudyProtocolSnapshotTest
         serialized = serialized.makeUnknown( connected )
         serialized = serialized.makeUnknown( unknownSamplingConfiguration, "configuration", "Unknown" )
         serialized = serialized.makeUnknown( task )
-        serialized = serialized.makeUnknown( unknownMeasure, "uniqueProperty", "Unknown" )
-        serialized = serialized.makeUnknown( unknownMeasure, "uniqueProperty", "Unknown 2" )
         serialized = serialized.makeUnknown( trigger, "uniqueProperty", "Unknown" )
 
         return serialized

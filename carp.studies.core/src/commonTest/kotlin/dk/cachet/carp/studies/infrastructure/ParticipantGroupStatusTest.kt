@@ -1,11 +1,13 @@
 package dk.cachet.carp.studies.infrastructure
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.data.input.CarpInputDataTypes
-import dk.cachet.carp.common.data.input.Sex
-import dk.cachet.carp.deployment.domain.StudyDeploymentStatus
-import dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
-import dk.cachet.carp.studies.domain.users.ParticipantGroupStatus
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.application.data.input.Sex
+import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.infrastructure.serialization.JSON
+import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.studies.application.users.Participant
+import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import kotlin.test.*
 
 
@@ -19,7 +21,7 @@ class ParticipantGroupStatusTest
     {
         val studyDeploymentId = UUID.randomUUID()
         val deploymentStatus = StudyDeploymentStatus.Invited( studyDeploymentId, listOf(), null )
-        val participants = setOf( DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() ) )
+        val participants = setOf( Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ) )
         val someData = mapOf( CarpInputDataTypes.SEX to Sex.Female )
         val groupStatus = ParticipantGroupStatus( deploymentStatus, participants, someData )
 

@@ -70,8 +70,8 @@ verify-implementation:
       - '**/carp/detekt/**'
 
       # TODO: enums may be valid for `DataClass`. At least, the following comply with the expectations.
-      - '**/carp/common/data/input/Sex.kt'
-    annotationClass: "dk.cachet.carp.common.ImplementAsDataClass"
+      - '**/carp/common/application/data/input/Sex.kt'
+    annotationClass: "dk.cachet.carp.common.application.ImplementAsDataClass"
     assumeNoAnnotations: &assume-no-annotations
       - 'kotlin.collections.List'
       - 'kotlin.collections.Map'
@@ -80,11 +80,12 @@ verify-implementation:
   Immutable:
     active: true
     excludes: *verify-implementation-excludes
-    annotationClass: "dk.cachet.carp.common.Immutable"
+    annotationClass: "dk.cachet.carp.common.application.Immutable"
     assumeNoAnnotations: *assume-no-annotations
     assumeImmutable: [
-      'dk.cachet.carp.common.DateTime',
-      'dk.cachet.carp.common.data.input.CustomInput.T',
+      'dk.cachet.carp.common.application.DateTime',
+      'dk.cachet.carp.common.application.data.input.CustomInput.T',
+      'dk.cachet.carp.common.application.sampling.BatteryAwareSamplingConfiguration.TConfig',
       'kotlinx.serialization.json.Json'
     ]
 

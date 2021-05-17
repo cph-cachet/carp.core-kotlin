@@ -2,28 +2,30 @@ declare module 'carp.core-kotlin-carp.studies.core'
 {
     import { kotlin } from 'kotlin'
     import ArrayList = kotlin.collections.ArrayList
-    import HashSet = kotlin.collections.HashSet
     import HashMap = kotlin.collections.HashMap
+    import HashSet = kotlin.collections.HashSet
+
     import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
     import Json = kotlinx.serialization.json.Json
+
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
-    import DateTime = cdk.cachet.carp.common.DateTime
-    import EmailAddress = cdk.cachet.carp.common.EmailAddress
-    import NamespacedId = cdk.cachet.carp.common.NamespacedId
-    import UUID = cdk.cachet.carp.common.UUID
-    import AccountIdentity = cdk.cachet.carp.common.users.AccountIdentity
+    import DateTime = cdk.cachet.carp.common.application.DateTime
+    import EmailAddress = cdk.cachet.carp.common.application.EmailAddress
+    import NamespacedId = cdk.cachet.carp.common.application.NamespacedId
+    import UUID = cdk.cachet.carp.common.application.UUID
+    import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
+
+    import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
+    import StudyDeploymentStatus = ddk.cachet.carp.deployments.application.StudyDeploymentStatus
+    import StudyInvitation = ddk.cachet.carp.deployments.application.users.StudyInvitation
+
     import { dk as pdk } from 'carp.core-kotlin-carp.protocols.core'
-    import StudyProtocolSnapshot = pdk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-    import { dk as ddk } from 'carp.core-kotlin-carp.deployment.core'
-
-    import StudyDeploymentStatus = ddk.cachet.carp.deployment.domain.StudyDeploymentStatus
-    import StudyInvitation = ddk.cachet.carp.deployment.domain.users.StudyInvitation
+    import StudyProtocolSnapshot = pdk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
 
-    namespace dk.cachet.carp.studies.domain
+    namespace dk.cachet.carp.studies.application
     {
-        import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
-        import DeanonymizedParticipation = dk.cachet.carp.studies.domain.users.DeanonymizedParticipation
+        import StudyOwner = dk.cachet.carp.studies.application.users.StudyOwner
 
 
         class StudyDetails
@@ -91,7 +93,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
     }
 
 
-    namespace dk.cachet.carp.studies.domain.users
+    namespace dk.cachet.carp.studies.application.users
     {
         class AssignParticipantDevices
         {
@@ -102,21 +104,9 @@ declare module 'carp.core-kotlin-carp.studies.core'
             readonly participantId: UUID
             readonly masterDeviceRoleNames: HashSet<string>
         }
-        function participantIds_nvx6bb$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<UUID>
-        function deviceRoles_nvx6bb$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<string>
+        function participantIds_ttprz$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<UUID>
+        function deviceRoles_ttprz$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<string>
         interface AssignParticipantDevices$Companion { serializer(): any }
-
-
-        class DeanonymizedParticipation
-        {
-            constructor( participantId: UUID, participationId: UUID )
-
-            static get Companion(): DeanonymizedParticipation$Companion
-
-            readonly participantId: UUID
-            readonly participationId: UUID
-        }
-        interface DeanonymizedParticipation$Companion { serializer(): any }
 
 
         class Participant
@@ -133,12 +123,12 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
         class ParticipantGroupStatus
         {
-            constructor( studyDeploymentStatus: StudyDeploymentStatus, participants: HashSet<DeanonymizedParticipation>, data: HashMap<NamespacedId, any> )
+            constructor( studyDeploymentStatus: StudyDeploymentStatus, participants: HashSet<Participant>, data: HashMap<NamespacedId, any> )
 
             static get Companion(): ParticipantGroupStatus$Companion
 
             readonly studyDeploymentStatus: StudyDeploymentStatus
-            readonly participants: HashSet<DeanonymizedParticipation>
+            readonly participants: HashSet<Participant>
             readonly data: any
         }
         interface ParticipantGroupStatus$Companion { serializer(): any }
@@ -158,8 +148,8 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
     namespace dk.cachet.carp.studies.infrastructure
     {
-        import AssignParticipantDevices = dk.cachet.carp.studies.domain.users.AssignParticipantDevices
-        import StudyOwner = dk.cachet.carp.studies.domain.users.StudyOwner
+        import AssignParticipantDevices = dk.cachet.carp.studies.application.users.AssignParticipantDevices
+        import StudyOwner = dk.cachet.carp.studies.application.users.StudyOwner
 
 
         abstract class StudyServiceRequest
@@ -209,45 +199,42 @@ declare module 'carp.core-kotlin-carp.studies.core'
         }
 
 
-        abstract class ParticipantServiceRequest
+        abstract class RecruitmentServiceRequest
         {
-            static get Companion(): ParticipantServiceRequest$Companion
+            static get Companion(): RecruitmentServiceRequest$Companion
         }
-        interface ParticipantServiceRequest$Companion { serializer(): any }
+        interface RecruitmentServiceRequest$Companion { serializer(): any }
 
-        namespace ParticipantServiceRequest
+        namespace RecruitmentServiceRequest
         {
-            class AddParticipant extends ParticipantServiceRequest
+            class AddParticipant extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID, email: EmailAddress )
             }
-            class GetParticipant extends ParticipantServiceRequest
+            class GetParticipant extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID, participantId: UUID )
             }
-            class GetParticipants extends ParticipantServiceRequest
+            class GetParticipants extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID )
             }
-            class DeployParticipantGroup extends ParticipantServiceRequest
+            class DeployParticipantGroup extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID, group: HashSet<AssignParticipantDevices> )
             }
-            class GetParticipantGroupStatusList extends ParticipantServiceRequest
+            class GetParticipantGroupStatusList extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID )
             }
-            class StopParticipantGroup extends ParticipantServiceRequest
+            class StopParticipantGroup extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID, groupId: UUID )
             }
-            class SetParticipantGroupData extends ParticipantServiceRequest
+            class SetParticipantGroupData extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID, groupId: UUID, inputDataType: NamespacedId, data?: any )
             }
         }
-
-
-        function createStudiesSerializer_18xi4u$(): Json
     }
 }

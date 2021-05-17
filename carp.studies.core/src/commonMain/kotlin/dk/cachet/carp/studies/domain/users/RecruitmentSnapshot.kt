@@ -1,10 +1,11 @@
 package dk.cachet.carp.studies.domain.users
 
-import dk.cachet.carp.common.DateTime
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.ddd.Snapshot
-import dk.cachet.carp.deployment.domain.users.StudyInvitation
-import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
+import dk.cachet.carp.common.application.DateTime
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.domain.Snapshot
+import dk.cachet.carp.deployments.application.users.StudyInvitation
+import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import dk.cachet.carp.studies.application.users.Participant
 import kotlinx.serialization.Serializable
 
 
@@ -15,7 +16,10 @@ data class RecruitmentSnapshot(
     val studyProtocol: StudyProtocolSnapshot?,
     val invitation: StudyInvitation?,
     val participants: Set<Participant>,
-    val participations: Map<UUID, Set<DeanonymizedParticipation>>
+    /**
+     * Per study deployment ID, the IDs of the participants participating in it.
+     */
+    val participations: Map<UUID, Set<UUID>>
 ) : Snapshot<Recruitment>
 {
     companion object
@@ -25,12 +29,6 @@ data class RecruitmentSnapshot(
          */
         fun fromParticipantRecruitment( recruitment: Recruitment ): RecruitmentSnapshot
         {
-            val clonedParticipations: MutableMap<UUID, Set<DeanonymizedParticipation>> = mutableMapOf()
-            for ( p in recruitment.participations )
-            {
-                clonedParticipations[ p.key ] = p.value.toSet()
-            }
-
             val status = recruitment.getStatus()
             var studyProtocol: StudyProtocolSnapshot? = null
             var invitation: StudyInvitation? = null
@@ -39,6 +37,9 @@ data class RecruitmentSnapshot(
                 studyProtocol = status.studyProtocol
                 invitation = status.invitation
             }
+            val participations = recruitment.participations.mapValues {
+                (_, participants) -> participants.map { it.id }.toSet()
+            }
 
             return RecruitmentSnapshot(
                 recruitment.studyId,
@@ -46,7 +47,7 @@ data class RecruitmentSnapshot(
                 studyProtocol,
                 invitation,
                 recruitment.participants,
-                participations = clonedParticipations )
+                participations )
         }
     }
 

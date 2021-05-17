@@ -1,12 +1,12 @@
 package dk.cachet.carp.protocols.application
 
-import dk.cachet.carp.common.UUID
-import dk.cachet.carp.common.data.input.InputDataType
-import dk.cachet.carp.common.users.ParticipantAttribute
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.triggers.TaskControl
+import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
@@ -83,8 +83,8 @@ interface ProtocolServiceTest
         service.add( protocol.getSnapshot() )
 
         val invalidSnapshot = protocol.getSnapshot().copy(
-            triggeredTasks = listOf(
-                StudyProtocolSnapshot.TriggeredTask( 0, "Non-existing", "Not a device" )
+            taskControls = listOf(
+                TaskControl( 0, "Non-existing", "Not a device", TaskControl.Control.Start )
             )
         )
 
@@ -116,7 +116,7 @@ interface ProtocolServiceTest
         val service = createService()
 
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
-        val unknownId = StudyProtocol.Id( ProtocolOwner().id, "Unknown protocol" )
+        val unknownId = StudyProtocolId( ProtocolOwner().id, "Unknown protocol" )
         assertFailsWith<IllegalArgumentException>
         {
             service.updateParticipantDataConfiguration( unknownId, "Unknown version", setOf( attribute ) )
@@ -140,7 +140,7 @@ interface ProtocolServiceTest
     fun getBy_fails_for_nonexisting_protocol() = runSuspendTest {
         val service = createService()
 
-        val unknownId = StudyProtocol.Id( UUID.randomUUID(), "Unknown" )
+        val unknownId = StudyProtocolId( UUID.randomUUID(), "Unknown" )
         assertFailsWith<IllegalArgumentException> { service.getBy( unknownId, "Nope" ) }
     }
 
@@ -183,7 +183,7 @@ interface ProtocolServiceTest
     fun getVersionHistoryFor_fails_when_protocol_not_found() = runSuspendTest {
         val service = createService()
 
-        val unknown = StudyProtocol.Id( UUID.randomUUID(), "Unknown" )
+        val unknown = StudyProtocolId( UUID.randomUUID(), "Unknown" )
         assertFailsWith<IllegalArgumentException> { service.getVersionHistoryFor( unknown ) }
     }
 
