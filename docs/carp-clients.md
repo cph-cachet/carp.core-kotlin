@@ -1,4 +1,4 @@
-# carp.clients [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.client/carp.clients.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.clients) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.clients/carp.clients.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/clients/) 
+# carp.clients [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.clients/carp.clients.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.clients) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.clients/carp.clients.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/clients/) 
 
 This is the runtime which performs the actual data collection on a device (e.g., desktop computer or smartphone).
 This subsystem contains reusable components which understand the runtime configuration derived from a study protocol by the ‘deployment’ subsystem.
