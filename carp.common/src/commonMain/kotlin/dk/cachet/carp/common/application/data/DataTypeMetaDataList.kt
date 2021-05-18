@@ -11,6 +11,10 @@ import dk.cachet.carp.common.application.EnumObjectList
  */
 open class DataTypeMetaDataList : EnumObjectList<DataTypeMetaData>()
 {
-    fun add( fullyQualifiedName: String ): DataTypeMetaData =
-        DataTypeMetaData( DataType.fromString( fullyQualifiedName ) )
+    /**
+     * Add a [DataTypeMetaData] for the [DataType] with [fullyQualifiedName]
+     * which can be displayed to the user using [displayName].
+     */
+    fun add( fullyQualifiedName: String, displayName: String ): DataTypeMetaData =
+        DataTypeMetaData( DataType.fromString( fullyQualifiedName ), displayName )
 }

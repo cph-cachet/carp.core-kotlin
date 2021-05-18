@@ -14,4 +14,13 @@ typealias DataType = NamespacedId
 /**
  * Contains metadata about [type].
  */
-data class DataTypeMetaData( val type: DataType )
+data class DataTypeMetaData(
+    /**
+     * Unique fully qualified name for the data type this meta data relates to.
+     */
+    val type: DataType,
+    /**
+     * A name which can be used to display to the user which data is collected.
+     */
+    val displayName: String
+)

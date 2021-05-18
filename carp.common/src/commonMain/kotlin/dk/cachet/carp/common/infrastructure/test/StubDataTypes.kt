@@ -10,7 +10,7 @@ import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 
 
 val STUB_DATA_TYPE: DataType = DataType( CarpDataTypes.CARP_NAMESPACE, "stub" )
-val STUB_DATA_TYPE_METADATA: DataTypeMetaData = DataTypeMetaData( STUB_DATA_TYPE )
+val STUB_DATA_TYPE_METADATA: DataTypeMetaData = DataTypeMetaData( STUB_DATA_TYPE, "Stub data" )
 
 class StubDataTypeSamplingScheme :
     DataTypeSamplingScheme<NoOptionsSamplingConfigurationBuilder>( STUB_DATA_TYPE_METADATA )
