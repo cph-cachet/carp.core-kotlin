@@ -8,7 +8,6 @@ import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.InputElement
 import dk.cachet.carp.common.application.data.input.elements.Text
-import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import kotlin.reflect.KClass
 import kotlin.test.*
 
@@ -144,29 +143,5 @@ class ParticipantAttributeTest
         assertFailsWith<UnsupportedOperationException> { attribute.inputToData( emptyList, "Test" ) }
         assertFailsWith<UnsupportedOperationException> { attribute.isValidData( emptyList, CustomInput( "Test" ) ) }
         assertFailsWith<UnsupportedOperationException> { attribute.dataToInput( emptyList, CustomInput( "Test" ) ) }
-    }
-
-    @Test
-    fun can_serialize_and_deserialize_DefaultParticipantAttribute_polymorphic()
-    {
-        val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "test" ) )
-
-        val json = createDefaultJSON()
-        val serialized = json.encodeToString( ParticipantAttribute.serializer(), attribute )
-        val parsed = json.decodeFromString( ParticipantAttribute.serializer(), serialized )
-
-        assertEquals( attribute, parsed )
-    }
-
-    @Test
-    fun can_serialize_and_deserialize_CustomParticipantAttribute_polymorphic()
-    {
-        val attribute = ParticipantAttribute.CustomParticipantAttribute( Text( "Favorite movie" ) )
-
-        val json = createDefaultJSON()
-        val serialized = json.encodeToString( ParticipantAttribute.serializer(), attribute )
-        val parsed = json.decodeFromString( ParticipantAttribute.serializer(), serialized )
-
-        assertEquals( attribute, parsed )
     }
 }
