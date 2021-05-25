@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.infrastructure.test
 
 import dk.cachet.carp.common.application.data.CarpDataTypes
+import dk.cachet.carp.common.application.data.DataTimeType
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingScheme
@@ -10,7 +11,7 @@ import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 
 
 val STUB_DATA_TYPE: DataType = DataType( CarpDataTypes.CARP_NAMESPACE, "stub" )
-val STUB_DATA_TYPE_METADATA: DataTypeMetaData = DataTypeMetaData( STUB_DATA_TYPE, "Stub data" )
+val STUB_DATA_TYPE_METADATA: DataTypeMetaData = DataTypeMetaData( STUB_DATA_TYPE, "Stub data", DataTimeType.POINT )
 
 class StubDataTypeSamplingScheme :
     DataTypeSamplingScheme<NoOptionsSamplingConfigurationBuilder>( STUB_DATA_TYPE_METADATA )

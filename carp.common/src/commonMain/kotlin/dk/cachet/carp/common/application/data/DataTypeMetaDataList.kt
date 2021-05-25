@@ -13,8 +13,8 @@ open class DataTypeMetaDataList : EnumObjectList<DataTypeMetaData>()
 {
     /**
      * Add a [DataTypeMetaData] for the [DataType] with [fullyQualifiedName]
-     * which can be displayed to the user using [displayName].
+     * which can be displayed to the user using [displayName] and should be stored temporally as specified by [timeType].
      */
-    fun add( fullyQualifiedName: String, displayName: String ): DataTypeMetaData =
-        DataTypeMetaData( DataType.fromString( fullyQualifiedName ), displayName )
+    fun add( fullyQualifiedName: String, displayName: String, timeType: DataTimeType ): DataTypeMetaData =
+        DataTypeMetaData( DataType.fromString( fullyQualifiedName ), displayName, timeType )
 }
