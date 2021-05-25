@@ -65,8 +65,10 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
     {
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
-            val protocol = StudyProtocol( snapshot.id.ownerId, snapshot.id.name, snapshot.description )
-            protocol.creationDate = snapshot.creationDate
+            val protocol = StudyProtocol( snapshot.id.ownerId, snapshot.id.name, snapshot.description ).apply {
+                creationDate = snapshot.creationDate
+                applicationData = snapshot.applicationData
+            }
 
             // Add master devices.
             snapshot.masterDevices.forEach { protocol.addMasterDevice( it ) }
@@ -318,6 +320,15 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
         toAdd.forEach { addExpectedParticipantData( it ) }
         return true
     }
+
+    /**
+     * Application-specific data to be stored as part of the study protocol
+     * which will be included in all deployments of this study protocol.
+     *
+     * This can be used by infrastructures or concrete applications which require exchanging additional data
+     * between the protocols and clients subsystems, outside of scope or not yet supported by CARP core.
+     */
+    var applicationData: String = ""
 
 
     /**

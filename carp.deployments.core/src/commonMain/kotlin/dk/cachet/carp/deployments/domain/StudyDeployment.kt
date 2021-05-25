@@ -348,7 +348,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             deviceRegistrations,
             tasks,
             usedTriggers,
-            taskControls )
+            taskControls,
+            protocol.applicationData
+        )
     }
 
     /**

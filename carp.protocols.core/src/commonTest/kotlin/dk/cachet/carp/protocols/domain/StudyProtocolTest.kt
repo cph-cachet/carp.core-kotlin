@@ -443,6 +443,7 @@ class StudyProtocolTest
             assertEquals( triggeredTasks.count(), triggeredTasks.intersect( fromSnapshotTriggeredTasks ).count() )
         }
         assertEquals( protocol.expectedParticipantData, fromSnapshot.expectedParticipantData )
+        assertEquals( protocol.applicationData, fromSnapshot.applicationData )
         assertEquals( 0, fromSnapshot.consumeEvents().size )
     }
 

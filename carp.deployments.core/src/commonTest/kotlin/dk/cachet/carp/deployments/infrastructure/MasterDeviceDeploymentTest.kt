@@ -39,7 +39,8 @@ class MasterDeviceDeploymentTest
             mapOf( connected.roleName to connected.createRegistration() ),
             setOf( task ),
             mapOf( 0 to trigger ),
-            setOf( TaskControl( 0, task.name, connected.roleName, TaskControl.Control.Start ) )
+            setOf( TaskControl( 0, task.name, connected.roleName, TaskControl.Control.Start ) ),
+            "some data"
         )
 
         val json = JSON.encodeToString( deployment )

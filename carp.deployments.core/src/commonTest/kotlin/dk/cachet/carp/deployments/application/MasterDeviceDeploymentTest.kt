@@ -22,7 +22,7 @@ class MasterDeviceDeploymentTest
 
         val deployment = MasterDeviceDeployment(
             master, registration, setOf( connected ), // Registered master and unregistered connected device.
-            emptyMap(), emptySet(), emptyMap(), emptySet() // Otherwise, empty deployment.
+            emptyMap(), emptySet(), emptyMap(), emptySet(), "" // Otherwise, empty deployment.
         )
 
         val devices = deployment.getAllDevicesAndRegistrations()
@@ -58,7 +58,8 @@ class MasterDeviceDeploymentTest
             taskControls = setOf(
                 TaskControl( 0, task.name, device.roleName, TaskControl.Control.Start ),
                 TaskControl( 1, task.name, connected.roleName, TaskControl.Control.Start )
-            )
+            ),
+            applicationData = ""
         )
         val deviceTasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 
@@ -89,7 +90,8 @@ class MasterDeviceDeploymentTest
             connectedDeviceConfigurations = emptyMap(),
             tasks = emptySet(),
             triggers = emptyMap(),
-            taskControls = emptySet()
+            taskControls = emptySet(),
+            applicationData = ""
         )
         val tasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 
@@ -120,7 +122,8 @@ class MasterDeviceDeploymentTest
             taskControls = setOf(
                 TaskControl( 0, task.name, master1.roleName, TaskControl.Control.Start ),
                 TaskControl( 0, "Task on Master 2", master2.roleName, TaskControl.Control.Start )
-            )
+            ),
+            applicationData = ""
         )
         val tasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 

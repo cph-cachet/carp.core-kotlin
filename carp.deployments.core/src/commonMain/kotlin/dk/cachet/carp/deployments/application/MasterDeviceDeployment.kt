@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.Trigger
+import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -42,7 +43,15 @@ data class MasterDeviceDeployment(
     /**
      * Determines which tasks need to be started or stopped when the conditions defined by [triggers] are met.
      */
-    val taskControls: Set<TaskControl>
+    val taskControls: Set<TaskControl>,
+    /**
+     * Application-specific data to be stored as part of a study deployment.
+     *
+     * This can be used by infrastructures or concrete applications which require exchanging additional data
+     * between the protocols and clients subsystems, outside of scope or not yet supported by CARP core.
+     */
+    @Serializable( ApplicationDataSerializer::class )
+    val applicationData: String
 )
 {
     /**
