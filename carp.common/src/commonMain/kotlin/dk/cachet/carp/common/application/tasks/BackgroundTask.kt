@@ -25,7 +25,7 @@ data class BackgroundTask(
 
 
 /**
- * A helper class to configure and construct immutable [BackgroundTask] classes.
+ * A helper class to configure and construct immutable [BackgroundTask] instances.
  */
 class BackgroundTaskBuilder(
     /**
