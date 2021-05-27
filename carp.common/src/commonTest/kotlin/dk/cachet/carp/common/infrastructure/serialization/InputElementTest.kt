@@ -2,7 +2,7 @@ package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.data.input.elements.InputElement
 import dk.cachet.carp.common.application.data.input.elements.Text
-import kotlinx.serialization.*
+import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.builtins.SetSerializer
 import kotlin.test.*
 

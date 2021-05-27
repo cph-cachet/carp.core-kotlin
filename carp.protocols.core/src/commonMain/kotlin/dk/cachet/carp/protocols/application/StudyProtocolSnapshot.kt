@@ -8,6 +8,7 @@ import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.Trigger
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.Snapshot
+import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.serialization.Serializable
 
@@ -26,7 +27,9 @@ data class StudyProtocolSnapshot(
     val tasks: List<TaskDescriptor>,
     val triggers: Map<Int, Trigger>,
     val taskControls: List<TaskControl>,
-    val expectedParticipantData: List<ParticipantAttribute>
+    val expectedParticipantData: List<ParticipantAttribute>,
+    @Serializable( ApplicationDataSerializer::class )
+    val applicationData: String
 ) : Snapshot<StudyProtocol>
 {
     @Serializable
@@ -61,7 +64,8 @@ data class StudyProtocolSnapshot(
                     .map { (trigger, control) ->
                         TaskControl( trigger.key, control.task.name, control.destinationDevice.roleName, control.control ) }
                     .toList(),
-                expectedParticipantData = protocol.expectedParticipantData.toList()
+                expectedParticipantData = protocol.expectedParticipantData.toList(),
+                applicationData = protocol.applicationData
             )
         }
 
@@ -90,6 +94,7 @@ data class StudyProtocolSnapshot(
         if ( id != other.id ) return false
         if ( description != other.description ) return false
         if ( creationDate != other.creationDate ) return false
+        if ( applicationData != other.applicationData ) return false
 
         val listsToCompare = listOf(
             masterDevices to other.masterDevices,
@@ -117,6 +122,7 @@ data class StudyProtocolSnapshot(
         var result = id.hashCode()
         result = 31 * result + description.hashCode()
         result = 31 * result + creationDate.hashCode()
+        result = 31 * result + applicationData.hashCode()
         result = 31 * result + masterDevices.sortedWith( compareBy { it.roleName } ).toTypedArray().contentDeepHashCode()
         result = 31 * result + connectedDevices.sortedWith( compareBy { it.roleName } ).toTypedArray().contentDeepHashCode()
         result = 31 * result + connections.sortedWith( compareBy( { it.roleName }, { it.connectedToRoleName } ) ).toTypedArray().contentDeepHashCode()

@@ -61,7 +61,7 @@ open class SamplingConfigurationMapBuilder
     ): SamplingConfiguration
     {
         val configuration = samplingScheme.samplingConfiguration( builder )
-        samplingConfigurations[ samplingScheme.type ] = configuration
+        samplingConfigurations[ samplingScheme.dataType.type ] = configuration
         return configuration
     }
 

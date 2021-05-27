@@ -403,6 +403,7 @@ class StudyDeploymentTest
     fun getDeviceDeploymentFor_succeeds()
     {
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
+        protocol.applicationData = "some data"
         val master = protocol.masterDevices.first { it.roleName == "Master" }
         val connected = protocol.devices.first { it.roleName == "Connected" }
         val masterTask = StubTaskDescriptor( "Master task" )
@@ -423,6 +424,7 @@ class StudyDeploymentTest
         assertEquals( "Registered master", deviceDeployment.configuration.deviceId )
         assertEquals( protocol.getConnectedDevices( master ).toSet(), deviceDeployment.connectedDevices )
         assertEquals( 1, deviceDeployment.connectedDeviceConfigurations.count() ) // One preregistered connected devices.
+        assertEquals( protocol.applicationData, deviceDeployment.applicationData )
 
         // Device deployment lists both tasks, even if one is destined for the connected device.
         assertEquals( protocol.tasks.count(), deviceDeployment.tasks.intersect( protocol.tasks ).count() )

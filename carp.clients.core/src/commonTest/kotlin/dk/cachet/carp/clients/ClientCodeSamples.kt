@@ -111,10 +111,11 @@ class ClientCodeSamples
         protocol.addConnectedDevice( connected, phone )
 
         val sensors = Smartphone.Sensors
-        val measures = Smartphone.Tasks.BACKGROUND.create( "Start measures" ) {
+        val trackMovement = Smartphone.Tasks.BACKGROUND.create( "Track movement" ) {
             measures = listOf( sensors.GEOLOCATION.measure(), sensors.STEP_COUNT.measure() )
         }
-        protocol.addTaskControl( phone.atStartOfStudy().start( measures, phone ) )
+        protocol.addTaskControl( phone.atStartOfStudy().start( trackMovement, phone ) )
+
 
         return protocol
     }

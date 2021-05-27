@@ -3,7 +3,7 @@
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.TimeSpan
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE_METADATA
 import dk.cachet.carp.common.infrastructure.test.StubSamplingConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubSamplingConfigurationBuilder
 import kotlin.test.*
@@ -16,7 +16,7 @@ class BatteryAwareSamplingSchemeTest
 {
     class TestBatteryAwareSamplingScheme :
         BatteryAwareSamplingScheme<StubSamplingConfiguration, StubSamplingConfigurationBuilder>(
-            STUB_DATA_TYPE,
+            STUB_DATA_TYPE_METADATA,
             { StubSamplingConfigurationBuilder( "Test" ) },
             StubSamplingConfiguration( "Test" )
         )

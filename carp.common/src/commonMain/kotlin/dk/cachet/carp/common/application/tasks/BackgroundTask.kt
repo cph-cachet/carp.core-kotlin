@@ -15,6 +15,7 @@ import kotlinx.serialization.Serializable
 data class BackgroundTask(
     override val name: String,
     override val measures: List<Measure>,
+    override val description: String? = null,
     /**
      * The optional duration over the course of which the [measures] need to be sampled.
      * Infinite by default.
@@ -34,5 +35,6 @@ class BackgroundTaskBuilder(
     var duration: TimeSpan = TimeSpan.INFINITE
 ) : TaskDescriptorBuilder<BackgroundTask>()
 {
-    override fun build( name: String ): BackgroundTask = BackgroundTask( name, measures, duration )
+    override fun build( name: String ): BackgroundTask =
+        BackgroundTask( name, measures, description, duration )
 }

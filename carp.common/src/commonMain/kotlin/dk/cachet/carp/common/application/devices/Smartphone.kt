@@ -57,7 +57,7 @@ data class Smartphone(
      */
     object Tasks : TaskDescriptorList()
 
-    override fun getSupportedDataTypes(): Set<DataType> = Sensors.map { it.type }.toSet()
+    override fun getSupportedDataTypes(): Set<DataType> = Sensors.getDataTypes()
 
     override fun createDeviceRegistrationBuilder(): SmartphoneDeviceRegistrationBuilder = SmartphoneDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<SmartphoneDeviceRegistration> = SmartphoneDeviceRegistration::class

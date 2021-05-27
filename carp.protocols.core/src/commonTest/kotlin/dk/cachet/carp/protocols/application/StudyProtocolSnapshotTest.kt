@@ -106,13 +106,13 @@ class StudyProtocolSnapshotTest
             "Description",
             creationDate,
             masterDevices, connectedDevices, connections,
-            tasks, triggers, triggeredTasks, expectedParticipantData )
+            tasks, triggers, triggeredTasks, expectedParticipantData, "" )
         val reorganizedSnapshot = StudyProtocolSnapshot(
             protocolId,
             "Description",
             creationDate,
             masterDevices.reversed(), connectedDevices.reversed(), connections.reversed(),
-            tasks.reversed(), triggers, triggeredTasks.reversed(), expectedParticipantData.reversed() )
+            tasks.reversed(), triggers, triggeredTasks.reversed(), expectedParticipantData.reversed(), "" )
 
         assertEquals( snapshot, reorganizedSnapshot )
         assertEquals( snapshot.hashCode(), reorganizedSnapshot.hashCode() )

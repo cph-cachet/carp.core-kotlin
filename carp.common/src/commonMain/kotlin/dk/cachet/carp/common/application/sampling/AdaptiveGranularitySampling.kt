@@ -2,7 +2,7 @@
 
 package dk.cachet.carp.common.application.sampling
 
-import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
 
 
@@ -11,7 +11,7 @@ import dk.cachet.carp.common.application.devices.DeviceDescriptor
  * The levels of granularity correspond to expected degrees of power consumption.
  * By default, [Granularity.Balanced] is used; when the battery is low, [Granularity.Coarse]; when battery is critically low, sampling stops.
  */
-class AdaptiveGranularitySamplingScheme( dataType: DataType ) :
+class AdaptiveGranularitySamplingScheme( dataType: DataTypeMetaData ) :
     BatteryAwareSamplingScheme<GranularitySamplingConfiguration, GranularitySamplingConfigurationBuilder>(
         dataType,
         { GranularitySamplingConfigurationBuilder( Granularity.Balanced ) },
