@@ -48,6 +48,7 @@ These extend from [BatteryAwareSampling](../carp.common/src/commonMain/kotlin/dk
 | --- | --- |
 | [BackgroundTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/BackgroundTask.kt) | Specifies that all containing measures and/or output should immediately start running in the background once triggered. |
 | [CustomProtocolTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/CustomProtocolTask.kt) | Contains a definition on how to run tasks, measures, and triggers which differs from the CARP domain model. |
+| [WebTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/WebTask.kt) | Redirects to a web page which contains the task which needs to be performed. |
 
 ### Triggers
 

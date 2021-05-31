@@ -82,6 +82,7 @@ private val commonInstances = listOf(
         "Custom study runtime",
         "{ \"\$type\": \"Study\", \"custom\": \"protocol\" }"
     ),
+    WebTask( "Survey", emptyList(), "Some survey", "http://survey.com" ),
 
     // `triggers` namespace.
     ElapsedTimeTrigger( Smartphone( "User's phone" ), TimeSpan( 0 ) ),
