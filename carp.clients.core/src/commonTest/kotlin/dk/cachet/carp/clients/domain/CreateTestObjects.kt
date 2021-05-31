@@ -6,7 +6,7 @@ import dk.cachet.carp.clients.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.clients.domain.data.StubDeviceDataCollector
 import dk.cachet.carp.clients.domain.data.StubDeviceDataCollectorFactory
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
@@ -92,11 +92,14 @@ fun createParticipantInvitation( protocol: StudyProtocol, identity: AccountIdent
  * Create a [DeviceDataCollectorFactory] which for all [DeviceDataCollector] instances
  * uses [StubDeviceDataCollector] with the specified [supportedDataTypes].
  */
-fun createDataCollectorFactory( vararg supportedDataTypes: DataType ): DeviceDataCollectorFactory =
-    supportedDataTypes.toSet().let { StubDeviceDataCollectorFactory( it, it ) }
+fun createDataCollectorFactory( vararg supportedDataTypes: DataTypeMetaData ): DeviceDataCollectorFactory =
+    supportedDataTypes
+        .map { it.type }
+        .toSet()
+        .let { StubDeviceDataCollectorFactory( it, it ) }
 
 /**
  * Create a data listener which supports the specified [supportedDataTypes].
  */
-fun createDataListener( vararg supportedDataTypes: DataType ): DataListener =
+fun createDataListener( vararg supportedDataTypes: DataTypeMetaData ): DataListener =
     DataListener( createDataCollectorFactory( *supportedDataTypes ) )

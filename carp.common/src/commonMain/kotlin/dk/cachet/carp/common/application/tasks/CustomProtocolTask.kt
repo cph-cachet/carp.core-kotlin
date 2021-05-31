@@ -16,6 +16,11 @@ data class CustomProtocolTask(
 ) : TaskDescriptor
 {
     /**
+     * Description is empty, since it is likely defined in [studyProtocol] in a different format.
+     */
+    override val description: String? = null
+
+    /**
      * This list is empty, since measures are defined in [studyProtocol] in a different format.
      */
     override val measures: List<Measure> = emptyList()

@@ -1,7 +1,7 @@
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.TimeSpan
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE_METADATA
 import kotlin.test.*
 
 
@@ -10,7 +10,7 @@ import kotlin.test.*
  */
 class DataTypeSamplingSchemeTest
 {
-    class TestSamplingScheme : DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>( STUB_DATA_TYPE )
+    class TestSamplingScheme : DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>( STUB_DATA_TYPE_METADATA )
     {
         val maxSeconds: Double = 42.0
 

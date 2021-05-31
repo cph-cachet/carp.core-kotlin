@@ -59,7 +59,7 @@ Two key **design goals** differentiate this project from similar projects:
 
 - [**Clients**](docs/carp-clients.md): The runtime which performs the actual data collection on a device (e.g., desktop computer or smartphone). This subsystem contains reusable components which understand the runtime configuration derived from a study protocol by the ‘deployment’ subsystem. Integrations with sensors are loaded through a 'device data collector' plug-in system to decouple sensing—not part of core—from sensing logic.
 
-   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.client/carp.clients.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.clients) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.clients/carp.clients.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/clients/)
+   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.clients/carp.clients.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.clients) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.clients/carp.clients.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/clients/)
 
 - **Resources**: Contains a simple file store for resources (such as images, videos, and text documents) which can be referenced from within study protocols to be used during a study.
 - **Data**: Contains all pseudonymized data. In combination with the original study protocol, the full provenance of the data (when/why it was collected) is known.
@@ -166,10 +166,11 @@ protocol.addMasterDevice( phone )
 
 // Define what needs to be measured, on which device, when.
 val sensors = Smartphone.Sensors
-val startMeasures = Smartphone.Tasks.BACKGROUND.create( "Start measures" ) {
+val trackMovement = Smartphone.Tasks.BACKGROUND.create( "Track movement" ) {
     measures = listOf( sensors.GEOLOCATION.measure(), sensors.STEP_COUNT.measure() )
+    description = "Track activity level and number of places visited per day."
 }
-protocol.addTaskControl( phone.atStartOfStudy().start( measures, phone ) )
+protocol.addTaskControl( phone.atStartOfStudy().start( trackMovement, phone ) )
 
 // JSON output of the study protocol, compatible with the rest of the CARP infrastructure.
 val json: String = protocol.getSnapshot().toJson()

@@ -15,7 +15,7 @@ class CarpDataTypesTest
     fun serializable_data_class_registered_for_each_data_type()
     {
         CarpDataTypes.forEach {
-            val serializer = COMMON_SERIAL_MODULE.getPolymorphic( Data::class, it.toString() )
+            val serializer = COMMON_SERIAL_MODULE.getPolymorphic( Data::class, it.type.toString() )
             assertNotNull( serializer )
         }
     }

@@ -39,7 +39,7 @@ describe( "carp.deployments.core", () => {
             new MasterDeviceDeployment(
                 exampleDevice,
                 new DefaultDeviceRegistration( "some role" ),
-                toSet( [] ), toMap( [] ), toSet( [] ), toMap( [] ), toSet( [] ) ),
+                toSet( [] ), toMap( [] ), toSet( [] ), toMap( [] ), toSet( [] ), "" ),
             MasterDeviceDeployment.Companion,
             new StudyDeploymentStatus.Invited( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
             new StudyDeploymentStatus.DeployingDevices( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),

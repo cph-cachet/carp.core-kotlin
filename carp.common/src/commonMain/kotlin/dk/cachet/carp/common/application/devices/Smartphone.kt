@@ -56,8 +56,15 @@ data class Smartphone(
      * ALl tasks commonly available on smartphones.
      */
     object Tasks : TaskDescriptorList()
+    {
+        /**
+         * Redirect to a web page which contains the task which needs to be performed.
+         * The passive measures are started when the website is opened and stopped when it is closed.
+         */
+        val WEB = add { WebTaskBuilder() }
+    }
 
-    override fun getSupportedDataTypes(): Set<DataType> = Sensors.map { it.type }.toSet()
+    override fun getSupportedDataTypes(): Set<DataType> = Sensors.getDataTypes()
 
     override fun createDeviceRegistrationBuilder(): SmartphoneDeviceRegistrationBuilder = SmartphoneDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<SmartphoneDeviceRegistration> = SmartphoneDeviceRegistration::class

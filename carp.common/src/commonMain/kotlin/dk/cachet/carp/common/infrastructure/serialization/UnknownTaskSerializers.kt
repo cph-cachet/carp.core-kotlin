@@ -15,10 +15,15 @@ data class CustomTaskDescriptor( override val className: String, override val js
     TaskDescriptor, UnknownPolymorphicWrapper
 {
     @Serializable
-    private data class BaseMembers( override val name: String, override val measures: List<Measure> ) : TaskDescriptor
+    private data class BaseMembers(
+        override val name: String,
+        override val measures: List<Measure>,
+        override val description: String?
+    ) : TaskDescriptor
 
     override val name: String
     override val measures: List<Measure>
+    override val description: String? = null
 
     init
     {

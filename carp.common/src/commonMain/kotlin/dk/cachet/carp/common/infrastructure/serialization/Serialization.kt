@@ -108,6 +108,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     {
         subclass( BackgroundTask::class )
         subclass( CustomProtocolTask::class )
+        subclass( WebTask::class )
 
         subclass( CustomTaskDescriptor::class )
         default { TaskDescriptorSerializer }
