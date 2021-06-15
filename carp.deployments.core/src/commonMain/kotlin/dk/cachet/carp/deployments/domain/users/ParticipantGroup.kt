@@ -184,15 +184,17 @@ class ParticipantGroup private constructor(
      * @throws IllegalArgumentException when:
      *   - [inputDataType] is not configured as expected participant data
      *   - [data] is invalid data for [inputDataType]
+     * @return True when data changed; false when data was already set.
      */
-    fun setData( registeredInputDataTypes: InputDataTypeList, inputDataType: InputDataType, data: Data? )
+    fun setData( registeredInputDataTypes: InputDataTypeList, inputDataType: InputDataType, data: Data? ): Boolean
     {
         require( expectedData.isValidParticipantData( registeredInputDataTypes, inputDataType, data ) )
             { "The input data type is not expected or invalid data is passed." }
 
         val prevData = _data.put( inputDataType, data )
 
-        if ( prevData != data ) event( Event.DataSet( inputDataType, data ) )
+        return ( prevData != data )
+            .eventIf( true ) { Event.DataSet( inputDataType, data ) }
     }
 
     /**
