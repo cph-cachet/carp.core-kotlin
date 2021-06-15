@@ -2,6 +2,8 @@ package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.StudyInvitation
@@ -29,6 +31,7 @@ class RecruitmentTest
         val invitation = StudyInvitation( "Test", "A study" )
         recruitment.lockInStudy( protocol.getSnapshot(), invitation )
         recruitment.addParticipation( participant, studyDeploymentId )
+        recruitment.setParticipantGroupData( studyDeploymentId, CarpInputDataTypes.SEX, Sex.Male )
 
         val snapshot = recruitment.getSnapshot()
         val fromSnapshot = Recruitment.fromSnapshot( snapshot )
@@ -37,6 +40,7 @@ class RecruitmentTest
         assertEquals( recruitment.getStatus(), fromSnapshot.getStatus() )
         assertEquals( recruitment.participants, fromSnapshot.participants )
         assertEquals( recruitment.participations, fromSnapshot.participations )
+        assertEquals( recruitment.participantGroupData, fromSnapshot.participantGroupData )
     }
 
     @Test
@@ -132,7 +136,7 @@ class RecruitmentTest
         recruitment.addParticipation( participant, studyDeploymentId )
 
         val stubDeploymentStatus = StudyDeploymentStatus.DeployingDevices( studyDeploymentId, emptyList(), null )
-        val groupStatus = recruitment.getParticipantGroupStatus( stubDeploymentStatus, emptyMap() )
+        val groupStatus = recruitment.getParticipantGroupStatus( stubDeploymentStatus )
 
         assertEquals( studyDeploymentId, groupStatus.id )
         assertEquals( setOf( participant ), groupStatus.participants )
@@ -142,11 +146,12 @@ class RecruitmentTest
     fun getParticipantGroupStatus_fails_for_unknown_studyDeploymentId()
     {
         val recruitment = Recruitment( studyId )
+        recruitment.lockInStudy( createEmptyProtocol().getSnapshot(), StudyInvitation.empty() )
 
         val unknownId = UUID.randomUUID()
         val stubDeploymentStatus = StudyDeploymentStatus.DeployingDevices( unknownId, emptyList(), null )
         assertFailsWith<IllegalArgumentException> {
-            recruitment.getParticipantGroupStatus( stubDeploymentStatus, emptyMap() )
+            recruitment.getParticipantGroupStatus( stubDeploymentStatus )
         }
     }
 }

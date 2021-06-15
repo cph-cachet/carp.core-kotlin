@@ -2,6 +2,8 @@ package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.Data
+import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
@@ -19,7 +21,11 @@ data class RecruitmentSnapshot(
     /**
      * Per study deployment ID, the IDs of the participants participating in it.
      */
-    val participations: Map<UUID, Set<UUID>>
+    val participations: Map<UUID, Set<UUID>>,
+    /**
+     * Per study deployment ID, input data related to the participant group.
+     */
+    val participantGroupData: Map<UUID, Map<InputDataType, Data?>>
 ) : Snapshot<Recruitment>
 {
     companion object
@@ -47,7 +53,9 @@ data class RecruitmentSnapshot(
                 studyProtocol,
                 invitation,
                 recruitment.participants,
-                participations )
+                participations,
+                recruitment.participantGroupData.toMap()
+            )
         }
     }
 

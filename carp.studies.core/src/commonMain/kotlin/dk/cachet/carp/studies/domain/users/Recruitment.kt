@@ -21,13 +21,17 @@ import dk.cachet.carp.studies.application.users.participantIds
 /**
  * Represents a set of [participants] recruited for a study identified by [studyId].
  */
-class Recruitment( val studyId: UUID ) :
-    AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>()
+class Recruitment( val studyId: UUID ) : AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>()
 {
     sealed class Event : DomainEvent()
     {
         data class ParticipantAdded( val participant: Participant ) : Event()
         data class ParticipationAdded( val participant: Participant, val studyDeploymentId: UUID ) : Event()
+        data class ParticipantGroupDataSet(
+            val studyDeploymentId: UUID,
+            val inputDataType: InputDataType,
+            val data: Data?
+        ) : Event()
     }
 
 
@@ -48,6 +52,12 @@ class Recruitment( val studyId: UUID ) :
                     .map { id -> recruitment.participants.first { it.id == id } }
                     .toMutableSet()
             }
+            for ( (deploymentId, setData) in snapshot.participantGroupData )
+            {
+                setData.forEach { recruitment.setParticipantGroupData( deploymentId, it.key, it.value ) }
+            }
+
+            recruitment.consumeEvents()
 
             return recruitment
         }
@@ -174,19 +184,50 @@ class Recruitment( val studyId: UUID ) :
     }
 
     /**
+     * Per study deployment ID, input data related to the participant group.
+     */
+    val participantGroupData: Map<UUID, Map<InputDataType, Data?>>
+        get() = _partipantGroupData
+
+    private val _partipantGroupData: MutableMap<UUID, MutableMap<InputDataType, Data?>> = mutableMapOf()
+
+    /**
+     * Set input data related to the participant group with the specified [studyDeploymentId].
+     *
+     * TODO: Should input data validation be replicated here? Right now, this is only ever set if it validates prior.
+     */
+    fun setParticipantGroupData( studyDeploymentId: UUID, inputDataType: InputDataType, data: Data? )
+    {
+        val status = getStatus()
+        check( status is RecruitmentStatus.ReadyForDeployment ) { "The study can't have been deployed yet." }
+        require( studyDeploymentId in participations )
+            { "No participant group exists with studyDeploymentId \"$studyDeploymentId\"." }
+
+        val groupData = _partipantGroupData.getOrPut( studyDeploymentId ) { mutableMapOf() }
+        val previousData = groupData.put( inputDataType, data )
+        if ( previousData == data ) event( Event.ParticipantGroupDataSet( studyDeploymentId, inputDataType, data ) )
+    }
+
+    /**
      * Get the [ParticipantGroupStatus] of the study deployment identified by [studyDeploymentStatus].
      *
      * @throws IllegalArgumentException when the study deployment identified by [studyDeploymentStatus] is not part of this recruitment.
      */
-    fun getParticipantGroupStatus(
-        studyDeploymentStatus: StudyDeploymentStatus,
-        participantData: Map<InputDataType, Data?>
-    ): ParticipantGroupStatus
+    fun getParticipantGroupStatus( studyDeploymentStatus: StudyDeploymentStatus ): ParticipantGroupStatus
     {
+        val status = getStatus()
+        check( status is RecruitmentStatus.ReadyForDeployment ) { "The study can't have been deployed yet." }
+
         val deploymentId = studyDeploymentStatus.studyDeploymentId
         val participants: Set<Participant> = _participations.getOrElse( deploymentId ) { emptySet() }
         require( participations.isNotEmpty() )
             { "A study deployment with ID \"$deploymentId\" is not part of this recruitment." }
+
+        // Assemble participant group data. Unset participant data is null by default.
+        val setParticipantData: Map<InputDataType, Data?> = _partipantGroupData[ deploymentId ] ?: emptyMap()
+        val participantData = status.studyProtocol.expectedParticipantData.associate {
+            it.inputType to setParticipantData[ it.inputType ]
+        }
 
         return ParticipantGroupStatus( studyDeploymentStatus, participants, participantData )
     }

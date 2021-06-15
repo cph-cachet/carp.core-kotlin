@@ -15,8 +15,6 @@ import dk.cachet.carp.studies.domain.users.ParticipantRepository
 import dk.cachet.carp.studies.domain.users.Recruitment
 
 
-// TODO: Participant data is currently retrieved through `participationService` for individual service call.
-//  Instead, we need to subscribe to events from this service and copy the data locally.
 class RecruitmentServiceHost(
     private val participantRepository: ParticipantRepository,
     private val deploymentService: DeploymentService,
@@ -39,6 +37,16 @@ class RecruitmentServiceHost(
                 checkNotNull( recruitment )
                 checkNotNull( goneLive.study.protocolSnapshot )
                 recruitment.lockInStudy( goneLive.study.protocolSnapshot, goneLive.study.invitation )
+                participantRepository.updateRecruitment( recruitment )
+            }
+
+            // Store input data set by participants in recruitments.
+            event { setData: ParticipationService.Event.ParticipantDataSet ->
+                val studyDeploymentId = setData.studyDeploymentId
+                val recruitment = participantRepository.getRecruitmentWithStudyDeploymentId( studyDeploymentId )
+                checkNotNull( recruitment )
+
+                recruitment.setParticipantGroupData( studyDeploymentId, setData.inputDataType, setData.data )
                 participantRepository.updateRecruitment( recruitment )
             }
 
@@ -124,8 +132,7 @@ class RecruitmentServiceHost(
             ?.let { deploymentService.getStudyDeploymentStatus( it.key ) }
         if ( deployedStatus != null && deployedStatus !is StudyDeploymentStatus.Stopped )
         {
-            val participantData = participationService.getParticipantData( deployedStatus.studyDeploymentId )
-            return recruitment.getParticipantGroupStatus( deployedStatus, participantData.data )
+            return recruitment.getParticipantGroupStatus( deployedStatus )
         }
 
         // Create deployment for the participant group and send invitations.
@@ -142,8 +149,7 @@ class RecruitmentServiceHost(
         }
         participantRepository.updateRecruitment( recruitment )
 
-        val participantData = participationService.getParticipantData( studyDeploymentId )
-        return recruitment.getParticipantGroupStatus( deploymentStatus, participantData.data )
+        return recruitment.getParticipantGroupStatus( deploymentStatus )
     }
 
     /**
@@ -161,12 +167,7 @@ class RecruitmentServiceHost(
             if ( studyDeploymentIds.isEmpty() ) emptyList()
             else deploymentService.getStudyDeploymentStatusList( studyDeploymentIds )
 
-        // Map each study deployment status to a deanonymized participant group status.
-        val participantDataList = participationService.getParticipantDataList( studyDeploymentIds )
-        return studyDeploymentStatuses.map { deployment ->
-            val participantData = participantDataList.first { it.studyDeploymentId == deployment.studyDeploymentId }
-            recruitment.getParticipantGroupStatus( deployment, participantData.data )
-        }
+        return studyDeploymentStatuses.map { recruitment.getParticipantGroupStatus( it ) }
     }
 
     /**
@@ -181,8 +182,7 @@ class RecruitmentServiceHost(
         val recruitment = getRecruitmentWithGroupOrThrow( studyId, groupId )
 
         val deploymentStatus = deploymentService.stop( groupId )
-        val participantData = participationService.getParticipantData( deploymentStatus.studyDeploymentId )
-        return recruitment.getParticipantGroupStatus( deploymentStatus, participantData.data )
+        return recruitment.getParticipantGroupStatus( deploymentStatus )
     }
 
     /**
@@ -203,9 +203,14 @@ class RecruitmentServiceHost(
     {
         val recruitment = getRecruitmentWithGroupOrThrow( studyId, groupId )
 
+        // Set data in participation service which also validates the constraints.
+        participationService.setParticipantData( groupId, inputDataType, data )
+
+        recruitment.setParticipantGroupData( groupId, inputDataType, data )
+        participantRepository.updateRecruitment( recruitment )
+
         val deploymentStatus = deploymentService.getStudyDeploymentStatus( groupId )
-        val newData = participationService.setParticipantData( groupId, inputDataType, data )
-        return recruitment.getParticipantGroupStatus( deploymentStatus, newData.data )
+        return recruitment.getParticipantGroupStatus( deploymentStatus )
     }
 
     private suspend fun getRecruitmentWithGroupOrThrow( studyId: UUID, groupId: UUID ): Recruitment

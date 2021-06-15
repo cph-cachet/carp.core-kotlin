@@ -139,7 +139,7 @@ class HostsIntegrationTest
     }
 
     @Test
-    fun set_participant_data_in_deployment_is_sent_as_event() = runSuspendTest {
+    fun set_participant_data_in_deployment_is_also_set_in_recruitment() = runSuspendTest {
         val (studyId, deviceRole) = createLiveStudy()
         {
             addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
@@ -155,9 +155,13 @@ class HostsIntegrationTest
         eventBus.registerHandler( ParticipationService::class, ParticipationService.Event.ParticipantDataSet::class, this )
             { participantDataSet = it }
         eventBus.activateHandlers( this )
-        participationService.setParticipantData( deploymentId, CarpInputDataTypes.SEX, Sex.Male )
+        val dataToSet = CarpInputDataTypes.SEX to Sex.Male
+        participationService.setParticipantData( deploymentId, dataToSet.first, dataToSet.second )
 
         assertEquals( deploymentId, participantDataSet?.studyDeploymentId )
+        val groupStatus = recruitmentService.getParticipantGroupStatusList( studyId ).singleOrNull()
+        assertNotNull( groupStatus )
+        assertEquals( mapOf( dataToSet ), groupStatus.data )
     }
 
 
