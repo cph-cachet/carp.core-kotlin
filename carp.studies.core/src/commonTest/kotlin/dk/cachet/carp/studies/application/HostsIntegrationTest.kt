@@ -2,8 +2,11 @@ package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
+import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHost
@@ -13,6 +16,7 @@ import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
 import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
+import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.StudyOwner
@@ -134,16 +138,40 @@ class HostsIntegrationTest
         assertNull( removedEvent )
     }
 
+    @Test
+    fun set_participant_data_in_deployment_is_sent_as_event() = runSuspendTest {
+        val (studyId, deviceRole) = createLiveStudy()
+        {
+            addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
+        }
+
+        // Add participant and deploy participant group.
+        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val assignDevices = AssignParticipantDevices( participant.id, setOf( deviceRole ) )
+        val group = recruitmentService.deployParticipantGroup( studyId, setOf( assignDevices ) )
+        val deploymentId = group.studyDeploymentStatus.studyDeploymentId
+
+        var participantDataSet: ParticipationService.Event.ParticipantDataSet? = null
+        eventBus.registerHandler( ParticipationService::class, ParticipationService.Event.ParticipantDataSet::class, this )
+            { participantDataSet = it }
+        eventBus.activateHandlers( this )
+        participationService.setParticipantData( deploymentId, CarpInputDataTypes.SEX, Sex.Male )
+
+        assertEquals( deploymentId, participantDataSet?.studyDeploymentId )
+    }
+
 
     /**
-     * Create a live study with a protocol containing one device.
+     * Create a live study with a starting protocol containing one device
+     * which can be modified using [modifyProtocol].
      */
-    private suspend fun createLiveStudy(): Pair<UUID, String>
+    private suspend fun createLiveStudy( modifyProtocol: StudyProtocol.() -> Unit = {} ): Pair<UUID, String>
     {
         val study = studyService.createStudy( StudyOwner(), "Test" )
         val studyId = study.studyId
         val deviceRole = "Phone"
         val protocol = createSingleMasterDeviceProtocol( deviceRole )
+        modifyProtocol( protocol )
         studyService.setProtocol( studyId, protocol.getSnapshot() )
         studyService.goLive( studyId )
 

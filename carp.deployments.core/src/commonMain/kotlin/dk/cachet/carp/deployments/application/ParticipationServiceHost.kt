@@ -112,8 +112,12 @@ class ParticipationServiceHost(
     override suspend fun setParticipantData( studyDeploymentId: UUID, inputDataType: InputDataType, data: Data? ): ParticipantData
     {
         val group = participationRepository.getParticipantGroupOrThrowBy( studyDeploymentId )
-        group.setData( participantDataInputTypes, inputDataType, data )
-        participationRepository.putParticipantGroup( group )
+        val isSet = group.setData( participantDataInputTypes, inputDataType, data )
+        if ( isSet )
+        {
+            participationRepository.putParticipantGroup( group )
+            eventBus.publish( ParticipationService.Event.ParticipantDataSet( studyDeploymentId, inputDataType, data ) )
+        }
 
         return ParticipantData( group.studyDeploymentId, group.data.toMap() )
     }

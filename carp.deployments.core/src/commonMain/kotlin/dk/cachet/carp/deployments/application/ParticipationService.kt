@@ -18,6 +18,14 @@ interface ParticipationService : ApplicationService<ParticipationService, Partic
 {
     @Serializable
     sealed class Event : IntegrationEvent<ParticipationService>()
+    {
+        @Serializable
+        data class ParticipantDataSet(
+            val studyDeploymentId: UUID,
+            val inputDataType: InputDataType,
+            val data: Data?
+        ) : Event()
+    }
 
 
     /**
