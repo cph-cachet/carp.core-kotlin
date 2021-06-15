@@ -29,6 +29,15 @@ class InMemoryParticipantRepository : ParticipantRepository
         recruitments[ studyId ]?.let { Recruitment.fromSnapshot( it ) }
 
     /**
+     * Returns the [Recruitment] which contains a participation with the specified [studyDeploymentId],
+     * or null when no such recruitment is found.
+     */
+    override suspend fun getRecruitmentWithStudyDeploymentId( studyDeploymentId: UUID ): Recruitment? =
+        recruitments.values
+            .singleOrNull { studyDeploymentId in it.participations }
+            ?.let { Recruitment.fromSnapshot( it ) }
+
+    /**
      * Update a [Recruitment] which is already stored in this repository.
      *
      * @throws IllegalArgumentException when no previous version of this recruitment is stored in the repository.

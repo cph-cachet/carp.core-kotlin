@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.UUID
 
 
 /**
- * Store [Participant] instances, linked to study IDs.
+ * Store participant recruitment and deloyment data, linked to study IDs.
  */
 interface ParticipantRepository
 {
@@ -19,6 +19,12 @@ interface ParticipantRepository
      * Returns the [Recruitment] for the specified [studyId], or null when no recruitment is found.
      */
     suspend fun getRecruitment( studyId: UUID ): Recruitment?
+
+    /**
+     * Returns the [Recruitment] which contains a participation with the specified [studyDeploymentId],
+     * or null when no such recruitment is found.
+     */
+    suspend fun getRecruitmentWithStudyDeploymentId( studyDeploymentId: UUID ): Recruitment?
 
     /**
      * Update a [Recruitment] which is already stored in this repository.

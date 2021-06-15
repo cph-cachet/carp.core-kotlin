@@ -1,6 +1,9 @@
 package dk.cachet.carp.studies.domain.users
 
+import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.deployments.application.users.StudyInvitation
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -40,6 +43,32 @@ interface ParticipantRepositoryTest
 
         val unknownId = UUID.randomUUID()
         assertNull( repo.getRecruitment( unknownId ) )
+    }
+
+    @Test
+    fun getRecruitmentWithStudyDeploymentId_succeeds() = runSuspendTest {
+        val repo = createRepository()
+        val studyId = UUID.randomUUID()
+        val studyDeploymentId = UUID.randomUUID()
+        val recruitment = Recruitment( studyId ).apply {
+            lockInStudy( createEmptyProtocol().getSnapshot(), StudyInvitation.empty() )
+            val participant = addParticipant( EmailAddress( "test@test.com" ) )
+            addParticipation( participant, studyDeploymentId )
+        }
+        repo.addRecruitment( recruitment )
+
+        val retrieved = repo.getRecruitmentWithStudyDeploymentId( studyDeploymentId )
+        assertNotNull( retrieved )
+        assertEquals( retrieved.getSnapshot(), recruitment.getSnapshot() )
+    }
+
+    @Test
+    fun getRecruitmnetWithStudyDeploymentId_returns_null_when_not_found() = runSuspendTest {
+        val repo = createRepository()
+
+        val unknownId = UUID.randomUUID()
+        val retrieved = repo.getRecruitmentWithStudyDeploymentId( unknownId )
+        assertNull( retrieved )
     }
 
     @Test
