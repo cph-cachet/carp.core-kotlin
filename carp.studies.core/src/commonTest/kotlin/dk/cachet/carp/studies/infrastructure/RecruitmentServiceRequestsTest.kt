@@ -2,8 +2,6 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.data.input.CustomInput
-import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.studies.application.RecruitmentService
 import dk.cachet.carp.studies.application.RecruitmentServiceMock
@@ -29,8 +27,7 @@ class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<Recruitmen
             RecruitmentServiceRequest.GetParticipants( studyId ),
             RecruitmentServiceRequest.DeployParticipantGroup( studyId, setOf() ),
             RecruitmentServiceRequest.GetParticipantGroupStatusList( studyId ),
-            RecruitmentServiceRequest.StopParticipantGroup( studyId, UUID.randomUUID() ),
-            RecruitmentServiceRequest.SetParticipantGroupData( studyId, UUID.randomUUID(), InputDataType( "some", "type" ), CustomInput( "Test" ) )
+            RecruitmentServiceRequest.StopParticipantGroup( studyId, UUID.randomUUID() )
         )
     }
 }

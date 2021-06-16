@@ -32,6 +32,7 @@ Allows setting recruitment goals, adding participants to studies, and creating d
 | Endpoint | Description | Require | Grant |
 | --- | --- | --- | --- |
 | `addParticipant` | Add a participant identified by a specified email address to a study. | manage study: `studyId` | |
+| `getParticipant` | Returns the participant with a specified ID for a study. | manage study: `studyId` | |
 | `getParticipants` | Get all participants for a study. | manage study: `studyId` | |
 | `deployParticipantGroup` | Deploy a study to a group of previously added participants. | manage study: `studyId` | |
 | `getParticipantGroupStatusList` | Get the status of all deployed participant groups in a study. | manage study: `studyId` | |

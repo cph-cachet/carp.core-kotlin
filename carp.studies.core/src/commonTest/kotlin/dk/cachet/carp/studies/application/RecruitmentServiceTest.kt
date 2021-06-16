@@ -3,8 +3,6 @@ package dk.cachet.carp.studies.application
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
-import dk.cachet.carp.common.application.data.input.InputDataType
-import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
@@ -12,7 +10,6 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
-import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
@@ -99,7 +96,6 @@ interface RecruitmentServiceTest
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
         val groupStatus = recruitmentService.deployParticipantGroup( studyId, setOf( assignParticipant ) )
         assertEquals( participant, groupStatus.participants.single() )
-        assertNull( groupStatus.data[ CarpInputDataTypes.SEX ] ) // By default, the configured expected data is not set.
         val participantGroups = recruitmentService.getParticipantGroupStatusList( studyId )
         val participantInGroup = participantGroups.single().participants.single()
         assertEquals( participant, participantInGroup )
@@ -250,45 +246,6 @@ interface RecruitmentServiceTest
         assertFailsWith<IllegalArgumentException> { recruitmentService.stopParticipantGroup( studyId, unknownId ) }
     }
 
-    @Test
-    fun setParticipantGroupData_succeeds() = runSuspendTest {
-        val (recruitmentService, studyService) = createService()
-        val (studyId, snapshot) = createLiveStudy( studyService )
-        val group = createLiveGroup( recruitmentService, studyId, snapshot )
-
-        val expectedData = CarpInputDataTypes.SEX
-        val groupAfterSet = recruitmentService.setParticipantGroupData( studyId, group.id, expectedData, Sex.Male )
-        assertEquals( 1, groupAfterSet.data.size )
-        assertEquals( Sex.Male, groupAfterSet.data[ expectedData ] )
-
-        val retrievedGroups = recruitmentService.getParticipantGroupStatusList( studyId )
-        val retrievedGroup = retrievedGroups.firstOrNull { it.id == group.id }
-        assertNotNull( retrievedGroup )
-        assertEquals( groupAfterSet.data, retrievedGroup.data )
-    }
-
-    @Test
-    fun setParticipantGroupData_fails_with_unknown_id() = runSuspendTest {
-        val (recruitmentService, _) = createService()
-
-        assertFailsWith<IllegalArgumentException>
-        {
-            recruitmentService.setParticipantGroupData( unknownId, unknownId, CarpInputDataTypes.SEX, Sex.Male )
-        }
-    }
-
-    @Test
-    fun setParticipantGroupData_fails_for_unexpected_data() = runSuspendTest {
-        val (recruitmentService, studyService) = createService()
-        val (studyId, snapshot) = createLiveStudy( studyService )
-        val group = createLiveGroup( recruitmentService, studyId, snapshot )
-
-        val unexpectedData = InputDataType( "namespace", "type" )
-        assertFailsWith<IllegalArgumentException> {
-            recruitmentService.setParticipantGroupData( studyId, group.id, unexpectedData, null )
-        }
-    }
-
 
     private suspend fun createLiveStudy( service: StudyService ): Pair<UUID, StudyProtocolSnapshot>
     {
@@ -305,18 +262,5 @@ interface RecruitmentServiceTest
         service.goLive( studyId )
 
         return Pair( studyId, validSnapshot )
-    }
-
-    private suspend fun createLiveGroup(
-        recruitmentService: RecruitmentService,
-        studyId: UUID,
-        protocolSnapshot: StudyProtocolSnapshot
-    ): ParticipantGroupStatus
-    {
-        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
-        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
-        val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
-
-        return recruitmentService.deployParticipantGroup( studyId, setOf( assignParticipant ) )
     }
 }

@@ -2,8 +2,6 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.data.Data
-import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.createServiceInvoker
 import dk.cachet.carp.studies.application.RecruitmentService
@@ -54,13 +52,4 @@ sealed class RecruitmentServiceRequest
     data class StopParticipantGroup( val studyId: UUID, val groupId: UUID ) :
         RecruitmentServiceRequest(),
         RecruitmentServiceInvoker<ParticipantGroupStatus> by createServiceInvoker( RecruitmentService::stopParticipantGroup, studyId, groupId )
-
-    @Serializable
-    data class SetParticipantGroupData(
-        val studyId: UUID,
-        val groupId: UUID,
-        val inputDataType: InputDataType,
-        val data: Data?
-    ) : RecruitmentServiceRequest(),
-        RecruitmentServiceInvoker<ParticipantGroupStatus> by createServiceInvoker( RecruitmentService::setParticipantGroupData, studyId, groupId, inputDataType, data )
 }

@@ -123,13 +123,12 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
         class ParticipantGroupStatus
         {
-            constructor( studyDeploymentStatus: StudyDeploymentStatus, participants: HashSet<Participant>, data: HashMap<NamespacedId, any> )
+            constructor( studyDeploymentStatus: StudyDeploymentStatus, participants: HashSet<Participant> )
 
             static get Companion(): ParticipantGroupStatus$Companion
 
             readonly studyDeploymentStatus: StudyDeploymentStatus
             readonly participants: HashSet<Participant>
-            readonly data: any
         }
         interface ParticipantGroupStatus$Companion { serializer(): any }
 
@@ -230,10 +229,6 @@ declare module 'carp.core-kotlin-carp.studies.core'
             class StopParticipantGroup extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID, groupId: UUID )
-            }
-            class SetParticipantGroupData extends RecruitmentServiceRequest
-            {
-                constructor( studyId: UUID, groupId: UUID, inputDataType: NamespacedId, data?: any )
             }
         }
     }

@@ -59,7 +59,6 @@ class HostsIntegrationTest
         recruitmentService = RecruitmentServiceHost(
             InMemoryParticipantRepository(),
             deploymentService,
-            participationService,
             eventBus.createApplicationServiceAdapter( RecruitmentService::class ) )
     }
 
