@@ -2,8 +2,6 @@ package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.data.Data
-import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
@@ -178,17 +176,14 @@ class Recruitment( val studyId: UUID ) :
      *
      * @throws IllegalArgumentException when the study deployment identified by [studyDeploymentStatus] is not part of this recruitment.
      */
-    fun getParticipantGroupStatus(
-        studyDeploymentStatus: StudyDeploymentStatus,
-        participantData: Map<InputDataType, Data?>
-    ): ParticipantGroupStatus
+    fun getParticipantGroupStatus( studyDeploymentStatus: StudyDeploymentStatus ): ParticipantGroupStatus
     {
         val deploymentId = studyDeploymentStatus.studyDeploymentId
         val participants: Set<Participant> = _participations.getOrElse( deploymentId ) { emptySet() }
         require( participations.isNotEmpty() )
             { "A study deployment with ID \"$deploymentId\" is not part of this recruitment." }
 
-        return ParticipantGroupStatus( studyDeploymentStatus, participants, participantData )
+        return ParticipantGroupStatus( studyDeploymentStatus, participants )
     }
 
     /**
