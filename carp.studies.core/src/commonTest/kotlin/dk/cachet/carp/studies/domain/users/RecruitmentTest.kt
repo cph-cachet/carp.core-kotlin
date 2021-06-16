@@ -3,6 +3,7 @@ package dk.cachet.carp.studies.domain.users
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
+import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
@@ -105,7 +106,7 @@ class RecruitmentTest
 
         recruitment.addParticipation( participant, studyDeploymentId )
         assertEquals( Recruitment.Event.ParticipationAdded( participant, studyDeploymentId ), recruitment.consumeEvents().last() )
-        assertEquals( participant, recruitment.getParticipations( studyDeploymentId ).single() )
+        assertEquals( participant, recruitment.participations[ studyDeploymentId ]?.singleOrNull() )
     }
 
     @Test
@@ -122,11 +123,30 @@ class RecruitmentTest
     }
 
     @Test
-    fun getParticipations_fails_for_unknown_studyDeploymentId()
+    fun getParticipantGroupStatus_succeeds()
+    {
+        val recruitment = Recruitment( studyId )
+        val participant = recruitment.addParticipant( participantEmail )
+        val protocol = createEmptyProtocol()
+        recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation.empty() )
+        recruitment.addParticipation( participant, studyDeploymentId )
+
+        val stubDeploymentStatus = StudyDeploymentStatus.DeployingDevices( studyDeploymentId, emptyList(), null )
+        val groupStatus = recruitment.getParticipantGroupStatus( stubDeploymentStatus )
+
+        assertEquals( studyDeploymentId, groupStatus.id )
+        assertEquals( setOf( participant ), groupStatus.participants )
+    }
+
+    @Test
+    fun getParticipantGroupStatus_fails_for_unknown_studyDeploymentId()
     {
         val recruitment = Recruitment( studyId )
 
         val unknownId = UUID.randomUUID()
-        assertFailsWith<IllegalArgumentException> { recruitment.getParticipations( unknownId ) }
+        val stubDeploymentStatus = StudyDeploymentStatus.DeployingDevices( unknownId, emptyList(), null )
+        assertFailsWith<IllegalArgumentException> {
+            recruitment.getParticipantGroupStatus( stubDeploymentStatus )
+        }
     }
 }

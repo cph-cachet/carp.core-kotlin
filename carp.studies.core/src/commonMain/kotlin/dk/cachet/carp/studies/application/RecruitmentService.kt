@@ -4,8 +4,6 @@ import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.data.Data
-import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
@@ -72,15 +70,4 @@ interface RecruitmentService : ApplicationService<RecruitmentService, Recruitmen
      * @throws IllegalArgumentException when a study with [studyId] or participant group with [groupId] does not exist.
      */
     suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ): ParticipantGroupStatus
-
-    /**
-     * Set participant [data] for the given [inputDataType],
-     * related to participants of the participant group with [groupId] in the study with the specified [studyId].
-     *
-     * @throws IllegalArgumentException when:
-     *   - a study with [studyId] or participant group with [groupId] does not exist.
-     *   - [inputDataType] is not configured as expected participant data in the study protocol
-     *   - [data] is invalid data for [inputDataType]
-     */
-    suspend fun setParticipantGroupData( studyId: UUID, groupId: UUID, inputDataType: InputDataType, data: Data? ): ParticipantGroupStatus
 }

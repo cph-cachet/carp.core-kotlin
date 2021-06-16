@@ -2,11 +2,8 @@ package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.data.Data
-import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.deployments.application.DeploymentService
-import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
@@ -15,12 +12,9 @@ import dk.cachet.carp.studies.domain.users.ParticipantRepository
 import dk.cachet.carp.studies.domain.users.Recruitment
 
 
-// TODO: Participant data is currently retrieved through `participationService` for individual service call.
-//  Instead, we need to subscribe to events from this service and copy the data locally.
 class RecruitmentServiceHost(
     private val participantRepository: ParticipantRepository,
     private val deploymentService: DeploymentService,
-    private val participationService: ParticipationService,
     private val eventBus: ApplicationServiceEventBus<RecruitmentService, RecruitmentService.Event>
 ) : RecruitmentService
 {
@@ -124,9 +118,7 @@ class RecruitmentServiceHost(
             ?.let { deploymentService.getStudyDeploymentStatus( it.key ) }
         if ( deployedStatus != null && deployedStatus !is StudyDeploymentStatus.Stopped )
         {
-            val participants = recruitment.getParticipations( deployedStatus.studyDeploymentId )
-            val participantData = participationService.getParticipantData( deployedStatus.studyDeploymentId )
-            return ParticipantGroupStatus( deployedStatus, participants, participantData.data )
+            return recruitment.getParticipantGroupStatus( deployedStatus )
         }
 
         // Create deployment for the participant group and send invitations.
@@ -143,9 +135,7 @@ class RecruitmentServiceHost(
         }
         participantRepository.updateRecruitment( recruitment )
 
-        val participants = recruitment.getParticipations( studyDeploymentId )
-        val participantData = participationService.getParticipantData( studyDeploymentId )
-        return ParticipantGroupStatus( deploymentStatus, participants, participantData.data )
+        return recruitment.getParticipantGroupStatus( deploymentStatus )
     }
 
     /**
@@ -163,13 +153,7 @@ class RecruitmentServiceHost(
             if ( studyDeploymentIds.isEmpty() ) emptyList()
             else deploymentService.getStudyDeploymentStatusList( studyDeploymentIds )
 
-        // Map each study deployment status to a deanonymized participant group status.
-        val participantDataList = participationService.getParticipantDataList( studyDeploymentIds )
-        return studyDeploymentStatuses.map { deployment ->
-            val participants = recruitment.getParticipations( deployment.studyDeploymentId )
-            val participantData = participantDataList.first { it.studyDeploymentId == deployment.studyDeploymentId }
-            ParticipantGroupStatus( deployment, participants, participantData.data )
-        }
+        return studyDeploymentStatuses.map { recruitment.getParticipantGroupStatus( it ) }
     }
 
     /**
@@ -181,43 +165,19 @@ class RecruitmentServiceHost(
      */
     override suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ): ParticipantGroupStatus
     {
-        val participations = getParticipationsOrThrow( studyId, groupId )
+        val recruitment = getRecruitmentWithGroupOrThrow( studyId, groupId )
 
         val deploymentStatus = deploymentService.stop( groupId )
-        val participantData = participationService.getParticipantData( deploymentStatus.studyDeploymentId )
-        return ParticipantGroupStatus( deploymentStatus, participations, participantData.data )
+        return recruitment.getParticipantGroupStatus( deploymentStatus )
     }
 
-    /**
-     * Set participant [data] for the given [inputDataType],
-     * related to participants of the participant group with [groupId] in the study with the specified [studyId].
-     *
-     * @throws IllegalArgumentException when:
-     *   - a study with [studyId] or participant group with [groupId] does not exist.
-     *   - [inputDataType] is not configured as expected participant data in the study protocol
-     *   - [data] is invalid data for [inputDataType]
-     */
-    override suspend fun setParticipantGroupData(
-        studyId: UUID,
-        groupId: UUID,
-        inputDataType: InputDataType,
-        data: Data?
-    ): ParticipantGroupStatus
-    {
-        val participations = getParticipationsOrThrow( studyId, groupId )
-
-        val deploymentStatus = deploymentService.getStudyDeploymentStatus( groupId )
-        val newData = participationService.setParticipantData( groupId, inputDataType, data )
-        return ParticipantGroupStatus( deploymentStatus, participations, newData.data )
-    }
-
-    private suspend fun getParticipationsOrThrow( studyId: UUID, groupId: UUID ): Set<Participant>
+    private suspend fun getRecruitmentWithGroupOrThrow( studyId: UUID, groupId: UUID ): Recruitment
     {
         val recruitment: Recruitment = getRecruitmentOrThrow( studyId )
         val participations = recruitment.participations[ groupId ]
         requireNotNull( participations ) { "Study deployment with the specified groupId not found." }
 
-        return participations
+        return recruitment
     }
 
     private suspend fun getRecruitmentOrThrow( studyId: UUID ): Recruitment = participantRepository.getRecruitment( studyId )

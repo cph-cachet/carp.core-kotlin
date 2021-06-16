@@ -53,7 +53,7 @@ describe( "carp.studies.core", () => {
             AssignParticipantDevices.Companion,
             new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ),
             Participant.Companion,
-            new ParticipantGroupStatus( new StudyDeploymentStatus(), new HashSet<Participant>(), toMap( [] ) ),
+            new ParticipantGroupStatus( new StudyDeploymentStatus(), new HashSet<Participant>() ),
             ParticipantGroupStatus.Companion,
             new StudyOwner(),
             StudyOwner.Companion,
@@ -164,13 +164,7 @@ describe( "carp.studies.core", () => {
         it( "can serialize ParticipantGroupStatus", () => {
             const deploymentStatus = new StudyDeploymentStatus.DeploymentReady( UUID.Companion.randomUUID(), new ArrayList( [] ), DateTime.Companion.now() )
             const participants = toSet( [ new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ) ] )
-
-            // Initialize data through a participant attribute. TypeScript does not have to initialize data objects directly.
-            const attribute = new ParticipantAttribute.CustomParticipantAttribute( new Text( "Name" ) )
-            const inputData = attribute.inputToData_etkzhw$( CarpInputDataTypes, "Steven" )
-            const data = toMap( [ new Pair( new NamespacedId( "namespace", "type" ), inputData ) ] )
-
-            const group = new ParticipantGroupStatus( deploymentStatus, participants, data )
+            const group = new ParticipantGroupStatus( deploymentStatus, participants )
 
             const json: Json = createDefaultJSON()
             const serializer = ParticipantGroupStatus.Companion.serializer()

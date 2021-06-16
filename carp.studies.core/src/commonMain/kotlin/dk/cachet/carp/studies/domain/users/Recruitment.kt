@@ -5,12 +5,14 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
+import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.application.throwIfInvalid
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
+import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.application.users.participantIds
 
 
@@ -146,7 +148,6 @@ class Recruitment( val studyId: UUID ) :
 
     /**
      * Per study deployment ID, the set of participants that participate in it.
-     * TODO: Maybe this should be kept private and be replaced with clearer helper functions (e.g., getStudyDeploymentIds).
      */
     val participations: Map<UUID, Set<Participant>>
         get() = _participations
@@ -171,16 +172,18 @@ class Recruitment( val studyId: UUID ) :
     }
 
     /**
-     * Get all [Participant]s for a specific [studyDeploymentId].
+     * Get the [ParticipantGroupStatus] of the study deployment identified by [studyDeploymentStatus].
      *
-     * @throws IllegalArgumentException when the given [studyDeploymentId] is not part of this recruitment.
+     * @throws IllegalArgumentException when the study deployment identified by [studyDeploymentStatus] is not part of this recruitment.
      */
-    fun getParticipations( studyDeploymentId: UUID ): Set<Participant>
+    fun getParticipantGroupStatus( studyDeploymentStatus: StudyDeploymentStatus ): ParticipantGroupStatus
     {
-        val participations: Set<Participant> = _participations.getOrElse( studyDeploymentId ) { emptySet() }
-        require( participations.isNotEmpty() ) { "The specified study deployment ID is not part of this recruitment." }
+        val deploymentId = studyDeploymentStatus.studyDeploymentId
+        val participants: Set<Participant> = _participations.getOrElse( deploymentId ) { emptySet() }
+        require( participations.isNotEmpty() )
+            { "A study deployment with ID \"$deploymentId\" is not part of this recruitment." }
 
-        return participations
+        return ParticipantGroupStatus( studyDeploymentStatus, participants )
     }
 
     /**

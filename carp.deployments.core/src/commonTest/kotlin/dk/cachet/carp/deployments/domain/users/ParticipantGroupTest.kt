@@ -212,8 +212,31 @@ class ParticipantGroupTest
 
         val group = createParticipantGroup( protocol )
 
-        group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
+        val isSet = group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
+        assertTrue( isSet )
         assertEquals( Sex.Male, group.data[ CarpInputDataTypes.SEX ] )
+        assertEquals(
+            ParticipantGroup.Event.DataSet( CarpInputDataTypes.SEX, Sex.Male ),
+            group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DataSet>().singleOrNull()
+        )
+    }
+
+    @Test
+    fun setData_returns_false_when_data_already_set()
+    {
+        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
+
+        val group = createParticipantGroup( protocol )
+        group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
+        group.consumeEvents()
+
+        val isSet = group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
+        assertFalse( isSet )
+        assertEquals(
+            0,
+            group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DataSet>().count()
+        )
     }
 
     @Test
