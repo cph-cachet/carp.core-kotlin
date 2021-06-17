@@ -10,6 +10,13 @@ import kotlin.test.*
  */
 class CarpDataTypesTest
 {
+    @Test
+    fun data_types_gets_added_to_underlying_list()
+    {
+        val size = CarpDataTypes.size
+        assertTrue( size > 0 )
+    }
+
     @ExperimentalSerializationApi
     @Test
     fun serializable_data_class_registered_for_each_data_type()
