@@ -10,7 +10,7 @@ import kotlinx.serialization.Transient
 
 
 /**
- * Any condition on a device ([DeviceDescriptor]) which starts or stops tasks at certain points in time when the condition applies.
+ * Any condition on a device ([DeviceDescriptor]) used to start or stop tasks at certain points in time when the condition applies.
  * The condition can either be time-bound, based on data streams, initiated by a user of the platform, or a combination of these.
  */
 @Serializable

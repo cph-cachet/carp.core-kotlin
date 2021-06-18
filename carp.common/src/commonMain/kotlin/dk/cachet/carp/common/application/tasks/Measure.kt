@@ -7,17 +7,29 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Defines data that needs to be measured/collected from a data stream on a [DeviceDescriptor],
- * as part of a task defined by [TaskDescriptor].
+ * Defines data that needs to be measured/collected passively as part of a task defined by [TaskDescriptor].
  */
 @Serializable
-data class Measure(
+sealed class Measure
+{
     /**
-     * The type of data this measure collects.
+     * Defines data that needs to be measured/collected from a data stream on a [DeviceDescriptor].
      */
-    val type: DataType,
+    @Serializable
+    data class DataStream(
+        /**
+         * The type of data this measure collects.
+         */
+        val type: DataType,
+        /**
+         * Override the default configuration on how to sample the data stream of the matching [type] on the device.
+         */
+        val overrideSamplingConfiguration: SamplingConfiguration? = null
+    ) : Measure()
+
     /**
-     * Override the default configuration on how to sample the data stream of the matching [type] on the device.
+     * Specify that the data related to the trigger with [triggerId] which started the task should be measured.
      */
-    val overrideSamplingConfiguration: SamplingConfiguration? = null
-)
+    @Serializable
+    data class TriggerData( val triggerId: Int ) : Measure()
+}

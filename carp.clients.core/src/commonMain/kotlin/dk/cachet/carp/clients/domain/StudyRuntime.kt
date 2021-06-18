@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.deployments.application.DeploymentService
@@ -191,7 +192,10 @@ class StudyRuntime private constructor(
                     ?: throw UnsupportedOperationException( "Connecting to device of type \"$deviceType\" is not supported on this client." )
             }
 
-            val dataTypes = tasks.flatMap { it.measures }.map { it.type }.distinct()
+            val dataTypes = tasks
+                .flatMap { it.measures.filterIsInstance<Measure.DataStream>() }
+                .map { it.type }
+                .distinct()
             for ( dataType in dataTypes )
             {
                 val supportsData =

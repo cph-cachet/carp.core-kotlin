@@ -35,6 +35,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( RRInterval::class, RRInterval.serializer() )
         subclass( SensorSkinContact::class )
         subclass( StepCount::class )
+        subclass( TriggeredTask::class )
 
         // InputDataType classes.
         subclass(

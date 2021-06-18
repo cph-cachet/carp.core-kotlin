@@ -258,10 +258,10 @@ class StudyRuntimeTest
     fun tryDeployment_succeeds_when_data_types_of_protocol_measures_are_supported() = runSuspendTest {
         // Create protocol that measures on smartphone and one connected device.
         val protocol = createSmartphoneWithConnectedDeviceStudy()
-        val masterTask = StubTaskDescriptor( "Master measure", listOf( Measure( STUB_DATA_TYPE ) ) )
+        val masterTask = StubTaskDescriptor( "Master measure", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
         protocol.addTaskControl( smartphone.atStartOfStudy().start( masterTask, smartphone ) )
         val connectedDataType = DataType( "custom", "type" )
-        val connectedTask = StubTaskDescriptor( "Connected measure", listOf( Measure( connectedDataType ) ) )
+        val connectedTask = StubTaskDescriptor( "Connected measure", listOf( Measure.DataStream( connectedDataType ) ) )
         protocol.addTaskControl( smartphone.atStartOfStudy().start( connectedTask, connectedDevice ) )
 
         // Create a data listener which supports the requested devices and types in the protocol
@@ -289,7 +289,7 @@ class StudyRuntimeTest
     fun tryDeployment_fails_when_requested_data_cannot_be_collected() = runSuspendTest {
         // Create a protocol that has one measure.
         val protocol = createSmartphoneStudy()
-        val task = StubTaskDescriptor( "One measure", listOf( Measure( STUB_DATA_TYPE ) ) )
+        val task = StubTaskDescriptor( "One measure", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
         protocol.addTaskControl( smartphone.atStartOfStudy().start( task, smartphone ) )
 
         // Initializing study runtime for the smartphone deployment should fail since StubMeasure can't be collected.

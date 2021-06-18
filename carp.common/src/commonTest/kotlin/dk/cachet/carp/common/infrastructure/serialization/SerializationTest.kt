@@ -49,6 +49,7 @@ private val commonInstances = listOf(
     RRInterval,
     SensorSkinContact( true ),
     StepCount( 42 ),
+    TriggeredTask( 1, "Some task", "Destination device", TaskControl.Control.Start ),
 
     // `data.input` namespace.
     CustomInput( "42" ),

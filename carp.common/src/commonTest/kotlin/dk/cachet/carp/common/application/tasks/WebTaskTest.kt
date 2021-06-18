@@ -45,7 +45,7 @@ class WebTaskTest
     {
         val surveyUrl = "http://surveymonkey.com/asd7f87sadfjalksjf"
         val surveyDescription = "A very important survey"
-        val backgroundMeasures = listOf( Measure( STUB_DATA_TYPE ) )
+        val backgroundMeasures = listOf( Measure.DataStream( STUB_DATA_TYPE ) )
         val webTask = WebTaskBuilder().apply {
             url = surveyUrl
             description = surveyDescription
