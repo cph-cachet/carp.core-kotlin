@@ -476,7 +476,7 @@ class StudyDeploymentTest
             addMasterDevice( sourceMaster )
             addMasterDevice( targetMaster )
         }
-        val measure = Measure( DataType( "namespace", "type" ) )
+        val measure = Measure.DataStream( DataType( "namespace", "type" ) )
         val task = StubTaskDescriptor( "Stub task", listOf( measure ) )
         protocol.addTaskControl( StubTrigger( sourceMaster ).start( task, targetMaster ) )
         val deployment = studyDeploymentFor( protocol )

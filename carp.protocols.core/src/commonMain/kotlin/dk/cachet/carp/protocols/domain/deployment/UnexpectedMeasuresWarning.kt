@@ -29,7 +29,9 @@ class UnexpectedMeasuresWarning internal constructor() : DeploymentWarning
         protocol.devices
             // Get measures per device.
             .flatMap { device ->
-                protocol.getTasksForDevice( device ).flatMap { it.measures }.map { device to it }
+                protocol.getTasksForDevice( device )
+                    .flatMap { it.measures.filterIsInstance<Measure.DataStream>() }
+                    .map { device to it }
             }
             // Filter out measures which are not supported on the device.
             .filter { (device, measure) ->
