@@ -83,9 +83,17 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
                 protocol.addConnectedDevice( connected, master )
             }
 
-            // Add tasks and triggers.
+            // Add tasks.
             snapshot.tasks.forEach { protocol.addTask( it ) }
-            snapshot.triggers.forEach { protocol.addTrigger( it.value ) }
+
+            // Add triggers.
+            val triggerIds = snapshot.triggers.keys.sorted()
+            if ( triggerIds.isNotEmpty() )
+            {
+                require( triggerIds.first() == 0 && triggerIds.last() == triggerIds.size - 1 )
+                    { "Triggers should be given sequential IDs starting with 0." }
+                triggerIds.map { protocol.addTrigger( snapshot.triggers[ it ]!! ) }
+            }
 
             // Add task controls.
             snapshot.taskControls.forEach { control ->
@@ -139,13 +147,17 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
         super.addConnectedDevice( device, masterDevice )
         .eventIf( true ) { Event.ConnectedDeviceAdded( device, masterDevice ) }
 
-    private val _triggers: MutableSet<Trigger> = mutableSetOf()
+    /**
+     * Set of triggers in the exact sequence by which they were added to the protocol.
+     * A `LinkedHashSet` is used to guarantee this order is maintained, allowing to use the index as ID.
+     */
+    private val _triggers: LinkedHashSet<Trigger> = LinkedHashSet()
 
     /**
-     * The set of triggers which can start or stop tasks in this study protocol.
+     * The list of triggers with assigned IDs which can start or stop tasks in this study protocol.
      */
-    val triggers: Set<Trigger>
-        get() = _triggers
+    val triggers: List<TriggerWithId>
+        get() = _triggers.mapIndexed { index, trigger -> TriggerWithId( index, trigger ) }
 
     /**
      * Stores which tasks need to be started or stopped when the conditions defined by [triggers] are met.
@@ -158,9 +170,9 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      * @throws IllegalArgumentException when:
      *   - [trigger] does not belong to any device specified in the study protocol
      *   - [trigger] requires a master device and the specified source device is not a master device
-     * @return True if the [trigger] has been added; false if the specified [trigger] is already included in this study protocol.
+     * @return The [trigger] and its newly assigned ID, or previously assigned ID in case the trigger is already included in this protocol.
      */
-    fun addTrigger( trigger: Trigger ): Boolean
+    fun addTrigger( trigger: Trigger ): TriggerWithId
     {
         val device: AnyDeviceDescriptor = deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
             ?: throw IllegalArgumentException( "The passed trigger does not belong to any device specified in this study protocol." )
@@ -170,12 +182,14 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
             throw IllegalArgumentException( "The passed trigger cannot be initiated by the specified device since it is not a master device." )
         }
 
-        return _triggers
-            .add( trigger )
-            .eventIf( true ) {
-                triggerControls[ trigger ] = mutableSetOf()
-                Event.TriggerAdded( trigger )
-            }
+        val isAdded = _triggers.add( trigger )
+        if ( isAdded )
+        {
+            triggerControls[ trigger ] = mutableSetOf()
+            event( Event.TriggerAdded( trigger ) )
+        }
+
+        return TriggerWithId( _triggers.indexOf( trigger ), trigger )
     }
 
     /**
@@ -230,7 +244,21 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      */
     fun getTaskControls( trigger: Trigger ): Iterable<TaskControl>
     {
-        require( trigger in triggers ) { "The passed trigger is not part of this study protocol." }
+        require( trigger in _triggers ) { "The passed trigger is not part of this study protocol." }
+
+        return triggerControls[ trigger ]!!
+    }
+
+    /**
+     * Gets all conditions which control that tasks get started or stopped on devices in this protocol
+     * by the trigger with [triggerId].
+     *
+     * @throws IllegalArgumentException when a trigger with [triggerId] is not defined in this study protocol.
+     */
+    fun getTaskControls( triggerId: Int ): Iterable<TaskControl>
+    {
+        val trigger = triggers.firstOrNull { it.id == triggerId }?.trigger
+        requireNotNull( trigger ) { "There is no trigger with ID \"$triggerId\" in this study protocol." }
 
         return triggerControls[ trigger ]!!
     }

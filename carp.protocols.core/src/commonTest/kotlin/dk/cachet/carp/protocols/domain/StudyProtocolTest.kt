@@ -134,9 +134,8 @@ class StudyProtocolTest
         protocol.addMasterDevice( device )
         val trigger = StubTrigger( device )
 
-        val isAdded: Boolean = protocol.addTrigger( trigger )
-        assertTrue( isAdded )
-        assertTrue( protocol.triggers.contains( trigger ) )
+        val assignedTrigger: TriggerWithId = protocol.addTrigger( trigger )
+        assertTrue( protocol.triggers.contains( assignedTrigger ) )
         assertEquals( StudyProtocol.Event.TriggerAdded( trigger ), protocol.consumeEvents().last() )
     }
 
@@ -147,10 +146,10 @@ class StudyProtocolTest
         val device = StubMasterDeviceDescriptor()
         protocol.addMasterDevice( device )
         val trigger = StubTrigger( device )
-        protocol.addTrigger( trigger )
+        val firstAssign: TriggerWithId = protocol.addTrigger( trigger )
 
-        val isAdded: Boolean = protocol.addTrigger( trigger )
-        assertFalse( isAdded )
+        val secondAssign: TriggerWithId = protocol.addTrigger( trigger )
+        assertEquals( firstAssign, secondAssign )
         assertEquals( 1, protocol.triggers.count() )
         val triggerEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggerAdded>()
         assertEquals( 1, triggerEvents.count() )
@@ -233,7 +232,7 @@ class StudyProtocolTest
 
         val trigger = StubTrigger( device )
         protocol.addTaskControl( trigger, task, device, Control.Start )
-        assertTrue( protocol.triggers.contains( trigger ) )
+        assertTrue( protocol.triggers.any { it.trigger == trigger } )
         val triggerEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TriggerAdded>()
         assertEquals( StudyProtocol.Event.TriggerAdded( trigger ), triggerEvents.single() )
     }
@@ -438,8 +437,8 @@ class StudyProtocolTest
         assertEquals( protocol.triggers, fromSnapshot.triggers )
         assertEquals( protocol.tasks, fromSnapshot.tasks )
         protocol.triggers.forEach {
-            val triggeredTasks = protocol.getTaskControls( it )
-            val fromSnapshotTriggeredTasks = fromSnapshot.getTaskControls( it )
+            val triggeredTasks = protocol.getTaskControls( it.id )
+            val fromSnapshotTriggeredTasks = fromSnapshot.getTaskControls( it.id )
             assertEquals( triggeredTasks.count(), triggeredTasks.intersect( fromSnapshotTriggeredTasks ).count() )
         }
         assertEquals( protocol.expectedParticipantData, fromSnapshot.expectedParticipantData )

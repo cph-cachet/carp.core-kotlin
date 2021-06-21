@@ -28,7 +28,7 @@ sealed class Measure
     ) : Measure()
 
     /**
-     * Specify that the data related to the trigger with [triggerId] which started the task should be measured.
+     * Specify that the data related to the trigger with [triggerId] which started or stopped the task should be measured.
      */
     @Serializable
     data class TriggerData( val triggerId: Int ) : Measure()
