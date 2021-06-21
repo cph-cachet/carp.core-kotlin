@@ -32,9 +32,9 @@ class UseCompositeTaskWarning internal constructor() : DeploymentWarning
 
     fun getOverlappingTasks( protocol: StudyProtocol ): List<OverlappingTasks>
     {
-        return protocol.triggers.flatMap { trigger -> // For each trigger, ...
+        return protocol.triggers.flatMap { (triggerId, trigger) -> // For each trigger, ...
             protocol
-                .getTaskControls( trigger )
+                .getTaskControls( triggerId )
                 .groupBy { it.destinationDevice } // ... group triggered tasks by target device, ...
                 .filter { it.value.count() > 1 } // ... select those with more than one task triggered (to a single target device).
                 .map { taskPerDevice ->
