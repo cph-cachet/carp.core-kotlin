@@ -25,7 +25,7 @@ data class StudyProtocolSnapshot(
     val connectedDevices: List<AnyDeviceDescriptor>,
     val connections: List<DeviceConnection>,
     val tasks: List<TaskDescriptor>,
-    val triggers: Map<Int, Trigger>,
+    val triggers: Map<Int, Trigger<*>>,
     val taskControls: List<TaskControl>,
     val expectedParticipantData: List<ParticipantAttribute>,
     @Serializable( ApplicationDataSerializer::class )

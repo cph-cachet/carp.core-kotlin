@@ -86,7 +86,7 @@ class StudyProtocolSnapshotTest
             StudyProtocolSnapshot.DeviceConnection( "C1", "M1" ),
             StudyProtocolSnapshot.DeviceConnection( "C2", "M2" ) )
         val tasks = listOf<TaskDescriptor>( StubTaskDescriptor( "T1" ), StubTaskDescriptor( "T2" ) )
-        val triggers = mapOf<Int, Trigger>(
+        val triggers = mapOf<Int, Trigger<*>>(
             0 to StubTrigger( masterDevices[ 0 ] ),
             1 to StubTrigger( masterDevices[ 1 ] ) )
         val triggeredTasks = listOf(

@@ -51,7 +51,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
     {
         data class MasterDeviceAdded( val device: AnyMasterDeviceDescriptor ) : Event()
         data class ConnectedDeviceAdded( val connected: AnyDeviceDescriptor, val master: AnyMasterDeviceDescriptor ) : Event()
-        data class TriggerAdded( val trigger: Trigger ) : Event()
+        data class TriggerAdded( val trigger: Trigger<*> ) : Event()
         data class TaskAdded( val task: TaskDescriptor ) : Event()
         data class TaskRemoved( val task: TaskDescriptor ) : Event()
         data class TaskControlAdded( val control: TaskControl ) : Event()
@@ -151,7 +151,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      * Set of triggers in the exact sequence by which they were added to the protocol.
      * A `LinkedHashSet` is used to guarantee this order is maintained, allowing to use the index as ID.
      */
-    private val _triggers: LinkedHashSet<Trigger> = LinkedHashSet()
+    private val _triggers: LinkedHashSet<Trigger<*>> = LinkedHashSet()
 
     /**
      * The list of triggers with assigned IDs which can start or stop tasks in this study protocol.
@@ -162,7 +162,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
     /**
      * Stores which tasks need to be started or stopped when the conditions defined by [triggers] are met.
      */
-    private val triggerControls: MutableMap<Trigger, MutableSet<TaskControl>> = mutableMapOf()
+    private val triggerControls: MutableMap<Trigger<*>, MutableSet<TaskControl>> = mutableMapOf()
 
     /**
      * Add a [trigger] to this protocol.
@@ -172,7 +172,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      *   - [trigger] requires a master device and the specified source device is not a master device
      * @return The [trigger] and its newly assigned ID, or previously assigned ID in case the trigger is already included in this protocol.
      */
-    fun addTrigger( trigger: Trigger ): TriggerWithId
+    fun addTrigger( trigger: Trigger<*> ): TriggerWithId
     {
         val device: AnyDeviceDescriptor = deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
             ?: throw IllegalArgumentException( "The passed trigger does not belong to any device specified in this study protocol." )
@@ -203,7 +203,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      * @return True if the task control has been added; false if the same control is already present.
      */
     fun addTaskControl(
-        trigger: Trigger,
+        trigger: Trigger<*>,
         task: TaskDescriptor,
         destinationDevice: AnyDeviceDescriptor,
         control: Control
@@ -242,7 +242,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      *
      * @throws IllegalArgumentException when [trigger] is not part of this study protocol.
      */
-    fun getTaskControls( trigger: Trigger ): Iterable<TaskControl>
+    fun getTaskControls( trigger: Trigger<*> ): Iterable<TaskControl>
     {
         require( trigger in _triggers ) { "The passed trigger is not part of this study protocol." }
 
