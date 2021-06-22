@@ -39,7 +39,7 @@ data class MasterDeviceDeployment(
     /**
      * All triggers originating from this device and connected devices, stored per assigned id unique within the study protocol.
      */
-    val triggers: Map<Int, Trigger>,
+    val triggers: Map<Int, Trigger<*>>,
     /**
      * Determines which tasks need to be started or stopped when the conditions defined by [triggers] are met.
      */

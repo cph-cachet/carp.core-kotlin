@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application.triggers
 
 import dk.cachet.carp.common.application.RecurrenceRule
 import dk.cachet.carp.common.application.TimeOfDay
+import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -18,7 +19,7 @@ data class ScheduledTrigger private constructor(
     override val sourceDeviceRoleName: String,
     val time: TimeOfDay,
     val recurrenceRule: RecurrenceRule
-) : Trigger()
+) : Trigger<NoData>()
 {
     @Transient
     override val requiresMasterDevice: Boolean = true

@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.application.triggers
 
 import dk.cachet.carp.common.application.TimeSpan
+import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -16,7 +17,7 @@ import kotlinx.serialization.Transient
 data class ElapsedTimeTrigger private constructor(
     override val sourceDeviceRoleName: String,
     val elapsedTime: TimeSpan
-) : Trigger()
+) : Trigger<NoData>()
 {
     @Transient
     override val requiresMasterDevice: Boolean = true

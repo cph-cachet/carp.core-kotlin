@@ -9,7 +9,7 @@ import dk.cachet.carp.common.application.triggers.Trigger
 /**
  * A [trigger] with an [id] as assigned to in a [StudyProtocol].
  */
-data class TriggerWithId( val id: Int, val trigger: Trigger )
+data class TriggerWithId( val id: Int, val trigger: Trigger<*> )
 {
     /**
      * Indicate that a task should measure the conditions under which this [trigger] started or stopped it.
@@ -23,7 +23,7 @@ data class TriggerWithId( val id: Int, val trigger: Trigger )
  *
  * @throws IllegalArgumentException when the trigger is not part of the passed study protocol.
  */
-fun Trigger.within( protocol: StudyProtocol ): TriggerWithId =
+fun Trigger<*>.within( protocol: StudyProtocol ): TriggerWithId =
     protocol.triggers.firstOrNull { it.trigger == this }
         ?: throw IllegalArgumentException( "This trigger is not part of the passed study protocol." )
 

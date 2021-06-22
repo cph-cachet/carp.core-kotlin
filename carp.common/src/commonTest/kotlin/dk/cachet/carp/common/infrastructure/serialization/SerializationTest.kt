@@ -46,6 +46,7 @@ private val commonInstances = listOf(
     FreeFormText( "Some text" ),
     Geolocation( 42.0, 42.0 ),
     HeartRate( 60 ),
+    NoData,
     RRInterval,
     SensorSkinContact( true ),
     StepCount( 42 ),

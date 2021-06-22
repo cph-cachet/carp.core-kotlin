@@ -18,7 +18,7 @@ class UseCompositeTaskWarning internal constructor() : DeploymentWarning
      * When the [trigger] is initiated, the tasks would thus be sent out simultaneously to the [targetDevice].
      */
     data class OverlappingTasks(
-        val trigger: Trigger,
+        val trigger: Trigger<*>,
         val targetDevice: AnyDeviceDescriptor,
         val tasks: List<TaskDescriptor>
     )
