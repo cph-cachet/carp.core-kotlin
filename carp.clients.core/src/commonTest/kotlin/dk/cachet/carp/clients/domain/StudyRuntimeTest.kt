@@ -170,7 +170,7 @@ class StudyRuntimeTest
     fun initialize_fails_for_incorrect_deviceRegistration() = runSuspendTest {
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
-        val incorrectRegistration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 )
+        val incorrectRegistration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0, 0 )
         val dataListener = createDataListener()
         assertFailsWith<IllegalArgumentException> {
             StudyRuntime.initialize(

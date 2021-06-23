@@ -23,6 +23,7 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | [sensorskincontact](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/SensorSkinContact.kt) | Whether a sensor requiring contact with skin is making proper contact at a specific point in time. |
 | [stepcount](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/StepCount.kt) | The number of steps a participant has taken in a specified time interval. |
 | [acceleration](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Acceleration.kt) | Acceleration along perpendicular x, y, and z axes. |
+| [signalstrength](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/SignalStrength.kt) | The received signal strength of a wireless device. |
 | [triggeredtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/TriggeredTask.kt) | A task which was started or stopped by a trigger, referring to identifiers in the study protocol. |
 
 ### Device descriptors
@@ -31,7 +32,7 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | --- | :---: | --- |
 | [Smartphone](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/Smartphone.kt) | Yes | An internet-connected phone with built-in sensors. |
 | [AltBeacon](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt) | | A beacon meeting the open AltBeacon standard. |
-| [BLEHeartRateSensor](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/BLEHeartRateDevice.kt) | | A Bluetooth device which implements a Heart Rate service. |
+| [BLEHeartRateDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/BLEHeartRateDevice.kt) | | A Bluetooth device which implements a Heart Rate service. |
 | [CustomProtocolDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/CustomProtocolDevice.kt) | Yes | A master device which uses a single `CustomProtocolTask` to determine how to run a study on the device. |
 
 ### Sampling schemes

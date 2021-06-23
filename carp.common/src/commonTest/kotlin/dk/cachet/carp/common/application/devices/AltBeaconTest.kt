@@ -17,10 +17,10 @@ class AltBeaconTest
     {
         val registration1 = AltBeaconDeviceRegistration(
             0, UUID( "00000000-0000-0000-0000-000000000000" ),
-            1, 1 )
+            1, 1, 0 )
         val registration2 = AltBeaconDeviceRegistration(
             0, UUID( "00000000-0000-0000-0000-000000000000" ),
-            1, 2 )
+            1, 2, 0 )
 
         assertNotEquals( registration1.deviceId, registration2.deviceId )
     }
@@ -44,7 +44,7 @@ class AltBeaconTest
     @Test
     fun registration_deviceId_is_serialized()
     {
-        val registration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 )
+        val registration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0, 0 )
 
         val json = createDefaultJSON()
         val serialized = json.encodeToString( AltBeaconDeviceRegistration.serializer(), registration )
