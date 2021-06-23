@@ -35,8 +35,8 @@ abstract class DataTypeSamplingScheme<TConfigBuilder : SamplingConfigurationBuil
      *
      * @throws IllegalArgumentException when a sampling configuration is built which breaks constraints specified in this sampling scheme.
      */
-    fun measure( samplingConfigurationBuilder: (TConfigBuilder.() -> Unit)? = null ): Measure =
-        Measure( dataType.type, samplingConfigurationBuilder?.let { samplingConfiguration( it ) } )
+    fun measure( samplingConfigurationBuilder: (TConfigBuilder.() -> Unit)? = null ): Measure.DataStream =
+        Measure.DataStream( dataType.type, samplingConfigurationBuilder?.let { samplingConfiguration( it ) } )
 
     /**
      * Determines whether [configuration] is valid for the constraints defined in this sampling scheme.

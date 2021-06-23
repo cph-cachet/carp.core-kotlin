@@ -16,5 +16,5 @@ open class DataTypeMetaDataList : EnumObjectList<DataTypeMetaData>()
      * which can be displayed to the user using [displayName] and should be stored temporally as specified by [timeType].
      */
     fun add( fullyQualifiedName: String, displayName: String, timeType: DataTimeType ): DataTypeMetaData =
-        DataTypeMetaData( DataType.fromString( fullyQualifiedName ), displayName, timeType )
+        super.add( DataTypeMetaData( DataType.fromString( fullyQualifiedName ), displayName, timeType ) )
 }

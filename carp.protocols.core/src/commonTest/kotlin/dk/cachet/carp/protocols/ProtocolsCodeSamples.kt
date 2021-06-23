@@ -1,13 +1,18 @@
 package dk.cachet.carp.protocols
 
+import dk.cachet.carp.common.application.RecurrenceRule
+import dk.cachet.carp.common.application.TimeOfDay
 import dk.cachet.carp.common.application.devices.CustomProtocolDevice
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.sampling.Granularity
+import dk.cachet.carp.common.application.tasks.BackgroundTask
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
+import dk.cachet.carp.common.application.triggers.ScheduledTrigger
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
+import dk.cachet.carp.protocols.domain.within
 import dk.cachet.carp.test.runSuspendTest
 import kotlinx.serialization.encodeToString
 import kotlin.test.*
@@ -58,5 +63,19 @@ class ProtocolsCodeSamples
 
         val json: String = JSON.encodeToString( protocol.getSnapshot() )
         assertTrue( json.isNotEmpty() )
+    }
+
+    @Test
+    fun measure_trigger_data() = runSuspendTest {
+        val owner = ProtocolOwner()
+        val protocol = StudyProtocol( owner, "Ping every noon" )
+        val phone = Smartphone( "Ping source" )
+        val daily = ScheduledTrigger( phone, TimeOfDay( 12, 0, 0 ), RecurrenceRule.daily( 1 ) )
+        protocol.addMasterDevice( phone )
+        protocol.addTrigger( daily ) // Trigger needs to be added before measure for it can be initialized.
+
+        val measurePing = daily.within( protocol ).measure()
+        val ping = BackgroundTask("Ping", listOf( measurePing ) )
+        protocol.addTaskControl( daily.start( ping, phone ) )
     }
 }

@@ -2,8 +2,10 @@ package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeList
+import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskDescriptorList
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
@@ -18,11 +20,15 @@ import kotlin.reflect.KClass
 data class AltBeacon( override val roleName: String ) : DeviceDescriptor<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
 {
     object Sensors : DataTypeSamplingSchemeList()
+    {
+        /**
+         * The signal strength as measured by the device listening to the [AltBeacon].
+         */
+        val SIGNAL_STRENGTH = add( NoOptionsSamplingScheme( CarpDataTypes.SIGNAL_STRENGTH ) )
+    }
+
     object Tasks : TaskDescriptorList()
 
-
-    // The AltBeacon protocol does not expose any measures. Other devices measure proximity to the beacon.
-    // TODO: Some beacons do include information such as battery charge and temperature.
     override fun getSupportedDataTypes(): Set<DataType> = Sensors.getDataTypes()
 
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
@@ -55,9 +61,23 @@ data class AltBeaconDeviceRegistration(
     /**
      * The last 2 bytes of the beacon identifier, commonly named minor ID.
      */
-    val minorId: Short
+    val minorId: Short,
+    /**
+     * The average received signal strength at 1 meter from the beacon in decibel-milliwatts (dBm).
+     * This value is constrained from -127 to 0.
+     */
+    val referenceRssi: Short
 ) : DeviceRegistration()
 {
+    companion object
+    {
+        val REFERENCE_RSS_RANGE: IntRange = -127..0
+    }
+    init
+    {
+        require( referenceRssi in REFERENCE_RSS_RANGE ) { "Reference RSSI needs to be in the range from -127 to 0." }
+    }
+
     override val deviceId: String =
         // TODO: Remove this workaround once JS serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/716
         if ( arrayOf( manufacturerId, organizationId, majorId, minorId ).any { it == null } ) ""
@@ -88,6 +108,14 @@ class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDe
      */
     var minorId: Short = 0x0000
 
+    /**
+     * The average received signal strength at 1 meter from the beacon in decibel-milliwatts (dBm).
+     * This value is constrained from -127 to 0.
+     *
+     * TODO: This presumes that beacons have a fixed reference RSSI; is this the case?
+     */
+    var referenceRssi: Short = 0
+
     override fun build(): AltBeaconDeviceRegistration =
-        AltBeaconDeviceRegistration( manufacturerId, organizationId, majorId, minorId )
+        AltBeaconDeviceRegistration( manufacturerId, organizationId, majorId, minorId, referenceRssi )
 }

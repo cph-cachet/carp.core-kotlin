@@ -25,7 +25,7 @@ data class StudyProtocolSnapshot(
     val connectedDevices: List<AnyDeviceDescriptor>,
     val connections: List<DeviceConnection>,
     val tasks: List<TaskDescriptor>,
-    val triggers: Map<Int, Trigger>,
+    val triggers: Map<Int, Trigger<*>>,
     val taskControls: List<TaskControl>,
     val expectedParticipantData: List<ParticipantAttribute>,
     @Serializable( ApplicationDataSerializer::class )
@@ -44,11 +44,7 @@ data class StudyProtocolSnapshot(
          */
         fun fromProtocol( protocol: StudyProtocol ): StudyProtocolSnapshot
         {
-            // Uniquely identify each trigger.
-            var curTriggerId = 0
-            val triggers = protocol.triggers
-                .sortedBy { it.toString() } // Sort so that the order triggers were added in does not impact snapshot equality.
-                .associateBy { curTriggerId++ }
+            val triggers = protocol.triggers.associate { it.id to it.trigger }
 
             return StudyProtocolSnapshot(
                 protocol.id,
@@ -58,7 +54,7 @@ data class StudyProtocolSnapshot(
                 connectedDevices = protocol.devices.minus( protocol.masterDevices ).toList(),
                 connections = protocol.masterDevices.flatMap { getConnections( protocol, it ) }.toList(),
                 tasks = protocol.tasks.toList(),
-                triggers = triggers.toMap(),
+                triggers = triggers,
                 taskControls = triggers
                     .flatMap { trigger -> protocol.getTaskControls( trigger.value ).map { trigger to it } }
                     .map { (trigger, control) ->

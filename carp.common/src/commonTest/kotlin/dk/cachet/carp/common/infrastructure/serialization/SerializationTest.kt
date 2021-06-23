@@ -46,9 +46,12 @@ private val commonInstances = listOf(
     FreeFormText( "Some text" ),
     Geolocation( 42.0, 42.0 ),
     HeartRate( 60 ),
+    NoData,
     RRInterval,
     SensorSkinContact( true ),
+    SignalStrength( 0 ),
     StepCount( 42 ),
+    TriggeredTask( 1, "Some task", "Destination device", TaskControl.Control.Start ),
 
     // `data.input` namespace.
     CustomInput( "42" ),
@@ -60,7 +63,7 @@ private val commonInstances = listOf(
 
     // Devices in `devices` namespace.
     AltBeacon( "Kitchen" ),
-    AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 ),
+    AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0, 0 ),
     BLEHeartRateDevice( "Polar" ),
     BLESerialNumberDeviceRegistration( "123456789" ),
     CustomProtocolDevice( "User's phone" ),

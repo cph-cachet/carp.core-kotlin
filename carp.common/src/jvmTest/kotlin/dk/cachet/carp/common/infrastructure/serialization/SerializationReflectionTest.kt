@@ -47,7 +47,7 @@ class SerializationReflectionTest
 
     @Test
     fun all_Trigger_types_registered_for_serialization() =
-        verifyTypesAreRegistered<Trigger>()
+        verifyTypesAreRegistered<Trigger<*>>()
 
     @Test
     fun all_AccountIdentity_types_registered_for_serialization() =

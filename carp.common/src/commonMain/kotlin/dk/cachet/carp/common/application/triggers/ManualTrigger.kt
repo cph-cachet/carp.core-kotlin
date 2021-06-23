@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.application.triggers
 
+import dk.cachet.carp.common.application.data.NoData
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
@@ -18,7 +19,7 @@ data class ManualTrigger(
      * An optional description elaborating on what happens when initiating this trigger.
      */
     val description: String = ""
-) : Trigger()
+) : Trigger<NoData>()
 {
     @Transient
     override val requiresMasterDevice: Boolean = true // Software is needed to display this to the user.

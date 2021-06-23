@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
+import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.triggers.Trigger
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -11,10 +12,10 @@ import kotlinx.serialization.json.Json
  */
 @Serializable( TriggerSerializer::class )
 data class CustomTrigger( override val className: String, override val jsonSource: String, val serializer: Json ) :
-    Trigger(), UnknownPolymorphicWrapper
+    Trigger<NoData>(), UnknownPolymorphicWrapper
 {
     @Serializable
-    private data class BaseMembers( override val sourceDeviceRoleName: String ) : Trigger()
+    private data class BaseMembers( override val sourceDeviceRoleName: String ) : Trigger<NoData>()
 
     override val sourceDeviceRoleName: String
 
@@ -29,5 +30,5 @@ data class CustomTrigger( override val className: String, override val jsonSourc
 /**
  * Custom serializer for a [Trigger] which enables deserializing types that are unknown at runtime, yet extend from [Trigger].
  */
-object TriggerSerializer : KSerializer<Trigger>
+object TriggerSerializer : KSerializer<Trigger<*>>
     by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTrigger( className, json, serializer ) } )

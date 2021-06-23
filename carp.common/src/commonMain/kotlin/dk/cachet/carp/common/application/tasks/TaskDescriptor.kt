@@ -20,7 +20,7 @@ interface TaskDescriptor
     val name: String
 
     /**
-     * The data which needs to be collected/measured as part of this task.
+     * The data which needs to be collected/measured passively as part of this task.
      */
     val measures: List<Measure>
 

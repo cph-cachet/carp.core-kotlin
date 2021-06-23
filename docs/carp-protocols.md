@@ -19,7 +19,7 @@ Typically, a desktop computer, smartphone, or web server.
 - [`TaskDescriptor`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/TaskDescriptor.kt):
 Describes requested `Measure`s and/or output to be presented on a device.
 - [`Measure`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/Measure.kt):
-Defines data that needs to be measured/collected for a supported `DataType`.
+Defines data that needs to be measured/collected passively for a supported `DataType`.
 - [`DataType`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/DataType.kt):
 Defines a type of data which can be processed by the platform (e.g., measured/collected/uploaded).
 - [`Trigger`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/triggers/Trigger.kt):

@@ -32,9 +32,12 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         // HACK: explicit serializer needs to be registered for object declarations due to limitation of the JS legacy backend.
         // https://github.com/Kotlin/kotlinx.serialization/issues/1138#issuecomment-707989920
         // This can likely be removed once we upgrade to the new IR backend.
+        subclass( NoData::class, NoData.serializer() )
         subclass( RRInterval::class, RRInterval.serializer() )
+        subclass( SignalStrength::class )
         subclass( SensorSkinContact::class )
         subclass( StepCount::class )
+        subclass( TriggeredTask::class )
 
         // InputDataType classes.
         subclass(

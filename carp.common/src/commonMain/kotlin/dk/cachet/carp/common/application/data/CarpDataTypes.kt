@@ -62,4 +62,16 @@ object CarpDataTypes : DataTypeMetaDataList()
      * Acceleration along perpendicular x, y, and z axes.
      */
     val ACCELERATION = add( ACCELERATION_TYPE_NAME, "Accelerometry", DataTimeType.POINT )
+
+    internal const val SIGNAL_STRENGTH_TYPE_NAME = "$CARP_NAMESPACE.signalstrength"
+    /**
+     * The received signal strength of a wireless device.
+     */
+    val SIGNAL_STRENGTH = add( SIGNAL_STRENGTH_TYPE_NAME, "Signal strength", DataTimeType.POINT )
+
+    internal const val TRIGGERED_TASK_TYPE_NAME = "$CARP_NAMESPACE.triggeredtask"
+    /**
+     * A task which was started or stopped by a trigger, referring to identifiers in the study protocol.
+     */
+    val TRIGGERED_TASK = add( TRIGGERED_TASK_TYPE_NAME, "Triggered task", DataTimeType.POINT )
 }

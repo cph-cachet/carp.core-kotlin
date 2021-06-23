@@ -66,7 +66,7 @@ fun createComplexProtocol(): StudyProtocol
     val chainedMasterDevice = StubMasterDeviceDescriptor( "Chained master" )
     val chainedConnectedDevice = StubDeviceDescriptor( "Chained connected" )
     val trigger = StubTrigger( connectedDevice )
-    val measures = listOf( Measure( STUB_DATA_TYPE ) )
+    val measures = listOf( Measure.DataStream( STUB_DATA_TYPE ) )
     val task = StubTaskDescriptor( "Task", measures )
     val expectedParticipantData = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
     with ( protocol )
