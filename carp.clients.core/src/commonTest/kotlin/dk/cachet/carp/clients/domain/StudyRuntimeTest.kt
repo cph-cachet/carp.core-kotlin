@@ -8,6 +8,7 @@ import dk.cachet.carp.clients.domain.data.StubDeviceDataCollector
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.AltBeaconDeviceRegistration
+import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceType
 import dk.cachet.carp.common.application.tasks.Measure
@@ -170,7 +171,7 @@ class StudyRuntimeTest
     fun initialize_fails_for_incorrect_deviceRegistration() = runSuspendTest {
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
 
-        val incorrectRegistration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 )
+        val incorrectRegistration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0, 0 )
         val dataListener = createDataListener()
         assertFailsWith<IllegalArgumentException> {
             StudyRuntime.initialize(

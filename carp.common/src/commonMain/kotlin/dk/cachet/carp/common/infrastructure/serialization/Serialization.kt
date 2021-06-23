@@ -33,6 +33,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         // https://github.com/Kotlin/kotlinx.serialization/issues/1138#issuecomment-707989920
         // This can likely be removed once we upgrade to the new IR backend.
         subclass( RRInterval::class, RRInterval.serializer() )
+        subclass( SignalStrength::class )
         subclass( SensorSkinContact::class )
         subclass( StepCount::class )
 

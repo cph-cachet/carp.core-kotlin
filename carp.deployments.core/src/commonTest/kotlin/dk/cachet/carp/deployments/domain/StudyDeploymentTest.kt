@@ -190,7 +190,7 @@ class StudyDeploymentTest
         protocol.addMasterDevice( master )
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
-        val wrongRegistration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 )
+        val wrongRegistration = AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0, 0 )
         assertFailsWith<IllegalArgumentException>
         {
             deployment.registerDevice( master, wrongRegistration )

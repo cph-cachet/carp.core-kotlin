@@ -48,6 +48,7 @@ private val commonInstances = listOf(
     HeartRate( 60 ),
     RRInterval,
     SensorSkinContact( true ),
+    SignalStrength( 0 ),
     StepCount( 42 ),
 
     // `data.input` namespace.
@@ -60,7 +61,7 @@ private val commonInstances = listOf(
 
     // Devices in `devices` namespace.
     AltBeacon( "Kitchen" ),
-    AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0 ),
+    AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0, 0 ),
     BLEHeartRateDevice( "Polar" ),
     BLESerialNumberDeviceRegistration( "123456789" ),
     CustomProtocolDevice( "User's phone" ),
