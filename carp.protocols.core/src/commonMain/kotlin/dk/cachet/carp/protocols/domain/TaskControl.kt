@@ -10,7 +10,7 @@ import dk.cachet.carp.common.application.triggers.Trigger
  * Specifies a task which at some point during a [StudyProtocol] needs to be started or stopped on a specific device.
  */
 data class TaskControl(
-    val trigger: Trigger,
+    val trigger: Trigger<*>,
     val task: TaskDescriptor,
     val destinationDevice: AnyDeviceDescriptor,
     val control: TaskControl.Control
@@ -20,11 +20,11 @@ data class TaskControl(
 /**
  * Specify that a [task] should start on the specified [destinationDevice] once this [Trigger] initiates.
  */
-fun Trigger.start( task: TaskDescriptor, destinationDevice: AnyDeviceDescriptor ) =
+fun Trigger<*>.start( task: TaskDescriptor, destinationDevice: AnyDeviceDescriptor ) =
     TaskControl( this, task, destinationDevice, TaskControl.Control.Start )
 
 /**
  * Specify that a [task] should stop on the specified [destinationDevice] once this [Trigger] initiates.
  */
-fun Trigger.stop( task: TaskDescriptor, destinationDevice: AnyDeviceDescriptor ) =
+fun Trigger<*>.stop( task: TaskDescriptor, destinationDevice: AnyDeviceDescriptor ) =
     TaskControl( this, task, destinationDevice, TaskControl.Control.Stop )

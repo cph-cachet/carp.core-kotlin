@@ -18,8 +18,8 @@ class UnexpectedMeasuresWarningTest
         val protocol = createEmptyProtocol()
         val master = StubMasterDeviceDescriptor() // Supports STUB_DATA_TYPE.
         protocol.addMasterDevice( master )
-        val expectedMeasure = Measure( STUB_DATA_TYPE )
-        val unexpectedMeasure = Measure( DataType( "namespace", "unexpected" ) )
+        val expectedMeasure = Measure.DataStream( STUB_DATA_TYPE )
+        val unexpectedMeasure = Measure.DataStream( DataType( "namespace", "unexpected" ) )
         val task = StubTaskDescriptor( "Task", listOf( expectedMeasure, unexpectedMeasure ) )
         protocol.addTaskControl( master.atStartOfStudy().start( task, master ) )
 
@@ -39,7 +39,7 @@ class UnexpectedMeasuresWarningTest
         val protocol = createEmptyProtocol()
         val master = StubMasterDeviceDescriptor() // Supports STUB_DATA_TYPE.
         protocol.addMasterDevice( master )
-        val measure = Measure( STUB_DATA_TYPE )
+        val measure = Measure.DataStream( STUB_DATA_TYPE )
         val task = StubTaskDescriptor( "Task", listOf( measure ) )
         protocol.addTaskControl( master.atStartOfStudy().start( task, master ) )
 

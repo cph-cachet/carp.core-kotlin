@@ -22,9 +22,9 @@ class UnusedDevicesWarning internal constructor() : DeploymentWarning
     fun getUnusedDevices( protocol: StudyProtocol ): Set<AnyDeviceDescriptor>
     {
         // Get all devices used in triggers.
-        val usedDevices: Set<AnyDeviceDescriptor> = protocol.triggers.flatMap { trigger ->
+        val usedDevices: Set<AnyDeviceDescriptor> = protocol.triggers.flatMap { (triggerId, trigger) ->
             val usedInTrigger =
-                protocol.getTaskControls( trigger ).map { it.destinationDevice }.toMutableList()
+                protocol.getTaskControls( triggerId ).map { it.destinationDevice }.toMutableList()
             usedInTrigger.add( protocol.devices.single { trigger.sourceDeviceRoleName == it.roleName } )
             usedInTrigger
         }.toSet()

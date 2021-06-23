@@ -127,7 +127,7 @@ class StudyProtocolSnapshotTest
         protocol.addConnectedDevice( connected, master )
 
         // (2) Add unknown task.
-        val measures: List<Measure> = listOf( Measure( STUB_DATA_TYPE ) )
+        val measures: List<Measure> = listOf( Measure.DataStream( STUB_DATA_TYPE ) )
         val task = StubTaskDescriptor( "Unknown task", measures )
         val trigger = StubTrigger( master.roleName, "Unknown" )
         protocol.addTaskControl( trigger.start( task, master ) )

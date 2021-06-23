@@ -68,4 +68,10 @@ object CarpDataTypes : DataTypeMetaDataList()
      * The received signal strength of a wireless device.
      */
     val SIGNAL_STRENGTH = add( SIGNAL_STRENGTH_TYPE_NAME, "Signal strength", DataTimeType.POINT )
+
+    internal const val TRIGGERED_TASK_TYPE_NAME = "$CARP_NAMESPACE.triggeredtask"
+    /**
+     * A task which was started or stopped by a trigger, referring to identifiers in the study protocol.
+     */
+    val TRIGGERED_TASK = add( TRIGGERED_TASK_TYPE_NAME, "Triggered task", DataTimeType.POINT )
 }

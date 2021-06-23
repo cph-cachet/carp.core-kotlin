@@ -86,7 +86,7 @@ class StudyProtocolSnapshotTest
             StudyProtocolSnapshot.DeviceConnection( "C1", "M1" ),
             StudyProtocolSnapshot.DeviceConnection( "C2", "M2" ) )
         val tasks = listOf<TaskDescriptor>( StubTaskDescriptor( "T1" ), StubTaskDescriptor( "T2" ) )
-        val triggers = mapOf<Int, Trigger>(
+        val triggers = mapOf<Int, Trigger<*>>(
             0 to StubTrigger( masterDevices[ 0 ] ),
             1 to StubTrigger( masterDevices[ 1 ] ) )
         val triggeredTasks = listOf(
@@ -118,9 +118,8 @@ class StudyProtocolSnapshotTest
         assertEquals( snapshot.hashCode(), reorganizedSnapshot.hashCode() )
     }
 
-    @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
     @Test
-    fun order_of_triggers_does_not_matter_for_snapshot_equality()
+    fun order_of_triggers_matters_for_snapshot_equality()
     {
         val device1 = StubMasterDeviceDescriptor( "One" )
         val device2 = StubMasterDeviceDescriptor( "Two" )
@@ -145,6 +144,36 @@ class StudyProtocolSnapshotTest
             addTrigger( trigger1 )
         }.getSnapshot()
 
-        assertTrue( snapshot1 == snapshot2 )
+        // Since the triggers were added in a different order, they were assigned different IDs.
+        assertNotEquals( snapshot1, snapshot2 )
+    }
+
+    @Test
+    fun trigger_ids_need_to_sequential_starting_from_zero()
+    {
+        val masterDevice = StubMasterDeviceDescriptor()
+        val task = StubTaskDescriptor()
+        val trigger = StubTrigger( masterDevice )
+
+        val correctSnapshot = StudyProtocolSnapshot(
+            StudyProtocolId( UUID.randomUUID(), "Name" ),
+            "Description",
+            DateTime.now(),
+            listOf( masterDevice ),
+            emptyList(),
+            emptyList(),
+            listOf( task ),
+            mapOf( 0 to trigger ),
+            listOf( TaskControl( 0, task.name, masterDevice.roleName, TaskControl.Control.Start ) ),
+            emptyList(),
+            ""
+        )
+        StudyProtocol.fromSnapshot( correctSnapshot )
+
+        val wrongSnapshot = correctSnapshot.copy(
+            triggers = mapOf( 1 to trigger ),
+            taskControls = listOf( TaskControl( 1, task.name, masterDevice.roleName, TaskControl.Control.Start) )
+        )
+        assertFailsWith<IllegalArgumentException> { StudyProtocol.fromSnapshot( wrongSnapshot ) }
     }
 }

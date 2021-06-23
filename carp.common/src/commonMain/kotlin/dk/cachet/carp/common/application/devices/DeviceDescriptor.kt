@@ -34,7 +34,7 @@ abstract class DeviceDescriptor<
     abstract val roleName: String
 
     /**
-     * The set of [DataType]s defining which data can be collected on this device.
+     * The set of [DataType]s defining which data stream data can be collected on this device.
      */
     abstract fun getSupportedDataTypes(): Set<DataType>
 

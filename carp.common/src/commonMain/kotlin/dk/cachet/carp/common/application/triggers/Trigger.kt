@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application.triggers
 
 import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
+import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import dk.cachet.carp.common.application.devices.MasterDeviceDescriptor
 import kotlinx.serialization.Polymorphic
@@ -10,14 +11,14 @@ import kotlinx.serialization.Transient
 
 
 /**
- * Any condition on a device ([DeviceDescriptor]) which starts or stops tasks at certain points in time when the condition applies.
+ * Any condition on a device ([DeviceDescriptor]) used to start or stop tasks at certain points in time when the condition applies.
  * The condition can either be time-bound, based on data streams, initiated by a user of the platform, or a combination of these.
  */
 @Serializable
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
-abstract class Trigger
+abstract class Trigger<TData : Data>
 {
     /**
      * Determines whether the trigger needs to be evaluated on a master device ([MasterDeviceDescriptor]).

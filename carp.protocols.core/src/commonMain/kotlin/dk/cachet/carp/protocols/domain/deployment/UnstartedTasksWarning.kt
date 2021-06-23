@@ -21,8 +21,8 @@ class UnstartedTasksWarning internal constructor() : DeploymentWarning
 
     fun getUnstartedTasks( protocol: StudyProtocol ): Set<TaskDescriptor>
     {
-        val startedTasks: List<TaskDescriptor> = protocol.triggers.flatMap { trigger ->
-            protocol.getTaskControls( trigger )
+        val startedTasks: List<TaskDescriptor> = protocol.triggers.flatMap { (triggerId, _) ->
+            protocol.getTaskControls( triggerId )
                 .filter { it.control == TaskControl.Control.Start }
                 .map { it.task }
         }

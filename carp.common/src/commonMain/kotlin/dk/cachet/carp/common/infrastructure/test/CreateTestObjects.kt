@@ -115,7 +115,7 @@ fun String.makeUnknown(
  */
 @ExperimentalSerializationApi
 fun String.makeUnknown(
-    trigger: Trigger,
+    trigger: Trigger<*>,
     key: String,
     value: String,
     unknownTypeName: String = "com.unknown.UnknownTrigger"
