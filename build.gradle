@@ -13,12 +13,12 @@ buildscript {
 
         versions = [
             // Kotlin multiplatform versions.
-            kotlin:'1.5.20',
+            kotlin:'1.5.10',
             serialization:'1.2.1',
             coroutines:'1.5.0',
 
             // JVM versions.
-            jvmTarget:'1.6',
+            jvmTarget:'1.8',
             jUnit5:'5.7.2',
             dokkaPlugin:'0.9.18',
             reflections:'0.9.12',
@@ -230,17 +230,26 @@ task setupTsProject(type: NpmTask) {
     args = ['install']
 }
 task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
-    // First compile all subprojects for which TypeScript declarations are defined.
+    // Make sure no old imported packages are left behind.
+    def importedPackages = file("$rootDir/build/js/packages_imported")
+    importedPackages.eachFile { it.delete() }
+
+    // Compile all subprojects for which TypeScript declarations are defined.
     def projects = coreModules + commonModule
     projects.each { dependsOn("${it.name}:jsBrowserDistribution") }
 
-    projects.each {
-        // Copy JS packages into ...
-        from "${it.rootDir}/build/js/node_modules"
+    // Copy compiled sources and dependencies to test project node_modules.
+    from "$rootDir/build/js/packages"
+    from(importedPackages) {
+        eachFile {
+            def path = it.path
+            if (path == ".visited") return // We don't need this file.
 
-        // ... 'node_modules' so that test can retrieve dependencies.
-        into "./${typescriptFolder}/node_modules"
+            // Remove intermediate version directory: e.g. "kotlin/1.5.10/kotlin.js"
+            it.path = path.replaceFirst(/\d+\.\d+.\d+\//, "")
+        }
     }
+    into "./$typescriptFolder/node_modules"
 }
 task compileTs(type: NpmTask, dependsOn: copyTestJsSources) {
     workingDir = file(typescriptFolder)
