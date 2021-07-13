@@ -75,8 +75,10 @@ fun getPolymorphicSerializers( serialModule: SerializersModule ): Map<KClass<*>,
         {
             val serializers: MutableMap<KClass<*>, KSerializer<*>> = mutableMapOf()
 
-            override fun <T : Any> contextual( kClass: KClass<T>, serializer: KSerializer<T> ) =
-                throw UnsupportedOperationException()
+            override fun <T : Any> contextual(
+                kClass: KClass<T>,
+                provider: (typeArgumentsSerializers: List<KSerializer<*>>) -> KSerializer<*>
+            ) = throw UnsupportedOperationException()
 
             override fun <Base : Any, Sub : Base> polymorphic(
                 baseClass: KClass<Base>,
