@@ -30,4 +30,4 @@ jobs:
 
       - name: Deploy snapshot
         if: success()
-        run: ./gradlew jsPackageJson publishSnapshot
+        run: ./gradlew setSnapshotVersion publishToSonatype closeAndReleaseSonatypeStagingRepository
