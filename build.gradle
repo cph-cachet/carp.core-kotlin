@@ -20,7 +20,7 @@ buildscript {
             // JVM versions.
             jvmTarget:'1.8',
             jUnit5:'5.7.2',
-            dokkaPlugin:'0.9.18',
+            dokkaPlugin:'1.5.0',
             reflections:'0.9.12',
 
             // JS versions.
@@ -128,15 +128,19 @@ configure( subprojects - detektModule ) {
     // > repository.password=<SONATYPE PASSWORD>
     apply plugin: 'maven-publish'
     apply plugin: 'org.jetbrains.dokka'
-    dokka {
-        outputFormat = 'html'
-        outputDirectory = "$buildDir/javadoc"
+    task dokkaJvmJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+        dokkaSourceSets {
+            register("jvm") {
+                platform.set(org.jetbrains.dokka.Platform.jvm)
+                sourceRoots.from(kotlin.sourceSets.getByName("jvmMain").kotlin.srcDirs)
+            }
+        }
     }
     task javadocJar(type: Jar) {
         group JavaBasePlugin.DOCUMENTATION_GROUP
         description 'Create javadoc jar using Dokka'
         archiveClassifier = "javadoc"
-        from dokka
+        from dokkaJvmJavadoc
     }
     publishing {
         publications {
@@ -355,36 +359,4 @@ configure( rootProject )
     }
     tasks.detekt.jvmTarget = "1.8"
     tasks.detekt.dependsOn ":carp.detekt:assemble" // Ensure 'carp.detekt' is built prior to running code analysis.
-}
-
-
-// HACK: Dokka currently does not work for multiplatform projects.
-// The following configuration is a workaround to configure Dokka for JVM solely:
-// https://discuss.kotlinlang.org/t/how-to-configure-dokka-for-kotlin-multiplatform/9834
-configure( subprojects - detektModule ) {
-    dokka {
-        kotlinTasks { [] }
-        // Dokka fails to retrieve sources from multiplatform tasks. Setting this as empty avoids exceptions.
-        sourceRoot {
-            path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0] // There is only one source dir.
-            platforms = ["Common"]
-        }
-        sourceRoot {
-            path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0] // There is only one source dir.
-            platforms = ["JVM"]
-        }
-    }
-}
-// HACK: Manually add source dependencies of core modules to 'common' so that Dokka can resolve them.
-configure( coreModules ) {
-    dokka {
-        sourceRoot {
-            path = project(':carp.common').kotlin.sourceSets.commonMain.kotlin.srcDirs[0] // There is only one source dir.
-            platforms = ["Common"]
-        }
-        sourceRoot {
-            path = project(':carp.common').kotlin.sourceSets.jvmMain.kotlin.srcDirs[0] // There is only one source dir.
-            platforms = ["JVM"]
-        }
-    }
 }
