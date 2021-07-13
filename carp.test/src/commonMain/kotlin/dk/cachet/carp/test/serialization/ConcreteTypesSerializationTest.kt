@@ -52,6 +52,7 @@ abstract class ConcreteTypesSerializationTest(
         {
             // Get serializer.
             val type = toSerialize::class
+            @Suppress( "UNCHECKED_CAST" )
             val serializer = polymorphicSerializers[ type ] as? KSerializer<Any>
             assertNotNull( serializer, "No serializer registered for type '$type'" )
 
