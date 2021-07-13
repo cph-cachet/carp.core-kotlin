@@ -13,9 +13,9 @@ buildscript {
 
         versions = [
             // Kotlin multiplatform versions.
-            kotlin:'1.5.10',
-            serialization:'1.2.1',
-            coroutines:'1.5.0',
+            kotlin:'1.5.21',
+            serialization:'1.2.2',
+            coroutines:'1.5.1',
 
             // JVM versions.
             jvmTarget:'1.8',
@@ -236,7 +236,7 @@ task setupTsProject(type: NpmTask) {
 task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
     // Make sure no old imported packages are left behind.
     def importedPackages = file("$rootDir/build/js/packages_imported")
-    importedPackages.eachFile { it.delete() }
+    if (importedPackages.exists()) importedPackages.eachFile { it.delete() }
 
     // Compile all subprojects for which TypeScript declarations are defined.
     def projects = coreModules + commonModule
