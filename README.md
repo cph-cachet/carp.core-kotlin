@@ -313,5 +313,8 @@ For `carp.core-kotlin`:
 - **jsTest**: Test the full project on a JavaScript runtime using a headless Chrome browser.
 - **verifyTsDeclarations**: Verify whether the TypeScript declarations of all modules, defined in `typescript-declarations`, match the compiled JS sources and work at runtime.
 - **detektPasses**: Run code analysis. Output will list failure in case code smells are detected.
-- **jsPackageJson publishSigned**: Publish all projects to Maven using the version number specified in `ext.globalVersion`. This includes documentation, sources, and signing. For this to work you need to configure a `publish.properties` file with a signing signature and repository user in the project root folder. See main `build.gradle` for details.
-- **jsPackageJson publishSnapshot**: Publish a snapshot build for all projects to Maven, substituting the suffix of the version specified in `ext.globalVersion` with `-SNAPSHOT`.
+- **publishToSonatype closeAndReleaseSonatypeStagingRepository**: Publish all projects to Maven using the version number specified in `ext.globalVersion`.
+  This includes documentation, sources, and signing.
+  For this to work you need to configure a `publish.properties` file with a signing signature and repository user in the project root folder.
+  Preface with `setSnapshotVersion` task to publish to the snapshot repository, substituting the suffix of the version specified in `ext.globalVersion` with `-SNAPSHOT`.
+  See main `build.gradle` for details.
