@@ -233,6 +233,7 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
 
     // Copy compiled sources and dependencies to test project node_modules.
     from "$rootDir/build/js/packages"
+    exclude '**/node_modules/**'
     from(importedPackages) {
         eachFile {
             def path = it.path
