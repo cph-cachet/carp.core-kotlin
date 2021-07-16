@@ -11,7 +11,6 @@ import Json = kotlinx.serialization.json.Json
 import { dk } from 'carp.core-kotlin-carp.common'
 import EmailAddress = dk.cachet.carp.common.application.EmailAddress
 import NamespacedId = dk.cachet.carp.common.application.NamespacedId
-import TimeSpan = dk.cachet.carp.common.application.TimeSpan
 import Trilean = dk.cachet.carp.common.application.Trilean
 import UUID = dk.cachet.carp.common.application.UUID
 import toTrilean = dk.cachet.carp.common.application.toTrilean_1v8dcc$
@@ -38,8 +37,6 @@ describe( "carp.common", () => {
             EmailAddress.Companion,
             new NamespacedId( "namespace", "type" ),
             NamespacedId.Companion,
-            TimeSpan.Companion.INFINITE,
-            TimeSpan.Companion,
             UUID.Companion.randomUUID(),
             UUID.Companion,
             [ "InputElement", new Text( "How are you feeling?" ) ],
@@ -62,15 +59,6 @@ describe( "carp.common", () => {
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.common', instances )
         await moduleVerifier.verify()
-    } )
-
-
-    describe( "TimeSpan", () => {
-        it( "totalMilliseconds works", () => {
-            const second = new TimeSpan( Long.fromNumber( 1000000 ) )
-            const ms = second.totalMilliseconds
-            expect( ms ).equals( 1000 )
-        } )
     } )
 
 

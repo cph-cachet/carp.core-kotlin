@@ -19,6 +19,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.test.*
+import kotlin.time.Duration
 
 
 val testJson = createDefaultJSON( STUBS_SERIAL_MODULE )
@@ -76,7 +77,7 @@ private val commonInstances = listOf(
     // `sampling` namespace.
     BatteryAwareSamplingConfiguration( GranularitySamplingConfiguration( Granularity.Balanced ) ),
     GranularitySamplingConfiguration( Granularity.Balanced ),
-    IntervalSamplingConfiguration( TimeSpan.fromMilliseconds( 1000.0 ) ),
+    IntervalSamplingConfiguration( Duration.Companion.milliseconds( 1000 ) ),
     NoOptionsSamplingConfiguration,
 
     // `tasks` namespace.
@@ -88,7 +89,7 @@ private val commonInstances = listOf(
     WebTask( "Survey", emptyList(), "Some survey", "http://survey.com" ),
 
     // `triggers` namespace.
-    ElapsedTimeTrigger( Smartphone( "User's phone" ), TimeSpan( 0 ) ),
+    ElapsedTimeTrigger( Smartphone( "User's phone" ), Duration.ZERO ),
     ManualTrigger(
         "User's phone",
         "Mood",

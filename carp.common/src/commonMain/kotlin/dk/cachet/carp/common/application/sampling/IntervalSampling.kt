@@ -1,15 +1,16 @@
 package dk.cachet.carp.common.application.sampling
 
-import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
+import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration
 
 
 /**
  * Sampling scheme which allows configuring a time interval in between subsequent measurements.
  */
-class IntervalSamplingScheme( dataType: DataTypeMetaData, val defaultMeasureInterval: TimeSpan ) :
+class IntervalSamplingScheme( dataType: DataTypeMetaData, val defaultMeasureInterval: Duration ) :
     DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>( dataType )
 {
     override fun createSamplingConfigurationBuilder(): IntervalSamplingConfigurationBuilder =
@@ -23,14 +24,17 @@ class IntervalSamplingScheme( dataType: DataTypeMetaData, val defaultMeasureInte
  * A sampling configuration which allows configuring the time [interval] in between subsequent measurements.
  */
 @Serializable
-data class IntervalSamplingConfiguration( val interval: TimeSpan ) : SamplingConfiguration
+data class IntervalSamplingConfiguration(
+    @Serializable( DurationSerializer::class )
+    val interval: Duration
+) : SamplingConfiguration
 
 
 /**
  * A helper class to configure and construct immutable [IntervalSamplingConfiguration] objects
  * as part of setting up a [DeviceDescriptor].
  */
-class IntervalSamplingConfigurationBuilder( var interval: TimeSpan ) :
+class IntervalSamplingConfigurationBuilder( var interval: Duration ) :
     SamplingConfigurationBuilder<IntervalSamplingConfiguration>
 {
     override fun build(): IntervalSamplingConfiguration = IntervalSamplingConfiguration( interval )

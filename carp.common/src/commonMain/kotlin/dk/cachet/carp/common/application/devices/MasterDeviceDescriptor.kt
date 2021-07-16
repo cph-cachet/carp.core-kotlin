@@ -1,9 +1,9 @@
 package dk.cachet.carp.common.application.devices
 
-import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration
 
 
 /**
@@ -22,7 +22,7 @@ abstract class MasterDeviceDescriptor<TRegistration : DeviceRegistration, out TB
     /**
      * Get a trigger which fires immediately at the start of a study deployment.
      */
-    fun atStartOfStudy(): ElapsedTimeTrigger = ElapsedTimeTrigger( this, TimeSpan( 0 ) )
+    fun atStartOfStudy(): ElapsedTimeTrigger = ElapsedTimeTrigger( this, Duration.ZERO )
 }
 
 typealias AnyMasterDeviceDescriptor = MasterDeviceDescriptor<*, *>

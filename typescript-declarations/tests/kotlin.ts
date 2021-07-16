@@ -7,6 +7,7 @@ import Pair = kotlin.Pair
 import ArrayList = kotlin.collections.ArrayList
 import HashSet = kotlin.collections.HashSet
 import toSet = kotlin.collections.toSet_us0mfu$
+import Duration = kotlin.time.Duration
 
 
 describe( "kotlin", () => {
@@ -14,7 +15,8 @@ describe( "kotlin", () => {
         const instances = [
             new Pair( "key", "value" ),
             new HashSet(),
-            new ArrayList( [ "One", "Two", "Three" ] )
+            new ArrayList( [ "One", "Two", "Three" ] ),
+            Duration.Companion
         ]
 
         const moduleVerifier = new VerifyModule( 'kotlin', instances )
