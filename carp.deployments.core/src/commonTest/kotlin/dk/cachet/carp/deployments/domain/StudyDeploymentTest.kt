@@ -1,6 +1,5 @@
 package dk.cachet.carp.deployments.domain
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.AltBeaconDeviceRegistration
@@ -22,6 +21,7 @@ import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
+import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import kotlin.test.*
 
@@ -591,7 +591,7 @@ class StudyDeploymentTest
         val deployment = createComplexDeployment()
 
         val invalidDevice = StubMasterDeviceDescriptor( "Not in deployment" )
-        assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( invalidDevice, DateTime.now() ) }
+        assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( invalidDevice, Clock.System.now() ) }
         assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
     }
 
@@ -603,7 +603,7 @@ class StudyDeploymentTest
         protocol.addMasterDevice( device )
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
-        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( device, DateTime.now() ) }
+        assertFailsWith<IllegalStateException> { deployment.deviceDeployed( device, Clock.System.now() ) }
         assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
     }
 
@@ -634,7 +634,7 @@ class StudyDeploymentTest
         // Ensure new registration is more recent than previous one.
         // The timer precision on the JS runtime is sometimes not enough to notice a difference.
         // In practice, in a distributed system, the timestamps of a re-registration will never overlap due to latency.
-        while ( DateTime.now() == deviceDeployment.lastUpdateDate ) { /* Wait. */ }
+        while ( Clock.System.now() == deviceDeployment.lastUpdateDate ) { /* Wait. */ }
         deployment.registerDevice( device, device.createRegistration { } )
 
         assertFailsWith<IllegalArgumentException> { deployment.deviceDeployed( device, deviceDeployment.lastUpdateDate ) }

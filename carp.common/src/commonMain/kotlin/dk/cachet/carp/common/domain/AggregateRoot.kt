@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.domain
 
-import dk.cachet.carp.common.application.DateTime
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 
 /**
@@ -12,7 +13,7 @@ abstract class AggregateRoot<TRoot, TSnapshot : Snapshot<TRoot>, TEvent : Domain
     /**
      * The date when this object was created.
      */
-    var creationDate: DateTime = DateTime.now()
+    var creationDate: Instant = Clock.System.now()
         protected set
 
     private val events: MutableList<TEvent> = mutableListOf()

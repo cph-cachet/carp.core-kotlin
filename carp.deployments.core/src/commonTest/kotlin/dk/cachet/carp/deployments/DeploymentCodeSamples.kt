@@ -1,6 +1,5 @@
 package dk.cachet.carp.deployments
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.EventBus
@@ -19,6 +18,7 @@ import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.test.runSuspendTest
+import kotlinx.datetime.Instant
 import kotlin.test.*
 
 
@@ -56,7 +56,7 @@ class DeploymentCodeSamples
         {
             val deploymentInformation: MasterDeviceDeployment =
                 deploymentService.getDeviceDeploymentFor( studyDeploymentId, patientPhone.roleName )
-            val deploymentDate: DateTime = deploymentInformation.lastUpdateDate // To verify correct deployment.
+            val deploymentDate: Instant = deploymentInformation.lastUpdateDate // To verify correct deployment.
             deploymentService.deploymentSuccessful( studyDeploymentId, patientPhone.roleName, deploymentDate )
         }
 

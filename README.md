@@ -248,7 +248,7 @@ if ( patientPhoneStatus.canObtainDeviceDeployment ) // True since there are no d
 {
     val deploymentInformation: MasterDeviceDeployment =
         deploymentService.getDeviceDeploymentFor( studyDeploymentId, patientPhone.roleName )
-    val deploymentDate: DateTime = deploymentInformation.lastUpdateDate // To verify correct deployment.
+    val deploymentDate: Instant = deploymentInformation.lastUpdateDate // To verify correct deployment.
     deploymentService.deploymentSuccessful( studyDeploymentId, patientPhone.roleName, deploymentDate )
 }
 

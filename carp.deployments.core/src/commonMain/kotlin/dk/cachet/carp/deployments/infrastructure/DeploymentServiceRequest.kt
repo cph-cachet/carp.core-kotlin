@@ -1,6 +1,5 @@
 package dk.cachet.carp.deployments.infrastructure
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
@@ -10,6 +9,7 @@ import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 private typealias Service = DeploymentService
@@ -68,7 +68,7 @@ sealed class DeploymentServiceRequest
     data class DeploymentSuccessful(
         val studyDeploymentId: UUID,
         val masterDeviceRoleName: String,
-        val deviceDeploymentLastUpdateDate: DateTime
+        val deviceDeploymentLastUpdateDate: Instant
     ) : DeploymentServiceRequest(),
         Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deviceDeploymentLastUpdateDate )
 

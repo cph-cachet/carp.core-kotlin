@@ -1,10 +1,10 @@
 package dk.cachet.carp.deployments.domain
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 
@@ -14,13 +14,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StudyDeploymentSnapshot(
     val studyDeploymentId: UUID,
-    override val creationDate: DateTime,
+    override val creationDate: Instant,
     val studyProtocolSnapshot: StudyProtocolSnapshot,
     val registeredDevices: Set<String>,
     val deviceRegistrationHistory: Map<String, List<DeviceRegistration>>,
     val deployedDevices: Set<String>,
     val invalidatedDeployedDevices: Set<String>,
-    val startTime: DateTime?,
+    val startTime: Instant?,
     val isStopped: Boolean
 ) : Snapshot<StudyDeployment>
 {

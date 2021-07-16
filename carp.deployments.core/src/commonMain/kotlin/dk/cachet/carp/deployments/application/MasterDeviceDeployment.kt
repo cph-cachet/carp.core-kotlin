@@ -1,6 +1,5 @@
 package dk.cachet.carp.deployments.application
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
@@ -8,6 +7,8 @@ import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.Trigger
 import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 
@@ -74,14 +75,13 @@ data class MasterDeviceDeployment(
      * The time when this device deployment was last updated.
      * This corresponds to the most recent device registration as part of this device deployment.
      */
-    val lastUpdateDate: DateTime =
-        // TODO: Remove this workaround once JS serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/716
+    val lastUpdateDate: Instant =
+        // TODO: Remove this workaround once JS serialization bug is fixed:
+        //  https://github.com/Kotlin/kotlinx.serialization/issues/716
         @Suppress( "SENSELESS_COMPARISON" )
-        if ( connectedDeviceConfigurations == null || configuration == null ) DateTime.now()
+        if ( connectedDeviceConfigurations == null || configuration == null ) Clock.System.now()
         else connectedDeviceConfigurations.values.plus( configuration )
-            .map { it.registrationCreationDate.msSinceUTC }
-            .maxOrNull()
-            .let { DateTime( it!! ) }
+            .maxOf { it.registrationCreationDate }
 
 
     /**

@@ -9,7 +9,6 @@ import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-js-leg
 import Json = kotlinx.serialization.json.Json
 
 import { dk } from 'carp.core-kotlin-carp.common'
-import DateTime = dk.cachet.carp.common.application.DateTime
 import EmailAddress = dk.cachet.carp.common.application.EmailAddress
 import NamespacedId = dk.cachet.carp.common.application.NamespacedId
 import TimeSpan = dk.cachet.carp.common.application.TimeSpan
@@ -35,8 +34,6 @@ describe( "carp.common", () => {
         const username = new Username( "Test" )
 
         const instances = [
-            DateTime.Companion.now(),
-            DateTime.Companion,
             new EmailAddress( "test@test.com" ),
             EmailAddress.Companion,
             new NamespacedId( "namespace", "type" ),
@@ -65,25 +62,6 @@ describe( "carp.common", () => {
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.common', instances )
         await moduleVerifier.verify()
-    } )
-
-
-    describe( "DateTime", () => {
-        it( "serializes as string", () => {
-            const dateTime = new DateTime( Long.fromNumber( 42 ) )
-            
-            const json: Json = createDefaultJSON()
-            const serializer = DateTime.Companion.serializer()
-            const serialized = json.encodeToString_tf03ej$( serializer, dateTime )
-    
-            expect( serialized ).equals( "\"1970-01-01T00:00:00.042Z\"" )
-        } )
-    
-        it( "msSinceUTC is Long", () => {
-            const now = DateTime.Companion.now()
-    
-            expect( now.msSinceUTC ).instanceOf( Long )
-        } )
     } )
 
 

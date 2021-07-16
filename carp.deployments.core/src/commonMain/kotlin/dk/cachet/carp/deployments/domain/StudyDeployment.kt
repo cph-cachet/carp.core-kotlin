@@ -1,6 +1,5 @@
 package dk.cachet.carp.deployments.domain
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
@@ -14,6 +13,8 @@ import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 
 /**
@@ -30,7 +31,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         data class DeviceRegistered( val device: AnyDeviceDescriptor, val registration: DeviceRegistration ) : Event()
         data class DeviceUnregistered( val device: AnyDeviceDescriptor ) : Event()
         data class DeviceDeployed( val device: AnyMasterDeviceDescriptor ) : Event()
-        data class Started( val startTime: DateTime ) : Event()
+        data class Started( val startTime: Instant ) : Event()
         data class DeploymentInvalidated( val device: AnyMasterDeviceDescriptor ) : Event()
         object Stopped : Event()
     }
@@ -140,7 +141,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * The time when the study deployment was ready for the first time (all devices deployed); null otherwise.
      */
-    var startTime: DateTime? = null
+    var startTime: Instant? = null
         private set
 
     /**
@@ -361,7 +362,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
      * - the [deviceDeploymentLastUpdateDate] does not match the expected date. The deployment might be outdated.
      * @throws IllegalStateException when the passed [device] cannot be deployed yet, or the deployment has stopped.
      */
-    fun deviceDeployed( device: AnyMasterDeviceDescriptor, deviceDeploymentLastUpdateDate: DateTime )
+    fun deviceDeployed( device: AnyMasterDeviceDescriptor, deviceDeploymentLastUpdateDate: Instant )
     {
         // Verify whether the specified device is part of the protocol of this deployment.
         require( device in protocolSnapshot.masterDevices ) { "The specified master device is not part of the protocol of this deployment." }
@@ -385,7 +386,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         // Set start time first time deployment is ready (last device deployed).
         if ( startTime == null && getStatus() is StudyDeploymentStatus.DeploymentReady )
         {
-            val now = DateTime.now()
+            val now = Clock.System.now()
             startTime = now
             event( Event.Started( now ) )
         }

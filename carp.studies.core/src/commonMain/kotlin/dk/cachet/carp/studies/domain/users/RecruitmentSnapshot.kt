@@ -1,18 +1,18 @@
 package dk.cachet.carp.studies.domain.users
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.users.Participant
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 
 @Serializable
 data class RecruitmentSnapshot(
     val studyId: UUID,
-    override val creationDate: DateTime,
+    override val creationDate: Instant,
     val studyProtocol: StudyProtocolSnapshot?,
     val invitation: StudyInvitation?,
     val participants: Set<Participant>,

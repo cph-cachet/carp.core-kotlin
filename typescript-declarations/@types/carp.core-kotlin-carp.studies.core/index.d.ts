@@ -8,8 +8,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
     import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-js-legacy'
     import Json = kotlinx.serialization.json.Json
 
+    import { kotlinx as kxd } from 'Kotlin-DateTime-library-kotlinx-datetime-js-legacy'
+    import Instant = kxd.datetime.Instant
+
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
-    import DateTime = cdk.cachet.carp.common.application.DateTime
     import EmailAddress = cdk.cachet.carp.common.application.EmailAddress
     import NamespacedId = cdk.cachet.carp.common.application.NamespacedId
     import UUID = cdk.cachet.carp.common.application.UUID
@@ -31,7 +33,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
         class StudyDetails
         {
             constructor(
-                studyId: UUID, studyOwner: StudyOwner, name: string, creationDate: DateTime,
+                studyId: UUID, studyOwner: StudyOwner, name: string, creationDate: Instant,
                 description: string,
                 invitation: StudyInvitation,
                 protocolSnapshot: StudyProtocolSnapshot | null )
@@ -41,7 +43,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             readonly studyId: UUID
             readonly studyOwner: StudyOwner
             readonly name: string
-            readonly creationDate: DateTime
+            readonly creationDate: Instant
             readonly description: string
             readonly invitation: StudyInvitation
             readonly protocolSnapshot: StudyProtocolSnapshot | null
@@ -60,7 +62,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             class Configuring
             {
                 constructor(
-                    studyId: UUID, name: string, creationDate: DateTime,
+                    studyId: UUID, name: string, creationDate: Instant,
                     canSetInvitation: boolean,
                     canSetStudyProtocol: boolean,
                     canDeployToParticipants: boolean,
@@ -68,7 +70,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
     
                 readonly studyId: UUID
                 readonly name: string
-                readonly creationDate: DateTime
+                readonly creationDate: Instant
                 readonly canSetInvitation: boolean
                 readonly canSetStudyProtocol: boolean
                 readonly canDeployToParticipants: boolean
@@ -77,14 +79,14 @@ declare module 'carp.core-kotlin-carp.studies.core'
             class Live
             {
                 constructor(
-                    studyId: UUID, name: string, creationDate: DateTime,
+                    studyId: UUID, name: string, creationDate: Instant,
                     canSetInvitation: boolean,
                     canSetStudyProtocol: boolean,
                     canDeployToParticipants: boolean )
     
                 readonly studyId: UUID
                 readonly name: string
-                readonly creationDate: DateTime
+                readonly creationDate: Instant
                 readonly canSetInvitation: boolean
                 readonly canSetStudyProtocol: boolean
                 readonly canDeployToParticipants: boolean
