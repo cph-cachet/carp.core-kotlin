@@ -1,12 +1,12 @@
 package dk.cachet.carp.protocols.domain
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.application.ProtocolVersion
 import dk.cachet.carp.protocols.application.StudyProtocolId
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.test.runSuspendTest
+import kotlinx.datetime.Instant
 import kotlin.test.*
 
 
@@ -109,12 +109,12 @@ interface StudyProtocolRepositoryTest
         val name = "Study"
 
         val protocol = StudyProtocol( owner, name )
-        val initialVersion = ProtocolVersion( "Initial", DateTime( 0 ) )
+        val initialVersion = ProtocolVersion( "Initial", Instant.fromEpochMilliseconds( 0 ) )
         repo.add( protocol, initialVersion )
 
         val protocol2 = StudyProtocol( owner, name )
         protocol2.addMasterDevice( StubMasterDeviceDescriptor() )
-        val newVersion = ProtocolVersion( "New version", DateTime( 1 ) )
+        val newVersion = ProtocolVersion( "New version", Instant.fromEpochMilliseconds( 1 ) )
         repo.addVersion( protocol2, newVersion )
 
         val retrieved = repo.getBy( protocol2.id )
@@ -185,10 +185,10 @@ interface StudyProtocolRepositoryTest
         repo.add( protocol1, ProtocolVersion( "Initial" ) )
 
         val protocol2 = StudyProtocol( owner, "Study 2" )
-        repo.add( protocol2, ProtocolVersion( "Initial", DateTime( 0 ) ) )
+        repo.add( protocol2, ProtocolVersion( "Initial", Instant.fromEpochMilliseconds( 0 ) ) )
         val protocol2Latest = StudyProtocol( owner, "Study 2" )
         protocol2Latest.addMasterDevice( StubMasterDeviceDescriptor() )
-        val later = DateTime( 1 )
+        val later = Instant.fromEpochMilliseconds( 1 )
         repo.addVersion( protocol2Latest, ProtocolVersion( "Latest should be retrieved", later ) )
 
         val protocols: Sequence<StudyProtocol> = repo.getAllFor( owner.id )

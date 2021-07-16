@@ -1,6 +1,5 @@
 package dk.cachet.carp.deployments.domain.users
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
@@ -8,6 +7,7 @@ import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.common.infrastructure.serialization.MapAsArraySerializer
 import dk.cachet.carp.deployments.application.users.AssignedMasterDevice
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 
@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ParticipantGroupSnapshot(
-    override val creationDate: DateTime,
+    override val creationDate: Instant,
     val studyDeploymentId: UUID,
     val assignedMasterDevices: Set<AssignedMasterDevice>,
     val isStudyDeploymentStopped: Boolean,

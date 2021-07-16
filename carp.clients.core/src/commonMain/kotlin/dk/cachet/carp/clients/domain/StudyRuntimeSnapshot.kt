@@ -1,18 +1,18 @@
 package dk.cachet.carp.clients.domain
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 
 @Serializable
 data class StudyRuntimeSnapshot(
     val studyDeploymentId: UUID,
-    override val creationDate: DateTime,
+    override val creationDate: Instant,
     val device: AnyMasterDeviceDescriptor,
     val isDeployed: Boolean,
     val deploymentInformation: MasterDeviceDeployment?,

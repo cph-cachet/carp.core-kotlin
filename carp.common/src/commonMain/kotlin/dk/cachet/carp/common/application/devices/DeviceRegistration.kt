@@ -2,8 +2,9 @@ package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 
@@ -28,7 +29,7 @@ abstract class DeviceRegistration
      */
     abstract val deviceId: String
 
-    val registrationCreationDate: DateTime = DateTime.now()
+    val registrationCreationDate: Instant = Clock.System.now()
 }
 
 

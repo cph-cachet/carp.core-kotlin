@@ -1,7 +1,6 @@
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
@@ -11,6 +10,7 @@ import dk.cachet.carp.deployments.domain.DeploymentRepository
 import dk.cachet.carp.deployments.domain.RegistrableDevice
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import kotlinx.datetime.Instant
 
 
 /**
@@ -197,7 +197,7 @@ class DeploymentServiceHost(
     override suspend fun deploymentSuccessful(
         studyDeploymentId: UUID,
         masterDeviceRoleName: String,
-        deviceDeploymentLastUpdateDate: DateTime
+        deviceDeploymentLastUpdateDate: Instant
     ): StudyDeploymentStatus
     {
         val deployment: StudyDeployment = repository.getStudyDeploymentOrThrowBy( studyDeploymentId )

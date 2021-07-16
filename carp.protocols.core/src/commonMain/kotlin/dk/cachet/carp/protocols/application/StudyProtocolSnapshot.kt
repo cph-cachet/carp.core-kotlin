@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.application
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
@@ -10,6 +9,7 @@ import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
 import dk.cachet.carp.protocols.domain.StudyProtocol
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 
@@ -20,7 +20,7 @@ import kotlinx.serialization.Serializable
 data class StudyProtocolSnapshot(
     val id: StudyProtocolId,
     val description: String,
-    override val creationDate: DateTime,
+    override val creationDate: Instant,
     val masterDevices: List<AnyMasterDeviceDescriptor>,
     val connectedDevices: List<AnyDeviceDescriptor>,
     val connections: List<DeviceConnection>,

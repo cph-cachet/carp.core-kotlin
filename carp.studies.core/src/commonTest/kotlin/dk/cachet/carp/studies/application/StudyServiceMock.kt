@@ -2,13 +2,13 @@
 
 package dk.cachet.carp.studies.application
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.studies.domain.createComplexStudy
 import dk.cachet.carp.test.Mock
+import kotlinx.datetime.Clock
 
 private typealias Service = StudyService
 
@@ -17,7 +17,7 @@ class StudyServiceMock(
     private val createStudyResult: StudyStatus = studyStatus,
     private val updateInternalDescriptionResult: StudyStatus = studyStatus,
     private val getStudyDetailsResult: StudyDetails = StudyDetails(
-        UUID.randomUUID(), StudyOwner(), "Name", DateTime.now(),
+        UUID.randomUUID(), StudyOwner(), "Name", Clock.System.now(),
         "Description", StudyInvitation.empty(), createComplexStudy().protocolSnapshot
     ),
     private val getStudyStatusResult: StudyStatus = studyStatus,
@@ -31,7 +31,7 @@ class StudyServiceMock(
     companion object
     {
         private val studyStatus = StudyStatus.Configuring(
-            UUID.randomUUID(), "Test", DateTime.now(),
+            UUID.randomUUID(), "Test", Clock.System.now(),
             canSetInvitation = true,
             canSetStudyProtocol = false,
             canDeployToParticipants = false,

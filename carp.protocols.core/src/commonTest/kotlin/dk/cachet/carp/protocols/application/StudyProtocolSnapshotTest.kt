@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.application
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
@@ -16,6 +15,7 @@ import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
+import kotlinx.datetime.Clock
 import kotlin.test.*
 
 
@@ -99,7 +99,7 @@ class StudyProtocolSnapshotTest
         )
 
         val ownerId = UUID( "ef26be3f-2de8-4779-a608-bb6e027e4b75" )
-        val creationDate = DateTime.now()
+        val creationDate = Clock.System.now()
         val protocolId = StudyProtocolId( ownerId, "Study" )
         val snapshot = StudyProtocolSnapshot(
             protocolId,
@@ -158,7 +158,7 @@ class StudyProtocolSnapshotTest
         val correctSnapshot = StudyProtocolSnapshot(
             StudyProtocolId( UUID.randomUUID(), "Name" ),
             "Description",
-            DateTime.now(),
+            Clock.System.now(),
             listOf( masterDevice ),
             emptyList(),
             emptyList(),

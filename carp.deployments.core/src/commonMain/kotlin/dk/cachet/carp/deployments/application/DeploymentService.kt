@@ -1,6 +1,5 @@
 package dk.cachet.carp.deployments.application
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
@@ -8,6 +7,7 @@ import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 
@@ -135,7 +135,7 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
     suspend fun deploymentSuccessful(
         studyDeploymentId: UUID,
         masterDeviceRoleName: String,
-        deviceDeploymentLastUpdateDate: DateTime
+        deviceDeploymentLastUpdateDate: Instant
     ): StudyDeploymentStatus
 
     /**

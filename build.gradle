@@ -15,6 +15,7 @@ buildscript {
             kotlin:'1.5.21',
             serialization:'1.2.2',
             coroutines:'1.5.1',
+            datetime:'0.2.1',
 
             // JVM versions.
             jvmTarget:'1.8',
@@ -278,6 +279,11 @@ configure( coreModules + commonModule ) {
 
     kotlin {
         sourceSets {
+            commonMain {
+                dependencies {
+                    implementation "org.jetbrains.kotlinx:kotlinx-datetime:${versions.datetime}"
+                }
+            }
             commonTest {
                 dependencies {
                     implementation project(':carp.test')
@@ -291,8 +297,11 @@ configure( coreModules + commonModule ) {
             }
 
             all {
-                // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
-                languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
+                languageSettings {
+                    // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
+                    useExperimentalAnnotation("kotlin.RequiresOptIn")
+                    useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+                }
             }
         }
     }
