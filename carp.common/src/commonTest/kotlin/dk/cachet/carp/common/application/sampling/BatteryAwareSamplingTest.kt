@@ -2,11 +2,11 @@
 
 package dk.cachet.carp.common.application.sampling
 
-import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE_METADATA
 import dk.cachet.carp.common.infrastructure.test.StubSamplingConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubSamplingConfigurationBuilder
 import kotlin.test.*
+import kotlin.time.Duration
 
 
 /**
@@ -56,7 +56,7 @@ class BatteryAwareSamplingSchemeTest
 
         val invalidConfiguration = BatteryAwareSamplingConfiguration(
             normal = StubSamplingConfiguration( "Balanced" ),
-            low = IntervalSamplingConfiguration( TimeSpan.fromMinutes( 1.0 ) ),
+            low = IntervalSamplingConfiguration( Duration.minutes( 1 ) ),
             critical = StubSamplingConfiguration( "Off" )
         )
         assertFalse( scheme.isValid( invalidConfiguration ) )

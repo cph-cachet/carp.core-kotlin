@@ -41,22 +41,6 @@ declare module 'carp.core-kotlin-carp.common'
         interface NamespacedId$Companion { serializer(): any }
 
 
-        class TimeSpan
-        {
-            constructor( microseconds: Long )
-
-            static get Companion(): TimeSpan$Companion
-
-            get totalMilliseconds(): number
-        }
-        interface TimeSpan$Companion
-        {
-            readonly INFINITE: TimeSpan;
-            serializer(): any;
-            fromMilliseconds_14dthe$( ms: number ): TimeSpan;
-        }
-
-
         class Trilean
         {
             static readonly TRUE: Trilean

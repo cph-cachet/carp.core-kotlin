@@ -49,4 +49,19 @@ declare module 'kotlin'
         class HashMap<TKey, TValue> {}
         function toMap_v2dak7$<TKey, TValue>( pairs: Pair<TKey, TValue>[] ): HashMap<TKey, TValue>
     }
+
+
+    namespace kotlin.time
+    {
+        class Duration
+        {
+            static get Companion(): Duration$Companion
+        }
+        interface Duration$Companion
+        {
+            readonly ZERO: Duration
+            readonly INFINITE: Duration
+            readonly NEG_INFINITE_8be2vx$: Duration
+        }
+    }
 }
