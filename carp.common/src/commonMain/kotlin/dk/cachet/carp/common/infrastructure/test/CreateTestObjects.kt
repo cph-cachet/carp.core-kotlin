@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.infrastructure.test
 
+import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
@@ -24,6 +25,13 @@ import kotlin.reflect.KClass
  * Stubs for testing extending from types in [dk.cachet.carp.common] module which need to be registered when using [Json] serializer.
  */
 val STUBS_SERIAL_MODULE = SerializersModule {
+    polymorphic( Data::class )
+    {
+        subclass( StubData::class )
+        subclass( StubDataPoint::class )
+        subclass( StubDataTimeSpan::class )
+    }
+
     fun PolymorphicModuleBuilder<AnyMasterDeviceDescriptor>.registerMasterDeviceDescriptorSubclasses()
     {
         subclass( StubMasterDeviceDescriptor::class )

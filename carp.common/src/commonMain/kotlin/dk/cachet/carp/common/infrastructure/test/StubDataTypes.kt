@@ -3,18 +3,36 @@ package dk.cachet.carp.common.infrastructure.test
 import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataTimeType
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.application.data.DataTypeMetaData
+import dk.cachet.carp.common.application.data.DataTypeMetaDataList
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingScheme
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingConfiguration
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingConfigurationBuilder
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 
 
-val STUB_DATA_TYPE: DataType = DataType( CarpDataTypes.CARP_NAMESPACE, "stub" )
-val STUB_DATA_TYPE_METADATA: DataTypeMetaData = DataTypeMetaData( STUB_DATA_TYPE, "Stub data", DataTimeType.POINT )
+/**
+ * Stub data types for unit tests.
+ */
+object StubDataTypes : DataTypeMetaDataList()
+{
+    internal const val STUB_DATA_TYPE_NAME = "${CarpDataTypes.CARP_NAMESPACE}.stub"
+    val STUB = add( STUB_DATA_TYPE_NAME, "Stub data", DataTimeType.EITHER )
+
+    internal const val STUB_DATA_POINT_TYPE_NAME = "${CarpDataTypes.CARP_NAMESPACE}.stubpoint"
+    val STUB_POINT = add( STUB_DATA_POINT_TYPE_NAME, "Stub data point", DataTimeType.POINT )
+
+    internal const val STUB_DATA_TIME_SPAN_TYPE_NAME = "${CarpDataTypes.CARP_NAMESPACE}.stubtimespan"
+    val STUB_TIME_SPAN = add( STUB_DATA_TIME_SPAN_TYPE_NAME, "Stub data time span", DataTimeType.TIME_SPAN )
+}
+
+
+val STUB_DATA_TYPE: DataType = DataType.fromString( StubDataTypes.STUB_DATA_TYPE_NAME )
+val STUB_DATA_POINT_TYPE: DataType = DataType.fromString( StubDataTypes.STUB_DATA_POINT_TYPE_NAME )
+val STUB_DATA_TIME_SPAN_TYPE: DataType = DataType.fromString( StubDataTypes.STUB_DATA_TIME_SPAN_TYPE_NAME )
+
 
 class StubDataTypeSamplingScheme :
-    DataTypeSamplingScheme<NoOptionsSamplingConfigurationBuilder>( STUB_DATA_TYPE_METADATA )
+    DataTypeSamplingScheme<NoOptionsSamplingConfigurationBuilder>( StubDataTypes.STUB )
 {
     override fun createSamplingConfigurationBuilder(): NoOptionsSamplingConfigurationBuilder = NoOptionsSamplingConfigurationBuilder
 
