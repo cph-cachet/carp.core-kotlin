@@ -55,7 +55,7 @@ fun DataTypeMetaDataList.isValidMeasurement( measurement: Measurement<*> ): Tril
     val expectedTimeType = registeredType.timeType
     val isValid =
         expectedDataType == measurement.dataType &&
-        ( expectedTimeType == DataTimeType.EITHER || expectedTimeType == measurement.getDataTimeType() )
+        measurement.getDataTimeType().matches( expectedTimeType )
 
     return isValid.toTrilean()
 }
