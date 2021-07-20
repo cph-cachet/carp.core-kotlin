@@ -3,7 +3,7 @@ package dk.cachet.carp.common.infrastructure.test
 import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataTimeType
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.application.data.DataTypeMetaDataList
+import dk.cachet.carp.common.application.data.DataTypeMetaDataMap
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingScheme
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingConfiguration
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingConfigurationBuilder
@@ -13,7 +13,7 @@ import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 /**
  * Stub data types for unit tests.
  */
-object StubDataTypes : DataTypeMetaDataList()
+object StubDataTypes : DataTypeMetaDataMap()
 {
     internal const val STUB_DATA_TYPE_NAME = "${CarpDataTypes.CARP_NAMESPACE}.stub"
     val STUB = add( STUB_DATA_TYPE_NAME, "Stub data", DataTimeType.EITHER )

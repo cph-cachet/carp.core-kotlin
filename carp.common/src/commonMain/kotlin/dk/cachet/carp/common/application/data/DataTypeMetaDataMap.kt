@@ -1,15 +1,16 @@
 package dk.cachet.carp.common.application.data
 
-import dk.cachet.carp.common.application.EnumObjectList
+import dk.cachet.carp.common.application.EnumObjectMap
 
 
 /**
  * A helper class to construct iterable objects which hold [DataTypeMetaData] member definitions.
  * This is similar to an enum, but removes the need for an intermediate enum type and generic type parameters are retained per member.
  *
- * Extend from this class as an object and assign members as follows: `val SOME_TYPE = add( "dk.cachet.carp.sometype" )`.
+ * Extend from this class as an object and assign members as follows:
+ * `val SOME_TYPE = add( "dk.cachet.carp.sometype", "Some type", DataTimeType.EITHER )`.
  */
-open class DataTypeMetaDataList : EnumObjectList<DataTypeMetaData>()
+open class DataTypeMetaDataMap : EnumObjectMap<DataType, DataTypeMetaData>( { metaData -> metaData.type } )
 {
     /**
      * Add a [DataTypeMetaData] for the [DataType] with [fullyQualifiedName]

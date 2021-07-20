@@ -1,6 +1,6 @@
 package dk.cachet.carp.common.application.sampling
 
-import dk.cachet.carp.common.application.EnumObjectList
+import dk.cachet.carp.common.application.EnumObjectMap
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.tasks.Measure
@@ -51,10 +51,5 @@ abstract class DataTypeSamplingScheme<TConfigBuilder : SamplingConfigurationBuil
  *
  * Extend from this class as an object and assign members as follows: `val SCHEME = add( Scheme( options ) )`.
  */
-open class DataTypeSamplingSchemeList : EnumObjectList<DataTypeSamplingScheme<*>>()
-{
-    /**
-     * Get all [DataType]s to which the [DataTypeSamplingScheme] in this list relate.
-     */
-    fun getDataTypes(): Set<DataType> = map { it.dataType.type }.toSet()
-}
+open class DataTypeSamplingSchemeMap :
+    EnumObjectMap<DataType, DataTypeSamplingScheme<*>>( { scheme -> scheme.dataType.type } )

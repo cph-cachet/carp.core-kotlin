@@ -1,7 +1,7 @@
 package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.Trilean
-import dk.cachet.carp.common.application.data.DataTypeMetaDataList
+import dk.cachet.carp.common.application.data.DataTypeMetaDataMap
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubData
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
@@ -63,7 +63,7 @@ class SerializerDerivedMeasurementTest
     @Test
     fun isValidMeasurement_returns_unknown_when_Data_type_is_not_registered()
     {
-        val noRegistrations = object : DataTypeMetaDataList() { }
+        val noRegistrations = object : DataTypeMetaDataMap() { }
 
         val unregisteredType = measurement( StubData(), 0 )
         assertEquals( Trilean.UNKNOWN, noRegistrations.isValidMeasurement( unregisteredType ) )

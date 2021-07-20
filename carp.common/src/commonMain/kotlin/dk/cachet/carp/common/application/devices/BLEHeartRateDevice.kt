@@ -3,7 +3,7 @@ package dk.cachet.carp.common.application.devices
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeList
+import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskDescriptorList
@@ -19,7 +19,7 @@ data class BLEHeartRateDevice(
     override val roleName: String
 ) : DeviceDescriptor<MACAddressDeviceRegistration, MACAddressDeviceRegistrationBuilder>()
 {
-    object Sensors : DataTypeSamplingSchemeList()
+    object Sensors : DataTypeSamplingSchemeMap()
     {
         /**
          * The number of heart contractions (beats) per minute (bpm).
@@ -40,7 +40,7 @@ data class BLEHeartRateDevice(
     object Tasks : TaskDescriptorList()
 
 
-    override fun getSupportedDataTypes(): Set<DataType> = Sensors.getDataTypes()
+    override fun getSupportedDataTypes(): Set<DataType> = Sensors.keys
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 
     override fun createDeviceRegistrationBuilder(): MACAddressDeviceRegistrationBuilder = MACAddressDeviceRegistrationBuilder()
