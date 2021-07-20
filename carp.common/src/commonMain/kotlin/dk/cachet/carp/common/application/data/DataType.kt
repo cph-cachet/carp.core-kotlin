@@ -48,5 +48,11 @@ enum class DataTimeType
     /**
      * Data can be either related to one specific point in time ([POINT]), or a [TIME_SPAN].
      */
-    EITHER
+    EITHER;
+
+
+    /**
+     * Determines whether this [DataTimeType] matches the [required] [DataTimeType].
+     */
+    fun matches( required: DataTimeType ): Boolean = required == EITHER || this == required
 }
