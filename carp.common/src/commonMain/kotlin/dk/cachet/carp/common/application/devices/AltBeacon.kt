@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeList
+import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskDescriptorList
@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
 @Serializable
 data class AltBeacon( override val roleName: String ) : DeviceDescriptor<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
 {
-    object Sensors : DataTypeSamplingSchemeList()
+    object Sensors : DataTypeSamplingSchemeMap()
     {
         /**
          * The signal strength as measured by the device listening to the [AltBeacon].
@@ -29,7 +29,7 @@ data class AltBeacon( override val roleName: String ) : DeviceDescriptor<AltBeac
 
     object Tasks : TaskDescriptorList()
 
-    override fun getSupportedDataTypes(): Set<DataType> = Sensors.getDataTypes()
+    override fun getSupportedDataTypes(): Set<DataType> = Sensors.keys
 
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 

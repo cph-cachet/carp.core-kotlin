@@ -4,11 +4,12 @@ import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.DataTimeType
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.application.data.DataTypeMetaDataList
+import dk.cachet.carp.common.application.data.DataTypeMetaDataMap
 import dk.cachet.carp.common.application.toTrilean
 import dk.cachet.carp.data.application.Measurement
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.serializer
 import kotlin.reflect.KClass
@@ -42,15 +43,12 @@ inline fun <reified TData : Data> measurement(
 
 /**
  * Determines whether the [DataType] and [DataTimeType] of [measurement] corresponds to the expected values for [Data]
- * as determined by [DataTypeMetaDataList], or [Trilean.UNKNOWN] in case the type of [Data] is not registered.
+ * as determined by [DataTypeMetaDataMap], or [Trilean.UNKNOWN] in case the type of [Data] is not registered.
  */
-fun DataTypeMetaDataList.isValidMeasurement( measurement: Measurement<*> ): Trilean
+fun DataTypeMetaDataMap.isValidMeasurement( measurement: Measurement<*> ): Trilean
 {
     val expectedDataType = getDataType( measurement.data::class )
-
-    // TODO: Rather than iterating, this should probably become a set lookup in `DataTypeMetaDataList`.
-    val registeredType = this.firstOrNull { it.type == expectedDataType }
-        ?: return Trilean.UNKNOWN
+    val registeredType = this[ expectedDataType ] ?: return Trilean.UNKNOWN
 
     val expectedTimeType = registeredType.timeType
     val isValid =
