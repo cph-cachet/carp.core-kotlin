@@ -2,6 +2,8 @@ package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -10,7 +12,7 @@ import kotlinx.serialization.Serializable
  * which was collected because the triggers identified by [triggerIds] requested data collection.
  */
 @Serializable
-data class DataStreamPoint<TData : Data>(
+data class DataStreamPoint<out TData : Data>(
     /**
      * The sequence number of this [measurement] in the data stream, acting as a unique key.
      * Sequence numbers are assigned by the master device which coordinates the data collection,
@@ -19,6 +21,7 @@ data class DataStreamPoint<TData : Data>(
     val sequenceId: Long,
     val studyDeploymentId: UUID,
     val deviceRoleName: String,
+    @Serializable( MeasurementSerializer::class )
     val measurement: Measurement<TData>,
     val triggerIds: List<Int>,
     /**
@@ -30,3 +33,12 @@ data class DataStreamPoint<TData : Data>(
     val dataStream: DataStreamId
         get() = DataStreamId( studyDeploymentId, deviceRoleName, measurement.dataType )
 }
+
+
+/**
+ * A serializer for [DataStreamPoint] to allow polymorphic serialization on the JS LEGACY backend.
+ *
+ * TODO: Verify whether this is still needed once we upgrade to the IR backend.
+ */
+object DataStreamPointSerializer : KSerializer<DataStreamPoint<Data>>
+    by DataStreamPoint.serializer( PolymorphicSerializer( Data::class ) )
