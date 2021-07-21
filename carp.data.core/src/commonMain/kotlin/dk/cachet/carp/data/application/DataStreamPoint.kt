@@ -34,7 +34,7 @@ data class DataStreamPoint<out TData : Data>(
     {
         require( sequenceId >= 0 ) { "Sequence ID must be positive." }
         require( triggerIds.isNotEmpty() )
-            { "Any data always needs to be linked back to at least one trigger that requested it." }
+            { "Data always needs to be linked to at least one trigger that requested it." }
     }
 
     val dataStream: DataStreamId
