@@ -2,6 +2,8 @@ package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.DataType
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
@@ -11,7 +13,7 @@ import kotlinx.serialization.Transient
  * which all share the same data type, [triggerIds], and [syncPoint].
  */
 @Serializable
-data class DataStreamBatch<TData : Data>(
+data class DataStreamBatch<out TData : Data>(
     val firstSequenceId: Long,
     val measurements: List<Measurement<TData>>,
     val triggerIds: List<Int>,
@@ -61,3 +63,13 @@ data class DataStreamBatch<TData : Data>(
         }
     }
 }
+
+
+/**
+ * A serializer for [DataStreamBatch] to allow polymorphic serialization on the JS LEGACY backend.
+ *
+ * TODO: Verify whether this is still needed once we upgrade to the IR backend.
+ */
+object DataStreamBatchSerializer : KSerializer<DataStreamBatch<Data>>
+    by DataStreamBatch.serializer( PolymorphicSerializer( Data::class ) )
+
