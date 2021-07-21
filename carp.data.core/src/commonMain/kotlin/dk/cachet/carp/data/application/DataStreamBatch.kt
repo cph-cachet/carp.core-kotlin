@@ -25,8 +25,17 @@ data class DataStreamBatch<TData : Data>(
     init
     {
         require( firstSequenceId >= 0 ) { "Sequence ID must be positive." }
-        require( measurements.all { it.dataType == dataType } )
-            { "Measurements in a batch all need to be of the same data type." }
+
+        // HACK: This is a workaround to circumvent a JS compilation bug: https://github.com/Kotlin/kotlinx.serialization/issues/247
+        //  This can likely be replaced with the commented out code below once we upgrade to the IR backend.
+        for ( measurement in measurements )
+        {
+            require( measurement.dataType == dataType )
+                { "Measurements in a batch all need to be of the same data type." }
+        }
+        // require( measurements.all { it.dataType == dataType } )
+        //     { "Measurements in a batch all need to be of the same data type." }
+
         require( triggerIds.isNotEmpty() )
             { "Data always needs to be linked to at least one trigger that requested it." }
     }
