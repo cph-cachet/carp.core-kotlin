@@ -30,6 +30,13 @@ data class DataStreamPoint<out TData : Data>(
     val syncPoint: SyncPoint
 )
 {
+    init
+    {
+        require( sequenceId >= 0 ) { "Sequence ID must be positive." }
+        require( triggerIds.isNotEmpty() )
+            { "Any data always needs to be linked back to at least one trigger that requested it." }
+    }
+
     val dataStream: DataStreamId
         get() = DataStreamId( studyDeploymentId, deviceRoleName, measurement.dataType )
 }
