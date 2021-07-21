@@ -9,8 +9,6 @@ import dk.cachet.carp.data.application.DataStreamPoint
 import dk.cachet.carp.data.application.DataStreamPointSerializer
 import dk.cachet.carp.data.application.SyncPoint
 import kotlinx.datetime.Clock
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -35,7 +33,7 @@ class DataStreamPointTest
         val dataStreamPoint: DataStreamPoint<StubData> = testDataStreamPoint
         val serialized = json.encodeToString( DataStreamPointSerializer, dataStreamPoint )
         @Suppress( "UNCHECKED_CAST" )
-        val parsed: DataStreamPoint<Data> =
+        val parsed: DataStreamPoint<StubData> =
             json.decodeFromString( DataStreamPointSerializer, serialized ) as DataStreamPoint<StubData>
 
         assertEquals( dataStreamPoint, parsed )
