@@ -1,11 +1,13 @@
 package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.Trilean
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.DataTimeType
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.data.DataTypeMetaDataMap
 import dk.cachet.carp.common.application.toTrilean
+import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.Measurement
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
@@ -30,6 +32,13 @@ fun <TData : Data> getDataType( dataKlass: KClass<TData> ): DataType =
     {
         throw IllegalArgumentException( "\"$dataKlass\" isn't a serializable Data class." )
     }
+
+/**
+ * Initialize a [DataStreamId] with the specified [studyDeploymentId and [deviceRoleName].
+ * The [DataType] is extracted from the serializer associated with the class of [TData].
+ */
+inline fun <reified TData : Data> dataStreamId( studyDeploymentId: UUID, deviceRoleName: String ): DataStreamId =
+    DataStreamId( studyDeploymentId, deviceRoleName, getDataType( TData::class ) )
 
 /**
  * Initialize a [Measurement] with the specified [sensorStartTime] and [sensorEndTime] for [data].

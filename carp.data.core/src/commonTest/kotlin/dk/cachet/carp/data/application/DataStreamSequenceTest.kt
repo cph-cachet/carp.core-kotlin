@@ -2,9 +2,9 @@ package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubData
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
+import dk.cachet.carp.data.infrastructure.dataStreamId
 import dk.cachet.carp.data.infrastructure.measurement
 import kotlinx.datetime.Clock
 import kotlin.test.Test
@@ -17,7 +17,7 @@ import kotlin.test.assertFailsWith
  */
 class DataStreamSequenceTest
 {
-    private val stubDataStream = DataStreamId( UUID.randomUUID(), "Device", STUB_DATA_TYPE )
+    private val stubDataStream = dataStreamId<StubData>( UUID.randomUUID(), "Device" )
     private val stubSyncPoint = SyncPoint( Clock.System.now() )
 
     @Test
@@ -102,7 +102,7 @@ class DataStreamSequenceTest
     {
         val deploymentId = UUID.randomUUID()
         val device = "Device"
-        val dataStream = DataStreamId( deploymentId, device, STUB_DATA_TYPE )
+        val dataStream = dataStreamId<StubData>( deploymentId, device )
 
         val measurement1 = measurement( StubData(), 0 )
         val measurement2 = measurement( StubData(), 1 )

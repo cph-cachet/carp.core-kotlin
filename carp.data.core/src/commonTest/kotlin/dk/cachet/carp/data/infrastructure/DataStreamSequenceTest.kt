@@ -4,11 +4,9 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubData
 import dk.cachet.carp.data.application.DataStreamSequence
 import dk.cachet.carp.data.application.DataStreamSequenceSerializer
-import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.SyncPoint
 import kotlinx.datetime.Clock
 import kotlin.test.*
@@ -21,7 +19,7 @@ class DataStreamSequenceTest
 {
     private val json = createDefaultJSON( STUBS_SERIAL_MODULE )
     private val testDataStreamSequence = DataStreamSequence.fromMeasurements(
-        DataStreamId( UUID.randomUUID(), "Device", STUB_DATA_TYPE ),
+        dataStreamId<StubData>( UUID.randomUUID(), "Device" ),
         0,
         listOf( measurement( StubData(), 0 ), measurement( StubData(), 1 ) ),
         listOf( 1 ),

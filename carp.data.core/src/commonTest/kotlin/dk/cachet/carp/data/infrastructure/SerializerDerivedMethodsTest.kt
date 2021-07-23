@@ -1,6 +1,7 @@
 package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.Trilean
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.DataTypeMetaDataMap
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubData
@@ -14,13 +15,21 @@ import kotlin.test.*
 /**
  * Tests for helper functions defined in `SerializerDerivedMeasurement.kt`.
  */
-class SerializerDerivedMeasurementTest
+class SerializerDerivedMethodsTest
 {
     @Test
     fun getDataType_succeeds()
     {
         val stubDataType = getDataType( StubData::class )
         assertEquals( STUB_DATA_TYPE, stubDataType )
+    }
+
+    @Test
+    fun dataStreamId_succeeds()
+    {
+        val stream = dataStreamId<StubData>( UUID.randomUUID(), "Device" )
+
+        assertEquals( STUB_DATA_TYPE, stream.dataType )
     }
 
     @Test
