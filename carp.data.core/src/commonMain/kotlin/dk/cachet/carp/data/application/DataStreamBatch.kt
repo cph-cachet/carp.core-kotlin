@@ -14,13 +14,13 @@ import kotlinx.serialization.encoding.Encoder
 @Serializable( DataStreamBatchSerializer::class )
 class DataStreamBatch
 {
-    private val sequenceMap: MutableMap<DataStreamId, MutableList<DataStreamSequence<*>>> = mutableMapOf()
+    private val sequenceMap: MutableMap<DataStreamId, MutableList<DataStreamSequence>> = mutableMapOf()
 
     /**
      * A list of sequences covering all sequences so far appended to this [DataStreamBatch].
      * This may return less sequences than originally appended in case appended sequences were merged with prior ones.
      */
-    val sequences: List<DataStreamSequence<*>>
+    val sequences: List<DataStreamSequence>
         get() = sequenceMap.flatMap { it.value }
 
 
@@ -30,7 +30,7 @@ class DataStreamBatch
      * @throws IllegalArgumentException when the start of the [sequence] range precedes the end of
      *   a previously appended sequence to the same data stream.
      */
-    fun appendSequence( sequence: DataStreamSequence<*> )
+    fun appendSequence( sequence: DataStreamSequence )
     {
         val sequences = sequenceMap[ sequence.dataStream ]
 
@@ -45,22 +45,10 @@ class DataStreamBatch
         require( last.range.last < sequence.range.first )
             { "Sequence range start lies before the end of a previously appended sequence to the same data stream." }
 
-        // Merge sequence with last sequence if possible; append otherwise.
-        // TODO: Some logic can likely be refactored to be part of `DataStreamSequence`.
-        val metaDataMatches = last.triggerIds == sequence.triggerIds && last.syncPoint == sequence.syncPoint
-        val followsSequence = last.range.last + 1 == sequence.firstSequenceId
-        if ( metaDataMatches && followsSequence )
+        // Merge sequence with last sequence if possible; add new sequence otherwise.
+        if ( last.canAppendSequence( sequence ) )
         {
-            sequences.removeLast()
-            sequences.add(
-                DataStreamSequence.fromMeasurements(
-                    sequence.dataStream,
-                    last.firstSequenceId,
-                    last.measurements.plus( sequence.measurements ),
-                    sequence.triggerIds,
-                    sequence.syncPoint
-                )
-            )
+            last.appendSequence( sequence )
         }
         else { sequences.add( sequence ) }
     }

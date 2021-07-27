@@ -44,21 +44,21 @@ class DataStreamBatchTest
         val batch = DataStreamBatch()
 
         val dataStream = dataStreamId<StubData>( UUID.randomUUID(), "Device" )
-        val measurements = listOf( measurement( StubData(), 0 ) )
-        val triggerId1Sequence = DataStreamSequence.fromMeasurements(
+        val measurement = measurement( StubData(), 0 )
+        val triggerId1Sequence = DataStreamSequence(
             dataStream,
             0,
-            measurements,
             listOf( 1 ),
             stubSyncPoint
         )
-        val triggerId2Sequence = DataStreamSequence.fromMeasurements(
+        triggerId1Sequence.appendMeasurements( measurement )
+        val triggerId2Sequence = DataStreamSequence(
             dataStream,
             1,
-            measurements,
             listOf( 2 ),
             stubSyncPoint
         )
+        triggerId2Sequence.appendMeasurements( measurement )
         batch.appendSequence( triggerId1Sequence )
         batch.appendSequence( triggerId2Sequence )
 
