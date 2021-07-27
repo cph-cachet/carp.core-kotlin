@@ -11,13 +11,77 @@ import kotlinx.serialization.encoding.Encoder
  * A sequence of consecutive [measurements] for a [dataStream] starting from [firstSequenceId]
  * which all share the same [triggerIds] and [syncPoint].
  */
-@Serializable( DataStreamSequenceSerializer::class )
-class DataStreamSequence(
-    val dataStream: DataStreamId,
-    val firstSequenceId: Long,
-    triggerIds: List<Int>,
+interface DataStreamSequence
+{
+    val dataStream: DataStreamId
+    val firstSequenceId: Long
+    val measurements: List<Measurement<*>>
+    val triggerIds: List<Int>
     val syncPoint: SyncPoint
-)
+
+    /**
+     * The current range of sequence IDs in the data stream covered by this [DataStreamSequence].
+     */
+    val range: LongRange get() =
+        if ( measurements.isEmpty() ) LongRange.EMPTY
+        else firstSequenceId until firstSequenceId + measurements.size
+
+
+    /**
+     * Return [DataStreamPoint]s contained in this sequence.
+     */
+    fun getDataStreamPoints(): List<DataStreamPoint<*>> =
+        measurements.mapIndexed { index, measurement ->
+            DataStreamPoint(
+                firstSequenceId + index,
+                dataStream.studyDeploymentId,
+                dataStream.deviceRoleName,
+                measurement,
+                triggerIds,
+                syncPoint
+            )
+        }
+
+    /**
+     * Determines whether [sequence] is a sequence for the same data stream with matching [triggerIds] and [syncPoint]
+     * and immediately follows the last data point in this sequence.
+     */
+    fun isImmediatelyFollowedBy( sequence: DataStreamSequence ): Boolean =
+        dataStream == sequence.dataStream &&
+        triggerIds == sequence.triggerIds &&
+        syncPoint == sequence.syncPoint &&
+        if ( range == LongRange.EMPTY ) firstSequenceId == sequence.firstSequenceId
+        else range.last + 1 == sequence.firstSequenceId
+
+
+    /**
+     * Returns a new [MutableDataStreamSequence], containing all the measurements of this sequence.
+     */
+    fun toMutableDataStreamSequence(): MutableDataStreamSequence
+    {
+        val sequence = MutableDataStreamSequence(
+            dataStream,
+            firstSequenceId,
+            triggerIds,
+            syncPoint
+        )
+        sequence.appendMeasurements( measurements )
+
+        return sequence
+    }
+}
+
+
+/**
+ * A mutable sequence of consecutive [measurements] for a [dataStream] starting from [firstSequenceId]
+ * which all share the same [triggerIds] and [syncPoint].
+ */
+class MutableDataStreamSequence(
+    override val dataStream: DataStreamId,
+    override val firstSequenceId: Long,
+    triggerIds: List<Int>,
+    override val syncPoint: SyncPoint
+) : DataStreamSequence
 {
     init
     {
@@ -26,19 +90,11 @@ class DataStreamSequence(
             { "Data always needs to be linked to at least one trigger that requested it." }
     }
 
-    val triggerIds = triggerIds.toList()
+    override val triggerIds: List<Int> = triggerIds.toList()
 
     private val _measurements: MutableList<Measurement<*>> = mutableListOf()
-    val measurements: List<Measurement<*>>
+    override val measurements: List<Measurement<*>>
         get() = _measurements
-
-    /**
-     * The current range of sequence IDs in the data stream covered by this [DataStreamSequence].
-     */
-    val range: LongRange
-        get() =
-            if ( _measurements.size == 0 ) LongRange.EMPTY
-            else firstSequenceId until firstSequenceId + _measurements.size
 
 
     /**
@@ -69,58 +125,35 @@ class DataStreamSequence(
      */
     fun appendSequence( sequence: DataStreamSequence )
     {
-        require( canAppendSequence( sequence ) )
+        require( isImmediatelyFollowedBy( sequence ) )
             { "Sequence doesn't match or doesn't immediately follow the last data point." }
 
         appendMeasurements( sequence.measurements )
     }
-
-    /**
-     * Determines whether [sequence] is a sequence for the same data stream with matching [triggerIds] and [syncPoint]
-     * and immediately follows the last data point in this sequence.
-     */
-    fun canAppendSequence( sequence: DataStreamSequence ): Boolean =
-        dataStream == sequence.dataStream &&
-        triggerIds == sequence.triggerIds &&
-        syncPoint == sequence.syncPoint &&
-        if ( range == LongRange.EMPTY ) firstSequenceId == sequence.firstSequenceId
-        else range.last + 1 == sequence.firstSequenceId
-
-    /**
-     * Return [DataStreamPoint]s contained in this sequence.
-     */
-    fun getDataStreamPoints(): List<DataStreamPoint<*>> =
-        measurements.mapIndexed { index, measurement ->
-            DataStreamPoint(
-                firstSequenceId + index,
-                dataStream.studyDeploymentId,
-                dataStream.deviceRoleName,
-                measurement,
-                triggerIds,
-                syncPoint
-            )
-        }
 }
 
 
-internal object DataStreamSequenceSerializer : KSerializer<DataStreamSequence>
+/**
+ * Serializer for any [DataStreamSequence], which doesn't guarantee the concrete type is retained.
+ */
+object DataStreamSequenceSerializer : KSerializer<DataStreamSequence>
 {
     @Serializable
-    class DataStreamSequenceSurrogate(
-        val dataStream: DataStreamId,
-        val firstSequenceId: Long,
-        val measurements: List<Measurement<*>>,
-        val triggerIds: List<Int>,
-        val syncPoint: SyncPoint
-    )
+    class DataStreamSequenceSnapshot internal constructor(
+        override val dataStream: DataStreamId,
+        override val firstSequenceId: Long,
+        override val measurements: List<Measurement<*>>,
+        override val triggerIds: List<Int>,
+        override val syncPoint: SyncPoint
+    ) : DataStreamSequence
 
-    private val serializer = DataStreamSequenceSurrogate.serializer()
+    private val serializer = DataStreamSequenceSnapshot.serializer()
     override val descriptor: SerialDescriptor = serializer.descriptor
 
     override fun serialize( encoder: Encoder, value: DataStreamSequence ) =
         encoder.encodeSerializableValue(
             serializer,
-            DataStreamSequenceSurrogate(
+            DataStreamSequenceSnapshot(
                 value.dataStream,
                 value.firstSequenceId,
                 value.measurements,
@@ -129,17 +162,6 @@ internal object DataStreamSequenceSerializer : KSerializer<DataStreamSequence>
             )
         )
 
-    override fun deserialize( decoder: Decoder ): DataStreamSequence
-    {
-        val surrogate = decoder.decodeSerializableValue( serializer )
-        val sequence = DataStreamSequence(
-            surrogate.dataStream,
-            surrogate.firstSequenceId,
-            surrogate.triggerIds,
-            surrogate.syncPoint
-        )
-        sequence.appendMeasurements( surrogate.measurements )
-
-        return sequence
-    }
+    override fun deserialize( decoder: Decoder ): DataStreamSequence =
+        decoder.decodeSerializableValue( serializer )
 }
