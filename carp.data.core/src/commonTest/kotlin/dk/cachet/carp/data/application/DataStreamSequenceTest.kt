@@ -5,24 +5,108 @@ import dk.cachet.carp.common.infrastructure.test.StubData
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.data.infrastructure.dataStreamId
 import dk.cachet.carp.data.infrastructure.measurement
-import kotlinx.datetime.Clock
 import kotlin.test.*
 
 
+private val stubDataStream = dataStreamId<StubData>( UUID.randomUUID(), "Device" )
+
+
 /**
- * Tests for [DataStreamSequence].
+ * Tests for implementations of [DataStreamSequence].
  */
-class DataStreamSequenceTest
+interface DataStreamSequenceTest
 {
-    private val stubDataStream = dataStreamId<StubData>( UUID.randomUUID(), "Device" )
-    private val stubSyncPoint = SyncPoint( Clock.System.now() )
+    fun createStubDataStreamSequence(
+        firstSequenceId: Long = 0,
+        measurements: List<Measurement<*>>,
+        triggerIds: List<Int> = listOf( 1 ),
+        syncPoint: SyncPoint = stubSyncPoint,
+        dataStream: DataStreamId = stubDataStream
+    ): DataStreamSequence
+
+
+    @Test
+    fun isImmediatelyFollowedBy_is_false_for_non_matching_data_stream()
+    {
+        val measurement = measurement( StubData(), 0 )
+        val sequence = createStubDataStreamSequence( 0, listOf( measurement ), triggerIds = listOf( 0 ) )
+        val wrongTrigger = createStubDataStreamSequence( 1, listOf( measurement ), triggerIds = listOf( 1 ) )
+
+        assertFalse( sequence.isImmediatelyFollowedBy( wrongTrigger ) )
+    }
+
+    @Test
+    fun isImmediatelyFollowedBy_is_false_when_there_is_a_gap()
+    {
+        val measurement = measurement( StubData(), 0 )
+        val sequence = createStubDataStreamSequence(0, listOf( measurement ) )
+        val doesNotFollow = createStubDataStreamSequence( 2, listOf( measurement ) )
+
+        assertFalse( sequence.isImmediatelyFollowedBy( doesNotFollow ) )
+    }
+
+    @Test
+    fun isImmediatelyFollowedBy_is_true_for_empty_sequence()
+    {
+        val measurement = measurement( StubData(), 0 )
+        val emptySequence = createStubDataStreamSequence( 0, emptyList() )
+        val firstItem = createStubDataStreamSequence( 0, listOf( measurement ) )
+
+        assertTrue( emptySequence.isImmediatelyFollowedBy( firstItem ) )
+    }
+
+    @Test
+    fun getDataStreamPoints_succeeds()
+    {
+        val deploymentId = UUID.randomUUID()
+        val device = "Device"
+
+        val measurement1 = measurement( StubData(), 0 )
+        val measurement2 = measurement( StubData(), 1 )
+
+        val triggerIds = listOf( 1 )
+
+        val sequence = createStubDataStreamSequence(
+            0,
+            listOf( measurement1, measurement2 ),
+            dataStream = dataStreamId<StubData>( deploymentId, device ),
+        )
+
+        val expectedPoints = listOf(
+            DataStreamPoint( 0, deploymentId, device, measurement1, triggerIds, stubSyncPoint ),
+            DataStreamPoint( 1, deploymentId, device, measurement2, triggerIds, stubSyncPoint )
+        )
+        assertEquals( expectedPoints, sequence.getDataStreamPoints() )
+    }
+}
+
+
+/**
+ * Tests for [MutableDataStreamSequence].
+ */
+class MutableDataStreamSequenceTest : DataStreamSequenceTest
+{
+    override fun createStubDataStreamSequence(
+        firstSequenceId: Long,
+        measurements: List<Measurement<*>>,
+        triggerIds: List<Int>,
+        syncPoint: SyncPoint,
+        dataStream: DataStreamId
+    ): DataStreamSequence
+    {
+        val sequence = MutableDataStreamSequence( dataStream, firstSequenceId, triggerIds, syncPoint )
+        sequence.appendMeasurements( measurements )
+
+        return sequence
+    }
+
 
     @Test
     fun initialization_with_negative_firstSequenceId_fails()
     {
         assertFailsWith<IllegalArgumentException>
         {
-            DataStreamSequence( stubDataStream, -1, listOf( 1 ), stubSyncPoint )
+            MutableDataStreamSequence( stubDataStream, -1, listOf( 1 ), stubSyncPoint )
         }
     }
 
@@ -31,14 +115,14 @@ class DataStreamSequenceTest
     {
         assertFailsWith<IllegalArgumentException>
         {
-            DataStreamSequence( stubDataStream, 0, emptyList(), stubSyncPoint )
+            MutableDataStreamSequence( stubDataStream, 0, emptyList(), stubSyncPoint )
         }
     }
 
     @Test
     fun appendMeasurements_succeeds()
     {
-        val sequence = DataStreamSequence( stubDataStream, 0, listOf( 1 ), stubSyncPoint )
+        val sequence = MutableDataStreamSequence( stubDataStream, 0, listOf( 1 ), stubSyncPoint )
         sequence.appendMeasurements(
             measurement( StubData(), 0 ),
             measurement( StubData(), 10 )
@@ -50,7 +134,7 @@ class DataStreamSequenceTest
     @Test
     fun appendMeasurements_fails_for_incorrect_data_type()
     {
-        val sequence = DataStreamSequence( stubDataStream, 0, listOf( 1 ), stubSyncPoint )
+        val sequence = MutableDataStreamSequence( stubDataStream, 0, listOf( 1 ), stubSyncPoint )
 
         assertFailsWith<IllegalArgumentException> { sequence.appendMeasurements( measurement( StubDataPoint(), 0 ) ) }
     }
@@ -58,7 +142,7 @@ class DataStreamSequenceTest
     @Test
     fun appendMeasurement_fails_when_list_contains_incorrect_data_type()
     {
-        val sequence = DataStreamSequence( stubDataStream, 0, listOf( 1 ), stubSyncPoint )
+        val sequence = MutableDataStreamSequence( stubDataStream, 0, listOf( 1 ), stubSyncPoint )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -74,77 +158,13 @@ class DataStreamSequenceTest
     {
         val measurement = measurement( StubData(), 0 )
 
-        val sequence = DataStreamSequence( stubDataStream, 0, listOf( 1 ), stubSyncPoint )
+        val sequence = MutableDataStreamSequence( stubDataStream, 0, listOf( 1 ), stubSyncPoint )
         sequence.appendMeasurements( measurement )
 
-        val toAppend = DataStreamSequence( stubDataStream, 1, listOf( 1 ), stubSyncPoint )
+        val toAppend = MutableDataStreamSequence( stubDataStream, 1, listOf( 1 ), stubSyncPoint )
         toAppend.appendMeasurements( measurement )
 
         sequence.appendSequence( toAppend )
         assertEquals( 0L..1, sequence.range )
-    }
-
-    @Test
-    fun canAppendSequence_is_false_for_non_matching_data_stream()
-    {
-        val measurement = measurement( StubData(), 0 )
-
-        val sequence = DataStreamSequence( stubDataStream, 0, listOf( 1 ), stubSyncPoint )
-        sequence.appendMeasurements( measurement )
-
-        val wrongTrigger = DataStreamSequence( stubDataStream, 1, listOf( 0 ), stubSyncPoint )
-        wrongTrigger.appendMeasurements( measurement )
-        assertFalse( sequence.canAppendSequence( wrongTrigger ) )
-    }
-
-    @Test
-    fun canAppendSequence_is_false_when_there_is_a_gap()
-    {
-        val measurement = measurement( StubData(), 0 )
-
-        val sequence = DataStreamSequence( stubDataStream, 0, listOf( 1 ), stubSyncPoint )
-        sequence.appendMeasurements( measurement )
-
-        val doesNotFollow = DataStreamSequence( stubDataStream, 2, listOf( 1 ), stubSyncPoint )
-        doesNotFollow.appendMeasurements( measurement )
-        assertFalse( sequence.canAppendSequence( doesNotFollow ) )
-    }
-
-    @Test
-    fun canAppendSequence_to_empty_sequence_succeeds()
-    {
-        val measurement = measurement( StubData(), 0 )
-
-        val sequence = DataStreamSequence( stubDataStream, 0, listOf( 1 ), stubSyncPoint )
-
-        val firstItem = DataStreamSequence( stubDataStream, 0, listOf( 1 ), stubSyncPoint )
-        firstItem.appendMeasurements( measurement )
-        assertTrue( sequence.canAppendSequence( firstItem ) )
-    }
-
-    @Test
-    fun getDataStreamPoints_succeeds()
-    {
-        val deploymentId = UUID.randomUUID()
-        val device = "Device"
-
-        val measurement1 = measurement( StubData(), 0 )
-        val measurement2 = measurement( StubData(), 1 )
-
-        val triggerIds = listOf( 1 )
-
-        val sequence = DataStreamSequence(
-            dataStreamId<StubData>( deploymentId, device ),
-            0,
-            triggerIds,
-            stubSyncPoint
-        )
-        sequence.appendMeasurements( measurement1, measurement2 )
-
-        val expectedPoints = listOf(
-            DataStreamPoint( 0, deploymentId, device, measurement1, triggerIds, stubSyncPoint ),
-            DataStreamPoint( 1, deploymentId, device, measurement2, triggerIds, stubSyncPoint )
-        )
-        assertEquals( expectedPoints, sequence.getDataStreamPoints() )
     }
 }

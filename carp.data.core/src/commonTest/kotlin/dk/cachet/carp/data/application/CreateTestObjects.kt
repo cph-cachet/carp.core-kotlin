@@ -16,7 +16,7 @@ val stubTriggerIds = listOf( 1 )
  */
 inline fun <reified T : Data> createStubSequence( firstSequenceId: Long, vararg data: T ): DataStreamSequence
 {
-    val sequence = DataStreamSequence(
+    val sequence = MutableDataStreamSequence(
         dataStreamId<T>( stubDeploymentId, "Device" ),
         firstSequenceId,
         stubTriggerIds,
