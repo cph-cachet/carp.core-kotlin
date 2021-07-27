@@ -14,11 +14,17 @@ val stubTriggerIds = listOf( 1 )
 /**
  * Create a [DataStreamSequence], always using the same data stream, except for the data type defined by [data].
  */
-inline fun <reified T : Data> createStubSequence( firstSequenceId: Long, vararg data: T ): DataStreamSequence<T> =
-    DataStreamSequence.fromMeasurements(
+inline fun <reified T : Data> createStubSequence( firstSequenceId: Long, vararg data: T ): DataStreamSequence
+{
+    val sequence = DataStreamSequence(
         dataStreamId<T>( stubDeploymentId, "Device" ),
         firstSequenceId,
-        data.map { measurement( it, 0 ) },
         stubTriggerIds,
         stubSyncPoint
     )
+
+    val measurements = data.map { measurement( it, 0 ) }
+    sequence.appendMeasurements( measurements )
+
+    return sequence
+}
