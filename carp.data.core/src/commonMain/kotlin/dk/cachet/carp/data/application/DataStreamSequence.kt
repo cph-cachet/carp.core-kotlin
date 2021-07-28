@@ -11,7 +11,7 @@ import kotlinx.serialization.encoding.Encoder
  * A sequence of consecutive [measurements] for a [dataStream] starting from [firstSequenceId]
  * which all share the same [triggerIds] and [syncPoint].
  */
-interface DataStreamSequence
+sealed interface DataStreamSequence
 {
     val dataStream: DataStreamId
     val firstSequenceId: Long
@@ -26,6 +26,18 @@ interface DataStreamSequence
         if ( measurements.isEmpty() ) LongRange.EMPTY
         else firstSequenceId until firstSequenceId + measurements.size
 
+
+    /**
+     * @throws IllegalStateException when the current state of this [DataStreamSequence] violates interface constraints.
+     */
+    fun throwIfIllegalState()
+    {
+        check( firstSequenceId >= 0 ) { "Sequence ID must be positive." }
+        check( triggerIds.isNotEmpty() )
+            { "Data always needs to be linked to at least one trigger that requested it." }
+        check( measurements.all { it.dataType == dataStream.dataType } )
+            { "Measurements all need to correspond to the data type of the data stream." }
+    }
 
     /**
      * Return [DataStreamPoint]s contained in this sequence.
@@ -83,18 +95,13 @@ class MutableDataStreamSequence(
     override val syncPoint: SyncPoint
 ) : DataStreamSequence
 {
-    init
-    {
-        require( firstSequenceId >= 0 ) { "Sequence ID must be positive." }
-        require( triggerIds.isNotEmpty() )
-            { "Data always needs to be linked to at least one trigger that requested it." }
-    }
-
     override val triggerIds: List<Int> = triggerIds.toList()
 
     private val _measurements: MutableList<Measurement<*>> = mutableListOf()
     override val measurements: List<Measurement<*>>
         get() = _measurements
+
+    init { throwIfIllegalInitialization() }
 
 
     /**
@@ -146,6 +153,9 @@ object DataStreamSequenceSerializer : KSerializer<DataStreamSequence>
         override val triggerIds: List<Int>,
         override val syncPoint: SyncPoint
     ) : DataStreamSequence
+    {
+        init { throwIfIllegalInitialization() }
+    }
 
     private val serializer = DataStreamSequenceSnapshot.serializer()
     override val descriptor: SerialDescriptor = serializer.descriptor
@@ -162,6 +172,9 @@ object DataStreamSequenceSerializer : KSerializer<DataStreamSequence>
             )
         )
 
-    override fun deserialize( decoder: Decoder ): DataStreamSequence =
-        decoder.decodeSerializableValue( serializer )
+    override fun deserialize( decoder: Decoder ): DataStreamSequence = decoder.decodeSerializableValue( serializer )
 }
+
+private fun DataStreamSequence.throwIfIllegalInitialization() =
+    try { throwIfIllegalState() }
+    catch ( ex: IllegalStateException ) { throw IllegalArgumentException( ex ) }

@@ -10,7 +10,7 @@ import kotlinx.serialization.encoding.Encoder
 /**
  * A collection of non-overlapping data stream [sequences].
  */
-interface DataStreamBatch
+sealed interface DataStreamBatch
 {
     val sequences: List<DataStreamSequence>
 

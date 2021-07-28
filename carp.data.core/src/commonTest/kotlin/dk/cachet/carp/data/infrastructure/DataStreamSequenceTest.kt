@@ -43,4 +43,33 @@ class DataStreamSequenceTest
 
         assertEquals( testDataStreamSequence.getDataStreamPoints(), parsed.getDataStreamPoints() )
     }
+
+    @Test
+    fun deserialization_incorrect_DataStreamSequence_fails()
+    {
+        val incorrectFirstSequenceId =
+            """
+            {
+               "dataStream":{
+                  "studyDeploymentId":"48a0312b-7536-43c2-af8b-8507b75642aa",
+                  "deviceRoleName":"Device",
+                  "dataType":"dk.cachet.carp.stub"
+               },
+               "firstSequenceId":-1,
+               "measurements":[],
+               "triggerIds":[1],
+               "syncPoint":{
+                  "utcTime":"2021-07-28T09:45:28.603825300Z",
+                  "utcOffset":0,
+                  "relativeClockSpeed":1.0
+               }
+            }
+            """
+
+        val json = createDefaultJSON( STUBS_SERIAL_MODULE )
+        assertFailsWith<IllegalArgumentException>
+        {
+            json.decodeFromString( DataStreamSequenceSerializer, incorrectFirstSequenceId )
+        }
+    }
 }
