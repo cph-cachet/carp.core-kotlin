@@ -11,7 +11,7 @@ import kotlinx.serialization.encoding.Encoder
  * A sequence of consecutive [measurements] for a [dataStream] starting from [firstSequenceId]
  * which all share the same [triggerIds] and [syncPoint].
  */
-sealed interface DataStreamSequence
+sealed interface DataStreamSequence : Sequence<DataStreamPoint<*>>
 {
     val dataStream: DataStreamId
     val firstSequenceId: Long
@@ -40,10 +40,10 @@ sealed interface DataStreamSequence
     }
 
     /**
-     * Return [DataStreamPoint]s contained in this sequence.
+     * Get an iterator to iterate over [DataStreamPoint]s contained in this sequence.
      */
-    fun getDataStreamPoints(): List<DataStreamPoint<*>> =
-        measurements.mapIndexed { index, measurement ->
+    override fun iterator(): Iterator<DataStreamPoint<*>> =
+        measurements.asSequence().mapIndexed { index, measurement ->
             DataStreamPoint(
                 firstSequenceId + index,
                 dataStream.studyDeploymentId,
@@ -52,7 +52,7 @@ sealed interface DataStreamSequence
                 triggerIds,
                 syncPoint
             )
-        }
+        }.iterator()
 
     /**
      * Determines whether [sequence] is a sequence for the same data stream with matching [triggerIds] and [syncPoint]
