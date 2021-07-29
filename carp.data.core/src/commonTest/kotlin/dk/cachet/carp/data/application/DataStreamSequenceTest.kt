@@ -76,7 +76,7 @@ interface DataStreamSequenceTest
             DataStreamPoint( 0, deploymentId, device, measurement1, triggerIds, stubSyncPoint ),
             DataStreamPoint( 1, deploymentId, device, measurement2, triggerIds, stubSyncPoint )
         )
-        assertEquals( expectedPoints, sequence.getDataStreamPoints() )
+        assertEquals( expectedPoints, sequence.toList() )
     }
 }
 

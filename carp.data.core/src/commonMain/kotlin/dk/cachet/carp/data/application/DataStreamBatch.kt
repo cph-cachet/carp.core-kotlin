@@ -10,15 +10,25 @@ import kotlinx.serialization.encoding.Encoder
 /**
  * A collection of non-overlapping data stream [sequences].
  */
-sealed interface DataStreamBatch
+interface DataStreamBatch : Sequence<DataStreamPoint<*>>
 {
-    val sequences: List<DataStreamSequence>
+    val sequences: Sequence<DataStreamSequence>
 
 
     /**
-     * Return all [DataStreamPoint]s contained in this batch.
+     * Get an iterator to iterate over all [DataStreamPoint]s contained in this batch.
      */
-    fun getDataStreamPoints(): List<DataStreamPoint<*>> = sequences.flatMap { it.getDataStreamPoints() }
+    override fun iterator(): Iterator<DataStreamPoint<*>> =
+        sequences.asSequence().flatMap { seq -> seq.map { it } }.iterator()
+
+
+    /**
+     * A [DataStreamBatch] with no data points.
+     */
+    object EMPTY : DataStreamBatch
+    {
+        override val sequences: Sequence<DataStreamSequence> = emptySequence()
+    }
 }
 
 
@@ -33,8 +43,8 @@ class MutableDataStreamBatch : DataStreamBatch
      * A list of sequences covering all sequences so far appended to this [MutableDataStreamBatch].
      * This may return less sequences than originally appended in case appended sequences were merged with prior ones.
      */
-    override val sequences: List<DataStreamSequence>
-        get() = sequenceMap.flatMap { it.value }
+    override val sequences: Sequence<DataStreamSequence>
+        get() = sequenceMap.asSequence().flatMap { it.value }
 
 
     /**
@@ -45,16 +55,16 @@ class MutableDataStreamBatch : DataStreamBatch
      */
     fun appendSequence( sequence: DataStreamSequence )
     {
-        val sequences = sequenceMap[ sequence.dataStream ]
+        val sequenceList = sequenceMap[ sequence.dataStream ]
 
         // Early out if this is the first sequence added for this data stream.
-        if ( sequences == null )
+        if ( sequenceList == null )
         {
             sequenceMap[ sequence.dataStream ] = mutableListOf( sequence.toMutableDataStreamSequence() )
             return
         }
 
-        val last = sequences.last()
+        val last = sequenceList.last()
         require( last.range.last < sequence.range.first )
             { "Sequence range start lies before the end of a previously appended sequence to the same data stream." }
 
@@ -63,13 +73,13 @@ class MutableDataStreamBatch : DataStreamBatch
         {
             last.appendSequence( sequence )
         }
-        else { sequences.add( sequence.toMutableDataStreamSequence() ) }
+        else { sequenceList.add( sequence.toMutableDataStreamSequence() ) }
     }
 }
 
 
 /**
- * Serializer for any [DataStreamBatch], which doesn't guarantee the concrete type is retained.
+ * Serializer [DataStreamBatch] as a list of [DataStreamSequence].
  */
 object DataStreamBatchSerializer : KSerializer<DataStreamBatch>
 {
@@ -77,7 +87,7 @@ object DataStreamBatchSerializer : KSerializer<DataStreamBatch>
     override val descriptor: SerialDescriptor = serializer.descriptor
 
     override fun serialize( encoder: Encoder, value: DataStreamBatch ) =
-        encoder.encodeSerializableValue( serializer, value.sequences )
+        encoder.encodeSerializableValue( serializer, value.sequences.toList() )
 
     override fun deserialize( decoder: Decoder ): DataStreamBatch
     {

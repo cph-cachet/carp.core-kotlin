@@ -41,7 +41,7 @@ class DataStreamSequenceTest
         val serialized = json.encodeToString( DataStreamSequenceSerializer, testDataStreamSequence )
         val parsed: DataStreamSequence = json.decodeFromString( DataStreamSequenceSerializer, serialized )
 
-        assertEquals( testDataStreamSequence.getDataStreamPoints(), parsed.getDataStreamPoints() )
+        assertEquals( testDataStreamSequence.toList(), parsed.toList() )
     }
 
     @Test
