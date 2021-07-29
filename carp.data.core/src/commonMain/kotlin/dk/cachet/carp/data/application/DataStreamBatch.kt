@@ -8,7 +8,7 @@ import kotlinx.serialization.encoding.Encoder
 
 
 /**
- * A collection of non-overlapping data stream [sequences].
+ * A collection of non-overlapping, ordered, data stream [sequences].
  */
 interface DataStreamBatch : Sequence<DataStreamPoint<*>>
 {
@@ -21,14 +21,16 @@ interface DataStreamBatch : Sequence<DataStreamPoint<*>>
     override fun iterator(): Iterator<DataStreamPoint<*>> =
         sequences.asSequence().flatMap { seq -> seq.map { it } }.iterator()
 
+    /**
+     * Determines whether this [DataStreamBatch] contains no [DataStreamPoint]s.
+     */
+    fun isEmpty(): Boolean = firstOrNull() == null
 
     /**
-     * A [DataStreamBatch] with no data points.
+     * Get all [DataStreamPoint]s for [dataStream] in this batch, in order.
      */
-    object EMPTY : DataStreamBatch
-    {
-        override val sequences: Sequence<DataStreamSequence> = emptySequence()
-    }
+    fun getDataStreamPoints( dataStream: DataStreamId ): Sequence<DataStreamPoint<*>> =
+        sequences.filter { it.dataStream == dataStream }.flatMap { sequence -> sequence.map { it } }
 }
 
 
@@ -75,6 +77,36 @@ class MutableDataStreamBatch : DataStreamBatch
         }
         else { sequenceList.add( sequence.toMutableDataStreamSequence() ) }
     }
+
+    /**
+     * Append all data stream sequences contained in [batch] to this batch.
+     *
+     * @throws IllegalArgumentException when the start of any of the sequences contained in [batch]
+     *   precede the end of a previously appended sequence to the same data stream.
+     */
+    fun appendBatch( batch: DataStreamBatch )
+    {
+        val containsNoPrecedingSequence = batch.sequences.all { sequence ->
+            sequenceMap[ sequence.dataStream ]?.last().let { lastStoredSequence ->
+                if ( lastStoredSequence == null ) true
+                else lastStoredSequence.range.last < sequence.range.first
+            }
+        }
+        require( containsNoPrecedingSequence )
+            { "The batch contains a sequence of which the start precedes a previously appended sequence" }
+
+        batch.sequences.forEach( ::appendSequence )
+    }
+
+    override fun equals( other: Any? ): Boolean
+    {
+        if ( this === other ) return true
+        if ( other !is DataStreamBatch ) return false
+
+        return toList() == other.toList()
+    }
+
+    override fun hashCode(): Int = sequences.hashCode()
 }
 
 
@@ -94,7 +126,7 @@ object DataStreamBatchSerializer : KSerializer<DataStreamBatch>
         val batch = MutableDataStreamBatch()
 
         val sequences = decoder.decodeSerializableValue( serializer )
-        sequences.forEach { batch.appendSequence( it ) }
+        sequences.forEach( batch::appendSequence )
 
         return batch
     }

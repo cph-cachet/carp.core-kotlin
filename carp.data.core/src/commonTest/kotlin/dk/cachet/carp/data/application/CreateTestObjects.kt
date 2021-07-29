@@ -12,19 +12,24 @@ val stubSyncPoint = SyncPoint( Clock.System.now() )
 val stubTriggerIds = listOf( 1 )
 
 /**
- * Create a [DataStreamSequence], always using the same data stream, except for the data type defined by [data].
+ * Create a [DataStreamSequence], always using the same data stream identifiers, except for the data type defined by [T].
  */
-inline fun <reified T : Data> createStubSequence( firstSequenceId: Long, vararg data: T ): DataStreamSequence
-{
-    val sequence = MutableDataStreamSequence(
+inline fun <reified T : Data> createStubSequence( firstSequenceId: Long, vararg data: T ): DataStreamSequence =
+    createStubSequence(
+        firstSequenceId,
+        *data.map { measurement( it, 0 ) }.toTypedArray()
+    )
+
+/**
+ * Create a [DataStreamSequence], always using the same data stream identifiers, except for the data type defined by [T].
+ */
+inline fun <reified T : Data> createStubSequence(
+    firstSequenceId: Long,
+    vararg measurements: Measurement<T>
+): DataStreamSequence =
+    MutableDataStreamSequence(
         dataStreamId<T>( stubDeploymentId, "Device" ),
         firstSequenceId,
         stubTriggerIds,
         stubSyncPoint
-    )
-
-    val measurements = data.map { measurement( it, 0 ) }
-    sequence.appendMeasurements( measurements )
-
-    return sequence
-}
+    ).apply { appendMeasurements( measurements.toList() ) }
