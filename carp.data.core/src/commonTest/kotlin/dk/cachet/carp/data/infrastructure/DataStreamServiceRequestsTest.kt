@@ -22,8 +22,7 @@ class DataStreamServiceRequestsTest : ApplicationServiceRequestsTest<DataStreamS
             DataStreamServiceRequest.AppendToDataStreams( UUID.randomUUID(), MutableDataStreamBatch() ),
             DataStreamServiceRequest.GetDataStream(
                 DataStreamId( UUID.randomUUID(), "Device", DataType( "some", "type" ) ),
-                0,
-                1
+                0
             )
         )
     }

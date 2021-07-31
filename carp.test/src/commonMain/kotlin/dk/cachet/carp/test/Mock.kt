@@ -11,7 +11,7 @@ import kotlin.reflect.*
  */
 open class Mock<TMock>
 {
-    private val functionCalls: MutableMap<String, Array<out Any>> = mutableMapOf()
+    private val functionCalls: MutableMap<String, Array<out Any?>> = mutableMapOf()
 
 
     fun <TReturn> trackCall( function: KFunction1<TMock, TReturn> ) =
@@ -19,56 +19,56 @@ open class Mock<TMock>
     fun <TReturn> trackSuspendCall( function: KSuspendFunction1<TMock, TReturn> ) =
         trackCallable( function )
     fun <T1, TReturn> trackCall( function: KFunction2<TMock, T1, TReturn>, arg1: T1 ) =
-        trackCallable( function, arg1 as Any )
+        trackCallable( function, arg1 as Any? )
     fun <T1, TReturn> trackSuspendCall( function: KSuspendFunction2<TMock, T1, TReturn>, arg1: T1 ) =
-        trackCallable( function, arg1 as Any )
+        trackCallable( function, arg1 as Any? )
     fun <T1, T2, TReturn> trackCall( function: KFunction3<TMock, T1, T2, TReturn>, arg1: T1, arg2: T2 ) =
-        trackCallable( function, arg1 as Any, arg2 as Any )
+        trackCallable( function, arg1 as Any?, arg2 as Any? )
     fun <T1, T2, TReturn> trackSuspendCall( function: KSuspendFunction3<TMock, T1, T2, TReturn>, arg1: T1, arg2: T2 ) =
-        trackCallable( function, arg1 as Any, arg2 as Any )
+        trackCallable( function, arg1 as Any?, arg2 as Any? )
     fun <T1, T2, T3, TReturn> trackCall( function: KFunction4<TMock, T1, T2, T3, TReturn>, arg1: T1, arg2: T2, arg3: T3 ) =
-        trackCallable( function, arg1 as Any, arg2 as Any, arg3 as Any )
+        trackCallable( function, arg1 as Any?, arg2 as Any?, arg3 as Any? )
     fun <T1, T2, T3, TReturn> trackSuspendCall( function: KSuspendFunction4<TMock, T1, T2, T3, TReturn>, arg1: T1, arg2: T2, arg3: T3 ) =
-        trackCallable( function, arg1 as Any, arg2 as Any, arg3 as Any )
+        trackCallable( function, arg1 as Any?, arg2 as Any?, arg3 as Any? )
     fun <T1, T2, T3, T4, TReturn> trackCall( function: KFunction5<TMock, T1, T2, T3, T4, TReturn>, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ) =
-        trackCallable( function, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any )
+        trackCallable( function, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any? )
     fun <T1, T2, T3, T4, TReturn> trackSuspendCall( function: KSuspendFunction5<TMock, T1, T2, T3, T4, TReturn>, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ) =
-        trackCallable( function, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any )
+        trackCallable( function, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any? )
     fun <T1, T2, T3, T4, T5, TReturn> trackCall( function: KFunction6<TMock, T1, T2, T3, T4, T5, TReturn>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5 ) =
-        trackCallable( function, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any, arg5 as Any )
+        trackCallable( function, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any?, arg5 as Any? )
     fun <T1, T2, T3, T4, T5, TReturn> trackSuspendCall( function: KSuspendFunction6<TMock, T1, T2, T3, T4, T5, TReturn>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5 ) =
-        trackCallable( function, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any, arg5 as Any )
+        trackCallable( function, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any?, arg5 as Any? )
 
     fun <TReturn> trackCallOverloaded( function: KFunction1<TMock, TReturn>, overloadIdentifier: String ) =
         trackCallableOverloaded( function, overloadIdentifier )
     fun <TReturn> trackSuspendCallOverloaded( function: KSuspendFunction1<TMock, TReturn>, overloadIdentifier: String ) =
         trackCallableOverloaded( function, overloadIdentifier )
     fun <T1, TReturn> trackCallOverloaded( function: KFunction2<TMock, T1, TReturn>, overloadIdentifier: String, arg1: T1 ) =
-        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any )
+        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any? )
     fun <T1, TReturn> trackSuspendCallOverloaded( function: KSuspendFunction2<TMock, T1, TReturn>, overloadIdentifier: String, arg1: T1 ) =
-        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any )
+        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any? )
     fun <T1, T2, TReturn> trackCallOverloaded( function: KFunction3<TMock, T1, T2, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2 ) =
-        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any )
+        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any? )
     fun <T1, T2, TReturn> trackSuspendCallOverloaded( function: KSuspendFunction3<TMock, T1, T2, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2 ) =
-        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any )
+        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any? )
     fun <T1, T2, T3, TReturn> trackCallOverloaded( function: KFunction4<TMock, T1, T2, T3, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3 ) =
-        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any )
+        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any?, arg3 as Any? )
     fun <T1, T2, T3, TReturn> trackSuspendCallOverloaded( function: KSuspendFunction4<TMock, T1, T2, T3, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3 ) =
-        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any )
+        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any?, arg3 as Any? )
     fun <T1, T2, T3, T4, TReturn> trackCallOverloaded( function: KFunction5<TMock, T1, T2, T3, T4, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ) =
-        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any )
+        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any? )
     fun <T1, T2, T3, T4, TReturn> trackSuspendCallOverloaded( function: KSuspendFunction5<TMock, T1, T2, T3, T4, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ) =
-        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any )
+        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any? )
     fun <T1, T2, T3, T4, T5, TReturn> trackCallOverloaded( function: KFunction6<TMock, T1, T2, T3, T4, T5, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5 ) =
-        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any, arg5 as Any )
+        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any?, arg5 as Any? )
     fun <T1, T2, T3, T4, T5, TReturn> trackSuspendCallOverloaded( function: KSuspendFunction6<TMock, T1, T2, T3, T4, T5, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5 ) =
-        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any, arg5 as Any )
+        trackCallableOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any?, arg5 as Any? )
 
-    private fun trackCallable( function: KCallable<*>, vararg arguments: Any )
+    private fun trackCallable( function: KCallable<*>, vararg arguments: Any? )
     {
         functionCalls[ function.name ] = arguments
     }
-    private fun trackCallableOverloaded( function: KCallable<*>, overloadIdentifier: String, vararg arguments: Any )
+    private fun trackCallableOverloaded( function: KCallable<*>, overloadIdentifier: String, vararg arguments: Any? )
     {
         functionCalls[ "${function.name}-$overloadIdentifier" ] = arguments
     }
@@ -79,58 +79,58 @@ open class Mock<TMock>
     fun <TReturn> wasSuspendCalled( function: KSuspendFunction1<TMock, TReturn> ): Boolean =
         wasCallableCalled( function )
     fun <T1, TReturn> wasCalled( function: KFunction2<TMock, T1, TReturn>, arg1: T1 ): Boolean =
-        wasCallableCalled( function, arg1 as Any )
+        wasCallableCalled( function, arg1 as Any? )
     fun <T1, TReturn> wasSuspendCalled( function: KSuspendFunction2<TMock, T1, TReturn>, arg1: T1 ): Boolean =
-        wasCallableCalled( function, arg1 as Any )
+        wasCallableCalled( function, arg1 as Any? )
     fun <T1, T2, TReturn> wasCalled( function: KFunction3<TMock, T1, T2, TReturn>, arg1: T1, arg2: T2 ): Boolean =
-        wasCallableCalled( function, arg1 as Any, arg2 as Any )
+        wasCallableCalled( function, arg1 as Any?, arg2 as Any? )
     fun <T1, T2, TReturn> wasSuspendCalled( function: KSuspendFunction3<TMock, T1, T2, TReturn>, arg1: T1, arg2: T2 ): Boolean =
-        wasCallableCalled( function, arg1 as Any, arg2 as Any )
+        wasCallableCalled( function, arg1 as Any?, arg2 as Any? )
     fun <T1, T2, T3, TReturn> wasCalled( function: KFunction4<TMock, T1, T2, T3, TReturn>, arg1: T1, arg2: T2, arg3: T3 ): Boolean =
-        wasCallableCalled( function, arg1 as Any, arg2 as Any, arg3 as Any )
+        wasCallableCalled( function, arg1 as Any?, arg2 as Any?, arg3 as Any? )
     fun <T1, T2, T3, TReturn> wasSuspendCalled( function: KSuspendFunction4<TMock, T1, T2, T3, TReturn>, arg1: T1, arg2: T2, arg3: T3 ): Boolean =
-        wasCallableCalled( function, arg1 as Any, arg2 as Any, arg3 as Any )
+        wasCallableCalled( function, arg1 as Any?, arg2 as Any?, arg3 as Any? )
     fun <T1, T2, T3, T4, TReturn> wasCalled( function: KFunction5<TMock, T1, T2, T3, T4, TReturn>, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ): Boolean =
-        wasCallableCalled( function, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any )
+        wasCallableCalled( function, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any? )
     fun <T1, T2, T3, T4, TReturn> wasSuspendCalled( function: KSuspendFunction5<TMock, T1, T2, T3, T4, TReturn>, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ): Boolean =
-        wasCallableCalled( function, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any )
+        wasCallableCalled( function, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any? )
     fun <T1, T2, T3, T4, T5, TReturn> wasCalled( function: KFunction6<TMock, T1, T2, T3, T4, T5, TReturn>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5 ): Boolean =
-        wasCallableCalled( function, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any, arg5 as Any )
+        wasCallableCalled( function, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any?, arg5 as Any? )
     fun <T1, T2, T3, T4, T5, TReturn> wasSuspendCalled( function: KSuspendFunction6<TMock, T1, T2, T3, T4, T5, TReturn>, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5 ): Boolean =
-        wasCallableCalled( function, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any, arg5 as Any )
+        wasCallableCalled( function, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any?, arg5 as Any? )
 
     fun <TReturn> wasCalledOverloaded( function: KFunction1<TMock, TReturn>, overloadIdentifier: String ): Boolean =
         wasCallableCalledOverloaded( function, overloadIdentifier )
     fun <TReturn> wasSuspendCalledOverloaded( function: KSuspendFunction1<TMock, TReturn>, overloadIdentifier: String ): Boolean =
         wasCallableCalledOverloaded( function, overloadIdentifier )
     fun <T1, TReturn> wasCalledOverloaded( function: KFunction2<TMock, T1, TReturn>, overloadIdentifier: String, arg1: T1 ): Boolean =
-        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any )
+        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any? )
     fun <T1, TReturn> wasSuspendCalledOverloaded( function: KSuspendFunction2<TMock, T1, TReturn>, overloadIdentifier: String, arg1: T1 ): Boolean =
-        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any )
+        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any? )
     fun <T1, T2, TReturn> wasCalledOverloaded( function: KFunction3<TMock, T1, T2, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2 ): Boolean =
-        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any )
+        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any? )
     fun <T1, T2, TReturn> wasSuspendCalledOverloaded( function: KSuspendFunction3<TMock, T1, T2, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2 ): Boolean =
-        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any )
+        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any? )
     fun <T1, T2, T3, TReturn> wasCalledOverloaded( function: KFunction4<TMock, T1, T2, T3, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3 ): Boolean =
-        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any )
+        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any?, arg3 as Any? )
     fun <T1, T2, T3, TReturn> wasSuspendCalledOverloaded( function: KSuspendFunction4<TMock, T1, T2, T3, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3 ): Boolean =
-        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any )
+        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any?, arg3 as Any? )
     fun <T1, T2, T3, T4, TReturn> wasCalledOverloaded( function: KFunction5<TMock, T1, T2, T3, T4, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ): Boolean =
-        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any )
+        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any? )
     fun <T1, T2, T3, T4, TReturn> wasSuspendCalledOverloaded( function: KSuspendFunction5<TMock, T1, T2, T3, T4, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3, arg4: T4 ): Boolean =
-        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any )
+        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any? )
     fun <T1, T2, T3, T4, T5, TReturn> wasCalledOverloaded( function: KFunction6<TMock, T1, T2, T3, T4, T5, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5 ): Boolean =
-        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any, arg5 as Any )
+        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any?, arg5 as Any? )
     fun <T1, T2, T3, T4, T5, TReturn> wasSuspendCalledOverloaded( function: KSuspendFunction6<TMock, T1, T2, T3, T4, T5, TReturn>, overloadIdentifier: String, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5 ): Boolean =
-        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any, arg2 as Any, arg3 as Any, arg4 as Any, arg5 as Any )
+        wasCallableCalledOverloaded( function, overloadIdentifier, arg1 as Any?, arg2 as Any?, arg3 as Any?, arg4 as Any?, arg5 as Any? )
 
-    private fun wasCallableCalled( function: KCallable<*>, vararg expectedArguments: Any ): Boolean
+    private fun wasCallableCalled( function: KCallable<*>, vararg expectedArguments: Any? ): Boolean
     {
         val calledArguments = functionCalls[ function.name ] ?: return false
 
         return calledArguments.contentEquals( expectedArguments )
     }
-    private fun wasCallableCalledOverloaded( function: KCallable<*>, overloadIdentifier: String, vararg expectedArguments: Any ): Boolean
+    private fun wasCallableCalledOverloaded( function: KCallable<*>, overloadIdentifier: String, vararg expectedArguments: Any? ): Boolean
     {
         val calledArguments = functionCalls[ function.name + "-" + overloadIdentifier ] ?: return false
 
