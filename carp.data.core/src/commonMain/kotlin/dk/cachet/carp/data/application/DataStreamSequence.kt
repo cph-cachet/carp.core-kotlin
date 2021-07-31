@@ -137,6 +137,9 @@ class MutableDataStreamSequence(
 
         appendMeasurements( sequence.measurements )
     }
+
+    override fun equals( other: Any? ): Boolean = equalsOther( other )
+    override fun hashCode(): Int = measurements.hashCode()
 }
 
 
@@ -155,6 +158,9 @@ object DataStreamSequenceSerializer : KSerializer<DataStreamSequence>
     ) : DataStreamSequence
     {
         init { throwIfIllegalInitialization() }
+
+        override fun equals( other: Any? ): Boolean = equalsOther( other )
+        override fun hashCode(): Int = measurements.hashCode()
     }
 
     private val serializer = DataStreamSequenceSnapshot.serializer()
@@ -178,3 +184,11 @@ object DataStreamSequenceSerializer : KSerializer<DataStreamSequence>
 private fun DataStreamSequence.throwIfIllegalInitialization() =
     try { throwIfIllegalState() }
     catch ( ex: IllegalStateException ) { throw IllegalArgumentException( ex ) }
+
+private fun DataStreamSequence.equalsOther( other: Any? ): Boolean
+{
+    if ( this === other ) return true
+    if ( other !is DataStreamSequence ) return false
+
+    return toList() == other.toList()
+}

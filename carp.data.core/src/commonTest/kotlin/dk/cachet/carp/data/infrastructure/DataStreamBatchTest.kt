@@ -29,6 +29,6 @@ class DataStreamBatchTest
         val serialized = json.encodeToString( DataStreamBatchSerializer, batch )
         val parsed: DataStreamBatch = json.decodeFromString( DataStreamBatchSerializer, serialized )
 
-        assertEquals( batch.toList(), parsed.toList() )
+        assertEquals( batch, parsed )
     }
 }

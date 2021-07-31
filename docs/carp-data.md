@@ -13,3 +13,17 @@ Multiple _subsequent_ `DataStreamPoint`'s can be stored as [`DataStreamSequence`
 To aggregate multiple `DataStreamSequence`'s of one or more data streams, e.g., to prepare for data upload, [`DataStreamBatch`](../carp.data.core/src/commonMain/kotlin/dk/cachet/carp/data/application/DataStreamBatch.kt) can be used.
 
 ![Data stream object model](https://i.imgur.com/6dnuynT.png)
+
+## Application services
+
+The _'Require'_ and _'Grant'_ column lists claim-based authorization recommendations for implementing infrastructures.
+Respectively, the required claims and claims to grant upon a successful request.
+
+### [`DataStreamService`](../carp.data.core/src/commonMain/kotlin/dk/cachet/carp/data/application/DataStreamService.kt)
+
+Store and retrieve [`DataStreamPoint`](../carp.data.core/src/commonMain/kotlin/dk/cachet/carp/data/application/DataStreamPoint.kt)s for study deployments.
+
+| Endpoint | Description | Require | Grant |
+| --- | --- | --- | --- |
+| `appendToDataStreams` | Append a batch of data point sequences to corresponding data streams. | in deployment: `studyDeploymentId` |  |
+| `getDataStream` | Retrieve all data points in [dataStream] that fall within the requested range. | in deployment: `dataStream.studyDeploymentId` | |
