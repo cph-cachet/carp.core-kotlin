@@ -86,11 +86,26 @@ class MutableDataStreamBatch : DataStreamBatch
      */
     fun appendBatch( batch: DataStreamBatch )
     {
-        val containsNoPrecedingSequence = batch.sequences.all { sequence ->
-            sequenceMap[ sequence.dataStream ]?.last().let { lastStoredSequence ->
-                if ( lastStoredSequence == null ) true
-                else lastStoredSequence.range.last < sequence.range.first
-            }
+        val containsNoPrecedingSequence = when ( batch )
+        {
+            is MutableDataStreamBatch ->
+                // Preconditions for `MutableDataStreamBatch` can be verified much more easily.
+                // This might seem like premature optimization, but currently it is the only concrete class.
+                // We expect many sequences for one data type to be common, e.g., RR intervals have many sync points.
+                batch.sequenceMap
+                    .mapValues { it.value.last() }
+                    .all { (dataStream, lastSequence) ->
+                        val lastStoredSequence = sequenceMap[ dataStream ]?.last()
+                        if ( lastStoredSequence == null ) true
+                        else lastStoredSequence.range.last < lastSequence.range.first
+                    }
+            else ->
+                batch.sequences.all { sequence ->
+                    sequenceMap[ sequence.dataStream ]?.last().let { lastStoredSequence ->
+                        if ( lastStoredSequence == null ) true
+                        else lastStoredSequence.range.last < sequence.range.first
+                    }
+                }
         }
         require( containsNoPrecedingSequence )
             { "The batch contains a sequence of which the start precedes a previously appended sequence" }
