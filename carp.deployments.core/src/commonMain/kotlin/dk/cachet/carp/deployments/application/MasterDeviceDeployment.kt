@@ -81,7 +81,7 @@ data class MasterDeviceDeployment(
         @Suppress( "SENSELESS_COMPARISON" )
         if ( connectedDeviceConfigurations == null || configuration == null ) Clock.System.now()
         else connectedDeviceConfigurations.values.plus( configuration )
-            .maxOf { it.registrationCreationDate }
+            .maxOf { it.registrationCreatedOn }
 
 
     /**
