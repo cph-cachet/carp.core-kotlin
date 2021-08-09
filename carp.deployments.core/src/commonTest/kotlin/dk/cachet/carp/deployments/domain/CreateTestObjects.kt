@@ -40,7 +40,7 @@ fun createComplexDeployment(): StudyDeployment
 
     // Deploy a device.
     val deviceDeployment = deployment.getDeviceDeploymentFor( master )
-    deployment.deviceDeployed( master, deviceDeployment.lastUpdateDate )
+    deployment.deviceDeployed( master, deviceDeployment.lastUpdatedOn )
 
     deployment.stop()
 
