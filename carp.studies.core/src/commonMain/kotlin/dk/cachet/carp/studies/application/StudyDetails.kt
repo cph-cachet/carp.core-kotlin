@@ -25,7 +25,7 @@ data class StudyDetails(
     /**
      * The date when this study was created.
      */
-    val creationDate: Instant,
+    val createdOn: Instant,
     /**
      * A description for the study, assigned by, and only visible to, the [StudyOwner].
      */

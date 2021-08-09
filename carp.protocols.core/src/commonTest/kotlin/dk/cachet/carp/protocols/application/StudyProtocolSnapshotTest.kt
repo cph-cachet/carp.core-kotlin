@@ -99,18 +99,18 @@ class StudyProtocolSnapshotTest
         )
 
         val ownerId = UUID( "ef26be3f-2de8-4779-a608-bb6e027e4b75" )
-        val creationDate = Clock.System.now()
+        val createdOn = Clock.System.now()
         val protocolId = StudyProtocolId( ownerId, "Study" )
         val snapshot = StudyProtocolSnapshot(
             protocolId,
             "Description",
-            creationDate,
+            createdOn,
             masterDevices, connectedDevices, connections,
             tasks, triggers, triggeredTasks, expectedParticipantData, "" )
         val reorganizedSnapshot = StudyProtocolSnapshot(
             protocolId,
             "Description",
-            creationDate,
+            createdOn,
             masterDevices.reversed(), connectedDevices.reversed(), connections.reversed(),
             tasks.reversed(), triggers, triggeredTasks.reversed(), expectedParticipantData.reversed(), "" )
 
@@ -126,7 +126,7 @@ class StudyProtocolSnapshotTest
         val trigger1 = StubTrigger( "One" )
         val trigger2 = StubTrigger( "Two" )
 
-        // Create two identical base protocols. protocol1 is cloned to make sure `creationDate` is the same.
+        // Create two identical base protocols. protocol1 is cloned to make sure `createdOn` is the same.
         val protocol1 = createEmptyProtocol()
         val protocol2 = StudyProtocol.fromSnapshot( protocol1.getSnapshot() )
 

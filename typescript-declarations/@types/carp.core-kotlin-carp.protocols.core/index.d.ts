@@ -47,7 +47,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
             readonly id: StudyProtocolId
             readonly description: string
-            readonly creationDate: Instant
+            readonly createdOn: Instant
             readonly expectedParticipantData: ArrayList<ParticipantAttribute>
         }
         interface StudyProtocolSnapshot$Companion { serializer(): any }

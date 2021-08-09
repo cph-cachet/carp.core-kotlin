@@ -34,7 +34,7 @@ class Recruitment( val studyId: UUID ) :
         fun fromSnapshot( snapshot: RecruitmentSnapshot ): Recruitment
         {
             val recruitment = Recruitment( snapshot.studyId )
-            recruitment.creationDate = snapshot.creationDate
+            recruitment.createdOn = snapshot.createdOn
             if ( snapshot.studyProtocol != null && snapshot.invitation != null )
             {
                 recruitment.lockInStudy( snapshot.studyProtocol, snapshot.invitation )

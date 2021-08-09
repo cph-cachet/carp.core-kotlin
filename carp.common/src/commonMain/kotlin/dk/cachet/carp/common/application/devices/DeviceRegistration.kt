@@ -29,7 +29,7 @@ abstract class DeviceRegistration
      */
     abstract val deviceId: String
 
-    val registrationCreationDate: Instant = Clock.System.now()
+    val registrationCreatedOn: Instant = Clock.System.now()
 }
 
 

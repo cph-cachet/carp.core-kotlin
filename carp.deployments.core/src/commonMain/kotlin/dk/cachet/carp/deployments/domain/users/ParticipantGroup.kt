@@ -60,7 +60,7 @@ class ParticipantGroup private constructor(
         {
             val group = ParticipantGroup( snapshot.studyDeploymentId, snapshot.assignedMasterDevices, snapshot.expectedData )
             group.isStudyDeploymentStopped = snapshot.isStudyDeploymentStopped
-            group.creationDate = snapshot.creationDate
+            group.createdOn = snapshot.createdOn
 
             // Add participations.
             snapshot.participations.forEach { p -> group._participations.add( p.copy() ) }

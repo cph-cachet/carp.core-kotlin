@@ -27,7 +27,7 @@ class StudyTest
         assertEquals( study.name, fromSnapshot.name )
         assertEquals( study.description, fromSnapshot.description )
         assertEquals( study.invitation, fromSnapshot.invitation )
-        assertEquals( study.creationDate, fromSnapshot.creationDate )
+        assertEquals( study.createdOn, fromSnapshot.createdOn )
         assertEquals( study.protocolSnapshot, fromSnapshot.protocolSnapshot )
         assertEquals( study.isLive, fromSnapshot.isLive )
         assertEquals( 0, fromSnapshot.consumeEvents().size )
