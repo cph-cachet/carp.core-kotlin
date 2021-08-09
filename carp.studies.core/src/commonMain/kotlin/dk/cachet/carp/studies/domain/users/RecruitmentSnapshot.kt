@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class RecruitmentSnapshot(
     val studyId: UUID,
-    override val creationDate: Instant,
+    override val createdOn: Instant,
     val studyProtocol: StudyProtocolSnapshot?,
     val invitation: StudyInvitation?,
     val participants: Set<Participant>,
@@ -43,7 +43,7 @@ data class RecruitmentSnapshot(
 
             return RecruitmentSnapshot(
                 recruitment.studyId,
-                recruitment.creationDate,
+                recruitment.createdOn,
                 studyProtocol,
                 invitation,
                 recruitment.participants,

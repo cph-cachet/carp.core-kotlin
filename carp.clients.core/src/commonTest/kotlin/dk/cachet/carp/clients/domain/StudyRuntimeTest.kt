@@ -377,7 +377,7 @@ class StudyRuntimeTest
         val fromSnapshot = StudyRuntime.fromSnapshot( snapshot )
 
         assertEquals( runtime.studyDeploymentId, fromSnapshot.studyDeploymentId )
-        assertEquals( runtime.creationDate, fromSnapshot.creationDate )
+        assertEquals( runtime.createdOn, fromSnapshot.createdOn )
         assertEquals( runtime.device, fromSnapshot.device )
         assertEquals( runtime.isDeployed, fromSnapshot.isDeployed )
         assertEquals( runtime.isStopped, fromSnapshot.isStopped )

@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StudyDeploymentSnapshot(
     val studyDeploymentId: UUID,
-    override val creationDate: Instant,
+    override val createdOn: Instant,
     val studyProtocolSnapshot: StudyProtocolSnapshot,
     val registeredDevices: Set<String>,
     val deviceRegistrationHistory: Map<String, List<DeviceRegistration>>,
@@ -35,7 +35,7 @@ data class StudyDeploymentSnapshot(
         {
             return StudyDeploymentSnapshot(
                 studyDeployment.id,
-                studyDeployment.creationDate,
+                studyDeployment.createdOn,
                 studyDeployment.protocolSnapshot,
                 studyDeployment.registeredDevices.map { it.key.roleName }.toSet(),
                 studyDeployment.deviceRegistrationHistory.mapKeys { it.key.roleName },

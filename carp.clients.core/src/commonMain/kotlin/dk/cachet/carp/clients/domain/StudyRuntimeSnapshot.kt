@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StudyRuntimeSnapshot(
     val studyDeploymentId: UUID,
-    override val creationDate: Instant,
+    override val createdOn: Instant,
     val device: AnyMasterDeviceDescriptor,
     val isDeployed: Boolean,
     val deploymentInformation: MasterDeviceDeployment?,
@@ -28,7 +28,7 @@ data class StudyRuntimeSnapshot(
 
             return StudyRuntimeSnapshot(
                 studyRuntime.studyDeploymentId,
-                studyRuntime.creationDate,
+                studyRuntime.createdOn,
                 studyRuntime.device,
                 studyRuntime.isDeployed,
                 (status as? StudyRuntimeStatus.DeploymentReceived)?.deploymentInformation,

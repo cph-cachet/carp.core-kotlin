@@ -12,7 +12,7 @@ import kotlinx.datetime.Instant
 @ImplementAsDataClass
 interface Snapshot<TAggregateRoot>
 {
-    val creationDate: Instant
+    val createdOn: Instant
 
 
     /**

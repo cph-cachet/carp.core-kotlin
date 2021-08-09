@@ -66,7 +66,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
             val protocol = StudyProtocol( snapshot.id.ownerId, snapshot.id.name, snapshot.description ).apply {
-                creationDate = snapshot.creationDate
+                createdOn = snapshot.createdOn
                 applicationData = snapshot.applicationData
             }
 
