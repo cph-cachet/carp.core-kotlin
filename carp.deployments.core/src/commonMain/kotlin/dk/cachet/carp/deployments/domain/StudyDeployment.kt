@@ -356,21 +356,21 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
     /**
      * Indicate that the specified [device] was deployed successfully
-     * using the deployment with the timestamp matching [deploymentLastUpdatedOn].
+     * using the device deployment with the timestamp matching [deviceDeploymentLastUpdatedOn].
      *
      * @throws IllegalArgumentException when:
      * - the passed [device] is not part of the protocol of this study deployment
-     * - the [deploymentLastUpdatedOn] does not match the expected timestamp. The deployment might be outdated.
+     * - the [deviceDeploymentLastUpdatedOn] does not match the expected timestamp. The deployment might be outdated.
      * @throws IllegalStateException when the passed [device] cannot be deployed yet, or the deployment has stopped.
      */
-    fun deviceDeployed( device: AnyMasterDeviceDescriptor, deploymentLastUpdatedOn: Instant )
+    fun deviceDeployed( device: AnyMasterDeviceDescriptor, deviceDeploymentLastUpdatedOn: Instant )
     {
         // Verify whether the specified device is part of the protocol of this deployment.
         require( device in protocolSnapshot.masterDevices ) { "The specified master device is not part of the protocol of this deployment." }
 
         // Verify whether deployment matches the expected deployment.
         val latestDeployment = getDeviceDeploymentFor( device )
-        require( latestDeployment.lastUpdatedOn == deploymentLastUpdatedOn )
+        require( latestDeployment.lastUpdatedOn == deviceDeploymentLastUpdatedOn )
 
         check( !isStopped ) { "Cannot deploy devices after a study deployment has stopped." }
 

@@ -122,20 +122,21 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
     suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
 
     /**
-     * Indicate to stakeholders in the study deployment with [studyDeploymentId] that the device with [masterDeviceRoleName] was deployed successfully,
-     * using the deployment with the specified [deviceDeploymentLastUpdateDate],
+     * Indicate to stakeholders in the study deployment with [studyDeploymentId]
+     * that the device with [masterDeviceRoleName] was deployed successfully,
+     * using the device deployment with timestamp [deviceDeploymentLastUpdatedOn],
      * i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it.
      *
      * @throws IllegalArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
      * - [masterDeviceRoleName] is not present in the deployment
-     * - the [deviceDeploymentLastUpdateDate] does not match the expected date. The deployment might be outdated.
+     * - the [deviceDeploymentLastUpdatedOn] does not match the expected timestamp. The deployment might be outdated.
      * @throws IllegalStateException when the deployment cannot be deployed yet, or the deployment has stopped.
      */
     suspend fun deploymentSuccessful(
         studyDeploymentId: UUID,
         masterDeviceRoleName: String,
-        deviceDeploymentLastUpdateDate: Instant
+        deviceDeploymentLastUpdatedOn: Instant
     ): StudyDeploymentStatus
 
     /**

@@ -282,7 +282,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             }
             class DeploymentSuccessful extends DeploymentServiceRequest
             {
-                constructor( studyDeploymentId: UUID, masterDeviceRoleName: string, deviceDeploymentLastUpdateDate: Instant )
+                constructor( studyDeploymentId: UUID, masterDeviceRoleName: string, deviceDeploymentLastUpdatedOn: Instant )
             }
             class Stop extends DeploymentServiceRequest
             {
