@@ -19,7 +19,7 @@ sealed class StudyStatus
     /**
      * The date when this study was created.
      */
-    abstract val creationDate: Instant
+    abstract val createdOn: Instant
     /**
      * Determines whether the invitation which is shared with participants can be changed for the study.
      */
@@ -41,7 +41,7 @@ sealed class StudyStatus
     data class Configuring(
         override val studyId: UUID,
         override val name: String,
-        override val creationDate: Instant,
+        override val createdOn: Instant,
         override val canSetInvitation: Boolean,
         override val canSetStudyProtocol: Boolean,
         override val canDeployToParticipants: Boolean,
@@ -59,7 +59,7 @@ sealed class StudyStatus
     data class Live(
         override val studyId: UUID,
         override val name: String,
-        override val creationDate: Instant,
+        override val createdOn: Instant,
         override val canSetInvitation: Boolean,
         override val canSetStudyProtocol: Boolean,
         override val canDeployToParticipants: Boolean
