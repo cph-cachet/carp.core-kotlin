@@ -288,7 +288,7 @@ class StudyDeploymentTest
         assertEquals(
             deployment.invalidatedDeployedDevices.count(),
             deployment.invalidatedDeployedDevices.intersect( fromSnapshot.invalidatedDeployedDevices ).count() )
-        assertEquals( deployment.startTime, fromSnapshot.startTime )
+        assertEquals( deployment.startedOn, fromSnapshot.startedOn )
         assertEquals( deployment.isStopped, fromSnapshot.isStopped )
         assertEquals( 0, fromSnapshot.consumeEvents().size )
     }
@@ -542,7 +542,7 @@ class StudyDeploymentTest
     }
 
     @Test
-    fun deviceDeployed_for_last_device_sets_startTime()
+    fun deviceDeployed_for_last_device_sets_startedOn()
     {
         val protocol = createEmptyProtocol()
         val master1 = StubMasterDeviceDescriptor( "Master1" )
@@ -553,19 +553,19 @@ class StudyDeploymentTest
         deployment.registerDevice( master1, master1.createRegistration() )
         deployment.registerDevice( master2, master2.createRegistration() )
 
-        // Deploying a device while others still need to be deployed does not set start time.
+        // Deploying a device while others still need to be deployed does not set `startedOn`.
         val master1Deployment = deployment.getDeviceDeploymentFor( master1 )
         deployment.deviceDeployed( master1, master1Deployment.lastUpdatedOn )
-        assertNull( deployment.startTime )
+        assertNull( deployment.startedOn )
         assertEquals( 0, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Started>().count() )
 
-        // Deploying the last device sets start time.
+        // Deploying the last device sets `startedOn`.
         val master2Deployment = deployment.getDeviceDeploymentFor( master2 )
         deployment.deviceDeployed( master2, master2Deployment.lastUpdatedOn )
-        assertNotNull( deployment.startTime )
+        assertNotNull( deployment.startedOn )
         assertEquals(
-            deployment.startTime,
-            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Started>().first().startTime )
+            deployment.startedOn,
+            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Started>().first().startedOn )
     }
 
     @Test
@@ -578,9 +578,9 @@ class StudyDeploymentTest
         deployment.registerDevice( device, device.createRegistration { } )
 
         val deviceDeployment = deployment.getDeviceDeploymentFor( device )
-        val deploymentDate = deviceDeployment.lastUpdatedOn
-        deployment.deviceDeployed( device, deploymentDate )
-        deployment.deviceDeployed( device, deploymentDate )
+        val lastUpdatedOn = deviceDeployment.lastUpdatedOn
+        deployment.deviceDeployed( device, lastUpdatedOn )
+        deployment.deviceDeployed( device, lastUpdatedOn )
         assertEquals( 1, deployment.deployedDevices.count() )
         assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().count() )
     }

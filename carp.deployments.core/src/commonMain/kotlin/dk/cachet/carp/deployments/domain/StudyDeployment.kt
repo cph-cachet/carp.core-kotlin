@@ -31,7 +31,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         data class DeviceRegistered( val device: AnyDeviceDescriptor, val registration: DeviceRegistration ) : Event()
         data class DeviceUnregistered( val device: AnyDeviceDescriptor ) : Event()
         data class DeviceDeployed( val device: AnyMasterDeviceDescriptor ) : Event()
-        data class Started( val startTime: Instant ) : Event()
+        data class Started( val startedOn: Instant ) : Event()
         data class DeploymentInvalidated( val device: AnyMasterDeviceDescriptor ) : Event()
         object Stopped : Event()
     }
@@ -43,7 +43,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         {
             val deployment = StudyDeployment( snapshot.studyProtocolSnapshot, snapshot.studyDeploymentId )
             deployment.createdOn = snapshot.createdOn
-            deployment.startTime = snapshot.startTime
+            deployment.startedOn = snapshot.startedOn
 
             // Replay device registration history.
             snapshot.deviceRegistrationHistory.forEach { (roleName, registrations) ->
@@ -141,7 +141,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * The time when the study deployment was ready for the first time (all devices deployed); null otherwise.
      */
-    var startTime: Instant? = null
+    var startedOn: Instant? = null
         private set
 
     /**
@@ -174,10 +174,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
         return when {
-            isStopped -> StudyDeploymentStatus.Stopped( id, devicesStatus, startTime )
-            allRequiredDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus, startTime )
-            anyRegistration -> StudyDeploymentStatus.DeployingDevices( id, devicesStatus, startTime )
-            else -> StudyDeploymentStatus.Invited( id, devicesStatus, startTime )
+            isStopped -> StudyDeploymentStatus.Stopped( id, devicesStatus, startedOn )
+            allRequiredDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus, startedOn )
+            anyRegistration -> StudyDeploymentStatus.DeployingDevices( id, devicesStatus, startedOn )
+            else -> StudyDeploymentStatus.Invited( id, devicesStatus, startedOn )
         }
     }
 
@@ -385,10 +385,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             .eventIf( true ) { Event.DeviceDeployed( device ) }
 
         // Set start time first time deployment is ready (last device deployed).
-        if ( startTime == null && getStatus() is StudyDeploymentStatus.DeploymentReady )
+        if ( startedOn == null && getStatus() is StudyDeploymentStatus.DeploymentReady )
         {
             val now = Clock.System.now()
-            startTime = now
+            startedOn = now
             event( Event.Started( now ) )
         }
     }

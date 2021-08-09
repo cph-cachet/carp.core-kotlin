@@ -20,7 +20,7 @@ data class StudyDeploymentSnapshot(
     val deviceRegistrationHistory: Map<String, List<DeviceRegistration>>,
     val deployedDevices: Set<String>,
     val invalidatedDeployedDevices: Set<String>,
-    val startTime: Instant?,
+    val startedOn: Instant?,
     val isStopped: Boolean
 ) : Snapshot<StudyDeployment>
 {
@@ -41,7 +41,7 @@ data class StudyDeploymentSnapshot(
                 studyDeployment.deviceRegistrationHistory.mapKeys { it.key.roleName },
                 studyDeployment.deployedDevices.map { it.roleName }.toSet(),
                 studyDeployment.invalidatedDeployedDevices.map { it.roleName }.toSet(),
-                studyDeployment.startTime,
+                studyDeployment.startedOn,
                 studyDeployment.isStopped )
         }
     }

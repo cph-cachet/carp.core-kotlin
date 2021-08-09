@@ -22,7 +22,7 @@ sealed class StudyDeploymentStatus
     /**
      * The time when the study deployment was ready for the first time (all devices deployed); null otherwise.
      */
-    abstract val startTime: Instant?
+    abstract val startedOn: Instant?
 
 
     /**
@@ -32,7 +32,7 @@ sealed class StudyDeploymentStatus
     data class Invited(
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
-        override val startTime: Instant?
+        override val startedOn: Instant?
     ) : StudyDeploymentStatus()
 
     /**
@@ -42,7 +42,7 @@ sealed class StudyDeploymentStatus
     data class DeployingDevices(
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
-        override val startTime: Instant?
+        override val startedOn: Instant?
     ) : StudyDeploymentStatus()
 
     /**
@@ -52,7 +52,7 @@ sealed class StudyDeploymentStatus
     data class DeploymentReady(
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
-        override val startTime: Instant?
+        override val startedOn: Instant?
     ) : StudyDeploymentStatus()
 
     /**
@@ -62,7 +62,7 @@ sealed class StudyDeploymentStatus
     data class Stopped(
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
-        override val startTime: Instant?
+        override val startedOn: Instant?
     ) : StudyDeploymentStatus()
 
 
