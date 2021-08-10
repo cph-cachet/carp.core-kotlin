@@ -281,7 +281,7 @@ configure( coreModules + commonModule ) {
         sourceSets {
             commonMain {
                 dependencies {
-                    implementation "org.jetbrains.kotlinx:kotlinx-datetime:${versions.datetime}"
+                    api "org.jetbrains.kotlinx:kotlinx-datetime:${versions.datetime}"
                 }
             }
             commonTest {
