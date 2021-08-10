@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Information about a sensor clock at [utcTime] on a master device
+ * Information about a sensor clock at the timestamp [synchronizedOn] on a master device
  * which allows converting sensor timestamps to UTC time.
  *
  * The required units/sign are determined by the formula: (sensorTimeStamp * [relativeClockSpeed]) + [utcOffset]
@@ -15,7 +15,7 @@ data class SyncPoint(
     /**
      * The UTC time as measured on the master device when it determined the synchronization point.
      */
-    val utcTime: Instant,
+    val synchronizedOn: Instant,
     /**
      * The offset to be added to the sensor time stamps after having multiplied by [relativeClockSpeed].
      */
