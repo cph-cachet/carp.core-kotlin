@@ -1,10 +1,10 @@
 package dk.cachet.carp.studies.domain
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 
@@ -15,7 +15,7 @@ data class StudySnapshot(
     val name: String,
     val description: String,
     val invitation: StudyInvitation,
-    override val creationDate: DateTime,
+    override val createdOn: Instant,
     val protocolSnapshot: StudyProtocolSnapshot?,
     val isLive: Boolean
 ) : Snapshot<Study>
@@ -35,7 +35,7 @@ data class StudySnapshot(
                 name = study.name,
                 description = study.description,
                 invitation = study.invitation,
-                creationDate = study.creationDate,
+                createdOn = study.createdOn,
                 protocolSnapshot = study.protocolSnapshot,
                 isLive = study.isLive )
         }

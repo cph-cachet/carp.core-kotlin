@@ -248,8 +248,8 @@ if ( patientPhoneStatus.canObtainDeviceDeployment ) // True since there are no d
 {
     val deploymentInformation: MasterDeviceDeployment =
         deploymentService.getDeviceDeploymentFor( studyDeploymentId, patientPhone.roleName )
-    val deploymentDate: DateTime = deploymentInformation.lastUpdateDate // To verify correct deployment.
-    deploymentService.deploymentSuccessful( studyDeploymentId, patientPhone.roleName, deploymentDate )
+    val deployedOn: Instant = deploymentInformation.lastUpdatedOn // To verify correct deployment.
+    deploymentService.deploymentSuccessful( studyDeploymentId, patientPhone.roleName, deployedOn )
 }
 
 // Now that all devices have been registered and deployed, the deployment is ready.
@@ -302,7 +302,7 @@ In case you want to contribute, please follow our [contribution guidelines](http
 We recommend using IntelliJ IDEA 2020, as this is the development environment we use and is therefore fully tested.
 
 - Open the project folder in IntelliJ 2020.
-- Install the Kotlin plugin for IntelliJ IDEA (203-1.4.31-release-IJ*): `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Install the Kotlin plugin for IntelliJ IDEA (211-1.5.21-release-*): `Tools->Kotlin->Configure Kotlin Plugin Updates`
 - To build/test/publish, click "Edit Configurations" to add configurations for [the included Gradle tasks](#gradle-tasks), or run them from the Gradle tool window.
 
 ### Gradle tasks
@@ -313,5 +313,8 @@ For `carp.core-kotlin`:
 - **jsTest**: Test the full project on a JavaScript runtime using a headless Chrome browser.
 - **verifyTsDeclarations**: Verify whether the TypeScript declarations of all modules, defined in `typescript-declarations`, match the compiled JS sources and work at runtime.
 - **detektPasses**: Run code analysis. Output will list failure in case code smells are detected.
-- **jsPackageJson publishSigned**: Publish all projects to Maven using the version number specified in `ext.globalVersion`. This includes documentation, sources, and signing. For this to work you need to configure a `publish.properties` file with a signing signature and repository user in the project root folder. See main `build.gradle` for details.
-- **jsPackageJson publishSnapshot**: Publish a snapshot build for all projects to Maven, substituting the suffix of the version specified in `ext.globalVersion` with `-SNAPSHOT`.
+- **publishToSonatype closeAndReleaseSonatypeStagingRepository**: Publish all projects to Maven using the version number specified in `ext.globalVersion`.
+  This includes documentation, sources, and signing.
+  For this to work you need to configure a `publish.properties` file with a signing signature and repository user in the project root folder.
+  Preface with `setSnapshotVersion` task to publish to the snapshot repository, substituting the suffix of the version specified in `ext.globalVersion` with `-SNAPSHOT`.
+  See main `build.gradle` for details.

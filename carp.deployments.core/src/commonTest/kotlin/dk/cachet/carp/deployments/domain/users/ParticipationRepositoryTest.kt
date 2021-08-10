@@ -118,7 +118,7 @@ interface ParticipationRepositoryTest
 
         val previous = repo.putParticipantGroup( group )
         assertNotNull( previous )
-        assertEquals( group.creationDate, previous.creationDate )
+        assertEquals( group.createdOn, previous.createdOn )
     }
 
     @Test

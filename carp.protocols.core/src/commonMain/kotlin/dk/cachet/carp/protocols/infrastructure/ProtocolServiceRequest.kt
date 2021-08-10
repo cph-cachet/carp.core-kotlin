@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.infrastructure
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
@@ -9,6 +8,7 @@ import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.application.ProtocolVersion
 import dk.cachet.carp.protocols.application.StudyProtocolId
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
 
 
@@ -24,7 +24,7 @@ sealed class ProtocolServiceRequest
         ServiceInvoker<ProtocolService, Unit> by createServiceInvoker( ProtocolService::add, protocol, versionTag )
 
     @Serializable
-    data class AddVersion( val protocol: StudyProtocolSnapshot, val versionTag: String = DateTime.now().toString() ) :
+    data class AddVersion( val protocol: StudyProtocolSnapshot, val versionTag: String = Clock.System.now().toString() ) :
         ProtocolServiceRequest(),
         ServiceInvoker<ProtocolService, Unit> by createServiceInvoker( ProtocolService::addVersion, protocol, versionTag )
 

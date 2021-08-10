@@ -83,9 +83,10 @@ verify-implementation:
     annotationClass: "dk.cachet.carp.common.application.Immutable"
     assumeNoAnnotations: *assume-no-annotations
     assumeImmutable: [
-      'dk.cachet.carp.common.application.DateTime',
-      'dk.cachet.carp.common.application.data.input.CustomInput.T',
+      'dk.cachet.carp.common.application.data.input.CustomInput',
       'dk.cachet.carp.common.application.sampling.BatteryAwareSamplingConfiguration.TConfig',
+      'kotlin.time.Duration',
+      'kotlinx.datetime.Instant',
       'kotlinx.serialization.json.Json'
     ]
 

@@ -1,6 +1,5 @@
 package dk.cachet.carp.protocols.application
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
@@ -10,6 +9,7 @@ import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
 import dk.cachet.carp.protocols.domain.StudyProtocol
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 
@@ -20,7 +20,7 @@ import kotlinx.serialization.Serializable
 data class StudyProtocolSnapshot(
     val id: StudyProtocolId,
     val description: String,
-    override val creationDate: DateTime,
+    override val createdOn: Instant,
     val masterDevices: List<AnyMasterDeviceDescriptor>,
     val connectedDevices: List<AnyDeviceDescriptor>,
     val connections: List<DeviceConnection>,
@@ -49,7 +49,7 @@ data class StudyProtocolSnapshot(
             return StudyProtocolSnapshot(
                 protocol.id,
                 description = protocol.description,
-                creationDate = protocol.creationDate,
+                createdOn = protocol.createdOn,
                 masterDevices = protocol.masterDevices.toList(),
                 connectedDevices = protocol.devices.minus( protocol.masterDevices ).toList(),
                 connections = protocol.masterDevices.flatMap { getConnections( protocol, it ) }.toList(),
@@ -89,7 +89,7 @@ data class StudyProtocolSnapshot(
 
         if ( id != other.id ) return false
         if ( description != other.description ) return false
-        if ( creationDate != other.creationDate ) return false
+        if ( createdOn != other.createdOn ) return false
         if ( applicationData != other.applicationData ) return false
 
         val listsToCompare = listOf(
@@ -117,7 +117,7 @@ data class StudyProtocolSnapshot(
     {
         var result = id.hashCode()
         result = 31 * result + description.hashCode()
-        result = 31 * result + creationDate.hashCode()
+        result = 31 * result + createdOn.hashCode()
         result = 31 * result + applicationData.hashCode()
         result = 31 * result + masterDevices.sortedWith( compareBy { it.roleName } ).toTypedArray().contentDeepHashCode()
         result = 31 * result + connectedDevices.sortedWith( compareBy { it.roleName } ).toTypedArray().contentDeepHashCode()

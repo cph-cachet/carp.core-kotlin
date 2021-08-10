@@ -6,30 +6,16 @@ declare module 'carp.core-kotlin-carp.common'
     import HashMap = kotlin.collections.HashMap
     import HashSet = kotlin.collections.HashSet
 
-    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
+    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-js-legacy'
     import Json = kotlinx.serialization.json.Json
+
+    import { kotlinx as kxd } from 'Kotlin-DateTime-library-kotlinx-datetime-js-legacy'
+    import Instant = kxd.datetime.Instant
     
     
     namespace dk.cachet.carp.common.application
     {
         import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute
-
-
-        class DateTime
-        {
-            constructor( msSinceUTC: Long )
-
-            static get Companion(): DateTime$Companion
-
-            readonly msSinceUTC: Long
-            toString(): string
-        }
-        interface DateTime$Companion
-        {
-            serializer(): any;
-            now(): DateTime;
-            fromString_61zpoe$( s: string ): DateTime
-        }
 
 
         class EmailAddress
@@ -53,22 +39,6 @@ declare module 'carp.core-kotlin-carp.common'
             readonly name: string
         }
         interface NamespacedId$Companion { serializer(): any }
-
-
-        class TimeSpan
-        {
-            constructor( microseconds: Long )
-
-            static get Companion(): TimeSpan$Companion
-
-            get totalMilliseconds(): number
-        }
-        interface TimeSpan$Companion
-        {
-            readonly INFINITE: TimeSpan;
-            serializer(): any;
-            fromMilliseconds_14dthe$( ms: number ): TimeSpan;
-        }
 
 
         class Trilean
@@ -104,7 +74,7 @@ declare module 'carp.core-kotlin-carp.common'
             static get Companion(): DeviceRegistration$Companion  
             
             readonly deviceId: string
-            readonly registrationCreationDate: DateTime
+            readonly registrationCreatedOn: Instant
         }
         interface DeviceRegistration$Companion { serializer(): any }
 

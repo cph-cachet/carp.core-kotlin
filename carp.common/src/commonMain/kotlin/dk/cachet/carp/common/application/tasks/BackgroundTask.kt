@@ -1,7 +1,8 @@
 package dk.cachet.carp.common.application.tasks
 
-import dk.cachet.carp.common.application.TimeSpan
+import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration
 
 
 /**
@@ -20,7 +21,8 @@ data class BackgroundTask(
      * The optional duration over the course of which the [measures] need to be sampled.
      * Infinite by default.
      */
-    val duration: TimeSpan = TimeSpan.INFINITE
+    @Serializable( DurationSerializer::class )
+    val duration: Duration = Duration.INFINITE
 ) : TaskDescriptor
 
 
@@ -32,7 +34,7 @@ class BackgroundTaskBuilder(
      * The optional duration over the course of which the [measures] need to be sampled.
      * Infinite by default.
      */
-    var duration: TimeSpan = TimeSpan.INFINITE
+    var duration: Duration = Duration.INFINITE
 ) : TaskDescriptorBuilder<BackgroundTask>()
 {
     override fun build( name: String ): BackgroundTask =

@@ -8,13 +8,15 @@ import HashSet = kotlin.collections.HashSet
 import toMap = kotlin.collections.toMap_v2dak7$
 import toSet = kotlin.collections.toSet_us0mfu$
 
-import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
+import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-js-legacy'
 import Json = kotlinx.serialization.json.Json
-import { kotlinx as kotlinxcore } from 'kotlinx-serialization-kotlinx-serialization-core-jsLegacy'
+import { kotlinx as kotlinxcore } from 'kotlinx-serialization-kotlinx-serialization-core-js-legacy'
 import ListSerializer = kotlinxcore.serialization.builtins.ListSerializer_swdriu$
 
+import { kotlinx as kxd } from 'Kotlin-DateTime-library-kotlinx-datetime-js-legacy'
+import Clock = kxd.datetime.Clock
+
 import { dk as cdk } from 'carp.core-kotlin-carp.common'
-import DateTime = cdk.cachet.carp.common.application.DateTime
 import NamespacedId = cdk.cachet.carp.common.application.NamespacedId
 import UUID = cdk.cachet.carp.common.application.UUID
 import CarpInputDataTypes = cdk.cachet.carp.common.application.data.input.CarpInputDataTypes
@@ -44,10 +46,10 @@ import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceR
 describe( "carp.studies.core", () => {
     it( "verify module declarations", async () => {
         const instances = [
-            new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", DateTime.Companion.now(), "Description", StudyInvitation.Companion.empty(), null ),
+            new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", Clock.System.now(), "Description", StudyInvitation.Companion.empty(), null ),
             StudyDetails.Companion,
-            new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, true, false, true ),
-            new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, false, true ),
+            new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true ),
+            new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), false, false, true ),
             StudyStatus.Companion,
             new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Test" ] ) ),
             AssignParticipantDevices.Companion,
@@ -96,12 +98,12 @@ describe( "carp.studies.core", () => {
 
     describe( "StudyStatus", () => {
         it ( "can typecheck StudyStatus", () => {
-            const configuring = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, true, false, true )
+            const configuring = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true )
             const configuringStatus: StudyStatus = configuring
             expect( configuringStatus instanceof StudyStatus.Configuring ).is.true
             expect( configuringStatus instanceof StudyStatus.Live ).is.false
 
-            const live = new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), false, false, true )
+            const live = new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), false, false, true )
             const liveStatus: StudyStatus = live
             expect( liveStatus instanceof StudyStatus.Live ).is.true
             expect( liveStatus instanceof StudyStatus.Configuring ).is.false
@@ -125,7 +127,7 @@ describe( "carp.studies.core", () => {
         } )
 
         it( "can serialize getStudiesOverview response", () => {
-            const status = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", DateTime.Companion.now(), true, true, false, true )
+            const status = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true )
             const statusList = new ArrayList( [ status ] )
 
             const json: Json = createDefaultJSON()
@@ -162,7 +164,7 @@ describe( "carp.studies.core", () => {
         } )
 
         it( "can serialize ParticipantGroupStatus", () => {
-            const deploymentStatus = new StudyDeploymentStatus.DeploymentReady( UUID.Companion.randomUUID(), new ArrayList( [] ), DateTime.Companion.now() )
+            const deploymentStatus = new StudyDeploymentStatus.DeploymentReady( UUID.Companion.randomUUID(), new ArrayList( [] ), Clock.System.now() )
             const participants = toSet( [ new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ) ] )
             const group = new ParticipantGroupStatus( deploymentStatus, participants )
 

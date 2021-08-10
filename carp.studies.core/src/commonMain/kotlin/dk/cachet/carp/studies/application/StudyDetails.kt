@@ -1,10 +1,10 @@
 package dk.cachet.carp.studies.application
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.users.StudyOwner
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 
@@ -25,7 +25,7 @@ data class StudyDetails(
     /**
      * The date when this study was created.
      */
-    val creationDate: DateTime,
+    val createdOn: Instant,
     /**
      * A description for the study, assigned by, and only visible to, the [StudyOwner].
      */

@@ -1,8 +1,10 @@
 package dk.cachet.carp.common.application
 
+import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
 import dk.cachet.carp.common.infrastructure.serialization.createCarpStringPrimitiveSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration
 
 
 /**
@@ -56,12 +58,11 @@ data class RecurrenceRule(
             // Extract parameters.
             val parameters = rrule.substring( "RRULE:".length )
                 .split( ';' )
-                .map {
+                .associate {
                     val par = it.split( '=' )
                     require( par.count() == 2 ) { "Invalid RRULE parameter format." }
                     par[ 0 ] to par[ 1 ]
                 }
-                .toMap()
 
             // Verify parameter correctness.
             val supportedParameters = listOf( "FREQ", "INTERVAL", "UNTIL", "COUNT" )
@@ -74,14 +75,14 @@ data class RecurrenceRule(
 
             // Extract remaining parameters.
             var interval = 1
-            var until: TimeSpan? = null
+            var until: Duration? = null
             var count: Int? = null
             for ( par in parameters )
             {
                 when ( par.key )
                 {
                     "INTERVAL" -> interval = par.value.toInt()
-                    "UNTIL" -> until = TimeSpan( par.value.toLong() )
+                    "UNTIL" -> until = Duration.microseconds( par.value.toLong() )
                     "COUNT" -> count = par.value.toInt()
                 }
             }
@@ -113,9 +114,12 @@ data class RecurrenceRule(
          * Bounds the recurrence rule in an inclusive manner to the associated start date of this rule plus [elapsedTime].
          */
         @Serializable
-        data class Until( val elapsedTime: TimeSpan ) : End()
+        data class Until(
+            @Serializable( DurationSerializer::class )
+            val elapsedTime: Duration
+        ) : End()
         {
-            override fun toString(): String = "UNTIL=${elapsedTime.microseconds}"
+            override fun toString(): String = "UNTIL=${elapsedTime.inWholeMicroseconds}"
         }
 
         /**

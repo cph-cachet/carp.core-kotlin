@@ -2,7 +2,6 @@
 
 package dk.cachet.carp.deployments.application
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
@@ -10,6 +9,7 @@ import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.test.Mock
+import kotlinx.datetime.Instant
 
 private typealias Service = DeploymentService
 
@@ -65,9 +65,9 @@ class DeploymentServiceMock(
         getDeviceDeploymentForResult
         .also { trackSuspendCall( Service::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName ) }
 
-    override suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String, deviceDeploymentLastUpdateDate: DateTime ) =
+    override suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String, deviceDeploymentLastUpdatedOn: Instant ) =
         deploymentSuccessfulResult
-        .also { trackSuspendCall( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deviceDeploymentLastUpdateDate ) }
+        .also { trackSuspendCall( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deviceDeploymentLastUpdatedOn ) }
 
     override suspend fun stop( studyDeploymentId: UUID ) =
         stopResult

@@ -2,7 +2,7 @@ package dk.cachet.carp.common.domain
 
 import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
-import dk.cachet.carp.common.application.DateTime
+import kotlinx.datetime.Instant
 
 
 /**
@@ -12,7 +12,7 @@ import dk.cachet.carp.common.application.DateTime
 @ImplementAsDataClass
 interface Snapshot<TAggregateRoot>
 {
-    val creationDate: DateTime
+    val createdOn: Instant
 
 
     /**

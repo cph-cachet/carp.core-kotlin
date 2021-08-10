@@ -1,8 +1,8 @@
 package dk.cachet.carp.common.application.sampling
 
-import dk.cachet.carp.common.application.TimeSpan
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE_METADATA
 import kotlin.test.*
+import kotlin.time.Duration
 
 
 /**
@@ -12,13 +12,13 @@ class DataTypeSamplingSchemeTest
 {
     class TestSamplingScheme : DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>( STUB_DATA_TYPE_METADATA )
     {
-        val maxSeconds: Double = 42.0
+        val maxDuration: Duration = Duration.seconds( 42 )
 
         override fun createSamplingConfigurationBuilder(): IntervalSamplingConfigurationBuilder =
-            IntervalSamplingConfigurationBuilder( TimeSpan.fromSeconds( 5.0 ) )
+            IntervalSamplingConfigurationBuilder( Duration.seconds( 5 ) )
 
         override fun isValid( configuration: SamplingConfiguration ): Boolean =
-            configuration is IntervalSamplingConfiguration && configuration.interval.totalSeconds <= maxSeconds
+            configuration is IntervalSamplingConfiguration && configuration.interval <= maxDuration
     }
 
 
@@ -27,7 +27,7 @@ class DataTypeSamplingSchemeTest
     {
         val scheme = TestSamplingScheme()
 
-        val exceedInterval = TimeSpan.fromSeconds( scheme.maxSeconds + 1 )
+        val exceedInterval = scheme.maxDuration + Duration.seconds( 1 )
         assertFailsWith<IllegalArgumentException> { scheme.measure { interval = exceedInterval } }
     }
 }

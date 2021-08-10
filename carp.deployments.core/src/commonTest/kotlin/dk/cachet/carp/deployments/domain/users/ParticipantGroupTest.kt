@@ -49,7 +49,7 @@ class ParticipantGroupTest
         val snapshot: ParticipantGroupSnapshot = group.getSnapshot()
         val fromSnapshot = ParticipantGroup.fromSnapshot( snapshot )
 
-        assertEquals( group.creationDate, fromSnapshot.creationDate )
+        assertEquals( group.createdOn, fromSnapshot.createdOn )
         assertEquals( group.studyDeploymentId, fromSnapshot.studyDeploymentId )
         assertEquals( group.assignedMasterDevices, fromSnapshot.assignedMasterDevices )
         assertEquals( group.isStudyDeploymentStopped, fromSnapshot.isStudyDeploymentStopped )

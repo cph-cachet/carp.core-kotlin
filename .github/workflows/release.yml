@@ -28,10 +28,6 @@ jobs:
         if: success()
         run: ./gradlew verifyTsDeclarations
 
-      - name: Publish to staging repo
+      - name: Publish to staging repo and release
         if: success()
-        run: ./gradlew jsPackageJson publishSigned
-      
-      - name: Release staged repo
-        if: success()
-        run: ./gradlew closeAndReleaseRepository
+        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository

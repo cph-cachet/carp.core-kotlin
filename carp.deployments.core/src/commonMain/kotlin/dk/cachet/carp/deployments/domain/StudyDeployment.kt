@@ -1,6 +1,5 @@
 package dk.cachet.carp.deployments.domain
 
-import dk.cachet.carp.common.application.DateTime
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
@@ -14,6 +13,8 @@ import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 
 /**
@@ -30,7 +31,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         data class DeviceRegistered( val device: AnyDeviceDescriptor, val registration: DeviceRegistration ) : Event()
         data class DeviceUnregistered( val device: AnyDeviceDescriptor ) : Event()
         data class DeviceDeployed( val device: AnyMasterDeviceDescriptor ) : Event()
-        data class Started( val startTime: DateTime ) : Event()
+        data class Started( val startedOn: Instant ) : Event()
         data class DeploymentInvalidated( val device: AnyMasterDeviceDescriptor ) : Event()
         object Stopped : Event()
     }
@@ -41,8 +42,8 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         fun fromSnapshot( snapshot: StudyDeploymentSnapshot ): StudyDeployment
         {
             val deployment = StudyDeployment( snapshot.studyProtocolSnapshot, snapshot.studyDeploymentId )
-            deployment.creationDate = snapshot.creationDate
-            deployment.startTime = snapshot.startTime
+            deployment.createdOn = snapshot.createdOn
+            deployment.startedOn = snapshot.startedOn
 
             // Replay device registration history.
             snapshot.deviceRegistrationHistory.forEach { (roleName, registrations) ->
@@ -66,7 +67,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
                 val deployedDevice = deployment.protocolSnapshot.masterDevices.firstOrNull { it.roleName == roleName }
                     ?: throw IllegalArgumentException( "Can't find deployed device with role name '$roleName' in snapshot." )
                 val deviceDeployment = deployment.getDeviceDeploymentFor( deployedDevice )
-                deployment.deviceDeployed( deployedDevice, deviceDeployment.lastUpdateDate )
+                deployment.deviceDeployed( deployedDevice, deviceDeployment.lastUpdatedOn )
             }
 
             // Add invalidated deployed devices.
@@ -140,7 +141,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * The time when the study deployment was ready for the first time (all devices deployed); null otherwise.
      */
-    var startTime: DateTime? = null
+    var startedOn: Instant? = null
         private set
 
     /**
@@ -173,10 +174,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
         return when {
-            isStopped -> StudyDeploymentStatus.Stopped( id, devicesStatus, startTime )
-            allRequiredDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus, startTime )
-            anyRegistration -> StudyDeploymentStatus.DeployingDevices( id, devicesStatus, startTime )
-            else -> StudyDeploymentStatus.Invited( id, devicesStatus, startTime )
+            isStopped -> StudyDeploymentStatus.Stopped( id, devicesStatus, startedOn )
+            allRequiredDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus, startedOn )
+            anyRegistration -> StudyDeploymentStatus.DeployingDevices( id, devicesStatus, startedOn )
+            else -> StudyDeploymentStatus.Invited( id, devicesStatus, startedOn )
         }
     }
 
@@ -354,21 +355,22 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     }
 
     /**
-     * Indicate that the specified [device] was deployed successfully using the deployment with the specified [deviceDeploymentLastUpdateDate].
+     * Indicate that the specified [device] was deployed successfully
+     * using the device deployment with the timestamp matching [deviceDeploymentLastUpdatedOn].
      *
      * @throws IllegalArgumentException when:
      * - the passed [device] is not part of the protocol of this study deployment
-     * - the [deviceDeploymentLastUpdateDate] does not match the expected date. The deployment might be outdated.
+     * - the [deviceDeploymentLastUpdatedOn] does not match the expected timestamp. The deployment might be outdated.
      * @throws IllegalStateException when the passed [device] cannot be deployed yet, or the deployment has stopped.
      */
-    fun deviceDeployed( device: AnyMasterDeviceDescriptor, deviceDeploymentLastUpdateDate: DateTime )
+    fun deviceDeployed( device: AnyMasterDeviceDescriptor, deviceDeploymentLastUpdatedOn: Instant )
     {
         // Verify whether the specified device is part of the protocol of this deployment.
         require( device in protocolSnapshot.masterDevices ) { "The specified master device is not part of the protocol of this deployment." }
 
         // Verify whether deployment matches the expected deployment.
         val latestDeployment = getDeviceDeploymentFor( device )
-        require( latestDeployment.lastUpdateDate == deviceDeploymentLastUpdateDate )
+        require( latestDeployment.lastUpdatedOn == deviceDeploymentLastUpdatedOn )
 
         check( !isStopped ) { "Cannot deploy devices after a study deployment has stopped." }
 
@@ -383,10 +385,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             .eventIf( true ) { Event.DeviceDeployed( device ) }
 
         // Set start time first time deployment is ready (last device deployed).
-        if ( startTime == null && getStatus() is StudyDeploymentStatus.DeploymentReady )
+        if ( startedOn == null && getStatus() is StudyDeploymentStatus.DeploymentReady )
         {
-            val now = DateTime.now()
-            startTime = now
+            val now = Clock.System.now()
+            startedOn = now
             event( Event.Started( now ) )
         }
     }

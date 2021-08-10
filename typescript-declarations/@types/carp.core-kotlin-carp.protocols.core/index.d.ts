@@ -4,8 +4,10 @@ declare module 'carp.core-kotlin-carp.protocols.core'
     import ArrayList = kotlin.collections.ArrayList
     import HashSet = kotlin.collections.HashSet
 
+    import { kotlinx as kxd } from 'Kotlin-DateTime-library-kotlinx-datetime-js-legacy'
+    import Instant = kxd.datetime.Instant
+
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
-    import DateTime = cdk.cachet.carp.common.application.DateTime
     import UUID = cdk.cachet.carp.common.application.UUID
     import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
 
@@ -14,12 +16,12 @@ declare module 'carp.core-kotlin-carp.protocols.core'
     {
         class ProtocolVersion
         {
-            constructor( tag: string, date?: DateTime )
+            constructor( tag: string, date?: Instant )
 
             static get Companion(): ProtocolVersion$Companion
 
             readonly tag: string
-            readonly date: DateTime
+            readonly date: Instant
         }
         interface ProtocolVersion$Companion { serializer(): any }
 
@@ -45,7 +47,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
             readonly id: StudyProtocolId
             readonly description: string
-            readonly creationDate: DateTime
+            readonly createdOn: Instant
             readonly expectedParticipantData: ArrayList<ParticipantAttribute>
         }
         interface StudyProtocolSnapshot$Companion { serializer(): any }
