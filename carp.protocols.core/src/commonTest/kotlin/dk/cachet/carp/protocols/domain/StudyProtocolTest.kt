@@ -431,7 +431,7 @@ class StudyProtocolTest
         assertEquals( protocol.ownerId, fromSnapshot.ownerId )
         assertEquals( protocol.name, fromSnapshot.name )
         assertEquals( protocol.description, fromSnapshot.description )
-        assertEquals( protocol.creationDate, fromSnapshot.creationDate )
+        assertEquals( protocol.createdOn, fromSnapshot.createdOn )
         assertEquals( protocol.devices, fromSnapshot.devices )
         protocol.masterDevices.forEach { assertTrue( connectedDevicesAreSame( protocol, fromSnapshot, it ) ) }
         assertEquals( protocol.triggers, fromSnapshot.triggers )

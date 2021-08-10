@@ -48,7 +48,7 @@ class Study(
         fun fromSnapshot( snapshot: StudySnapshot ): Study
         {
             val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.description, snapshot.invitation, snapshot.studyId )
-            study.creationDate = snapshot.creationDate
+            study.createdOn = snapshot.createdOn
             study.protocolSnapshot = snapshot.protocolSnapshot
             study.isLive = snapshot.isLive
 
@@ -103,14 +103,14 @@ class Study(
      * Get the status (serializable) of this [Study].
      */
     fun getStatus(): StudyStatus =
-        if ( isLive ) StudyStatus.Live( id, name, creationDate, canSetInvitation, canSetStudyProtocol, canDeployToParticipants )
-        else StudyStatus.Configuring( id, name, creationDate, canSetInvitation, canSetStudyProtocol, canDeployToParticipants, canGoLive )
+        if ( isLive ) StudyStatus.Live( id, name, createdOn, canSetInvitation, canSetStudyProtocol, canDeployToParticipants )
+        else StudyStatus.Configuring( id, name, createdOn, canSetInvitation, canSetStudyProtocol, canDeployToParticipants, canGoLive )
 
     /**
      * Get [StudyDetails] for this [Study].
      */
     fun getStudyDetails(): StudyDetails =
-        StudyDetails( id, owner, name, creationDate, description, invitation, protocolSnapshot )
+        StudyDetails( id, owner, name, createdOn, description, invitation, protocolSnapshot )
 
     val canSetStudyProtocol: Boolean get() = !isLive
 

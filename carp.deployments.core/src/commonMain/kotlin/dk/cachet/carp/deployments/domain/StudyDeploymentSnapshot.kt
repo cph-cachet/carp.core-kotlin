@@ -14,13 +14,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StudyDeploymentSnapshot(
     val studyDeploymentId: UUID,
-    override val creationDate: Instant,
+    override val createdOn: Instant,
     val studyProtocolSnapshot: StudyProtocolSnapshot,
     val registeredDevices: Set<String>,
     val deviceRegistrationHistory: Map<String, List<DeviceRegistration>>,
     val deployedDevices: Set<String>,
     val invalidatedDeployedDevices: Set<String>,
-    val startTime: Instant?,
+    val startedOn: Instant?,
     val isStopped: Boolean
 ) : Snapshot<StudyDeployment>
 {
@@ -35,13 +35,13 @@ data class StudyDeploymentSnapshot(
         {
             return StudyDeploymentSnapshot(
                 studyDeployment.id,
-                studyDeployment.creationDate,
+                studyDeployment.createdOn,
                 studyDeployment.protocolSnapshot,
                 studyDeployment.registeredDevices.map { it.key.roleName }.toSet(),
                 studyDeployment.deviceRegistrationHistory.mapKeys { it.key.roleName },
                 studyDeployment.deployedDevices.map { it.roleName }.toSet(),
                 studyDeployment.invalidatedDeployedDevices.map { it.roleName }.toSet(),
-                studyDeployment.startTime,
+                studyDeployment.startedOn,
                 studyDeployment.isStopped )
         }
     }

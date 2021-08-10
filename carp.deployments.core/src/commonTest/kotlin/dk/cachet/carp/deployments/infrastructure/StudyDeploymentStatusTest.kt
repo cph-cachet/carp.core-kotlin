@@ -41,7 +41,7 @@ class StudyDeploymentStatusTest
             deployment.registerDevice( it.device, it.device.createRegistration() )
         }
         val masterDeviceDeployment = deployment.getDeviceDeploymentFor( master )
-        deployment.deviceDeployed( master, masterDeviceDeployment.lastUpdateDate )
+        deployment.deviceDeployed( master, masterDeviceDeployment.lastUpdatedOn )
         val status: StudyDeploymentStatus = deployment.getStatus()
 
         val serialized: String = JSON.encodeToString( status )

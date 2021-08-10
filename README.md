@@ -253,8 +253,8 @@ if ( patientPhoneStatus.canObtainDeviceDeployment ) // True since there are no d
 {
     val deploymentInformation: MasterDeviceDeployment =
         deploymentService.getDeviceDeploymentFor( studyDeploymentId, patientPhone.roleName )
-    val deploymentDate: Instant = deploymentInformation.lastUpdateDate // To verify correct deployment.
-    deploymentService.deploymentSuccessful( studyDeploymentId, patientPhone.roleName, deploymentDate )
+    val deployedOn: Instant = deploymentInformation.lastUpdatedOn // To verify correct deployment.
+    deploymentService.deploymentSuccessful( studyDeploymentId, patientPhone.roleName, deployedOn )
 }
 
 // Now that all devices have been registered and deployed, the deployment is ready.

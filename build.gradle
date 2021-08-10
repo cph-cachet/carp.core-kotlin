@@ -8,7 +8,7 @@ buildscript {
     ext {
         // Version used for all submodule artifacts.
         // Snapshot publishing changes (or adds) the suffix after '-' with 'SNAPSHOT' prior to publishing.
-        globalVersion = '1.0.0-alpha.34'
+        globalVersion = '1.0.0-alpha.35'
 
         versions = [
             // Kotlin multiplatform versions.
@@ -27,7 +27,7 @@ buildscript {
             nodePlugin:'3.1.0',
 
             // DevOps versions.
-            detektPlugin:'1.18.0-RC1',
+            detektPlugin:'1.18.0-RC3',
             detektVerifyImplementation:'1.2.2',
             nexusPublishPlugin:'1.1.0'
         ]
@@ -281,7 +281,7 @@ configure( coreModules + commonModule ) {
         sourceSets {
             commonMain {
                 dependencies {
-                    implementation "org.jetbrains.kotlinx:kotlinx-datetime:${versions.datetime}"
+                    api "org.jetbrains.kotlinx:kotlinx-datetime:${versions.datetime}"
                 }
             }
             commonTest {

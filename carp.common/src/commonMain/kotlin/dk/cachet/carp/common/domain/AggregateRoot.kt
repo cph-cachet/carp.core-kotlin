@@ -13,7 +13,7 @@ abstract class AggregateRoot<TRoot, TSnapshot : Snapshot<TRoot>, TEvent : Domain
     /**
      * The date when this object was created.
      */
-    var creationDate: Instant = Clock.System.now()
+    var createdOn: Instant = Clock.System.now()
         protected set
 
     private val events: MutableList<TEvent> = mutableListOf()

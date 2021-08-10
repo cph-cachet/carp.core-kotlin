@@ -110,7 +110,7 @@ interface DeploymentRepositoryTest
             registerDevice( connectedDevice, connectedDevice.createRegistration() )
 
             val deviceDeployment = deployment.getDeviceDeploymentFor( masterDevice )
-            deviceDeployed( masterDevice, deviceDeployment.lastUpdateDate )
+            deviceDeployed( masterDevice, deviceDeployment.lastUpdatedOn )
 
             stop()
         }

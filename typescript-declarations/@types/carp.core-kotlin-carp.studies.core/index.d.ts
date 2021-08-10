@@ -33,7 +33,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
         class StudyDetails
         {
             constructor(
-                studyId: UUID, studyOwner: StudyOwner, name: string, creationDate: Instant,
+                studyId: UUID, studyOwner: StudyOwner, name: string, createdOn: Instant,
                 description: string,
                 invitation: StudyInvitation,
                 protocolSnapshot: StudyProtocolSnapshot | null )
@@ -43,7 +43,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             readonly studyId: UUID
             readonly studyOwner: StudyOwner
             readonly name: string
-            readonly creationDate: Instant
+            readonly createdOn: Instant
             readonly description: string
             readonly invitation: StudyInvitation
             readonly protocolSnapshot: StudyProtocolSnapshot | null
@@ -62,7 +62,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             class Configuring
             {
                 constructor(
-                    studyId: UUID, name: string, creationDate: Instant,
+                    studyId: UUID, name: string, createdOn: Instant,
                     canSetInvitation: boolean,
                     canSetStudyProtocol: boolean,
                     canDeployToParticipants: boolean,
@@ -70,7 +70,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
     
                 readonly studyId: UUID
                 readonly name: string
-                readonly creationDate: Instant
+                readonly createdOn: Instant
                 readonly canSetInvitation: boolean
                 readonly canSetStudyProtocol: boolean
                 readonly canDeployToParticipants: boolean
@@ -79,14 +79,14 @@ declare module 'carp.core-kotlin-carp.studies.core'
             class Live
             {
                 constructor(
-                    studyId: UUID, name: string, creationDate: Instant,
+                    studyId: UUID, name: string, createdOn: Instant,
                     canSetInvitation: boolean,
                     canSetStudyProtocol: boolean,
                     canDeployToParticipants: boolean )
     
                 readonly studyId: UUID
                 readonly name: string
-                readonly creationDate: Instant
+                readonly createdOn: Instant
                 readonly canSetInvitation: boolean
                 readonly canSetStudyProtocol: boolean
                 readonly canDeployToParticipants: boolean
