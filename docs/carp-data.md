@@ -26,5 +26,7 @@ Store and retrieve [`DataStreamPoint`](../carp.data.core/src/commonMain/kotlin/d
 
 | Endpoint | Description | Require | Grant |
 | --- | --- | --- | --- |
+| `openDataStreams` | Start accepting data for a specific study deployment. | manage deployment: `studyDeploymentId`| |
 | `appendToDataStreams` | Append a batch of data point sequences to corresponding data streams. | in deployment: `studyDeploymentId` |  |
 | `getDataStream` | Retrieve all data points in data stream that fall within the requested range. | in deployment: `dataStream.studyDeploymentId` | |
+| `closeDataStreams` | Stop accepting data for a specific study deployment. | manage deployment: (all) `studyDeploymentId` | |

@@ -10,6 +10,7 @@ import kotlinx.datetime.Clock
 val stubDeploymentId = UUID.randomUUID()
 val stubSyncPoint = SyncPoint( Clock.System.now() )
 val stubTriggerIds = listOf( 1 )
+const val stubSequenceDeviceRoleName = "Device"
 
 /**
  * Create a [DataStreamSequence], always using the same data stream identifiers, except for the data type defined by [T].
@@ -28,7 +29,7 @@ inline fun <reified T : Data> createStubSequence(
     vararg measurements: Measurement<T>
 ): DataStreamSequence =
     MutableDataStreamSequence(
-        dataStreamId<T>( stubDeploymentId, "Device" ),
+        dataStreamId<T>( stubDeploymentId, stubSequenceDeviceRoleName ),
         firstSequenceId,
         stubTriggerIds,
         stubSyncPoint
