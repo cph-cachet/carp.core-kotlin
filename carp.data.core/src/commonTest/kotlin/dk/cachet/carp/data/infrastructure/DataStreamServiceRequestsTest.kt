@@ -6,6 +6,7 @@ import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
 import dk.cachet.carp.data.application.DataStreamServiceMock
+import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.data.application.MutableDataStreamBatch
 
 
@@ -19,11 +20,13 @@ class DataStreamServiceRequestsTest : ApplicationServiceRequestsTest<DataStreamS
     companion object
     {
         val REQUESTS: List<DataStreamServiceRequest> = listOf(
+            DataStreamServiceRequest.OpenDataStreams( DataStreamsConfiguration( UUID.randomUUID(), emptySet() ) ),
             DataStreamServiceRequest.AppendToDataStreams( UUID.randomUUID(), MutableDataStreamBatch() ),
             DataStreamServiceRequest.GetDataStream(
                 DataStreamId( UUID.randomUUID(), "Device", DataType( "some", "type" ) ),
                 0
-            )
+            ),
+            DataStreamServiceRequest.CloseDataStreams( setOf( UUID.randomUUID() ) )
         )
     }
 }
