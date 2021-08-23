@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
+import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.domain.users.AccountService
 import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
 import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
@@ -24,6 +25,7 @@ class ParticipationServiceHostTest : ParticipationServiceTest()
 
         val deploymentService = DeploymentServiceHost(
             InMemoryDeploymentRepository(),
+            InMemoryDataStreamService(),
             eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
         val accountService = InMemoryAccountService()

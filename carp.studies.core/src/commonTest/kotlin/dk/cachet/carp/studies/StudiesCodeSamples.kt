@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
+import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHost
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
@@ -81,6 +82,7 @@ class StudiesCodeSamples
 
         val deploymentService = DeploymentServiceHost(
             InMemoryDeploymentRepository(),
+            InMemoryDataStreamService(),
             eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
         val recruitmentService = RecruitmentServiceHost(
