@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.application.tasks
 
+import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
@@ -24,6 +25,12 @@ data class BackgroundTask(
     @Serializable( DurationSerializer::class )
     val duration: Duration = Duration.INFINITE
 ) : TaskDescriptor
+{
+    /**
+     * This list is empty, since a background task by definition does not contain any interactions.
+     */
+    override fun getInteractionDataTypes(): Set<DataType> = emptySet()
+}
 
 
 /**

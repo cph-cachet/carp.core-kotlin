@@ -2,6 +2,8 @@ package dk.cachet.carp.common.application.tasks
 
 import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
+import dk.cachet.carp.common.application.data.CarpDataTypes
+import dk.cachet.carp.common.application.data.DataType
 import kotlinx.serialization.Polymorphic
 
 
@@ -28,7 +30,29 @@ interface TaskDescriptor
      * A description of this task, emphasizing the reason why the data is collected.
      */
     val description: String?
+
+
+    /**
+     * Get data types of all data which may be collected as the result of user interactions for this task.
+     */
+    fun getInteractionDataTypes(): Set<DataType>
 }
+
+
+/**
+ * Get data types of all data which may be collected, either passively as part of task measures,
+ * or as the result of user interactions, for this task.
+ */
+fun TaskDescriptor.getAllExpectedDataTypes(): Set<DataType> =
+    measures.map { measure ->
+        when ( measure )
+        {
+            is Measure.TriggerData -> CarpDataTypes.TRIGGERED_TASK.type
+            is Measure.DataStream -> measure.type
+        }
+    }
+    .plus( getInteractionDataTypes() )
+    .toSet()
 
 
 /**
