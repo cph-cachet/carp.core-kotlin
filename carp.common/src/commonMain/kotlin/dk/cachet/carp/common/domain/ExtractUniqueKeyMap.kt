@@ -51,10 +51,15 @@ class ExtractUniqueKeyMap<K, V>(
      *
      * @return True if the element has been removed; false if the specified element is not included in this collection.
      */
-    fun remove( element: V ): Boolean
-    {
-        return map.remove( keyOf( element ) ) != null
-    }
+    fun remove( element: V ): Boolean = map.remove( keyOf( element ) ) != null
+
+    /**
+     * Removes the element with the specified [key] from this collection.
+     *
+     * @return True if the element with [key] has been removed; false if no element with [key] is included in this collection.
+     */
+    fun removeKey( key: K ): Boolean = map.remove( key ) != null
+
 
     override val entries: Set<Map.Entry<K, V>> get() = map.entries
     override val keys: Set<K> get() = map.keys
