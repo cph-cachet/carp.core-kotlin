@@ -114,7 +114,7 @@ class HostsIntegrationTest
     }
 
     @Test
-    fun removing_deployment_removes_participant_group() = runSuspendTest {
+    fun removing_deployment_removes_participant_group_and_data_streams() = runSuspendTest {
         var deploymentsRemoved: DeploymentService.Event.StudyDeploymentsRemoved? = null
         eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentsRemoved::class, this )
         {
@@ -122,17 +122,25 @@ class HostsIntegrationTest
         }
         eventBus.activateHandlers( this )
 
-        val protocol = createComplexProtocol()
+        // Create a protocol which when deployed has one `STUB_DATA_TYPE` data stream.
+        val masterDevice = StubMasterDeviceDescriptor()
+        val protocol = createEmptyProtocol()
+        protocol.addMasterDevice( masterDevice )
+        val task = StubTaskDescriptor( "Task", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
+        val atStartOfStudy = protocol.addTrigger( masterDevice.atStartOfStudy() )
+        protocol.addTaskControl( atStartOfStudy.start( task, masterDevice ) )
+
+        // Deploy protocol.
         val invitation = createParticipantInvitation( protocol )
         val deploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
+        val dataStreamId = dataStreamId<StubData>( deploymentId, masterDevice.roleName )
 
         deploymentService.removeStudyDeployments( setOf( deploymentId ) )
+
         assertEquals( setOf( deploymentId ), deploymentsRemoved?.deploymentIds )
-        assertFailsWith<IllegalArgumentException>
-        {
-            participationService.getParticipantData( deploymentId )
-        }
+        assertFailsWith<IllegalArgumentException> { participationService.getParticipantData( deploymentId ) }
+        assertFailsWith<IllegalArgumentException> { dataStreamService.getDataStream( dataStreamId, 0 ) }
     }
 
     @Test
