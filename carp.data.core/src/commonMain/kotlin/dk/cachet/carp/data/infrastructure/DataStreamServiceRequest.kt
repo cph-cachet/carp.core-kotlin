@@ -42,4 +42,9 @@ sealed class DataStreamServiceRequest
     data class CloseDataStreams( val studyDeploymentIds: Set<UUID> ) :
         DataStreamServiceRequest(),
         ServiceInvoker<DataStreamService, Unit> by createServiceInvoker( DataStreamService::closeDataStreams, studyDeploymentIds )
+
+    @Serializable
+    data class RemoveDataStreams( val studyDeploymentIds: Set<UUID> ) :
+        DataStreamServiceRequest(),
+        ServiceInvoker<DataStreamService, Boolean> by createServiceInvoker( DataStreamService::removeDataStreams, studyDeploymentIds )
 }

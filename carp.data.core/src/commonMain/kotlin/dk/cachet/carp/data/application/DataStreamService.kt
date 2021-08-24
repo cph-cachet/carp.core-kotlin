@@ -57,4 +57,11 @@ interface DataStreamService : ApplicationService<DataStreamService, DataStreamSe
      * @throws IllegalArgumentException when no data streams were ever opened for any of the [studyDeploymentIds].
      */
     suspend fun closeDataStreams( studyDeploymentIds: Set<UUID> )
+
+    /**
+     * Close data streams and remove all data for each of the [studyDeploymentIds].
+     *
+     * @return True when any data streams have been removed, or false when there were no data streams to remove.
+     */
+    suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Boolean
 }

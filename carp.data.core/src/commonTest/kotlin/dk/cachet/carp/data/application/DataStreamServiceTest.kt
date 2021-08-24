@@ -129,6 +129,27 @@ interface DataStreamServiceTest
         }
     }
 
+    @Test
+    fun removeDataStreams_succeeds() = runSuspendTest {
+        val service = createServiceWithOpenStubDataStream()
+        val batch = MutableDataStreamBatch().apply {
+            appendSequence( createStubSequence( 0, StubData(), StubData() ) )
+        }
+
+        service.removeDataStreams( setOf( stubDeploymentId ) )
+
+        val dataStreamId = dataStreamId<StubData>( stubDeploymentId, stubSequenceDeviceRoleName )
+        assertFailsWith<IllegalArgumentException> { service.getDataStream( dataStreamId, 0 ) }
+    }
+
+    @Test
+    fun removeDataStreams_returns_false_when_nothing_removed() = runSuspendTest {
+        val service = createService()
+
+        val unknownDeploymentId = UUID.randomUUID()
+        assertFalse( service.removeDataStreams( setOf( unknownDeploymentId ) ) )
+    }
+
 
     /**
      * Create a data stream service and open [stubDataStream] for [stubDeploymentId].
