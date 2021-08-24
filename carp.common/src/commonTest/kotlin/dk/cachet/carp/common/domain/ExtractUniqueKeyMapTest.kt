@@ -63,4 +63,24 @@ class ExtractUniqueKeyMapTest
         val isRemoved = map.remove( toRemove )
         assertFalse( isRemoved )
     }
+
+    @Test
+    fun removeKey_succeeds()
+    {
+        val map = ExtractUniqueKeyMap<String, SomeObject>( { s -> s.key } ) { Error() }
+        val element = SomeObject( "Remove" )
+        map.tryAddIfKeyIsNew( element )
+
+        val isRemoved = map.removeKey( element.key )
+        assertTrue( isRemoved )
+    }
+
+    @Test
+    fun removeKey_returns_false_when_key_not_present()
+    {
+        val map = ExtractUniqueKeyMap<String, SomeObject>( { s -> s.key } ) { Error() }
+        val isRemoved = map.removeKey( "Unknown key" )
+
+        assertFalse( isRemoved )
+    }
 }
