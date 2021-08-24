@@ -73,13 +73,16 @@ class DeploymentServiceHost(
 
     /**
      * Remove study deployments with the given [studyDeploymentIds].
-     * This also removes all data related to the study deployments managed by [ParticipationService].
+     * This also removes all data related to the study deployments managed by [ParticipationService] and [DataStreamService].
      *
      * @return The IDs of study deployments which were removed. IDs for which no study deployment exists are ignored.
      */
     override suspend fun removeStudyDeployments( studyDeploymentIds: Set<UUID> ): Set<UUID>
     {
         val removedIds = repository.remove( studyDeploymentIds )
+
+        dataStreamService.removeDataStreams( studyDeploymentIds )
+
         eventBus.publish( DeploymentService.Event.StudyDeploymentsRemoved( studyDeploymentIds ) )
         return removedIds
     }
