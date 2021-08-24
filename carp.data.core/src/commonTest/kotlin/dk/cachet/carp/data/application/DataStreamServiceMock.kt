@@ -5,7 +5,8 @@ import dk.cachet.carp.test.Mock
 
 
 class DataStreamServiceMock(
-    val getDataStreamResult: DataStreamBatch = MutableDataStreamBatch()
+    val getDataStreamResult: DataStreamBatch = MutableDataStreamBatch(),
+    val removeDataStreamsResult: Boolean = true
 ) : Mock<DataStreamService>(), DataStreamService
 {
     override suspend fun openDataStreams( configuration: DataStreamsConfiguration ) =
@@ -26,4 +27,10 @@ class DataStreamServiceMock(
 
     override suspend fun closeDataStreams( studyDeploymentIds: Set<UUID> ) =
         trackSuspendCall( DataStreamService::closeDataStreams, studyDeploymentIds )
+
+    override suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Boolean
+    {
+        trackSuspendCall( DataStreamService::removeDataStreams, studyDeploymentIds )
+        return removeDataStreamsResult
+    }
 }
