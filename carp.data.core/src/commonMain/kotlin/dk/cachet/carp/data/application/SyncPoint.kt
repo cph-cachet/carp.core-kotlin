@@ -6,9 +6,10 @@ import kotlinx.serialization.Serializable
 
 /**
  * Information about a sensor clock at the timestamp [synchronizedOn] on a master device
- * which allows converting sensor timestamps to UTC time.
+ * which allows converting sensor timestamps to UTC time in microseconds.
  *
- * The required units/sign are determined by the formula: (sensorTimeStamp * [relativeClockSpeed]) + [utcOffset]
+ * The required units/sign to convert to UTC microseconds are determined by the formula:
+ * (sensorTimeStamp * [relativeClockSpeed]) + [utcOffset]
  */
 @Serializable
 data class SyncPoint(
