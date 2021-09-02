@@ -16,7 +16,7 @@ data class StudyRuntimeSnapshot(
     val device: AnyMasterDeviceDescriptor,
     val isDeployed: Boolean,
     val deploymentInformation: MasterDeviceDeployment?,
-    val remainingDevicesToRegister: List<AnyDeviceDescriptor>,
+    val remainingDevicesToRegister: Set<AnyDeviceDescriptor>,
     val isStopped: Boolean
 ) : Snapshot<StudyRuntime>
 {
@@ -32,8 +32,8 @@ data class StudyRuntimeSnapshot(
                 studyRuntime.device,
                 studyRuntime.isDeployed,
                 (status as? StudyRuntimeStatus.DeploymentReceived)?.deploymentInformation,
-                (status as? StudyRuntimeStatus.RegisteringDevices)?.remainingDevicesToRegister
-                    ?: emptyList(),
+                (status as? StudyRuntimeStatus.RegisteringDevices)?.remainingDevicesToRegister?.toSet()
+                    ?: emptySet(),
                 studyRuntime.isStopped
             )
         }

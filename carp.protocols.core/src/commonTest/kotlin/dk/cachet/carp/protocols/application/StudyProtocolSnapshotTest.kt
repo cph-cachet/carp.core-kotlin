@@ -105,14 +105,14 @@ class StudyProtocolSnapshotTest
             protocolId,
             "Description",
             createdOn,
-            masterDevices, connectedDevices, connections,
-            tasks, triggers, triggeredTasks, expectedParticipantData, "" )
+            masterDevices.toSet(), connectedDevices.toSet(), connections.toSet(),
+            tasks.toSet(), triggers, triggeredTasks.toSet(), expectedParticipantData.toSet(), "" )
         val reorganizedSnapshot = StudyProtocolSnapshot(
             protocolId,
             "Description",
             createdOn,
-            masterDevices.reversed(), connectedDevices.reversed(), connections.reversed(),
-            tasks.reversed(), triggers, triggeredTasks.reversed(), expectedParticipantData.reversed(), "" )
+            masterDevices.reversed().toSet(), connectedDevices.reversed().toSet(), connections.reversed().toSet(),
+            tasks.reversed().toSet(), triggers, triggeredTasks.reversed().toSet(), expectedParticipantData.reversed().toSet(), "" )
 
         assertEquals( snapshot, reorganizedSnapshot )
         assertEquals( snapshot.hashCode(), reorganizedSnapshot.hashCode() )
@@ -159,20 +159,20 @@ class StudyProtocolSnapshotTest
             StudyProtocolId( UUID.randomUUID(), "Name" ),
             "Description",
             Clock.System.now(),
-            listOf( masterDevice ),
-            emptyList(),
-            emptyList(),
-            listOf( task ),
+            setOf( masterDevice ),
+            emptySet(),
+            emptySet(),
+            setOf( task ),
             mapOf( 0 to trigger ),
-            listOf( TaskControl( 0, task.name, masterDevice.roleName, TaskControl.Control.Start ) ),
-            emptyList(),
+            setOf( TaskControl( 0, task.name, masterDevice.roleName, TaskControl.Control.Start ) ),
+            emptySet(),
             ""
         )
         StudyProtocol.fromSnapshot( correctSnapshot )
 
         val wrongSnapshot = correctSnapshot.copy(
             triggers = mapOf( 1 to trigger ),
-            taskControls = listOf( TaskControl( 1, task.name, masterDevice.roleName, TaskControl.Control.Start) )
+            taskControls = setOf( TaskControl( 1, task.name, masterDevice.roleName, TaskControl.Control.Start) )
         )
         assertFailsWith<IllegalArgumentException> { StudyProtocol.fromSnapshot( wrongSnapshot ) }
     }

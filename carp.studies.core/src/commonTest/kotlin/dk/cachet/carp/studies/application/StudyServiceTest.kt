@@ -175,7 +175,7 @@ interface StudyServiceTest
 
         val validSnapshot = createDeployableProtocol()
         val invalidSnapshot = validSnapshot.copy(
-            taskControls = listOf(
+            taskControls = setOf(
                 TaskControl( 0, "Unknown task", "Unknown device", TaskControl.Control.Start )
             )
         )

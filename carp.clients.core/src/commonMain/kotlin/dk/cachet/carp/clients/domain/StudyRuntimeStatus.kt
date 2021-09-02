@@ -49,7 +49,7 @@ sealed class StudyRuntimeStatus
     data class RegisteringDevices internal constructor(
         override val id: StudyRuntimeId,
         override val deploymentInformation: MasterDeviceDeployment,
-        val remainingDevicesToRegister: List<AnyDeviceDescriptor>
+        val remainingDevicesToRegister: Set<AnyDeviceDescriptor>
     ) : StudyRuntimeStatus(), DeploymentReceived
     {
         override val devicesRegistrationStatus = getDevicesRegistrationStatus( deploymentInformation )
