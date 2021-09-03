@@ -8,7 +8,7 @@ buildscript {
     ext {
         // Version used for all submodule artifacts.
         // Snapshot publishing changes (or adds) the suffix after '-' with 'SNAPSHOT' prior to publishing.
-        globalVersion = '1.0.0-alpha.35'
+        globalVersion = '1.0.0-alpha.36'
 
         versions = [
             // Kotlin multiplatform versions.
@@ -19,7 +19,6 @@ buildscript {
 
             // JVM versions.
             jvmTarget:'1.8',
-            jUnit5:'5.7.2',
             dokkaPlugin:'1.5.0',
             reflections:'0.9.12',
 
@@ -79,6 +78,10 @@ configure( subprojects - detektModule ) {
         jvm {
             compilations.main.kotlinOptions.jvmTarget = versions.jvmTarget
             compilations.test.kotlinOptions.jvmTarget = versions.jvmTarget
+
+            testRuns["test"].executionTask.configure {
+                useJUnitPlatform()
+            }
         }
         js(LEGACY) {
             binaries.executable()
@@ -93,21 +96,7 @@ configure( subprojects - detektModule ) {
             }
             commonTest {
                 dependencies {
-                    implementation kotlin('test-common')
-                    implementation kotlin('test-annotations-common')
-                }
-            }
-            jvmTest {
-                dependencies {
                     implementation kotlin('test')
-                    implementation kotlin('test-junit5')
-                    implementation "org.junit.jupiter:junit-jupiter-api:${versions.jUnit5}"
-                    runtimeOnly "org.junit.jupiter:junit-jupiter-engine:${versions.jUnit5}"
-                }
-            }
-            jsTest {
-                dependencies {
-                    implementation kotlin('test-js')
                 }
             }
         }
@@ -281,7 +270,7 @@ configure( coreModules + commonModule ) {
         sourceSets {
             commonMain {
                 dependencies {
-                    implementation "org.jetbrains.kotlinx:kotlinx-datetime:${versions.datetime}"
+                    api "org.jetbrains.kotlinx:kotlinx-datetime:${versions.datetime}"
                 }
             }
             commonTest {

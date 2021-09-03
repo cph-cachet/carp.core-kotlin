@@ -30,7 +30,7 @@ data class Smartphone(
     /**
      * All the sensors commonly available on smartphones.
      */
-    object Sensors : DataTypeSamplingSchemeList()
+    object Sensors : DataTypeSamplingSchemeMap()
     {
         /**
          *  Geographic location data, representing latitude and longitude within the World Geodetic System 1984.
@@ -64,7 +64,7 @@ data class Smartphone(
         val WEB = add { WebTaskBuilder() }
     }
 
-    override fun getSupportedDataTypes(): Set<DataType> = Sensors.getDataTypes()
+    override fun getSupportedDataTypes(): Set<DataType> = Sensors.keys
 
     override fun createDeviceRegistrationBuilder(): SmartphoneDeviceRegistrationBuilder = SmartphoneDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<SmartphoneDeviceRegistration> = SmartphoneDeviceRegistration::class

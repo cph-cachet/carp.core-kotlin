@@ -1,0 +1,12 @@
+group = 'dk.cachet.carp.data'
+
+publishing {
+    publications {
+        all {
+            pom {
+                name = 'Data Domain Model and Application Services'
+                description = 'Contains all pseudonymized data. When combined with the original study protocol, the full provenance of the data (when/why it was collected) is known.'
+            }
+        }
+    }
+}

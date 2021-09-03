@@ -34,7 +34,7 @@ class StudyRuntime private constructor(
     {
         data class DeploymentReceived(
             val deploymentInformation: MasterDeviceDeployment,
-            val remainingDevicesToRegister: List<AnyDeviceDescriptor>
+            val remainingDevicesToRegister: Set<AnyDeviceDescriptor>
         ) : Event()
 
         object DeploymentCompleted : Event()
@@ -98,7 +98,7 @@ class StudyRuntime private constructor(
                 createdOn = snapshot.createdOn
                 isDeployed = snapshot.isDeployed
                 deploymentInformation = snapshot.deploymentInformation
-                remainingDevicesToRegister = snapshot.remainingDevicesToRegister
+                remainingDevicesToRegister = snapshot.remainingDevicesToRegister.toSet()
                 isStopped = snapshot.isStopped
             }
     }
@@ -115,7 +115,7 @@ class StudyRuntime private constructor(
     var isDeployed: Boolean = false
         private set
 
-    private var remainingDevicesToRegister: List<AnyDeviceDescriptor> = emptyList()
+    private var remainingDevicesToRegister: Set<AnyDeviceDescriptor> = emptySet()
     private var deploymentInformation: MasterDeviceDeployment? = null
 
     /**
@@ -132,7 +132,7 @@ class StudyRuntime private constructor(
         when {
             deploymentInformation == null -> StudyRuntimeStatus.NotReadyForDeployment( id )
             remainingDevicesToRegister.isNotEmpty() ->
-                StudyRuntimeStatus.RegisteringDevices( id, deploymentInformation!!, remainingDevicesToRegister.toList() )
+                StudyRuntimeStatus.RegisteringDevices( id, deploymentInformation!!, remainingDevicesToRegister.toSet() )
             isStopped -> StudyRuntimeStatus.Stopped( id, deploymentInformation!! )
             isDeployed -> StudyRuntimeStatus.Deployed( id, deploymentInformation!! )
             else -> error( "Unexpected study runtime state." )
@@ -172,7 +172,8 @@ class StudyRuntime private constructor(
         remainingDevicesToRegister = deploymentStatus.devicesStatus
             .map { it.device }
             .filter { it.roleName in deviceStatus.remainingDevicesToRegisterBeforeDeployment }
-        event( Event.DeploymentReceived( deployment, remainingDevicesToRegister.toList() ) )
+            .toSet()
+        event( Event.DeploymentReceived( deployment, remainingDevicesToRegister.toSet() ) )
 
         // Early out in case devices need to be registered before being able to complete deployment.
         if ( remainingDevicesToRegister.isNotEmpty() ) return

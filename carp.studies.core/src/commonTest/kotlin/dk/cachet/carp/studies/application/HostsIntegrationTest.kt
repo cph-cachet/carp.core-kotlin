@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
+import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHost
 import dk.cachet.carp.deployments.application.ParticipationService
@@ -47,6 +48,7 @@ class HostsIntegrationTest
         // Create deployment service.
         deploymentService = DeploymentServiceHost(
             InMemoryDeploymentRepository(),
+            InMemoryDataStreamService(),
             eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
         // Create dependent participation service.

@@ -29,6 +29,9 @@ Two key **design goals** differentiate this project from similar projects:
     - [Application services](docs/carp-deployments.md#application-services)
   - [Clients](docs/carp-clients.md)
     - [Study runtime state](docs/carp-clients.md#study-runtime-state)
+  - [Data](docs/carp-data.md)
+    - [Data streams](docs/carp-data.md#data-streams)
+    - [Application services](docs/carp-data.md#application-services)
   - [Common](docs/carp-common.md)
     - [Built-in types](docs/carp-common.md#built-in-types)
 - [Infrastructure helpers](#infrastructure-helpers)
@@ -61,8 +64,11 @@ Two key **design goals** differentiate this project from similar projects:
 
    [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.clients/carp.clients.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.clients) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.clients/carp.clients.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/clients/)
 
+- [**Data**](docs/carp-data.md): Contains all pseudonymized data. In combination with the original study protocol, the full provenance of the data (when/why it was collected) is known.
+  
+  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.data/carp.data.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.data) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.data/carp.data.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/data/)
+
 - **Resources**: Contains a simple file store for resources (such as images, videos, and text documents) which can be referenced from within study protocols to be used during a study.
-- **Data**: Contains all pseudonymized data. In combination with the original study protocol, the full provenance of the data (when/why it was collected) is known.
 - **Analysis**: An analysis subsystem sits in between the data store and 'studies' subsystem, enabling common data analytics but also offering anonimity-preserving features such as k-anonymity.
 - **Supporting subystems**:
    - [**Common**](docs/carp-common.md): Implements helper classes and base types relied upon by all subsystems.
@@ -79,7 +85,9 @@ which subsequently get passed to the deployments and clients subsystem.
      
    - **carp.detekt**: Includes static code analysis extensions for [detekt](https://github.com/arturbosch/detekt), used when building this project to ensure conventions are followed.
 
-Not all subsystems are implemented yet. Currently, this project contains an unstable (not backwards compatible) alpha version of the protocols, deployments, client, and studies subsystems. Many changes will happen as the rest of the infrastructure is implemented.
+Not all subsystems are implemented yet.
+Currently, this project contains an unstable (not backwards compatible) alpha version of the protocols, studies, deployments, clients, and data subsystems.
+Many changes will happen as the rest of the infrastructure is implemented.
 
 ## Infrastructure helpers
 
@@ -299,10 +307,10 @@ if ( status is StudyRuntimeStatus.RegisteringDevices )
 
 In case you want to contribute, please follow our [contribution guidelines](https://github.com/cph-cachet/carp.core-kotlin/blob/develop/CONTRIBUTING.md).
 
-We recommend using IntelliJ IDEA 2020, as this is the development environment we use and is therefore fully tested.
+We recommend using IntelliJ IDEA 2021, as this is the development environment we use and is therefore fully tested.
 
-- Open the project folder in IntelliJ 2020.
 - Install the Kotlin plugin for IntelliJ IDEA (211-1.5.21-release-*): `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Open the project folder in IntelliJ 2021.
 - To build/test/publish, click "Edit Configurations" to add configurations for [the included Gradle tasks](#gradle-tasks), or run them from the Gradle tool window.
 
 ### Gradle tasks

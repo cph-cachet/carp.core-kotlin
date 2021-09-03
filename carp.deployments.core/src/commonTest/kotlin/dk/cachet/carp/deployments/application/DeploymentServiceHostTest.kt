@@ -3,6 +3,7 @@ package dk.cachet.carp.deployments.application
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
+import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 
 
@@ -15,5 +16,6 @@ class DeploymentServiceHostTest : DeploymentServiceTest()
 
     override fun createService(): DeploymentService = DeploymentServiceHost(
         InMemoryDeploymentRepository(),
+        InMemoryDataStreamService(),
         eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 }

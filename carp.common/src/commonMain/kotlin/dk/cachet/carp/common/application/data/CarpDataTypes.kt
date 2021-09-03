@@ -7,7 +7,7 @@ package dk.cachet.carp.common.application.data
 /**
  * All CARP data types.
  */
-object CarpDataTypes : DataTypeMetaDataList()
+object CarpDataTypes : DataTypeMetaDataMap()
 {
     /**
      * The [DataType] namespace of all CARP data type definitions.

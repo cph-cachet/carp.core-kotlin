@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.data.application.DataStreamService
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.domain.DeploymentRepository
 import dk.cachet.carp.deployments.domain.RegistrableDevice
@@ -19,6 +20,7 @@ import kotlinx.datetime.Instant
  */
 class DeploymentServiceHost(
     private val repository: DeploymentRepository,
+    private val dataStreamService: DataStreamService,
     private val eventBus: ApplicationServiceEventBus<DeploymentService, DeploymentService.Event>
 ) : DeploymentService
 {
@@ -71,13 +73,16 @@ class DeploymentServiceHost(
 
     /**
      * Remove study deployments with the given [studyDeploymentIds].
-     * This also removes all data related to the study deployments managed by [ParticipationService].
+     * This also removes all data related to the study deployments managed by [ParticipationService] and [DataStreamService].
      *
      * @return The IDs of study deployments which were removed. IDs for which no study deployment exists are ignored.
      */
     override suspend fun removeStudyDeployments( studyDeploymentIds: Set<UUID> ): Set<UUID>
     {
         val removedIds = repository.remove( studyDeploymentIds )
+
+        dataStreamService.removeDataStreams( studyDeploymentIds )
+
         eventBus.publish( DeploymentService.Event.StudyDeploymentsRemoved( studyDeploymentIds ) )
         return removedIds
     }
@@ -207,7 +212,15 @@ class DeploymentServiceHost(
         deployment.deviceDeployed( device, deviceDeploymentLastUpdatedOn )
         repository.update( deployment )
 
-        return deployment.getStatus()
+        val deploymentStatus = deployment.getStatus()
+
+        // Once the deployment is ready, open the required data streams.
+        if ( deploymentStatus is StudyDeploymentStatus.DeploymentReady )
+        {
+            dataStreamService.openDataStreams( deployment.requiredDataStreams )
+        }
+
+        return deploymentStatus
     }
 
     /**
@@ -222,6 +235,12 @@ class DeploymentServiceHost(
 
         if ( !deployment.isStopped )
         {
+            // Close all data streams used by the deployment.
+            if ( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
+            {
+                dataStreamService.closeDataStreams( setOf( studyDeploymentId ) )
+            }
+
             deployment.stop()
             repository.update( deployment )
             eventBus.publish( DeploymentService.Event.StudyDeploymentStopped( studyDeploymentId ) )

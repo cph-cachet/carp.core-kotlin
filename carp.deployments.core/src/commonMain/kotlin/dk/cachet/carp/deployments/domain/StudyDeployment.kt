@@ -4,10 +4,13 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.tasks.getAllExpectedDataTypes
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
+import dk.cachet.carp.common.infrastructure.serialization.CustomTaskDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicWrapper
+import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
@@ -97,6 +100,20 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         {
             throw IllegalArgumentException( "Invalid protocol snapshot passed.", e )
         }
+
+    /**
+     * All the data streams which are required to run this study deployment.
+     */
+    val requiredDataStreams: DataStreamsConfiguration =
+        DataStreamsConfiguration(
+            id,
+            protocol.devices.flatMap { device ->
+                protocol.getTasksForDevice( device )
+                    .filter { it !is CustomTaskDescriptor } // Can't retrieve expected data types for unknown tasks.
+                    .flatMap { it.getAllExpectedDataTypes() }
+                    .map { DataStreamsConfiguration.ExpectedDataStream( device.roleName, it ) }
+            }.toSet()
+        )
 
     /**
      * The set of all devices which can or need to be registered for this study deployment.

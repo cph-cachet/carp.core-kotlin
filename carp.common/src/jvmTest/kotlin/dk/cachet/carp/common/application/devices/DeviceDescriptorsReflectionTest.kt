@@ -1,6 +1,6 @@
 package dk.cachet.carp.common.application.devices
 
-import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeList
+import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.tasks.TaskDescriptorList
 import org.reflections.Reflections
 import java.lang.reflect.Modifier
@@ -28,7 +28,7 @@ class DeviceDescriptorsReflectionTest
 
             // Does the DeviceDescriptor list available sensors?
             val sensorsClass = subclasses.singleOrNull { it.name.endsWith( "\$Sensors" ) }
-            val superSensorsClass = DataTypeSamplingSchemeList::class
+            val superSensorsClass = DataTypeSamplingSchemeMap::class
             assertNotNull( sensorsClass, "No `Sensors` subclass defined in \"$name\"." )
             assertEquals(
                 sensorsClass.superclass, superSensorsClass.java,

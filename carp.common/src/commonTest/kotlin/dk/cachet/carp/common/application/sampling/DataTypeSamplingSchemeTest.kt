@@ -1,6 +1,6 @@
 package dk.cachet.carp.common.application.sampling
 
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE_METADATA
+import dk.cachet.carp.common.infrastructure.test.StubDataTypes
 import kotlin.test.*
 import kotlin.time.Duration
 
@@ -10,7 +10,7 @@ import kotlin.time.Duration
  */
 class DataTypeSamplingSchemeTest
 {
-    class TestSamplingScheme : DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>( STUB_DATA_TYPE_METADATA )
+    class TestSamplingScheme : DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>( StubDataTypes.STUB )
     {
         val maxDuration: Duration = Duration.seconds( 42 )
 

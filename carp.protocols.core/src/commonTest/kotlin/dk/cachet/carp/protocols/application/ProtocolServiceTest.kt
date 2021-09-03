@@ -83,7 +83,7 @@ interface ProtocolServiceTest
         service.add( protocol.getSnapshot() )
 
         val invalidSnapshot = protocol.getSnapshot().copy(
-            taskControls = listOf(
+            taskControls = setOf(
                 TaskControl( 0, "Non-existing", "Not a device", TaskControl.Control.Start )
             )
         )

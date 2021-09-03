@@ -1,0 +1,133 @@
+package dk.cachet.carp.data.infrastructure
+
+import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.intersect
+import dk.cachet.carp.common.domain.ExtractUniqueKeyMap
+import dk.cachet.carp.data.application.DataStreamBatch
+import dk.cachet.carp.data.application.DataStreamId
+import dk.cachet.carp.data.application.DataStreamService
+import dk.cachet.carp.data.application.DataStreamsConfiguration
+import dk.cachet.carp.data.application.MutableDataStreamBatch
+import dk.cachet.carp.data.application.MutableDataStreamSequence
+
+
+/**
+ * A [DataStreamService] which holds data points in memory as long as the instance is held in memory.
+ */
+class InMemoryDataStreamService : DataStreamService
+{
+    private val configuredDataStreams: ExtractUniqueKeyMap<UUID, DataStreamsConfiguration> =
+        ExtractUniqueKeyMap( { configuration -> configuration.studyDeploymentId } )
+        {
+            studyDeploymentId ->
+                IllegalStateException( "Data streams for deployment with \"$studyDeploymentId\" have already been configured." )
+        }
+    private val stoppedStudyDeploymentIds: MutableSet<UUID> = mutableSetOf()
+    private val dataStreams: MutableDataStreamBatch = MutableDataStreamBatch()
+
+
+    /**
+     * Start accepting data for a study deployment for data streams configured in [configuration].
+     *
+     * @throws IllegalStateException when data streams for the specified study deployment have already been configured.
+     */
+    override suspend fun openDataStreams( configuration: DataStreamsConfiguration )
+    {
+        configuredDataStreams.tryAddIfKeyIsNew( configuration )
+    }
+
+    /**
+     * Append a [batch] of data point sequences to corresponding data streams in [studyDeploymentId].
+     *
+     * @throws IllegalArgumentException when:
+     *  - the `studyDeploymentId` of one or more sequences in [batch] does not match [studyDeploymentId]
+     *  - the start of one or more of the sequences contained in [batch]
+     *  precede the end of a previously appended sequence to the same data stream
+     *  - [batch] contains a sequence with [DataStreamId] which wasn't configured for [studyDeploymentId]
+     * @throws IllegalStateException when data streams for [studyDeploymentId] have been closed.
+     */
+    override suspend fun appendToDataStreams( studyDeploymentId: UUID, batch: DataStreamBatch )
+    {
+        require( batch.sequences.all { it.dataStream.studyDeploymentId == studyDeploymentId } )
+            { "The study deployment ID of one or more sequences in `batch` doesn't match `studyDeploymentId`." }
+
+        val configuration = configuredDataStreams[ studyDeploymentId ]
+        requireNotNull( configuration ) { "No data streams configured for this study deployment." }
+        require( batch.sequences.all { it.dataStream in configuration.expectedDataStreamIds } )
+            { "The batch contains a sequence with a data stream which wasn't configured for this study deployment." }
+
+        check( studyDeploymentId !in stoppedStudyDeploymentIds )
+            { "Data streams for this study deployment have been closed." }
+
+        dataStreams.appendBatch( batch )
+    }
+
+    /**
+     * Retrieve all data points in [dataStream] that fall within the inclusive range
+     * defined by [fromSequenceId] and [toSequenceIdInclusive].
+     * If [toSequenceIdInclusive] is null, all data points starting [fromSequenceId] are returned.
+     *
+     * In case no data for [dataStream] is stored in this repository, or is available for the specified range,
+     * an empty [DataStreamBatch] is returned.
+     *
+     * @throws IllegalArgumentException when [dataStream] has never been opened.
+     */
+    override suspend fun getDataStream(
+        dataStream: DataStreamId,
+        fromSequenceId: Long,
+        toSequenceIdInclusive: Long?
+    ): DataStreamBatch
+    {
+        val configuration = configuredDataStreams[ dataStream.studyDeploymentId ]
+        requireNotNull( configuration ) { "No data streams configured for this study deployment." }
+        require( dataStream in configuration.expectedDataStreamIds )
+            { "The batch contains a sequence with a data stream which wasn't configured for this study deployment." }
+
+        return dataStreams.sequences
+            .filter { it.dataStream == dataStream }
+            .mapNotNull {
+                val queryRange = fromSequenceId.rangeTo( toSequenceIdInclusive ?: Long.MAX_VALUE )
+                val subRange = it.range.intersect( queryRange )
+
+                if ( subRange.isEmpty() ) null
+                else MutableDataStreamSequence( dataStream, subRange.first, it.triggerIds, it.syncPoint )
+                    .apply {
+                        val startOffset = subRange.first - it.range.first
+                        val exclusiveEnd = startOffset + subRange.last - subRange.first + 1
+                        check( startOffset <= Int.MAX_VALUE && exclusiveEnd <= Int.MAX_VALUE )
+                            { "Exceeded capacity of measurements which can be held in memory." }
+                        appendMeasurements( it.measurements.subList( startOffset.toInt(), exclusiveEnd.toInt() ) )
+                    }
+            }
+            .fold( MutableDataStreamBatch() ) { batch, sequence ->
+                batch.apply { appendSequence( sequence ) }
+            }
+    }
+
+    /**
+     * Stop accepting incoming data for all data streams for each of the [studyDeploymentIds].
+     *
+     * @throws IllegalArgumentException when no data streams were ever opened for any of the [studyDeploymentIds].
+     */
+    override suspend fun closeDataStreams( studyDeploymentIds: Set<UUID> )
+    {
+        require( studyDeploymentIds.all { configuredDataStreams[ it ] != null } )
+            { "No data streams configured for this study deployment." }
+
+        stoppedStudyDeploymentIds.addAll( studyDeploymentIds )
+    }
+
+    /**
+     * Close data streams and remove all data for each of the [studyDeploymentIds].
+     *
+     * @return True when any data streams have been removed, or false when there were no data streams to remove.
+     */
+    override suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Boolean
+    {
+        stoppedStudyDeploymentIds.removeAll( studyDeploymentIds )
+
+        return studyDeploymentIds.fold( false ) {
+            removedAny, toRemove -> configuredDataStreams.removeKey( toRemove ) || removedAny
+        }
+    }
+}

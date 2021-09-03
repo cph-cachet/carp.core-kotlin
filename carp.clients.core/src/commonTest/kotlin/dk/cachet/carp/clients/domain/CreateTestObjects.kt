@@ -13,6 +13,7 @@ import dk.cachet.carp.common.application.services.createApplicationServiceAdapte
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
+import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHost
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
@@ -70,6 +71,7 @@ suspend fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentSer
 
     val deploymentService = DeploymentServiceHost(
         InMemoryDeploymentRepository(),
+        InMemoryDataStreamService(),
         eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
     val invitation = createParticipantInvitation( protocol )
     val status = deploymentService.createStudyDeployment( UUID.randomUUID(), protocol.getSnapshot(), listOf( invitation ) )

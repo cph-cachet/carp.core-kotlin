@@ -15,8 +15,6 @@ dependencies {
     testImplementation "io.gitlab.arturbosch.detekt:detekt-test:${versions.detektPlugin}"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${versions.jUnit5}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${versions.jUnit5}"
 }
 
 test {

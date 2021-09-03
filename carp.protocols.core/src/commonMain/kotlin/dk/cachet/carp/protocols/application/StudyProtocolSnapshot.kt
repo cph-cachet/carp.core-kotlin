@@ -21,13 +21,13 @@ data class StudyProtocolSnapshot(
     val id: StudyProtocolId,
     val description: String,
     override val createdOn: Instant,
-    val masterDevices: List<AnyMasterDeviceDescriptor>,
-    val connectedDevices: List<AnyDeviceDescriptor>,
-    val connections: List<DeviceConnection>,
-    val tasks: List<TaskDescriptor>,
+    val masterDevices: Set<AnyMasterDeviceDescriptor>,
+    val connectedDevices: Set<AnyDeviceDescriptor>,
+    val connections: Set<DeviceConnection>,
+    val tasks: Set<TaskDescriptor>,
     val triggers: Map<Int, Trigger<*>>,
-    val taskControls: List<TaskControl>,
-    val expectedParticipantData: List<ParticipantAttribute>,
+    val taskControls: Set<TaskControl>,
+    val expectedParticipantData: Set<ParticipantAttribute>,
     @Serializable( ApplicationDataSerializer::class )
     val applicationData: String
 ) : Snapshot<StudyProtocol>
@@ -50,17 +50,17 @@ data class StudyProtocolSnapshot(
                 protocol.id,
                 description = protocol.description,
                 createdOn = protocol.createdOn,
-                masterDevices = protocol.masterDevices.toList(),
-                connectedDevices = protocol.devices.minus( protocol.masterDevices ).toList(),
-                connections = protocol.masterDevices.flatMap { getConnections( protocol, it ) }.toList(),
-                tasks = protocol.tasks.toList(),
+                masterDevices = protocol.masterDevices.toSet(),
+                connectedDevices = protocol.devices.minus( protocol.masterDevices ).toSet(),
+                connections = protocol.masterDevices.flatMap { getConnections( protocol, it ) }.toSet(),
+                tasks = protocol.tasks.toSet(),
                 triggers = triggers,
                 taskControls = triggers
                     .flatMap { trigger -> protocol.getTaskControls( trigger.value ).map { trigger to it } }
                     .map { (trigger, control) ->
                         TaskControl( trigger.key, control.task.name, control.destinationDevice.roleName, control.control ) }
-                    .toList(),
-                expectedParticipantData = protocol.expectedParticipantData.toList(),
+                    .toSet(),
+                expectedParticipantData = protocol.expectedParticipantData.toSet(),
                 applicationData = protocol.applicationData
             )
         }
@@ -81,54 +81,6 @@ data class StudyProtocolSnapshot(
         }
     }
 
-
-    override fun equals( other: Any? ): Boolean
-    {
-        if ( this === other ) return true
-        if ( other !is StudyProtocolSnapshot ) return false
-
-        if ( id != other.id ) return false
-        if ( description != other.description ) return false
-        if ( createdOn != other.createdOn ) return false
-        if ( applicationData != other.applicationData ) return false
-
-        val listsToCompare = listOf(
-            masterDevices to other.masterDevices,
-            connectedDevices to other.connectedDevices,
-            connections to other.connections,
-            tasks to other.tasks,
-            triggers.toList() to other.triggers.toList(),
-            taskControls to other.taskControls,
-            expectedParticipantData.toList() to other.expectedParticipantData.toList()
-        )
-        val allListsMatch = listsToCompare.all { listEquals( it.first, it.second ) }
-        if ( !allListsMatch ) return false
-
-        return true
-    }
-
-    private fun <T> listEquals( a1: List<T>, a2: List<T> ): Boolean
-    {
-        val count = a1.count()
-        return count == a2.count() && a1.intersect( a2.toList() ).count() == count
-    }
-
-    override fun hashCode(): Int
-    {
-        var result = id.hashCode()
-        result = 31 * result + description.hashCode()
-        result = 31 * result + createdOn.hashCode()
-        result = 31 * result + applicationData.hashCode()
-        result = 31 * result + masterDevices.sortedWith( compareBy { it.roleName } ).toTypedArray().contentDeepHashCode()
-        result = 31 * result + connectedDevices.sortedWith( compareBy { it.roleName } ).toTypedArray().contentDeepHashCode()
-        result = 31 * result + connections.sortedWith( compareBy( { it.roleName }, { it.connectedToRoleName } ) ).toTypedArray().contentDeepHashCode()
-        result = 31 * result + tasks.sortedWith( compareBy { it.name } ).toTypedArray().contentDeepHashCode()
-        result = 31 * result + triggers.entries.sortedWith( compareBy { it.key } ).toTypedArray().contentDeepHashCode()
-        result = 31 * result + taskControls.sortedWith( compareBy( { it.triggerId }, { it.taskName }, { it.destinationDeviceRoleName } ) ).toTypedArray().contentDeepHashCode()
-        result = 31 * result + expectedParticipantData.sortedWith( compareBy { it.inputType.toString() } ).toTypedArray().contentDeepHashCode()
-
-        return result
-    }
 
     override fun toObject(): StudyProtocol = StudyProtocol.fromSnapshot( this )
 }

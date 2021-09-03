@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
+import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.tasks.Measure
 import kotlinx.serialization.KSerializer
@@ -20,6 +21,9 @@ data class CustomTaskDescriptor( override val className: String, override val js
         override val measures: List<Measure>,
         override val description: String?
     ) : TaskDescriptor
+    {
+        override fun getInteractionDataTypes(): Set<DataType> = emptySet()
+    }
 
     override val name: String
     override val measures: List<Measure>
@@ -32,6 +36,9 @@ data class CustomTaskDescriptor( override val className: String, override val js
         name = baseMembers.name
         measures = baseMembers.measures
     }
+
+    override fun getInteractionDataTypes(): Set<DataType> =
+        throw UnsupportedOperationException( "The task needs to be known at runtime to determine interaction data types." )
 }
 
 /**

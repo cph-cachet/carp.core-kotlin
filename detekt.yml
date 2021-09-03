@@ -75,6 +75,7 @@ verify-implementation:
     assumeNoAnnotations: &assume-no-annotations
       - 'kotlin.collections.List'
       - 'kotlin.collections.Map'
+      - 'kotlin.sequences.Sequence'
       - 'kotlinx.serialization.KSerializer'
       - 'kotlinx.serialization.modules.SerializersModuleCollector'
   Immutable:

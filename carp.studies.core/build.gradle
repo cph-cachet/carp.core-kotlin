@@ -17,6 +17,7 @@ kotlin {
             dependencies {
                 api project(':carp.protocols.core')
                 api project(':carp.deployments.core')
+                implementation project(':carp.data.core')
             }
         }
     }
