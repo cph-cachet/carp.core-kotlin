@@ -16,7 +16,7 @@ data class StudyInvitation(
     /**
      * A description of the study clarifying to participants what it is about.
      */
-    val description: String,
+    val description: String? = null,
     /**
      * Application-specific data to be shared with clients when they are invited to a study.
      *
@@ -24,14 +24,5 @@ data class StudyInvitation(
      * between the studies and clients subsystems, outside of scope or not yet supported by CARP core.
      */
     @Serializable( ApplicationDataSerializer::class )
-    val applicationData: String = ""
+    val applicationData: String? = null
 )
-{
-    companion object
-    {
-        /**
-         * Initializes a [StudyInvitation] with blank values for all fields.
-         */
-        fun empty(): StudyInvitation = StudyInvitation( "", "" )
-    }
-}

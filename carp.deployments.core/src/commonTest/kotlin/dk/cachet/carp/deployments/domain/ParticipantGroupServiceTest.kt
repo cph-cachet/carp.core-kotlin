@@ -74,7 +74,7 @@ class ParticipantGroupServiceTest
             addMasterDevice( StubMasterDeviceDescriptor( device2Role ) )
         }
         val identity = AccountIdentity.fromUsername( "Test" )
-        val studyInvitation = StudyInvitation.empty()
+        val studyInvitation = StudyInvitation( "Some study" )
         val invitation1 = ParticipantInvitation( UUID.randomUUID(), setOf( device1Role ), identity, studyInvitation )
         val invitation2 = ParticipantInvitation( UUID.randomUUID(), setOf( device2Role ), identity, studyInvitation )
 
@@ -94,7 +94,7 @@ class ParticipantGroupServiceTest
             UUID.randomUUID(),
             setOf( "Wrong device" ),
             AccountIdentity.fromUsername( "Test" ),
-            StudyInvitation.empty()
+            StudyInvitation( "Some study" )
         )
         val createdEvent = DeploymentService.Event.StudyDeploymentCreated(
             studyDeploymentId,

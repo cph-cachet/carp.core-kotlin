@@ -22,6 +22,9 @@ import kotlin.test.*
  */
 class ParticipantGroupTest
 {
+    private val studyInvitation = StudyInvitation( "Some study" )
+
+
     @Test
     fun fromNewDeployment_succeeds()
     {
@@ -70,14 +73,13 @@ class ParticipantGroupTest
 
         val participation = Participation( group.studyDeploymentId )
         val account = Account.withUsernameIdentity( "test" )
-        val invitation = StudyInvitation.empty()
-        group.addParticipation( account, invitation, participation, devicesToAssign )
+        group.addParticipation( account, studyInvitation, participation, devicesToAssign )
 
         val expectedParticipation = AccountParticipation(
             participation,
             devicesToAssign.map { it.roleName }.toSet(),
             account.id,
-            invitation
+            studyInvitation
         )
         assertEquals( ParticipantGroup.Event.ParticipationAdded( expectedParticipation ), group.consumeEvents().last() )
     }
@@ -93,7 +95,7 @@ class ParticipantGroupTest
         val participation = Participation( incorrectDeploymentId )
         assertFailsWith<IllegalArgumentException>
         {
-            group.addParticipation( account, StudyInvitation.empty(), participation, devicesToAssign )
+            group.addParticipation( account, studyInvitation, participation, devicesToAssign )
         }
         assertEquals( 0, group.consumeEvents().filterIsInstance<ParticipantGroup.Event.ParticipationAdded>().count() )
     }
@@ -105,7 +107,7 @@ class ParticipantGroupTest
         val devicesToAssign = group.assignedMasterDevices.map { it.device }.toSet()
         val account = Account.withUsernameIdentity( "test" )
         val participation = Participation( group.studyDeploymentId )
-        val invitation = StudyInvitation.empty()
+        val invitation = studyInvitation
         group.addParticipation( account, invitation, participation, devicesToAssign )
 
         assertFailsWith<IllegalArgumentException>
@@ -126,7 +128,7 @@ class ParticipantGroupTest
         val participation = Participation( group.studyDeploymentId )
         assertFailsWith<IllegalStateException>
         {
-            group.addParticipation( account, StudyInvitation.empty(), participation, devicesToAssign )
+            group.addParticipation( account, studyInvitation, participation, devicesToAssign )
         }
     }
 

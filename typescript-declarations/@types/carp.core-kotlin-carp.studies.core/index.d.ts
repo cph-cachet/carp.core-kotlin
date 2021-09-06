@@ -34,7 +34,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
         {
             constructor(
                 studyId: UUID, studyOwner: StudyOwner, name: string, createdOn: Instant,
-                description: string,
+                description: string | null,
                 invitation: StudyInvitation,
                 protocolSnapshot: StudyProtocolSnapshot | null )
 
@@ -44,7 +44,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             readonly studyOwner: StudyOwner
             readonly name: string
             readonly createdOn: Instant
-            readonly description: string
+            readonly description: string | null
             readonly invitation: StudyInvitation
             readonly protocolSnapshot: StudyProtocolSnapshot | null
         }
@@ -163,11 +163,11 @@ declare module 'carp.core-kotlin-carp.studies.core'
         {
             class CreateStudy extends StudyServiceRequest
             {
-                constructor( owner: StudyOwner, name: string, description?: string, invitation?: StudyInvitation )
+                constructor( owner: StudyOwner, name: string, description?: string | null, invitation?: StudyInvitation )
             }
             class SetInternalDescription extends StudyServiceRequest
             {
-                constructor( studyId: UUID, name: string, description: string )
+                constructor( studyId: UUID, name: string, description: string | null )
             }
             class GetStudyDetails extends StudyServiceRequest
             {

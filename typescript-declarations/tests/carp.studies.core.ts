@@ -46,7 +46,7 @@ import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceR
 describe( "carp.studies.core", () => {
     it( "verify module declarations", async () => {
         const instances = [
-            new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", Clock.System.now(), "Description", StudyInvitation.Companion.empty(), null ),
+            new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", Clock.System.now(), "Description", new StudyInvitation( "Some study" ), null ),
             StudyDetails.Companion,
             new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true ),
             new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), false, false, true ),
@@ -117,7 +117,7 @@ describe( "carp.studies.core", () => {
                 new StudyOwner(),
                 "Test study",
                 "This is a study description",
-                StudyInvitation.Companion.empty()
+                new StudyInvitation( "Some study" )
             )
 
             const json: Json = createDefaultJSON()

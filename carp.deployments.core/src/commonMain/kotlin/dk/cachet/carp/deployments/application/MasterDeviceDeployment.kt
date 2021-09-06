@@ -52,7 +52,7 @@ data class MasterDeviceDeployment(
      * between the protocols and clients subsystems, outside of scope or not yet supported by CARP core.
      */
     @Serializable( ApplicationDataSerializer::class )
-    val applicationData: String = ""
+    val applicationData: String? = null
 )
 {
     /**

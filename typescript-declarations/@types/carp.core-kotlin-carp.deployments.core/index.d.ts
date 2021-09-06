@@ -99,12 +99,12 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             constructor(
                 deviceDescriptor: any,
                 configuration: DeviceRegistration,
-                connectedDevices: HashSet<any>,
-                connectedDeviceConfigurations: HashMap<string, DeviceRegistration>,
-                tasks: HashSet<any>,
-                triggers: HashMap<number, any>,
-                taskControls: HashSet<any>,
-                applicationData: String )
+                connectedDevices?: HashSet<any>,
+                connectedDeviceConfigurations?: HashMap<string, DeviceRegistration>,
+                tasks?: HashSet<any>,
+                triggers?: HashMap<number, any>,
+                taskControls?: HashSet<any>,
+                applicationData?: String | null )
 
                 static get Companion(): MasterDeviceDeployment$Companion
 
@@ -115,7 +115,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
                 readonly tasks: HashSet<any>
                 readonly triggers: HashMap<number, any>
                 readonly taskControls: HashSet<any>
-                readonly applicationData: String
+                readonly applicationData: String | null
         }
         interface MasterDeviceDeployment$Companion { serializer(): any }
 
@@ -226,18 +226,17 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
         class StudyInvitation
         {
-            constructor( name: string, description: string, applicationData?: string )
+            constructor( name: string, description?: string | null, applicationData?: string | null )
 
             static get Companion(): StudyInvitation$Companion
 
             readonly name: string
-            readonly description: string
-            readonly applicationData: string
+            readonly description: string | null
+            readonly applicationData: string | null
         }
         interface StudyInvitation$Companion
         {
             serializer(): any;
-            empty(): StudyInvitation;
         }
     }
 

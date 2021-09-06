@@ -13,7 +13,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocol
 fun createComplexStudy(): Study
 {
     val owner = StudyOwner()
-    val invitation = StudyInvitation.empty()
+    val invitation = StudyInvitation( "Some study" )
     val study = Study( owner, "Test", "Description", invitation )
 
     // Specify protocol.

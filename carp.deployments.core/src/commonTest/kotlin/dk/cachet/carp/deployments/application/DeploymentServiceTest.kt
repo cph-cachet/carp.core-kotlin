@@ -57,7 +57,7 @@ abstract class DeploymentServiceTest
             UUID.randomUUID(),
             setOf( deviceRole ),
             AccountIdentity.fromUsername( "User" ),
-            StudyInvitation.empty()
+            StudyInvitation( "Some study" )
         )
         assertFailsWith<IllegalArgumentException> {
             deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )

@@ -25,12 +25,12 @@ class StudyServiceRequestsTest : ApplicationServiceRequestsTest<StudyService, St
         private val studyId = UUID.randomUUID()
 
         val REQUESTS: List<StudyServiceRequest> = listOf(
-            StudyServiceRequest.CreateStudy( StudyOwner(), "Test", "Description", StudyInvitation.empty() ),
+            StudyServiceRequest.CreateStudy( StudyOwner(), "Test", "Description", StudyInvitation( "Some study" ) ),
             StudyServiceRequest.SetInternalDescription( studyId, "New name", "New description" ),
             StudyServiceRequest.GetStudyDetails( studyId ),
             StudyServiceRequest.GetStudyStatus( studyId ),
             StudyServiceRequest.GetStudiesOverview( StudyOwner() ),
-            StudyServiceRequest.SetInvitation( studyId, StudyInvitation.empty() ),
+            StudyServiceRequest.SetInvitation( studyId, StudyInvitation( "Some study" ) ),
             StudyServiceRequest.SetProtocol( studyId, StudyProtocol( ProtocolOwner(), "Test" ).getSnapshot() ),
             StudyServiceRequest.GoLive( studyId ),
             StudyServiceRequest.Remove( studyId )

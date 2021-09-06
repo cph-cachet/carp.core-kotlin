@@ -13,8 +13,8 @@ data class StudySnapshot(
     val studyId: UUID,
     val ownerId: UUID,
     val name: String,
-    val description: String = "",
-    val invitation: StudyInvitation = StudyInvitation.empty(),
+    val description: String? = null,
+    val invitation: StudyInvitation,
     override val createdOn: Instant,
     val protocolSnapshot: StudyProtocolSnapshot?,
     val isLive: Boolean

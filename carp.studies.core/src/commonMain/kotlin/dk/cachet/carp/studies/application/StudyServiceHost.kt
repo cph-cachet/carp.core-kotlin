@@ -29,7 +29,7 @@ class StudyServiceHost(
         /**
          * An optional description of the study, assigned by, and only visible to, the [owner].
          */
-        description: String,
+        description: String?,
         /**
          * An optional description of the study, shared with participants once they are invited.
          * In case no description is specified, [name] is used as the name in [invitation].
@@ -37,7 +37,7 @@ class StudyServiceHost(
         invitation: StudyInvitation?
     ): StudyStatus
     {
-        val ensuredInvitation = invitation ?: StudyInvitation( name, "" )
+        val ensuredInvitation = invitation ?: StudyInvitation( name )
         val study = Study( owner, name, description, ensuredInvitation )
 
         repository.add( study )

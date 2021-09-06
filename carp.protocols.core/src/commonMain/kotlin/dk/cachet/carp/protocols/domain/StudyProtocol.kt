@@ -28,7 +28,7 @@ import dk.cachet.carp.protocols.domain.deployment.UseCompositeTaskWarning
  * the optional devices ([AnyDeviceDescriptor]) connected to them, and the [Trigger]'s which lead to data collection on said devices.
  */
 @Suppress( "TooManyFunctions" ) // TODO: some of the device and task configuration methods are overridden solely to add events. Can this be refactored?
-class StudyProtocol private constructor( val ownerId: UUID, val name: String, val description: String ) :
+class StudyProtocol private constructor( val ownerId: UUID, val name: String, val description: String? ) :
     StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration(), EmptyParticipantDataConfiguration() )
 {
     constructor(
@@ -43,7 +43,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
         /**
          * An optional description for the study protocol.
          */
-        description: String = ""
+        description: String? = null
     ) : this( owner.id, name, description )
 
 
@@ -356,7 +356,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      * This can be used by infrastructures or concrete applications which require exchanging additional data
      * between the protocols and clients subsystems, outside of scope or not yet supported by CARP core.
      */
-    var applicationData: String = ""
+    var applicationData: String? = null
 
 
     /**

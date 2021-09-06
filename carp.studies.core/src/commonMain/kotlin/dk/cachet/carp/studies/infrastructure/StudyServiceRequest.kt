@@ -25,7 +25,7 @@ sealed class StudyServiceRequest
     data class CreateStudy(
         val owner: StudyOwner,
         val name: String,
-        val description: String = "",
+        val description: String? = null,
         val invitation: StudyInvitation? = null
     ) : StudyServiceRequest(),
         Invoker<StudyStatus> by createServiceInvoker( Service::createStudy, owner, name, description, invitation )

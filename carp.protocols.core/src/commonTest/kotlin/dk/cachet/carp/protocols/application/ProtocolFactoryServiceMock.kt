@@ -14,7 +14,7 @@ class ProtocolFactoryServiceMock(
         ownerId: UUID,
         name: String,
         customProtocol: String,
-        description: String
+        description: String?
     ): StudyProtocolSnapshot
     {
         trackSuspendCall( ProtocolFactoryService::createCustomProtocol, ownerId, name, customProtocol, description )

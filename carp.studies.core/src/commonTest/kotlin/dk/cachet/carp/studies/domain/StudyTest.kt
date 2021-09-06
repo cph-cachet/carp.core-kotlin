@@ -52,7 +52,7 @@ class StudyTest
         setDeployableProtocol( study )
         study.goLive()
 
-        assertFailsWith<IllegalStateException> { study.invitation = StudyInvitation.empty() }
+        assertFailsWith<IllegalStateException> { study.invitation = StudyInvitation( "Some study" ) }
     }
 
     @Test

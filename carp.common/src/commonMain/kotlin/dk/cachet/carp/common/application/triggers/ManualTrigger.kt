@@ -18,7 +18,7 @@ data class ManualTrigger(
     /**
      * An optional description elaborating on what happens when initiating this trigger.
      */
-    val description: String = ""
+    val description: String? = null
 ) : Trigger<NoData>()
 {
     @Transient

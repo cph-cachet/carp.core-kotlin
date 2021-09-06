@@ -19,7 +19,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StudyProtocolSnapshot(
     val id: StudyProtocolId,
-    val description: String,
+    val description: String? = null,
     override val createdOn: Instant,
     val masterDevices: Set<AnyMasterDeviceDescriptor> = emptySet(),
     val connectedDevices: Set<AnyDeviceDescriptor> = emptySet(),
@@ -29,7 +29,7 @@ data class StudyProtocolSnapshot(
     val taskControls: Set<TaskControl> = emptySet(),
     val expectedParticipantData: Set<ParticipantAttribute> = emptySet(),
     @Serializable( ApplicationDataSerializer::class )
-    val applicationData: String = ""
+    val applicationData: String? = null
 ) : Snapshot<StudyProtocol>
 {
     @Serializable

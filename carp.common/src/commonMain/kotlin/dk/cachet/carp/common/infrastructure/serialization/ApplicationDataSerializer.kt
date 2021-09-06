@@ -2,6 +2,7 @@ package dk.cachet.carp.common.infrastructure.serialization
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -20,14 +21,17 @@ import kotlinx.serialization.json.JsonObject
 
  * In case the JSON contained in the String is malformed, it will be serialized as a normal escaped string.
  */
-class ApplicationDataSerializer : KSerializer<String>
+class ApplicationDataSerializer : KSerializer<String?>
 {
-    override val descriptor: SerialDescriptor = String.serializer().descriptor
+    override val descriptor: SerialDescriptor = String.serializer().nullable.descriptor
 
-    override fun deserialize( decoder: Decoder ): String
+    override fun deserialize( decoder: Decoder ): String?
     {
+        // Early out when the value is null.
+        if ( !decoder.decodeNotNullMark() ) return null
+
         // Application data is only serialized as JSON for JSON encoder.
-        if ( decoder !is JsonDecoder ) return decoder.decodeString()
+        if ( decoder !is JsonDecoder ) return decoder.decodeNullableSerializableValue( String.serializer().nullable )
 
         // Read application data which is stored as JSON.
         val jsonElement = decoder.decodeJsonElement()
@@ -38,12 +42,19 @@ class ApplicationDataSerializer : KSerializer<String>
         else originalString.substring( 1, originalString.length - 1 )
     }
 
-    override fun serialize( encoder: Encoder, value: String )
+    override fun serialize( encoder: Encoder, value: String? )
     {
+        // Early out when the value is null.
+        if ( value == null )
+        {
+            encoder.encodeNull()
+            return
+        }
+
         // Application data is only serialized as JSON for JSON encoder.
         if ( encoder !is JsonEncoder )
         {
-            encoder.encodeString( value )
+            encoder.encodeNullableSerializableValue( String.serializer().nullable, value )
             return
         }
 

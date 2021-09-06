@@ -36,7 +36,7 @@ interface ParticipationRepositoryTest
         // Add participation.
         val account = Account.withEmailIdentity( "test@test.com" )
         val participation = Participation( deployment.id )
-        val invitation = StudyInvitation.empty()
+        val invitation = StudyInvitation( "Some study" )
         group.addParticipation( account, invitation, participation, protocol.masterDevices )
         repo.putParticipantGroup( group )
 

@@ -96,7 +96,7 @@ class HostsIntegrationTest
         // Create deployment with one invitation.
         val toInvite = EmailAccountIdentity( "test@test.com" )
         val assignedDevices = setOf( deviceRole )
-        val studyInvitation = StudyInvitation.empty()
+        val studyInvitation = StudyInvitation( "Some study" )
         val invitations = listOf(
             ParticipantInvitation( UUID.randomUUID(), assignedDevices, toInvite, studyInvitation )
         )

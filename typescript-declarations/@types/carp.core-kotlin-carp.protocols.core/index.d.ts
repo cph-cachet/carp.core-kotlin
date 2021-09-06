@@ -121,7 +121,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
         {
             class CreateCustomProtocol extends ProtocolFactoryServiceRequest
             {
-                constructor( ownerId: UUID, name: string, customProtocol: string, description: string )
+                constructor( ownerId: UUID, name: string, customProtocol: string, description?: string | null )
             }
         }
     }
