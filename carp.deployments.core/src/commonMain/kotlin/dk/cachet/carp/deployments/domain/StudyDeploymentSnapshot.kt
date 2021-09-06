@@ -16,10 +16,10 @@ data class StudyDeploymentSnapshot(
     val studyDeploymentId: UUID,
     override val createdOn: Instant,
     val studyProtocolSnapshot: StudyProtocolSnapshot,
-    val registeredDevices: Set<String>,
-    val deviceRegistrationHistory: Map<String, List<DeviceRegistration>>,
-    val deployedDevices: Set<String>,
-    val invalidatedDeployedDevices: Set<String>,
+    val registeredDevices: Set<String> = emptySet(),
+    val deviceRegistrationHistory: Map<String, List<DeviceRegistration>> = emptyMap(),
+    val deployedDevices: Set<String> = emptySet(),
+    val invalidatedDeployedDevices: Set<String> = emptySet(),
     val startedOn: Instant?,
     val isStopped: Boolean
 ) : Snapshot<StudyDeployment>

@@ -55,7 +55,7 @@ abstract class ParticipationServiceTest
         assertNotNull( retrievedInvitation )
         assertEquals( studyDeploymentId, retrievedInvitation.participation.studyDeploymentId )
         assertEquals( invitation, retrievedInvitation.invitation )
-        val expectedAssignedDevice = AssignedMasterDevice( protocol.masterDevices.single(), null )
+        val expectedAssignedDevice = AssignedMasterDevice( protocol.masterDevices.single() )
         assertEquals( setOf( expectedAssignedDevice ), retrievedInvitation.assignedDevices )
     }
 

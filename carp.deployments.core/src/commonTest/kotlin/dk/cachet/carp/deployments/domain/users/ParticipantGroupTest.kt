@@ -34,7 +34,7 @@ class ParticipantGroupTest
 
         assertEquals( deployment.id, group.studyDeploymentId )
         val expectedAssignedMasterDevices = protocol.masterDevices
-            .map { AssignedMasterDevice( it, null ) }
+            .map { AssignedMasterDevice( it ) }
             .toSet()
         assertEquals( expectedAssignedMasterDevices, group.assignedMasterDevices )
         assertEquals( mapOf( expectedData to null ), group.data )

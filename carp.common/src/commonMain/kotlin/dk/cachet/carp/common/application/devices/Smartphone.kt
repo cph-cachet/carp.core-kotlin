@@ -21,10 +21,10 @@ typealias SmartphoneDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder
 @Serializable
 data class Smartphone(
     override val roleName: String,
-    override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
+    override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 ) : MasterDeviceDescriptor<SmartphoneDeviceRegistration, SmartphoneDeviceRegistrationBuilder>()
 {
-    constructor( roleName: String, builder: SmartphoneBuilder.() -> Unit = { } ) :
+    constructor( roleName: String, builder: SmartphoneBuilder.() -> Unit ) :
         this( roleName, SmartphoneBuilder().apply( builder ).buildSamplingConfiguration() )
 
     /**

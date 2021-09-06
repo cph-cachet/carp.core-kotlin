@@ -47,7 +47,7 @@ class ParticipantGroup private constructor(
         fun fromNewDeployment( studyDeploymentId: UUID, protocol: StudyProtocol ): ParticipantGroup =
             ParticipantGroup(
                 studyDeploymentId,
-                protocol.masterDevices.map { AssignedMasterDevice( it, null ) }.toSet(),
+                protocol.masterDevices.map { AssignedMasterDevice( it ) }.toSet(),
                 protocol.expectedParticipantData )
 
         /**

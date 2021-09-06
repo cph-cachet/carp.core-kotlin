@@ -21,15 +21,15 @@ data class StudyProtocolSnapshot(
     val id: StudyProtocolId,
     val description: String,
     override val createdOn: Instant,
-    val masterDevices: Set<AnyMasterDeviceDescriptor>,
-    val connectedDevices: Set<AnyDeviceDescriptor>,
-    val connections: Set<DeviceConnection>,
-    val tasks: Set<TaskDescriptor>,
-    val triggers: Map<Int, Trigger<*>>,
-    val taskControls: Set<TaskControl>,
-    val expectedParticipantData: Set<ParticipantAttribute>,
+    val masterDevices: Set<AnyMasterDeviceDescriptor> = emptySet(),
+    val connectedDevices: Set<AnyDeviceDescriptor> = emptySet(),
+    val connections: Set<DeviceConnection> = emptySet(),
+    val tasks: Set<TaskDescriptor> = emptySet(),
+    val triggers: Map<Int, Trigger<*>> = emptyMap(),
+    val taskControls: Set<TaskControl> = emptySet(),
+    val expectedParticipantData: Set<ParticipantAttribute> = emptySet(),
     @Serializable( ApplicationDataSerializer::class )
-    val applicationData: String
+    val applicationData: String = ""
 ) : Snapshot<StudyProtocol>
 {
     @Serializable

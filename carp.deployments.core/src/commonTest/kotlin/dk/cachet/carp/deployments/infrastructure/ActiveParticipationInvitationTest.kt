@@ -26,7 +26,7 @@ class ActiveParticipationInvitationTest
         val invitation = ActiveParticipationInvitation(
             Participation( UUID.randomUUID() ),
             StudyInvitation.empty(),
-            setOf( AssignedMasterDevice( masterDevice, null ) )
+            setOf( AssignedMasterDevice( masterDevice ) )
         )
 
         val serialized = json.encodeToString( invitation )
@@ -45,7 +45,7 @@ class ActiveParticipationInvitationTest
         val invitation = ActiveParticipationInvitation(
             Participation( UUID.randomUUID() ),
             StudyInvitation.empty(),
-            setOf( AssignedMasterDevice( unknownMasterDevice, null ) )
+            setOf( AssignedMasterDevice( unknownMasterDevice ) )
         )
 
         val serialized = json.encodeToString( invitation )

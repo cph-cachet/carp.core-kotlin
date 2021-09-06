@@ -13,8 +13,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class WebTask(
     override val name: String,
-    override val measures: List<Measure>,
-    override val description: String?,
+    override val measures: List<Measure> = emptyList(),
+    override val description: String? = null,
     /**
      * The URL of the web page which contains the task to be performed.
      * The URL may contain [UrlVariable] patterns which will be replaced with the corresponding values by the client runtime.

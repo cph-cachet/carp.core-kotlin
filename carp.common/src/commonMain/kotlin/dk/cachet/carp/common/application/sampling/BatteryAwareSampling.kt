@@ -25,7 +25,7 @@ abstract class BatteryAwareSamplingScheme<
     /**
      * The default sampling configuration to use when the battery is low.
      */
-    private val low: TConfig? = null,
+    private val low: TConfig,
     /**
      * The default sampling configuration to use when the battery is critically low.
      * By default, sampling should be disabled at this point.
@@ -77,7 +77,7 @@ data class BatteryAwareSamplingConfiguration<TConfig : SamplingConfiguration>(
     /**
      * The sampling configuration to use when the battery is low.
      */
-    val low: TConfig? = null,
+    val low: TConfig,
     /**
      * The sampling configuration to use when the battery is critically low.
      */
@@ -95,7 +95,7 @@ class BatteryAwareSamplingConfigurationBuilder<
 >(
     private val createBuilder: () -> TBuilder,
     private var normal: TConfig,
-    private var low: TConfig?,
+    private var low: TConfig,
     private var critical: TConfig?
 ) : SamplingConfigurationBuilder<BatteryAwareSamplingConfiguration<TConfig>>
 {

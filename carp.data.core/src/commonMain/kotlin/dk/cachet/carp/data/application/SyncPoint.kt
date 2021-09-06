@@ -1,6 +1,7 @@
 package dk.cachet.carp.data.application
 
 import kotlinx.datetime.Instant
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 
 
@@ -20,9 +21,11 @@ data class SyncPoint(
     /**
      * The offset to be added to the sensor time stamps after having multiplied by [relativeClockSpeed].
      */
+    @Required
     val utcOffset: Long = 0,
     /**
      * The value to multiply sensor time stamps by.
      */
+    @Required
     val relativeClockSpeed: Double = 1.0
 )

@@ -21,7 +21,7 @@ import kotlinx.serialization.encoding.Decoder
 @Serializable( MeasurementSerializer::class )
 data class Measurement<out TData : Data>(
     val sensorStartTime: Long,
-    val sensorEndTime: Long?,
+    val sensorEndTime: Long? = null,
     val dataType: DataType,
     val data: TData
 )
@@ -51,7 +51,7 @@ data class Measurement<out TData : Data>(
 object MeasurementSerializer : KSerializer<Measurement<Data>>
 {
     @Serializable
-    private class Surrogate( val sensorStartTime: Long, val sensorEndTime: Long?, val data: Data )
+    private class Surrogate( val sensorStartTime: Long, val sensorEndTime: Long? = null, val data: Data )
 
     override val descriptor: SerialDescriptor = Surrogate.serializer().descriptor
 
