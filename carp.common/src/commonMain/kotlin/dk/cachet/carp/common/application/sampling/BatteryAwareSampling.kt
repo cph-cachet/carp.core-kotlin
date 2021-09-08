@@ -46,14 +46,14 @@ abstract class BatteryAwareSamplingScheme<
         // Verify whether battery-level-specific configurations are the expected type.
         val correctTypes =
             configurationKlass.isInstance( configuration.normal ) && // Normal configuration cannot be null.
-            ( configuration.low == null || configurationKlass.isInstance( configuration.low ) ) &&
+            ( configurationKlass.isInstance( configuration.low ) ) &&
             ( configuration.critical == null || configurationKlass.isInstance( configuration.critical ) )
         if ( !correctTypes ) return false
 
         // Verify whether constraints for the battery-level-specific configurations are met.
         @Suppress( "UNCHECKED_CAST" )
         return isValidBatteryLevelConfiguration( configuration.normal as TConfig ) &&
-            ( configuration.low == null || isValidBatteryLevelConfiguration( configuration.low as TConfig ) ) &&
+            ( isValidBatteryLevelConfiguration( configuration.low as TConfig ) ) &&
             ( configuration.critical == null || isValidBatteryLevelConfiguration( configuration.critical as TConfig ) )
     }
 
