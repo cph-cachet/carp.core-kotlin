@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistrationBuilder
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -15,7 +16,7 @@ import kotlin.reflect.KClass
  */
 @Serializable
 data class StubDeviceDescriptor(
-    override val roleName: String = "Stub device",
+    @Required override val roleName: String = "Stub device",
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 ) :
     DeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()

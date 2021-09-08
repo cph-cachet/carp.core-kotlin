@@ -9,6 +9,7 @@ import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskDescriptorList
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -78,6 +79,7 @@ data class AltBeaconDeviceRegistration(
         require( referenceRssi in REFERENCE_RSS_RANGE ) { "Reference RSSI needs to be in the range from -127 to 0." }
     }
 
+    @Required
     override val deviceId: String =
         // TODO: Remove this workaround once JS serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/716
         @Suppress( "SENSELESS_COMPARISON" )

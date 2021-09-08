@@ -27,6 +27,7 @@ data class CustomDeviceDescriptor(
 ) : DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
+
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 
     // This information is not serialized. Therefore, the supported types are unknown.
@@ -63,6 +64,7 @@ data class CustomMasterDeviceDescriptor(
 ) : MasterDeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
+
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 
     // This information is not serialized. Therefore, the supported types are unknown.
@@ -91,7 +93,7 @@ data class CustomMasterDeviceDescriptor(
 @Serializable
 private data class BaseMembers(
     override val roleName: String,
-    override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
+    override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 ) : DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>()
 {
     override fun getSupportedDataTypes(): Set<DataType> =

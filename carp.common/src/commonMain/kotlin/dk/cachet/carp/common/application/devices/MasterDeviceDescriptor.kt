@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger
 import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 
@@ -17,6 +18,7 @@ abstract class MasterDeviceDescriptor<TRegistration : DeviceRegistration, out TB
 {
     // This property is only here for (de)serialization purposes.
     // For unknown types we need to know whether to treat them as master devices or not (in the case of 'DeviceDescriptor' collections).
+    @Required
     internal val isMasterDevice: Boolean = true
 
     /**

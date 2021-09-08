@@ -18,8 +18,8 @@ data class CustomTaskDescriptor( override val className: String, override val js
     @Serializable
     private data class BaseMembers(
         override val name: String,
-        override val measures: List<Measure>,
-        override val description: String?
+        override val measures: List<Measure> = emptyList(),
+        override val description: String? = null
     ) : TaskDescriptor
     {
         override fun getInteractionDataTypes(): Set<DataType> = emptySet()
