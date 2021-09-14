@@ -198,6 +198,25 @@ class ParticipantGroup private constructor(
     }
 
     /**
+     * Set [data] for the participants in this group,
+     * using [registeredInputDataTypes] to verify whether the data is valid for default input data types.
+     *
+     * @throws IllegalArgumentException when:
+     *   - one or more of the keys in [data] isn't configured as expected participant data
+     *   - one or more of the set [data] isn't valid for the corresponding input data type
+     * @return True when any data has changed; false when all [data] was already set.
+     */
+    fun setData( registeredInputDataTypes: InputDataTypeList, data: Map<InputDataType, Data?> ): Boolean
+    {
+        require( data.all { expectedData.isValidParticipantData( registeredInputDataTypes, it.key, it.value ) } )
+            { "One of the input data types is not expected or invalid data is passed." }
+
+        return data.entries.fold( false ) { anyDataChanged, element ->
+            setData( registeredInputDataTypes, element.key, element.value ) || anyDataChanged
+        }
+    }
+
+    /**
      * Get a serializable snapshot of the current state of this [ParticipantGroup].
      */
     override fun getSnapshot(): ParticipantGroupSnapshot = ParticipantGroupSnapshot.fromParticipantGroup( this )

@@ -31,7 +31,7 @@ class ParticipationServiceMock(
         getParticipantDataListResult
         .also { trackSuspendCall( ParticipationService::getParticipantDataList, studyDeploymentIds ) }
 
-    override suspend fun setParticipantData( studyDeploymentId: UUID, inputDataType: InputDataType, data: Data? ) =
+    override suspend fun setParticipantData( studyDeploymentId: UUID, data: Map<InputDataType, Data?> ) =
         setParticipantDataResult
-        .also { trackSuspendCall( ParticipationService::setParticipantData, studyDeploymentId, inputDataType, data ) }
+        .also { trackSuspendCall( ParticipationService::setParticipantData, studyDeploymentId, data ) }
 }
