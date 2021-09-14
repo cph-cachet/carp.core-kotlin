@@ -3,8 +3,10 @@ package dk.cachet.carp.deployments.domain.users
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.Sex
+import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
@@ -264,6 +266,76 @@ class ParticipantGroupTest
         {
             group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, wrongData )
         }
+    }
+
+    @Test
+    fun setData_multiple_data_succeeds()
+    {
+        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
+        val customInput = ParticipantAttribute.CustomParticipantAttribute( Text( "Test" ) )
+        protocol.addExpectedParticipantData( customInput )
+
+        val group = createParticipantGroup( protocol )
+
+        val toSet = mapOf(
+            CarpInputDataTypes.SEX to Sex.Male,
+            customInput.inputType to CustomInput( "Test" )
+        )
+        val isSet = group.setData( CarpInputDataTypes, toSet )
+        assertTrue( isSet )
+        assertEquals( Sex.Male, group.data[ CarpInputDataTypes.SEX ] )
+        assertEquals( CustomInput( "Test" ), group.data[ customInput.inputType ] )
+        assertEquals(
+            setOf(
+                ParticipantGroup.Event.DataSet( CarpInputDataTypes.SEX, Sex.Male ),
+                ParticipantGroup.Event.DataSet( customInput.inputType, CustomInput( "Test" ) )
+            ),
+            group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DataSet>().toSet()
+        )
+    }
+
+    @Test
+    fun setData_multiple_data_returns_false_when_all_data_already_set()
+    {
+        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
+        val customInput = ParticipantAttribute.CustomParticipantAttribute( Text( "Test" ) )
+        protocol.addExpectedParticipantData( customInput )
+        val group = createParticipantGroup( protocol )
+        val toSet = mapOf(
+            CarpInputDataTypes.SEX to Sex.Male,
+            customInput.inputType to CustomInput( "Test" )
+        )
+        group.setData( CarpInputDataTypes, toSet )
+        group.consumeEvents()
+
+        val isSet = group.setData( CarpInputDataTypes, toSet )
+        assertFalse( isSet )
+        assertEquals(
+            0,
+            group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DataSet>().count()
+        )
+    }
+
+    @Test
+    fun setData_multiple_data_succeeds_fully_or_fails()
+    {
+        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        val customInput = ParticipantAttribute.CustomParticipantAttribute( Text( "Test" ) )
+        protocol.addExpectedParticipantData( customInput )
+        val group = createParticipantGroup( protocol )
+
+        val toSet = mapOf(
+            customInput.inputType to CustomInput( "Test" ),
+            CarpInputDataTypes.SEX to Sex.Male // Not expected, thus should fail.
+        )
+        assertFailsWith<IllegalArgumentException> { group.setData( CarpInputDataTypes, toSet ) }
+        assertEquals( null, group.data[ customInput.inputType ] )
+        assertEquals(
+            0,
+            group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DataSet>().count()
+        )
     }
 
     private fun createParticipantGroup( protocol: StudyProtocol = createSingleMasterDeviceProtocol() ): ParticipantGroup

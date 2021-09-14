@@ -123,7 +123,8 @@ abstract class ParticipationServiceTest
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
-        val afterSet = participationService.setParticipantData( studyDeploymentId, CarpInputDataTypes.SEX, Sex.Male )
+        val toSet = mapOf( CarpInputDataTypes.SEX to Sex.Male )
+        val afterSet = participationService.setParticipantData( studyDeploymentId, toSet )
         assertEquals( Sex.Male, afterSet.data[ CarpInputDataTypes.SEX ] )
 
         val retrievedData = participationService.getParticipantData( studyDeploymentId )
@@ -134,9 +135,10 @@ abstract class ParticipationServiceTest
     fun setParticipantData_fails_for_unknown_deploymentId() = runSuspendTest {
         val (participationService, _, _) = createService( CarpInputDataTypes )
 
+        val toSet = mapOf( CarpInputDataTypes.SEX to Sex.Male )
         assertFailsWith<IllegalArgumentException>
         {
-            participationService.setParticipantData( unknownId, CarpInputDataTypes.SEX, Sex.Male )
+            participationService.setParticipantData( unknownId, toSet )
         }
     }
 
@@ -146,9 +148,10 @@ abstract class ParticipationServiceTest
             createService( CarpInputDataTypes )
         val studyDeploymentId = addTestDeployment( deploymentService )
 
+        val toSet = mapOf( CarpInputDataTypes.SEX to Sex.Male )
         assertFailsWith<IllegalArgumentException>
         {
-            participationService.setParticipantData( studyDeploymentId, CarpInputDataTypes.SEX, Sex.Male )
+            participationService.setParticipantData( studyDeploymentId, toSet )
         }
     }
 
@@ -164,10 +167,11 @@ abstract class ParticipationServiceTest
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
+        val wrongData = object : Data { }
+        val toSet = mapOf( CarpInputDataTypes.SEX to wrongData )
         assertFailsWith<IllegalArgumentException>
         {
-            val wrongData = object : Data { }
-            participationService.setParticipantData( studyDeploymentId, CarpInputDataTypes.SEX, wrongData )
+            participationService.setParticipantData( studyDeploymentId, toSet )
         }
     }
 
