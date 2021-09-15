@@ -101,7 +101,7 @@ class ParticipationServiceHost(
     }
 
     /**
-     * Set participant [data] in the study deployment with [studyDeploymentId].
+     * Set participant [data] in the study deployment with [studyDeploymentId], or unset it by passing `null`.
      *
      * @throws IllegalArgumentException when:
      *   - there is no study deployment with [studyDeploymentId]
