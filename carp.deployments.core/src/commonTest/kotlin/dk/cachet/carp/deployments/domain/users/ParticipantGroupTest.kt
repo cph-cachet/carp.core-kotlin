@@ -280,16 +280,16 @@ class ParticipantGroupTest
 
         val toSet = mapOf(
             CarpInputDataTypes.SEX to Sex.Male,
-            customInput.inputType to CustomInput( "Test" )
+            customInput.inputDataType to CustomInput( "Test" )
         )
         val isSet = group.setData( CarpInputDataTypes, toSet )
         assertTrue( isSet )
         assertEquals( Sex.Male, group.data[ CarpInputDataTypes.SEX ] )
-        assertEquals( CustomInput( "Test" ), group.data[ customInput.inputType ] )
+        assertEquals( CustomInput( "Test" ), group.data[ customInput.inputDataType ] )
         assertEquals(
             setOf(
                 ParticipantGroup.Event.DataSet( CarpInputDataTypes.SEX, Sex.Male ),
-                ParticipantGroup.Event.DataSet( customInput.inputType, CustomInput( "Test" ) )
+                ParticipantGroup.Event.DataSet( customInput.inputDataType, CustomInput( "Test" ) )
             ),
             group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DataSet>().toSet()
         )
@@ -305,7 +305,7 @@ class ParticipantGroupTest
         val group = createParticipantGroup( protocol )
         val toSet = mapOf(
             CarpInputDataTypes.SEX to Sex.Male,
-            customInput.inputType to CustomInput( "Test" )
+            customInput.inputDataType to CustomInput( "Test" )
         )
         group.setData( CarpInputDataTypes, toSet )
         group.consumeEvents()
@@ -327,11 +327,11 @@ class ParticipantGroupTest
         val group = createParticipantGroup( protocol )
 
         val toSet = mapOf(
-            customInput.inputType to CustomInput( "Test" ),
+            customInput.inputDataType to CustomInput( "Test" ),
             CarpInputDataTypes.SEX to Sex.Male // Not expected, thus should fail.
         )
         assertFailsWith<IllegalArgumentException> { group.setData( CarpInputDataTypes, toSet ) }
-        assertEquals( null, group.data[ customInput.inputType ] )
+        assertEquals( null, group.data[ customInput.inputDataType ] )
         assertEquals(
             0,
             group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DataSet>().count()

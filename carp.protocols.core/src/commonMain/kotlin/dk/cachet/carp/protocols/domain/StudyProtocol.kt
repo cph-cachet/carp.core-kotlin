@@ -336,7 +336,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      */
     fun replaceExpectedParticipantData( attributes: Set<ParticipantAttribute> ): Boolean
     {
-        require( attributes.map { it.inputType }.toSet().size == attributes.size )
+        require( attributes.map { it.inputDataType }.toSet().size == attributes.size )
             { "The specified attributes contain two or more attributes with the same input type." }
 
         val toRemove = expectedParticipantData.minus( attributes )

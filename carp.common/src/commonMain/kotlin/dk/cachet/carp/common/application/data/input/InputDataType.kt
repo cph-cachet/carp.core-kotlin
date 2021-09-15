@@ -4,6 +4,6 @@ import dk.cachet.carp.common.application.NamespacedId
 
 
 /**
- * Defines a type of data which is entered by a user.
+ * Uniquely identifies data which can be entered by a user.
  */
 typealias InputDataType = NamespacedId

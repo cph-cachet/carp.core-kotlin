@@ -75,7 +75,7 @@ abstract class ParticipationServiceTest
 
         val participantData = participationService.getParticipantData( studyDeploymentId )
         assertEquals( studyDeploymentId, participantData.studyDeploymentId )
-        assertEquals( setOf( CarpInputDataTypes.SEX, customAttribute.inputType ), participantData.data.keys )
+        assertEquals( setOf( CarpInputDataTypes.SEX, customAttribute.inputDataType ), participantData.data.keys )
         assertTrue( participantData.data.values.all { it == null } )
     }
 

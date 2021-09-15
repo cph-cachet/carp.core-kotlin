@@ -175,7 +175,7 @@ class ParticipantGroup private constructor(
 
     private val _data: MutableMap<InputDataType, Data?> =
         // All expected participant data is null by default.
-        expectedData.associate { it.inputType to null }.toMutableMap()
+        expectedData.associate { it.inputDataType to null }.toMutableMap()
 
     /**
      * Set [data] for the participants in this group for the given [inputDataType], or unset it by passing `null`,

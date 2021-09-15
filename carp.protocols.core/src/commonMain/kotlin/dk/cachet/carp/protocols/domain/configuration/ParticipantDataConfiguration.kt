@@ -46,7 +46,7 @@ fun <TData : Data?> Set<ParticipantAttribute>.isValidParticipantData(
     data: TData
 ): Boolean
 {
-    val attribute = this.firstOrNull { it.inputType == inputDataType } ?: return false
+    val attribute = this.firstOrNull { it.inputDataType == inputDataType } ?: return false
 
     return attribute.isValidData( registeredInputDataTypes, data )
 }
