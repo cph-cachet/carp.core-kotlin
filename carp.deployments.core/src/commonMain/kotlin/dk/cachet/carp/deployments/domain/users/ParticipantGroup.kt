@@ -178,7 +178,7 @@ class ParticipantGroup private constructor(
         expectedData.associate { it.inputType to null }.toMutableMap()
 
     /**
-     * Set [data] for the participants in this group for the given [inputDataType],
+     * Set [data] for the participants in this group for the given [inputDataType], or unset it by passing `null`,
      * using [registeredInputDataTypes] to verify whether the data is valid for default input data types.
      *
      * @throws IllegalArgumentException when:
@@ -198,7 +198,7 @@ class ParticipantGroup private constructor(
     }
 
     /**
-     * Set [data] for the participants in this group,
+     * Set [data] for the participants in this group, or unset it by passing `null`,
      * using [registeredInputDataTypes] to verify whether the data is valid for default input data types.
      *
      * @throws IllegalArgumentException when:
