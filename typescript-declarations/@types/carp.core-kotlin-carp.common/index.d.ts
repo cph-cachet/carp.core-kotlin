@@ -143,7 +143,7 @@ declare module 'carp.core-kotlin-carp.common'
         {
             static get Companion(): ParticipantAttribute$Companion
 
-            readonly inputType: NamespacedId
+            readonly inputDataType: NamespacedId
 
             getInputElement_6eo89k$( registeredInputDataTypes: InputDataTypeList ): InputElement
             isValidInput_etkzhw$( registeredInputDataTypes: InputDataTypeList, input: any ): boolean

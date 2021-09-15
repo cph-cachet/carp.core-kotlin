@@ -16,7 +16,7 @@ class EmptyParticipantDataConfiguration :
     ParticipantDataConfiguration
 {
     private val _expectedParticipantData: ExtractUniqueKeyMap<InputDataType, ParticipantAttribute> =
-        ExtractUniqueKeyMap( { attribute -> attribute.inputType } )
+        ExtractUniqueKeyMap( { attribute -> attribute.inputDataType } )
         {
             key -> IllegalArgumentException( "Input type \"$key\" is not unique within participant data configuration." )
         }

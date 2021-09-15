@@ -69,21 +69,21 @@ interface ParticipantDataConfigurationTest
         // Default (registered) types.
         assertEquals(
             defaultAttribute.isValidData( CarpInputDataTypes, Sex.Male ),
-            attributes.isValidParticipantData( CarpInputDataTypes, defaultAttribute.inputType, Sex.Male )
+            attributes.isValidParticipantData( CarpInputDataTypes, defaultAttribute.inputDataType, Sex.Male )
         )
         assertEquals(
             defaultAttribute.isValidData( CarpInputDataTypes, CustomInput( "Zorg" ) ),
-            attributes.isValidParticipantData( CarpInputDataTypes, defaultAttribute.inputType, CustomInput( "Zorg" ) )
+            attributes.isValidParticipantData( CarpInputDataTypes, defaultAttribute.inputDataType, CustomInput( "Zorg" ) )
         )
 
         // Custom types.
         assertEquals(
             customAttribute.isValidData( CarpInputDataTypes, CustomInput( "Valid" ) ),
-            attributes.isValidParticipantData( CarpInputDataTypes, customAttribute.inputType, CustomInput( "Valid" ) )
+            attributes.isValidParticipantData( CarpInputDataTypes, customAttribute.inputDataType, CustomInput( "Valid" ) )
         )
         assertEquals(
             customAttribute.isValidData( CarpInputDataTypes, CustomInput( -1 ) ),
-            attributes.isValidParticipantData( CarpInputDataTypes, customAttribute.inputType, CustomInput( -1 ) )
+            attributes.isValidParticipantData( CarpInputDataTypes, customAttribute.inputDataType, CustomInput( -1 ) )
         )
     }
 

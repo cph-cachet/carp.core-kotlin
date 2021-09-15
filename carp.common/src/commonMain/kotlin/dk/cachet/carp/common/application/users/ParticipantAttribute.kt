@@ -20,23 +20,23 @@ sealed class ParticipantAttribute
     /**
      * Uniquely identifies the type of data represented by this participant attribute.
      */
-    abstract val inputType: InputDataType
+    abstract val inputDataType: InputDataType
 
 
     /**
-     * A default participant attribute which is identified by the data [inputType] to be input.
+     * A participant attribute for which [inputDataType] determines what data needs to be input.
      */
     @Serializable
-    data class DefaultParticipantAttribute( override val inputType: InputDataType ) : ParticipantAttribute()
+    data class DefaultParticipantAttribute( override val inputDataType: InputDataType ) : ParticipantAttribute()
 
 
     /**
-     * A custom participant attribute, for which an [input] element is specified, and for which an [inputType] is generated.
+     * A custom participant attribute, for which an [input] element is specified, and for which an [inputDataType] is generated.
      */
     @Serializable
     data class CustomParticipantAttribute<T : Any>( val input: InputElement<T> ) : ParticipantAttribute()
     {
-        override val inputType: InputDataType = InputDataType( CUSTOM_INPUT_TYPE_NAME, UUID.randomUUID().toString() )
+        override val inputDataType: InputDataType = InputDataType( CUSTOM_INPUT_TYPE_NAME, UUID.randomUUID().toString() )
     }
 
 
@@ -49,8 +49,8 @@ sealed class ParticipantAttribute
     fun getInputElement( registeredInputDataTypes: InputDataTypeList ): AnyInputElement =
         when ( this )
         {
-            is DefaultParticipantAttribute -> registeredInputDataTypes.inputElements[ inputType ]
-                ?: throw UnsupportedOperationException( "No input element for '$inputType' registered." )
+            is DefaultParticipantAttribute -> registeredInputDataTypes.inputElements[ inputDataType ]
+                ?: throw UnsupportedOperationException( "No input element for '$inputDataType' registered." )
             is CustomParticipantAttribute<*> -> input
         }
 
@@ -93,8 +93,8 @@ sealed class ParticipantAttribute
         if ( this is CustomParticipantAttribute<*> ) return CustomInput( input )
 
         // Convert to concrete Data object.
-        val converter = registeredInputDataTypes.inputToDataConverters[ inputType ]
-            ?: throw UnsupportedOperationException( "No data converter for '$inputType' registered." )
+        val converter = registeredInputDataTypes.inputToDataConverters[ inputDataType ]
+            ?: throw UnsupportedOperationException( "No data converter for '$inputDataType' registered." )
         return converter( input )
     }
 
@@ -114,7 +114,7 @@ sealed class ParticipantAttribute
         val isCorrectDataType = when ( this )
         {
             is CustomParticipantAttribute<*> -> data is CustomInput && isValidCustomData( inputElement, data )
-            is DefaultParticipantAttribute -> registeredInputDataTypes.dataClasses[ inputType ]!!.isInstance( data )
+            is DefaultParticipantAttribute -> registeredInputDataTypes.dataClasses[ inputDataType ]!!.isInstance( data )
         }
         if ( !isCorrectDataType ) return false
 
@@ -145,9 +145,9 @@ sealed class ParticipantAttribute
         }
 
         // Convert to input data.
-        val converter = registeredInputDataTypes.dataToInputConverters[ inputType ]
-            ?: throw UnsupportedOperationException( "No data converter for '$inputType' registered." )
-        require( registeredInputDataTypes.dataClasses[ inputType ]!!.isInstance( data ) )
+        val converter = registeredInputDataTypes.dataToInputConverters[ inputDataType ]
+            ?: throw UnsupportedOperationException( "No data converter for '$inputDataType' registered." )
+        require( registeredInputDataTypes.dataClasses[ inputDataType ]!!.isInstance( data ) )
             { "Data is not of expected type for this attribute." }
         return converter( data )
     }

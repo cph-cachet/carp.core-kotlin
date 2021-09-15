@@ -98,7 +98,7 @@ fun createComplexParticipantGroup(): ParticipantGroup
             setOf( protocol.masterDevices.first() )
         )
         setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
-        setData( CarpInputDataTypes, customAttribute.inputType, CustomInput( "Steven" ) )
+        setData( CarpInputDataTypes, customAttribute.inputDataType, CustomInput( "Steven" ) )
         studyDeploymentStopped()
     }
 }
