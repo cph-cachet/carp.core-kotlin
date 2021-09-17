@@ -1,6 +1,8 @@
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.services.ApplicationServiceArgumentException
+import dk.cachet.carp.common.application.services.ApplicationServiceStateException
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
@@ -59,7 +61,7 @@ abstract class DeploymentServiceTest
             AccountIdentity.fromUsername( "User" ),
             StudyInvitation( "Some study" )
         )
-        assertFailsWith<IllegalArgumentException> {
+        assertFailsWith<ApplicationServiceArgumentException> {
             deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
         }
     }
@@ -73,8 +75,8 @@ abstract class DeploymentServiceTest
 
         val removedIds = deploymentService.removeStudyDeployments( deploymentIds )
         assertEquals( deploymentIds, removedIds )
-        assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatus( deploymentId1 ) }
-        assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatus( deploymentId2 ) }
+        assertFailsWith<ApplicationServiceArgumentException> { deploymentService.getStudyDeploymentStatus( deploymentId1 ) }
+        assertFailsWith<ApplicationServiceArgumentException> { deploymentService.getStudyDeploymentStatus( deploymentId2 ) }
     }
 
     @Test
@@ -101,7 +103,7 @@ abstract class DeploymentServiceTest
     fun getStudyDeploymentStatus_fails_for_unknown_studyDeploymentId() = runSuspendTest {
         val deploymentService = createService()
 
-        assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatus( unknownId ) }
+        assertFailsWith<ApplicationServiceArgumentException> { deploymentService.getStudyDeploymentStatus( unknownId ) }
     }
 
     @Test
@@ -128,7 +130,7 @@ abstract class DeploymentServiceTest
         val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
 
         val deploymentIds = setOf( studyDeploymentId, unknownId )
-        assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatusList( deploymentIds ) }
+        assertFailsWith<ApplicationServiceArgumentException> { deploymentService.getStudyDeploymentStatusList( deploymentIds ) }
     }
 
     @Test
@@ -154,7 +156,7 @@ abstract class DeploymentServiceTest
         deploymentService.registerDevice( studyDeploymentId, master.roleName, registration )
         deploymentService.stop( studyDeploymentId )
 
-        assertFailsWith<IllegalStateException>
+        assertFailsWith<ApplicationServiceStateException>
         {
             deploymentService.registerDevice( studyDeploymentId, master.roleName, registration )
         }
@@ -186,7 +188,7 @@ abstract class DeploymentServiceTest
     fun stop_fails_for_unknown_studyDeploymentId() = runSuspendTest {
         val deploymentService = createService()
 
-        assertFailsWith<IllegalArgumentException> { deploymentService.stop( unknownId ) }
+        assertFailsWith<ApplicationServiceArgumentException> { deploymentService.stop( unknownId ) }
     }
 
     @Test
@@ -200,12 +202,12 @@ abstract class DeploymentServiceTest
         deploymentService.registerDevice( studyDeploymentId, connected.roleName, connected.createRegistration() )
         deploymentService.stop( studyDeploymentId )
 
-        assertFailsWith<IllegalStateException>
+        assertFailsWith<ApplicationServiceStateException>
             { deploymentService.registerDevice( studyDeploymentId, connected.roleName, connected.createRegistration() ) }
-        assertFailsWith<IllegalStateException>
+        assertFailsWith<ApplicationServiceStateException>
             { deploymentService.unregisterDevice( studyDeploymentId, master.roleName ) }
         val deviceDeployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, master.roleName )
-        assertFailsWith<IllegalStateException>
+        assertFailsWith<ApplicationServiceStateException>
             { deploymentService.deploymentSuccessful( studyDeploymentId, master.roleName, deviceDeployment.lastUpdatedOn ) }
     }
 

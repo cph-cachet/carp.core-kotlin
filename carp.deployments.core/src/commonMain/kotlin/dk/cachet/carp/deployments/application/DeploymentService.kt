@@ -4,6 +4,8 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.services.ApplicationService
+import dk.cachet.carp.common.application.services.ApplicationServiceArgumentException
+import dk.cachet.carp.common.application.services.ApplicationServiceStateException
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
@@ -48,7 +50,7 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
      * An invitation (and account details) is delivered to the person managing the identity,
      * or should be handed out manually to the relevant participant by the person managing the identity.
      *
-     * @throws IllegalArgumentException when:
+     * @throws ApplicationServiceArgumentException when:
      *  - a deployment with [id] already exists
      *  - [protocol] is invalid
      *  - [invitations] is empty
@@ -77,14 +79,14 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
     /**
      * Get the status for a study deployment with the given [studyDeploymentId].
      *
-     * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist.
+     * @throws ApplicationServiceArgumentException when a deployment with [studyDeploymentId] does not exist.
      */
     suspend fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus
 
     /**
      * Get the statuses for a set of deployments with the specified [studyDeploymentIds].
      *
-     * @throws IllegalArgumentException when [studyDeploymentIds] contains an ID for which no deployment exists.
+     * @throws ApplicationServiceArgumentException when [studyDeploymentIds] contains an ID for which no deployment exists.
      */
     suspend fun getStudyDeploymentStatusList( studyDeploymentIds: Set<UUID> ): List<StudyDeploymentStatus>
 
@@ -93,31 +95,31 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
      *
      * @param registration A matching configuration for the device with [deviceRoleName].
      *
-     * @throws IllegalArgumentException when:
+     * @throws ApplicationServiceArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
      * - [deviceRoleName] is not present in the deployment or is already registered and a different [registration] is specified than a previous request
      * - [registration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device
-     * @throws IllegalStateException when this deployment has stopped.
+     * @throws ApplicationServiceStateException when this deployment has stopped.
      */
     suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
 
     /**
      * Unregister the device with the specified [deviceRoleName] for the study deployment with [studyDeploymentId].
      *
-     * @throws IllegalArgumentException when:
+     * @throws ApplicationServiceArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
      * - [deviceRoleName] is not present in the deployment
-     * @throws IllegalStateException when this deployment has stopped.
+     * @throws ApplicationServiceStateException when this deployment has stopped.
      */
     suspend fun unregisterDevice( studyDeploymentId: UUID, deviceRoleName: String ): StudyDeploymentStatus
 
     /**
      * Get the deployment configuration for the master device with [masterDeviceRoleName] in the study deployment with [studyDeploymentId].
      *
-     * @throws IllegalArgumentException when:
+     * @throws ApplicationServiceArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
      * - [masterDeviceRoleName] is not present in the deployment
-     * @throws IllegalStateException when the deployment for the requested master device is not yet available.
+     * @throws ApplicationServiceStateException when the deployment for the requested master device is not yet available.
      */
     suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
 
@@ -127,11 +129,11 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
      * using the device deployment with timestamp [deviceDeploymentLastUpdatedOn],
      * i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it.
      *
-     * @throws IllegalArgumentException when:
+     * @throws ApplicationServiceArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
      * - [masterDeviceRoleName] is not present in the deployment
      * - the [deviceDeploymentLastUpdatedOn] does not match the expected timestamp. The deployment might be outdated.
-     * @throws IllegalStateException when the deployment cannot be deployed yet, or the deployment has stopped.
+     * @throws ApplicationServiceStateException when the deployment cannot be deployed yet, or the deployment has stopped.
      */
     suspend fun deploymentSuccessful(
         studyDeploymentId: UUID,
@@ -143,7 +145,7 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
      * Stop the study deployment with the specified [studyDeploymentId].
      * No further changes to this deployment will be allowed and no more data will be collected.
      *
-     * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist.
+     * @throws ApplicationServiceArgumentException when a deployment with [studyDeploymentId] does not exist.
      */
     suspend fun stop( studyDeploymentId: UUID ): StudyDeploymentStatus
 }

@@ -1,10 +1,15 @@
 package dk.cachet.carp.deployments.application
 
-import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.services.ApplicationServiceArgumentException
+import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
+import dk.cachet.carp.common.application.services.ApplicationServiceStateException
+import dk.cachet.carp.common.application.services.wrapArgumentExceptions
+import dk.cachet.carp.common.application.services.wrapExceptions
+import dk.cachet.carp.common.application.services.wrapStateExceptions
 import dk.cachet.carp.data.application.DataStreamService
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.domain.DeploymentRepository
@@ -12,6 +17,7 @@ import dk.cachet.carp.deployments.domain.RegistrableDevice
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.datetime.Instant
+import kotlin.reflect.KCallable
 
 
 /**
@@ -32,7 +38,7 @@ class DeploymentServiceHost(
      * An invitation (and account details) is delivered to the person managing the identity,
      * or should be handed out manually to the relevant participant by the person managing the identity.
      *
-     * @throws IllegalArgumentException when:
+     * @throws ApplicationServiceArgumentException when:
      *  - a deployment with [id] already exists
      *  - [protocol] is invalid
      *  - [invitations] is empty
@@ -50,15 +56,16 @@ class DeploymentServiceHost(
         connectedDevicePreregistrations: Map<String, DeviceRegistration>
     ): StudyDeploymentStatus
     {
-        protocol.throwIfInvalid( invitations, connectedDevicePreregistrations )
+        val endpoint = DeploymentService::createStudyDeployment
+        wrapArgumentExceptions( endpoint ) { protocol.throwIfInvalid( invitations, connectedDevicePreregistrations ) }
 
-        val newDeployment = StudyDeployment( protocol, id )
+        val newDeployment = wrapArgumentExceptions( endpoint ) { StudyDeployment( protocol, id ) }
         connectedDevicePreregistrations.forEach { (connected, registration) ->
             val device = protocol.connectedDevices.first { it.roleName == connected }
             newDeployment.registerDevice( device, registration )
         }
 
-        repository.add( newDeployment )
+        wrapArgumentExceptions( endpoint ) { repository.add( newDeployment ) }
         eventBus.publish(
             DeploymentService.Event.StudyDeploymentCreated(
                 newDeployment.id,
@@ -92,11 +99,12 @@ class DeploymentServiceHost(
      *
      * @param studyDeploymentId The id of the [StudyDeployment] to return [StudyDeploymentStatus] for.
      *
-     * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist.
+     * @throws ApplicationServiceArgumentException when a deployment with [studyDeploymentId] does not exist.
      */
     override suspend fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus
     {
-        val deployment: StudyDeployment = repository.getStudyDeploymentOrThrowBy( studyDeploymentId )
+        val deployment: StudyDeployment =
+            getStudyDeploymentOrThrowBy( DeploymentService::getStudyDeploymentStatus, studyDeploymentId )
 
         return deployment.getStatus()
     }
@@ -104,23 +112,33 @@ class DeploymentServiceHost(
     /**
      * Get the statuses for a set of deployments with the specified [studyDeploymentIds].
      *
-     * @throws IllegalArgumentException when [studyDeploymentIds] contains an ID for which no deployment exists.
+     * @throws ApplicationServiceArgumentException when [studyDeploymentIds] contains an ID for which no deployment exists.
      */
-    override suspend fun getStudyDeploymentStatusList( studyDeploymentIds: Set<UUID> ): List<StudyDeploymentStatus> =
-        repository
-            .getStudyDeploymentsOrThrowBy( studyDeploymentIds )
-            .map { it.getStatus() }
+    override suspend fun getStudyDeploymentStatusList( studyDeploymentIds: Set<UUID> ): List<StudyDeploymentStatus>
+    {
+        val studyDeployments = repository.getStudyDeploymentsBy( studyDeploymentIds )
+        if ( studyDeployments.size != studyDeploymentIds.size )
+        {
+            throw ApplicationServiceArgumentException(
+                DeploymentService::getStudyDeploymentStatusList,
+                null,
+                "No deployment exists for one of the specified studyDeploymentIds."
+            )
+        }
+
+        return studyDeployments.map { it.getStatus() }
+    }
 
     /**
      * Register the device with the specified [deviceRoleName] for the study deployment with [studyDeploymentId].
      *
      * @param registration A matching configuration for the device with [deviceRoleName].
      *
-     * @throws IllegalArgumentException when:
+     * @throws ApplicationServiceArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
      * - [deviceRoleName] is not present in the deployment or is already registered and a different [registration] is specified than a previous request
      * - [registration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device
-     * @throws IllegalStateException when this deployment has stopped.
+     * @throws ApplicationServiceStateException when this deployment has stopped.
      */
     override suspend fun registerDevice(
         studyDeploymentId: UUID,
@@ -128,8 +146,9 @@ class DeploymentServiceHost(
         registration: DeviceRegistration
     ): StudyDeploymentStatus
     {
-        val deployment: StudyDeployment = repository.getStudyDeploymentOrThrowBy( studyDeploymentId )
-        val device: AnyDeviceDescriptor = getRegistrableDevice( deployment, deviceRoleName ).device
+        val endpoint = DeploymentService::registerDevice
+        val deployment: StudyDeployment = getStudyDeploymentOrThrowBy( endpoint, studyDeploymentId )
+        val device: AnyDeviceDescriptor = getRegistrableDevice( endpoint, deployment, deviceRoleName ).device
 
         // Early out when the device is already registered.
         val priorRegistration = deployment.registeredDevices[ device ]
@@ -139,7 +158,7 @@ class DeploymentServiceHost(
         }
 
         // Register device and save/distribute changes.
-        deployment.registerDevice( device, registration )
+        wrapExceptions( endpoint ) { deployment.registerDevice( device, registration ) }
         repository.update( deployment )
         val registered = DeploymentService.Event.DeviceRegistrationChanged( studyDeploymentId, device, registration )
         eventBus.publish( registered )
@@ -150,20 +169,21 @@ class DeploymentServiceHost(
     /**
      * Unregister the device with the specified [deviceRoleName] for the study deployment with [studyDeploymentId].
      *
-     * @throws IllegalArgumentException when:
+     * @throws ApplicationServiceArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
      * - [deviceRoleName] is not present in the deployment
-     * @throws IllegalStateException when this deployment has stopped.
+     * @throws ApplicationServiceStateException when this deployment has stopped.
      */
     override suspend fun unregisterDevice( studyDeploymentId: UUID, deviceRoleName: String ): StudyDeploymentStatus
     {
-        val deployment: StudyDeployment = repository.getStudyDeploymentOrThrowBy( studyDeploymentId )
-        val device: AnyDeviceDescriptor = getRegistrableDevice( deployment, deviceRoleName ).device
+        val endpoint = DeploymentService::unregisterDevice
+        val deployment: StudyDeployment = getStudyDeploymentOrThrowBy( endpoint, studyDeploymentId )
+        val device: AnyDeviceDescriptor = getRegistrableDevice( endpoint, deployment, deviceRoleName ).device
 
         val isRegistered = device in deployment.registeredDevices.keys
         if ( isRegistered )
         {
-            deployment.unregisterDevice( device )
+            wrapStateExceptions( endpoint ) { deployment.unregisterDevice( device ) }
             repository.update( deployment )
             val unregistered = DeploymentService.Event.DeviceRegistrationChanged( studyDeploymentId, device, null )
             eventBus.publish( unregistered )
@@ -175,17 +195,18 @@ class DeploymentServiceHost(
     /**
      * Get the deployment configuration for the master device with [masterDeviceRoleName] in the study deployment with [studyDeploymentId].
      *
-     * @throws IllegalArgumentException when:
+     * @throws ApplicationServiceArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
      * - [masterDeviceRoleName] is not present in the deployment
-     * @throws IllegalStateException when the deployment for the requested master device is not yet available.
+     * @throws ApplicationServiceStateException when the deployment for the requested master device is not yet available.
      */
     override suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
     {
-        val deployment: StudyDeployment = repository.getStudyDeploymentOrThrowBy( studyDeploymentId )
-        val device = getRegisteredMasterDevice( deployment, masterDeviceRoleName )
+        val endpoint = DeploymentService::getDeviceDeploymentFor
+        val deployment: StudyDeployment = getStudyDeploymentOrThrowBy( endpoint, studyDeploymentId )
+        val device = getRegisteredMasterDevice( endpoint, deployment, masterDeviceRoleName )
 
-        return deployment.getDeviceDeploymentFor( device )
+        return wrapStateExceptions( endpoint ) { deployment.getDeviceDeploymentFor( device ) }
     }
 
     /**
@@ -194,11 +215,11 @@ class DeploymentServiceHost(
      * using the device deployment with timestamp [deviceDeploymentLastUpdatedOn],
      * i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it.
      *
-     * @throws IllegalArgumentException when:
+     * @throws ApplicationServiceArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
      * - [masterDeviceRoleName] is not present in the deployment
      * - the [deviceDeploymentLastUpdatedOn] does not match the expected timestamp. The deployment might be outdated.
-     * @throws IllegalStateException when the deployment cannot be deployed yet, or the deployment has stopped.
+     * @throws ApplicationServiceStateException when the deployment cannot be deployed yet, or the deployment has stopped.
      */
     override suspend fun deploymentSuccessful(
         studyDeploymentId: UUID,
@@ -206,10 +227,11 @@ class DeploymentServiceHost(
         deviceDeploymentLastUpdatedOn: Instant
     ): StudyDeploymentStatus
     {
-        val deployment: StudyDeployment = repository.getStudyDeploymentOrThrowBy( studyDeploymentId )
-        val device = getRegisteredMasterDevice( deployment, masterDeviceRoleName )
+        val endpoint = DeploymentService::deploymentSuccessful
+        val deployment: StudyDeployment = getStudyDeploymentOrThrowBy( endpoint, studyDeploymentId )
+        val device = getRegisteredMasterDevice( endpoint, deployment, masterDeviceRoleName )
 
-        deployment.deviceDeployed( device, deviceDeploymentLastUpdatedOn )
+        wrapExceptions( endpoint ) { deployment.deviceDeployed( device, deviceDeploymentLastUpdatedOn ) }
         repository.update( deployment )
 
         val deploymentStatus = deployment.getStatus()
@@ -227,11 +249,12 @@ class DeploymentServiceHost(
      * Stop the study deployment with the specified [studyDeploymentId].
      * No further changes to this deployment will be allowed and no more data will be collected.
      *
-     * @throws IllegalArgumentException when a deployment with [studyDeploymentId] does not exist.
+     * @throws ApplicationServiceArgumentException when a deployment with [studyDeploymentId] does not exist.
      */
     override suspend fun stop( studyDeploymentId: UUID ): StudyDeploymentStatus
     {
-        val deployment: StudyDeployment = repository.getStudyDeploymentOrThrowBy( studyDeploymentId )
+        val endpoint = DeploymentService::stop
+        val deployment: StudyDeployment = getStudyDeploymentOrThrowBy( endpoint, studyDeploymentId )
 
         if ( !deployment.isStopped )
         {
@@ -249,18 +272,43 @@ class DeploymentServiceHost(
         return deployment.getStatus()
     }
 
-    private fun getRegistrableDevice( deployment: StudyDeployment, deviceRoleName: String ): RegistrableDevice
+    private suspend fun getStudyDeploymentOrThrowBy( endpoint: KCallable<*>, studyDeploymentId: UUID ): StudyDeployment =
+        repository.getStudyDeploymentBy( studyDeploymentId )
+            ?: throw ApplicationServiceArgumentException(
+                endpoint,
+                null,
+                "A deployment with ID '$studyDeploymentId' does not exist."
+            )
+
+    private fun getRegistrableDevice( endpoint: KCallable<*>, deployment: StudyDeployment, deviceRoleName: String ): RegistrableDevice
     {
         return deployment.registrableDevices.firstOrNull { it.device.roleName == deviceRoleName }
-            ?: throw IllegalArgumentException( "A device with the role name '$deviceRoleName' could not be found in the study deployment." )
+            ?: throw ApplicationServiceArgumentException(
+                endpoint,
+                null,
+                "A device with the role name '$deviceRoleName' could not be found in the study deployment."
+            )
     }
 
-    private fun getRegisteredMasterDevice( deployment: StudyDeployment, masterDeviceRoleName: String ): AnyMasterDeviceDescriptor
+    private fun getRegisteredMasterDevice(
+        endpoint: KCallable<*>,
+        deployment: StudyDeployment,
+        masterDeviceRoleName: String
+    ): AnyMasterDeviceDescriptor
     {
-        val registeredDevice = deployment.registeredDevices.entries.firstOrNull { it.key.roleName == masterDeviceRoleName }?.toPair()
-            ?: throw IllegalArgumentException( "The specified device role name is not part of this study deployment or is not yet registered." )
+        val registeredDevice = deployment.registeredDevices.entries
+            .firstOrNull { it.key.roleName == masterDeviceRoleName }?.toPair()
+                ?: throw ApplicationServiceArgumentException(
+                    endpoint,
+                    null,
+                    "The specified device role name is not part of this study deployment or is not yet registered."
+                )
 
         return registeredDevice.first as? AnyMasterDeviceDescriptor
-            ?: throw IllegalArgumentException( "The specified device is not a master device and therefore does not have a deployment configuration." )
+            ?: throw ApplicationServiceArgumentException(
+                endpoint,
+                null,
+                "The specified device is not a master device and therefore does not have a deployment configuration."
+            )
     }
 }

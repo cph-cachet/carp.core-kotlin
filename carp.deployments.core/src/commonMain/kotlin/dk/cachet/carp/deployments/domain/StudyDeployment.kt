@@ -250,7 +250,11 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
     /**
      * Register the specified [device] for this deployment using the passed [registration] options.
      *
-     * @throws IllegalArgumentException when the passed device is not part of this deployment or is already registered.
+     * @throws IllegalArgumentException when:
+     *  - the passed device is not part of this deployment
+     *  - the passed device is already registered
+     *  - the device registration is not valid for the device
+     *  - the deviceId in registration is already in use by a device of the same type
      * @throws IllegalStateException when this deployment has stopped.
      */
     fun registerDevice( device: AnyDeviceDescriptor, registration: DeviceRegistration )
