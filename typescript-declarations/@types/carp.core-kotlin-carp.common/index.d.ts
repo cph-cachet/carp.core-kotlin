@@ -179,7 +179,7 @@ declare module 'carp.core-kotlin-carp.common'
     {
         interface InputElement
         {
-            readonly name: string
+            readonly prompt: string
 
             isValid_trkh7z$( input: any ): boolean
         }
@@ -190,7 +190,7 @@ declare module 'carp.core-kotlin-carp.common'
 
             static get Companion(): Text$Companion
 
-            readonly name: string
+            readonly prompt: string
             isValid_trkh7z$( input: any ): boolean
         }
         interface Text$Companion { serializer(): any }
@@ -201,7 +201,7 @@ declare module 'carp.core-kotlin-carp.common'
 
             static get Companion(): SelectOne$Companion
 
-            readonly name: string
+            readonly prompt: string
             readonly options: HashSet<string>
             isValid_trkh7z$( input: any ): boolean
         }
