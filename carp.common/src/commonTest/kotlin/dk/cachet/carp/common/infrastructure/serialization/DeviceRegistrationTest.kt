@@ -2,6 +2,8 @@ package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -15,8 +17,8 @@ class DeviceRegistrationTest
     {
         val default: DeviceRegistration = DefaultDeviceRegistration( "Test" )
 
-        val serialized = default.toJson()
-        val parsed = DeviceRegistration.fromJson( serialized )
+        val serialized = testJson.encodeToString( DeviceRegistration.serializer(), default )
+        val parsed: DeviceRegistration = testJson.decodeFromString( serialized )
 
         assertEquals( default, parsed )
     }
@@ -28,7 +30,7 @@ class DeviceRegistrationTest
     fun unknown_types_are_wrapped_when_deserializing()
     {
         val unknownRegistration = serializeUnknownDeviceRegistration()
-        val parsed = DeviceRegistration.fromJson( unknownRegistration )
+        val parsed: DeviceRegistration = testJson.decodeFromString( unknownRegistration )
 
         assertTrue( parsed is CustomDeviceRegistration )
     }
@@ -40,16 +42,16 @@ class DeviceRegistrationTest
     fun serializing_unknown_types_removes_the_wrapper()
     {
         val unknownRegistration = serializeUnknownDeviceRegistration()
-        val parsed = DeviceRegistration.fromJson( unknownRegistration )
+        val parsed: DeviceRegistration = testJson.decodeFromString( unknownRegistration )
 
-        val serialized = parsed.toJson()
+        val serialized = testJson.encodeToString( parsed )
         assertEquals( unknownRegistration, serialized )
     }
 
-    fun serializeUnknownDeviceRegistration(): String
+    private fun serializeUnknownDeviceRegistration(): String
     {
         val registration = DefaultDeviceRegistration( "Test" )
-        var serialized = registration.toJson()
+        var serialized = testJson.encodeToString( DeviceRegistration.serializer(), registration )
         serialized = serialized.replace( "dk.cachet.carp.common.application.devices.DefaultDeviceRegistration", "com.unknown.CustomRegistration" )
 
         return serialized

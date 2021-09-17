@@ -165,15 +165,3 @@ fun createDefaultJSON( module: SerializersModule? = null ): Json
         serializersModule = jsonSerializersModule
     }
 }
-
-/**
- * Create a [DeviceRegistration] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
- */
-fun DeviceRegistration.Companion.fromJson( json: String ): DeviceRegistration =
-    JSON.decodeFromString( serializer(), json )
-
-/**
- * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
- */
-fun DeviceRegistration.toJson(): String =
-    JSON.encodeToString( DeviceRegistration.serializer(), this )
