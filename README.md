@@ -309,7 +309,7 @@ In case you want to contribute, please follow our [contribution guidelines](http
 
 We recommend using IntelliJ IDEA 2021, as this is the development environment we use and is therefore fully tested.
 
-- Install the Kotlin plugin for IntelliJ IDEA (211-1.5.21-release-*): `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Install the Kotlin plugin for IntelliJ IDEA (212-1.5.31-release-*): `Tools->Kotlin->Configure Kotlin Plugin Updates`
 - Open the project folder in IntelliJ 2021.
 - To build/test/publish, click "Edit Configurations" to add configurations for [the included Gradle tasks](#gradle-tasks), or run them from the Gradle tool window.
 
