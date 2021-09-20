@@ -10,7 +10,10 @@ import kotlinx.serialization.Serializable
  * The levels of granularity correspond to expected degrees of power consumption.
  */
 class GranularitySamplingScheme( dataType: DataTypeMetaData, val defaultGranularity: Granularity ) :
-    DataTypeSamplingScheme<GranularitySamplingConfigurationBuilder>( dataType )
+    DataTypeSamplingScheme<GranularitySamplingConfigurationBuilder>(
+        dataType,
+        GranularitySamplingConfiguration( defaultGranularity )
+    )
 {
     override fun createSamplingConfigurationBuilder(): GranularitySamplingConfigurationBuilder =
         GranularitySamplingConfigurationBuilder( defaultGranularity )
