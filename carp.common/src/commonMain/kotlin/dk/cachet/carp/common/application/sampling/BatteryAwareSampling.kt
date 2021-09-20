@@ -21,16 +21,16 @@ abstract class BatteryAwareSamplingScheme<
     /**
      * The default sampling configuration to use when there is plenty of battery left.
      */
-    private val normal: TConfig,
+    val normal: TConfig,
     /**
      * The default sampling configuration to use when the battery is low.
      */
-    private val low: TConfig,
+    val low: TConfig,
     /**
      * The default sampling configuration to use when the battery is critically low.
      * By default, sampling should be disabled at this point.
      */
-    private val critical: TConfig? = null
+    val critical: TConfig? = null
 ) : DataTypeSamplingScheme<BatteryAwareSamplingConfigurationBuilder<TConfig, TBuilder>>( dataType )
 {
     private val configurationKlass: KClass<out TConfig> = normal::class
