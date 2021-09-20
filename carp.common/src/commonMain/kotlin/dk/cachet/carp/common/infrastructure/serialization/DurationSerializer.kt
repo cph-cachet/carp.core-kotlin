@@ -12,7 +12,8 @@ import kotlin.time.Duration
 /**
  * Serializes [Duration] by converting it to microseconds.
  */
-object DurationSerializer : KSerializer<Duration> {
+object DurationSerializer : KSerializer<Duration>
+{
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor( "$NAMESPACE.${Duration::class.simpleName!!}", PrimitiveKind.STRING )
 
