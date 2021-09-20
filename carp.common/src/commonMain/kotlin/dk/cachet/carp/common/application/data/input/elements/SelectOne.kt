@@ -8,7 +8,7 @@ import kotlin.reflect.KClass
  * User needs to select one out of multiple [options].
  */
 @Serializable
-data class SelectOne( override val name: String, val options: Set<String> ) : InputElement<String>
+data class SelectOne( override val prompt: String, val options: Set<String> ) : InputElement<String>
 {
     init
     {

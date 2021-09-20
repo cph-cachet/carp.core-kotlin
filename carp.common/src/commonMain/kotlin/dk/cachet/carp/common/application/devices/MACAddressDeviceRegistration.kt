@@ -24,5 +24,5 @@ class MACAddressDeviceRegistrationBuilder : DeviceRegistrationBuilder<MACAddress
 {
     var macAddress: String = ""
 
-    override fun build(): MACAddressDeviceRegistration = MACAddressDeviceRegistration( MACAddress( macAddress ) )
+    override fun build(): MACAddressDeviceRegistration = MACAddressDeviceRegistration( MACAddress.parse( macAddress ) )
 }
