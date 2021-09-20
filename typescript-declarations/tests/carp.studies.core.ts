@@ -2,10 +2,8 @@ import { expect } from 'chai'
 import VerifyModule from './VerifyModule'
 
 import { kotlin } from 'kotlin'
-import Pair = kotlin.Pair
 import ArrayList = kotlin.collections.ArrayList
 import HashSet = kotlin.collections.HashSet
-import toMap = kotlin.collections.toMap_v2dak7$
 import toSet = kotlin.collections.toSet_us0mfu$
 
 import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-js-legacy'
@@ -17,16 +15,14 @@ import { kotlinx as kxd } from 'Kotlin-DateTime-library-kotlinx-datetime-js-lega
 import Clock = kxd.datetime.Clock
 
 import { dk as cdk } from 'carp.core-kotlin-carp.common'
-import NamespacedId = cdk.cachet.carp.common.application.NamespacedId
 import UUID = cdk.cachet.carp.common.application.UUID
 import CarpInputDataTypes = cdk.cachet.carp.common.application.data.input.CarpInputDataTypes
-import Text = cdk.cachet.carp.common.application.data.input.elements.Text
-import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
 import Username = cdk.cachet.carp.common.application.users.Username
 import UsernameAccountIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
 import createDefaultJSON = cdk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
 
 import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
+import DeviceDeploymentStatus = ddk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import StudyDeploymentStatus = ddk.cachet.carp.deployments.application.StudyDeploymentStatus
 import StudyInvitation = ddk.cachet.carp.deployments.application.users.StudyInvitation
 
@@ -48,6 +44,7 @@ describe( "carp.studies.core", () => {
         const instances = [
             new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", Clock.System.now(), "Description", new StudyInvitation( "Some study" ), null ),
             StudyDetails.Companion,
+            [ "StudyStatus", new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true ) ],
             new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true ),
             new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), false, false, true ),
             StudyStatus.Companion,
@@ -55,7 +52,10 @@ describe( "carp.studies.core", () => {
             AssignParticipantDevices.Companion,
             new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ),
             Participant.Companion,
-            new ParticipantGroupStatus( new StudyDeploymentStatus(), new HashSet<Participant>() ),
+            new ParticipantGroupStatus(
+                new StudyDeploymentStatus.Invited( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+                new HashSet<Participant>()
+            ),
             ParticipantGroupStatus.Companion,
             new StudyOwner(),
             StudyOwner.Companion,

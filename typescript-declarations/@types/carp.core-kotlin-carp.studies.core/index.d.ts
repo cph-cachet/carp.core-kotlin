@@ -2,18 +2,13 @@ declare module 'carp.core-kotlin-carp.studies.core'
 {
     import { kotlin } from 'kotlin'
     import ArrayList = kotlin.collections.ArrayList
-    import HashMap = kotlin.collections.HashMap
     import HashSet = kotlin.collections.HashSet
-
-    import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-js-legacy'
-    import Json = kotlinx.serialization.json.Json
 
     import { kotlinx as kxd } from 'Kotlin-DateTime-library-kotlinx-datetime-js-legacy'
     import Instant = kxd.datetime.Instant
 
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import EmailAddress = cdk.cachet.carp.common.application.EmailAddress
-    import NamespacedId = cdk.cachet.carp.common.application.NamespacedId
     import UUID = cdk.cachet.carp.common.application.UUID
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
 
@@ -53,13 +48,20 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
         abstract class StudyStatus
         {
+            readonly studyId: UUID
+            readonly name: string
+            readonly createdOn: Instant
+            readonly canSetInvitation: boolean
+            readonly canSetStudyProtocol: boolean
+            readonly canDeployToParticipants: boolean
+
             static get Companion(): StudyStatus$Companion
         }
         interface StudyStatus$Companion { serializer(): any }
 
         namespace StudyStatus
         {
-            class Configuring
+            class Configuring extends StudyStatus
             {
                 constructor(
                     studyId: UUID, name: string, createdOn: Instant,
@@ -68,28 +70,15 @@ declare module 'carp.core-kotlin-carp.studies.core'
                     canDeployToParticipants: boolean,
                     canGoLive: boolean )
     
-                readonly studyId: UUID
-                readonly name: string
-                readonly createdOn: Instant
-                readonly canSetInvitation: boolean
-                readonly canSetStudyProtocol: boolean
-                readonly canDeployToParticipants: boolean
                 readonly canGoLive: boolean
             }
-            class Live
+            class Live extends StudyStatus
             {
                 constructor(
                     studyId: UUID, name: string, createdOn: Instant,
                     canSetInvitation: boolean,
                     canSetStudyProtocol: boolean,
                     canDeployToParticipants: boolean )
-    
-                readonly studyId: UUID
-                readonly name: string
-                readonly createdOn: Instant
-                readonly canSetInvitation: boolean
-                readonly canSetStudyProtocol: boolean
-                readonly canDeployToParticipants: boolean
             }
         }
     }

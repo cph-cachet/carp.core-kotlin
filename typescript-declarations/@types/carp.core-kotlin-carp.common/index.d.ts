@@ -1,8 +1,6 @@
 declare module 'carp.core-kotlin-carp.common'
 {
     import { kotlin } from 'kotlin'
-    import { Long } from 'kotlin'
-    import ArrayList = kotlin.collections.ArrayList
     import HashMap = kotlin.collections.HashMap
     import HashSet = kotlin.collections.HashSet
 
@@ -15,9 +13,6 @@ declare module 'carp.core-kotlin-carp.common'
     
     namespace dk.cachet.carp.common.application
     {
-        import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute
-
-
         class EmailAddress
         {
             constructor( address: string )

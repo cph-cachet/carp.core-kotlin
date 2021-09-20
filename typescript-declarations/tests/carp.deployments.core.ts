@@ -32,6 +32,7 @@ describe( "carp.deployments.core", () => {
         const studyInvitation = new StudyInvitation( "Some study" )
         const instances = [
             DeviceDeploymentStatus.Companion,
+            [ "DeviceDeploymentStatus", new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ), toSet( [] ) ) ],
             new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ), toSet( [] ) ),
             new DeviceDeploymentStatus.Registered( null, true, toSet( [] ), toSet( [] ) ),
             new DeviceDeploymentStatus.Deployed( null ),
@@ -42,6 +43,7 @@ describe( "carp.deployments.core", () => {
                 new DefaultDeviceRegistration( "some role" ),
                 toSet( [] ), toMap( [] ), toSet( [] ), toMap( [] ), toSet( [] ), "" ),
             MasterDeviceDeployment.Companion,
+            [ "StudyDeploymentStatus", new StudyDeploymentStatus.Invited( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ) ],
             new StudyDeploymentStatus.Invited( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
             new StudyDeploymentStatus.DeployingDevices( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
             new StudyDeploymentStatus.DeploymentReady( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
