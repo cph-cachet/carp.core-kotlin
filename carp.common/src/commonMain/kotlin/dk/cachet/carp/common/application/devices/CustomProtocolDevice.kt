@@ -23,6 +23,7 @@ data class CustomProtocolDevice( override val roleName: String ) :
 
     // Measures and data types are defined in the custom `CustomProtocolTask.studyProtocol` and thus not managed by core.
     override fun getSupportedDataTypes(): Set<DataType> = Sensors.keys
+    override fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap = Sensors
 
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 

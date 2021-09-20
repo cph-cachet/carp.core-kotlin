@@ -10,7 +10,10 @@ import kotlin.time.Duration
  */
 class DataTypeSamplingSchemeTest
 {
-    class TestSamplingScheme : DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>( StubDataTypes.STUB )
+    class TestSamplingScheme : DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>(
+        StubDataTypes.STUB,
+        IntervalSamplingConfiguration( Duration.seconds( 1 ) )
+    )
     {
         val maxDuration: Duration = Duration.seconds( 42 )
 
