@@ -22,7 +22,8 @@ sealed class Measure
          */
         val type: DataType,
         /**
-         * Override the default configuration on how to sample the data stream of the matching [type] on the device.
+         * Optionally, override the default configuration on how to sample the data stream of the matching [type] on the device.
+         * In case `null` is specified, the default configuration is derived from the [DeviceDescriptor].
          */
         val overrideSamplingConfiguration: SamplingConfiguration? = null
     ) : Measure()
