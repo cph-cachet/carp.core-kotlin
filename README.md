@@ -18,6 +18,12 @@ Two key **design goals** differentiate this project from similar projects:
 ## Table of Contents
 
 - [Architecture](#architecture)
+  - [Common](docs/carp-common.md)
+    - [Data types](docs/carp-common.md#data-types)
+    - [Device descriptors](docs/carp-common.md#device-descriptors)
+    - [Sampling schemes and configurations](docs/carp-common.md#sampling-schemes-and-configurations)
+    - [Tasks](docs/carp-common.md#tasks)
+    - [Triggers](docs/carp-common.md#triggers)
   - [Protocols](docs/carp-protocols.md)
     - [Domain objects](docs/carp-protocols.md#domain-objects)
     - [Application services](docs/carp-protocols.md#application-services)
@@ -32,8 +38,6 @@ Two key **design goals** differentiate this project from similar projects:
   - [Data](docs/carp-data.md)
     - [Data streams](docs/carp-data.md#data-streams)
     - [Application services](docs/carp-data.md#application-services)
-  - [Common](docs/carp-common.md)
-    - [Built-in types](docs/carp-common.md#built-in-types)
 - [Infrastructure helpers](#infrastructure-helpers)
   - [Serialization](#serialization)
   - [Request objects](#request-objects)

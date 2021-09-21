@@ -37,7 +37,7 @@ Most of these are abstract base types. For information on concrete types extendi
 
 ## Extending domain objects
 
-In case the [currently supported built-in types](carp-common.md#built-in-types) do not provide the functionality you require, the following abstract classes can be extended to model your own custom study logic:
+In case the [currently supported built-in types](carp-common.md) do not provide the functionality you require, the following abstract classes can be extended to model your own custom study logic:
 
 - Extend `DeviceDescriptor` or `MasterDeviceDescriptor` to add support for a new type of device, and extend `DeviceRegistration` to specify how a single instance of this device should be uniquely identified, the capabilities it has, and device-specific configuration options needed for the device to operate.
 Example: [`AltBeacon`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt).  
