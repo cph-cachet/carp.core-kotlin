@@ -65,12 +65,26 @@ class InMemoryClientRepository : ClientRepository
      */
     override suspend fun updateStudyRuntime( runtime: StudyRuntime )
     {
-        val storedRuntime = studyRuntimes.firstOrNull {
-            it.studyDeploymentId == runtime.studyDeploymentId &&
-            it.device.roleName == runtime.id.deviceRoleName }
+        val storedRuntime = findRuntimeSnapshot( runtime )
         requireNotNull( storedRuntime ) { "The repository does not contain an existing study runtime matching the one to update." }
 
         studyRuntimes.remove( storedRuntime )
         studyRuntimes.add( runtime.getSnapshot() )
     }
+
+    /**
+     * Remove a [StudyRuntime] which is already stored in the repository.
+     * In case [runtime] is not stored in this repository, nothing happens.
+     */
+    override suspend fun removeStudyRuntime( runtime: StudyRuntime )
+    {
+        val storedRuntime = findRuntimeSnapshot( runtime )
+        studyRuntimes.remove( storedRuntime )
+    }
+
+    private fun findRuntimeSnapshot( runtime: StudyRuntime ): StudyRuntimeSnapshot? =
+        studyRuntimes.firstOrNull {
+            it.studyDeploymentId == runtime.studyDeploymentId &&
+            it.device.roleName == runtime.id.deviceRoleName
+        }
 }
