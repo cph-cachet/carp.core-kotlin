@@ -42,7 +42,7 @@ interface StudyServiceTest
         // Default study description when not specified.
         val studyDetails = service.getStudyDetails( status.studyId )
         assertEquals( name, studyDetails.invitation.name )
-        assertEquals( "", studyDetails.invitation.description )
+        assertNull( studyDetails.invitation.description )
 
         assertFalse( foundStudy.canDeployToParticipants )
     }
@@ -143,7 +143,10 @@ interface StudyServiceTest
     fun setInvitation_fails_for_unknown_studyId() = runSuspendTest {
         val service = createService()
 
-        assertFailsWith<IllegalArgumentException> { service.setInvitation( unknownId, StudyInvitation.empty() ) }
+        assertFailsWith<IllegalArgumentException>
+        {
+            service.setInvitation( unknownId, StudyInvitation( "Some study" ) )
+        }
     }
 
     @Test
@@ -202,7 +205,10 @@ interface StudyServiceTest
         assertFalse( status.canSetInvitation )
         assertFalse( status.canSetStudyProtocol )
 
-        assertFailsWith<IllegalStateException> { service.setInvitation( status.studyId, StudyInvitation.empty() ) }
+        assertFailsWith<IllegalStateException>
+        {
+            service.setInvitation( status.studyId, StudyInvitation( "Some study" ) )
+        }
         assertFailsWith<IllegalStateException> { service.setProtocol( status.studyId, protocol ) }
     }
 

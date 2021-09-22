@@ -21,17 +21,20 @@ abstract class BatteryAwareSamplingScheme<
     /**
      * The default sampling configuration to use when there is plenty of battery left.
      */
-    private val normal: TConfig,
+    val normal: TConfig,
     /**
      * The default sampling configuration to use when the battery is low.
      */
-    private val low: TConfig? = null,
+    val low: TConfig,
     /**
      * The default sampling configuration to use when the battery is critically low.
      * By default, sampling should be disabled at this point.
      */
-    private val critical: TConfig? = null
-) : DataTypeSamplingScheme<BatteryAwareSamplingConfigurationBuilder<TConfig, TBuilder>>( dataType )
+    val critical: TConfig? = null
+) : DataTypeSamplingScheme<BatteryAwareSamplingConfigurationBuilder<TConfig, TBuilder>>(
+    dataType,
+    BatteryAwareSamplingConfiguration( normal, low, critical )
+)
 {
     private val configurationKlass: KClass<out TConfig> = normal::class
 
@@ -46,14 +49,14 @@ abstract class BatteryAwareSamplingScheme<
         // Verify whether battery-level-specific configurations are the expected type.
         val correctTypes =
             configurationKlass.isInstance( configuration.normal ) && // Normal configuration cannot be null.
-            ( configuration.low == null || configurationKlass.isInstance( configuration.low ) ) &&
+            ( configurationKlass.isInstance( configuration.low ) ) &&
             ( configuration.critical == null || configurationKlass.isInstance( configuration.critical ) )
         if ( !correctTypes ) return false
 
         // Verify whether constraints for the battery-level-specific configurations are met.
         @Suppress( "UNCHECKED_CAST" )
         return isValidBatteryLevelConfiguration( configuration.normal as TConfig ) &&
-            ( configuration.low == null || isValidBatteryLevelConfiguration( configuration.low as TConfig ) ) &&
+            ( isValidBatteryLevelConfiguration( configuration.low as TConfig ) ) &&
             ( configuration.critical == null || isValidBatteryLevelConfiguration( configuration.critical as TConfig ) )
     }
 
@@ -77,7 +80,7 @@ data class BatteryAwareSamplingConfiguration<TConfig : SamplingConfiguration>(
     /**
      * The sampling configuration to use when the battery is low.
      */
-    val low: TConfig? = null,
+    val low: TConfig,
     /**
      * The sampling configuration to use when the battery is critically low.
      */
@@ -95,7 +98,7 @@ class BatteryAwareSamplingConfigurationBuilder<
 >(
     private val createBuilder: () -> TBuilder,
     private var normal: TConfig,
-    private var low: TConfig?,
+    private var low: TConfig,
     private var critical: TConfig?
 ) : SamplingConfigurationBuilder<BatteryAwareSamplingConfiguration<TConfig>>
 {

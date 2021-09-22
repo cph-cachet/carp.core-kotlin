@@ -40,7 +40,7 @@ interface StudyService : ApplicationService<StudyService, StudyService.Event>
         /**
          * An optional description of the study, assigned by, and only visible to, the [owner].
          */
-        description: String = "",
+        description: String? = null,
         /**
          * An optional description of the study, shared with participants once they are invited.
          * In case no description is specified, [name] is used as the name in [invitation].

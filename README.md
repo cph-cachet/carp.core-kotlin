@@ -18,6 +18,12 @@ Two key **design goals** differentiate this project from similar projects:
 ## Table of Contents
 
 - [Architecture](#architecture)
+  - [Common](docs/carp-common.md)
+    - [Data types](docs/carp-common.md#data-types)
+    - [Device descriptors](docs/carp-common.md#device-descriptors)
+    - [Sampling schemes and configurations](docs/carp-common.md#sampling-schemes-and-configurations)
+    - [Tasks](docs/carp-common.md#tasks)
+    - [Triggers](docs/carp-common.md#triggers)
   - [Protocols](docs/carp-protocols.md)
     - [Domain objects](docs/carp-protocols.md#domain-objects)
     - [Application services](docs/carp-protocols.md#application-services)
@@ -32,8 +38,6 @@ Two key **design goals** differentiate this project from similar projects:
   - [Data](docs/carp-data.md)
     - [Data streams](docs/carp-data.md#data-streams)
     - [Application services](docs/carp-data.md#application-services)
-  - [Common](docs/carp-common.md)
-    - [Built-in types](docs/carp-common.md#built-in-types)
 - [Infrastructure helpers](#infrastructure-helpers)
   - [Serialization](#serialization)
   - [Request objects](#request-objects)
@@ -309,7 +313,7 @@ In case you want to contribute, please follow our [contribution guidelines](http
 
 We recommend using IntelliJ IDEA 2021, as this is the development environment we use and is therefore fully tested.
 
-- Install the Kotlin plugin for IntelliJ IDEA (211-1.5.21-release-*): `Tools->Kotlin->Configure Kotlin Plugin Updates`
+- Install the Kotlin plugin for IntelliJ IDEA (212-1.5.31-release-*): `Tools->Kotlin->Configure Kotlin Plugin Updates`
 - Open the project folder in IntelliJ 2021.
 - To build/test/publish, click "Edit Configurations" to add configurations for [the included Gradle tasks](#gradle-tasks), or run them from the Gradle tool window.
 

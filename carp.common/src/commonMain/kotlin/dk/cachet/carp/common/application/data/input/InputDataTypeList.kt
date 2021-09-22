@@ -29,17 +29,18 @@ open class InputDataTypeList private constructor( val list: MutableList<InputDat
     val dataToInputConverters: Map<InputDataType, (Data) -> Any> = _dataToInputConverters
 
     /**
-     * Register an input [type], an associated [inputElement], and data converter to convert the data type of the [inputElement] to a [Data] object.
+     * Register an [inputDataType], an associated [inputElement],
+     * and data converter to convert the data type of the [inputElement] to a [Data] object.
      */
     @Suppress( "UNCHECKED_CAST" )
     protected fun <TInput : Any, TData : Data> add(
-        inputType: InputDataType,
+        inputDataType: InputDataType,
         inputElement: InputElement<TInput>,
         dataClass: KClass<TData>,
         inputToData: (TInput) -> TData,
         dataToInput: (TData) -> TInput
     ): InputDataType =
-        inputType.also{
+        inputDataType.also{
             require( !_inputElements.containsKey( it ) ) { "The specified input data type is already registered in this list." }
 
             list.add( it )

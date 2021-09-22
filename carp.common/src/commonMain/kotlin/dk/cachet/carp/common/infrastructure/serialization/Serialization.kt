@@ -163,20 +163,5 @@ fun createDefaultJSON( module: SerializersModule? = null ): Json
     return Json {
         classDiscriminator = CLASS_DISCRIMINATOR
         serializersModule = jsonSerializersModule
-        // TODO: `encodeDefaults` changed in kotlinx.serialization 1.0.0-RC2 to false by default
-        //  which caused unknown polymorphic serializer tests to fail. Verify whether we need this.
-        encodeDefaults = true
     }
 }
-
-/**
- * Create a [DeviceRegistration] from JSON, serialized using the globally set infrastructure serializer ([JSON]).
- */
-fun DeviceRegistration.Companion.fromJson( json: String ): DeviceRegistration =
-    JSON.decodeFromString( serializer(), json )
-
-/**
- * Serialize to JSON, using the globally set infrastructure serializer ([JSON]).
- */
-fun DeviceRegistration.toJson(): String =
-    JSON.encodeToString( DeviceRegistration.serializer(), this )

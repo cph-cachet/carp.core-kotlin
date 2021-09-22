@@ -21,7 +21,7 @@ interface StudyRepositoryTest
         val study = Study( StudyOwner(), "Test" )
         repo.add( study )
 
-        val studyWithSameId = Study( StudyOwner(), "Study 2", "Description", StudyInvitation.empty(), study.id )
+        val studyWithSameId = Study( StudyOwner(), "Study 2", "Description", StudyInvitation( "Some study" ), study.id )
         assertFailsWith<IllegalArgumentException>
         {
             repo.add( studyWithSameId )

@@ -42,4 +42,10 @@ interface ClientRepository
      * @throws IllegalArgumentException when no previous version of this study runtime is stored in the repository.
      */
     suspend fun updateStudyRuntime( runtime: StudyRuntime )
+
+    /**
+     * Remove a [StudyRuntime] which is already stored in the repository.
+     * In case [runtime] is not stored in this repository, nothing happens.
+     */
+    suspend fun removeStudyRuntime( runtime: StudyRuntime )
 }

@@ -28,23 +28,23 @@ data class MasterDeviceDeployment(
     /**
      * The devices this device needs to connect to.
      */
-    val connectedDevices: Set<AnyDeviceDescriptor>,
+    val connectedDevices: Set<AnyDeviceDescriptor> = emptySet(),
     /**
      * Preregistration of connected devices, including configuration such as connection properties, stored per role name.
      */
-    val connectedDeviceConfigurations: Map<String, DeviceRegistration>,
+    val connectedDeviceConfigurations: Map<String, DeviceRegistration> = emptyMap(),
     /**
      * All tasks which should be able to be executed on this or connected devices.
      */
-    val tasks: Set<TaskDescriptor>,
+    val tasks: Set<TaskDescriptor> = emptySet(),
     /**
      * All triggers originating from this device and connected devices, stored per assigned id unique within the study protocol.
      */
-    val triggers: Map<Int, Trigger<*>>,
+    val triggers: Map<Int, Trigger<*>> = emptyMap(),
     /**
      * Determines which tasks need to be started or stopped when the conditions defined by [triggers] are met.
      */
-    val taskControls: Set<TaskControl>,
+    val taskControls: Set<TaskControl> = emptySet(),
     /**
      * Application-specific data to be stored as part of a study deployment.
      *
@@ -52,7 +52,7 @@ data class MasterDeviceDeployment(
      * between the protocols and clients subsystems, outside of scope or not yet supported by CARP core.
      */
     @Serializable( ApplicationDataSerializer::class )
-    val applicationData: String
+    val applicationData: String? = null
 )
 {
     /**

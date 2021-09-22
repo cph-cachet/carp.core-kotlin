@@ -2,11 +2,7 @@ import { expect } from 'chai'
 import VerifyModule from './VerifyModule'
 
 import { kotlin } from 'kotlin'
-import { Long } from 'kotlin'
 import toSet = kotlin.collections.toSet_us0mfu$
-
-import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-js-legacy'
-import Json = kotlinx.serialization.json.Json
 
 import { dk } from 'carp.core-kotlin-carp.common'
 import EmailAddress = dk.cachet.carp.common.application.EmailAddress
@@ -25,7 +21,6 @@ import ParticipantAttribute = dk.cachet.carp.common.application.users.Participan
 import Username = dk.cachet.carp.common.application.users.Username
 import UsernameAccountIdentity = dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import emailAccountIdentityFromString = dk.cachet.carp.common.application.users.EmailAccountIdentity_init_61zpoe$
-import createDefaultJSON = dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
 
 
 describe( "carp.common", () => {

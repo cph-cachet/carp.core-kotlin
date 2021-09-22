@@ -1,7 +1,6 @@
 declare module 'carp.core-kotlin-carp.protocols.core'
 {
     import { kotlin } from 'kotlin'
-    import ArrayList = kotlin.collections.ArrayList
     import HashSet = kotlin.collections.HashSet
 
     import { kotlinx as kxd } from 'Kotlin-DateTime-library-kotlinx-datetime-js-legacy'
@@ -121,7 +120,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
         {
             class CreateCustomProtocol extends ProtocolFactoryServiceRequest
             {
-                constructor( ownerId: UUID, name: string, customProtocol: string, description: string )
+                constructor( ownerId: UUID, name: string, customProtocol: string, description?: string | null )
             }
         }
     }

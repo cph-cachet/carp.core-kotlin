@@ -6,6 +6,7 @@ import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 
 
@@ -27,8 +28,10 @@ abstract class DeviceRegistration
      *
      * TODO: This might be useful for potential optimizations later (e.g., prevent pulling in data from the same source more than once), but for now is ignored.
      */
+    @Required
     abstract val deviceId: String
 
+    @Required
     val registrationCreatedOn: Instant = Clock.System.now()
 }
 

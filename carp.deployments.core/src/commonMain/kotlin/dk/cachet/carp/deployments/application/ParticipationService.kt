@@ -42,13 +42,13 @@ interface ParticipationService : ApplicationService<ParticipationService, Partic
     suspend fun getParticipantDataList( studyDeploymentIds: Set<UUID> ): List<ParticipantData>
 
     /**
-     * Set participant [data] for the given [inputDataType] in the study deployment with [studyDeploymentId].
+     * Set participant [data] in the study deployment with [studyDeploymentId], or unset it by passing `null`.
      *
      * @throws IllegalArgumentException when:
      *   - there is no study deployment with [studyDeploymentId]
-     *   - [inputDataType] is not configured as expected participant data in the study protocol
-     *   - [data] is invalid data for [inputDataType]
+     *   - one or more of the keys in [data] isn't configured as expected participant data in the study protocol
+     *   - one or more of the set [data] isn't valid for the corresponding input data type
      * @return All data for the specified study deployment, including the newly set data.
      */
-    suspend fun setParticipantData( studyDeploymentId: UUID, inputDataType: InputDataType, data: Data? ): ParticipantData
+    suspend fun setParticipantData( studyDeploymentId: UUID, data: Map<InputDataType, Data?> ): ParticipantData
 }

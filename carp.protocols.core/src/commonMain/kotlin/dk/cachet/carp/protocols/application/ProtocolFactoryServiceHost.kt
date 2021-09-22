@@ -25,7 +25,7 @@ class ProtocolFactoryServiceHost : ProtocolFactoryService
         ownerId: UUID,
         name: String,
         customProtocol: String,
-        description: String
+        description: String?
     ): StudyProtocolSnapshot
     {
         // Get protocol owner.

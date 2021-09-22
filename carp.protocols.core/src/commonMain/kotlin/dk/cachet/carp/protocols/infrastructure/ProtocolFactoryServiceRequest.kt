@@ -19,7 +19,7 @@ sealed class ProtocolFactoryServiceRequest
         val ownerId: UUID,
         val name: String,
         val customProtocol: String,
-        val description: String
+        val description: String?
     ) :
         ProtocolFactoryServiceRequest(),
         ServiceInvoker<ProtocolFactoryService, StudyProtocolSnapshot> by createServiceInvoker( ProtocolFactoryService::createCustomProtocol, ownerId, name, customProtocol, description )

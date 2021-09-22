@@ -19,6 +19,8 @@ abstract class AccountServiceTest
      */
     abstract fun createService(): AccountService
 
+    private val studyInvitation: StudyInvitation = StudyInvitation( "Some study" )
+
 
     @Test
     fun inviteNewAccount_with_username_succeeds() =
@@ -33,7 +35,7 @@ abstract class AccountServiceTest
 
         // Create and verify account.
         val participation = Participation( UUID.randomUUID() )
-        val account = service.inviteNewAccount( identity, StudyInvitation.empty(), participation, listOf() )
+        val account = service.inviteNewAccount( identity, studyInvitation, participation, listOf() )
         assertEquals( identity, account.identity )
 
         // Verify whether account can be retrieved.
@@ -52,10 +54,10 @@ abstract class AccountServiceTest
     private fun inviteNewAccountWithExistingTest( identity: AccountIdentity ) = runSuspendTest {
         val service = createService()
         val participation = Participation( UUID.randomUUID() )
-        service.inviteNewAccount( identity, StudyInvitation.empty(), participation, listOf() )
+        service.inviteNewAccount( identity, studyInvitation, participation, listOf() )
 
         assertFailsWith<IllegalArgumentException> {
-            service.inviteNewAccount( identity, StudyInvitation.empty(), participation, listOf() )
+            service.inviteNewAccount( identity, studyInvitation, participation, listOf() )
         }
     }
 
@@ -63,12 +65,11 @@ abstract class AccountServiceTest
     fun inviteExistingAccount_succeeds() = runSuspendTest {
         val service = createService()
         val identity = UsernameAccountIdentity( "test" )
-        val invitation = StudyInvitation.empty()
         val participation = Participation( UUID.randomUUID() )
-        val account = service.inviteNewAccount( identity, invitation, participation, listOf() )
+        val account = service.inviteNewAccount( identity, studyInvitation, participation, listOf() )
 
         val newParticipation = Participation( UUID.randomUUID() )
-        service.inviteExistingAccount( account.id, invitation, newParticipation, listOf() )
+        service.inviteExistingAccount( account.id, studyInvitation, newParticipation, listOf() )
     }
 
     @Test
@@ -78,7 +79,7 @@ abstract class AccountServiceTest
 
         val unknownId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException> {
-            service.inviteExistingAccount( unknownId, StudyInvitation.empty(), participation, listOf() )
+            service.inviteExistingAccount( unknownId, studyInvitation, participation, listOf() )
         }
     }
 

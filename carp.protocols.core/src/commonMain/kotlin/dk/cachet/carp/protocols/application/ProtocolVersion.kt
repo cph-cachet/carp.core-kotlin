@@ -13,4 +13,8 @@ import kotlinx.serialization.Serializable
  * @param date The date when this version of the protocol was created.
  */
 @Serializable
-data class ProtocolVersion( val tag: String, @Required val date: Instant = Clock.System.now() )
+data class ProtocolVersion(
+    val tag: String,
+    @Required
+    val date: Instant = Clock.System.now()
+)

@@ -75,7 +75,7 @@ fun createParticipantInvitation( protocol: StudyProtocol, identity: AccountIdent
         UUID.randomUUID(),
         protocol.masterDevices.map { it.roleName }.toSet(),
         identity ?: AccountIdentity.fromUsername( "Test" ),
-        StudyInvitation.empty()
+        StudyInvitation( "Some study" )
     )
 
 /**
@@ -93,12 +93,12 @@ fun createComplexParticipantGroup(): ParticipantGroup
     return ParticipantGroup.fromNewDeployment( deployment ).apply {
         addParticipation(
             Account.withEmailIdentity( "test@test.com" ),
-            StudyInvitation.empty(),
+            StudyInvitation( "Some study" ),
             Participation( studyDeploymentId ),
             setOf( protocol.masterDevices.first() )
         )
         setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
-        setData( CarpInputDataTypes, customAttribute.inputType, CustomInput( "Steven" ) )
+        setData( CarpInputDataTypes, customAttribute.inputDataType, CustomInput( "Steven" ) )
         studyDeploymentStopped()
     }
 }

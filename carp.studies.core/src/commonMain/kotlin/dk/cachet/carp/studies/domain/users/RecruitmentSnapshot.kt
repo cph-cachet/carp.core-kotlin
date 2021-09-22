@@ -15,11 +15,11 @@ data class RecruitmentSnapshot(
     override val createdOn: Instant,
     val studyProtocol: StudyProtocolSnapshot?,
     val invitation: StudyInvitation?,
-    val participants: Set<Participant>,
+    val participants: Set<Participant> = emptySet(),
     /**
      * Per study deployment ID, the IDs of the participants participating in it.
      */
-    val participations: Map<UUID, Set<UUID>>
+    val participations: Map<UUID, Set<UUID>> = emptyMap()
 ) : Snapshot<Recruitment>
 {
     companion object

@@ -15,8 +15,10 @@ class ApplicationDataSerializerTest
     data class ContainsApplicationData(
         val normalData: String,
         @Serializable( ApplicationDataSerializer::class )
-        val applicationData: String
+        val applicationData: String?
     )
+
+    private val json = createDefaultJSON()
 
 
     @Test
@@ -24,7 +26,6 @@ class ApplicationDataSerializerTest
     {
         val toSerialize = ContainsApplicationData( "normal", "some application data" )
 
-        val json = createDefaultJSON()
         val serialized = json.encodeToString( toSerialize )
         val parsed: ContainsApplicationData = json.decodeFromString( serialized )
         assertEquals( toSerialize, parsed )
@@ -33,8 +34,6 @@ class ApplicationDataSerializerTest
     @Test
     fun can_serialize_and_deserialize_json_application_data()
     {
-        val json = createDefaultJSON()
-
         // Parse application data as JSON to remove newlines/white spaces.
         val applicationData = json.parseToJsonElement(
             """
@@ -50,7 +49,16 @@ class ApplicationDataSerializerTest
 
         val serialized = json.encodeToString( toSerialize )
         val parsed: ContainsApplicationData = json.decodeFromString( serialized )
+        assertEquals( toSerialize, parsed )
+    }
 
+    @Test
+    fun can_serialize_and_deserialize_null_application_data()
+    {
+        val toSerialize = ContainsApplicationData( "normal", null )
+
+        val serialized = json.encodeToString( toSerialize )
+        val parsed: ContainsApplicationData = json.decodeFromString( serialized )
         assertEquals( toSerialize, parsed )
     }
 
@@ -59,7 +67,6 @@ class ApplicationDataSerializerTest
     {
         val toSerialize = ContainsApplicationData( "normal", """{"json":"data"}""" )
 
-        val json = createDefaultJSON()
         val serialized = json.encodeToString( toSerialize )
 
         // The application data should not be escaped, but simply be added as plain JSON.
@@ -72,7 +79,6 @@ class ApplicationDataSerializerTest
         val malformedJson = """{"json object":"or not?"""
         val toSerialize = ContainsApplicationData( "normal", malformedJson )
 
-        val json = createDefaultJSON()
         val serialized = json.encodeToString( toSerialize )
 
         // Fallback for malformed JSON is serializing it as an escaped string.

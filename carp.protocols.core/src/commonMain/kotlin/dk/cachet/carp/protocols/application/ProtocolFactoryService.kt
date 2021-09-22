@@ -28,6 +28,6 @@ interface ProtocolFactoryService : ApplicationService<ProtocolFactoryService, Pr
         ownerId: UUID,
         name: String,
         customProtocol: String,
-        description: String = ""
+        description: String? = null
     ): StudyProtocolSnapshot
 }

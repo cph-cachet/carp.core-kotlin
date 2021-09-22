@@ -47,7 +47,7 @@ class ParticipantGroup private constructor(
         fun fromNewDeployment( studyDeploymentId: UUID, protocol: StudyProtocol ): ParticipantGroup =
             ParticipantGroup(
                 studyDeploymentId,
-                protocol.masterDevices.map { AssignedMasterDevice( it, null ) }.toSet(),
+                protocol.masterDevices.map { AssignedMasterDevice( it ) }.toSet(),
                 protocol.expectedParticipantData )
 
         /**
@@ -175,10 +175,10 @@ class ParticipantGroup private constructor(
 
     private val _data: MutableMap<InputDataType, Data?> =
         // All expected participant data is null by default.
-        expectedData.associate { it.inputType to null }.toMutableMap()
+        expectedData.associate { it.inputDataType to null }.toMutableMap()
 
     /**
-     * Set [data] for the participants in this group for the given [inputDataType],
+     * Set [data] for the participants in this group for the given [inputDataType], or unset it by passing `null`,
      * using [registeredInputDataTypes] to verify whether the data is valid for default input data types.
      *
      * @throws IllegalArgumentException when:
@@ -195,6 +195,25 @@ class ParticipantGroup private constructor(
 
         return ( prevData != data )
             .eventIf( true ) { Event.DataSet( inputDataType, data ) }
+    }
+
+    /**
+     * Set [data] for the participants in this group, or unset it by passing `null`,
+     * using [registeredInputDataTypes] to verify whether the data is valid for default input data types.
+     *
+     * @throws IllegalArgumentException when:
+     *   - one or more of the keys in [data] isn't configured as expected participant data
+     *   - one or more of the set [data] isn't valid for the corresponding input data type
+     * @return True when any data has changed; false when all [data] was already set.
+     */
+    fun setData( registeredInputDataTypes: InputDataTypeList, data: Map<InputDataType, Data?> ): Boolean
+    {
+        require( data.all { expectedData.isValidParticipantData( registeredInputDataTypes, it.key, it.value ) } )
+            { "One of the input data types is not expected or invalid data is passed." }
+
+        return data.entries.fold( false ) { anyDataChanged, element ->
+            setData( registeredInputDataTypes, element.key, element.value ) || anyDataChanged
+        }
     }
 
     /**

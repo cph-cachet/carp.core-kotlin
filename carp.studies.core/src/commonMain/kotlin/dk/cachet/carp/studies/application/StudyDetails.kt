@@ -9,13 +9,13 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Contains detailed information about a [Study], such as the configured study protocol.
+ * Contains detailed information about a study, such as the configured study protocol.
  */
 @Serializable
 data class StudyDetails(
     val studyId: UUID,
     /**
-     * The person or group that created this [Study].
+     * The person or group that created this study.
      */
     val studyOwner: StudyOwner,
     /**
@@ -29,7 +29,7 @@ data class StudyDetails(
     /**
      * A description for the study, assigned by, and only visible to, the [StudyOwner].
      */
-    val description: String,
+    val description: String?,
     /**
      * A description of the study, shared with participants once they are invited to the study.
      */

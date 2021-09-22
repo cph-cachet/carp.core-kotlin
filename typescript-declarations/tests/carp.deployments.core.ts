@@ -29,8 +29,10 @@ import ParticipationServiceRequest = dk.cachet.carp.deployments.infrastructure.P
 describe( "carp.deployments.core", () => {
     it( "verify module declarations", async () => {
         const exampleDevice = new Smartphone( "test", toMap( [] ) )
+        const studyInvitation = new StudyInvitation( "Some study" )
         const instances = [
             DeviceDeploymentStatus.Companion,
+            [ "DeviceDeploymentStatus", new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ), toSet( [] ) ) ],
             new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ), toSet( [] ) ),
             new DeviceDeploymentStatus.Registered( null, true, toSet( [] ), toSet( [] ) ),
             new DeviceDeploymentStatus.Deployed( null ),
@@ -41,22 +43,23 @@ describe( "carp.deployments.core", () => {
                 new DefaultDeviceRegistration( "some role" ),
                 toSet( [] ), toMap( [] ), toSet( [] ), toMap( [] ), toSet( [] ), "" ),
             MasterDeviceDeployment.Companion,
+            [ "StudyDeploymentStatus", new StudyDeploymentStatus.Invited( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ) ],
             new StudyDeploymentStatus.Invited( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
             new StudyDeploymentStatus.DeployingDevices( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
             new StudyDeploymentStatus.DeploymentReady( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
             new StudyDeploymentStatus.Stopped( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
             StudyDeploymentStatus.Companion,
-            new ActiveParticipationInvitation( new Participation( UUID.Companion.randomUUID() ), StudyInvitation.Companion.empty(), toSet( [] ) ),
+            new ActiveParticipationInvitation( new Participation( UUID.Companion.randomUUID() ), studyInvitation, toSet( [] ) ),
             ActiveParticipationInvitation.Companion,
             new AssignedMasterDevice( exampleDevice, null ),
             AssignedMasterDevice.Companion,
             new ParticipantData( UUID.Companion.randomUUID(), toMap( [] ) ),
             ParticipantData.Companion,
-            new ParticipantInvitation( UUID.Companion.randomUUID(), toSet( [] ), new UsernameAccountIdentity( new Username( "Test" ) ), StudyInvitation.Companion.empty() ),
+            new ParticipantInvitation( UUID.Companion.randomUUID(), toSet( [] ), new UsernameAccountIdentity( new Username( "Test" ) ), studyInvitation ),
             ParticipantInvitation.Companion,
             new Participation( UUID.Companion.randomUUID() ),
             Participation.Companion,
-            StudyInvitation.Companion.empty(),
+            studyInvitation,
             StudyInvitation.Companion,
             DeploymentServiceRequest.Companion,
             ParticipationServiceRequest.Companion,

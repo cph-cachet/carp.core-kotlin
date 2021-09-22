@@ -20,10 +20,8 @@ class MasterDeviceDeploymentTest
         val registration = master.createRegistration()
         val connected = StubDeviceDescriptor( "Connected" )
 
-        val deployment = MasterDeviceDeployment(
-            master, registration, setOf( connected ), // Registered master and unregistered connected device.
-            emptyMap(), emptySet(), emptyMap(), emptySet(), "" // Otherwise, empty deployment.
-        )
+        // Deployment with registered master device and unregistered connected device.
+        val deployment = MasterDeviceDeployment( master, registration, setOf( connected ) )
 
         val devices = deployment.getAllDevicesAndRegistrations()
         assertEquals( 2, devices.size )
@@ -58,8 +56,7 @@ class MasterDeviceDeploymentTest
             taskControls = setOf(
                 TaskControl( 0, task.name, device.roleName, TaskControl.Control.Start ),
                 TaskControl( 1, task.name, connected.roleName, TaskControl.Control.Start )
-            ),
-            applicationData = ""
+            )
         )
         val deviceTasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 
@@ -83,16 +80,7 @@ class MasterDeviceDeploymentTest
         val device = StubMasterDeviceDescriptor( "Master" )
         val registration = device.createRegistration()
 
-        val deployment = MasterDeviceDeployment(
-            deviceDescriptor = device,
-            configuration = registration,
-            connectedDevices = emptySet(),
-            connectedDeviceConfigurations = emptyMap(),
-            tasks = emptySet(),
-            triggers = emptyMap(),
-            taskControls = emptySet(),
-            applicationData = ""
-        )
+        val deployment = MasterDeviceDeployment( deviceDescriptor = device, configuration = registration )
         val tasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 
         assertEquals( 1, tasks.size )
@@ -122,8 +110,7 @@ class MasterDeviceDeploymentTest
             taskControls = setOf(
                 TaskControl( 0, task.name, master1.roleName, TaskControl.Control.Start ),
                 TaskControl( 0, "Task on Master 2", master2.roleName, TaskControl.Control.Start )
-            ),
-            applicationData = ""
+            )
         )
         val tasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 

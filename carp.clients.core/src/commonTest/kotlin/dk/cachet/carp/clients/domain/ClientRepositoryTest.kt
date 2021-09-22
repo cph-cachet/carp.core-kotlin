@@ -40,6 +40,16 @@ interface ClientRepositoryTest
         return status.studyDeploymentId
     }
 
+    private suspend fun createTestStudyRuntime(): Pair<ClientRepository, StudyRuntime>
+    {
+        val (repo, deploymentService, dataListener) = createDependencies()
+        val deploymentId = addTestDeployment( deploymentService )
+        val roleName = smartphone.roleName
+        return repo to StudyRuntime.initialize(
+            deploymentService, dataListener,
+            deploymentId, roleName, smartphone.createRegistration() )
+    }
+
 
     @Test
     fun deviceRegistration_is_initially_null() = runSuspendTest {
@@ -49,16 +59,12 @@ interface ClientRepositoryTest
 
     @Test
     fun addStudyRuntime_can_be_retrieved() = runSuspendTest {
-        val (repo, deploymentService, dataListener) = createDependencies()
-        val deploymentId = addTestDeployment( deploymentService )
-        val roleName = smartphone.roleName
-        val studyRuntime = StudyRuntime.initialize(
-            deploymentService, dataListener,
-            deploymentId, roleName, smartphone.createRegistration() )
-
+        val (repo, studyRuntime) = createTestStudyRuntime()
         repo.addStudyRuntime( studyRuntime )
 
         // Runtime can be retrieved by ID.
+        val deploymentId = studyRuntime.studyDeploymentId
+        val roleName = studyRuntime.device.roleName
         val retrievedRuntime = repo.getStudyRuntimeBy( deploymentId, roleName )
         assertNotNull( retrievedRuntime )
 
@@ -70,12 +76,7 @@ interface ClientRepositoryTest
 
     @Test
     fun addStudyRuntime_fails_for_existing_runtime() = runSuspendTest {
-        val (repo, deploymentService, dataListener) = createDependencies()
-        val deploymentId = addTestDeployment( deploymentService )
-        val roleName = smartphone.roleName
-        val studyRuntime = StudyRuntime.initialize(
-            deploymentService, dataListener,
-            deploymentId, roleName, smartphone.createRegistration() )
+        val (repo, studyRuntime) = createTestStudyRuntime()
         repo.addStudyRuntime( studyRuntime )
 
         assertFailsWith<IllegalArgumentException> { repo.addStudyRuntime( studyRuntime ) }
@@ -121,12 +122,27 @@ interface ClientRepositoryTest
 
     @Test
     fun updateStudyRuntime_fails_for_unknown_runtime() = runSuspendTest {
-        val (repo, deploymentService, dataListener) = createDependencies()
-        val deploymentId = addTestDeployment( deploymentService )
-        val studyRuntime = StudyRuntime.initialize(
-            deploymentService, dataListener,
-            deploymentId, smartphone.roleName, smartphone.createRegistration() )
+        val (repo, studyRuntime) = createTestStudyRuntime()
 
         assertFailsWith<IllegalArgumentException> { repo.updateStudyRuntime( studyRuntime ) }
+    }
+
+    @Test
+    fun removeStudyRuntime_succeeds() = runSuspendTest {
+        val (repo, studyRuntime) = createTestStudyRuntime()
+        repo.addStudyRuntime( studyRuntime )
+
+        repo.removeStudyRuntime( studyRuntime )
+
+        val deploymentId = studyRuntime.studyDeploymentId
+        val roleName = studyRuntime.device.roleName
+        assertNull( repo.getStudyRuntimeBy( deploymentId, roleName ) )
+        assertEquals( 0, repo.getStudyRuntimeList().count() )
+    }
+
+    @Test
+    fun removeStudyRuntime_succeeds_when_runtime_not_present() = runSuspendTest {
+        val (repo, studyRuntime) = createTestStudyRuntime()
+        repo.removeStudyRuntime( studyRuntime )
     }
 }

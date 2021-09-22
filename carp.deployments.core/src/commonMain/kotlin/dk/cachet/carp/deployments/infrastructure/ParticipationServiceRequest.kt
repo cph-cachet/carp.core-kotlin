@@ -39,7 +39,7 @@ sealed class ParticipationServiceRequest
         ParticipationServiceInvoker<List<ParticipantData>> by createServiceInvoker( ParticipationService::getParticipantDataList, studyDeploymentIds )
 
     @Serializable
-    data class SetParticipantData( val studyDeploymentId: UUID, val inputDataType: InputDataType, val data: Data? ) :
+    data class SetParticipantData( val studyDeploymentId: UUID, val data: Map<InputDataType, Data?> ) :
         ParticipationServiceRequest(),
-        ParticipationServiceInvoker<ParticipantData> by createServiceInvoker( ParticipationService::setParticipantData, studyDeploymentId, inputDataType, data )
+        ParticipationServiceInvoker<ParticipantData> by createServiceInvoker( ParticipationService::setParticipantData, studyDeploymentId, data )
 }

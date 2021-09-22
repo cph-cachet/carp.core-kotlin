@@ -20,7 +20,7 @@ class ValidationTest
 {
     private val participantId = UUID.randomUUID()
     private val identity: AccountIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
-    private val invitation: StudyInvitation = StudyInvitation.empty()
+    private val invitation: StudyInvitation = StudyInvitation( "Some study" )
 
     private fun createInvitation( assignedDevices: Set<String> ) =
         ParticipantInvitation( participantId, assignedDevices, identity, invitation )

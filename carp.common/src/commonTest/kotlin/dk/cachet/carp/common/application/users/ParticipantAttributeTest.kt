@@ -113,7 +113,7 @@ class ParticipantAttributeTest
         val constrainedElement =
             object : InputElement<String>
             {
-                override val name: String = "Test"
+                override val prompt: String = "Test"
                 override fun isValid( input: String ): Boolean = input == "Correct"
                 override fun getDataClass(): KClass<String> = String::class
             }

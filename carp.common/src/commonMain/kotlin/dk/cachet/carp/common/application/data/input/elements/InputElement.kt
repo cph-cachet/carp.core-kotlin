@@ -9,9 +9,9 @@ import kotlin.reflect.KClass
 interface InputElement<TData : Any>
 {
     /**
-     * Describes the data which may be input.
+     * The prompt to be shown to the user to indicate which data may be input.
      */
-    val name: String
+    val prompt: String
 
     /**
      * Validates whether the provided [input] matches the constraints of this input element.

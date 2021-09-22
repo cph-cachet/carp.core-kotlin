@@ -16,7 +16,7 @@ import kotlin.time.Duration
 @Serializable
 data class BackgroundTask(
     override val name: String,
-    override val measures: List<Measure>,
+    override val measures: List<Measure> = emptyList(),
     override val description: String? = null,
     /**
      * The optional duration over the course of which the [measures] need to be sampled.

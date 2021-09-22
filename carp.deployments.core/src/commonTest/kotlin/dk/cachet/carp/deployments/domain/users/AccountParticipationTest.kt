@@ -25,7 +25,7 @@ class AccountParticipationTest
             participation,
             setOf( deviceRole ),
             accountId = UUID.randomUUID(),
-            StudyInvitation.empty(),
+            StudyInvitation( "Some study" ),
         )
 
         val activeInvitations = filterActiveParticipationInvitations(
@@ -48,7 +48,7 @@ class AccountParticipationTest
             participation,
             setOf( deviceRole ),
             accountId = UUID.randomUUID(),
-            StudyInvitation.empty()
+            StudyInvitation( "Some study" )
         )
 
         // When the device is not registered in the deployment, this is communicated in the active invitation.
@@ -80,7 +80,7 @@ class AccountParticipationTest
             participation,
             setOf( "Smartphone" ),
             accountId = UUID.randomUUID(),
-            StudyInvitation.empty()
+            StudyInvitation( "Some study" )
         )
 
         assertFailsWith<IllegalArgumentException>
@@ -99,7 +99,7 @@ class AccountParticipationTest
             participation,
             setOf( "Incorrect device role" ),
             accountId = UUID.randomUUID(),
-            StudyInvitation.empty()
+            StudyInvitation( "Some study" )
         )
 
         assertFailsWith<IllegalArgumentException>

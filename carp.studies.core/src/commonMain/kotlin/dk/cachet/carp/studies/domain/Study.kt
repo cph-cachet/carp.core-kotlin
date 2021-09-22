@@ -26,17 +26,17 @@ class Study(
     /**
      * A description for the study, assigned by, and only visible to, the [StudyOwner].
      */
-    description: String = "",
+    description: String? = null,
     /**
      * A description of the study, shared with participants once they are invited to the study.
      */
-    invitation: StudyInvitation = StudyInvitation.empty(),
+    invitation: StudyInvitation = StudyInvitation( name ),
     val id: UUID = UUID.randomUUID()
 ) : AggregateRoot<Study, StudySnapshot, Study.Event>()
 {
     sealed class Event : DomainEvent()
     {
-        data class InternalDescriptionChanged( val name: String, val description: String ) : Event()
+        data class InternalDescriptionChanged( val name: String, val description: String? ) : Event()
         data class InvitationChanged( val invitation: StudyInvitation ) : Event()
         data class ProtocolSnapshotChanged( val protocolSnapshot: StudyProtocolSnapshot? ) : Event()
         data class StateChanged( val isLive: Boolean ) : Event()
@@ -73,7 +73,7 @@ class Study(
     /**
      * A description for the study, assigned by, and only visible to, the [StudyOwner].
      */
-    var description: String = description
+    var description: String? = description
         set( value )
         {
             field = value

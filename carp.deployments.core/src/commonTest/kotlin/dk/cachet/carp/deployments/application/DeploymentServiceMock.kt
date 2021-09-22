@@ -32,8 +32,7 @@ class DeploymentServiceMock(
             listOf(), null )
         private val emptyMasterDeviceDeployment: MasterDeviceDeployment = MasterDeviceDeployment(
             StubMasterDeviceDescriptor(),
-            DefaultDeviceRegistration( "Test" ),
-            setOf(), mapOf(), setOf(), mapOf(), setOf(), "" )
+            DefaultDeviceRegistration( "Test" ) )
     }
 
 

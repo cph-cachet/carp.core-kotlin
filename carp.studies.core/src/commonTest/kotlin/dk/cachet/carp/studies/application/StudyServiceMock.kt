@@ -18,7 +18,7 @@ class StudyServiceMock(
     private val updateInternalDescriptionResult: StudyStatus = studyStatus,
     private val getStudyDetailsResult: StudyDetails = StudyDetails(
         UUID.randomUUID(), StudyOwner(), "Name", Clock.System.now(),
-        "Description", StudyInvitation.empty(), createComplexStudy().protocolSnapshot
+        "Description", StudyInvitation( "Some study" ), createComplexStudy().protocolSnapshot
     ),
     private val getStudyStatusResult: StudyStatus = studyStatus,
     private val getStudiesOverviewResult: List<StudyStatus> = emptyList(),
@@ -39,7 +39,7 @@ class StudyServiceMock(
     }
 
 
-    override suspend fun createStudy( owner: StudyOwner, name: String, description: String, invitation: StudyInvitation? ) =
+    override suspend fun createStudy( owner: StudyOwner, name: String, description: String?, invitation: StudyInvitation? ) =
         createStudyResult
         .also { trackSuspendCall( Service::createStudy, owner, name, description, invitation ) }
 

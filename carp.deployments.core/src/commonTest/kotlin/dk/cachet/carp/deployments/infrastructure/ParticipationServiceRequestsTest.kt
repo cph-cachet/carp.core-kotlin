@@ -24,7 +24,10 @@ class ParticipationServiceRequestsTest : ApplicationServiceRequestsTest<Particip
             ParticipationServiceRequest.GetActiveParticipationInvitations( UUID.randomUUID() ),
             ParticipationServiceRequest.GetParticipantData( UUID.randomUUID() ),
             ParticipationServiceRequest.GetParticipantDataList( emptySet() ),
-            ParticipationServiceRequest.SetParticipantData( UUID.randomUUID(), CarpInputDataTypes.SEX, Sex.Male )
+            ParticipationServiceRequest.SetParticipantData(
+                UUID.randomUUID(),
+                mapOf( CarpInputDataTypes.SEX to Sex.Male )
+            )
         )
     }
 }

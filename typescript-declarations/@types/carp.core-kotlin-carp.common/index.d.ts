@@ -1,8 +1,6 @@
 declare module 'carp.core-kotlin-carp.common'
 {
     import { kotlin } from 'kotlin'
-    import { Long } from 'kotlin'
-    import ArrayList = kotlin.collections.ArrayList
     import HashMap = kotlin.collections.HashMap
     import HashSet = kotlin.collections.HashSet
 
@@ -15,9 +13,6 @@ declare module 'carp.core-kotlin-carp.common'
     
     namespace dk.cachet.carp.common.application
     {
-        import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute
-
-
         class EmailAddress
         {
             constructor( address: string )
@@ -143,7 +138,7 @@ declare module 'carp.core-kotlin-carp.common'
         {
             static get Companion(): ParticipantAttribute$Companion
 
-            readonly inputType: NamespacedId
+            readonly inputDataType: NamespacedId
 
             getInputElement_6eo89k$( registeredInputDataTypes: InputDataTypeList ): InputElement
             isValidInput_etkzhw$( registeredInputDataTypes: InputDataTypeList, input: any ): boolean
@@ -179,7 +174,7 @@ declare module 'carp.core-kotlin-carp.common'
     {
         interface InputElement
         {
-            readonly name: string
+            readonly prompt: string
 
             isValid_trkh7z$( input: any ): boolean
         }
@@ -190,7 +185,7 @@ declare module 'carp.core-kotlin-carp.common'
 
             static get Companion(): Text$Companion
 
-            readonly name: string
+            readonly prompt: string
             isValid_trkh7z$( input: any ): boolean
         }
         interface Text$Companion { serializer(): any }
@@ -201,7 +196,7 @@ declare module 'carp.core-kotlin-carp.common'
 
             static get Companion(): SelectOne$Companion
 
-            readonly name: string
+            readonly prompt: string
             readonly options: HashSet<string>
             isValid_trkh7z$( input: any ): boolean
         }

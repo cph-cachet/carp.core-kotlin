@@ -25,8 +25,8 @@ class ActiveParticipationInvitationTest
         val masterDevice = StubMasterDeviceDescriptor()
         val invitation = ActiveParticipationInvitation(
             Participation( UUID.randomUUID() ),
-            StudyInvitation.empty(),
-            setOf( AssignedMasterDevice( masterDevice, null ) )
+            StudyInvitation( "Some study" ),
+            setOf( AssignedMasterDevice( masterDevice ) )
         )
 
         val serialized = json.encodeToString( invitation )
@@ -44,8 +44,8 @@ class ActiveParticipationInvitationTest
         val unknownMasterDevice = CustomMasterDeviceDescriptor( "unknown.device", masterDeviceJson, json )
         val invitation = ActiveParticipationInvitation(
             Participation( UUID.randomUUID() ),
-            StudyInvitation.empty(),
-            setOf( AssignedMasterDevice( unknownMasterDevice, null ) )
+            StudyInvitation( "Some study" ),
+            setOf( AssignedMasterDevice( unknownMasterDevice ) )
         )
 
         val serialized = json.encodeToString( invitation )

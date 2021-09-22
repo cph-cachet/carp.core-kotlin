@@ -16,7 +16,7 @@ data class StudyRuntimeSnapshot(
     val device: AnyMasterDeviceDescriptor,
     val isDeployed: Boolean,
     val deploymentInformation: MasterDeviceDeployment?,
-    val remainingDevicesToRegister: Set<AnyDeviceDescriptor>,
+    val remainingDevicesToRegister: Set<AnyDeviceDescriptor> = emptySet(),
     val isStopped: Boolean
 ) : Snapshot<StudyRuntime>
 {

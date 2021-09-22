@@ -87,7 +87,7 @@ fun createParticipantInvitation( protocol: StudyProtocol, identity: AccountIdent
         UUID.randomUUID(),
         protocol.masterDevices.map { it.roleName }.toSet(),
         identity ?: AccountIdentity.fromUsername( "Test" ),
-        StudyInvitation.empty()
+        StudyInvitation( "Some study" )
     )
 
 /**

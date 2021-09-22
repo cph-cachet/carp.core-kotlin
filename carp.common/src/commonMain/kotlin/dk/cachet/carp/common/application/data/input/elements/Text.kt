@@ -8,7 +8,7 @@ import kotlin.reflect.KClass
  * Text entry by the user.
  */
 @Serializable
-data class Text( override val name: String ) : InputElement<String>
+data class Text( override val prompt: String ) : InputElement<String>
 {
     override fun isValid( input: String ): Boolean = true
 

@@ -27,6 +27,7 @@ import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import kotlinx.datetime.Clock
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.test.*
@@ -111,10 +112,10 @@ class StudyDeploymentTest
     }
 
     @Serializable
-    data class UnknownTaskDescriptor( override val name: String = "Unknown task" ) : TaskDescriptor
+    data class UnknownTaskDescriptor( @Required override val name: String = "Unknown task" ) : TaskDescriptor
     {
         override val measures: List<Measure> = emptyList()
-        override val description: String? = ""
+        override val description: String = ""
         override fun getInteractionDataTypes(): Set<DataType> =
             setOf( DataType( "namespace", "unknownInteractionType" ) )
     }

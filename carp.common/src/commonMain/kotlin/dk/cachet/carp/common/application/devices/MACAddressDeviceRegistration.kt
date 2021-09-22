@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.MACAddress
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 
 
@@ -13,6 +14,7 @@ data class MACAddressDeviceRegistration( val macAddress: MACAddress ) : DeviceRe
 {
     // TODO: Remove this workaround once JS serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/716
     @Suppress( "UNNECESSARY_SAFE_CALL" )
+    @Required
     override val deviceId: String = macAddress?.address
 }
 
@@ -22,5 +24,5 @@ class MACAddressDeviceRegistrationBuilder : DeviceRegistrationBuilder<MACAddress
 {
     var macAddress: String = ""
 
-    override fun build(): MACAddressDeviceRegistration = MACAddressDeviceRegistration( MACAddress( macAddress ) )
+    override fun build(): MACAddressDeviceRegistration = MACAddressDeviceRegistration( MACAddress.parse( macAddress ) )
 }

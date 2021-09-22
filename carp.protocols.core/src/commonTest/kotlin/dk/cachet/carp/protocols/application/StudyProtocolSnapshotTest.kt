@@ -159,14 +159,10 @@ class StudyProtocolSnapshotTest
             StudyProtocolId( UUID.randomUUID(), "Name" ),
             "Description",
             Clock.System.now(),
-            setOf( masterDevice ),
-            emptySet(),
-            emptySet(),
-            setOf( task ),
-            mapOf( 0 to trigger ),
-            setOf( TaskControl( 0, task.name, masterDevice.roleName, TaskControl.Control.Start ) ),
-            emptySet(),
-            ""
+            masterDevices = setOf( masterDevice ),
+            tasks = setOf( task ),
+            triggers = mapOf( 0 to trigger ),
+            taskControls = setOf( TaskControl( 0, task.name, masterDevice.roleName, TaskControl.Control.Start ) )
         )
         StudyProtocol.fromSnapshot( correctSnapshot )
 

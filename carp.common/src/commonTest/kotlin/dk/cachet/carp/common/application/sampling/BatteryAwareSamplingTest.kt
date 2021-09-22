@@ -18,7 +18,8 @@ class BatteryAwareSamplingSchemeTest
         BatteryAwareSamplingScheme<StubSamplingConfiguration, StubSamplingConfigurationBuilder>(
             StubDataTypes.STUB,
             { StubSamplingConfigurationBuilder( "Test" ) },
-            StubSamplingConfiguration( "Test" )
+            StubSamplingConfiguration( "Normal" ),
+            StubSamplingConfiguration( "Low" )
         )
     {
         override fun isValidBatteryLevelConfiguration( configuration: StubSamplingConfiguration ): Boolean =
@@ -39,12 +40,13 @@ class BatteryAwareSamplingSchemeTest
     }
 
     @Test
-    fun isValid_true_when_some_configurations_are_not_set()
+    fun isValid_true_when_critical_configurations_is_not_set()
     {
         val scheme = TestBatteryAwareSamplingScheme()
 
         val validConfiguration = BatteryAwareSamplingConfiguration(
-            normal = StubSamplingConfiguration( "Balanced" )
+            normal = StubSamplingConfiguration( "Balanced" ),
+            low = StubSamplingConfiguration( "Low" )
         )
         assertTrue( scheme.isValid( validConfiguration ) )
     }
@@ -69,7 +71,8 @@ class BatteryAwareSamplingSchemeTest
 
         // "Invalid" breaks the constraint implemented in `TestBatteryAwareSamplingScheme`.
         val invalidConfiguration = BatteryAwareSamplingConfiguration(
-            normal = StubSamplingConfiguration( "Invalid" )
+            normal = StubSamplingConfiguration( "Invalid" ),
+            low = StubSamplingConfiguration( "Low" )
         )
         assertFalse( scheme.isValid( invalidConfiguration ) )
     }

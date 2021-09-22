@@ -20,10 +20,10 @@ data class ParticipantGroupSnapshot(
     val studyDeploymentId: UUID,
     val assignedMasterDevices: Set<AssignedMasterDevice>,
     val isStudyDeploymentStopped: Boolean,
-    val expectedData: Set<ParticipantAttribute>,
-    val participations: Set<AccountParticipation>,
+    val expectedData: Set<ParticipantAttribute> = emptySet(),
+    val participations: Set<AccountParticipation> = emptySet(),
     @Serializable( MapAsArraySerializer::class )
-    val data: Map<InputDataType, Data?>
+    val data: Map<InputDataType, Data?> = emptyMap()
 ) : Snapshot<ParticipantGroup>
 {
     companion object

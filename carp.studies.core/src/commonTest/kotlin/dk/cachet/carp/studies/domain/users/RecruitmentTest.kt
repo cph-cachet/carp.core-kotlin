@@ -88,7 +88,7 @@ class RecruitmentTest
     {
         val recruitment = Recruitment( studyId )
         val protocol = createSingleMasterDeviceProtocol().getSnapshot()
-        val invitation = StudyInvitation.empty()
+        val invitation = StudyInvitation( "Some study" )
         recruitment.lockInStudy( protocol, invitation )
 
         assertFailsWith<IllegalStateException> { recruitment.lockInStudy( protocol, invitation ) }
@@ -100,7 +100,7 @@ class RecruitmentTest
         val recruitment = Recruitment( studyId )
         val participant = recruitment.addParticipant( participantEmail )
         val protocol = createEmptyProtocol()
-        recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation.empty() )
+        recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation( "Some study" ) )
 
         assertTrue( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
 
@@ -128,7 +128,7 @@ class RecruitmentTest
         val recruitment = Recruitment( studyId )
         val participant = recruitment.addParticipant( participantEmail )
         val protocol = createEmptyProtocol()
-        recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation.empty() )
+        recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation( "Some study" ) )
         recruitment.addParticipation( participant, studyDeploymentId )
 
         val stubDeploymentStatus = StudyDeploymentStatus.DeployingDevices( studyDeploymentId, emptyList(), null )

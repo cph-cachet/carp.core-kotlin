@@ -3,8 +3,10 @@ package dk.cachet.carp.deployments.domain.users
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.Sex
+import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
@@ -22,6 +24,9 @@ import kotlin.test.*
  */
 class ParticipantGroupTest
 {
+    private val studyInvitation = StudyInvitation( "Some study" )
+
+
     @Test
     fun fromNewDeployment_succeeds()
     {
@@ -34,7 +39,7 @@ class ParticipantGroupTest
 
         assertEquals( deployment.id, group.studyDeploymentId )
         val expectedAssignedMasterDevices = protocol.masterDevices
-            .map { AssignedMasterDevice( it, null ) }
+            .map { AssignedMasterDevice( it ) }
             .toSet()
         assertEquals( expectedAssignedMasterDevices, group.assignedMasterDevices )
         assertEquals( mapOf( expectedData to null ), group.data )
@@ -70,14 +75,13 @@ class ParticipantGroupTest
 
         val participation = Participation( group.studyDeploymentId )
         val account = Account.withUsernameIdentity( "test" )
-        val invitation = StudyInvitation.empty()
-        group.addParticipation( account, invitation, participation, devicesToAssign )
+        group.addParticipation( account, studyInvitation, participation, devicesToAssign )
 
         val expectedParticipation = AccountParticipation(
             participation,
             devicesToAssign.map { it.roleName }.toSet(),
             account.id,
-            invitation
+            studyInvitation
         )
         assertEquals( ParticipantGroup.Event.ParticipationAdded( expectedParticipation ), group.consumeEvents().last() )
     }
@@ -93,7 +97,7 @@ class ParticipantGroupTest
         val participation = Participation( incorrectDeploymentId )
         assertFailsWith<IllegalArgumentException>
         {
-            group.addParticipation( account, StudyInvitation.empty(), participation, devicesToAssign )
+            group.addParticipation( account, studyInvitation, participation, devicesToAssign )
         }
         assertEquals( 0, group.consumeEvents().filterIsInstance<ParticipantGroup.Event.ParticipationAdded>().count() )
     }
@@ -105,7 +109,7 @@ class ParticipantGroupTest
         val devicesToAssign = group.assignedMasterDevices.map { it.device }.toSet()
         val account = Account.withUsernameIdentity( "test" )
         val participation = Participation( group.studyDeploymentId )
-        val invitation = StudyInvitation.empty()
+        val invitation = studyInvitation
         group.addParticipation( account, invitation, participation, devicesToAssign )
 
         assertFailsWith<IllegalArgumentException>
@@ -126,7 +130,7 @@ class ParticipantGroupTest
         val participation = Participation( group.studyDeploymentId )
         assertFailsWith<IllegalStateException>
         {
-            group.addParticipation( account, StudyInvitation.empty(), participation, devicesToAssign )
+            group.addParticipation( account, studyInvitation, participation, devicesToAssign )
         }
     }
 
@@ -262,6 +266,76 @@ class ParticipantGroupTest
         {
             group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, wrongData )
         }
+    }
+
+    @Test
+    fun setData_multiple_data_succeeds()
+    {
+        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
+        val customInput = ParticipantAttribute.CustomParticipantAttribute( Text( "Test" ) )
+        protocol.addExpectedParticipantData( customInput )
+
+        val group = createParticipantGroup( protocol )
+
+        val toSet = mapOf(
+            CarpInputDataTypes.SEX to Sex.Male,
+            customInput.inputDataType to CustomInput( "Test" )
+        )
+        val isSet = group.setData( CarpInputDataTypes, toSet )
+        assertTrue( isSet )
+        assertEquals( Sex.Male, group.data[ CarpInputDataTypes.SEX ] )
+        assertEquals( CustomInput( "Test" ), group.data[ customInput.inputDataType ] )
+        assertEquals(
+            setOf(
+                ParticipantGroup.Event.DataSet( CarpInputDataTypes.SEX, Sex.Male ),
+                ParticipantGroup.Event.DataSet( customInput.inputDataType, CustomInput( "Test" ) )
+            ),
+            group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DataSet>().toSet()
+        )
+    }
+
+    @Test
+    fun setData_multiple_data_returns_false_when_all_data_already_set()
+    {
+        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
+        val customInput = ParticipantAttribute.CustomParticipantAttribute( Text( "Test" ) )
+        protocol.addExpectedParticipantData( customInput )
+        val group = createParticipantGroup( protocol )
+        val toSet = mapOf(
+            CarpInputDataTypes.SEX to Sex.Male,
+            customInput.inputDataType to CustomInput( "Test" )
+        )
+        group.setData( CarpInputDataTypes, toSet )
+        group.consumeEvents()
+
+        val isSet = group.setData( CarpInputDataTypes, toSet )
+        assertFalse( isSet )
+        assertEquals(
+            0,
+            group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DataSet>().count()
+        )
+    }
+
+    @Test
+    fun setData_multiple_data_succeeds_fully_or_fails()
+    {
+        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        val customInput = ParticipantAttribute.CustomParticipantAttribute( Text( "Test" ) )
+        protocol.addExpectedParticipantData( customInput )
+        val group = createParticipantGroup( protocol )
+
+        val toSet = mapOf(
+            customInput.inputDataType to CustomInput( "Test" ),
+            CarpInputDataTypes.SEX to Sex.Male // Not expected, thus should fail.
+        )
+        assertFailsWith<IllegalArgumentException> { group.setData( CarpInputDataTypes, toSet ) }
+        assertEquals( null, group.data[ customInput.inputDataType ] )
+        assertEquals(
+            0,
+            group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DataSet>().count()
+        )
     }
 
     private fun createParticipantGroup( protocol: StudyProtocol = createSingleMasterDeviceProtocol() ): ParticipantGroup
