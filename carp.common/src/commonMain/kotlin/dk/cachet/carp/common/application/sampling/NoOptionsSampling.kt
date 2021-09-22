@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
  * Sampling scheme which does not allow any sampling configuration.
  */
 class NoOptionsSamplingScheme( dataType: DataTypeMetaData ) :
-    DataTypeSamplingScheme<NoOptionsSamplingConfigurationBuilder>( dataType )
+    DataTypeSamplingScheme<NoOptionsSamplingConfigurationBuilder>( dataType, NoOptionsSamplingConfiguration )
 {
     override fun createSamplingConfigurationBuilder(): NoOptionsSamplingConfigurationBuilder =
         NoOptionsSamplingConfigurationBuilder

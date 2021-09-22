@@ -31,7 +31,10 @@ abstract class BatteryAwareSamplingScheme<
      * By default, sampling should be disabled at this point.
      */
     val critical: TConfig? = null
-) : DataTypeSamplingScheme<BatteryAwareSamplingConfigurationBuilder<TConfig, TBuilder>>( dataType )
+) : DataTypeSamplingScheme<BatteryAwareSamplingConfigurationBuilder<TConfig, TBuilder>>(
+    dataType,
+    BatteryAwareSamplingConfiguration( normal, low, critical )
+)
 {
     private val configurationKlass: KClass<out TConfig> = normal::class
 

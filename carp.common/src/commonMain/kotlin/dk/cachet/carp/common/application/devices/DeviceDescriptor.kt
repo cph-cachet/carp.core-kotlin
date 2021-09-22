@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfigurationMapBuilder
 import kotlinx.serialization.Polymorphic
@@ -44,6 +45,23 @@ abstract class DeviceDescriptor<
      *       We might also want to check whether the sampling configuration instances are valid.
      */
     abstract val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
+
+    /**
+     * Get the default sampling configuration to be used for measurements of [dataType].
+     * The configuration to use may still be overridden by individual data stream measures.
+     */
+    fun getDefaultSamplingConfiguration( dataType: DataType ): SamplingConfiguration =
+        defaultSamplingConfiguration[ dataType ]
+            ?: getDataTypeSamplingSchemes()[ dataType ]?.default
+            ?: throw IllegalArgumentException( "The specified `dataType` is not supported on this device." )
+
+    /**
+     * Return sampling schemes for all the sensors available on this device.
+     *
+     * Implementations of [DeviceDescriptor] should simply return the mandatory inner object
+     * `object Sensors : DataTypeSamplingSchemeMap()` here.
+     */
+    protected abstract fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap
 
     protected abstract fun createDeviceRegistrationBuilder(): TRegistrationBuilder
 

@@ -41,6 +41,7 @@ data class BLEHeartRateDevice(
 
 
     override fun getSupportedDataTypes(): Set<DataType> = Sensors.keys
+    override fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap = Sensors
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 
     override fun createDeviceRegistrationBuilder(): MACAddressDeviceRegistrationBuilder = MACAddressDeviceRegistrationBuilder()

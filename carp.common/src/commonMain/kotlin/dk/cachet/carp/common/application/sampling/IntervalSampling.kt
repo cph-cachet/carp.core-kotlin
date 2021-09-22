@@ -11,7 +11,10 @@ import kotlin.time.Duration
  * Sampling scheme which allows configuring a time interval in between subsequent measurements.
  */
 class IntervalSamplingScheme( dataType: DataTypeMetaData, val defaultMeasureInterval: Duration ) :
-    DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>( dataType )
+    DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>(
+        dataType,
+        IntervalSamplingConfiguration( defaultMeasureInterval )
+    )
 {
     override fun createSamplingConfigurationBuilder(): IntervalSamplingConfigurationBuilder =
         IntervalSamplingConfigurationBuilder( defaultMeasureInterval )

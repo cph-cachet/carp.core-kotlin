@@ -13,7 +13,11 @@ abstract class DataTypeSamplingScheme<TConfigBuilder : SamplingConfigurationBuil
     /**
      * Information about the data type this sampling scheme relates to.
      */
-    val dataType: DataTypeMetaData
+    val dataType: DataTypeMetaData,
+    /**
+     * The default [SamplingConfiguration] to use when no other configuration is specified.
+     */
+    val default: SamplingConfiguration
 )
 {
     /**

@@ -8,6 +8,7 @@ import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistrationBuilder
 import dk.cachet.carp.common.application.devices.MasterDeviceDescriptor
+import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -30,8 +31,10 @@ data class CustomDeviceDescriptor(
 
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 
-    // This information is not serialized. Therefore, the supported types are unknown.
+    // This information is not serialized. Therefore, the supported types and sampling schemes are unknown.
     override fun getSupportedDataTypes(): Set<DataType> = emptySet()
+    override fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap =
+        throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, sampling schemes are unknown." )
 
     init
     {
@@ -67,8 +70,10 @@ data class CustomMasterDeviceDescriptor(
 
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 
-    // This information is not serialized. Therefore, the supported types are unknown.
+    // This information is not serialized. Therefore, the supported types and sampling schemes are unknown.
     override fun getSupportedDataTypes(): Set<DataType> = emptySet()
+    override fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap =
+        throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, sampling schemes are unknown." )
 
     init
     {
@@ -97,6 +102,8 @@ private data class BaseMembers(
 ) : DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>()
 {
     override fun getSupportedDataTypes(): Set<DataType> =
+        throw UnsupportedOperationException()
+    override fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap =
         throw UnsupportedOperationException()
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
         throw UnsupportedOperationException()

@@ -1,12 +1,10 @@
 # carp.common [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.common/carp.common/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.common) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.common/carp.common?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/common/)
 
 Implements helper classes and base types relied upon by all subsystems.
-Primarily, this contains the [built-in types](#built-in-types) used to [define study protocols](carp-protocols.md#domain-objects)
+Primarily, this contains the built-in types used to [define study protocols](carp-protocols.md#domain-objects)
 which subsequently get passed to the deployments and clients subsystem.
 
-## Built-in types
-
-### Data types
+## Data types
 
 `DataType`s are identified by a given _name_ within a _namespace_ and prescribe the data contained within each data point when measured.
 When a data type describes data over the course of a time interval, the time interval is stored within the header (shared by all data types) and not in data-type specific data.
@@ -26,7 +24,7 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | [signalstrength](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/SignalStrength.kt) | The received signal strength of a wireless device. |
 | [triggeredtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/TriggeredTask.kt) | A task which was started or stopped by a trigger, referring to identifiers in the study protocol. |
 
-### Device descriptors
+## Device descriptors
 
 | Class | Master | Description |
 | --- | :---: | --- |
@@ -35,9 +33,19 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | [BLEHeartRateDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/BLEHeartRateDevice.kt) | | A Bluetooth device which implements a Heart Rate service. |
 | [CustomProtocolDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/CustomProtocolDevice.kt) | Yes | A master device which uses a single `CustomProtocolTask` to determine how to run a study on the device. |
 
-### Sampling schemes
+## Sampling schemes and configurations
 
 Supports specifying the sampling scheme for a [`DataType`](#data-types), including possible options, defaults, and constraints.
+
+From sampling _schemes_, matching sampling _configurations_ can be created.
+Per data type, only one `SamplingConfiguration` is ever active on a device.
+The sampling configuration to be used is determined on clients in order of priority:
+
+1. The sampling configuration, if specified in the study protocol, of the `Measure.DataStream` in the last triggered _active_ `TaskDescriptor`. 
+   Once a task stops, it is no longer "active".
+2. The default sampling configuration, if specified in the study protocol, for the `DeviceDescriptor`.
+   This can be retrieved through `MasterDeviceDeployment` on the client.
+3. The default sampling configuration hardcoded in the `Sensors` sampling schemes of the concrete `DeviceDescriptor`, if none of the previous configurations are present.
 
 Some sampling schemes support specifying a different sampling configuration depending on how much battery is left,
 indicated by the "Battery-aware" column.
@@ -50,7 +58,7 @@ These extend from [BatteryAwareSampling](../carp.common/src/commonMain/kotlin/dk
 | [IntervalSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/IntervalSampling.kt) | | Specify a time interval in between subsequent measurements. |
 | [NoOptionsSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/NoOptionsSampling.kt) | | Does not allow any sampling configuration. |
 
-### Tasks
+## Tasks
 
 | Class | Description |
 | --- | --- |
@@ -58,7 +66,7 @@ These extend from [BatteryAwareSampling](../carp.common/src/commonMain/kotlin/dk
 | [CustomProtocolTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/CustomProtocolTask.kt) | Contains a definition on how to run tasks, measures, and triggers which differs from the CARP domain model. |
 | [WebTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/WebTask.kt) | Redirects to a web page which contains the task which needs to be performed. |
 
-### Triggers
+## Triggers
 
 | Class | Description |
 | --- | --- |

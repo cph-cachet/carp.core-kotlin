@@ -32,7 +32,7 @@ val STUB_DATA_TIME_SPAN_TYPE: DataType = DataType.fromString( StubDataTypes.STUB
 
 
 class StubDataTypeSamplingScheme :
-    DataTypeSamplingScheme<NoOptionsSamplingConfigurationBuilder>( StubDataTypes.STUB )
+    DataTypeSamplingScheme<NoOptionsSamplingConfigurationBuilder>( StubDataTypes.STUB, NoOptionsSamplingConfiguration )
 {
     override fun createSamplingConfigurationBuilder(): NoOptionsSamplingConfigurationBuilder = NoOptionsSamplingConfigurationBuilder
 
