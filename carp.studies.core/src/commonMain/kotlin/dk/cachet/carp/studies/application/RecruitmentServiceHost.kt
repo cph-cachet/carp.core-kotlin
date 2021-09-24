@@ -41,7 +41,7 @@ class RecruitmentServiceHost(
                 // Remove deployments in the deployments subsystem.
                 val recruitment = participantRepository.getRecruitment( removed.studyId )
                 checkNotNull( recruitment )
-                val idsToRemove = recruitment.participations.keys
+                val idsToRemove = recruitment.participantGroups.keys
                 deploymentService.removeStudyDeployments( idsToRemove )
 
                 participantRepository.removeStudy( removed.studyId )
@@ -111,9 +111,9 @@ class RecruitmentServiceHost(
         // and that deployment is still running, return the existing group.
         // TODO: The same participants might be invited for different role names, which we currently cannot differentiate between.
         val toDeployParticipantIds = group.map { it.participantId }.toSet()
-        val deployedStatus = recruitment.participations.entries
-            .firstOrNull { (_, participations) ->
-                participations.map { it.id }.toSet() == toDeployParticipantIds
+        val deployedStatus = recruitment.participantGroups.entries
+            .firstOrNull { (_, group) ->
+                group.participantIds == toDeployParticipantIds
             }
             ?.let { deploymentService.getStudyDeploymentStatus( it.key ) }
         if ( deployedStatus != null && deployedStatus !is StudyDeploymentStatus.Stopped )
@@ -121,18 +121,11 @@ class RecruitmentServiceHost(
             return recruitment.getParticipantGroupStatus( deployedStatus )
         }
 
-        // Create deployment for the participant group and send invitations.
-        // TODO: Assign deployment ID from `ParticipantGroup` ID?
-        val studyDeploymentId = UUID.randomUUID()
-        val deploymentStatus = deploymentService.createStudyDeployment( studyDeploymentId, protocol, invitations )
+        // Create participant group, deploy, and send invitations.
+        val participantGroup = recruitment.addParticipantGroup( toDeployParticipantIds )
+        val deploymentStatus = deploymentService.createStudyDeployment( participantGroup.id, protocol, invitations )
+        participantGroup.markAsDeployed()
 
-        // Reflect that participants have been invited in the recruitment.
-        invitations.forEach { invitation ->
-            recruitment.addParticipation(
-                recruitment.participants.first { invitation.participantId == it.id },
-                deploymentStatus.studyDeploymentId
-            )
-        }
         participantRepository.updateRecruitment( recruitment )
 
         return recruitment.getParticipantGroupStatus( deploymentStatus )
@@ -148,7 +141,7 @@ class RecruitmentServiceHost(
         val recruitment: Recruitment = getRecruitmentOrThrow( studyId )
 
         // Get study deployment statuses.
-        val studyDeploymentIds = recruitment.participations.keys
+        val studyDeploymentIds = recruitment.participantGroups.keys
         val studyDeploymentStatuses: List<StudyDeploymentStatus> =
             if ( studyDeploymentIds.isEmpty() ) emptyList()
             else deploymentService.getStudyDeploymentStatusList( studyDeploymentIds )
@@ -174,7 +167,7 @@ class RecruitmentServiceHost(
     private suspend fun getRecruitmentWithGroupOrThrow( studyId: UUID, groupId: UUID ): Recruitment
     {
         val recruitment: Recruitment = getRecruitmentOrThrow( studyId )
-        val participations = recruitment.participations[ groupId ]
+        val participations = recruitment.participantGroups[ groupId ]
         requireNotNull( participations ) { "Study deployment with the specified groupId not found." }
 
         return recruitment
