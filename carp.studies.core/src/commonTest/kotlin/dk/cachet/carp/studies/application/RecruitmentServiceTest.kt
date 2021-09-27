@@ -10,6 +10,7 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
@@ -225,6 +226,7 @@ interface RecruitmentServiceTest
         val groupStatus = recruitmentService.deployParticipantGroup( studyId, setOf( assignParticipant ) )
 
         val stoppedGroupStatus = recruitmentService.stopParticipantGroup( studyId, groupStatus.id )
+        assertTrue( stoppedGroupStatus is ParticipantGroupStatus.Invited ) // TODO: a 'Stopped' state is needed here.
         assertTrue( stoppedGroupStatus.studyDeploymentStatus is StudyDeploymentStatus.Stopped )
     }
 

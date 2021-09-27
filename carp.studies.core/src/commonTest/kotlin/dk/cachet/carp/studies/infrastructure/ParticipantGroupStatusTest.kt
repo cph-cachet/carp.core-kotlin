@@ -21,7 +21,12 @@ class ParticipantGroupStatusTest
         val studyDeploymentId = UUID.randomUUID()
         val deploymentStatus = StudyDeploymentStatus.Invited( Clock.System.now(), studyDeploymentId, listOf(), null )
         val participants = setOf( Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ) )
-        val groupStatus = ParticipantGroupStatus( deploymentStatus, deploymentStatus.createdOn, participants )
+        val groupStatus = ParticipantGroupStatus.Invited(
+            studyDeploymentId,
+            participants,
+            deploymentStatus.createdOn,
+            deploymentStatus
+        )
 
         val serialized: String = JSON.encodeToString( ParticipantGroupStatus.serializer(), groupStatus )
         val parsed: ParticipantGroupStatus = JSON.decodeFromString( ParticipantGroupStatus.serializer(), serialized )

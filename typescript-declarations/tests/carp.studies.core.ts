@@ -41,6 +41,10 @@ import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceR
 
 describe( "carp.studies.core", () => {
     it( "verify module declarations", async () => {
+        const deploymentId = UUID.Companion.randomUUID()
+        const now = Clock.System.now()
+        const invitedDeploymentStatus = new StudyDeploymentStatus.Invited( now, deploymentId, new ArrayList<DeviceDeploymentStatus>( [] ), null )
+
         const instances = [
             new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", Clock.System.now(), "Description", new StudyInvitation( "Some study" ), null ),
             StudyDetails.Companion,
@@ -52,11 +56,9 @@ describe( "carp.studies.core", () => {
             AssignParticipantDevices.Companion,
             new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ),
             Participant.Companion,
-            new ParticipantGroupStatus(
-                new StudyDeploymentStatus.Invited( Clock.System.now(), UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
-                Clock.System.now(),
-                new HashSet<Participant>()
-            ),
+            [ "ParticipantGroupStatus", new ParticipantGroupStatus.Invited( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus ) ],
+            new ParticipantGroupStatus.Staged( deploymentId, new HashSet<Participant>() ),
+            new ParticipantGroupStatus.Invited( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus ),
             ParticipantGroupStatus.Companion,
             new StudyOwner(),
             StudyOwner.Companion,
@@ -165,10 +167,11 @@ describe( "carp.studies.core", () => {
         } )
 
         it( "can serialize ParticipantGroupStatus", () => {
+            const deploymentId = UUID.Companion.randomUUID()
             const now = Clock.System.now()
-            const deploymentStatus = new StudyDeploymentStatus.DeploymentReady( now, UUID.Companion.randomUUID(), new ArrayList( [] ), now )
+            const deploymentStatus = new StudyDeploymentStatus.DeploymentReady( now, deploymentId, new ArrayList( [] ), now )
             const participants = toSet( [ new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ) ] )
-            const group = new ParticipantGroupStatus( deploymentStatus, now, participants )
+            const group = new ParticipantGroupStatus.Invited( deploymentId, participants, now, deploymentStatus )
 
             const json: Json = createDefaultJSON()
             const serializer = ParticipantGroupStatus.Companion.serializer()

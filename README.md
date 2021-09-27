@@ -223,7 +223,7 @@ if ( studyStatus.canDeployToParticipants )
     val participantGroup = setOf( participation )
 
     val groupStatus: ParticipantGroupStatus = recruitmentService.deployParticipantGroup( studyId, participantGroup )
-    val isInvited = groupStatus.studyDeploymentStatus is StudyDeploymentStatus.Invited // True.
+    val isInvited = groupStatus is ParticipantGroupStatus.Invited // True.
 }
 ```
 

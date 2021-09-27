@@ -106,7 +106,7 @@ class HostsIntegrationTest
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
         val assignDevices = AssignParticipantDevices( participant.id, setOf( deviceRole ) )
         val group = recruitmentService.deployParticipantGroup( studyId, setOf( assignDevices ) )
-        val deploymentId = group.studyDeploymentStatus.studyDeploymentId
+        val deploymentId = group.id
 
         var studyRemovedEvent: StudyService.Event.StudyRemoved? = null
         eventBus.registerHandler( StudyService::class, StudyService.Event.StudyRemoved::class, this ) { studyRemovedEvent = it }
