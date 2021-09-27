@@ -114,11 +114,12 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
         class ParticipantGroupStatus
         {
-            constructor( studyDeploymentStatus: StudyDeploymentStatus, participants: HashSet<Participant> )
+            constructor( studyDeploymentStatus: StudyDeploymentStatus, invitedOn: Instant, participants: HashSet<Participant> )
 
             static get Companion(): ParticipantGroupStatus$Companion
 
             readonly studyDeploymentStatus: StudyDeploymentStatus
+            readonly invitedOn: Instant
             readonly participants: HashSet<Participant>
         }
         interface ParticipantGroupStatus$Companion { serializer(): any }

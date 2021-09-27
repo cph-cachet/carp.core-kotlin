@@ -5,6 +5,9 @@ import ArrayList = kotlin.collections.ArrayList
 import toMap = kotlin.collections.toMap_v2dak7$
 import toSet = kotlin.collections.toSet_us0mfu$
 
+import { kotlinx as kxd } from 'Kotlin-DateTime-library-kotlinx-datetime-js-legacy'
+import Clock = kxd.datetime.Clock
+
 import { dk as dkc } from 'carp.core-kotlin-carp.common'
 import UUID = dkc.cachet.carp.common.application.UUID
 import DefaultDeviceRegistration = dkc.cachet.carp.common.application.devices.DefaultDeviceRegistration
@@ -43,11 +46,11 @@ describe( "carp.deployments.core", () => {
                 new DefaultDeviceRegistration( "some role" ),
                 toSet( [] ), toMap( [] ), toSet( [] ), toMap( [] ), toSet( [] ), "" ),
             MasterDeviceDeployment.Companion,
-            [ "StudyDeploymentStatus", new StudyDeploymentStatus.Invited( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ) ],
-            new StudyDeploymentStatus.Invited( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
-            new StudyDeploymentStatus.DeployingDevices( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
-            new StudyDeploymentStatus.DeploymentReady( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
-            new StudyDeploymentStatus.Stopped( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+            [ "StudyDeploymentStatus", new StudyDeploymentStatus.Invited( Clock.System.now(), UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ) ],
+            new StudyDeploymentStatus.Invited( Clock.System.now(), UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+            new StudyDeploymentStatus.DeployingDevices( Clock.System.now(), UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+            new StudyDeploymentStatus.DeploymentReady( Clock.System.now(), UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+            new StudyDeploymentStatus.Stopped( Clock.System.now(), UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
             StudyDeploymentStatus.Companion,
             new ActiveParticipationInvitation( new Participation( UUID.Companion.randomUUID() ), studyInvitation, toSet( [] ) ),
             ActiveParticipationInvitation.Companion,
