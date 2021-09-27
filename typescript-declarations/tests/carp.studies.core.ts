@@ -53,7 +53,8 @@ describe( "carp.studies.core", () => {
             new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ),
             Participant.Companion,
             new ParticipantGroupStatus(
-                new StudyDeploymentStatus.Invited( UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+                new StudyDeploymentStatus.Invited( Clock.System.now(), UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+                Clock.System.now(),
                 new HashSet<Participant>()
             ),
             ParticipantGroupStatus.Companion,
@@ -164,9 +165,10 @@ describe( "carp.studies.core", () => {
         } )
 
         it( "can serialize ParticipantGroupStatus", () => {
-            const deploymentStatus = new StudyDeploymentStatus.DeploymentReady( UUID.Companion.randomUUID(), new ArrayList( [] ), Clock.System.now() )
+            const now = Clock.System.now()
+            const deploymentStatus = new StudyDeploymentStatus.DeploymentReady( now, UUID.Companion.randomUUID(), new ArrayList( [] ), now )
             const participants = toSet( [ new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ) ] )
-            const group = new ParticipantGroupStatus( deploymentStatus, participants )
+            const group = new ParticipantGroupStatus( deploymentStatus, now, participants )
 
             const json: Json = createDefaultJSON()
             const serializer = ParticipantGroupStatus.Companion.serializer()

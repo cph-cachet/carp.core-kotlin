@@ -7,6 +7,7 @@ import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
+import kotlinx.datetime.Clock
 import kotlin.test.*
 
 
@@ -135,7 +136,8 @@ class RecruitmentTest
         recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation( "Some study" ) )
         val group = recruitment.addParticipantGroup( setOf( participant.id ) )
 
-        val stubDeploymentStatus = StudyDeploymentStatus.DeployingDevices( group.id, emptyList(), null )
+        val stubDeploymentStatus =
+            StudyDeploymentStatus.DeployingDevices( Clock.System.now(), group.id, emptyList(), null )
         val groupStatus = recruitment.getParticipantGroupStatus( stubDeploymentStatus )
 
         assertEquals( group.id, groupStatus.id )
@@ -148,7 +150,8 @@ class RecruitmentTest
         val recruitment = Recruitment( studyId )
 
         val unknownId = UUID.randomUUID()
-        val stubDeploymentStatus = StudyDeploymentStatus.DeployingDevices( unknownId, emptyList(), null )
+        val stubDeploymentStatus =
+            StudyDeploymentStatus.DeployingDevices( Clock.System.now(), unknownId, emptyList(), null )
         assertFailsWith<IllegalArgumentException> {
             recruitment.getParticipantGroupStatus( stubDeploymentStatus )
         }

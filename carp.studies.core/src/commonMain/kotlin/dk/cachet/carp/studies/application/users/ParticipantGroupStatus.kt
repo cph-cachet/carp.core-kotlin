@@ -3,11 +3,14 @@ package dk.cachet.carp.studies.application.users
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.domain.StudyDeployment
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 
 /**
  * A group of one or more [Participant]s participating in a [StudyDeployment].
+ *
+ * TODO: This should become a state machine, reflecting the distinction between staging and invited.
  */
 @Serializable
 data class ParticipantGroupStatus(
@@ -16,7 +19,11 @@ data class ParticipantGroupStatus(
      */
     val studyDeploymentStatus: StudyDeploymentStatus,
     /**
-     * The participants that are part of this deployment.
+     * The time at which the participant group was invited.
+     */
+    val invitedOn: Instant,
+    /**
+     * The participants that are part of this group.
      */
     val participants: Set<Participant>
 )

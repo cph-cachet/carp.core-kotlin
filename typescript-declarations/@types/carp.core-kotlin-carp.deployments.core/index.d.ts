@@ -110,6 +110,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
         abstract class StudyDeploymentStatus
         {
+            readonly createdOn: Instant
             readonly studyDeploymentId: UUID
             readonly devicesStatus: ArrayList<DeviceDeploymentStatus>
             readonly startedOn: Instant | null
@@ -122,19 +123,19 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         {
             class Invited extends StudyDeploymentStatus
             {
-                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startedOn: Instant | null )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startedOn: Instant | null )
             }
             class DeployingDevices extends StudyDeploymentStatus
             {
-                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startedOn: Instant | null  )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startedOn: Instant | null  )
             }
             class DeploymentReady extends StudyDeploymentStatus
             {
-                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startedOn: Instant | null  )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startedOn: Instant | null  )
             }
             class Stopped extends StudyDeploymentStatus
             {
-                constructor( studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startedOn: Instant | null  )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startedOn: Instant | null  )
             }
         }
     }

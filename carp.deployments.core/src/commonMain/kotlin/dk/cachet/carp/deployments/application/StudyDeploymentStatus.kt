@@ -13,6 +13,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class StudyDeploymentStatus
 {
+    /**
+     * The time when the deployment was created.
+     */
+    abstract val createdOn: Instant
+
     abstract val studyDeploymentId: UUID
     /**
      * The list of all devices part of this study deployment and their status.
@@ -30,6 +35,7 @@ sealed class StudyDeploymentStatus
      */
     @Serializable
     data class Invited(
+        override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
         override val startedOn: Instant?
@@ -40,6 +46,7 @@ sealed class StudyDeploymentStatus
      */
     @Serializable
     data class DeployingDevices(
+        override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
         override val startedOn: Instant?
@@ -50,6 +57,7 @@ sealed class StudyDeploymentStatus
      */
     @Serializable
     data class DeploymentReady(
+        override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
         override val startedOn: Instant?
@@ -60,6 +68,7 @@ sealed class StudyDeploymentStatus
      */
     @Serializable
     data class Stopped(
+        override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
         override val startedOn: Instant?

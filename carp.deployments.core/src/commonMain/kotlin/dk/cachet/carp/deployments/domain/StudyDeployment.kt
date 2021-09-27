@@ -191,10 +191,10 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
         return when {
-            isStopped -> StudyDeploymentStatus.Stopped( id, devicesStatus, startedOn )
-            allRequiredDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( id, devicesStatus, startedOn )
-            anyRegistration -> StudyDeploymentStatus.DeployingDevices( id, devicesStatus, startedOn )
-            else -> StudyDeploymentStatus.Invited( id, devicesStatus, startedOn )
+            isStopped -> StudyDeploymentStatus.Stopped( createdOn, id, devicesStatus, startedOn )
+            allRequiredDevicesDeployed -> StudyDeploymentStatus.DeploymentReady( createdOn, id, devicesStatus, startedOn )
+            anyRegistration -> StudyDeploymentStatus.DeployingDevices( createdOn, id, devicesStatus, startedOn )
+            else -> StudyDeploymentStatus.Invited( createdOn, id, devicesStatus, startedOn )
         }
     }
 

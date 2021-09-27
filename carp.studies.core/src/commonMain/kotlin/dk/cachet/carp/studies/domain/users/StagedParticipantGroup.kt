@@ -1,6 +1,8 @@
 package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 
@@ -20,12 +22,18 @@ data class StagedParticipantGroup(
     val participantIds: Set<UUID>
         get() = _participantIds
 
-    private var _isDeployed: Boolean = false
+    /**
+     * The time at which the participant group was invited.
+     */
+    var invitedOn: Instant? = null
+        private set
+
     /**
      * Determines whether this participant group has been deployed.
      */
     val isDeployed: Boolean
-        get() = _isDeployed
+        get() = invitedOn != null
+
 
 
     /**
@@ -42,14 +50,15 @@ data class StagedParticipantGroup(
     }
 
     /**
-     * Specify that this participant group has been deployed.
+     * Specify that a deployment with [deploymentStatus] for this participant group has been created,
+     * and thus the participants have been invited.
      *
-     * @throws IllegalStateException when no participants to deploy are specified.
+     * @throws IllegalStateException when no participants to invite are specified.
      */
-    fun markAsDeployed()
+    fun markAsInvited( deploymentStatus: StudyDeploymentStatus )
     {
         check( participantIds.isNotEmpty() ) { "No participants specified to deploy." }
 
-        _isDeployed = true
+        invitedOn = deploymentStatus.createdOn
     }
 }

@@ -10,6 +10,7 @@ import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.test.Mock
+import kotlinx.datetime.Clock
 
 // TODO: Due to a bug, `Service` cannot be used here, although that would be preferred.
 //       Change this once this is fixed: https://youtrack.jetbrains.com/issue/KT-24700
@@ -27,8 +28,10 @@ class RecruitmentServiceMock(
 {
     companion object
     {
+        private val now = Clock.System.now()
         private val groupStatus = ParticipantGroupStatus(
-            StudyDeploymentStatus.Invited( UUID.randomUUID(), emptyList(), null ),
+            StudyDeploymentStatus.Invited( now, UUID.randomUUID(), emptyList(), null ),
+            now,
             emptySet() )
     }
 
