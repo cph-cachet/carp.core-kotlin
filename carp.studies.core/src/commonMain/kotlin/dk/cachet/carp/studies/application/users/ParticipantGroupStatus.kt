@@ -8,28 +8,45 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * A group of one or more [Participant]s participating in a [StudyDeployment].
- *
- * TODO: This should become a state machine, reflecting the distinction between staging and invited.
+ * A group of one or more [participants] which is first [Staged] to later be [Invited] to a [StudyDeployment].
  */
 @Serializable
-data class ParticipantGroupStatus(
+sealed class ParticipantGroupStatus
+{
     /**
-     * The deployment status associated with this participant group.
+     * The ID of this participant group, which is equivalent to the ID of the associated study deployment once deployed.
      */
-    val studyDeploymentStatus: StudyDeploymentStatus,
-    /**
-     * The time at which the participant group was invited.
-     */
-    val invitedOn: Instant,
+    abstract val id: UUID
+
     /**
      * The participants that are part of this group.
      */
-    val participants: Set<Participant>
-)
-{
+    abstract val participants: Set<Participant>
+
+
     /**
-     * The ID of this participant group, which is equivalent to the ID of the associated study deployment.
+     * The [participants] have not yet been invited. The list of participants can still be modified.
      */
-    val id: UUID get() = studyDeploymentStatus.studyDeploymentId
+    @Serializable
+    data class Staged(
+        override val id: UUID,
+        override val participants: Set<Participant>
+    ) : ParticipantGroupStatus()
+
+    /**
+     * The [participants] have been invited to a study deployment.
+     */
+    @Serializable
+    data class Invited(
+        override val id: UUID,
+        override val participants: Set<Participant>,
+        /**
+         * The time at which the participant group was invited.
+         */
+        val invitedOn: Instant,
+        /**
+         * The deployment status of the study deployment the participants were invited to.
+         */
+        val studyDeploymentStatus: StudyDeploymentStatus
+    ) : ParticipantGroupStatus()
 }
