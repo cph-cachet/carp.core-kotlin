@@ -15,7 +15,9 @@ but, the study description and protocol can no longer be modified; they are "loc
 Participant groups are managed through `RecruitmentService`. The status of participant groups is represented by [`ParticipantGroupStatus`](../carp.studies.core/src/commonMain/kotlin/dk/cachet/carp/studies/application/users/ParticipantGroupStatus.kt),
 which reflects the underlying state machine:
 
-![Participant group state machine](https://i.imgur.com/u7EW6st.png)
+![Participant group state machine](https://i.imgur.com/VIv3HKk.png)
+
+Note: `createParticipantGroup` and `inviteParticipantGroup` are envisioned new endpoints currently not yet available.
 
 Once a participant group is `InDeployment`, the state of the underlying `studyDeploymentStatus` determines the concrete `ParticipantGroupStatus`.
 Calling `RecruitmentService.stopParticipantGroup()` will stop the underlying deployment, but the deployment can also be stopped by participants in the study.
@@ -52,6 +54,6 @@ Allows setting recruitment goals, adding participants to studies, and creating d
 | `addParticipant` | Add a participant identified by a specified email address to a study. | manage study: `studyId` | |
 | `getParticipant` | Returns the participant with a specified ID for a study. | manage study: `studyId` | |
 | `getParticipants` | Get all participants for a study. | manage study: `studyId` | |
-| `deployParticipantGroup` | Deploy a study to a group of previously added participants. | manage study: `studyId` | |
+| `inviteNewParticipantGroup` | Create and instantly invite a group of previously added participants to a study. | manage study: `studyId` | |
 | `getParticipantGroupStatusList` | Get the status of all deployed participant groups in a study. | manage study: `studyId` | |
 | `stopParticipantGroup` | Stop the study deployment in a study of a participant group. No further changes to this deployment will be allowed and no more data will be collected. | manage study: `studyId` | |

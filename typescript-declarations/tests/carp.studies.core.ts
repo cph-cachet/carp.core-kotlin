@@ -147,7 +147,7 @@ describe( "carp.studies.core", () => {
 
     describe( "RecruitmentServiceRequest", () => {
         it( "can serialize DeployParticipantGroup", () => {
-            const deployGroup = new RecruitmentServiceRequest.DeployParticipantGroup(
+            const deployGroup = new RecruitmentServiceRequest.InviteNewParticipantGroup(
                 UUID.Companion.randomUUID(),
                 toSet( [
                     new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Smartphone" ] ) )

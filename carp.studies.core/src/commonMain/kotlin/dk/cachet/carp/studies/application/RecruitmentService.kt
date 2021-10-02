@@ -41,7 +41,9 @@ interface RecruitmentService : ApplicationService<RecruitmentService, Recruitmen
     suspend fun getParticipants( studyId: UUID ): List<Participant>
 
     /**
-     * Deploy the study with the given [studyId] to a [group] of previously added participants.
+     * Create a new participant [group] of previously added participants and instantly send out invitations
+     * to participate in the study with the given [studyId].
+     *
      * In case a group with the same participants has already been deployed and is still running (not stopped),
      * the latest status for this group is simply returned.
      *
@@ -53,7 +55,7 @@ interface RecruitmentService : ApplicationService<RecruitmentService, Recruitmen
      *  - not all master devices part of the study have been assigned a participant
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus
+    suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus
 
     /**
      * Get the status of all deployed participant groups in the study with the specified [studyId].
