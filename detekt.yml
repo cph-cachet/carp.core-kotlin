@@ -3,6 +3,10 @@ complexity:
     excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
   TooManyFunctions:
     ignorePrivate: true
+  ComplexCondition:
+    active: true
+  ComplexMethod:
+    active: true
 
 formatting:
   Filename:
