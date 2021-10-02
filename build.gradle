@@ -19,6 +19,7 @@ buildscript {
 
             // JVM versions.
             jvmTarget:'1.8',
+            jacoco:'0.8.7',
             dokkaPlugin:'1.5.30',
             reflections:'0.9.12',
 
@@ -41,6 +42,7 @@ buildscript {
         classpath "com.github.node-gradle:gradle-node-plugin:${versions.nodePlugin}"
 
         // JVM plugins.
+        classpath "org.jacoco:org.jacoco.core:${versions.jacoco}"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${versions.dokkaPlugin}"
 
         // DevOps plugins.
@@ -74,6 +76,8 @@ configure( subprojects - detektModule ) {
     // Specify platforms and test frameworks to use.
     apply plugin: 'kotlin-multiplatform'
     apply plugin: 'kotlinx-serialization'
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
     kotlin {
         jvm {
             compilations.main.kotlinOptions.jvmTarget = versions.jvmTarget
@@ -105,6 +109,17 @@ configure( subprojects - detektModule ) {
     // JVM test configuration.
     jvmTest {
         useJUnitPlatform()
+    }
+    tasks.jacocoTestReport {
+        classDirectories.setFrom(fileTree("${buildDir}/classes/kotlin/jvm/"))
+        sourceDirectories.setFrom("src/commonMain", "src/jvmMain")
+
+        executionData.setFrom(files("${buildDir}/jacoco/jvmTest.exec"))
+
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
     }
 
     // Publish configuration.
