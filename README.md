@@ -222,7 +222,7 @@ if ( studyStatus.canDeployToParticipants )
     val participation = AssignParticipantDevices( participant.id, setOf( patientPhone.roleName ) )
     val participantGroup = setOf( participation )
 
-    val groupStatus: ParticipantGroupStatus = recruitmentService.deployParticipantGroup( studyId, participantGroup )
+    val groupStatus: ParticipantGroupStatus = recruitmentService.inviteNewParticipantGroup( studyId, participantGroup )
     val isInvited = groupStatus is ParticipantGroupStatus.Invited // True.
 }
 ```

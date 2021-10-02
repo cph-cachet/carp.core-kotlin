@@ -250,7 +250,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             {
                 constructor( studyId: UUID )
             }
-            class DeployParticipantGroup extends RecruitmentServiceRequest
+            class InviteNewParticipantGroup extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID, group: HashSet<AssignParticipantDevices> )
             }

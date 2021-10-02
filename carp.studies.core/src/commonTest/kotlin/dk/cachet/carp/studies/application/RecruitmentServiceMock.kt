@@ -47,9 +47,9 @@ class RecruitmentServiceMock(
         getParticipantsResult
         .also { trackSuspendCall( RecruitmentService::getParticipants, studyId ) }
 
-    override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ) =
+    override suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ) =
         deployParticipantResult
-        .also { trackSuspendCall( RecruitmentService::deployParticipantGroup, studyId, group ) }
+        .also { trackSuspendCall( RecruitmentService::inviteNewParticipantGroup, studyId, group ) }
 
     override suspend fun getParticipantGroupStatusList( studyId: UUID ) =
         getParticipantGroupStatusListResult
