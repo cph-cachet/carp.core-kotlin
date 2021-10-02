@@ -29,10 +29,8 @@ class RecruitmentServiceMock(
     companion object
     {
         private val now = Clock.System.now()
-        private val groupStatus = ParticipantGroupStatus.Invited(
-            UUID.randomUUID(),
+        private val groupStatus = ParticipantGroupStatus.InDeployment.fromDeploymentStatus(
             emptySet(),
-            now,
             StudyDeploymentStatus.Invited( now, UUID.randomUUID(), emptyList(), null ) )
     }
 

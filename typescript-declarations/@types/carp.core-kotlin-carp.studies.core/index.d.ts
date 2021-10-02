@@ -127,16 +127,40 @@ declare module 'carp.core-kotlin-carp.studies.core'
             {
                 constructor( id: UUID, participants: HashSet<Participant> )
             }
-            class Invited extends ParticipantGroupStatus
+            abstract class InDeployment extends ParticipantGroupStatus
+            {
+                readonly invitedOn: Instant
+                readonly studyDeploymentStatus: StudyDeploymentStatus
+            }
+            class Invited extends InDeployment
             {
                 constructor(
                     id: UUID,
                     participants: HashSet<Participant>,
                     invitedOn: Instant,
                     studyDeploymentStatus: StudyDeploymentStatus )
+            }
+            class Running extends InDeployment
+            {
+                constructor(
+                    id: UUID,
+                    participants: HashSet<Participant>,
+                    invitedOn: Instant,
+                    studyDeploymentStatus: StudyDeploymentStatus,
+                    startedOn: Instant )
 
-                readonly invitedOn: Instant
-                readonly studyDeploymentStatus: StudyDeploymentStatus
+                readonly startedOn: Instant
+            }
+            class Stopped extends InDeployment
+            {
+                constructor(
+                    id: UUID,
+                    participants: HashSet<Participant>,
+                    invitedOn: Instant,
+                    studyDeploymentStatus: StudyDeploymentStatus,
+                    startedOn: Instant )
+
+                readonly startedOn?: Instant
             }
         }
 

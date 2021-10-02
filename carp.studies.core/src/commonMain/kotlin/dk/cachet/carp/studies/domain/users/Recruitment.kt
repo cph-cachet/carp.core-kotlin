@@ -182,12 +182,7 @@ class Recruitment( val studyId: UUID ) :
             { "A study deployment with ID \"$deploymentId\" is not part of this recruitment." }
 
         val participants = group.participantIds.map { id -> _participants.first { it.id == id } }
-        return ParticipantGroupStatus.Invited(
-            deploymentId,
-            participants.toSet(),
-            studyDeploymentStatus.createdOn,
-            studyDeploymentStatus
-        )
+        return ParticipantGroupStatus.InDeployment.fromDeploymentStatus( participants.toSet(), studyDeploymentStatus )
     }
 
     /**

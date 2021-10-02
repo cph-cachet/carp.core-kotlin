@@ -3,12 +3,15 @@ package dk.cachet.carp.studies.application.users
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.domain.StudyDeployment
+import dk.cachet.carp.deployments.domain.users.ParticipantGroup
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 
 /**
  * A group of one or more [participants] which is first [Staged] to later be [Invited] to a [StudyDeployment].
+ * Once [Invited], the participant group is [InDeployment] and will get the state [Running] once the deployment is ready,
+ * until the deployment is [Stopped].
  */
 @Serializable
 sealed class ParticipantGroupStatus
@@ -33,20 +36,96 @@ sealed class ParticipantGroupStatus
         override val participants: Set<Participant>
     ) : ParticipantGroupStatus()
 
+
     /**
-     * The [participants] have been invited to a study deployment.
+     * A [ParticipantGroup] that has been invited to a [StudyDeployment].
+     */
+    @Serializable
+    sealed class InDeployment : ParticipantGroupStatus()
+    {
+        companion object
+        {
+            /**
+             * Initialize an [InDeployment] state for a group of [participants] based on [deploymentStatus].
+             */
+            fun fromDeploymentStatus(
+                participants: Set<Participant>,
+                deploymentStatus: StudyDeploymentStatus
+            ): InDeployment
+            {
+                val id = deploymentStatus.studyDeploymentId
+                val createdOn: Instant = deploymentStatus.createdOn
+                val startedOn: Instant? = deploymentStatus.startedOn
+
+                return when ( deploymentStatus )
+                {
+                    is StudyDeploymentStatus.Invited,
+                    is StudyDeploymentStatus.DeployingDevices ->
+                        // If deployment was ready at one point (`startedOn`), consider the study 'Running'.
+                        if ( startedOn == null ) Invited( id, participants, createdOn, deploymentStatus )
+                        else Running( id, participants, createdOn, deploymentStatus, startedOn )
+                    is StudyDeploymentStatus.DeploymentReady ->
+                        Running( id, participants, createdOn, deploymentStatus, checkNotNull( startedOn ) )
+                    is StudyDeploymentStatus.Stopped ->
+                        Stopped( id, participants, createdOn, deploymentStatus, startedOn )
+                }
+            }
+        }
+
+
+        /**
+         * The time at which the participant group was invited.
+         */
+        abstract val invitedOn: Instant
+        /**
+         * The deployment status of the study deployment the participants were invited to.
+         */
+        abstract val studyDeploymentStatus: StudyDeploymentStatus
+    }
+
+
+    /**
+     * The [participants] have been invited to a study deployment which isn't [Running] or hasn't been [Stopped] yet.
+     * More details are on the study deployment state are available in [studyDeploymentStatus].
      */
     @Serializable
     data class Invited(
         override val id: UUID,
         override val participants: Set<Participant>,
+        override val invitedOn: Instant,
+        override val studyDeploymentStatus: StudyDeploymentStatus
+    ) : InDeployment()
+
+    /**
+     * The study deployment is [StudyDeploymentStatus.DeploymentReady],
+     * of which more details are available in [studyDeploymentStatus].
+     */
+    @Serializable
+    data class Running(
+        override val id: UUID,
+        override val participants: Set<Participant>,
+        override val invitedOn: Instant,
+        override val studyDeploymentStatus: StudyDeploymentStatus,
         /**
-         * The time at which the participant group was invited.
+         * The time when the study deployment was ready for the first time (all devices deployed).
          */
-        val invitedOn: Instant,
+        val startedOn: Instant
+    ) : InDeployment()
+
+    /**
+     * The study deployment has [StudyDeploymentStatus.Stopped],
+     * of which more details are available in [studyDeploymentStatus].
+     */
+    @Serializable
+    data class Stopped(
+        override val id: UUID,
+        override val participants: Set<Participant>,
+        override val invitedOn: Instant,
+        override val studyDeploymentStatus: StudyDeploymentStatus,
         /**
-         * The deployment status of the study deployment the participants were invited to.
+         * The time when the study deployment was ready for the first time (all devices deployed),
+         * or null in case this was never the case.
          */
-        val studyDeploymentStatus: StudyDeploymentStatus
-    ) : ParticipantGroupStatus()
+        val startedOn: Instant?
+    ) : InDeployment()
 }
