@@ -31,8 +31,10 @@ import ParticipationServiceRequest = dk.cachet.carp.deployments.infrastructure.P
 
 describe( "carp.deployments.core", () => {
     it( "verify module declarations", async () => {
+        const now = Clock.System.now()
         const exampleDevice = new Smartphone( "test", toMap( [] ) )
         const studyInvitation = new StudyInvitation( "Some study" )
+        
         const instances = [
             DeviceDeploymentStatus.Companion,
             [ "DeviceDeploymentStatus", new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ), toSet( [] ) ) ],
@@ -46,11 +48,11 @@ describe( "carp.deployments.core", () => {
                 new DefaultDeviceRegistration( "some role" ),
                 toSet( [] ), toMap( [] ), toSet( [] ), toMap( [] ), toSet( [] ), "" ),
             MasterDeviceDeployment.Companion,
-            [ "StudyDeploymentStatus", new StudyDeploymentStatus.Invited( Clock.System.now(), UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ) ],
-            new StudyDeploymentStatus.Invited( Clock.System.now(), UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
-            new StudyDeploymentStatus.DeployingDevices( Clock.System.now(), UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
-            new StudyDeploymentStatus.DeploymentReady( Clock.System.now(), UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
-            new StudyDeploymentStatus.Stopped( Clock.System.now(), UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+            [ "StudyDeploymentStatus", new StudyDeploymentStatus.Invited( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ) ],
+            new StudyDeploymentStatus.Invited( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+            new StudyDeploymentStatus.DeployingDevices( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+            new StudyDeploymentStatus.DeploymentReady( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+            new StudyDeploymentStatus.Stopped( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null, now ),
             StudyDeploymentStatus.Companion,
             new ActiveParticipationInvitation( new Participation( UUID.Companion.randomUUID() ), studyInvitation, toSet( [] ) ),
             ActiveParticipationInvitation.Companion,

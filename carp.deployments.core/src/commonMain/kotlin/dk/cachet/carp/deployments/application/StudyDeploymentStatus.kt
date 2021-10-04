@@ -71,7 +71,8 @@ sealed class StudyDeploymentStatus
         override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
-        override val startedOn: Instant?
+        override val startedOn: Instant?,
+        val stoppedOn: Instant
     ) : StudyDeploymentStatus()
 
 

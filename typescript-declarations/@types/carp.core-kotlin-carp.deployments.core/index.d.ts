@@ -135,7 +135,9 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             }
             class Stopped extends StudyDeploymentStatus
             {
-                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startedOn: Instant | null  )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startedOn: Instant | null, stoppedOn: Instant  )
+
+                readonly stoppedOn: Instant
             }
         }
     }
