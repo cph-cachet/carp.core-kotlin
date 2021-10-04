@@ -24,7 +24,9 @@ interface DeviceConfiguration
     /**
      * Add a master device which is responsible for aggregating and synchronizing incoming data.
      *
-     * @throws IllegalArgumentException in case a device with the specified role name already exists.
+     * @throws IllegalArgumentException when:
+     * - a device with the specified role name already exists
+     * - [masterDevice] contains invalid default sampling configurations
      * @param masterDevice A description of the master device to add. Its role name should be unique in the protocol.
      * @return True if the [masterDevice] has been added; false if it is already set as a master device.
      */
@@ -36,6 +38,7 @@ interface DeviceConfiguration
      * @throws IllegalArgumentException when:
      *   - a device with the specified role name already exists
      *   - [masterDevice] is not part of the device configuration
+     *   - [device] contains invalid default sampling configurations
      * @param device The device to be connected to a master device. Its role name should be unique in the protocol.
      * @return True if the [device] has been added; false if it is already connected to the specified [masterDevice].
      */
