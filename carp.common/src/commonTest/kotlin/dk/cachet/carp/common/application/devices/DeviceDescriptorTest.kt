@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.BatteryAwareSamplingConfiguration
 import dk.cachet.carp.common.application.sampling.Granularity
 import dk.cachet.carp.common.application.sampling.GranularitySamplingConfiguration
+import dk.cachet.carp.common.application.sampling.NoOptionsSamplingConfiguration
 import kotlin.test.*
 
 
@@ -12,6 +13,28 @@ import kotlin.test.*
  */
 class DeviceDescriptorTest
 {
+    @Test
+    fun validateModifiedDefaultSamplingConfigurations_with_correct_configuration()
+    {
+        val validConfigurations = mapOf(
+            Smartphone.Sensors.GEOLOCATION.dataType.type to Smartphone.Sensors.GEOLOCATION.default
+        )
+        val device = Smartphone( "Irrelevant", validConfigurations )
+
+        device.validateDefaultSamplingConfiguration()
+    }
+
+    @Test
+    fun validateModifiedDefaultSamplingConfigurations_with_invalid_configuration()
+    {
+        val invalidConfigurations = mapOf(
+            Smartphone.Sensors.GEOLOCATION.dataType.type to NoOptionsSamplingConfiguration
+        )
+        val device = Smartphone( "Irrelevant", invalidConfigurations )
+
+        assertFailsWith<IllegalStateException> { device.validateDefaultSamplingConfiguration() }
+    }
+
     @Test
     fun getDefaultSamplingConfiguration_succeeds()
     {

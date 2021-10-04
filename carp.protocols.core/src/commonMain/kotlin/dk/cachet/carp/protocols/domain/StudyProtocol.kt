@@ -127,7 +127,9 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      * Add a [masterDevice] which is responsible for aggregating and synchronizing incoming data.
      * Its role name should be unique in the protocol.
      *
-     * @throws IllegalArgumentException in case a device with the specified role name already exists.
+     * @throws IllegalArgumentException when:
+     *  - a device with the specified role name already exists
+     *  - [masterDevice] contains invalid default sampling configurations
      * @return True if the [masterDevice] has been added; false if it is already set as a master device.
      */
     override fun addMasterDevice( masterDevice: AnyMasterDeviceDescriptor ): Boolean =
@@ -141,6 +143,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      * @throws IllegalArgumentException when:
      *   - a device with the specified role name already exists
      *   - [masterDevice] is not part of the device configuration
+     *   - [device] contains invalid default sampling configurations
      * @return True if the [device] has been added; false if it is already connected to the specified [masterDevice].
      */
     override fun addConnectedDevice( device: AnyDeviceDescriptor, masterDevice: AnyMasterDeviceDescriptor ): Boolean =
