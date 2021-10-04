@@ -2,6 +2,7 @@ package dk.cachet.carp.protocols.domain.configuration
 
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import dk.cachet.carp.common.domain.ExtractUniqueKeyMap
 
 

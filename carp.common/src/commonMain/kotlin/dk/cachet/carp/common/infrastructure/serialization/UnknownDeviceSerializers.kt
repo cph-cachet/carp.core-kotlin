@@ -41,7 +41,7 @@ data class CustomDeviceDescriptor(
         val json = Json( serializer ) { ignoreUnknownKeys = true }
         val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
         roleName = baseMembers.roleName
-        defaultSamplingConfiguration = baseMembers.defaultSamplingConfiguration
+        defaultSamplingConfiguration = baseMembers.getModifiedDefaultSamplingConfigurations()
     }
 
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
@@ -80,7 +80,7 @@ data class CustomMasterDeviceDescriptor(
         val json = Json( serializer ) { ignoreUnknownKeys = true }
         val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
         roleName = baseMembers.roleName
-        defaultSamplingConfiguration = baseMembers.defaultSamplingConfiguration
+        defaultSamplingConfiguration = baseMembers.getModifiedDefaultSamplingConfigurations()
     }
 
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =

@@ -39,21 +39,34 @@ abstract class DeviceDescriptor<
      */
     abstract fun getSupportedDataTypes(): Set<DataType>
 
+    // The following is intentionally `protected` and named `defaultSamplingConfiguration` because:
+    // - at runtime, it makes sense defaults defined at compile time are included (see `getDefaultSamplingConfiguration`)
+    // - when serialized, it doesn't make sense compile time constants are included, and this is the most logical name
+    // - using `@SerialName` to change the serialized name would require all extending classes to do so
+    // - at runtime, `getModifiedDefaultSamplingConfigurations` more clearly conveys the difference
     /**
      * Sampling configurations which override the default configurations for data types available on this device.
      * TODO: Verify whether all configured data types are supported by this device (supported data streams), probably in init.
      *       We might also want to check whether the sampling configuration instances are valid.
      */
-    abstract val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
+    protected abstract val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 
     /**
-     * Get the default sampling configuration to be used for measurements of [dataType].
+     * Get all sampling configurations which override the default configurations for data types available on this device.
+     */
+    fun getModifiedDefaultSamplingConfigurations(): Map<DataType, SamplingConfiguration> =
+        defaultSamplingConfiguration.toMap()
+
+    /**
+     * Get the default sampling configuration to be used for measurements of [dataType],
+     * as determined by a configuration overriding the default ([defaultSamplingConfiguration]), or if not present,
+     * the default for this [dataType] defined by this device's sampling schemes ([getDataTypeSamplingSchemes]).
      * The configuration to use may still be overridden by individual data stream measures.
      */
     fun getDefaultSamplingConfiguration( dataType: DataType ): SamplingConfiguration =
         defaultSamplingConfiguration[ dataType ]
             ?: getDataTypeSamplingSchemes()[ dataType ]?.default
-            ?: throw IllegalArgumentException( "The specified `dataType` is not supported on this device." )
+            ?: throw IllegalArgumentException( "Data type `$dataType` is not supported on this device." )
 
     /**
      * Return sampling schemes for all the sensors available on this device.

@@ -24,7 +24,7 @@ class SmartphoneTest
         }
 
         val type = Smartphone.Sensors.GEOLOCATION.dataType.type
-        val configuration = phone.defaultSamplingConfiguration[ type ] as? BatteryAwareSamplingConfiguration<*>
+        val configuration = phone.getModifiedDefaultSamplingConfigurations()[ type ] as? BatteryAwareSamplingConfiguration<*>
         assertNotNull( configuration )
         val configuredGranularity = configuration.normal as GranularitySamplingConfiguration
         assertEquals( expectedGranularity, configuredGranularity.granularity )
