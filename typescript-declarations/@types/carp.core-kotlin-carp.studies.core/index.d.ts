@@ -158,9 +158,11 @@ declare module 'carp.core-kotlin-carp.studies.core'
                     participants: HashSet<Participant>,
                     invitedOn: Instant,
                     studyDeploymentStatus: StudyDeploymentStatus,
-                    startedOn: Instant )
+                    startedOn: Instant | null,
+                    stoppedOn: Instant )
 
-                readonly startedOn?: Instant
+                readonly startedOn: Instant | null
+                readonly stoppedOn: Instant
             }
         }
 

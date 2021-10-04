@@ -723,9 +723,11 @@ class StudyDeploymentTest
         deployment.deviceDeployed( device, deviceDeployment.lastUpdatedOn )
 
         assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
+        assertNull( deployment.stoppedOn )
 
         deployment.stop()
         assertTrue( deployment.isStopped )
+        assertNotNull( deployment.stoppedOn )
         assertTrue( deployment.getStatus() is StudyDeploymentStatus.Stopped )
         assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Stopped>().count() )
     }
@@ -740,9 +742,11 @@ class StudyDeploymentTest
         deployment.registerDevice( device, device.createRegistration() )
 
         assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeployingDevices )
+        assertNull( deployment.stoppedOn )
 
         deployment.stop()
         assertTrue( deployment.isStopped )
+        assertNotNull( deployment.stoppedOn )
         assertTrue( deployment.getStatus() is StudyDeploymentStatus.Stopped )
         assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Stopped>().count() )
     }

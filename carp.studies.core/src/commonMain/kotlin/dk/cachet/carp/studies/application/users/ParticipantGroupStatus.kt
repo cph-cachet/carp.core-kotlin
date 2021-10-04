@@ -67,7 +67,7 @@ sealed class ParticipantGroupStatus
                     is StudyDeploymentStatus.DeploymentReady ->
                         Running( id, participants, createdOn, deploymentStatus, checkNotNull( startedOn ) )
                     is StudyDeploymentStatus.Stopped ->
-                        Stopped( id, participants, createdOn, deploymentStatus, startedOn )
+                        Stopped( id, participants, createdOn, deploymentStatus, startedOn, deploymentStatus.stoppedOn )
                 }
             }
         }
@@ -126,6 +126,10 @@ sealed class ParticipantGroupStatus
          * The time when the study deployment was ready for the first time (all devices deployed),
          * or null in case this was never the case.
          */
-        val startedOn: Instant?
+        val startedOn: Instant?,
+        /**
+         * The time when the study deployment was stopped.
+         */
+        val stoppedOn: Instant
     ) : InDeployment()
 }

@@ -61,7 +61,7 @@ describe( "carp.studies.core", () => {
             [ "ParticipantGroupStatus$InDeployment", new ParticipantGroupStatus.Invited( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus ) ],
             new ParticipantGroupStatus.Invited( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus ),
             new ParticipantGroupStatus.Running( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus, now ),
-            new ParticipantGroupStatus.Stopped( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus, now ),
+            new ParticipantGroupStatus.Stopped( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus, null, now ),
             ParticipantGroupStatus.Companion,
             new StudyOwner(),
             StudyOwner.Companion,
