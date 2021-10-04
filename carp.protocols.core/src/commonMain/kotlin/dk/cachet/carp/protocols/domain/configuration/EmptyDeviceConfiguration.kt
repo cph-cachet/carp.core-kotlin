@@ -33,6 +33,8 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescripto
 
     override fun addMasterDevice( masterDevice: AnyMasterDeviceDescriptor ): Boolean
     {
+        verifySamplingConfigurations( masterDevice )
+
         val isNewDevice: Boolean = _devices.tryAddIfKeyIsNew( masterDevice )
         _masterDevices.add( masterDevice )
 
@@ -41,6 +43,7 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescripto
 
     override fun addConnectedDevice( device: AnyDeviceDescriptor, masterDevice: AnyMasterDeviceDescriptor ): Boolean
     {
+        verifySamplingConfigurations( device )
         verifyMasterDevice( masterDevice )
 
         // Add device when not yet within this configuration.
@@ -76,7 +79,20 @@ internal class EmptyDeviceConfiguration : AbstractMap<String, AnyDeviceDescripto
     }
 
     /**
-     * Throws [IllegalArgumentException] when master device is not part of this configuration.
+     * Throws [IllegalArgumentException] when [device] contains one or more invalid sampling configurations.
+     */
+    private fun verifySamplingConfigurations( device: AnyDeviceDescriptor ) =
+        try { device.validateDefaultSamplingConfiguration() }
+        catch ( ex: IllegalStateException )
+        {
+            throw IllegalArgumentException(
+                "The device with role name `${device.roleName}` contains an invalid sampling configuration.",
+                ex
+            )
+        }
+
+    /**
+     * Throws [IllegalArgumentException] when [device] is not part of this configuration.
      */
     private fun verifyMasterDevice( device: AnyMasterDeviceDescriptor ) = require( device in devices )
         { "The passed master device with role name \"${device.roleName}\" is not part of this device configuration." }

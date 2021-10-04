@@ -46,6 +46,22 @@ abstract class DeviceDescriptor<
      */
     abstract val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 
+
+    /**
+     * Do nothing in case [defaultSamplingConfiguration] is valid; throw [IllegalStateException] otherwise.
+     * Only known supported data types can be validated; unexpected data types are ignored.
+     */
+    fun validateDefaultSamplingConfiguration()
+    {
+        val canBeValidated = getSupportedDataTypes()
+        for ( (dataType, samplingConfiguration) in defaultSamplingConfiguration.filter { it.key in canBeValidated } )
+        {
+            val samplingScheme = checkNotNull( getDataTypeSamplingSchemes()[ dataType ] )
+            check( samplingScheme.isValid( samplingConfiguration ) )
+                { "The sampling configuration for data type `$dataType` is invalid." }
+        }
+    }
+
     /**
      * Get the default sampling configuration to be used for measurements of [dataType].
      * The configuration to use may still be overridden by individual data stream measures.
