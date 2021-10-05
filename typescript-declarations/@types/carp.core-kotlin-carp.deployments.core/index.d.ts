@@ -131,7 +131,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             }
             class Running extends StudyDeploymentStatus
             {
-                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startedOn: Instant | null  )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, startedOn: Instant )
             }
             class Stopped extends StudyDeploymentStatus
             {

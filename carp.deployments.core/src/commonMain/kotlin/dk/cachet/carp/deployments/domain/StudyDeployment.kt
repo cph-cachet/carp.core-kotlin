@@ -198,7 +198,7 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
         return when {
             isStopped -> StudyDeploymentStatus.Stopped( createdOn, id, devicesStatus, startedOn, stoppedOn!! )
-            allRequiredDevicesDeployed -> StudyDeploymentStatus.Running( createdOn, id, devicesStatus, startedOn )
+            allRequiredDevicesDeployed -> StudyDeploymentStatus.Running( createdOn, id, devicesStatus, startedOn!! )
             anyRegistration -> StudyDeploymentStatus.DeployingDevices( createdOn, id, devicesStatus, startedOn )
             else -> StudyDeploymentStatus.Invited( createdOn, id, devicesStatus, startedOn )
         }
@@ -408,7 +408,11 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
             .eventIf( true ) { Event.DeviceDeployed( device ) }
 
         // Set start time when deployment starts running (last device deployed).
-        if ( startedOn == null && getStatus() is StudyDeploymentStatus.Running )
+        val allRequiredDeviceDeployed = _registrableDevices
+            .map { getDeviceStatus( it.device ) }
+            .filter { it.requiresDeployment }
+            .all { it is DeviceDeploymentStatus.Deployed }
+        if ( startedOn == null && allRequiredDeviceDeployed )
         {
             val now = Clock.System.now()
             startedOn = now
