@@ -1,5 +1,9 @@
 package dk.cachet.carp.deployments.application
 
+import dk.cachet.carp.common.application.devices.Smartphone
+import dk.cachet.carp.common.application.sampling.BatteryAwareSamplingConfiguration
+import dk.cachet.carp.common.application.sampling.Granularity
+import dk.cachet.carp.common.application.sampling.GranularitySamplingConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
@@ -14,7 +18,7 @@ import kotlin.test.*
 class MasterDeviceDeploymentTest
 {
     @Test
-    fun getAllDevicesAndRegistrations_succeeds()
+    fun getRuntimeDeviceInfo_contains_all_devices()
     {
         val master = StubMasterDeviceDescriptor( "Master" )
         val registration = master.createRegistration()
@@ -23,20 +27,51 @@ class MasterDeviceDeploymentTest
         // Deployment with registered master device and unregistered connected device.
         val deployment = MasterDeviceDeployment( master, registration, setOf( connected ) )
 
-        val devices = deployment.getAllDevicesAndRegistrations()
+        val devices = deployment.getRuntimeDeviceInfo()
         assertEquals( 2, devices.size )
+        assertEquals( 1, devices.count { it.descriptor == master && !it.isConnectedDevice } )
+        assertEquals( 1, devices.count { it.descriptor == connected && it.isConnectedDevice } )
+    }
+
+    @Test
+    fun getRuntimeDeviceInfo_contains_default_sampling_configuration()
+    {
+        val master = StubMasterDeviceDescriptor( "Master" )
+        val registration = master.createRegistration()
+        val deployment = MasterDeviceDeployment( master, registration )
+
+        val deviceInfo = deployment.getRuntimeDeviceInfo()
+            .first { it.descriptor == master }
         assertEquals(
-            MasterDeviceDeployment.Device( master, false, registration ),
-            devices.firstOrNull { it.descriptor == master }
-        )
-        assertEquals(
-            MasterDeviceDeployment.Device( connected, true, null ),
-            devices.firstOrNull { it.descriptor == connected }
+            StubMasterDeviceDescriptor.Sensors.map { it.key to it.value.default }.toMap(),
+            deviceInfo.defaultSamplingConfiguration
         )
     }
 
     @Test
-    fun getTasksPerDevice_succeeds()
+    fun getRuntimeDeviceInfo_contains_overridden_sampling_configuration()
+    {
+        val typeMetaData = Smartphone.Sensors.GEOLOCATION
+        val dataType = typeMetaData.dataType.type
+        val configurationOverride = BatteryAwareSamplingConfiguration(
+            GranularitySamplingConfiguration( Granularity.Coarse ),
+            GranularitySamplingConfiguration( Granularity.Coarse ),
+            GranularitySamplingConfiguration( Granularity.Coarse )
+        )
+        val device = Smartphone( "Irrelevant", mapOf( dataType to configurationOverride ) )
+        val registration = device.createRegistration()
+        val deployment = MasterDeviceDeployment( device, registration )
+
+        val deviceInfo = deployment.getRuntimeDeviceInfo()
+            .first { it.descriptor == device }
+        assertEquals(
+            configurationOverride,
+            deviceInfo.defaultSamplingConfiguration[ dataType ]
+        )
+    }
+
+    @Test
+    fun getTasksPerDevice_contains_all_tasks()
     {
         val device = StubMasterDeviceDescriptor( "Master" )
         val registration = device.createRegistration()
@@ -61,16 +96,8 @@ class MasterDeviceDeploymentTest
         val deviceTasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 
         assertEquals( 2, deviceTasks.size )
-        val expectedMasterDeviceTasks = MasterDeviceDeployment.DeviceTasks(
-            device = MasterDeviceDeployment.Device( device, false, registration ),
-            tasks = setOf( task )
-        )
-        val expectedConnectedDeviceTasks = MasterDeviceDeployment.DeviceTasks(
-            device = MasterDeviceDeployment.Device( connected, true, connectedRegistration ),
-            tasks = setOf( task )
-        )
-        assertEquals( expectedMasterDeviceTasks, deviceTasks.first { it.device.descriptor == device } )
-        assertEquals( expectedConnectedDeviceTasks, deviceTasks.first { it.device.descriptor == connected } )
+        assertEquals( setOf( task ), deviceTasks.first { it.device.descriptor == device }.tasks )
+        assertEquals( setOf( task ), deviceTasks.first { it.device.descriptor == connected }.tasks )
     }
 
 
@@ -84,11 +111,7 @@ class MasterDeviceDeploymentTest
         val tasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 
         assertEquals( 1, tasks.size )
-        val expectedDeviceTasks = MasterDeviceDeployment.DeviceTasks(
-            device = MasterDeviceDeployment.Device( device, false, registration ),
-            tasks = emptySet()
-        )
-        assertEquals( expectedDeviceTasks, tasks.single() )
+        assertEquals( emptySet(), tasks.single().tasks )
     }
 
     @Test
@@ -115,10 +138,7 @@ class MasterDeviceDeploymentTest
         val tasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
 
         assertEquals( 1, tasks.size ) // The other master device (master2) is not included.
-        val expectedMasterDeviceTasks = MasterDeviceDeployment.DeviceTasks(
-            device = MasterDeviceDeployment.Device( master1, false, master1Registration ),
-            tasks = setOf( task )
-        )
-        assertEquals( expectedMasterDeviceTasks, tasks.single() )
+        assertEquals( master1, tasks.single().device.descriptor )
+        assertEquals( setOf( task ), tasks.single().tasks )
     }
 }
