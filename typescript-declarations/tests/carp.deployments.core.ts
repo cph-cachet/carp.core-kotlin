@@ -42,7 +42,7 @@ describe( "carp.deployments.core", () => {
             new DeviceDeploymentStatus.Registered( null, true, toSet( [] ), toSet( [] ) ),
             new DeviceDeploymentStatus.Deployed( null ),
             new DeviceDeploymentStatus.NeedsRedeployment( null, toSet( [] ), toSet( [] ) ),
-            [ "NotDeployed", new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ), toSet( [] ) ) ],
+            [ "DeviceDeploymentStatus$NotDeployed", new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ), toSet( [] ) ) ],
             new MasterDeviceDeployment(
                 exampleDevice,
                 new DefaultDeviceRegistration( "some role" ),
