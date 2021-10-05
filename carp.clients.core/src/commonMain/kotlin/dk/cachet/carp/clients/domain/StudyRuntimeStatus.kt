@@ -81,11 +81,9 @@ sealed class StudyRuntimeStatus
 
 
 private fun getDevicesRegistrationStatus( deployment: MasterDeviceDeployment ) = deployment
-    .getAllDevicesAndRegistrations()
+    .getRuntimeDeviceInfo()
     .map {
         val registration = it.registration
-        if ( registration == null ) DeviceRegistrationStatus.Unregistered( it.descriptor )
-        else DeviceRegistrationStatus.Registered( it.descriptor, registration )
-    }
-    .map { it.device to it }
-    .toMap()
+        if (registration == null) DeviceRegistrationStatus.Unregistered(it.descriptor)
+        else DeviceRegistrationStatus.Registered(it.descriptor, registration)
+    }.associateBy { it.device }

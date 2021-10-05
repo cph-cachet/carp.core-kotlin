@@ -45,11 +45,9 @@ class DataListener( private val dataCollectorFactory: DeviceDataCollectorFactory
         return try
         {
             connectedDataCollectors
-                .getOrPut( connectedDeviceType, { mutableMapOf() } )
-                .getOrPut(
-                    registration,
-                    { dataCollectorFactory.createConnectedDataCollector( connectedDeviceType, registration ) }
-                )
+                .getOrPut( connectedDeviceType ) { mutableMapOf() }
+                .getOrPut( registration )
+                    { dataCollectorFactory.createConnectedDataCollector(connectedDeviceType, registration) }
         }
         catch ( _: UnsupportedOperationException ) { null }
     }

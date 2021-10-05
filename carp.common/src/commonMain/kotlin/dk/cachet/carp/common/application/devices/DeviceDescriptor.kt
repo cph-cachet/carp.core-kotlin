@@ -63,21 +63,12 @@ abstract class DeviceDescriptor<
     }
 
     /**
-     * Get the default sampling configuration to be used for measurements of [dataType].
-     * The configuration to use may still be overridden by individual data stream measures.
-     */
-    fun getDefaultSamplingConfiguration( dataType: DataType ): SamplingConfiguration =
-        defaultSamplingConfiguration[ dataType ]
-            ?: getDataTypeSamplingSchemes()[ dataType ]?.default
-            ?: throw IllegalArgumentException( "The specified `dataType` is not supported on this device." )
-
-    /**
      * Return sampling schemes for all the sensors available on this device.
      *
      * Implementations of [DeviceDescriptor] should simply return the mandatory inner object
      * `object Sensors : DataTypeSamplingSchemeMap()` here.
      */
-    protected abstract fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap
+    abstract fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap
 
     protected abstract fun createDeviceRegistrationBuilder(): TRegistrationBuilder
 
