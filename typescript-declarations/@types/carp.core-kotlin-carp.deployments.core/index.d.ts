@@ -32,52 +32,39 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
         namespace DeviceDeploymentStatus
         {
-            interface NotDeployed
+            abstract class NotDeployed
             {
-                readonly requiresDeployment: Boolean
                 readonly isReadyForDeployment: Boolean
                 readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
 
             }
-            class Unregistered extends DeviceDeploymentStatus implements NotDeployed
+            class Unregistered extends NotDeployed
             {
                 constructor(
                     device: any,
                     requiresDeployment: Boolean,
                     remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
                     remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
-
-                readonly isReadyForDeployment: Boolean
-                readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
-                readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
-            class Registered extends DeviceDeploymentStatus implements NotDeployed
+            class Registered extends NotDeployed
             {
                 constructor(
                     device: any,
                     requiresDeployment: Boolean,
                     remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
                     remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
-
-                readonly isReadyForDeployment: Boolean
-                readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
-                readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
             class Deployed extends DeviceDeploymentStatus 
             {
                 constructor( device: any )
             }
-            class NeedsRedeployment extends DeviceDeploymentStatus implements NotDeployed
+            class NeedsRedeployment extends NotDeployed
             {
                 constructor(
                     device: any,
                     remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
                     remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
-
-                readonly isReadyForDeployment: Boolean
-                readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
-                readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
         }
 
