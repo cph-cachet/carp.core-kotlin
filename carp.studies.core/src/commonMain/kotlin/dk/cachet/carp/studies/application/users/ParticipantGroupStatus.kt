@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 
 /**
  * A group of one or more [participants] which is first [Staged] to later be [Invited] to a [StudyDeployment].
- * Once [Invited], the participant group is [InDeployment] and will get the state [Running] once the deployment is ready,
+ * Once [Invited], the participant group is [InDeployment] and will get the state [Running] once the deployment is running,
  * until the deployment is [Stopped].
  */
 @Serializable
@@ -64,7 +64,7 @@ sealed class ParticipantGroupStatus
                         // If deployment was ready at one point (`startedOn`), consider the study 'Running'.
                         if ( startedOn == null ) Invited( id, participants, createdOn, deploymentStatus )
                         else Running( id, participants, createdOn, deploymentStatus, startedOn )
-                    is StudyDeploymentStatus.DeploymentReady ->
+                    is StudyDeploymentStatus.Running ->
                         Running( id, participants, createdOn, deploymentStatus, checkNotNull( startedOn ) )
                     is StudyDeploymentStatus.Stopped ->
                         Stopped( id, participants, createdOn, deploymentStatus, startedOn, deploymentStatus.stoppedOn )
@@ -97,7 +97,7 @@ sealed class ParticipantGroupStatus
     ) : InDeployment()
 
     /**
-     * The study deployment is [StudyDeploymentStatus.DeploymentReady],
+     * The study deployment is [StudyDeploymentStatus.Running],
      * of which more details are available in [studyDeploymentStatus].
      */
     @Serializable
@@ -107,7 +107,7 @@ sealed class ParticipantGroupStatus
         override val invitedOn: Instant,
         override val studyDeploymentStatus: StudyDeploymentStatus,
         /**
-         * The time when the study deployment was ready for the first time (all devices deployed).
+         * The time when the study deployment started running, i.e., when all devices were deployed for the first time.
          */
         val startedOn: Instant
     ) : InDeployment()

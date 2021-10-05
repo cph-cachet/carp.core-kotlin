@@ -172,7 +172,7 @@ describe( "carp.studies.core", () => {
         it( "can serialize ParticipantGroupStatus", () => {
             const deploymentId = UUID.Companion.randomUUID()
             const now = Clock.System.now()
-            const deploymentStatus = new StudyDeploymentStatus.DeploymentReady( now, deploymentId, new ArrayList( [] ), now )
+            const deploymentStatus = new StudyDeploymentStatus.Running( now, deploymentId, new ArrayList( [] ), now )
             const participants = toSet( [ new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ) ] )
             const group = new ParticipantGroupStatus.Invited( deploymentId, participants, now, deploymentStatus )
 

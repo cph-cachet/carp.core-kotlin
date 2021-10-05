@@ -420,7 +420,7 @@ class StudyDeploymentTest
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
         deployment.deviceDeployed( master, deviceDeployment.lastUpdatedOn )
         val afterDeployStatus = deployment.getStatus()
-        assertTrue( afterDeployStatus is StudyDeploymentStatus.DeploymentReady )
+        assertTrue( afterDeployStatus is StudyDeploymentStatus.Running )
         val deviceStatus = afterDeployStatus.getDeviceStatus( master )
         assertTrue( deviceStatus is DeviceDeploymentStatus.Deployed )
         assertEquals( 0, afterDeployStatus.getRemainingDevicesReadyToDeploy().count() )
@@ -445,10 +445,10 @@ class StudyDeploymentTest
         deployment.deviceDeployed( master1, master1Deployment.lastUpdatedOn )
         assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeployingDevices )
 
-        // After deployment of the second master device, deployment is ready.
+        // After deployment of the second master device, deployment is running.
         val master2Deployment = deployment.getDeviceDeploymentFor( master2 )
         deployment.deviceDeployed( master2, master2Deployment.lastUpdatedOn )
-        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.Running )
 
         // Unregistering one device returns deployment to 'deploying'.
         deployment.unregisterDevice( master1 )
@@ -722,7 +722,7 @@ class StudyDeploymentTest
         val deviceDeployment = deployment.getDeviceDeploymentFor( device )
         deployment.deviceDeployed( device, deviceDeployment.lastUpdatedOn )
 
-        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.Running )
         assertNull( deployment.stoppedOn )
 
         deployment.stop()

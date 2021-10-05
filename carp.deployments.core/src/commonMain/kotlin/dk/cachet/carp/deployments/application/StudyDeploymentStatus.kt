@@ -53,10 +53,11 @@ sealed class StudyDeploymentStatus
     ) : StudyDeploymentStatus()
 
     /**
-     * All master devices have been successfully deployed.
+     * All master devices have been successfully deployed and data collection has started
+     * on the time specified by [startedOn].
      */
     @Serializable
-    data class DeploymentReady(
+    data class Running(
         override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,

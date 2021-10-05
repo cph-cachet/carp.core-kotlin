@@ -51,7 +51,7 @@ describe( "carp.deployments.core", () => {
             [ "StudyDeploymentStatus", new StudyDeploymentStatus.Invited( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ) ],
             new StudyDeploymentStatus.Invited( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
             new StudyDeploymentStatus.DeployingDevices( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
-            new StudyDeploymentStatus.DeploymentReady( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
+            new StudyDeploymentStatus.Running( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
             new StudyDeploymentStatus.Stopped( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null, now ),
             StudyDeploymentStatus.Companion,
             new ActiveParticipationInvitation( new Participation( UUID.Companion.randomUUID() ), studyInvitation, toSet( [] ) ),

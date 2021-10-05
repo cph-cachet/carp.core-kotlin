@@ -214,8 +214,8 @@ class DeploymentServiceHost(
 
         val deploymentStatus = deployment.getStatus()
 
-        // Once the deployment is ready, open the required data streams.
-        if ( deploymentStatus is StudyDeploymentStatus.DeploymentReady )
+        // Once the deployment is running, open the required data streams.
+        if ( deploymentStatus is StudyDeploymentStatus.Running )
         {
             dataStreamService.openDataStreams( deployment.requiredDataStreams )
         }
@@ -236,7 +236,7 @@ class DeploymentServiceHost(
         if ( !deployment.isStopped )
         {
             // Close all data streams used by the deployment.
-            if ( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
+            if ( deployment.getStatus() is StudyDeploymentStatus.Running )
             {
                 dataStreamService.closeDataStreams( setOf( studyDeploymentId ) )
             }
