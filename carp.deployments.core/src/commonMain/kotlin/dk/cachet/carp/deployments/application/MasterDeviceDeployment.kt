@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.triggers.TaskControl
@@ -117,12 +118,17 @@ data class MasterDeviceDeployment(
             )
         )
 
-    private fun getDefaultSamplingConfigurations( device: AnyDeviceDescriptor ): Map<DataType, SamplingConfiguration> =
-        device.getDataTypeSamplingSchemes().map { (dataType, samplingScheme) ->
-            val configuration = device.defaultSamplingConfiguration[ dataType ] ?: samplingScheme.default
-            dataType to configuration
+    private fun getDefaultSamplingConfigurations( device: AnyDeviceDescriptor ): Map<DataType, SamplingConfiguration>
+    {
+        val samplingSchemes: DataTypeSamplingSchemeMap = device.getDataTypeSamplingSchemes()
+
+        // Include configurations for unexpected data types in `defaultSamplingConfiguration` for which no scheme exists.
+        val dataTypes: Set<DataType> = samplingSchemes.keys + device.defaultSamplingConfiguration.keys
+
+        return dataTypes.associateWith { dataType ->
+            device.defaultSamplingConfiguration[ dataType ] ?: samplingSchemes[ dataType ]!!.default
         }
-        .toMap()
+    }
 
     private fun getDeviceTasks( device: AnyDeviceDescriptor ): Set<TaskDescriptor> = taskControls
         .filter { it.destinationDeviceRoleName == device.roleName }

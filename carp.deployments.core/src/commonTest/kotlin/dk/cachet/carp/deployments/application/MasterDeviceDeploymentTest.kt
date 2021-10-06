@@ -1,9 +1,11 @@
 package dk.cachet.carp.deployments.application
 
+import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.sampling.BatteryAwareSamplingConfiguration
 import dk.cachet.carp.common.application.sampling.Granularity
 import dk.cachet.carp.common.application.sampling.GranularitySamplingConfiguration
+import dk.cachet.carp.common.application.sampling.NoOptionsSamplingConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
@@ -68,6 +70,20 @@ class MasterDeviceDeploymentTest
             configurationOverride,
             deviceInfo.defaultSamplingConfiguration[ dataType ]
         )
+    }
+
+    @Test
+    fun getRuntimeDeviceInfo_contains_unexpected_data_type_sampling_configurations()
+    {
+        val unexpectedType = DataType( "something", "unexpected" )
+        val unexpectedTypeConfiguration = NoOptionsSamplingConfiguration
+        val master = StubMasterDeviceDescriptor( "Master", mapOf( unexpectedType to unexpectedTypeConfiguration ) )
+        val registration = master.createRegistration()
+        val deployment = MasterDeviceDeployment( master, registration )
+
+        val deviceInfo = deployment.getRuntimeDeviceInfo()
+            .first { it.descriptor == master }
+        assertEquals( unexpectedTypeConfiguration, deviceInfo.defaultSamplingConfiguration[ unexpectedType ] )
     }
 
     @Test
