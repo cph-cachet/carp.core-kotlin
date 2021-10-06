@@ -71,13 +71,13 @@ data class MasterDeviceDeployment(
          * The sampling configuration per data type to use for device when no custom sampling configuration is provided
          * by an ongoing measure.
          */
-        val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
+        val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>,
+        /**
+         * The set of tasks which may be sent to this device over the course of the deployment,
+         * or an empty set in case there are none.
+         */
+        val tasks: Set<TaskDescriptor>
     )
-
-    /**
-     * The set of [tasks] which may need to be executed on a master [device], or a connected [device], during a deployment.
-     */
-    data class DeviceTasks( val device: RuntimeDeviceInfo, val tasks: Set<TaskDescriptor> )
 
 
     /**
@@ -102,7 +102,8 @@ data class MasterDeviceDeployment(
                 it,
                 isConnectedDevice = true,
                 connectedDeviceConfigurations[ it.roleName ],
-                getDefaultSamplingConfigurations( it )
+                getDefaultSamplingConfigurations( it ),
+                getDeviceTasks( it )
             )
         }
         .plus(
@@ -111,7 +112,8 @@ data class MasterDeviceDeployment(
                 deviceDescriptor,
                 isConnectedDevice = false,
                 configuration,
-                getDefaultSamplingConfigurations( deviceDescriptor )
+                getDefaultSamplingConfigurations( deviceDescriptor ),
+                getDeviceTasks( deviceDescriptor )
             )
         )
 
@@ -122,16 +124,8 @@ data class MasterDeviceDeployment(
         }
         .toMap()
 
-    /**
-     * Retrieves for this master device and all connected devices
-     * the set of tasks which may be sent to them over the course of the deployment, or an empty set in case there are none.
-     * Tasks which target other master devices are not included in this collection.
-     */
-    fun getTasksPerDevice(): List<DeviceTasks> = getRuntimeDeviceInfo()
-        .map { device ->
-            val tasks = taskControls
-                .filter { it.destinationDeviceRoleName == device.descriptor.roleName }
-                .map { triggered -> tasks.first { it.name == triggered.taskName } }
-            DeviceTasks( device, tasks.toSet() )
-        }
+    private fun getDeviceTasks( device: AnyDeviceDescriptor ): Set<TaskDescriptor> = taskControls
+        .filter { it.destinationDeviceRoleName == device.roleName }
+        .map { triggered -> tasks.first { it.name == triggered.taskName } }
+        .toSet()
 }

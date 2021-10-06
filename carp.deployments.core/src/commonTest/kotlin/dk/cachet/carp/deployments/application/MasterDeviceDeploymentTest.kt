@@ -71,7 +71,7 @@ class MasterDeviceDeploymentTest
     }
 
     @Test
-    fun getTasksPerDevice_contains_all_tasks()
+    fun getRuntimeDeviceInfo_contains_all_tasks()
     {
         val device = StubMasterDeviceDescriptor( "Master" )
         val registration = device.createRegistration()
@@ -93,29 +93,29 @@ class MasterDeviceDeploymentTest
                 TaskControl( 1, task.name, connected.roleName, TaskControl.Control.Start )
             )
         )
-        val deviceTasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
+        val devices: List<MasterDeviceDeployment.RuntimeDeviceInfo> = deployment.getRuntimeDeviceInfo()
 
-        assertEquals( 2, deviceTasks.size )
-        assertEquals( setOf( task ), deviceTasks.first { it.device.descriptor == device }.tasks )
-        assertEquals( setOf( task ), deviceTasks.first { it.device.descriptor == connected }.tasks )
+        assertEquals( 2, devices.size )
+        assertEquals( setOf( task ), devices.first { it.descriptor == device }.tasks )
+        assertEquals( setOf( task ), devices.first { it.descriptor == connected }.tasks )
     }
 
 
     @Test
-    fun getTasksPerDevice_includes_devices_with_no_tasks()
+    fun getRuntimeDeviceInfo_includes_devices_with_no_tasks()
     {
         val device = StubMasterDeviceDescriptor( "Master" )
         val registration = device.createRegistration()
 
         val deployment = MasterDeviceDeployment( deviceDescriptor = device, configuration = registration )
-        val tasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
+        val devices: List<MasterDeviceDeployment.RuntimeDeviceInfo> = deployment.getRuntimeDeviceInfo()
 
-        assertEquals( 1, tasks.size )
-        assertEquals( emptySet(), tasks.single().tasks )
+        assertEquals( 1, devices.size )
+        assertEquals( emptySet(), devices.single().tasks )
     }
 
     @Test
-    fun getTaskPerDevice_does_not_include_tasks_for_other_master_devices()
+    fun getRuntimeDeviceInfo_does_not_include_tasks_for_other_master_devices()
     {
         val master1 = StubMasterDeviceDescriptor( "Master 1" )
         val task = StubTaskDescriptor()
@@ -135,10 +135,10 @@ class MasterDeviceDeploymentTest
                 TaskControl( 0, "Task on Master 2", master2.roleName, TaskControl.Control.Start )
             )
         )
-        val tasks: List<MasterDeviceDeployment.DeviceTasks> = deployment.getTasksPerDevice()
+        val devices: List<MasterDeviceDeployment.RuntimeDeviceInfo> = deployment.getRuntimeDeviceInfo()
 
-        assertEquals( 1, tasks.size ) // The other master device (master2) is not included.
-        assertEquals( master1, tasks.single().device.descriptor )
-        assertEquals( setOf( task ), tasks.single().tasks )
+        assertEquals( 1, devices.size ) // The other master device (master2) is not included.
+        assertEquals( master1, devices.single().descriptor )
+        assertEquals( setOf( task ), devices.single().tasks )
     }
 }
