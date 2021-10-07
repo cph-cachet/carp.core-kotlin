@@ -492,9 +492,9 @@ class StudyDeploymentTest
         protocol.addTaskControl( ignoredMaster.atStartOfStudy().start( masterTask, ignoredMaster ) )
 
         val deviceDeployment: MasterDeviceDeployment = deployment.getDeviceDeploymentFor( master )
-        assertEquals( "Registered master", deviceDeployment.configuration.deviceId )
+        assertEquals( "Registered master", deviceDeployment.registration.deviceId )
         assertEquals( protocol.getConnectedDevices( master ).toSet(), deviceDeployment.connectedDevices )
-        assertEquals( 1, deviceDeployment.connectedDeviceConfigurations.count() ) // One preregistered connected devices.
+        assertEquals( 1, deviceDeployment.connectedDeviceRegistrations.count() )
         assertEquals( protocol.applicationData, deviceDeployment.applicationData )
 
         // Device deployment lists both tasks, even if one is destined for the connected device.
@@ -521,8 +521,8 @@ class StudyDeploymentTest
         deployment.registerDevice( connected, DefaultDeviceRegistration( "42" ) )
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
 
-        assertEquals( "Connected", deviceDeployment.connectedDeviceConfigurations.keys.single() )
-        assertEquals( "42", deviceDeployment.connectedDeviceConfigurations.getValue( "Connected" ).deviceId )
+        assertEquals( "Connected", deviceDeployment.connectedDeviceRegistrations.keys.single() )
+        assertEquals( "42", deviceDeployment.connectedDeviceRegistrations.getValue( "Connected" ).deviceId )
     }
 
     @Test
@@ -535,7 +535,7 @@ class StudyDeploymentTest
 
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
 
-        assertTrue( deviceDeployment.connectedDeviceConfigurations.isEmpty() )
+        assertTrue( deviceDeployment.connectedDeviceRegistrations.isEmpty() )
     }
 
     @Test

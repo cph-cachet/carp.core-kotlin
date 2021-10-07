@@ -43,7 +43,7 @@ abstract class DeploymentServiceTest
         deploymentService.registerDevice( deploymentId, masterDevice.roleName, masterDevice.createRegistration() )
 
         val deployment = deploymentService.getDeviceDeploymentFor( deploymentId, masterDevice.roleName )
-        assertEquals( preregistration, deployment.connectedDeviceConfigurations[ connectedDevice.roleName ] )
+        assertEquals( preregistration, deployment.connectedDeviceRegistrations[ connectedDevice.roleName ] )
     }
 
     @Test

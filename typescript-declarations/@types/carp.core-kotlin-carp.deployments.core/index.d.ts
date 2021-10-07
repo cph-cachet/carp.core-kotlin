@@ -73,7 +73,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         {
             constructor(
                 deviceDescriptor: any,
-                configuration: DeviceRegistration,
+                registration: DeviceRegistration,
                 connectedDevices?: HashSet<any>,
                 connectedDeviceConfigurations?: HashMap<string, DeviceRegistration>,
                 tasks?: HashSet<any>,
@@ -84,9 +84,9 @@ declare module 'carp.core-kotlin-carp.deployments.core'
                 static get Companion(): MasterDeviceDeployment$Companion
 
                 readonly deviceDescriptor: any
-                readonly configuration: DeviceRegistration
+                readonly registration: DeviceRegistration
                 readonly connectedDevices: HashSet<any>
-                readonly connectedDeviceConfigurations: HashMap<string, DeviceRegistration>
+                readonly connectedDeviceRegistrations: HashMap<string, DeviceRegistration>
                 readonly tasks: HashSet<any>
                 readonly triggers: HashMap<number, any>
                 readonly taskControls: HashSet<any>

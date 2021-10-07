@@ -99,9 +99,9 @@ class MasterDeviceDeploymentTest
 
         val deployment = MasterDeviceDeployment(
             deviceDescriptor = device,
-            configuration = registration,
+            registration = registration,
             connectedDevices = setOf( connected ),
-            connectedDeviceConfigurations = mapOf( connected.roleName to connectedRegistration ),
+            connectedDeviceRegistrations = mapOf( connected.roleName to connectedRegistration ),
             tasks = setOf( task ),
             triggers = mapOf( 0 to masterTrigger, 1 to connectedTrigger ),
             taskControls = setOf(
@@ -123,7 +123,7 @@ class MasterDeviceDeploymentTest
         val device = StubMasterDeviceDescriptor( "Master" )
         val registration = device.createRegistration()
 
-        val deployment = MasterDeviceDeployment( deviceDescriptor = device, configuration = registration )
+        val deployment = MasterDeviceDeployment( device, registration )
         val devices: List<MasterDeviceDeployment.RuntimeDeviceInfo> = deployment.getRuntimeDeviceInfo()
 
         assertEquals( 1, devices.size )
@@ -141,9 +141,9 @@ class MasterDeviceDeploymentTest
 
         val deployment = MasterDeviceDeployment(
             deviceDescriptor = master1,
-            configuration = master1Registration,
+            registration = master1Registration,
             connectedDevices = emptySet(),
-            connectedDeviceConfigurations = emptyMap(),
+            connectedDeviceRegistrations = emptyMap(),
             tasks = setOf( task ),
             triggers = mapOf( 0 to master1Trigger ),
             taskControls = setOf(

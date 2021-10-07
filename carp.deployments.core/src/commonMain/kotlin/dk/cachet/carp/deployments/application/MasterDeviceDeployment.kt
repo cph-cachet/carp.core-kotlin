@@ -25,17 +25,17 @@ data class MasterDeviceDeployment(
      */
     val deviceDescriptor: AnyMasterDeviceDescriptor,
     /**
-     * Configuration for this master device.
+     * Registrations for this master device.
      */
-    val configuration: DeviceRegistration,
+    val registration: DeviceRegistration,
     /**
      * The devices this device needs to connect to.
      */
     val connectedDevices: Set<AnyDeviceDescriptor> = emptySet(),
     /**
-     * Preregistration of connected devices, including configuration such as connection properties, stored per role name.
+     * Preregistration of connected devices, including information such as connection properties, stored per role name.
      */
-    val connectedDeviceConfigurations: Map<String, DeviceRegistration> = emptyMap(),
+    val connectedDeviceRegistrations: Map<String, DeviceRegistration> = emptyMap(),
     /**
      * All tasks which should be able to be executed on this or connected devices.
      */
@@ -89,8 +89,8 @@ data class MasterDeviceDeployment(
         // TODO: Remove this workaround once JS serialization bug is fixed:
         //  https://github.com/Kotlin/kotlinx.serialization/issues/716
         @Suppress( "SENSELESS_COMPARISON" )
-        if ( connectedDeviceConfigurations == null || configuration == null ) Clock.System.now()
-        else connectedDeviceConfigurations.values.plus( configuration )
+        if ( connectedDeviceRegistrations == null || registration == null ) Clock.System.now()
+        else connectedDeviceRegistrations.values.plus( registration )
             .maxOf { it.registrationCreatedOn }
 
 
@@ -102,7 +102,7 @@ data class MasterDeviceDeployment(
             RuntimeDeviceInfo(
                 it,
                 isConnectedDevice = true,
-                connectedDeviceConfigurations[ it.roleName ],
+                connectedDeviceRegistrations[ it.roleName ],
                 getDefaultSamplingConfigurations( it ),
                 getDeviceTasks( it )
             )
@@ -112,7 +112,7 @@ data class MasterDeviceDeployment(
             RuntimeDeviceInfo(
                 deviceDescriptor,
                 isConnectedDevice = false,
-                configuration,
+                registration,
                 getDefaultSamplingConfigurations( deviceDescriptor ),
                 getDeviceTasks( deviceDescriptor )
             )
