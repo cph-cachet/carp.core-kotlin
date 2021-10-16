@@ -38,7 +38,7 @@ class InMemoryClientRepository : ClientRepository
     {
         val deploymentId = studyRuntime.studyDeploymentId
         val deviceRoleName = studyRuntime.id.deviceRoleName
-        require( studyRuntimes.none { it.studyDeploymentId == deploymentId && it.device.roleName == deviceRoleName } )
+        require( studyRuntimes.none { it.studyDeploymentId == deploymentId && it.deviceRoleName == deviceRoleName } )
 
         studyRuntimes.add( studyRuntime.getSnapshot() )
     }
@@ -48,7 +48,7 @@ class InMemoryClientRepository : ClientRepository
      */
     override suspend fun getStudyRuntimeBy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntime? =
         studyRuntimes
-            .filter { it.studyDeploymentId == studyDeploymentId && it.device.roleName == deviceRoleName }
+            .filter { it.studyDeploymentId == studyDeploymentId && it.deviceRoleName == deviceRoleName }
             .map { StudyRuntime.fromSnapshot( it ) }
             .firstOrNull()
 
@@ -85,6 +85,6 @@ class InMemoryClientRepository : ClientRepository
     private fun findRuntimeSnapshot( runtime: StudyRuntime ): StudyRuntimeSnapshot? =
         studyRuntimes.firstOrNull {
             it.studyDeploymentId == runtime.studyDeploymentId &&
-            it.device.roleName == runtime.id.deviceRoleName
+            it.deviceRoleName == runtime.id.deviceRoleName
         }
 }

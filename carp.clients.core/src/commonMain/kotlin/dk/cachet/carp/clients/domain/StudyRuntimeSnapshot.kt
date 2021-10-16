@@ -2,7 +2,6 @@ package dk.cachet.carp.clients.domain
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 import kotlinx.datetime.Instant
@@ -12,8 +11,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StudyRuntimeSnapshot(
     val studyDeploymentId: UUID,
+    val deviceRoleName: String,
     override val createdOn: Instant,
-    val device: AnyMasterDeviceDescriptor,
     val isDeployed: Boolean,
     val deploymentInformation: MasterDeviceDeployment?,
     val remainingDevicesToRegister: Set<AnyDeviceDescriptor> = emptySet(),
@@ -28,8 +27,8 @@ data class StudyRuntimeSnapshot(
 
             return StudyRuntimeSnapshot(
                 studyRuntime.studyDeploymentId,
+                studyRuntime.deviceRoleName,
                 studyRuntime.createdOn,
-                studyRuntime.device,
                 studyRuntime.isDeployed,
                 (status as? StudyRuntimeStatus.DeploymentReceived)?.deploymentInformation,
                 (status as? StudyRuntimeStatus.RegisteringDevices)?.remainingDevicesToRegister?.toSet()

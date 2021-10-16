@@ -4,6 +4,7 @@ import dk.cachet.carp.clients.domain.data.ConnectedDeviceDataCollector
 import dk.cachet.carp.clients.domain.data.DataListener
 import dk.cachet.carp.clients.domain.data.DeviceDataCollector
 import dk.cachet.carp.clients.domain.data.DeviceDataCollectorFactory
+import dk.cachet.carp.clients.domain.study.StudyDeploymentProxy
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistrationBuilder
@@ -35,6 +36,7 @@ abstract class ClientManager<
 )
 {
     private val dataListener: DataListener = DataListener( dataCollectorFactory )
+    private val studyDeployment: StudyDeploymentProxy = StudyDeploymentProxy( deploymentService, dataListener )
 
 
     /**
@@ -85,13 +87,11 @@ abstract class ClientManager<
         val alreadyAdded = repository.getStudyRuntimeBy( studyDeploymentId, deviceRoleName ) != null
         require( !alreadyAdded ) { "A study with the same study deployment ID and device role name has already been added." }
 
-        // Create the study runtime.
+        // Create the study runtime and try to deploy.
         // IllegalArgumentException's will be thrown here when deployment or role name does not exist, or device is already registered.
+        val runtime = StudyRuntime( studyDeploymentId, deviceRoleName )
         val deviceRegistration = repository.getDeviceRegistration()!!
-        val runtime = StudyRuntime.initialize(
-            deploymentService, dataListener,
-            studyDeploymentId, deviceRoleName, deviceRegistration
-        )
+        studyDeployment.tryDeployment( runtime, deviceRegistration )
 
         repository.addStudyRuntime( runtime )
         return runtime.getStatus()
@@ -112,7 +112,9 @@ abstract class ClientManager<
         val status = runtime.getStatus()
         if ( status is StudyRuntimeStatus.Deployed ) return status
 
-        val newStatus = runtime.tryDeployment( deploymentService, dataListener )
+        val registration = repository.getDeviceRegistration()!!
+        studyDeployment.tryDeployment( runtime, registration )
+        val newStatus = runtime.getStatus()
         if ( status != newStatus )
         {
             repository.updateStudyRuntime( runtime )
@@ -131,7 +133,9 @@ abstract class ClientManager<
         val runtime = getStudyRuntime( studyRuntimeId )
         val status = runtime.getStatus()
 
-        val newStatus = runtime.stop( deploymentService )
+        studyDeployment.stop( runtime )
+
+        val newStatus = runtime.getStatus()
         if ( status != newStatus )
         {
             repository.updateStudyRuntime( runtime )
@@ -140,9 +144,9 @@ abstract class ClientManager<
         return newStatus
     }
 
-    private suspend fun getStudyRuntime( studyRuntimeid: StudyRuntimeId ): StudyRuntime =
-        repository.getStudyRuntimeList().firstOrNull { it.id == studyRuntimeid }
-            ?: throw IllegalArgumentException( "The specified study runtime does not exist." )
+    private suspend fun getStudyRuntime( studyRuntimeId: StudyRuntimeId ): StudyRuntime =
+        requireNotNull( repository.getStudyRuntimeList().firstOrNull { it.id == studyRuntimeId } )
+            { "The specified study runtime does not exist." }
 
     /**
      * Once a connected device has been registered, this returns a manager which provides access to the status of the [registeredDevice].
