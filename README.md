@@ -34,7 +34,7 @@ Two key **design goals** differentiate this project from similar projects:
     - [Study and device deployment state](docs/carp-deployments.md#study-and-device-deployment-state)
     - [Application services](docs/carp-deployments.md#application-services)
   - [Clients](docs/carp-clients.md)
-    - [Study runtime state](docs/carp-clients.md#study-runtime-state)
+    - [Study state](docs/carp-clients.md#study-state)
   - [Data](docs/carp-data.md)
     - [Data streams](docs/carp-data.md#data-streams)
     - [Application services](docs/carp-data.md#application-services)
@@ -283,7 +283,7 @@ val invitation: ActiveParticipationInvitation =
 val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
 val deviceToUse: String = invitation.assignedDevices.first().device.roleName // This matches "Patient's phone".
 
-// Create a study runtime for the study.
+// Add the study to a client device manager.
 val clientRepository = createRepository()
 val client = SmartphoneClient( clientRepository, deploymentService, dataCollectorFactory )
 client.configure {
@@ -292,10 +292,10 @@ client.configure {
     // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
     deviceId = "xxxxxxxxx"
 }
-var status: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
+var status: StudyStatus = client.addStudy( studyDeploymentId, deviceToUse )
 
 // Register connected devices in case needed.
-if ( status is StudyRuntimeStatus.RegisteringDevices )
+if ( status is StudyStatus.RegisteringDevices )
 {
     val connectedDevice = status.remainingDevicesToRegister.first()
     val connectedRegistration = connectedDevice.createRegistration()
@@ -303,7 +303,7 @@ if ( status is StudyRuntimeStatus.RegisteringDevices )
 
     // Re-try deployment now that devices have been registered.
     status = client.tryDeployment( status.id )
-    val isDeployed = status is StudyRuntimeStatus.Deployed // True.
+    val isDeployed = status is StudyStatus.Deployed // True.
 }
 ```
 

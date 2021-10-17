@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class StudyRuntimeSnapshot(
+data class StudySnapshot(
     val studyDeploymentId: UUID,
     val deviceRoleName: String,
     override val createdOn: Instant,
@@ -17,26 +17,26 @@ data class StudyRuntimeSnapshot(
     val deploymentInformation: MasterDeviceDeployment?,
     val remainingDevicesToRegister: Set<AnyDeviceDescriptor> = emptySet(),
     val isStopped: Boolean
-) : Snapshot<StudyRuntime>
+) : Snapshot<Study>
 {
     companion object
     {
-        fun fromStudyRuntime( studyRuntime: StudyRuntime ): StudyRuntimeSnapshot
+        fun fromStudy( study: Study ): StudySnapshot
         {
-            val status = studyRuntime.getStatus()
+            val status = study.getStatus()
 
-            return StudyRuntimeSnapshot(
-                studyRuntime.studyDeploymentId,
-                studyRuntime.deviceRoleName,
-                studyRuntime.createdOn,
-                studyRuntime.isDeployed,
-                (status as? StudyRuntimeStatus.DeploymentReceived)?.deploymentInformation,
-                (status as? StudyRuntimeStatus.RegisteringDevices)?.remainingDevicesToRegister?.toSet()
+            return StudySnapshot(
+                study.studyDeploymentId,
+                study.deviceRoleName,
+                study.createdOn,
+                study.isDeployed,
+                (status as? StudyStatus.DeploymentReceived)?.deploymentInformation,
+                (status as? StudyStatus.RegisteringDevices)?.remainingDevicesToRegister?.toSet()
                     ?: emptySet(),
-                studyRuntime.isStopped
+                study.isStopped
             )
         }
     }
 
-    override fun toObject(): StudyRuntime = StudyRuntime.fromSnapshot( this )
+    override fun toObject(): Study = Study.fromSnapshot( this )
 }

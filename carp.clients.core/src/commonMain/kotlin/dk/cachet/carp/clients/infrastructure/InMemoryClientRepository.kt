@@ -1,14 +1,14 @@
 package dk.cachet.carp.clients.infrastructure
 
 import dk.cachet.carp.clients.domain.ClientRepository
-import dk.cachet.carp.clients.domain.StudyRuntime
-import dk.cachet.carp.clients.domain.StudyRuntimeSnapshot
+import dk.cachet.carp.clients.domain.Study
+import dk.cachet.carp.clients.domain.StudySnapshot
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 
 
 /**
- * A [ClientRepository] which holds [StudyRuntime]s in memory as long as the instance is held in memory.
+ * A [ClientRepository] which holds [Study]s in memory as long as the instance is held in memory.
  */
 class InMemoryClientRepository : ClientRepository
 {
@@ -27,63 +27,63 @@ class InMemoryClientRepository : ClientRepository
         deviceRegistration = registration
     }
 
-    private val studyRuntimes: MutableList<StudyRuntimeSnapshot> = mutableListOf()
+    private val studies: MutableList<StudySnapshot> = mutableListOf()
 
     /**
-     * Adds the specified [studyRuntime] to the repository.
+     * Adds the specified [study] to the repository.
      *
-     * @throws IllegalArgumentException when a [StudyRuntime] which has the same study deployment ID and device role name already exists.
+     * @throws IllegalArgumentException when a [Study] which has the same study deployment ID and device role name already exists.
      */
-    override suspend fun addStudyRuntime( studyRuntime: StudyRuntime )
+    override suspend fun addStudy( study: Study )
     {
-        val deploymentId = studyRuntime.studyDeploymentId
-        val deviceRoleName = studyRuntime.id.deviceRoleName
-        require( studyRuntimes.none { it.studyDeploymentId == deploymentId && it.deviceRoleName == deviceRoleName } )
+        val deploymentId = study.studyDeploymentId
+        val deviceRoleName = study.id.deviceRoleName
+        require( studies.none { it.studyDeploymentId == deploymentId && it.deviceRoleName == deviceRoleName } )
 
-        studyRuntimes.add( studyRuntime.getSnapshot() )
+        studies.add( study.getSnapshot() )
     }
 
     /**
-     * Return the [StudyRuntime] with [studyDeploymentId] and [deviceRoleName], or null when no such [StudyRuntime] is found.
+     * Return the [Study] with [studyDeploymentId] and [deviceRoleName], or null when no such [Study] is found.
      */
-    override suspend fun getStudyRuntimeBy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntime? =
-        studyRuntimes
+    override suspend fun getStudyBy( studyDeploymentId: UUID, deviceRoleName: String ): Study? =
+        studies
             .filter { it.studyDeploymentId == studyDeploymentId && it.deviceRoleName == deviceRoleName }
-            .map { StudyRuntime.fromSnapshot( it ) }
+            .map { Study.fromSnapshot( it ) }
             .firstOrNull()
 
     /**
-     * Return all [StudyRuntime]s for the client.
+     * Return all [Study]s for the client.
      */
-    override suspend fun getStudyRuntimeList(): List<StudyRuntime> =
-        studyRuntimes.map { StudyRuntime.fromSnapshot( it ) }
+    override suspend fun getStudyList(): List<Study> =
+        studies.map { Study.fromSnapshot( it ) }
 
     /**
-     * Update a [StudyRuntime] which is already stored in the repository.
+     * Update a [study] which is already stored in the repository.
      *
-     * @throws IllegalArgumentException when no previous version of this study runtime is stored in the repository.
+     * @throws IllegalArgumentException when no previous version of this study is stored in the repository.
      */
-    override suspend fun updateStudyRuntime( runtime: StudyRuntime )
+    override suspend fun updateStudy( study: Study )
     {
-        val storedRuntime = findRuntimeSnapshot( runtime )
-        requireNotNull( storedRuntime ) { "The repository does not contain an existing study runtime matching the one to update." }
+        val storedStudy = findStudySnapshot( study )
+        requireNotNull( storedStudy ) { "The repository does not contain an existing study matching the one to update." }
 
-        studyRuntimes.remove( storedRuntime )
-        studyRuntimes.add( runtime.getSnapshot() )
+        studies.remove( storedStudy )
+        studies.add( study.getSnapshot() )
     }
 
     /**
-     * Remove a [StudyRuntime] which is already stored in the repository.
-     * In case [runtime] is not stored in this repository, nothing happens.
+     * Remove a [study] which is already stored in the repository.
+     * In case [study] is not stored in this repository, nothing happens.
      */
-    override suspend fun removeStudyRuntime( runtime: StudyRuntime )
+    override suspend fun removeStudy( study: Study )
     {
-        val storedRuntime = findRuntimeSnapshot( runtime )
-        studyRuntimes.remove( storedRuntime )
+        val storedStudy = findStudySnapshot( study )
+        studies.remove( storedStudy )
     }
 
-    private fun findRuntimeSnapshot( runtime: StudyRuntime ): StudyRuntimeSnapshot? =
-        studyRuntimes.firstOrNull {
+    private fun findStudySnapshot( runtime: Study ): StudySnapshot? =
+        studies.firstOrNull {
             it.studyDeploymentId == runtime.studyDeploymentId &&
             it.deviceRoleName == runtime.id.deviceRoleName
         }

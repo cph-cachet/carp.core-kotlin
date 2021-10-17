@@ -95,15 +95,15 @@ class ClientManagerTest
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
         val deploymentId = deploymentStatus.studyDeploymentId
-        var status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
+        var status: StudyStatus = client.addStudy( deploymentId, smartphone.roleName )
 
         // Dependent device needs to be registered before the intended device can be deployed on this client.
-        assertTrue( status is StudyRuntimeStatus.NotReadyForDeployment )
+        assertTrue( status is StudyStatus.NotReadyForDeployment )
         val dependentRegistration = deviceSmartphoneDependsOn.createRegistration()
         deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
 
         status = client.tryDeployment( status.id )
-        assertTrue( status is StudyRuntimeStatus.Deployed )
+        assertTrue( status is StudyStatus.Deployed )
     }
 
     @Test
@@ -112,16 +112,16 @@ class ClientManagerTest
             createStudyDeployment( createSmartphoneWithConnectedDeviceStudy() )
         val client = initializeSmartphoneClient( deploymentService )
         val deploymentId = deploymentStatus.studyDeploymentId
-        var status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
+        var status: StudyStatus = client.addStudy( deploymentId, smartphone.roleName )
 
         // Connected device needs to be registered before deployment can complete.
         // TODO: It should be possible to register this device through `ClientManager` rather than directly from `deploymentService`.
-        assertTrue( status is StudyRuntimeStatus.RegisteringDevices )
+        assertTrue( status is StudyStatus.RegisteringDevices )
         val connectedRegistration = connectedDevice.createRegistration()
         deploymentService.registerDevice( deploymentId, connectedDevice.roleName, connectedRegistration )
 
         status = client.tryDeployment( status.id )
-        assertTrue( status is StudyRuntimeStatus.Deployed )
+        assertTrue( status is StudyStatus.Deployed )
     }
 
     @Test
@@ -130,11 +130,11 @@ class ClientManagerTest
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
         val deploymentId = deploymentStatus.studyDeploymentId
-        var status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
-        assertTrue( status is StudyRuntimeStatus.Deployed )
+        var status: StudyStatus = client.addStudy( deploymentId, smartphone.roleName )
+        assertTrue( status is StudyStatus.Deployed )
 
         status = client.tryDeployment( status.id )
-        assertTrue( status is StudyRuntimeStatus.Deployed )
+        assertTrue( status is StudyStatus.Deployed )
     }
 
     @Test
@@ -144,7 +144,7 @@ class ClientManagerTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            client.tryDeployment( StudyRuntimeId( unknownId, "Unknown device role" ) )
+            client.tryDeployment( StudyId( unknownId, "Unknown device role" ) )
         }
     }
 
@@ -152,10 +152,10 @@ class ClientManagerTest
     fun stopStudy_succeeds() = runSuspendTest {
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
-        val status: StudyRuntimeStatus = client.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
+        val status: StudyStatus = client.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
 
         val newStatus = client.stopStudy( status.id )
-        assertTrue( newStatus is StudyRuntimeStatus.Stopped )
+        assertTrue( newStatus is StudyStatus.Stopped )
     }
 
     @Test
@@ -165,7 +165,7 @@ class ClientManagerTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            client.stopStudy( StudyRuntimeId( unknownId, "Unknown device role" ) )
+            client.stopStudy( StudyId( unknownId, "Unknown device role" ) )
         }
     }
 
@@ -174,14 +174,14 @@ class ClientManagerTest
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
         val deploymentId = deploymentStatus.studyDeploymentId
-        var status: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
+        var status: StudyStatus = client.addStudy( deploymentId, smartphone.roleName )
 
         // Register dependent device and deploy client.
-        check( status is StudyRuntimeStatus.NotReadyForDeployment )
+        check( status is StudyStatus.NotReadyForDeployment )
         val dependentRegistration = deviceSmartphoneDependsOn.createRegistration()
         deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
         status = client.tryDeployment( status.id )
-        check( status is StudyRuntimeStatus.Deployed )
+        check( status is StudyStatus.Deployed )
         assertEquals( status, client.getStudiesStatus().first() )
 
         // Stop client.
@@ -202,8 +202,8 @@ class ClientManagerTest
 
         // Get device registration status.
         val client = initializeSmartphoneClient( deploymentService )
-        val studyStatus: StudyRuntimeStatus = client.addStudy( deploymentId, smartphone.roleName )
-        assertTrue( studyStatus is StudyRuntimeStatus.DeploymentReceived )
+        val studyStatus: StudyStatus = client.addStudy( deploymentId, smartphone.roleName )
+        assertTrue( studyStatus is StudyStatus.DeploymentReceived )
         val deviceStatus = studyStatus.devicesRegistrationStatus[ connectedDevice ]
         assertTrue( deviceStatus is DeviceRegistrationStatus.Registered )
 

@@ -1,7 +1,7 @@
 package dk.cachet.carp.clients.domain.study
 
-import dk.cachet.carp.clients.domain.StudyRuntime
-import dk.cachet.carp.clients.domain.StudyRuntimeStatus
+import dk.cachet.carp.clients.domain.Study
+import dk.cachet.carp.clients.domain.StudyStatus
 import dk.cachet.carp.clients.domain.data.DataListener
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
@@ -11,7 +11,7 @@ import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 
 
 /**
- * Perform deployment actions for a [StudyRuntime] on a client device.
+ * Perform deployment actions for a [Study] on a client device.
  */
 class StudyDeploymentProxy(
     private val deploymentService: DeploymentService,
@@ -19,7 +19,7 @@ class StudyDeploymentProxy(
 )
 {
     /**
-     * Tries to deploy the [study] runtime if it's ready to be deployed
+     * Tries to deploy the [study] if it's ready to be deployed
      * by registering the client device using [deviceRegistration] and verifying the study is supported on this device.
      * In case already deployed, nothing happens.
      *
@@ -33,7 +33,7 @@ class StudyDeploymentProxy(
      *  - not all necessary plugins to execute the study are available
      *  - data requested in the deployment cannot be collected on this client device
      */
-    suspend fun tryDeployment( study: StudyRuntime, deviceRegistration: DeviceRegistration )
+    suspend fun tryDeployment( study: Study, deviceRegistration: DeviceRegistration )
     {
         val (studyDeploymentId: UUID, deviceRoleName: String) = study.id
 
@@ -74,11 +74,11 @@ class StudyDeploymentProxy(
     /**
      * Stop the study deployment which this [study] runtime is part of.
      */
-    suspend fun stop( study: StudyRuntime )
+    suspend fun stop( study: Study )
     {
         // Early out in case study has already been stopped.
         val status = study.getStatus()
-        if ( status is StudyRuntimeStatus.Stopped ) return
+        if ( status is StudyStatus.Stopped ) return
 
         // Stop study deployment.
         // TODO: Right now this requires the client to be online in case `deploymentService` is an online service.

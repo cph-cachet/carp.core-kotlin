@@ -6,15 +6,15 @@ import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 
 
 /**
- * Describes the status of a [StudyRuntime].
+ * Describes the status of a [Study].
  */
 @ImplementAsDataClass
-sealed class StudyRuntimeStatus
+sealed class StudyStatus
 {
     /**
-     * Unique ID of the study runtime on the [ClientManager].
+     * Unique ID of the study on the [ClientManager].
      */
-    abstract val id: StudyRuntimeId
+    abstract val id: StudyId
 
 
     /**
@@ -22,7 +22,7 @@ sealed class StudyRuntimeStatus
      */
     interface DeploymentReceived
     {
-        val id: StudyRuntimeId
+        val id: StudyId
 
         /**
          * Contains all the information on the study to run.
@@ -41,39 +41,39 @@ sealed class StudyRuntimeStatus
     /**
      * Deployment cannot succeed yet because other master devices have not been registered yet.
      */
-    data class NotReadyForDeployment internal constructor( override val id: StudyRuntimeId ) : StudyRuntimeStatus()
+    data class NotReadyForDeployment internal constructor( override val id: StudyId ) : StudyStatus()
 
     /**
      * Deployment can complete after [remainingDevicesToRegister] have been registered.
      */
     data class RegisteringDevices internal constructor(
-        override val id: StudyRuntimeId,
+        override val id: StudyId,
         override val deploymentInformation: MasterDeviceDeployment,
         val remainingDevicesToRegister: Set<AnyDeviceDescriptor>
-    ) : StudyRuntimeStatus(), DeploymentReceived
+    ) : StudyStatus(), DeploymentReceived
     {
         override val devicesRegistrationStatus = getDevicesRegistrationStatus( deploymentInformation )
     }
 
     /**
-     * Study runtime status when deployment has been successfully completed:
+     * Study status when deployment has been successfully completed:
      * the [MasterDeviceDeployment] has been retrieved and all necessary plugins to execute the study have been loaded.
      */
     data class Deployed internal constructor(
-        override val id: StudyRuntimeId,
+        override val id: StudyId,
         override val deploymentInformation: MasterDeviceDeployment
-    ) : StudyRuntimeStatus(), DeploymentReceived
+    ) : StudyStatus(), DeploymentReceived
     {
         override val devicesRegistrationStatus = getDevicesRegistrationStatus( deploymentInformation )
     }
 
     /**
-     * Study runtime status when deployment has been stopped, either by this client or researcher.
+     * Study status when deployment has been stopped, either by this client or researcher.
      */
     data class Stopped internal constructor(
-        override val id: StudyRuntimeId,
+        override val id: StudyId,
         override val deploymentInformation: MasterDeviceDeployment
-    ) : StudyRuntimeStatus(), DeploymentReceived
+    ) : StudyStatus(), DeploymentReceived
     {
         override val devicesRegistrationStatus = getDevicesRegistrationStatus( deploymentInformation )
     }
@@ -84,6 +84,6 @@ private fun getDevicesRegistrationStatus( deployment: MasterDeviceDeployment ) =
     .getRuntimeDeviceInfo()
     .map {
         val registration = it.registration
-        if (registration == null) DeviceRegistrationStatus.Unregistered(it.descriptor)
-        else DeviceRegistrationStatus.Registered(it.descriptor, registration)
+        if ( registration == null ) DeviceRegistrationStatus.Unregistered( it.descriptor )
+        else DeviceRegistrationStatus.Registered( it.descriptor, registration )
     }.associateBy { it.device }

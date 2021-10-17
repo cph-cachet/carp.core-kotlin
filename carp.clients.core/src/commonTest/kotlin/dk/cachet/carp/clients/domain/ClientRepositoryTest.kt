@@ -22,96 +22,96 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun addStudyRuntime_can_be_retrieved() = runSuspendTest {
+    fun addStudy_can_be_retrieved() = runSuspendTest {
         val repo = createRepository()
 
-        val runtime = StudyRuntime( UUID.randomUUID(), "Device role" )
-        repo.addStudyRuntime( runtime )
+        val study = Study( UUID.randomUUID(), "Device role" )
+        repo.addStudy( study )
 
-        // Runtime can be retrieved by ID.
-        val deploymentId = runtime.studyDeploymentId
-        val roleName = runtime.deviceRoleName
-        val retrievedRuntime = repo.getStudyRuntimeBy( deploymentId, roleName )
-        assertNotNull( retrievedRuntime )
+        // Study can be retrieved by ID.
+        val deploymentId = study.studyDeploymentId
+        val roleName = study.deviceRoleName
+        val retrievedStudy = repo.getStudyBy( deploymentId, roleName )
+        assertNotNull( retrievedStudy )
 
-        // Runtime is included in list.
-        val allRuntimes = repo.getStudyRuntimeList()
-        assertEquals( 1, allRuntimes.count() )
-        assertNotNull( allRuntimes.single { it.studyDeploymentId == deploymentId && it.deviceRoleName == roleName } )
+        // Study is included in list.
+        val allStudies = repo.getStudyList()
+        assertEquals( 1, allStudies.count() )
+        assertNotNull( allStudies.single { it.studyDeploymentId == deploymentId && it.deviceRoleName == roleName } )
     }
 
     @Test
-    fun addStudyRuntime_fails_for_existing_runtime() = runSuspendTest {
+    fun addStudy_fails_for_existing_study() = runSuspendTest {
         val repo = createRepository()
-        val runtime = StudyRuntime( UUID.randomUUID(), "Device role" )
-        repo.addStudyRuntime( runtime )
+        val study = Study( UUID.randomUUID(), "Device role" )
+        repo.addStudy( study )
 
-        assertFailsWith<IllegalArgumentException> { repo.addStudyRuntime( runtime ) }
+        assertFailsWith<IllegalArgumentException> { repo.addStudy( study ) }
     }
 
     @Test
-    fun getStudyRuntimeBy_is_null_for_unknown_runtime() = runSuspendTest {
+    fun getStudyBy_is_null_for_unknown_study() = runSuspendTest {
         val repo = createRepository()
 
         val unknownId = UUID.randomUUID()
-        assertNull( repo.getStudyRuntimeBy( unknownId, "Unknown" ) )
+        assertNull( repo.getStudyBy( unknownId, "Unknown" ) )
     }
 
     @Test
-    fun getStudyRuntimeList_is_empty_initially() = runSuspendTest {
+    fun getStudyList_is_empty_initially() = runSuspendTest {
         val repo = createRepository()
 
-        assertEquals( 0, repo.getStudyRuntimeList().count() )
+        assertEquals( 0, repo.getStudyList().count() )
     }
 
     @Test
-    fun updateStudyRuntime_succeeds() = runSuspendTest {
+    fun updateStudy_succeeds() = runSuspendTest {
         val repo = createRepository()
         val deploymentId = UUID.randomUUID()
         val deviceRoleName = "Device role"
-        val runtime = StudyRuntime( deploymentId, deviceRoleName )
-        repo.addStudyRuntime( runtime )
+        val study = Study( deploymentId, deviceRoleName )
+        repo.addStudy( study )
 
         // Make some changes and update.
         val masterDevice = StubMasterDeviceDescriptor( deviceRoleName )
         val registration = masterDevice.createRegistration()
         val masterDeviceDeployment = MasterDeviceDeployment( StubMasterDeviceDescriptor( deviceRoleName ), registration )
-        runtime.deploymentReceived( masterDeviceDeployment, emptySet() )
-        runtime.completeDeployment( createDataListener() )
-        repo.updateStudyRuntime( runtime )
+        study.deploymentReceived( masterDeviceDeployment, emptySet() )
+        study.completeDeployment( createDataListener() )
+        repo.updateStudy( study )
 
         // Verify whether changes were stored.
-        val retrievedRuntime = repo.getStudyRuntimeBy( deploymentId, deviceRoleName )
-        assertNotNull( retrievedRuntime )
-        assertEquals( runtime.getSnapshot(), retrievedRuntime.getSnapshot() )
+        val retrievedStudy = repo.getStudyBy( deploymentId, deviceRoleName )
+        assertNotNull( retrievedStudy )
+        assertEquals( study.getSnapshot(), retrievedStudy.getSnapshot() )
     }
 
     @Test
-    fun updateStudyRuntime_fails_for_unknown_runtime() = runSuspendTest {
+    fun updateStudy_fails_for_unknown_study() = runSuspendTest {
         val repo = createRepository()
 
-        val runtime = StudyRuntime( UUID.randomUUID(), "Device role" )
-        assertFailsWith<IllegalArgumentException> { repo.updateStudyRuntime( runtime ) }
+        val study = Study( UUID.randomUUID(), "Device role" )
+        assertFailsWith<IllegalArgumentException> { repo.updateStudy( study ) }
     }
 
     @Test
-    fun removeStudyRuntime_succeeds() = runSuspendTest {
+    fun removeStudy_succeeds() = runSuspendTest {
         val repo = createRepository()
-        val runtime = StudyRuntime( UUID.randomUUID(), "Device role" )
-        repo.addStudyRuntime( runtime )
+        val study = Study( UUID.randomUUID(), "Device role" )
+        repo.addStudy( study )
 
-        repo.removeStudyRuntime( runtime )
+        repo.removeStudy( study )
 
-        val deploymentId = runtime.studyDeploymentId
-        val roleName = runtime.deviceRoleName
-        assertNull( repo.getStudyRuntimeBy( deploymentId, roleName ) )
-        assertEquals( 0, repo.getStudyRuntimeList().count() )
+        val deploymentId = study.studyDeploymentId
+        val roleName = study.deviceRoleName
+        assertNull( repo.getStudyBy( deploymentId, roleName ) )
+        assertEquals( 0, repo.getStudyList().count() )
     }
 
     @Test
-    fun removeStudyRuntime_succeeds_when_runtime_not_present() = runSuspendTest {
+    fun removeStudy_succeeds_when_study_not_present() = runSuspendTest {
         val repo = createRepository()
-        val runtime = StudyRuntime( UUID.randomUUID(), "Device role" )
-        repo.removeStudyRuntime( runtime )
+        val study = Study( UUID.randomUUID(), "Device role" )
+        repo.removeStudy( study )
     }
 }

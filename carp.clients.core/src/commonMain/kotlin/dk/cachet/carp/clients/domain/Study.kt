@@ -10,9 +10,9 @@ import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 
 
 /**
- * Manage data collection for a particular study on a client device.
+ * A study deployment, identified by [studyDeploymentId], a client device participates with the role [deviceRoleName].
  */
-class StudyRuntime(
+class Study(
     /**
      * The ID of the deployed study for which to collect data.
      */
@@ -21,7 +21,7 @@ class StudyRuntime(
      * The role name of the device this runtime is intended for within the deployment identified by [studyDeploymentId].
      */
     val deviceRoleName: String
-) : AggregateRoot<StudyRuntime, StudyRuntimeSnapshot, StudyRuntime.Event>()
+) : AggregateRoot<Study, StudySnapshot, Study.Event>()
 {
     sealed class Event : DomainEvent()
     {
@@ -38,8 +38,8 @@ class StudyRuntime(
 
     companion object Factory
     {
-        internal fun fromSnapshot( snapshot: StudyRuntimeSnapshot ): StudyRuntime =
-            StudyRuntime( snapshot.studyDeploymentId, snapshot.deviceRoleName ).apply {
+        internal fun fromSnapshot( snapshot: StudySnapshot ): Study =
+            Study( snapshot.studyDeploymentId, snapshot.deviceRoleName ).apply {
                 createdOn = snapshot.createdOn
                 isDeployed = snapshot.isDeployed
                 deploymentInformation = snapshot.deploymentInformation
@@ -50,9 +50,9 @@ class StudyRuntime(
 
 
     /**
-     * Composite ID for this study runtime, comprised of the [studyDeploymentId] and [deviceRoleName].
+     * Composite ID for this study, comprised of the [studyDeploymentId] and [deviceRoleName].
      */
-    val id: StudyRuntimeId get() = StudyRuntimeId( studyDeploymentId, deviceRoleName )
+    val id: StudyId get() = StudyId( studyDeploymentId, deviceRoleName )
 
     /**
      * Determines whether the device deployment has completed successfully.
@@ -71,20 +71,20 @@ class StudyRuntime(
 
 
     /**
-     * Get the status of this [StudyRuntime].
+     * Get the status of this [Study].
      */
-    fun getStatus(): StudyRuntimeStatus =
+    fun getStatus(): StudyStatus =
         when {
-            deploymentInformation == null -> StudyRuntimeStatus.NotReadyForDeployment( id )
+            deploymentInformation == null -> StudyStatus.NotReadyForDeployment( id )
             remainingDevicesToRegister.isNotEmpty() ->
-                StudyRuntimeStatus.RegisteringDevices( id, deploymentInformation!!, remainingDevicesToRegister.toSet() )
-            isStopped -> StudyRuntimeStatus.Stopped( id, deploymentInformation!! )
-            isDeployed -> StudyRuntimeStatus.Deployed( id, deploymentInformation!! )
-            else -> error( "Unexpected study runtime state." )
+                StudyStatus.RegisteringDevices( id, deploymentInformation!!, remainingDevicesToRegister.toSet() )
+            isStopped -> StudyStatus.Stopped( id, deploymentInformation!! )
+            isDeployed -> StudyStatus.Deployed( id, deploymentInformation!! )
+            else -> error( "Unexpected study state." )
         }
 
     /**
-     * A new master device [deployment] determining what data to collect for this study runtime has been received.
+     * A new master device [deployment] determining what data to collect for this study has been received.
      * The [remainingDevicesToRegister] need to be registered before deployment can be completed.
      *
      * @throws IllegalArgumentException when the role name [deployment] is intended for is different from the expected [deviceRoleName].
@@ -157,13 +157,13 @@ class StudyRuntime(
     }
 
     /**
-     * Permanently stop collecting data for this [StudyRuntime].
+     * Permanently stop collecting data for this [Study].
      */
-    fun stop(): StudyRuntimeStatus
+    fun stop(): StudyStatus
     {
         // Early out in case study has already been stopped.
         val status = getStatus()
-        if ( status is StudyRuntimeStatus.Stopped ) return status
+        if ( status is StudyStatus.Stopped ) return status
 
         isStopped = true
         event( Event.DeploymentStopped )
@@ -172,7 +172,7 @@ class StudyRuntime(
     }
 
     /**
-     * Get a serializable snapshot of the current state of this [StudyRuntime].
+     * Get a serializable snapshot of the current state of this [Study].
      */
-    override fun getSnapshot(): StudyRuntimeSnapshot = StudyRuntimeSnapshot.fromStudyRuntime( this )
+    override fun getSnapshot(): StudySnapshot = StudySnapshot.fromStudy( this )
 }
