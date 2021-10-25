@@ -66,7 +66,7 @@ class ClientCodeSamples
 
             // Re-try deployment now that devices have been registered.
             status = client.tryDeployment( status.id )
-            val isDeployed = status is StudyStatus.Deployed // True.
+            val isDeployed = status is StudyStatus.Running // True.
         }
     }
 

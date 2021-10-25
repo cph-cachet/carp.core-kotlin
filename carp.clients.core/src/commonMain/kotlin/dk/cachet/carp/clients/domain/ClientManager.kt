@@ -110,7 +110,7 @@ abstract class ClientManager<
 
         // Early out in case this study has already received and validated deployment information.
         val status = study.getStatus()
-        if ( status is StudyStatus.Deployed ) return status
+        if ( status is StudyStatus.Running ) return status
 
         val registration = repository.getDeviceRegistration()!!
         studyDeployment.tryDeployment( study, registration )

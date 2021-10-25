@@ -1,9 +1,9 @@
 package dk.cachet.carp.clients.domain
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -13,10 +13,8 @@ data class StudySnapshot(
     val studyDeploymentId: UUID,
     val deviceRoleName: String,
     override val createdOn: Instant,
-    val isDeployed: Boolean,
+    val deploymentStatus: StudyDeploymentStatus?,
     val deploymentInformation: MasterDeviceDeployment?,
-    val remainingDevicesToRegister: Set<AnyDeviceDescriptor> = emptySet(),
-    val isStopped: Boolean
 ) : Snapshot<Study>
 {
     companion object
@@ -24,16 +22,20 @@ data class StudySnapshot(
         fun fromStudy( study: Study ): StudySnapshot
         {
             val status = study.getStatus()
+            val deploymentInformation: MasterDeviceDeployment? =
+                when ( status )
+                {
+                    is StudyStatus.DeviceDeploymentReceived -> status.deploymentInformation
+                    is StudyStatus.Stopped -> status.deploymentInformation
+                    else -> null
+                }
 
             return StudySnapshot(
                 study.studyDeploymentId,
                 study.deviceRoleName,
                 study.createdOn,
-                study.isDeployed,
-                (status as? StudyStatus.DeploymentReceived)?.deploymentInformation,
-                (status as? StudyStatus.RegisteringDevices)?.remainingDevicesToRegister?.toSet()
-                    ?: emptySet(),
-                study.isStopped
+                (status as? StudyStatus.DeploymentStatusAvailable)?.deploymentStatus,
+                deploymentInformation
             )
         }
     }

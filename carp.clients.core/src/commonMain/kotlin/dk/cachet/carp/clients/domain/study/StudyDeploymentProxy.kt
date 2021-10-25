@@ -40,6 +40,7 @@ class StudyDeploymentProxy(
         // Register the client device in the study deployment.
         val studyStatus: StudyDeploymentStatus =
             deploymentService.registerDevice( studyDeploymentId, deviceRoleName, deviceRegistration )
+        study.deploymentStatusReceived( studyStatus )
         val deviceStatus = studyStatus.getDeviceStatus( deviceRoleName )
 
         // Early out in case state indicates the device is already deployed or deployment cannot yet be obtained.
@@ -55,16 +56,18 @@ class StudyDeploymentProxy(
             .map { it.device }
             .filter { it.roleName in deviceStatus.remainingDevicesToRegisterBeforeDeployment }
             .toSet()
-        study.deploymentReceived( deployment, remainingDevicesToRegister )
+        study.deviceDeploymentReceived( deployment )
 
         // Early out in case devices need to be registered before being able to complete deployment.
         if ( remainingDevicesToRegister.isNotEmpty() ) return
 
         // Validate deployment and notify deployment service in case successful.
-        study.completeDeployment( dataListener )
+        study.validateDeviceDeployment( dataListener )
         try
         {
-            deploymentService.deploymentSuccessful( studyDeploymentId, device.roleName, deployment.lastUpdatedOn )
+            val deployedStatus =
+                deploymentService.deploymentSuccessful( studyDeploymentId, device.roleName, deployment.lastUpdatedOn )
+            study.deploymentStatusReceived( deployedStatus )
         }
         // Handle race conditions with competing clients modifying device registrations, invalidating this deployment.
         catch ( ignore: IllegalArgumentException ) { } // TODO: When deployment is out of date, maybe also use `IllegalStateException` for easier handling here.
@@ -86,6 +89,6 @@ class StudyDeploymentProxy(
         val deploymentStatus = deploymentService.stop( study.studyDeploymentId )
         check( deploymentStatus is StudyDeploymentStatus.Stopped )
 
-        study.stop()
+        study.deploymentStatusReceived( deploymentStatus )
     }
 }

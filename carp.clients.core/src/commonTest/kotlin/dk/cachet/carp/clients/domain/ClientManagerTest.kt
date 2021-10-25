@@ -98,12 +98,12 @@ class ClientManagerTest
         var status: StudyStatus = client.addStudy( deploymentId, smartphone.roleName )
 
         // Dependent device needs to be registered before the intended device can be deployed on this client.
-        assertTrue( status is StudyStatus.NotReadyForDeployment )
+        assertTrue( status is StudyStatus.AwaitingOtherDeviceRegistrations )
         val dependentRegistration = deviceSmartphoneDependsOn.createRegistration()
         deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
 
         status = client.tryDeployment( status.id )
-        assertTrue( status is StudyStatus.Deployed )
+        assertTrue( status is StudyStatus.AwaitingOtherDeviceDeployments )
     }
 
     @Test
@@ -121,20 +121,20 @@ class ClientManagerTest
         deploymentService.registerDevice( deploymentId, connectedDevice.roleName, connectedRegistration )
 
         status = client.tryDeployment( status.id )
-        assertTrue( status is StudyStatus.Deployed )
+        assertTrue( status is StudyStatus.Running )
     }
 
     @Test
-    fun tryDeployment_returns_true_when_already_deployed() = runSuspendTest {
+    fun tryDeployment_succeeds_when_already_deployed() = runSuspendTest {
         // Add a study which instantly deploys given that the protocol only contains one master device.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
         val deploymentId = deploymentStatus.studyDeploymentId
         var status: StudyStatus = client.addStudy( deploymentId, smartphone.roleName )
-        assertTrue( status is StudyStatus.Deployed )
+        assertTrue( status is StudyStatus.Running )
 
         status = client.tryDeployment( status.id )
-        assertTrue( status is StudyStatus.Deployed )
+        assertTrue( status is StudyStatus.Running )
     }
 
     @Test
@@ -177,11 +177,11 @@ class ClientManagerTest
         var status: StudyStatus = client.addStudy( deploymentId, smartphone.roleName )
 
         // Register dependent device and deploy client.
-        check( status is StudyStatus.NotReadyForDeployment )
+        check( status is StudyStatus.AwaitingOtherDeviceRegistrations )
         val dependentRegistration = deviceSmartphoneDependsOn.createRegistration()
         deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
         status = client.tryDeployment( status.id )
-        check( status is StudyStatus.Deployed )
+        check( status is StudyStatus.AwaitingOtherDeviceDeployments )
         assertEquals( status, client.getStudiesStatus().first() )
 
         // Stop client.
@@ -203,7 +203,7 @@ class ClientManagerTest
         // Get device registration status.
         val client = initializeSmartphoneClient( deploymentService )
         val studyStatus: StudyStatus = client.addStudy( deploymentId, smartphone.roleName )
-        assertTrue( studyStatus is StudyStatus.DeploymentReceived )
+        assertTrue( studyStatus is StudyStatus.DeviceDeploymentReceived )
         val deviceStatus = studyStatus.devicesRegistrationStatus[ connectedDevice ]
         assertTrue( deviceStatus is DeviceRegistrationStatus.Registered )
 

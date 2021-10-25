@@ -11,4 +11,4 @@ Concrete devices extend on it, e.g., [`SmartphoneClient`](../carp.clients.core/s
 
 [`StudyStatus`](../carp.clients.core/src/commonMain/kotlin/dk/cachet/carp/clients/domain/StudyStatus.kt) represents the status of a single study which runs on `ClientManager`.
 
-![Study state machine](https://i.imgur.com/lS43IOz.png)
+![Study state machine](https://i.imgur.com/fi348XB.png)

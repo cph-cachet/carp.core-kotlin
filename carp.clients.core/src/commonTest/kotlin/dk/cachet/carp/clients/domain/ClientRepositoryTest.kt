@@ -2,8 +2,11 @@ package dk.cachet.carp.clients.domain
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.test.runSuspendTest
+import kotlinx.datetime.Clock
 import kotlin.test.*
 
 
@@ -76,8 +79,17 @@ interface ClientRepositoryTest
         val masterDevice = StubMasterDeviceDescriptor( deviceRoleName )
         val registration = masterDevice.createRegistration()
         val masterDeviceDeployment = MasterDeviceDeployment( StubMasterDeviceDescriptor( deviceRoleName ), registration )
-        study.deploymentReceived( masterDeviceDeployment, emptySet() )
-        study.completeDeployment( createDataListener() )
+        study.deploymentStatusReceived(
+            StudyDeploymentStatus.DeployingDevices(
+                Clock.System.now(),
+                deploymentId,
+                listOf(
+                    DeviceDeploymentStatus.Registered( masterDevice, true, emptySet(), emptySet() )
+                ),
+                null
+            )
+        )
+        study.deviceDeploymentReceived( masterDeviceDeployment )
         repo.updateStudy( study )
 
         // Verify whether changes were stored.
