@@ -1,5 +1,6 @@
-package dk.cachet.carp.clients.domain
+package dk.cachet.carp.clients.domain.study
 
+import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
@@ -40,5 +41,5 @@ data class StudySnapshot(
         }
     }
 
-    override fun toObject(): Study = Study.fromSnapshot( this )
+    override fun toObject(): Study = Study.fromSnapshot(this)
 }

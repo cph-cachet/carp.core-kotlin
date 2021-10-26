@@ -1,5 +1,6 @@
 package dk.cachet.carp.clients.domain
 
+import dk.cachet.carp.clients.domain.study.Study
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment

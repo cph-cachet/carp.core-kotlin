@@ -1,5 +1,6 @@
 package dk.cachet.carp.clients.domain
 
+import dk.cachet.carp.clients.application.ClientManager
 import dk.cachet.carp.clients.domain.data.ConnectedDeviceDataCollector
 import dk.cachet.carp.clients.domain.data.DeviceDataCollector
 import dk.cachet.carp.clients.domain.data.DeviceDataCollectorFactory

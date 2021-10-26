@@ -1,5 +1,6 @@
-package dk.cachet.carp.clients.domain
+package dk.cachet.carp.clients.application.study
 
+import dk.cachet.carp.clients.domain.DeviceRegistrationStatus
 import dk.cachet.carp.common.application.ImplementAsDataClass
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
@@ -167,6 +168,6 @@ private fun getDevicesRegistrationStatus( deployment: MasterDeviceDeployment ) =
     .getRuntimeDeviceInfo()
     .map {
         val registration = it.registration
-        if ( registration == null ) DeviceRegistrationStatus.Unregistered( it.descriptor )
-        else DeviceRegistrationStatus.Registered( it.descriptor, registration )
+        if ( registration == null ) DeviceRegistrationStatus.Unregistered(it.descriptor)
+        else DeviceRegistrationStatus.Registered(it.descriptor, registration)
     }.associateBy { it.device }

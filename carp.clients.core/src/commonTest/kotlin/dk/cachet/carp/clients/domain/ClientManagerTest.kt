@@ -1,5 +1,7 @@
 package dk.cachet.carp.clients.domain
 
+import dk.cachet.carp.clients.application.study.StudyId
+import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.clients.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployments.application.DeploymentService

@@ -1,7 +1,6 @@
 package dk.cachet.carp.clients.domain.study
 
-import dk.cachet.carp.clients.domain.Study
-import dk.cachet.carp.clients.domain.StudyStatus
+import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.clients.domain.data.DataListener
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration

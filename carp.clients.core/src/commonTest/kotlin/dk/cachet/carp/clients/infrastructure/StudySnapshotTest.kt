@@ -1,7 +1,7 @@
 package dk.cachet.carp.clients.infrastructure
 
-import dk.cachet.carp.clients.domain.Study
-import dk.cachet.carp.clients.domain.StudySnapshot
+import dk.cachet.carp.clients.domain.study.Study
+import dk.cachet.carp.clients.domain.study.StudySnapshot
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.test.runSuspendTest
