@@ -54,16 +54,6 @@ class StudyDeploymentProxyTest
         assertEquals( smartphone, registrationStatus.device )
         assertEquals( deviceRegistration, registrationStatus.registration )
 
-        // Study events reflects deployment has been received and is running.
-        val events = study.consumeEvents()
-        val receivedEvent = events.filterIsInstance<Study.Event.DeviceDeploymentReceived>()
-        assertEquals( 1, receivedEvent.count() )
-        assertEquals( studyStatus.deploymentInformation, receivedEvent.single().deploymentInformation )
-        val completedEvents = events
-            .filterIsInstance<Study.Event.DeploymentStatusReceived>()
-            .filter { it.deploymentStatus is StudyDeploymentStatus.Running }
-        assertEquals( 1, completedEvents.count() )
-
         // Master device status in deployment is also set to deployed.
         val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
         val masterDeviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
@@ -83,10 +73,6 @@ class StudyDeploymentProxyTest
         // Study status is not ready for deployment.
         val studyStatus = study.getStatus()
         assertTrue( studyStatus is StudyStatus.AwaitingOtherDeviceRegistrations )
-
-        // Study events reflects deployment has not been received yet.
-        val events = study.consumeEvents()
-        assertEquals( 0, events.filterIsInstance<Study.Event.DeviceDeploymentReceived>().count() )
 
         // Master device status in deployment is registered, but not deployed.
         val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
@@ -112,16 +98,6 @@ class StudyDeploymentProxyTest
         val connectedRegistrationStatus = studyStatus.devicesRegistrationStatus[ connectedDevice ]
         assertTrue( connectedRegistrationStatus is DeviceRegistrationStatus.Unregistered )
         assertEquals( connectedDevice, connectedRegistrationStatus.device )
-
-        // Study events reflects deployment has been received, but not running.
-        val events = study.consumeEvents()
-        val receivedEvent = events.filterIsInstance<Study.Event.DeviceDeploymentReceived>()
-        assertEquals( 1, receivedEvent.count() )
-        assertEquals( studyStatus.deploymentInformation, receivedEvent.single().deploymentInformation )
-        val runningEvent = events
-            .filterIsInstance<Study.Event.DeploymentStatusReceived>()
-            .filter { it.deploymentStatus is StudyDeploymentStatus.Running }
-        assertEquals( 0, runningEvent.size )
 
         // Master device status in deployment is registered, but not deployed.
         val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
@@ -178,7 +154,6 @@ class StudyDeploymentProxyTest
 
         // Dependent devices are not yet registered.
         var status = study.getStatus()
-        assertEquals( 0, study.consumeEvents().filterIsInstance<Study.Event.DeviceDeploymentReceived>().count() )
         assertTrue( status is StudyStatus.AwaitingOtherDeviceRegistrations )
 
         // Once dependent devices are registered, deployment succeeds.
@@ -188,7 +163,6 @@ class StudyDeploymentProxyTest
             deviceSmartphoneDependsOn.createRegistration() )
         studyDeployment.tryDeployment( study, deviceRegistration )
         status = study.getStatus()
-        assertEquals( 1, study.consumeEvents().filterIsInstance<Study.Event.DeviceDeploymentReceived>().count() )
         assertTrue( status is StudyStatus.AwaitingOtherDeviceDeployments )
         val registrationStatus = status.devicesRegistrationStatus.values.singleOrNull()
         assertTrue( registrationStatus is DeviceRegistrationStatus.Registered )
@@ -208,10 +182,6 @@ class StudyDeploymentProxyTest
 
         // Connected device is not yet registered.
         var status = study.getStatus()
-        val runningEvents = study.consumeEvents()
-            .filterIsInstance<Study.Event.DeploymentStatusReceived>()
-            .filter { it.deploymentStatus is StudyDeploymentStatus.Running }
-        assertEquals( 0, runningEvents.count() )
         assertTrue( status is StudyStatus.RegisteringDevices )
 
         // Once device is registered, deployment succeeds.
@@ -222,7 +192,6 @@ class StudyDeploymentProxyTest
             connectedDevice.createRegistration() )
         studyDeployment.tryDeployment( study, deviceRegistration )
         status = study.getStatus()
-        assertEquals( 1, study.consumeEvents().filterIsInstance<Study.Event.DeviceDeploymentReceived>().count() )
         assertTrue( status is StudyStatus.Running )
         val registrationStatuses = status.devicesRegistrationStatus
         assertEquals( 2, registrationStatuses.size ) // Smartphone and connected device.
@@ -336,19 +305,12 @@ class StudyDeploymentProxyTest
         val deviceRegistration = smartphone.createRegistration()
         studyDeployment.tryDeployment( study, deviceRegistration )
         check( study.getStatus() is StudyStatus.Running )
-        study.consumeEvents() // Drop events so only new ones under test appear.
 
         studyDeployment.stop( study )
         val status = study.getStatus()
 
         // Study status reflects the study has stopped.
         assertTrue( status is StudyStatus.Stopped )
-
-        // Study events reflects deployment has stopped
-        val stoppedEvents = study.consumeEvents()
-            .filterIsInstance<Study.Event.DeploymentStatusReceived>()
-            .filter { it.deploymentStatus is StudyDeploymentStatus.Stopped }
-        assertEquals( 1, stoppedEvents.count() )
 
         // Deployment status also reflects deployment has stopped.
         val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
