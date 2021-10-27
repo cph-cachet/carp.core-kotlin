@@ -70,35 +70,22 @@ abstract class ClientManager<
     suspend fun getStudiesStatus(): List<StudyStatus> = repository.getStudyList().map { it.getStatus() }
 
     /**
-     * Add a study which needs to be executed on this client. This involves registering this device for the specified study deployment.
+     * Add a study which needs to be executed on this client. No deployment is attempted yet.
      *
-     * @param studyDeploymentId The ID of a study which has been deployed already and for which to collect data.
-     * @param deviceRoleName The role of the client device this study is intended for plays as part of the deployment identified by [studyDeploymentId].
+     * @param studyDeploymentId The ID of the study deployment for which to collect data.
+     * @param deviceRoleName The role of the client device which takes part in the deployment identified by [studyDeploymentId].
      *
-     * @throws IllegalArgumentException when:
-     * - the client has not yet been configured
-     * - a deployment with [studyDeploymentId] does not exist
-     * - [deviceRoleName] is not present in the deployment or is already registered by a different device
-     * - a study with the same [studyDeploymentId] and [deviceRoleName] has already been added to this client
-     * - the configured device registration of this client is invalid for the specified device
-     * - the configured device registration of this client uses a device ID which has already been used as part of registration of a different device
+     * @throws IllegalArgumentException if a study with the same [studyDeploymentId] and [deviceRoleName] has already been added to this client.
      * @return The [StudyStatus] of the newly added study.
      */
     suspend fun addStudy( studyDeploymentId: UUID, deviceRoleName: String ): StudyStatus
     {
-        // TODO: Can/should it be reinforced here that only study runtimes for a matching master device type can be created?
-        require( isConfigured() ) { "The client has not been configured yet." }
+        require( repository.getStudyBy( studyDeploymentId, deviceRoleName ) == null )
+            { "A study with the same study deployment ID and device role name has already been added." }
 
-        val alreadyAdded = repository.getStudyBy( studyDeploymentId, deviceRoleName ) != null
-        require( !alreadyAdded ) { "A study with the same study deployment ID and device role name has already been added." }
-
-        // Create the study and try to deploy.
-        // IllegalArgumentException's will be thrown here when deployment or role name does not exist, or device is already registered.
         val study = Study( studyDeploymentId, deviceRoleName )
-        val deviceRegistration = repository.getDeviceRegistration()!!
-        studyDeployment.tryDeployment( study, deviceRegistration )
-
         repository.addStudy( study )
+
         return study.getStatus()
     }
 
@@ -106,24 +93,30 @@ abstract class ClientManager<
      * Verifies whether the device is ready for deployment of the study identified by [studyId],
      * and in case it is, deploys. In case already deployed, nothing happens.
      *
-     * @throws IllegalArgumentException in case no [Study] with the given [studyId] exists.
-     * @throws UnsupportedOperationException in case deployment failed since not all necessary plugins to execute the study are available.
+     * @throws IllegalArgumentException if:
+     * - the client has not yet been configured
+     * - a [Study] with the given [studyId] does not exist
+     * - deployment failed because of unexpected study deployment ID, device role name, or device registration
+     * @throws UnsupportedOperationException if deployment failed since the runtime does not support all requirements of the study.
      */
     suspend fun tryDeployment( studyId: StudyId ): StudyStatus
     {
+        require( isConfigured() ) { "The client has not been configured yet." }
+
         val study = getStudy( studyId )
 
         // Early out in case this study has already received and validated deployment information.
         val status = study.getStatus()
         if ( status is StudyStatus.Running ) return status
 
+        // Try to deploy the study.
+        // IllegalArgumentException's will be thrown here when deployment or role name does not exist, or device is already registered.
+        // TODO: Can/should it be reinforced here that only matching master device type can be deployed?
         val registration = repository.getDeviceRegistration()!!
         studyDeployment.tryDeployment( study, registration )
+
         val newStatus = study.getStatus()
-        if ( status != newStatus )
-        {
-            repository.updateStudy( study )
-        }
+        if ( status != newStatus ) repository.updateStudy( study )
 
         return newStatus
     }

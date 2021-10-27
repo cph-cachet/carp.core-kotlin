@@ -301,7 +301,7 @@ if ( status is StudyStatus.RegisteringDevices )
     val connectedRegistration = connectedDevice.createRegistration()
     deploymentService.registerDevice( studyDeploymentId, connectedDevice.roleName, connectedRegistration )
 
-    // Re-try deployment now that devices have been registered.
+    // Try deployment now that devices have been registered.
     status = client.tryDeployment( status.id )
     val isDeployed = status is StudyStatus.Running // True.
 }

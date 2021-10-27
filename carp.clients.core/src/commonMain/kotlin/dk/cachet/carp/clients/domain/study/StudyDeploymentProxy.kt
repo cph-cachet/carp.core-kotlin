@@ -23,11 +23,12 @@ class StudyDeploymentProxy(
      * In case already deployed, nothing happens.
      *
      * TODO: Handle `NeedsRedeployment`, invalidating the retrieved deployment information.
-     * @throws IllegalArgumentException when:
-     *  - no study deployment to deploy this client device for found
-     *  - the client device is not expected in the deployment or is already registered and a different [deviceRegistration] is specified
-     *  - [deviceRegistration] is invalid for the client device or
-     *    has a device ID which is already in use by the registration of a different device
+     * @throws IllegalArgumentException if:
+     * - a deployment with study deployment ID matching this [study] does not exist
+     * - device role name of [study] is not present in the deployment
+     * or is already registered and a different [deviceRegistration] is specified
+     * - [deviceRegistration] of this client is invalid for the expected device role name
+     * or has a device ID which is already in use by the registration of a different device
      * @throws UnsupportedOperationException when:
      *  - not all necessary plugins to execute the study are available
      *  - data requested in the deployment cannot be collected on this client device
