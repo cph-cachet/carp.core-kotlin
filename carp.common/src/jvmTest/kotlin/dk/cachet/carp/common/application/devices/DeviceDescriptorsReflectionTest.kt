@@ -1,30 +1,18 @@
 package dk.cachet.carp.common.application.devices
 
+import dk.cachet.carp.common.application.concreteDeviceDescriptorTypes
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.tasks.TaskDescriptorList
-import org.reflections.Reflections
-import java.lang.reflect.Modifier
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import kotlin.test.*
 
 
 class DeviceDescriptorsReflectionTest
 {
     @Test
-    fun all_device_descriptors_define_sensors_and_tasks()
-    {
-        // Find all device descriptors in this subsystem.
-        val deviceClass = DeviceDescriptor::class.java
-        val namespace = deviceClass.`package`.name
-        val reflections = Reflections( namespace )
-        val concreteDeviceDescriptors = reflections
-            .getSubTypesOf( deviceClass )
-            .filter { !Modifier.isAbstract( it.modifiers ) }
-
-        concreteDeviceDescriptors.forEach { concreteClass ->
-            val name = concreteClass.simpleName
-            val subclasses = concreteClass.classes.toList()
+    fun all_device_descriptors_define_sensors_and_tasks() =
+        concreteDeviceDescriptorTypes.forEach { descriptor ->
+            val name = descriptor.simpleName
+            val subclasses = descriptor.java.classes.toList()
 
             // Does the DeviceDescriptor list available sensors?
             val sensorsClass = subclasses.singleOrNull { it.name.endsWith( "\$Sensors" ) }
@@ -44,5 +32,4 @@ class DeviceDescriptorsReflectionTest
                 "`Tasks` subclass in \"$name\" does not extend from \"${superTasksClass.simpleName}\"."
             )
         }
-    }
 }
