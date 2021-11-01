@@ -15,7 +15,7 @@ class DeviceDescriptorTest
         val validConfigurations = mapOf(
             Smartphone.Sensors.GEOLOCATION.dataType.type to Smartphone.Sensors.GEOLOCATION.default
         )
-        val device = Smartphone( "Irrelevant", validConfigurations )
+        val device = Smartphone( "Irrelevant", false, validConfigurations )
 
         device.validateDefaultSamplingConfiguration()
     }
@@ -26,7 +26,7 @@ class DeviceDescriptorTest
         val invalidConfigurations = mapOf(
             Smartphone.Sensors.GEOLOCATION.dataType.type to NoOptionsSamplingConfiguration
         )
-        val device = Smartphone( "Irrelevant", invalidConfigurations )
+        val device = Smartphone( "Irrelevant", false, invalidConfigurations )
 
         assertFailsWith<IllegalStateException> { device.validateDefaultSamplingConfiguration() }
     }

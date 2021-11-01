@@ -60,7 +60,7 @@ class MasterDeviceDeploymentTest
             GranularitySamplingConfiguration( Granularity.Coarse ),
             GranularitySamplingConfiguration( Granularity.Coarse )
         )
-        val device = Smartphone( "Irrelevant", mapOf( dataType to configurationOverride ) )
+        val device = Smartphone( "Irrelevant", false, mapOf( dataType to configurationOverride ) )
         val registration = device.createRegistration()
         val deployment = MasterDeviceDeployment( device, registration )
 
@@ -77,7 +77,7 @@ class MasterDeviceDeploymentTest
     {
         val unexpectedType = DataType( "something", "unexpected" )
         val unexpectedTypeConfiguration = NoOptionsSamplingConfiguration
-        val master = StubMasterDeviceDescriptor( "Master", mapOf( unexpectedType to unexpectedTypeConfiguration ) )
+        val master = StubMasterDeviceDescriptor( "Master", false, mapOf( unexpectedType to unexpectedTypeConfiguration ) )
         val registration = master.createRegistration()
         val deployment = MasterDeviceDeployment( master, registration )
 
