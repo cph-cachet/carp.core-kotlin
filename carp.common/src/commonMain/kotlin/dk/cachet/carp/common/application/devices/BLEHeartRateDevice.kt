@@ -16,7 +16,8 @@ import kotlin.reflect.KClass
  */
 @Serializable
 data class BLEHeartRateDevice(
-    override val roleName: String
+    override val roleName: String,
+    override val isOptional: Boolean = false
 ) : DeviceDescriptor<MACAddressDeviceRegistration, MACAddressDeviceRegistrationBuilder>()
 {
     object Sensors : DataTypeSamplingSchemeMap()

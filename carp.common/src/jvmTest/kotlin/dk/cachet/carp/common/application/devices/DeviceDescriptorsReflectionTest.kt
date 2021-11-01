@@ -72,5 +72,10 @@ class DeviceDescriptorsReflectionTest
                 hasDefaultValues.defaultSamplingConfiguration,
                 "`${AnyDeviceDescriptor::defaultSamplingConfiguration.name}` of `$descriptor` doesn't have the correct default."
             )
+            assertEquals(
+                false,
+                hasDefaultValues.isOptional,
+                "`${AnyDeviceDescriptor::isOptional.name}` of `$descriptor` doesn't have the correct default."
+            )
         }
 }

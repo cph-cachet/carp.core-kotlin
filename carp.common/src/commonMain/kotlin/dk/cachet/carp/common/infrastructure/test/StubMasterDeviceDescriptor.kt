@@ -18,6 +18,7 @@ import kotlin.reflect.KClass
 @Serializable
 data class StubMasterDeviceDescriptor(
     @Required override val roleName: String = "Stub master device",
+    override val isOptional: Boolean = false,
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 ) : MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {
