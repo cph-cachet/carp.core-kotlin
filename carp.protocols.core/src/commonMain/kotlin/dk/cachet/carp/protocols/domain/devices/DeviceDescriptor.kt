@@ -34,6 +34,12 @@ abstract class DeviceDescriptor<
     abstract val roleName: String
 
     /**
+     * Determines whether device registration for this device is optional prior to starting a study,
+     * i.e., whether the study can run without this device or not.
+     */
+    abstract val isOptional: Boolean
+
+    /**
      * The set of [DataType]s defining which data can be collected on this device.
      */
     abstract val supportedDataTypes: Set<DataType>

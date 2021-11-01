@@ -119,7 +119,7 @@ class StudyProtocolSnapshotTest
         val samplingConfiguration = mapOf(
             STUB_DATA_TYPE to unknownSamplingConfiguration
         )
-        val master = StubMasterDeviceDescriptor( "Unknown", samplingConfiguration )
+        val master = StubMasterDeviceDescriptor( "Unknown", false, samplingConfiguration )
         protocol.addMasterDevice( master )
         val connected = StubDeviceDescriptor( "Unknown 2" )
         protocol.addConnectedDevice( connected, master )

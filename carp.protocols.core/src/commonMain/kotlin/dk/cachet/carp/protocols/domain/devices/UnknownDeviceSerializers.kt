@@ -12,6 +12,7 @@ import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.SetSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -25,6 +26,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
     DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
+    override val isOptional: Boolean
     override val supportedDataTypes: Set<DataType>
     override val samplingConfiguration: Map<DataType, SamplingConfiguration>
 
@@ -32,6 +34,7 @@ data class CustomDeviceDescriptor( override val className: String, override val 
     {
         val parsed = parseDeviceDescriptorFields( jsonSource, serializer )
         roleName = parsed.roleName
+        isOptional = parsed.isOptional
         supportedDataTypes = parsed.supportedDataTypes
         samplingConfiguration = parsed.samplingConfiguration
     }
@@ -55,6 +58,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
     MasterDeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
+    override val isOptional: Boolean
     override val supportedDataTypes: Set<DataType>
     override val samplingConfiguration: Map<DataType, SamplingConfiguration>
 
@@ -62,6 +66,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
     {
         val parsed = parseDeviceDescriptorFields( jsonSource, serializer )
         roleName = parsed.roleName
+        isOptional = parsed.isOptional
         supportedDataTypes = parsed.supportedDataTypes
         samplingConfiguration = parsed.samplingConfiguration
     }
@@ -80,6 +85,7 @@ data class CustomMasterDeviceDescriptor( override val className: String, overrid
 
 private data class DeviceDescriptorFields(
     val roleName: String,
+    val isOptional: Boolean,
     val supportedDataTypes: Set<DataType>,
     val samplingConfiguration: Map<DataType, SamplingConfiguration>
 )
@@ -91,6 +97,11 @@ private fun parseDeviceDescriptorFields( jsonSource: String, serializer: Json ):
     val roleNameField = AnyDeviceDescriptor::roleName.name
     require( roleNameField in json.keys ) { "No '$roleNameField' defined." }
     val roleName = json[ roleNameField ]!!.jsonPrimitive.content
+
+    val isOptionalField = AnyDeviceDescriptor::isOptional.name
+    val isOptional =
+        if ( isOptionalField in json.keys ) json[ isOptionalField ]!!.jsonPrimitive.boolean
+        else false
 
     val supportedDataTypesField = AnyDeviceDescriptor::supportedDataTypes.name
     val supportedDataTypes =
@@ -112,7 +123,7 @@ private fun parseDeviceDescriptorFields( jsonSource: String, serializer: Json ):
         }
         else emptyMap()
 
-    return DeviceDescriptorFields( roleName, supportedDataTypes, samplingConfiguration )
+    return DeviceDescriptorFields( roleName, isOptional, supportedDataTypes, samplingConfiguration )
 }
 
 

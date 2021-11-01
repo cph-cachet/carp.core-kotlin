@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
  * A master device which uses a single [CustomProtocolTask] to determine how to run a study on the device.
  */
 @Serializable
-data class CustomProtocolDevice( override val roleName: String ) :
+data class CustomProtocolDevice( override val roleName: String, override val isOptional: Boolean = false ) :
     MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {
     // Measures and data types are defined in the custom `CustomProtocolTask.studyProtocol` and thus not managed by core.
