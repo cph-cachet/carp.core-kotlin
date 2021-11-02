@@ -52,7 +52,7 @@ interface RecruitmentService : ApplicationService<RecruitmentService, Recruitmen
      *  - [group] is empty
      *  - any of the participants specified in [group] does not exist
      *  - any of the master device roles specified in [group] are not part of the configured study protocol
-     *  - not all master devices part of the study have been assigned a participant
+     *  - not all necessary master devices part of the study have been assigned a participant
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
     suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus

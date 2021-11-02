@@ -37,7 +37,7 @@ class DeploymentServiceHost(
      *  - [protocol] is invalid
      *  - [invitations] is empty
      *  - any of the assigned device roles in [invitations] is not part of the study [protocol]
-     *  - not all master devices part of the study [protocol] have been assigned a participant
+     *  - not all necessary master devices part of the study [protocol] have been assigned a participant
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
     override suspend fun createStudyDeployment(
