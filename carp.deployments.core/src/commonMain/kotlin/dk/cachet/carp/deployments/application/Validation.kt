@@ -12,7 +12,7 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
  * @throws IllegalArgumentException when:
  *  - [invitations] is empty
  *  - any of the assigned device roles in [invitations] is not part of the study protocol
- *  - not all master devices part of the study protocol have been assigned a participant
+ *  - not all necessary master devices part of the study protocol have been assigned a participant
  */
 fun StudyProtocolSnapshot.throwIfInvalid(
     invitations: List<ParticipantInvitation>,
@@ -21,14 +21,14 @@ fun StudyProtocolSnapshot.throwIfInvalid(
 {
     require( invitations.isNotEmpty() ) { "No participants invited." }
 
-    val masterDevices = this.masterDevices.map { it.roleName }
-    val assignedMasterDevices = invitations.flatMap { it.assignedMasterDeviceRoleNames }.toSet()
-    assignedMasterDevices.forEach {
-        require( it in masterDevices )
-            { "The assigned master device with role name \"$it\" is not part of the study protocol." }
+    val assignedMasterDeviceRoleNames = invitations.flatMap { it.assignedMasterDeviceRoleNames }.toSet()
+    assignedMasterDeviceRoleNames.forEach { assigned ->
+        require( assigned in masterDevices.map { it.roleName } )
+            { "The assigned master device with role name \"$assigned\" is not part of the study protocol." }
     }
-    require( assignedMasterDevices.containsAll( masterDevices ) )
-        { "Not all devices required for this study have been assigned to a participant." }
+    val requiredMasterDeviceRoleNames = masterDevices.filter { !it.isOptional }.map { it.roleName }
+    require( assignedMasterDeviceRoleNames.containsAll( requiredMasterDeviceRoleNames ) )
+        { "Not all necessary devices required for this study have been assigned to a participant." }
 
     connectedDevicePreregistrations.forEach { (roleName, registration) ->
         val connectedDevice = connectedDevices.firstOrNull { it.roleName == roleName }
