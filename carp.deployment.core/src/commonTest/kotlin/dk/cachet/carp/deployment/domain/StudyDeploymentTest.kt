@@ -27,6 +27,7 @@ import kotlin.test.*
 /**
  * Tests for [StudyDeployment].
  */
+@Suppress( "LargeClass" )
 class StudyDeploymentTest
 {
     companion object
@@ -81,6 +82,30 @@ class StudyDeploymentTest
         assertEquals( 1, deployment.deviceRegistrationHistory[ device ]?.count() )
         assertEquals( registration, deployment.deviceRegistrationHistory[ device ]?.last() )
         assertEquals( StudyDeployment.Event.DeviceRegistered( device, registration ), deployment.consumeEvents().last() )
+    }
+
+    @Test
+    fun registerDevice_of_optional_master_device_triggers_redeployment()
+    {
+        // Deploy master device.
+        val master = StubMasterDeviceDescriptor( "Master 1" )
+        val optionalMaster = StubMasterDeviceDescriptor( "Master 2", true )
+        val protocol = createEmptyProtocol().apply {
+            addMasterDevice( master )
+            addMasterDevice( optionalMaster )
+        }
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( master, master.createRegistration() )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( master )
+        deployment.deviceDeployed( master, deviceDeployment.lastUpdateDate )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
+
+        // Register dependent device.
+        deployment.registerDevice( optionalMaster, optionalMaster.createRegistration() )
+        val status = deployment.getStatus()
+        assertTrue( status is StudyDeploymentStatus.DeployingDevices )
+        val deviceStatus = status.getDeviceStatus( master )
+        assertTrue( deviceStatus is DeviceDeploymentStatus.NeedsRedeployment )
     }
 
     @Test
@@ -415,10 +440,9 @@ class StudyDeploymentTest
         deployment.registerDevice( master, registration )
         deployment.registerDevice( connected, connected.createRegistration() )
 
-        // Include an additional master device with a trigger which should not impact the `DeviceDeployment` tested here.
+        // Later changes made to the protocol don't impact the previously created deployment.
         val ignoredMaster = StubMasterDeviceDescriptor( "Ignored" )
-        protocol.addMasterDevice( ignoredMaster )
-        protocol.addTriggeredTask( ignoredMaster.atStartOfStudy(), masterTask, ignoredMaster )
+        protocol.addMasterDevice( ignoredMaster ) // Normally, this dependent device would block obtaining deployment.
 
         val deviceDeployment: MasterDeviceDeployment = deployment.getDeviceDeploymentFor( master )
         assertEquals( "Registered master", deviceDeployment.configuration.deviceId )
@@ -498,6 +522,32 @@ class StudyDeploymentTest
         // There are no connected devices, only master devices.
         assertEquals( 0, sourceDeployment.connectedDevices.size )
         assertEquals( 0, targetDeployment.connectedDevices.size )
+    }
+
+    @Test
+    fun getDeviceDeploymentFor_and_deviceDeployed_succeed_with_optional_unregistered_dependent_device()
+    {
+        val master = StubMasterDeviceDescriptor( "Master 1" )
+        val optionalMaster = StubMasterDeviceDescriptor( "Master 2", true )
+        val protocol = createEmptyProtocol().apply {
+            addMasterDevice( master )
+            addMasterDevice( optionalMaster )
+        }
+        val deployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( master, master.createRegistration() )
+
+        // Can get deployment.
+        val deploymentStatus = deployment.getStatus()
+        val deviceStatus = deploymentStatus.getDeviceStatus( master )
+        assertTrue( deviceStatus is DeviceDeploymentStatus.Registered )
+        assertTrue( deviceStatus.canObtainDeviceDeployment )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( master )
+        assertEquals( master, deviceDeployment.deviceDescriptor )
+
+        // Can complete deployment.
+        deployment.deviceDeployed( master, deviceDeployment.lastUpdateDate )
+        val status = deployment.getStatus()
+        assertTrue( status is StudyDeploymentStatus.DeploymentReady )
     }
 
     @Test

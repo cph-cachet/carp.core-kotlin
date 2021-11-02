@@ -86,7 +86,7 @@ class ParticipantServiceHost(
      *  - [group] is empty
      *  - any of the participants specified in [group] does not exist
      *  - any of the device roles specified in [group] are not part of the configured study protocol
-     *  - not all devices part of the study have been assigned a participant
+     *  - not all necessary devices part of the study have been assigned a participant
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
     override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus
@@ -99,13 +99,13 @@ class ParticipantServiceHost(
         val protocolSnapshot = study.protocolSnapshot!!
 
         // Verify whether the master device roles to deploy exist in the protocol.
-        val masterDevices = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
-        require( group.deviceRoles().all { it in masterDevices } )
+        val masterDevices = protocolSnapshot.masterDevices
+        require( group.deviceRoles().all { assignedRoleName -> assignedRoleName in masterDevices.map { it.roleName } } )
             { "One of the specified device roles is not part of the configured study protocol." }
 
         // Verify whether all master devices in the study protocol have been assigned to a participant.
-        require( group.deviceRoles().containsAll( masterDevices ) )
-            { "Not all devices required for this study have been assigned to a participant." }
+        require( group.deviceRoles().containsAll( masterDevices.filter { !it.isOptional }.map { it.roleName } ) )
+            { "Not all necessary devices required for this study have been assigned to a participant." }
 
         // In case the same participants have been invited before,
         // and that deployment is still running, return the existing group.
