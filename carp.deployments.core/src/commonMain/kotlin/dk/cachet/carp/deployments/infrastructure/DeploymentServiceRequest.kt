@@ -65,12 +65,12 @@ sealed class DeploymentServiceRequest
         Invoker<MasterDeviceDeployment> by createServiceInvoker( Service::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName )
 
     @Serializable
-    data class DeploymentSuccessful(
+    data class DeviceDeployed(
         val studyDeploymentId: UUID,
         val masterDeviceRoleName: String,
         val deviceDeploymentLastUpdatedOn: Instant
     ) : DeploymentServiceRequest(),
-        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deviceDeploymentLastUpdatedOn )
+        Invoker<StudyDeploymentStatus> by createServiceInvoker( Service::deviceDeployed, studyDeploymentId, masterDeviceRoleName, deviceDeploymentLastUpdatedOn )
 
     @Serializable
     data class Stop( val studyDeploymentId: UUID ) :

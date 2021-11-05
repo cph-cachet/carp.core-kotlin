@@ -10,7 +10,7 @@ The events between `DeploymentService` and `ParticipationService` are opaque to 
 The application and domain services in `carp.studies` and `carp.client` abstract away this entire sequence.
 Matching code for these calls can be found in the main README as part of the [carp.deployments](../README.md#example-deployments) and [carp.client](../README.md#example-client) examples.
 
-![Study deployment sequence diagram](https://i.imgur.com/T9VjzQm.png)
+![Study deployment sequence diagram](https://i.imgur.com/EVRQ5wb.png)
 
 ## Study and device deployment state
 
@@ -18,12 +18,12 @@ Most of the [the `DeploymentService` endpoints](#application-services) return th
 Depending on the current state of the deployment, different operations are available.
 This is represented by [`StudyDeploymentStatus`](../carp.deployments.core/src/commonMain/kotlin/dk/cachet/carp/deployments/application/StudyDeploymentStatus.kt), which reflects the underlying state machine:
 
-![Study deployment state machine](https://i.imgur.com/QubueGl.png)
+![Study deployment state machine](https://i.imgur.com/GTk5OHe.png)
 
 The overall deployment state depends on the aggregate of individual device deployment states.
 Each device within the study deployment has a corresponding [`DeviceDeploymentStatus`](../carp.deployments.core/src/commonMain/kotlin/dk/cachet/carp/deployments/application/DeviceDeploymentStatus.kt):
 
-![Device deployment state machine](https://i.imgur.com/Mkb78W4.png)
+![Device deployment state machine](https://i.imgur.com/acxD0Vw.png)
 
 ## Application services
 
@@ -43,7 +43,7 @@ Allows deploying study protocols to participants and retrieving master device de
 | `registerDevice` | Register a device for a study deployment. | in deployment: `studyDeploymentId` | |
 | `unregisterDevice` | Unregister a device for a study deployment. | in deployment: `studyDeploymentId` | |
 | `getDeviceDeploymentFor` | Get the deployment configuration for a master device in a study deployment. | in deployment: `studyDeploymentId` | |
-| `deploymentSuccessful` | Indicate to stakeholders in a study deployment that a master device was deployed successfully, i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it. | in deployment: `studyDeploymentId` | |
+| `deviceDeployed` | Indicate to stakeholders in a study deployment that a master device was deployed successfully, i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it. | in deployment: `studyDeploymentId` | |
 | `stop` | Stop a study deployment. No further changes to this deployment will be allowed and no more data will be collected. | in deployment: `studyDeploymentId` | |
 
 ### [`ParticipationService`](../carp.deployments.core/src/commonMain/kotlin/dk/cachet/carp/deployments/application/ParticipationService.kt)

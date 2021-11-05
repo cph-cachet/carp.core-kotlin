@@ -229,7 +229,7 @@ class HostsIntegrationTest
         // Data can now be appended to data streams once the deployment is "ready".
         deploymentService.registerDevice( deploymentId, masterDevice.roleName, masterDevice.createRegistration() )
         val deviceDeployment = deploymentService.getDeviceDeploymentFor( deploymentId, masterDevice.roleName )
-        deploymentService.deploymentSuccessful( deploymentId, masterDevice.roleName, deviceDeployment.lastUpdatedOn )
+        deploymentService.deviceDeployed( deploymentId, masterDevice.roleName, deviceDeployment.lastUpdatedOn )
         dataStreamService.appendToDataStreams( deploymentId, toAppend )
 
         // Data can no longer be appended after a deployment is stopped.
