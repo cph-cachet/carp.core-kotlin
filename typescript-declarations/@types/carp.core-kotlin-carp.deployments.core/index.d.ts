@@ -244,7 +244,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             {
                 constructor( studyDeploymentId: UUID, masterDeviceRoleName: string )
             }
-            class DeploymentSuccessful extends DeploymentServiceRequest
+            class DeviceDeployed extends DeploymentServiceRequest
             {
                 constructor( studyDeploymentId: UUID, masterDeviceRoleName: string, deviceDeploymentLastUpdatedOn: Instant )
             }

@@ -218,7 +218,7 @@ class StudyRuntime private constructor(
         // Notify deployment service of successful deployment.
         try
         {
-            deploymentService.deploymentSuccessful( studyDeploymentId, device.roleName, deployment.lastUpdatedOn )
+            deploymentService.deviceDeployed( studyDeploymentId, device.roleName, deployment.lastUpdatedOn )
             isDeployed = true
             event( Event.DeploymentCompleted )
         }

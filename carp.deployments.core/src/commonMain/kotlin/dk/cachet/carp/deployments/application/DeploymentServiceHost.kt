@@ -200,7 +200,7 @@ class DeploymentServiceHost(
      * - the [deviceDeploymentLastUpdatedOn] does not match the expected timestamp. The deployment might be outdated.
      * @throws IllegalStateException when the deployment cannot be deployed yet, or the deployment has stopped.
      */
-    override suspend fun deploymentSuccessful(
+    override suspend fun deviceDeployed(
         studyDeploymentId: UUID,
         masterDeviceRoleName: String,
         deviceDeploymentLastUpdatedOn: Instant
