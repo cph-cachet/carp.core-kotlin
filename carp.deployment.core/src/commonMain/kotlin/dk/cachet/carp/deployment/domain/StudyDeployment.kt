@@ -175,7 +175,11 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         // Initialize information which devices can or should be registered for this deployment.
         _registrableDevices = protocol.devices
             // Top-level master devices that aren't optional require deployment.
-            .map { RegistrableDevice( it, it in protocol.masterDevices && !it.isOptional ) }
+            .map {
+                val canBeDeployed = it in protocol.masterDevices
+                val requiresDeployment = canBeDeployed && !it.isOptional
+                RegistrableDevice( it, canBeDeployed, requiresDeployment )
+            }
             .toMutableSet()
     }
 
@@ -188,7 +192,9 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         val devicesStatus: List<DeviceDeploymentStatus> = _registrableDevices.map { getDeviceStatus( it.device ) }
         val allRequiredDevicesDeployed: Boolean = devicesStatus
             .filter { it.requiresDeployment }
-            .all { it is DeviceDeploymentStatus.Deployed }
+            .all { it is DeviceDeploymentStatus.Deployed } &&
+                // At least one device needs to be deployed.
+                devicesStatus.any { it is DeviceDeploymentStatus.Deployed }
         val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
         return when {
@@ -407,10 +413,13 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
         check( !isStopped ) { "Cannot deploy devices after a study deployment has stopped." }
 
         // Verify whether the specified device is ready to be deployed.
-        val canDeploy = getDeviceStatus( device ).let {
+        val canDeployDevice = registrableDevices.first { it.device == device }.canBeDeployed
+        val isReadyForDeployment = getDeviceStatus( device ).let {
             it is DeviceDeploymentStatus.Deployed ||
-            it is DeviceDeploymentStatus.NotDeployed && it.isReadyForDeployment }
-        check( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
+            it is DeviceDeploymentStatus.NotDeployed &&
+            ( canDeployDevice && it.remainingDevicesToRegisterBeforeDeployment.isEmpty() )
+        }
+        check( isReadyForDeployment ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
         _deployedDevices
             .add( device )

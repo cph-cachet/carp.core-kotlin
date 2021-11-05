@@ -29,7 +29,6 @@ declare module 'carp.core-kotlin-carp.deployment.core'
             interface NotDeployed
             {
                 readonly requiresDeployment: Boolean
-                readonly isReadyForDeployment: Boolean
                 readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
 
@@ -45,7 +44,6 @@ declare module 'carp.core-kotlin-carp.deployment.core'
                 readonly device: any
                 readonly requiresDeployment: Boolean
                 readonly canObtainDeviceDeployment: Boolean
-                readonly isReadyForDeployment: Boolean
                 readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
@@ -60,7 +58,6 @@ declare module 'carp.core-kotlin-carp.deployment.core'
                 readonly device: any
                 readonly requiresDeployment: Boolean
                 readonly canObtainDeviceDeployment: Boolean
-                readonly isReadyForDeployment: Boolean
                 readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }
@@ -82,7 +79,6 @@ declare module 'carp.core-kotlin-carp.deployment.core'
                 readonly device: any
                 readonly requiresDeployment: Boolean
                 readonly canObtainDeviceDeployment: Boolean
-                readonly isReadyForDeployment: Boolean
                 readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
             }

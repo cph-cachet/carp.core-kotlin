@@ -16,7 +16,12 @@ data class RegistrableDevice(
     @Serializable( DeviceDescriptorSerializer::class )
     val device: AnyDeviceDescriptor,
     /**
-     * Determines whether this device requires deployment in order to start the study.
+     * Determines whether the device can be deployed by retrieving [MasterDeviceDeployment].
+     * Not all master devices necessarily need deployment; chained master devices do not.
+     */
+    val canBeDeployed: Boolean,
+    /**
+     * Determines whether this device can be deployed and requires deployment in order to start the study.
      */
     val requiresDeployment: Boolean
 )

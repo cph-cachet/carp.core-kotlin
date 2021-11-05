@@ -40,12 +40,6 @@ sealed class DeviceDeploymentStatus
         val requiresDeployment: Boolean
 
         /**
-         * Determines whether the device and all dependent devices have been registered successfully and is ready for deployment.
-         */
-        val isReadyForDeployment: Boolean
-            get() = requiresDeployment && remainingDevicesToRegisterBeforeDeployment.isEmpty()
-
-        /**
          * The role names of devices which need to be registered before the deployment information for this device can be obtained.
          */
         val remainingDevicesToRegisterToObtainDeployment: Set<String>
