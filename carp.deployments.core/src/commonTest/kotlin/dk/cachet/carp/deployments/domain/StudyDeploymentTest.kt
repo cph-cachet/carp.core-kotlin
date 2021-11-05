@@ -481,7 +481,33 @@ class StudyDeploymentTest
     }
 
     @Test
-    fun chained_master_devices_do_not_require_deployment()
+    fun getStatus_for_protocol_with_only_optional_devices()
+    {
+        val protocol = createEmptyProtocol()
+        val master = StubMasterDeviceDescriptor( "Master", isOptional = true )
+        val master2 = StubMasterDeviceDescriptor( "Master 2", isOptional = true )
+        protocol.addMasterDevice( master )
+        protocol.addMasterDevice( master2 )
+        val deployment = studyDeploymentFor( protocol )
+
+        // At least one device needs to be deployed before deployment can be considered "Running".
+        var status = deployment.getStatus()
+        assertTrue( status is StudyDeploymentStatus.Invited )
+
+        // Register device.
+        deployment.registerDevice( master, master.createRegistration() )
+        status = deployment.getStatus()
+        assertTrue( status is StudyDeploymentStatus.DeployingDevices )
+
+        // Deploy device. All other devices are optional, so deployment is "Running".
+        val deviceDeployment = deployment.getDeviceDeploymentFor( master )
+        deployment.deviceDeployed( master, deviceDeployment.lastUpdatedOn )
+        status = deployment.getStatus()
+        assertTrue( status is StudyDeploymentStatus.Running )
+    }
+
+    @Test
+    fun chained_master_devices_cant_be_deployed()
     {
         val protocol = createEmptyProtocol()
         val master = StubMasterDeviceDescriptor( "Master" )
@@ -492,7 +518,7 @@ class StudyDeploymentTest
 
         val status: StudyDeploymentStatus = deployment.getStatus()
         val chainedStatus = status.getDeviceStatus( chained )
-        assertFalse { chainedStatus.requiresDeployment }
+        assertFalse { chainedStatus.canBeDeployed }
     }
 
     @Test
