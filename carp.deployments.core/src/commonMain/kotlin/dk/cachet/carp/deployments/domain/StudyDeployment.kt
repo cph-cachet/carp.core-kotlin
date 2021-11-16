@@ -14,6 +14,9 @@ import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.deployments.application.throwIfInvalidInvitations
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
+import dk.cachet.carp.deployments.application.users.ParticipantStatus
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.datetime.Clock
@@ -26,8 +29,11 @@ import kotlinx.datetime.Instant
  * I.e., a [StudyDeployment] is responsible for registering the physical devices described in the [StudyProtocol],
  * enabling a connection between them, tracking device connection issues, and assessing data quality.
  */
-class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID = UUID.randomUUID() ) :
-    AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>()
+class StudyDeployment private constructor(
+    val protocolSnapshot: StudyProtocolSnapshot,
+    val participants: List<ParticipantStatus>,
+    val id: UUID = UUID.randomUUID()
+) : AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>()
 {
     sealed class Event : DomainEvent()
     {
@@ -42,9 +48,31 @@ class StudyDeployment( val protocolSnapshot: StudyProtocolSnapshot, val id: UUID
 
     companion object Factory
     {
+        /**
+         * Initialize a deployment for a [protocolSnapshot] for the participants invited as defined by [invitations].
+         *
+         * @throws IllegalArgumentException if [invitations] don't match the requirements of the protocol.
+         */
+        fun fromInvitations(
+            protocolSnapshot: StudyProtocolSnapshot,
+            invitations: List<ParticipantInvitation>,
+            id: UUID = UUID.randomUUID()
+        ): StudyDeployment
+        {
+            protocolSnapshot.throwIfInvalidInvitations( invitations )
+            val participants = invitations.map {
+                ParticipantStatus( it.participantId, it.assignedMasterDeviceRoleNames )
+            }
+
+            return StudyDeployment( protocolSnapshot, participants, id )
+        }
+
         fun fromSnapshot( snapshot: StudyDeploymentSnapshot ): StudyDeployment
         {
-            val deployment = StudyDeployment( snapshot.studyProtocolSnapshot, snapshot.studyDeploymentId )
+            val deployment = StudyDeployment(
+                snapshot.studyProtocolSnapshot,
+                snapshot.participants.toList(),
+                snapshot.studyDeploymentId )
             deployment.createdOn = snapshot.createdOn
             deployment.startedOn = snapshot.startedOn
 

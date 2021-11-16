@@ -50,9 +50,8 @@ class DeploymentServiceHost(
         connectedDevicePreregistrations: Map<String, DeviceRegistration>
     ): StudyDeploymentStatus
     {
-        protocol.throwIfInvalid( invitations, connectedDevicePreregistrations )
-
-        val newDeployment = StudyDeployment( protocol, id )
+        protocol.throwIfInvalidPreregistrations( connectedDevicePreregistrations )
+        val newDeployment = StudyDeployment.fromInvitations( protocol, invitations, id )
         connectedDevicePreregistrations.forEach { (connected, registration) ->
             val device = protocol.connectedDevices.first { it.roleName == connected }
             newDeployment.registerDevice( device, registration )

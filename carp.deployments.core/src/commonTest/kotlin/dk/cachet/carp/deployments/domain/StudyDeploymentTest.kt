@@ -10,6 +10,7 @@ import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.triggers.TaskControl
+import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.CustomMasterDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.CustomTaskDescriptor
@@ -23,8 +24,11 @@ import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
+import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import kotlinx.datetime.Clock
 import kotlinx.serialization.Required
@@ -45,7 +49,7 @@ class StudyDeploymentTest
 
 
     @Test
-    fun cant_initialize_deployment_with_errors()
+    fun fromInvitations_with_invalid_protocol_fails()
     {
         val protocol = createEmptyProtocol()
         val snapshot = protocol.getSnapshot()
@@ -53,7 +57,25 @@ class StudyDeploymentTest
         // Protocol does not contain a master device, thus contains deployment error and can't be initialized.
         assertFailsWith<IllegalArgumentException>
         {
-            StudyDeployment( snapshot )
+            StudyDeployment.fromInvitations( snapshot, emptyList() )
+        }
+    }
+
+    @Test
+    fun fromInvitations_with_invalid_invitations_fails()
+    {
+        val protocol = createSingleMasterDeviceProtocol()
+        val snapshot = protocol.getSnapshot()
+
+        val incorrectInvitation = ParticipantInvitation(
+            UUID.randomUUID(),
+            setOf( "Invalid" ),
+            UsernameAccountIdentity( "Test" ),
+            StudyInvitation( "Test" )
+        )
+        assertFailsWith<IllegalArgumentException>
+        {
+            StudyDeployment.fromInvitations( snapshot, listOf( incorrectInvitation ) )
         }
     }
 

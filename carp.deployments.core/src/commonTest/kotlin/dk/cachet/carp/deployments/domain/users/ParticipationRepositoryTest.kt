@@ -4,8 +4,8 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
-import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.deployments.domain.createComplexParticipantGroup
+import dk.cachet.carp.deployments.domain.studyDeploymentFor
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import dk.cachet.carp.test.runSuspendTest
@@ -30,7 +30,7 @@ interface ParticipationRepositoryTest
     fun getParticipations_succeeds() = runSuspendTest {
         val repo = createRepository()
         val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
-        val deployment = StudyDeployment( protocol.getSnapshot() )
+        val deployment = studyDeploymentFor( protocol )
         val group = ParticipantGroup.fromNewDeployment( deployment )
 
         // Add participation.
@@ -85,11 +85,11 @@ interface ParticipationRepositoryTest
         val repo = createRepository()
         val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
 
-        val deployment1 = StudyDeployment( protocol.getSnapshot() )
+        val deployment1 = studyDeploymentFor( protocol )
         val group1 = ParticipantGroup.fromNewDeployment( deployment1 )
         repo.putParticipantGroup( group1 )
 
-        val deployment2 = StudyDeployment( protocol.getSnapshot() )
+        val deployment2 = studyDeploymentFor( protocol )
         val group2 = ParticipantGroup.fromNewDeployment( deployment2 )
         repo.putParticipantGroup( group2 )
 
