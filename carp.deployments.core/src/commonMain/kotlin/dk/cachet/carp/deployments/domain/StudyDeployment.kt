@@ -219,16 +219,17 @@ class StudyDeployment private constructor(
     fun getStatus(): StudyDeploymentStatus
     {
         val devicesStatus: List<DeviceDeploymentStatus> = _registrableDevices.map { getDeviceStatus( it.device ) }
+        val participantsStatus = participants.toList()
         val allRequiredDevicesDeployed: Boolean = devicesStatus
             .filter { it.requiresDeployment }
             .all { it is DeviceDeploymentStatus.Deployed }
         val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
         return when {
-            isStopped -> StudyDeploymentStatus.Stopped( createdOn, id, devicesStatus, startedOn, stoppedOn!! )
-            allRequiredDevicesDeployed -> StudyDeploymentStatus.Running( createdOn, id, devicesStatus, startedOn!! )
-            anyRegistration -> StudyDeploymentStatus.DeployingDevices( createdOn, id, devicesStatus, startedOn )
-            else -> StudyDeploymentStatus.Invited( createdOn, id, devicesStatus, startedOn )
+            isStopped -> StudyDeploymentStatus.Stopped( createdOn, id, devicesStatus, participantsStatus, startedOn, stoppedOn!! )
+            allRequiredDevicesDeployed -> StudyDeploymentStatus.Running( createdOn, id, devicesStatus, participantsStatus, startedOn!! )
+            anyRegistration -> StudyDeploymentStatus.DeployingDevices( createdOn, id, devicesStatus, participantsStatus, startedOn )
+            else -> StudyDeploymentStatus.Invited( createdOn, id, devicesStatus, participantsStatus, startedOn )
         }
     }
 

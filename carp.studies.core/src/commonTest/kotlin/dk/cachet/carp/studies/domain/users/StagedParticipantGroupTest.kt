@@ -29,7 +29,7 @@ class StagedParticipantGroupTest
         val participantId = UUID.randomUUID()
         group.addParticipants( setOf( participantId ) )
         val stubInvitedStatus =
-            StudyDeploymentStatus.Invited( Clock.System.now(), UUID.randomUUID(), emptyList(), Clock.System.now() )
+            StudyDeploymentStatus.Invited( Clock.System.now(), UUID.randomUUID(), emptyList(), emptyList(), Clock.System.now() )
         group.markAsInvited( stubInvitedStatus )
 
         val newParticipantId = UUID.randomUUID()
@@ -46,7 +46,7 @@ class StagedParticipantGroupTest
 
         val expectedInvitedOn: Instant = Clock.System.now()
         val mockInvitedStatus =
-            StudyDeploymentStatus.Invited( expectedInvitedOn, UUID.randomUUID(), emptyList(), Clock.System.now() )
+            StudyDeploymentStatus.Invited( expectedInvitedOn, UUID.randomUUID(), emptyList(), emptyList(), Clock.System.now() )
         group.markAsInvited( mockInvitedStatus )
 
         assertEquals( expectedInvitedOn, group.invitedOn )
@@ -58,7 +58,7 @@ class StagedParticipantGroupTest
     {
         val group = StagedParticipantGroup()
         val stubInvitedStatus =
-            StudyDeploymentStatus.Invited( Clock.System.now(), UUID.randomUUID(), emptyList(), Clock.System.now() )
+            StudyDeploymentStatus.Invited( Clock.System.now(), UUID.randomUUID(), emptyList(), emptyList(), Clock.System.now() )
         assertFailsWith<IllegalStateException> { group.markAsInvited( stubInvitedStatus ) }
     }
 }

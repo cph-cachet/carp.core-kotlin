@@ -1,3 +1,5 @@
+@file:Suppress( "LargeClass" )
+
 package dk.cachet.carp.deployments.domain
 
 import dk.cachet.carp.common.application.UUID
@@ -25,6 +27,7 @@ import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
+import dk.cachet.carp.deployments.application.users.ParticipantStatus
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
@@ -402,6 +405,26 @@ class StudyDeploymentTest
         val snapshot = deployment.getSnapshot()
         val fromSnapshot = StudyDeployment.fromSnapshot( snapshot )
         assertEquals( listOf( registration1, registration2 ), fromSnapshot.deviceRegistrationHistory[ master ] )
+    }
+
+    @Test
+    fun getStatus_contains_invited_participants()
+    {
+        val deviceRoleName = "Master"
+        val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
+        val invitation = ParticipantInvitation(
+            UUID.randomUUID(),
+            setOf( deviceRoleName ),
+            UsernameAccountIdentity( "Test" ),
+            StudyInvitation( "Test " )
+        )
+        val deployment = StudyDeployment.fromInvitations( protocol.getSnapshot(), listOf( invitation ) )
+
+        val status = deployment.getStatus()
+        assertEquals(
+            listOf( ParticipantStatus( invitation.participantId, invitation.assignedMasterDeviceRoleNames ) ),
+            status.participantsStatus
+        )
     }
 
     @Test

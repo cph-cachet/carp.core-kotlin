@@ -137,7 +137,7 @@ class RecruitmentTest
         val group = recruitment.addParticipantGroup( setOf( participant.id ) )
 
         val stubDeploymentStatus =
-            StudyDeploymentStatus.DeployingDevices( Clock.System.now(), group.id, emptyList(), null )
+            StudyDeploymentStatus.DeployingDevices( Clock.System.now(), group.id, emptyList(), emptyList(), null )
         val groupStatus = recruitment.getParticipantGroupStatus( stubDeploymentStatus )
 
         assertEquals( group.id, groupStatus.id )
@@ -151,7 +151,7 @@ class RecruitmentTest
 
         val unknownId = UUID.randomUUID()
         val stubDeploymentStatus =
-            StudyDeploymentStatus.DeployingDevices( Clock.System.now(), unknownId, emptyList(), null )
+            StudyDeploymentStatus.DeployingDevices( Clock.System.now(), unknownId, emptyList(), emptyList(), null )
         assertFailsWith<IllegalArgumentException> {
             recruitment.getParticipantGroupStatus( stubDeploymentStatus )
         }
