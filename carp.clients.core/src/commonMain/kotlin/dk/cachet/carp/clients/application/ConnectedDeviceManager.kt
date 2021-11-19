@@ -1,4 +1,4 @@
-package dk.cachet.carp.clients.domain
+package dk.cachet.carp.clients.application
 
 import dk.cachet.carp.clients.domain.data.AnyConnectedDeviceDataCollector
 import dk.cachet.carp.common.application.devices.DeviceRegistration

@@ -7,8 +7,8 @@ Integrations with sensors are loaded through a 'device data collector' plug-in s
 [`ClientManager`](../carp.clients.core/src/commonMain/kotlin/dk/cachet/carp/clients/domain/ClientManager.kt) is the main entry point into this subsystem.
 Concrete devices extend on it, e.g., [`SmartphoneClient`](../carp.clients.core/src/commonMain/kotlin/dk/cachet/carp/clients/domain/SmartphoneClient.kt) manages data collection on a smartphone.
 
-## Study runtime state
+## Study state
 
-[`StudyRuntimeStatus`](../carp.clients.core/src/commonMain/kotlin/dk/cachet/carp/clients/domain/StudyRuntimeStatus.kt) represents the status of a single study which runs on `ClientManager`.
+[`StudyStatus`](../carp.clients.core/src/commonMain/kotlin/dk/cachet/carp/clients/domain/StudyStatus.kt) represents the status of a single study which runs on `ClientManager`.
 
-![Study deployment state machine](https://i.imgur.com/aBbsgqx.png)
+![Study state machine](https://i.imgur.com/fi348XB.png)

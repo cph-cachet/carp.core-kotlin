@@ -1,7 +1,7 @@
 package dk.cachet.carp.clients
 
 import dk.cachet.carp.clients.domain.SmartphoneClient
-import dk.cachet.carp.clients.domain.StudyRuntimeStatus
+import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.clients.domain.createDataCollectorFactory
 import dk.cachet.carp.clients.domain.createParticipantInvitation
 import dk.cachet.carp.clients.domain.data.DataListener
@@ -46,7 +46,7 @@ class ClientCodeSamples
         val studyDeploymentId: UUID = invitation.participation.studyDeploymentId
         val deviceToUse: String = invitation.assignedDevices.first().device.roleName // This matches "Patient's phone".
 
-        // Create a study runtime for the study.
+        // Add the study to a client device manager.
         val clientRepository = createRepository()
         val client = SmartphoneClient( clientRepository, deploymentService, dataCollectorFactory )
         client.configure {
@@ -55,18 +55,18 @@ class ClientCodeSamples
             // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
             deviceId = "xxxxxxxxx"
         }
-        var status: StudyRuntimeStatus = client.addStudy( studyDeploymentId, deviceToUse )
+        var status: StudyStatus = client.addStudy( studyDeploymentId, deviceToUse )
 
         // Register connected devices in case needed.
-        if ( status is StudyRuntimeStatus.RegisteringDevices )
+        if ( status is StudyStatus.RegisteringDevices )
         {
             val connectedDevice = status.remainingDevicesToRegister.first()
             val connectedRegistration = connectedDevice.createRegistration()
             deploymentService.registerDevice( studyDeploymentId, connectedDevice.roleName, connectedRegistration )
 
-            // Re-try deployment now that devices have been registered.
+            // Try deployment now that devices have been registered.
             status = client.tryDeployment( status.id )
-            val isDeployed = status is StudyRuntimeStatus.Deployed // True.
+            val isDeployed = status is StudyStatus.Running // True.
         }
     }
 

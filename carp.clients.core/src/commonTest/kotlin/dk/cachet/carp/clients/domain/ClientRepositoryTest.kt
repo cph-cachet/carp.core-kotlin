@@ -1,15 +1,13 @@
 package dk.cachet.carp.clients.domain
 
-import dk.cachet.carp.clients.domain.data.DataListener
+import dk.cachet.carp.clients.domain.study.Study
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.devices.SmartphoneDeviceRegistration
-import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
-import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
-import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
-import dk.cachet.carp.deployments.application.DeploymentService
-import dk.cachet.carp.deployments.application.DeploymentServiceHost
-import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
+import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
+import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.test.runSuspendTest
+import kotlinx.datetime.Clock
 import kotlin.test.*
 
 
@@ -20,129 +18,114 @@ interface ClientRepositoryTest
      */
     fun createRepository(): ClientRepository
 
-    private fun createDependencies(): Triple<ClientRepository, DeploymentService, DataListener>
-    {
-        val eventBus = SingleThreadedEventBus()
-
-        val deploymentService = DeploymentServiceHost(
-            InMemoryDeploymentRepository(),
-            InMemoryDataStreamService(),
-            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
-        return Triple( createRepository(), deploymentService, createDataListener() )
-    }
-
-    private suspend fun addTestDeployment( deploymentService: DeploymentService ): UUID
-    {
-        val protocol = createSmartphoneStudy()
-        val invitation = createParticipantInvitation( protocol )
-        val status = deploymentService.createStudyDeployment( UUID.randomUUID(), protocol.getSnapshot(), listOf( invitation ) )
-
-        return status.studyDeploymentId
-    }
-
-    private suspend fun createTestStudyRuntime(): Pair<ClientRepository, StudyRuntime>
-    {
-        val (repo, deploymentService, dataListener) = createDependencies()
-        val deploymentId = addTestDeployment( deploymentService )
-        val roleName = smartphone.roleName
-        return repo to StudyRuntime.initialize(
-            deploymentService, dataListener,
-            deploymentId, roleName, smartphone.createRegistration() )
-    }
-
 
     @Test
     fun deviceRegistration_is_initially_null() = runSuspendTest {
-        val (repo, _) = createDependencies()
+        val repo = createRepository()
         assertNull( repo.getDeviceRegistration() )
     }
 
     @Test
-    fun addStudyRuntime_can_be_retrieved() = runSuspendTest {
-        val (repo, studyRuntime) = createTestStudyRuntime()
-        repo.addStudyRuntime( studyRuntime )
+    fun addStudy_can_be_retrieved() = runSuspendTest {
+        val repo = createRepository()
 
-        // Runtime can be retrieved by ID.
-        val deploymentId = studyRuntime.studyDeploymentId
-        val roleName = studyRuntime.device.roleName
-        val retrievedRuntime = repo.getStudyRuntimeBy( deploymentId, roleName )
-        assertNotNull( retrievedRuntime )
+        val study = Study( UUID.randomUUID(), "Device role" )
+        repo.addStudy( study )
 
-        // Runtime is included in list.
-        val allRuntimes = repo.getStudyRuntimeList()
-        assertEquals( 1, allRuntimes.count() )
-        assertNotNull( allRuntimes.single { it.studyDeploymentId == deploymentId && it.device.roleName == roleName } )
+        // Study can be retrieved by ID.
+        val deploymentId = study.studyDeploymentId
+        val roleName = study.deviceRoleName
+        val retrievedStudy = repo.getStudyBy( deploymentId, roleName )
+        assertNotNull( retrievedStudy )
+
+        // Study is included in list.
+        val allStudies = repo.getStudyList()
+        assertEquals( 1, allStudies.count() )
+        assertNotNull( allStudies.single { it.studyDeploymentId == deploymentId && it.deviceRoleName == roleName } )
     }
 
     @Test
-    fun addStudyRuntime_fails_for_existing_runtime() = runSuspendTest {
-        val (repo, studyRuntime) = createTestStudyRuntime()
-        repo.addStudyRuntime( studyRuntime )
+    fun addStudy_fails_for_existing_study() = runSuspendTest {
+        val repo = createRepository()
+        val study = Study( UUID.randomUUID(), "Device role" )
+        repo.addStudy( study )
 
-        assertFailsWith<IllegalArgumentException> { repo.addStudyRuntime( studyRuntime ) }
+        assertFailsWith<IllegalArgumentException> { repo.addStudy( study ) }
     }
 
     @Test
-    fun getStudyRuntimeBy_is_null_for_unknown_runtime() = runSuspendTest {
-        val (repo, _) = createDependencies()
+    fun getStudyBy_is_null_for_unknown_study() = runSuspendTest {
+        val repo = createRepository()
 
         val unknownId = UUID.randomUUID()
-        assertNull( repo.getStudyRuntimeBy( unknownId, "Unknown" ) )
+        assertNull( repo.getStudyBy( unknownId, "Unknown" ) )
     }
 
     @Test
-    fun getStudyRuntimeList_is_empty_initially() = runSuspendTest {
-        val (repo, _) = createDependencies()
+    fun getStudyList_is_empty_initially() = runSuspendTest {
+        val repo = createRepository()
 
-        assertEquals( 0, repo.getStudyRuntimeList().count() )
+        assertEquals( 0, repo.getStudyList().count() )
     }
 
     @Test
-    fun updateStudyRuntime_succeeds() = runSuspendTest {
-        val (repo, deploymentService, dataListener) = createDependencies()
-        val protocol = createDependentSmartphoneStudy()
-        val invitation = createParticipantInvitation( protocol )
+    fun updateStudy_succeeds() = runSuspendTest {
+        val repo = createRepository()
         val deploymentId = UUID.randomUUID()
-        deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
-        val studyRuntime = StudyRuntime.initialize(
-            deploymentService, dataListener,
-            deploymentId, smartphone.roleName, smartphone.createRegistration() )
-        repo.addStudyRuntime( studyRuntime )
+        val deviceRoleName = "Device role"
+        val study = Study( deploymentId, deviceRoleName )
+        repo.addStudy( study )
 
         // Make some changes and update.
-        deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, SmartphoneDeviceRegistration( "dependent" ) )
-        studyRuntime.tryDeployment( deploymentService, dataListener )
-        repo.updateStudyRuntime( studyRuntime )
+        val masterDevice = StubMasterDeviceDescriptor( deviceRoleName )
+        val registration = masterDevice.createRegistration()
+        val masterDeviceDeployment = MasterDeviceDeployment( StubMasterDeviceDescriptor( deviceRoleName ), registration )
+        study.deploymentStatusReceived(
+            StudyDeploymentStatus.DeployingDevices(
+                Clock.System.now(),
+                deploymentId,
+                listOf(
+                    DeviceDeploymentStatus.Registered( masterDevice, true, emptySet(), emptySet() )
+                ),
+                emptyList(),
+                null
+            )
+        )
+        study.deviceDeploymentReceived( masterDeviceDeployment )
+        repo.updateStudy( study )
 
         // Verify whether changes were stored.
-        val retrievedRuntime = repo.getStudyRuntimeBy( deploymentId, smartphone.roleName )
-        assertNotNull( retrievedRuntime )
-        assertEquals( studyRuntime.getSnapshot(), retrievedRuntime.getSnapshot() )
+        val retrievedStudy = repo.getStudyBy( deploymentId, deviceRoleName )
+        assertNotNull( retrievedStudy )
+        assertEquals( study.getSnapshot(), retrievedStudy.getSnapshot() )
     }
 
     @Test
-    fun updateStudyRuntime_fails_for_unknown_runtime() = runSuspendTest {
-        val (repo, studyRuntime) = createTestStudyRuntime()
+    fun updateStudy_fails_for_unknown_study() = runSuspendTest {
+        val repo = createRepository()
 
-        assertFailsWith<IllegalArgumentException> { repo.updateStudyRuntime( studyRuntime ) }
+        val study = Study( UUID.randomUUID(), "Device role" )
+        assertFailsWith<IllegalArgumentException> { repo.updateStudy( study ) }
     }
 
     @Test
-    fun removeStudyRuntime_succeeds() = runSuspendTest {
-        val (repo, studyRuntime) = createTestStudyRuntime()
-        repo.addStudyRuntime( studyRuntime )
+    fun removeStudy_succeeds() = runSuspendTest {
+        val repo = createRepository()
+        val study = Study( UUID.randomUUID(), "Device role" )
+        repo.addStudy( study )
 
-        repo.removeStudyRuntime( studyRuntime )
+        repo.removeStudy( study )
 
-        val deploymentId = studyRuntime.studyDeploymentId
-        val roleName = studyRuntime.device.roleName
-        assertNull( repo.getStudyRuntimeBy( deploymentId, roleName ) )
-        assertEquals( 0, repo.getStudyRuntimeList().count() )
+        val deploymentId = study.studyDeploymentId
+        val roleName = study.deviceRoleName
+        assertNull( repo.getStudyBy( deploymentId, roleName ) )
+        assertEquals( 0, repo.getStudyList().count() )
     }
 
     @Test
-    fun removeStudyRuntime_succeeds_when_runtime_not_present() = runSuspendTest {
-        val (repo, studyRuntime) = createTestStudyRuntime()
-        repo.removeStudyRuntime( studyRuntime )
+    fun removeStudy_succeeds_when_study_not_present() = runSuspendTest {
+        val repo = createRepository()
+        val study = Study( UUID.randomUUID(), "Device role" )
+        repo.removeStudy( study )
     }
 }
