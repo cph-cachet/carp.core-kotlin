@@ -8,6 +8,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import UUID = cdk.cachet.carp.common.application.UUID
+    import DeviceDescriptor = cdk.cachet.carp.common.application.devices.DeviceDescriptor
     import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
 
 
@@ -47,6 +48,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             readonly id: StudyProtocolId
             readonly description: string
             readonly createdOn: Instant
+            readonly masterDevices: HashSet<DeviceDescriptor>
             readonly expectedParticipantData: HashSet<ParticipantAttribute>
         }
         interface StudyProtocolSnapshot$Companion { serializer(): any }

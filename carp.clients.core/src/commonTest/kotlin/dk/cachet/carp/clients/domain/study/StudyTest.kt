@@ -5,10 +5,13 @@ import dk.cachet.carp.clients.domain.connectedDevice
 import dk.cachet.carp.clients.domain.smartphone
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
+import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -99,23 +102,36 @@ class StudyTest
         }
 
 
-    private fun singleDeviceDeployment( device: AnyMasterDeviceDescriptor ) = StudyDeployment(
-        StudyProtocol( ProtocolOwner(), "Test" ).apply {
-            addMasterDevice( device )
-        }
-        .getSnapshot(),
-        deploymentId
-    )
+    private fun singleDeviceDeployment( device: AnyMasterDeviceDescriptor ) =
+        StudyDeployment.fromInvitations(
+            StudyProtocol( ProtocolOwner(), "Test" ).apply { addMasterDevice( device ) }.getSnapshot(),
+            listOf(
+                ParticipantInvitation(
+                    UUID.randomUUID(),
+                    setOf( device.roleName ),
+                    UsernameAccountIdentity( "Test" ),
+                    StudyInvitation( "Test" )
+                )
+            ),
+            deploymentId
+        )
 
     private fun twoDeviceDeployment(
         device: AnyMasterDeviceDescriptor,
         dependentDevice: AnyMasterDeviceDescriptor
-    ) = StudyDeployment(
+    ) = StudyDeployment.fromInvitations(
         StudyProtocol( ProtocolOwner(), "Test" ).apply {
             addMasterDevice( device )
             addMasterDevice( dependentDevice )
-        }
-        .getSnapshot(),
+        }.getSnapshot(),
+        listOf(
+            ParticipantInvitation(
+                UUID.randomUUID(),
+                setOf( device.roleName, dependentDevice.roleName ),
+                UsernameAccountIdentity( "Test" ),
+                StudyInvitation( "Test" )
+            )
+        ),
         deploymentId
     )
 
@@ -298,6 +314,7 @@ class StudyTest
                         connectedDevices.map { it.roleName }.toSet()
                     )
                 ),
+                emptyList(),
                 null
             )
         )

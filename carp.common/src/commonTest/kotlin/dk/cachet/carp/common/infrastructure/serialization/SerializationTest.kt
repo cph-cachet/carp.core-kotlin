@@ -2,31 +2,43 @@
 
 package dk.cachet.carp.common.infrastructure.serialization
 
-import dk.cachet.carp.common.application.*
-import dk.cachet.carp.common.application.data.*
-import dk.cachet.carp.common.application.data.input.*
-import dk.cachet.carp.common.application.data.input.elements.*
-import dk.cachet.carp.common.application.devices.*
-import dk.cachet.carp.common.application.sampling.*
-import dk.cachet.carp.common.application.tasks.*
-import dk.cachet.carp.common.application.triggers.*
-import dk.cachet.carp.common.application.users.*
+import dk.cachet.carp.common.application.data.Data
+import dk.cachet.carp.common.application.data.input.CustomInput
+import dk.cachet.carp.common.application.data.input.elements.InputElement
+import dk.cachet.carp.common.application.data.input.elements.Text
+import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
+import dk.cachet.carp.common.application.sampling.BatteryAwareSamplingConfiguration
+import dk.cachet.carp.common.application.sampling.Granularity
+import dk.cachet.carp.common.application.sampling.GranularitySamplingConfiguration
+import dk.cachet.carp.common.application.sampling.SamplingConfiguration
+import dk.cachet.carp.common.application.commonInstances
 import dk.cachet.carp.common.infrastructure.test.*
 import dk.cachet.carp.test.serialization.ConcreteTypesSerializationTest
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.test.*
-import kotlin.time.Duration
 
 
 val testJson = createDefaultJSON( STUBS_SERIAL_MODULE )
 
+val unknownInstances = listOf(
+    // `infrastructure` namespace.
+    unknown( StubDeviceDescriptor() ) { CustomDeviceDescriptor( it.first, it.second, it.third ) },
+    unknown( StubMasterDeviceDescriptor() ) { CustomMasterDeviceDescriptor( it.first, it.second, it.third ) },
+    unknown( DefaultDeviceRegistration( "id" ) ) { CustomDeviceRegistration( it.first, it.second, it.third ) },
+    unknown( StubSamplingConfiguration( "" ) ) { CustomSamplingConfiguration( it.first, it.second, it.third ) },
+    unknown( StubTaskDescriptor() ) { CustomTaskDescriptor( it.first, it.second, it.third ) },
+    unknown( StubTrigger( "source" ) ) { CustomTrigger( it.first, it.second, it.third ) },
+)
+
 /**
  * Convert the specified [stub] to the corresponding [UnknownPolymorphicWrapper] as if it were unknown at runtime.
  */
+@OptIn( ExperimentalSerializationApi::class )
 inline fun <reified Base : Any> unknown( stub: Base, constructor: (Triple<String, String, Json>) -> Base ): Base
 {
     val originalObject = testJson.encodeToJsonElement( PolymorphicSerializer( Base::class ), stub ) as JsonObject
@@ -40,82 +52,6 @@ inline fun <reified Base : Any> unknown( stub: Base, constructor: (Triple<String
     return constructor( Triple( unknownName, jsonSource, testJson ) )
 }
 
-private val commonInstances = listOf(
-    // `data` namespace.
-    Acceleration( 42.0, 42.0, 42.0 ),
-    ECG( 42.0 ),
-    FreeFormText( "Some text" ),
-    Geolocation( 42.0, 42.0 ),
-    HeartRate( 60 ),
-    NoData,
-    RRInterval,
-    SensorSkinContact( true ),
-    SignalStrength( 0 ),
-    StepCount( 42 ),
-    TriggeredTask( 1, "Some task", "Destination device", TaskControl.Control.Start ),
-
-    // `data.input` namespace.
-    CustomInput( "42" ),
-    Sex.Male,
-
-    // `data.input.elements` namespace.
-    SelectOne( "Sex", setOf( "Male", "Female" ) ),
-    Text( "Name" ),
-
-    // Devices in `devices` namespace.
-    AltBeacon( "Kitchen" ),
-    AltBeaconDeviceRegistration( 0, UUID.randomUUID(), 0, 0, 0 ),
-    BLEHeartRateDevice( "Polar" ),
-    BLESerialNumberDeviceRegistration( "123456789" ),
-    CustomProtocolDevice( "User's phone" ),
-    Smartphone( "User's phone" ),
-
-    // Shared device registrations in `devices` namespace.
-    DefaultDeviceRegistration( "Some device" ),
-    MACAddressDeviceRegistration( MACAddress( "00-00-00-00-00-00" ) ),
-
-    // `sampling` namespace.
-    BatteryAwareSamplingConfiguration(
-        GranularitySamplingConfiguration( Granularity.Balanced ),
-        GranularitySamplingConfiguration( Granularity.Coarse ),
-    ),
-    GranularitySamplingConfiguration( Granularity.Balanced ),
-    IntervalSamplingConfiguration( Duration.Companion.milliseconds( 1000 ) ),
-    NoOptionsSamplingConfiguration,
-
-    // `tasks` namespace.
-    BackgroundTask( "Start measures", listOf() ),
-    CustomProtocolTask(
-        "Custom study runtime",
-        "{ \"\$type\": \"Study\", \"custom\": \"protocol\" }"
-    ),
-    WebTask( "Survey", emptyList(), "Some survey", "http://survey.com" ),
-
-    // `triggers` namespace.
-    ElapsedTimeTrigger( Smartphone( "User's phone" ), Duration.ZERO ),
-    ManualTrigger(
-        "User's phone",
-        "Mood",
-        "Describe how you are feeling at the moment."
-    ),
-    ScheduledTrigger(
-        Smartphone( "User's phone"),
-        TimeOfDay( 12 ), RecurrenceRule( RecurrenceRule.Frequency.DAILY )
-    ),
-
-    // `users` namespace.
-    EmailAccountIdentity( "test@test.com" ),
-    UsernameAccountIdentity( "Some user" ),
-
-    // `infrastructure` namespace.
-    unknown( StubDeviceDescriptor() ) { CustomDeviceDescriptor( it.first, it.second, it.third ) },
-    unknown( StubMasterDeviceDescriptor() ) { CustomMasterDeviceDescriptor( it.first, it.second, it.third ) },
-    unknown( DefaultDeviceRegistration( "id" ) ) { CustomDeviceRegistration( it.first, it.second, it.third ) },
-    unknown( StubSamplingConfiguration( "" ) ) { CustomSamplingConfiguration( it.first, it.second, it.third ) },
-    unknown( StubTaskDescriptor() ) { CustomTaskDescriptor( it.first, it.second, it.third ) },
-    unknown( StubTrigger( "source" ) ) { CustomTrigger( it.first, it.second, it.third ) },
-)
-
 
 /**
  * Serialization tests for all extending types from base classes in [dk.cachet.carp.common].
@@ -123,7 +59,8 @@ private val commonInstances = listOf(
 class SerializationTest : ConcreteTypesSerializationTest(
     testJson,
     COMMON_SERIAL_MODULE,
-    commonInstances )
+    commonInstances + unknownInstances
+)
 {
     @Test
     fun can_serialize_and_deserialize_polymorphic_InputElement()

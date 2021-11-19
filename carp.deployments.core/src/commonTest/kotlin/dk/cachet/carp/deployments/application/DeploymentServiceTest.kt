@@ -206,7 +206,7 @@ abstract class DeploymentServiceTest
             { deploymentService.unregisterDevice( studyDeploymentId, master.roleName ) }
         val deviceDeployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, master.roleName )
         assertFailsWith<IllegalStateException>
-            { deploymentService.deploymentSuccessful( studyDeploymentId, master.roleName, deviceDeployment.lastUpdatedOn ) }
+            { deploymentService.deviceDeployed( studyDeploymentId, master.roleName, deviceDeployment.lastUpdatedOn ) }
     }
 
 

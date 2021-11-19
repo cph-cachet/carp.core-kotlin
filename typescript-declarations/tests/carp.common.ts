@@ -15,6 +15,7 @@ import CarpInputDataTypes = dk.cachet.carp.common.application.data.input.CarpInp
 import SelectOne = dk.cachet.carp.common.application.data.input.elements.SelectOne
 import Text = dk.cachet.carp.common.application.data.input.elements.Text
 import DeviceRegistration = dk.cachet.carp.common.application.devices.DeviceRegistration
+import Smartphone = dk.cachet.carp.common.application.devices.Smartphone
 import AccountIdentity = dk.cachet.carp.common.application.users.AccountIdentity
 import EmailAccountIdentity = dk.cachet.carp.common.application.users.EmailAccountIdentity
 import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute
@@ -39,6 +40,7 @@ describe( "carp.common", () => {
             SelectOne.Companion,
             new Text( "How are you feeling?" ),
             Text.Companion,
+            [ "DeviceDescriptor", new Smartphone( "Role", toSet( [] ) ) ],
             [ "DeviceRegistration", new DefaultDeviceRegistration( "some device id" ) ],
             DeviceRegistration.Companion,
             AccountIdentity.Factory,

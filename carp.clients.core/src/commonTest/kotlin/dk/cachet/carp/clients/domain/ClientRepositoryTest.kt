@@ -87,6 +87,7 @@ interface ClientRepositoryTest
                 listOf(
                     DeviceDeploymentStatus.Registered( masterDevice, true, emptySet(), emptySet() )
                 ),
+                emptyList(),
                 null
             )
         )

@@ -1,20 +1,23 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
+import dk.cachet.carp.common.application.concreteAccountIdentityTypes
+import dk.cachet.carp.common.application.concreteDataTypes
+import dk.cachet.carp.common.application.concreteDeviceDescriptorTypes
+import dk.cachet.carp.common.application.concreteDeviceRegistrationTypes
+import dk.cachet.carp.common.application.concreteInputElementTypes
+import dk.cachet.carp.common.application.concreteSamplingConfigurationTypes
+import dk.cachet.carp.common.application.concreteTaskDescriptorTypes
+import dk.cachet.carp.common.application.concreteTriggerTypes
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.CUSTOM_INPUT_TYPE_NAME
 import dk.cachet.carp.common.application.data.input.CustomInputSerializer
 import dk.cachet.carp.common.application.data.input.elements.InputElement
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
-import dk.cachet.carp.common.application.devices.DeviceRegistration
-import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
-import dk.cachet.carp.common.application.triggers.Trigger
-import dk.cachet.carp.common.application.users.AccountIdentity
-import dk.cachet.carp.test.serialization.verifyTypesAreRegistered
+import dk.cachet.carp.test.serialization.getPolymorphicSerializers
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
 import org.reflections.Reflections
 import java.lang.reflect.ParameterizedType
+import kotlin.reflect.KClass
 import kotlin.test.*
 
 
@@ -23,39 +26,50 @@ class SerializationReflectionTest
 {
     @Test
     fun all_Data_types_registered_for_serialization() =
-        verifyTypesAreRegistered<Data>()
+        verifyTypesAreRegistered( concreteDataTypes )
 
     @Test
     fun all_InputElement_types_registered_for_serialization() =
-        verifyTypesAreRegistered<InputElement<*>>()
+        verifyTypesAreRegistered( concreteInputElementTypes )
 
     @Test
     fun all_DeviceDescriptor_types_registered_for_serialization() =
-        verifyTypesAreRegistered<AnyDeviceDescriptor>()
+        verifyTypesAreRegistered( concreteDeviceDescriptorTypes )
 
     @Test
     fun all_DeviceRegistration_types_registered_for_serialization() =
-        verifyTypesAreRegistered<DeviceRegistration>()
+        verifyTypesAreRegistered( concreteDeviceRegistrationTypes )
 
     @Test
     fun all_SamplingConfiguration_types_registered_for_serialization() =
-        verifyTypesAreRegistered<SamplingConfiguration>()
+        verifyTypesAreRegistered( concreteSamplingConfigurationTypes )
 
     @Test
     fun all_TaskDescriptor_types_registered_for_serialization() =
-        verifyTypesAreRegistered<TaskDescriptor>()
+        verifyTypesAreRegistered( concreteTaskDescriptorTypes )
 
     @Test
     fun all_Trigger_types_registered_for_serialization() =
-        verifyTypesAreRegistered<Trigger<*>>()
+        verifyTypesAreRegistered( concreteTriggerTypes )
 
     @Test
     fun all_AccountIdentity_types_registered_for_serialization() =
-        verifyTypesAreRegistered<AccountIdentity>()
+        verifyTypesAreRegistered( concreteAccountIdentityTypes )
 
-    private inline fun <reified T : Any> verifyTypesAreRegistered() =
-        verifyTypesAreRegistered<T>( COMMON_SERIAL_MODULE )
+    private val polymorphicSerializers = getPolymorphicSerializers( COMMON_SERIAL_MODULE )
 
+    /**
+     * Verifies whether all [types] are registered for polymorphic serialization in [COMMON_SERIAL_MODULE].
+     */
+    private fun verifyTypesAreRegistered( types: List<KClass<out Any>> ) = types
+        .filter { type ->
+            // Wrappers for unknown types are only used at runtime and don't need to be serializable.
+            type.java.interfaces.none { it == UnknownPolymorphicWrapper::class.java }
+        }
+        .forEach {
+            val serializer = polymorphicSerializers[ it ]
+            assertNotNull( serializer, "No serializer registered for '$it'." )
+        }
 
     @InternalSerializationApi
     @Test

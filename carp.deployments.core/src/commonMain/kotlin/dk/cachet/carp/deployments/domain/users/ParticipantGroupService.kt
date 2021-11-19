@@ -2,7 +2,8 @@ package dk.cachet.carp.deployments.domain.users
 
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.users.Participation
-import dk.cachet.carp.deployments.application.throwIfInvalid
+import dk.cachet.carp.deployments.application.throwIfInvalidInvitations
+import dk.cachet.carp.deployments.application.throwIfInvalidPreregistrations
 
 
 class ParticipantGroupService( val accountService: AccountService )
@@ -17,7 +18,8 @@ class ParticipantGroupService( val accountService: AccountService )
         // Verify whether the participant group matches the requirements of the protocol.
         val studyDeploymentId = createdDeployment.studyDeploymentId
         val invitations = createdDeployment.invitations
-        createdDeployment.protocol.throwIfInvalid( invitations, createdDeployment.connectedDevicePreregistrations )
+        createdDeployment.protocol.throwIfInvalidInvitations( invitations )
+        createdDeployment.protocol.throwIfInvalidPreregistrations( createdDeployment.connectedDevicePreregistrations )
 
         // Create group.
         val protocol = createdDeployment.protocol.toObject()

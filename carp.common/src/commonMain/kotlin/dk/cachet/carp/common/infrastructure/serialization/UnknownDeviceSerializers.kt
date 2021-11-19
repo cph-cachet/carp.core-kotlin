@@ -28,6 +28,7 @@ data class CustomDeviceDescriptor(
 ) : DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
+    override val isOptional: Boolean
 
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 
@@ -41,6 +42,7 @@ data class CustomDeviceDescriptor(
         val json = Json( serializer ) { ignoreUnknownKeys = true }
         val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
         roleName = baseMembers.roleName
+        isOptional = baseMembers.isOptional
         defaultSamplingConfiguration = baseMembers.defaultSamplingConfiguration
     }
 
@@ -67,6 +69,7 @@ data class CustomMasterDeviceDescriptor(
 ) : MasterDeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
+    override val isOptional: Boolean
 
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 
@@ -80,6 +83,7 @@ data class CustomMasterDeviceDescriptor(
         val json = Json( serializer ) { ignoreUnknownKeys = true }
         val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
         roleName = baseMembers.roleName
+        isOptional = baseMembers.isOptional
         defaultSamplingConfiguration = baseMembers.defaultSamplingConfiguration
     }
 
@@ -98,6 +102,7 @@ data class CustomMasterDeviceDescriptor(
 @Serializable
 private data class BaseMembers(
     override val roleName: String,
+    override val isOptional: Boolean = false,
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 ) : DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>()
 {

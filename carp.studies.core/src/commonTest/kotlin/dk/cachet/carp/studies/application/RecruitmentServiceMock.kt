@@ -31,7 +31,8 @@ class RecruitmentServiceMock(
         private val now = Clock.System.now()
         private val groupStatus = ParticipantGroupStatus.InDeployment.fromDeploymentStatus(
             emptySet(),
-            StudyDeploymentStatus.Invited( now, UUID.randomUUID(), emptyList(), null ) )
+            StudyDeploymentStatus.Invited( now, UUID.randomUUID(), emptyList(), emptyList(), null )
+        )
     }
 
 

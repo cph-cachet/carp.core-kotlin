@@ -66,7 +66,7 @@ class StudyDeploymentProxy(
         try
         {
             val deployedStatus =
-                deploymentService.deploymentSuccessful( studyDeploymentId, device.roleName, deployment.lastUpdatedOn )
+                deploymentService.deviceDeployed( studyDeploymentId, device.roleName, deployment.lastUpdatedOn )
             study.deploymentStatusReceived( deployedStatus )
         }
         // Handle race conditions with competing clients modifying device registrations, invalidating this deployment.
