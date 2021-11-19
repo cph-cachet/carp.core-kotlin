@@ -1,12 +1,15 @@
 import { expect } from 'chai'
 import VerifyModule from './VerifyModule'
 
+import { kotlin } from 'kotlin'
+import toSet = kotlin.collections.toSet_us0mfu$
 import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-jsLegacy'
 import Json = kotlinx.serialization.json.Json
 import { dk as dkc } from 'carp.core-kotlin-carp.common'
 import UUID = dkc.cachet.carp.common.UUID
 import { dk } from 'carp.core-kotlin-carp.protocols.core'
 import DeviceRegistration = dk.cachet.carp.protocols.domain.devices.DeviceRegistration
+import Smartphone = dk.cachet.carp.protocols.domain.devices.Smartphone
 import DefaultDeviceRegistration = dk.cachet.carp.protocols.domain.devices.DefaultDeviceRegistration
 import ProtocolId = dk.cachet.carp.protocols.domain.StudyProtocol.Id
 import ProtocolOwner = dk.cachet.carp.protocols.domain.ProtocolOwner
@@ -32,6 +35,7 @@ describe( "carp.protocols.core", () => {
             studyProtocolSnapshot,
             StudyProtocolSnapshot.Companion,
             [ "DeviceRegistration", new DefaultDeviceRegistration( "some device id" ) ],
+            [ "DeviceDescriptor", new Smartphone( "Role", toSet( [] ) ) ],
             DeviceRegistration.Companion,
             new ProtocolVersion( "Version" ),
             ProtocolVersion.Companion,

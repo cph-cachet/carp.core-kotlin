@@ -16,6 +16,9 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
     namespace dk.cachet.carp.protocols.domain
     {
+        import DeviceDescriptor = dk.cachet.carp.protocols.domain.devices.DeviceDescriptor
+
+
         namespace StudyProtocol
         {
             class Id
@@ -62,6 +65,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             readonly name: string
             readonly description: string
             readonly creationDate: DateTime
+            readonly masterDevices: HashSet<DeviceDescriptor>
             readonly expectedParticipantData: ArrayList<ParticipantAttribute>
         }
         interface StudyProtocolSnapshot$Companion { serializer(): any }
@@ -69,6 +73,11 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
     namespace dk.cachet.carp.protocols.domain.devices
     {
+        abstract class DeviceDescriptor
+        {
+            readonly roleName: String
+        }
+
         abstract class DeviceRegistration
         {
             static get Companion(): DeviceRegistration$Companion  
