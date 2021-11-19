@@ -363,6 +363,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      */
     private val possibleDeploymentIssues: List<DeploymentIssue> = listOf(
         NoMasterDeviceError(),
+        OnlyOptionalDevicesWarning(),
         UnstartedTasksWarning(),
         BackgroundTaskWithNoMeasuresWarning(),
         UseCompositeTaskWarning(),
