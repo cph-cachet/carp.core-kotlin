@@ -1,30 +1,25 @@
 package dk.cachet.carp.common.application.devices
 
+import dk.cachet.carp.common.application.commonInstances
+import dk.cachet.carp.common.application.concreteDeviceDescriptorTypes
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.tasks.TaskDescriptorList
-import org.reflections.Reflections
-import java.lang.reflect.Modifier
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import kotlin.reflect.full.primaryConstructor
+import kotlin.test.*
 
 
 class DeviceDescriptorsReflectionTest
 {
-    @Test
-    fun all_device_descriptors_define_sensors_and_tasks()
-    {
-        // Find all device descriptors in this subsystem.
-        val deviceClass = DeviceDescriptor::class.java
-        val namespace = deviceClass.`package`.name
-        val reflections = Reflections( namespace )
-        val concreteDeviceDescriptors = reflections
-            .getSubTypesOf( deviceClass )
-            .filter { !Modifier.isAbstract( it.modifiers ) }
+    private val instances = commonInstances
+        .filterIsInstance<AnyDeviceDescriptor>()
+        .associateBy { it::class }
 
-        concreteDeviceDescriptors.forEach { concreteClass ->
-            val name = concreteClass.simpleName
-            val subclasses = concreteClass.classes.toList()
+
+    @Test
+    fun all_device_descriptors_define_sensors_and_tasks() =
+        concreteDeviceDescriptorTypes.forEach { descriptor ->
+            val name = descriptor.simpleName
+            val subclasses = descriptor.java.classes.toList()
 
             // Does the DeviceDescriptor list available sensors?
             val sensorsClass = subclasses.singleOrNull { it.name.endsWith( "\$Sensors" ) }
@@ -44,5 +39,43 @@ class DeviceDescriptorsReflectionTest
                 "`Tasks` subclass in \"$name\" does not extend from \"${superTasksClass.simpleName}\"."
             )
         }
-    }
+
+    @Test
+    fun all_device_descriptors_have_an_instance_for_testing() =
+        concreteDeviceDescriptorTypes.forEach { descriptor ->
+            val instance = instances[ descriptor ]
+            assertNotNull( instance, "No test instance added for `$descriptor`." )
+        }
+
+    @Test
+    fun all_device_descriptors_have_correct_defaults() =
+        concreteDeviceDescriptorTypes.forEach { descriptor ->
+            val instance = instances.getValue( descriptor )
+
+            // Find constructor to instantiate a new instance with the default parameter values.
+            // TODO: Do we always expect the primary constructor to be the one we need? Okay for now.
+            val constructor = descriptor.primaryConstructor
+            assertNotNull( constructor, "`$descriptor` does not have a primary constructor." )
+
+            // For all non-optional parameters in constructor, get correct values from `instance`.
+            val parameters = constructor.parameters.filter { !it.isOptional }
+            val parameterValues = parameters.associateWith { parameter ->
+                val matchingMember = descriptor.members.firstOrNull { it.name == parameter.name }
+                assertNotNull( matchingMember, "No member with name `$parameter.name` found." )
+                matchingMember.call( instance )
+            }
+
+            // Construct instance which has default values and verify whether they are correct.
+            val hasDefaultValues = constructor.callBy( parameterValues )
+            assertEquals(
+                emptyMap(),
+                hasDefaultValues.defaultSamplingConfiguration,
+                "`${AnyDeviceDescriptor::defaultSamplingConfiguration.name}` of `$descriptor` doesn't have the correct default."
+            )
+            assertEquals(
+                false,
+                hasDefaultValues.isOptional,
+                "`${AnyDeviceDescriptor::isOptional.name}` of `$descriptor` doesn't have the correct default."
+            )
+        }
 }

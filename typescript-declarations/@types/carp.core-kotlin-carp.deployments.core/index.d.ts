@@ -26,7 +26,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         abstract class DeviceDeploymentStatus
         {
             readonly device: any
-            readonly requiresDeployment: Boolean
+            readonly canBeDeployed: Boolean
             readonly canObtainDeviceDeployment: Boolean
 
             static get Companion(): DeviceDeploymentStatus$Companion
@@ -46,7 +46,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             {
                 constructor(
                     device: any,
-                    requiresDeployment: Boolean,
+                    canBeDeployed: Boolean,
                     remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
                     remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
             }
@@ -54,7 +54,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             {
                 constructor(
                     device: any,
-                    requiresDeployment: Boolean,
+                    canBeDeployed: Boolean,
                     remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
                     remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
             }

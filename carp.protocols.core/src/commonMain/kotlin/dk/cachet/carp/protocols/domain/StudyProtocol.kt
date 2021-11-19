@@ -1,3 +1,5 @@
+@file:Suppress( "WildcardImport" )
+
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.application.UUID
@@ -14,13 +16,7 @@ import dk.cachet.carp.protocols.domain.configuration.EmptyDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantDataConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyTaskConfiguration
 import dk.cachet.carp.protocols.domain.configuration.StudyProtocolComposition
-import dk.cachet.carp.protocols.domain.deployment.DeploymentError
-import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
-import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
-import dk.cachet.carp.protocols.domain.deployment.UnexpectedMeasuresWarning
-import dk.cachet.carp.protocols.domain.deployment.UnstartedTasksWarning
-import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
-import dk.cachet.carp.protocols.domain.deployment.UseCompositeTaskWarning
+import dk.cachet.carp.protocols.domain.deployment.*
 
 
 /**
@@ -367,7 +363,9 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      */
     private val possibleDeploymentIssues: List<DeploymentIssue> = listOf(
         NoMasterDeviceError(),
+        OnlyOptionalDevicesWarning(),
         UnstartedTasksWarning(),
+        BackgroundTaskWithNoMeasuresWarning(),
         UseCompositeTaskWarning(),
         UnusedDevicesWarning(),
         UnexpectedMeasuresWarning()

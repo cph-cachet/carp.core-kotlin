@@ -16,10 +16,10 @@ sealed class DeviceDeploymentStatus
     abstract val device: AnyDeviceDescriptor
 
     /**
-     * Determines whether the device requires a device deployment by retrieving [MasterDeviceDeployment].
+     * Determines whether the device can be deployed by retrieving [MasterDeviceDeployment].
      * Not all master devices necessarily need deployment; chained master devices do not.
      */
-    abstract val requiresDeployment: Boolean
+    abstract val canBeDeployed: Boolean
 
     /**
      * Determines whether the device requires a device deployment, and if so,
@@ -39,7 +39,7 @@ sealed class DeviceDeploymentStatus
          * Determines whether the device and all dependent devices have been registered successfully and is ready for deployment.
          */
         val isReadyForDeployment: Boolean
-            get() = requiresDeployment && remainingDevicesToRegisterBeforeDeployment.isEmpty()
+            get() = canBeDeployed && remainingDevicesToRegisterBeforeDeployment.isEmpty()
 
         /**
          * The role names of devices which need to be registered before the deployment information for this device can be obtained.
@@ -59,7 +59,7 @@ sealed class DeviceDeploymentStatus
     @Serializable
     data class Unregistered(
         override val device: AnyDeviceDescriptor,
-        override val requiresDeployment: Boolean,
+        override val canBeDeployed: Boolean,
         override val remainingDevicesToRegisterToObtainDeployment: Set<String>,
         override val remainingDevicesToRegisterBeforeDeployment: Set<String>
     ) : NotDeployed()
@@ -70,7 +70,7 @@ sealed class DeviceDeploymentStatus
     @Serializable
     data class Registered(
         override val device: AnyDeviceDescriptor,
-        override val requiresDeployment: Boolean,
+        override val canBeDeployed: Boolean,
         override val remainingDevicesToRegisterToObtainDeployment: Set<String>,
         override val remainingDevicesToRegisterBeforeDeployment: Set<String>
     ) : NotDeployed()
@@ -83,8 +83,8 @@ sealed class DeviceDeploymentStatus
         override val device: AnyDeviceDescriptor
     ) : DeviceDeploymentStatus()
     {
-        // All devices that can be deployed need to be deployed.
-        override val requiresDeployment = true
+        // All devices that have been deployed necessarily can be deployed.
+        override val canBeDeployed = true
     }
 
     /**
@@ -97,7 +97,7 @@ sealed class DeviceDeploymentStatus
         override val remainingDevicesToRegisterBeforeDeployment: Set<String>
     ) : NotDeployed()
     {
-        // Only devices that can be deployed ever need to be redeployed, and all those require deployment.
-        override val requiresDeployment = true
+        // All devices that have been deployed necessarily can be deployed.
+        override val canBeDeployed = true
     }
 }

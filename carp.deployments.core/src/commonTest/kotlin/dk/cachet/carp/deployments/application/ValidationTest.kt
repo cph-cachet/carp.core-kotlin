@@ -37,6 +37,19 @@ class ValidationTest
     }
 
     @Test
+    fun throwIfInvalidInvitations_for_valid_invitations_with_unassigned_optional_master_device()
+    {
+        val toAssign = "Test device"
+        val protocol = createEmptyProtocol().apply {
+            addMasterDevice( StubMasterDeviceDescriptor( toAssign ) )
+            addMasterDevice( StubMasterDeviceDescriptor( "Unassigned optional device", true ) )
+        }.getSnapshot()
+        val invitation = createInvitation( setOf( toAssign ) )
+
+        protocol.throwIfInvalidInvitations( listOf( invitation ) )
+    }
+
+    @Test
     fun throwIfInvalidInvitations_throws_for_empty_invitations()
     {
         val protocol = createSingleMasterDeviceProtocol().getSnapshot()

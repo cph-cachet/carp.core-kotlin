@@ -184,7 +184,7 @@ class StudyDeployment private constructor(
     private val _invalidatedDeployedDevices: MutableSet<AnyMasterDeviceDescriptor> = mutableSetOf()
 
     /**
-     * The time when the study deployment was ready for the first time (all devices deployed);
+     * The time when the study deployment was ready for the first time (all necessary devices deployed);
      * null if the study deployment hasn't started yet.
      */
     var startedOn: Instant? = null
@@ -205,10 +205,14 @@ class StudyDeployment private constructor(
     {
         require( protocol.isDeployable() ) { "The passed protocol snapshot contains deployment errors." }
 
-        // Initialize information which devices can or should be registered for this deployment.
+        // Initialize information which devices can be registered, deployed, and should be deployed for this deployment.
         _registrableDevices = protocol.devices
-            // Top-level master devices require deployment.
-            .map { RegistrableDevice( it, it in protocol.masterDevices ) }
+            // Top-level master devices that aren't optional require deployment.
+            .map {
+                val canBeDeployed = it in protocol.masterDevices
+                val requiresDeployment = canBeDeployed && !it.isOptional
+                RegistrableDevice( it, canBeDeployed, requiresDeployment )
+            }
             .toMutableSet()
     }
 
@@ -218,13 +222,17 @@ class StudyDeployment private constructor(
      */
     fun getStatus(): StudyDeploymentStatus
     {
-        val devicesStatus: List<DeviceDeploymentStatus> = _registrableDevices.map { getDeviceStatus( it.device ) }
+        val devices: Map<RegistrableDevice, DeviceDeploymentStatus> =
+            _registrableDevices.associateWith { getDeviceStatus( it.device ) }
         val participantsStatus = participants.toList()
-        val allRequiredDevicesDeployed: Boolean = devicesStatus
-            .filter { it.requiresDeployment }
-            .all { it is DeviceDeploymentStatus.Deployed }
+        val allRequiredDevicesDeployed: Boolean = devices
+            .filter { it.key.requiresDeployment }
+            .all { it.value is DeviceDeploymentStatus.Deployed } &&
+                // At least one device needs to be deployed.
+                devices.any { it.value is DeviceDeploymentStatus.Deployed }
         val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
+        val devicesStatus = devices.values.toList()
         return when {
             isStopped -> StudyDeploymentStatus.Stopped( createdOn, id, devicesStatus, participantsStatus, startedOn, stoppedOn!! )
             allRequiredDevicesDeployed -> StudyDeploymentStatus.Running( createdOn, id, devicesStatus, participantsStatus, startedOn!! )
@@ -241,28 +249,29 @@ class StudyDeployment private constructor(
         val needsRedeployment = device in invalidatedDeployedDevices
         val isDeployed = device in deployedDevices
         val isRegistered = device in _registeredDevices
-        val requiresDeployment = registrableDevices.first{ it.device == device }.requiresDeployment
+        val canBeDeployed = registrableDevices.first{ it.device == device }.canBeDeployed
 
-        val alreadyRegistered = registeredDevices.keys.map { r -> r.roleName }
-        val dependentDevices = getDependentDevices( device ).map { d -> d.roleName }
-        val toRegisterToObtainDeployment = dependentDevices
-            .plus( device.roleName ) // Device itself needs to be registered.
+        val alreadyRegistered = registeredDevices.keys
+        val mandatoryDependentDevices = getDependentDevices( device ).filter { !it.isOptional }
+        val toRegisterToObtainDeployment = mandatoryDependentDevices
+            .plus( device ) // Device itself needs to be registered.
             .minus( alreadyRegistered )
-            .toSet()
+        val mandatoryConnectedDevices =
+            if ( device is AnyMasterDeviceDescriptor ) protocol.getConnectedDevices( device ).filter { !it.isOptional }
+            else emptyList()
         val toRegisterBeforeDeployment = toRegisterToObtainDeployment
-            // Master devices require all connected devices to be registered.
-            .plus(
-                if ( device is AnyMasterDeviceDescriptor ) protocol.getConnectedDevices( device ).map { c -> c.roleName }
-                else emptyList() )
+            // Master devices require non-optional connected devices to be registered.
+            .plus( mandatoryConnectedDevices )
             .minus( alreadyRegistered )
-            .toSet()
 
+        val toObtainDeployment = toRegisterToObtainDeployment.map { it.roleName }.toSet()
+        val beforeDeployment = toRegisterBeforeDeployment.map { it.roleName }.toSet()
         return when
         {
-            needsRedeployment -> DeviceDeploymentStatus.NeedsRedeployment( device, toRegisterToObtainDeployment, toRegisterBeforeDeployment )
+            needsRedeployment -> DeviceDeploymentStatus.NeedsRedeployment( device, toObtainDeployment, beforeDeployment )
             isDeployed -> DeviceDeploymentStatus.Deployed( device )
-            isRegistered -> DeviceDeploymentStatus.Registered( device, requiresDeployment, toRegisterToObtainDeployment, toRegisterBeforeDeployment )
-            else -> DeviceDeploymentStatus.Unregistered( device, requiresDeployment, toRegisterToObtainDeployment, toRegisterBeforeDeployment )
+            isRegistered -> DeviceDeploymentStatus.Registered( device, canBeDeployed, toObtainDeployment, beforeDeployment )
+            else -> DeviceDeploymentStatus.Unregistered( device, canBeDeployed, toObtainDeployment, beforeDeployment )
         }
     }
 
@@ -319,6 +328,8 @@ class StudyDeployment private constructor(
         val registrationHistory = _deviceRegistrationHistory.getOrPut( device ) { mutableListOf() }
         registrationHistory.add( registration )
         event( Event.DeviceRegistered( device, registration ) )
+
+        invalidateDeploymentOfDependentDevices( device )
     }
 
     /**
@@ -341,7 +352,14 @@ class StudyDeployment private constructor(
 
         event( Event.DeviceUnregistered( device ) )
 
-        // Invalidate deployed master devices which depend on this device that are deployed.
+        invalidateDeploymentOfDependentDevices( device )
+    }
+
+    /**
+     * Invalidate deployed master devices which depend on this [device].
+     */
+    private fun invalidateDeploymentOfDependentDevices( device: AnyDeviceDescriptor )
+    {
         val dependentMasterDevices = getDependentDevices( device )
             .filterIsInstance<AnyMasterDeviceDescriptor>()
         dependentMasterDevices.forEach {
@@ -436,10 +454,10 @@ class StudyDeployment private constructor(
             .add( device )
             .eventIf( true ) { Event.DeviceDeployed( device ) }
 
-        // Set start time when deployment starts running (last device deployed).
+        // Set start time when deployment starts running (all necessary devices deployed).
         val allRequiredDeviceDeployed = _registrableDevices
-            .map { getDeviceStatus( it.device ) }
             .filter { it.requiresDeployment }
+            .map { getDeviceStatus( it.device ) }
             .all { it is DeviceDeploymentStatus.Deployed }
         if ( startedOn == null && allRequiredDeviceDeployed )
         {

@@ -18,7 +18,10 @@ import kotlin.reflect.KClass
  * A beacon meeting the open AltBeacon standard.
  */
 @Serializable
-data class AltBeacon( override val roleName: String ) : DeviceDescriptor<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
+data class AltBeacon(
+    override val roleName: String,
+    override val isOptional: Boolean = false,
+) : DeviceDescriptor<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
 {
     object Sensors : DataTypeSamplingSchemeMap()
     {
