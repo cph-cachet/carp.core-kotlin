@@ -27,34 +27,17 @@ class ValidationTest
 
 
     @Test
-    fun throwIfInvalid_for_valid_invitations()
+    fun throwIfInvalidInvitations_for_valid_invitations()
     {
         val deviceRoleName = "Test device"
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName ).getSnapshot()
         val invitation = createInvitation( setOf( deviceRoleName ) )
 
-        protocol.throwIfInvalid( listOf( invitation ) )
+        protocol.throwIfInvalidInvitations( listOf( invitation ) )
     }
 
     @Test
-    fun throwIfInvalid_throws_for_empty_invitations()
-    {
-        val protocol = createSingleMasterDeviceProtocol().getSnapshot()
-
-        assertFailsWith<IllegalArgumentException> { protocol.throwIfInvalid( emptyList() ) }
-    }
-
-    @Test
-    fun throwIfInvalid_throws_for_invalid_master_device()
-    {
-        val protocol = createSingleMasterDeviceProtocol( "Master" ).getSnapshot()
-        val invitation = createInvitation( setOf( "Invalid" ) )
-
-        assertFailsWith<IllegalArgumentException> { protocol.throwIfInvalid( listOf( invitation ) ) }
-    }
-
-    @Test
-    fun throwIfInvalid_for_valid_invitations_with_unassigned_optional_master_device()
+    fun throwIfInvalidInvitations_for_valid_invitations_with_unassigned_optional_master_device()
     {
         val toAssign = "Test device"
         val protocol = createEmptyProtocol().apply {
@@ -63,11 +46,28 @@ class ValidationTest
         }.getSnapshot()
         val invitation = createInvitation( setOf( toAssign ) )
 
-        protocol.throwIfInvalid( listOf( invitation ) )
+        protocol.throwIfInvalidInvitations( listOf( invitation ) )
     }
 
     @Test
-    fun throwIfInvalid_throws_for_unassigned_master_device()
+    fun throwIfInvalidInvitations_throws_for_empty_invitations()
+    {
+        val protocol = createSingleMasterDeviceProtocol().getSnapshot()
+
+        assertFailsWith<IllegalArgumentException> { protocol.throwIfInvalidInvitations( emptyList() ) }
+    }
+
+    @Test
+    fun throwIfInvalidInvitations_throws_for_invalid_master_device()
+    {
+        val protocol = createSingleMasterDeviceProtocol( "Master" ).getSnapshot()
+        val invitation = createInvitation( setOf( "Invalid" ) )
+
+        assertFailsWith<IllegalArgumentException> { protocol.throwIfInvalidInvitations( listOf( invitation ) ) }
+    }
+
+    @Test
+    fun throwIfInvalidInvitations_throws_for_unassigned_master_device()
     {
         val toAssign = "Test device"
         val protocol = createEmptyProtocol().apply {
@@ -76,68 +76,64 @@ class ValidationTest
         }.getSnapshot()
         val invitation = createInvitation( setOf( toAssign ) )
 
-        assertFailsWith<IllegalArgumentException> { protocol.throwIfInvalid( listOf( invitation ) ) }
+        assertFailsWith<IllegalArgumentException> { protocol.throwIfInvalidInvitations( listOf( invitation ) ) }
     }
 
     @Test
-    fun throwIfInvalid_for_valid_preregistrations()
+    fun throwIfInvalidPreregistrations_for_valid_preregistrations()
     {
         val masterRoleName = "Master"
         val connectedRoleName = "Connected"
         val protocol = createSingleMasterWithConnectedDeviceProtocol( masterRoleName, connectedRoleName ).getSnapshot()
 
-        val invitation = createInvitation( setOf( masterRoleName ) )
         val preregistrations = mapOf(
             connectedRoleName to protocol.connectedDevices.first { it.roleName == connectedRoleName }.createRegistration()
         )
 
-        protocol.throwIfInvalid( listOf( invitation ), preregistrations )
+        protocol.throwIfInvalidPreregistrations( preregistrations )
     }
 
     @Test
-    fun throwIfInvalid_throws_for_preregistration_for_nonconnected_devices()
+    fun throwIfInvalidPreregistrations_throws_for_preregistration_for_nonconnected_devices()
     {
         val masterRoleName = "Master"
         val connectedRoleName = "Connected"
         val protocol = createSingleMasterWithConnectedDeviceProtocol( masterRoleName, connectedRoleName ).getSnapshot()
 
-        val invitation = createInvitation( setOf( masterRoleName ) )
         val preregistrations = mapOf(
             masterRoleName to protocol.masterDevices.first { it.roleName == masterRoleName }.createRegistration()
         )
 
         assertFailsWith<IllegalArgumentException> {
-            protocol.throwIfInvalid( listOf( invitation ), preregistrations )
+            protocol.throwIfInvalidPreregistrations( preregistrations )
         }
     }
 
     @Test
-    fun throwIfInvalid_throws_for_preregistration_for_unknown_devices()
+    fun throwIfInvalidPreregistrations_throws_for_preregistration_for_unknown_devices()
     {
         val deviceRoleName = "Master"
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName ).getSnapshot()
 
-        val invitation = createInvitation( setOf( deviceRoleName ) )
         val preregistrations = mapOf( "Unknown" to DefaultDeviceRegistration( "ID" ) )
 
         assertFailsWith<IllegalArgumentException> {
-            protocol.throwIfInvalid( listOf( invitation ), preregistrations )
+            protocol.throwIfInvalidPreregistrations( preregistrations )
         }
     }
 
     @Test
-    fun throwIfInvalid_throws_for_invalid_preregistrations()
+    fun throwIfInvalidPreregistrations_throws_for_invalid_preregistrations()
     {
         val masterRoleName = "Master"
         val connectedRoleName = "Connected"
         val protocol = createSingleMasterWithConnectedDeviceProtocol( masterRoleName, connectedRoleName ).getSnapshot()
 
         val invalidRegistration = object : DeviceRegistration() { override val deviceId: String = "Invalid" }
-        val invitation = createInvitation( setOf( masterRoleName ) )
         val preregistrations = mapOf( connectedRoleName to invalidRegistration )
 
         assertFailsWith<IllegalArgumentException> {
-            protocol.throwIfInvalid( listOf( invitation ), preregistrations )
+            protocol.throwIfInvalidPreregistrations( preregistrations )
         }
     }
 }

@@ -28,10 +28,8 @@ class DeploymentServiceMock(
 {
     companion object
     {
-        private val emptyStatus: StudyDeploymentStatus = StudyDeploymentStatus.DeployingDevices(
-            Clock.System.now(),
-            UUID( "00000000-0000-0000-0000-000000000000"),
-            listOf(), null )
+        private val emptyStatus: StudyDeploymentStatus =
+            StudyDeploymentStatus.DeployingDevices( Clock.System.now(), UUID.randomUUID(), emptyList(), emptyList(), null )
         private val emptyMasterDeviceDeployment: MasterDeviceDeployment = MasterDeviceDeployment(
             StubMasterDeviceDescriptor(),
             DefaultDeviceRegistration( "Test" ) )

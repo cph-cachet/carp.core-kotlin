@@ -64,6 +64,11 @@ declare module 'carp.core-kotlin-carp.common'
 
     namespace dk.cachet.carp.common.application.devices
     {
+        abstract class DeviceDescriptor
+        {
+            readonly roleName: String
+        }
+
         abstract class DeviceRegistration
         {
             static get Companion(): DeviceRegistration$Companion  

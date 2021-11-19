@@ -8,6 +8,7 @@ import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.Participation
@@ -18,10 +19,21 @@ import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProt
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 
 
+/**
+ * Create a study deployment with a test user assigned to each master device in the [protocol].
+ */
 fun studyDeploymentFor( protocol: StudyProtocol ): StudyDeployment
 {
     val snapshot = protocol.getSnapshot()
-    return StudyDeployment( snapshot )
+
+    // Create invitations.
+    val identity = UsernameAccountIdentity( "Test user" )
+    val invitation = StudyInvitation( "Test" )
+    val invitations = protocol.masterDevices.map {
+        ParticipantInvitation( UUID.randomUUID(), setOf( it.roleName ), identity, invitation )
+    }
+
+    return StudyDeployment.fromInvitations( snapshot, invitations )
 }
 
 /**
@@ -88,7 +100,7 @@ fun createComplexParticipantGroup(): ParticipantGroup
     protocol.addExpectedParticipantData( defaultAttribute )
     val customAttribute = ParticipantAttribute.CustomParticipantAttribute( Text( "Name" ) )
     protocol.addExpectedParticipantData( customAttribute )
-    val deployment = StudyDeployment( protocol.getSnapshot() )
+    val deployment = studyDeploymentFor( protocol )
 
     return ParticipantGroup.fromNewDeployment( deployment ).apply {
         addParticipation(

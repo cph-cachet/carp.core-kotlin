@@ -1,10 +1,14 @@
 package dk.cachet.carp.deployments.infrastructure
 
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
+import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
+import dk.cachet.carp.deployments.application.users.ParticipantInvitation
+import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.deployments.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployments.domain.studyDeploymentFor
@@ -44,9 +48,17 @@ class StudyDeploymentTest
         val invalidJson = json.replaceFirst( "\"Master\"", "\"Non-existing device\"" )
         val invalidSnapshot: StudyProtocolSnapshot = JSON.decodeFromString( invalidJson )
 
+        val invitations = listOf(
+            ParticipantInvitation(
+                UUID.randomUUID(),
+                setOf( master.roleName ),
+                UsernameAccountIdentity( "Test" ),
+                StudyInvitation( "Test" )
+            )
+        )
         assertFailsWith<IllegalArgumentException>
         {
-            StudyDeployment( invalidSnapshot )
+            StudyDeployment.fromInvitations( invalidSnapshot, invitations )
         }
     }
 

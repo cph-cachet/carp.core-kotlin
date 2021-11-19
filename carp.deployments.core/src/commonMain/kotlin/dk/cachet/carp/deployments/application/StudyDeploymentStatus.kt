@@ -3,6 +3,7 @@ package dk.cachet.carp.deployments.application
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.deployments.application.users.ParticipantStatus
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -25,6 +26,11 @@ sealed class StudyDeploymentStatus
     abstract val devicesStatus: List<DeviceDeploymentStatus>
 
     /**
+     * The list of all participants and their status in this study deployment.
+     */
+    abstract val participantsStatus: List<ParticipantStatus>
+
+    /**
      * The time when the study deployment was ready for the first time (all devices deployed); null otherwise.
      */
     abstract val startedOn: Instant?
@@ -38,6 +44,7 @@ sealed class StudyDeploymentStatus
         override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
+        override val participantsStatus: List<ParticipantStatus>,
         override val startedOn: Instant?
     ) : StudyDeploymentStatus()
 
@@ -49,6 +56,7 @@ sealed class StudyDeploymentStatus
         override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
+        override val participantsStatus: List<ParticipantStatus>,
         override val startedOn: Instant?
     ) : StudyDeploymentStatus()
 
@@ -61,6 +69,7 @@ sealed class StudyDeploymentStatus
         override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
+        override val participantsStatus: List<ParticipantStatus>,
         override val startedOn: Instant
     ) : StudyDeploymentStatus()
 
@@ -72,6 +81,7 @@ sealed class StudyDeploymentStatus
         override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
+        override val participantsStatus: List<ParticipantStatus>,
         override val startedOn: Instant?,
         val stoppedOn: Instant
     ) : StudyDeploymentStatus()

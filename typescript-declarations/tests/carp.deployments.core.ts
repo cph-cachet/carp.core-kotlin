@@ -24,6 +24,7 @@ import AssignedMasterDevice = dk.cachet.carp.deployments.application.users.Assig
 import ParticipantData = dk.cachet.carp.deployments.application.users.ParticipantData
 import Participation = dk.cachet.carp.deployments.application.users.Participation
 import ParticipantInvitation = dk.cachet.carp.deployments.application.users.ParticipantInvitation
+import ParticipantStatus = dk.cachet.carp.deployments.application.users.ParticipantStatus
 import StudyInvitation = dk.cachet.carp.deployments.application.users.StudyInvitation
 import DeploymentServiceRequest = dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest
 import ParticipationServiceRequest = dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest
@@ -48,11 +49,11 @@ describe( "carp.deployments.core", () => {
                 new DefaultDeviceRegistration( "some role" ),
                 toSet( [] ), toMap( [] ), toSet( [] ), toMap( [] ), toSet( [] ), "" ),
             MasterDeviceDeployment.Companion,
-            [ "StudyDeploymentStatus", new StudyDeploymentStatus.Invited( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ) ],
-            new StudyDeploymentStatus.Invited( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
-            new StudyDeploymentStatus.DeployingDevices( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null ),
-            new StudyDeploymentStatus.Running( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), now ),
-            new StudyDeploymentStatus.Stopped( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), null, now ),
+            [ "StudyDeploymentStatus", new StudyDeploymentStatus.Invited( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), new ArrayList<ParticipantStatus>( [] ), null ) ],
+            new StudyDeploymentStatus.Invited( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), new ArrayList<ParticipantStatus>( [] ), null ),
+            new StudyDeploymentStatus.DeployingDevices( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), new ArrayList<ParticipantStatus>( [] ), null ),
+            new StudyDeploymentStatus.Running( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), new ArrayList<ParticipantStatus>( [] ), now ),
+            new StudyDeploymentStatus.Stopped( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), new ArrayList<ParticipantStatus>( [] ), null, now ),
             StudyDeploymentStatus.Companion,
             new ActiveParticipationInvitation( new Participation( UUID.Companion.randomUUID() ), studyInvitation, toSet( [] ) ),
             ActiveParticipationInvitation.Companion,
@@ -62,6 +63,8 @@ describe( "carp.deployments.core", () => {
             ParticipantData.Companion,
             new ParticipantInvitation( UUID.Companion.randomUUID(), toSet( [] ), new UsernameAccountIdentity( new Username( "Test" ) ), studyInvitation ),
             ParticipantInvitation.Companion,
+            new ParticipantStatus( UUID.Companion.randomUUID(), toSet( [] ) ),
+            ParticipantStatus.Companion,
             new Participation( UUID.Companion.randomUUID() ),
             Participation.Companion,
             studyInvitation,

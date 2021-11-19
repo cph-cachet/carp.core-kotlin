@@ -24,6 +24,7 @@ import createDefaultJSON = cdk.cachet.carp.common.infrastructure.serialization.c
 import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
 import DeviceDeploymentStatus = ddk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import StudyDeploymentStatus = ddk.cachet.carp.deployments.application.StudyDeploymentStatus
+import ParticipantStatus = ddk.cachet.carp.deployments.application.users.ParticipantStatus
 import StudyInvitation = ddk.cachet.carp.deployments.application.users.StudyInvitation
 
 import { dk } from 'carp.core-kotlin-carp.studies.core'
@@ -43,7 +44,7 @@ describe( "carp.studies.core", () => {
     it( "verify module declarations", async () => {
         const deploymentId = UUID.Companion.randomUUID()
         const now = Clock.System.now()
-        const invitedDeploymentStatus = new StudyDeploymentStatus.Invited( now, deploymentId, new ArrayList<DeviceDeploymentStatus>( [] ), null )
+        const invitedDeploymentStatus = new StudyDeploymentStatus.Invited( now, deploymentId, new ArrayList<DeviceDeploymentStatus>( [] ), new ArrayList<ParticipantStatus>( [] ), null )
 
         const instances = [
             new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", Clock.System.now(), "Description", new StudyInvitation( "Some study" ), null ),
@@ -172,7 +173,7 @@ describe( "carp.studies.core", () => {
         it( "can serialize ParticipantGroupStatus", () => {
             const deploymentId = UUID.Companion.randomUUID()
             const now = Clock.System.now()
-            const deploymentStatus = new StudyDeploymentStatus.Running( now, deploymentId, new ArrayList( [] ), now )
+            const deploymentStatus = new StudyDeploymentStatus.Running( now, deploymentId, new ArrayList<DeviceDeploymentStatus>( [] ), new ArrayList<ParticipantStatus>( [] ), now )
             const participants = toSet( [ new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ) ] )
             const group = new ParticipantGroupStatus.Invited( deploymentId, participants, now, deploymentStatus )
 

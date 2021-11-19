@@ -13,8 +13,8 @@ import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.deployments.application.users.AssignedMasterDevice
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
-import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.deployments.domain.createComplexParticipantGroup
+import dk.cachet.carp.deployments.domain.studyDeploymentFor
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import kotlin.test.*
@@ -33,7 +33,7 @@ class ParticipantGroupTest
         val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
         val expectedData = InputDataType( "some", "type" )
         protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( expectedData ) )
-        val deployment = StudyDeployment( protocol.getSnapshot() )
+        val deployment = studyDeploymentFor( protocol )
 
         val group = ParticipantGroup.fromNewDeployment( deployment )
 
@@ -340,7 +340,7 @@ class ParticipantGroupTest
 
     private fun createParticipantGroup( protocol: StudyProtocol = createSingleMasterDeviceProtocol() ): ParticipantGroup
     {
-        val deployment = StudyDeployment( protocol.getSnapshot() )
+        val deployment = studyDeploymentFor( protocol )
         return ParticipantGroup.fromNewDeployment( deployment )
     }
 }

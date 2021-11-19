@@ -6,9 +6,9 @@ import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.deployments.application.throwIfInvalidInvitations
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
-import dk.cachet.carp.deployments.application.throwIfInvalid
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
@@ -136,7 +136,7 @@ class Recruitment( val studyId: UUID ) :
             )
         }
         val protocol = status.studyProtocol
-        protocol.throwIfInvalid( invitations )
+        protocol.throwIfInvalidInvitations( invitations )
 
         return Pair( protocol, invitations )
     }

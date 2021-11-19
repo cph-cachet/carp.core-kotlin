@@ -19,7 +19,7 @@ class ParticipantGroupStatusTest
     fun can_serialize_and_deserialize_ParticipantGroupStatus_using_JSON()
     {
         val studyDeploymentId = UUID.randomUUID()
-        val deploymentStatus = StudyDeploymentStatus.Invited( Clock.System.now(), studyDeploymentId, listOf(), null )
+        val deploymentStatus = StudyDeploymentStatus.Invited( Clock.System.now(), studyDeploymentId, listOf(), emptyList(), null )
         val participants = setOf( Participant( AccountIdentity.fromEmailAddress( "test@test.com" ) ) )
         val groupStatus = ParticipantGroupStatus.InDeployment.fromDeploymentStatus( participants, deploymentStatus )
 
