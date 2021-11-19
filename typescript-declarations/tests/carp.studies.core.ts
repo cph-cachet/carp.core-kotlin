@@ -42,7 +42,7 @@ describe( "carp.studies.core", () => {
         const instances = [
             new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Test" ] ) ),
             AssignParticipantDevices.Companion,
-            new DeanonymizedParticipant( UUID.Companion.randomUUID(), UUID.Companion.randomUUID() ),
+            new DeanonymizedParticipant( UUID.Companion.randomUUID(), UUID.Companion.randomUUID(), toSet( [ "Test" ] ) ),
             DeanonymizedParticipant.Companion,
             new Participant( new UsernameIdentity( "Test" ) ),
             Participant.Companion,
@@ -152,7 +152,7 @@ describe( "carp.studies.core", () => {
 
         it( "can serialize ParticipantGroupStatus", () => {
             const deploymentStatus = new StudyDeploymentStatus.DeploymentReady( UUID.Companion.randomUUID(), new ArrayList( [] ), DateTime.Companion.now() )
-            const participants = toSet( [ new DeanonymizedParticipant( UUID.Companion.randomUUID(), UUID.Companion.randomUUID() ) ] )
+            const participants = toSet( [ new DeanonymizedParticipant( UUID.Companion.randomUUID(), UUID.Companion.randomUUID(), toSet( [] ) ) ] )
 
             // Initialize data through a participant attribute. TypeScript does not have to initialize data objects directly.
             const attribute = new ParticipantAttribute.CustomParticipantAttribute( new Text( "Name" ) )

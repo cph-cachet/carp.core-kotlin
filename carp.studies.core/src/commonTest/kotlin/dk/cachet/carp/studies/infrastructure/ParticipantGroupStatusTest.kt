@@ -19,7 +19,7 @@ class ParticipantGroupStatusTest
     {
         val studyDeploymentId = UUID.randomUUID()
         val deploymentStatus = StudyDeploymentStatus.Invited( studyDeploymentId, listOf(), null )
-        val participants = setOf( DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() ) )
+        val participants = setOf( DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID(), setOf( "Device role" ) ) )
         val someData = mapOf( CarpInputDataTypes.SEX to Sex.Female )
         val groupStatus = ParticipantGroupStatus( deploymentStatus, participants, someData )
 

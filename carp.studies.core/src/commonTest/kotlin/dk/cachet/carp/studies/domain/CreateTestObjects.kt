@@ -20,14 +20,15 @@ fun createComplexStudy(): Study
 
     // Specify protocol.
     val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
-    protocol.addMasterDevice( Smartphone( "User's phone" ) ) // Needed to make the protocol deployable.
+    val device = Smartphone( "User's phone" )
+    protocol.addMasterDevice( device ) // Needed to make the protocol deployable.
     study.protocolSnapshot = protocol.getSnapshot()
 
     // Go live.
     study.goLive()
 
     // Add a participation.
-    val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
+    val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID(), setOf( device.roleName ) )
     val studyDeploymentId = UUID.randomUUID()
     study.addParticipation( studyDeploymentId, participation )
 

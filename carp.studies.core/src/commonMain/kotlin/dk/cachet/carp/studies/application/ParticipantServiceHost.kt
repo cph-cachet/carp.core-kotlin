@@ -141,7 +141,7 @@ class ParticipantServiceHost(
 
             study.addParticipation(
                 deploymentStatus.studyDeploymentId,
-                DeanonymizedParticipation( toAssign.participantId, participation.id ) )
+                DeanonymizedParticipation( toAssign.participantId, participation.id, toAssign.deviceRoleNames ) )
         }
 
         studyRepository.update( study )

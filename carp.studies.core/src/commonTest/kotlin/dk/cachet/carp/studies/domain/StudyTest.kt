@@ -167,7 +167,7 @@ class StudyTest
         assertTrue( study.canDeployToParticipants )
 
         val studyDeploymentId = UUID.randomUUID()
-        val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
+        val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID(), setOf( masterDevice.roleName ) )
         study.addParticipation( studyDeploymentId, participation )
         assertEquals( Study.Event.ParticipationAdded( studyDeploymentId, participation ), study.consumeEvents().last() )
         assertEquals( participation, study.getParticipations( studyDeploymentId ).single() )
@@ -181,7 +181,7 @@ class StudyTest
 
         assertFalse( study.canDeployToParticipants )
 
-        val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
+        val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID(), setOf( masterDevice.roleName ) )
         val studyDeploymentId = UUID.randomUUID()
         assertFailsWith<IllegalStateException> { study.addParticipation( studyDeploymentId, participation ) }
         val participationEvents = study.consumeEvents().filterIsInstance<Study.Event.ParticipationAdded>()
@@ -200,10 +200,11 @@ class StudyTest
 
     private fun createStudy(): Study = Study( StudyOwner(), "Test study" )
 
+    private val masterDevice = Smartphone( "User's phone" )
     private fun setDeployableProtocol( study: Study )
     {
         val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
-        protocol.addMasterDevice( Smartphone( "User's phone" ) ) // One master device is needed to deploy.
+        protocol.addMasterDevice( masterDevice ) // One master device is needed to deploy.
         study.protocolSnapshot = protocol.getSnapshot()
     }
 }

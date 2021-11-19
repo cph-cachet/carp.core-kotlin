@@ -9,4 +9,8 @@ import kotlinx.serialization.Serializable
  * Links a [Participant] (and its associated meta-data) to an anonymized [Participation] in a study deployment.
  */
 @Serializable
-data class DeanonymizedParticipation( val participantId: UUID, val participationId: UUID )
+data class DeanonymizedParticipation(
+    val participantId: UUID,
+    val participationId: UUID,
+    val assignedDeviceRoleNames: Set<String>
+)

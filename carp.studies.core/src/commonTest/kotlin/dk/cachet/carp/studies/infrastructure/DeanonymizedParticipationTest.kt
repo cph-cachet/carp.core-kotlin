@@ -14,7 +14,7 @@ class DeanonymizedParticipationTest
     @Test
     fun can_serialize_and_deserialize_deanonymized_participation_using_JSON()
     {
-        val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID() )
+        val participation = DeanonymizedParticipation( UUID.randomUUID(), UUID.randomUUID(), setOf( "Device role" ) )
 
         val serialized: String = JSON.encodeToString( DeanonymizedParticipation.serializer(), participation )
         val parsed: DeanonymizedParticipation = JSON.decodeFromString( DeanonymizedParticipation.serializer(), serialized )

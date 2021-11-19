@@ -122,7 +122,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
         class DeanonymizedParticipation
         {
-            constructor( participantId: UUID, participationId: UUID )
+            constructor( participantId: UUID, participationId: UUID, assignedDeviceRoleNames: HashSet<string> )
 
             static get Companion(): DeanonymizedParticipation$Companion
 
