@@ -68,6 +68,20 @@ data class Smartphone(
         val NON_GRAVITATIONAL_ACCELERATION = add(
             IntervalSamplingScheme( CarpDataTypes.NON_GRAVITATIONAL_ACCELERATION, Duration.milliseconds( 200 ) )
         )
+
+        /**
+         * Rate of rotation around perpendicular x, y and z axes,
+         * as measured by the phone's gyroscope and calibrated to remove drift and noise.
+         * This uses the same coordinate system as the other sensors referring to x, y, and z axes.
+         *
+         * Android (https://developer.android.com/guide/topics/sensors/sensors_overview):
+         * - This corresponds to `TYPE_GYROSCOPE`.
+         * - The sampling scheme's default measure interval corresponds to `SENSOR_DELAY_NORMAL` (200 ms).
+         * - Only available starting from Android 3.0 (API Level 11): earlier versions don't support setting the interval as an absolute value.
+         */
+        val ANGULAR_VELOCITY = add(
+            IntervalSamplingScheme( CarpDataTypes.ANGULAR_VELOCITY, Duration.milliseconds( 200 ) )
+        )
     }
 
     /**

@@ -63,6 +63,12 @@ object CarpDataTypes : DataTypeMetaDataMap()
      */
     val NON_GRAVITATIONAL_ACCELERATION = add( NON_GRAVITATIONAL_ACCELERATION_TYPE_NAME, "Acceleration without gravity", DataTimeType.POINT )
 
+    internal const val ANGULAR_VELOCITY_TYPE_NAME = "$CARP_NAMESPACE.angularvelocity"
+    /**
+     * Rate of rotation around perpendicular x, y, and z axes.
+     */
+    val ANGULAR_VELOCITY = add( ANGULAR_VELOCITY_TYPE_NAME, "Angular velocity", DataTimeType.POINT )
+
     internal const val SIGNAL_STRENGTH_TYPE_NAME = "$CARP_NAMESPACE.signalstrength"
     /**
      * The received signal strength of a wireless device.
