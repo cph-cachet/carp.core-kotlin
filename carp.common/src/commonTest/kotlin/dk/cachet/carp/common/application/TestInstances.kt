@@ -18,12 +18,13 @@ import kotlin.time.Duration
  */
 val commonInstances = listOf(
     // `data` namespace.
-    NonGravitationalAcceleration( 42.0, 42.0, 42.0 ),
+    AngularVelocity( 42.0, 42.0, 42.0 ),
     ECG( 42.0 ),
     FreeFormText( "Some text" ),
     Geolocation( 42.0, 42.0 ),
     HeartRate( 60 ),
     NoData,
+    NonGravitationalAcceleration( 42.0, 42.0, 42.0 ),
     RRInterval,
     SensorSkinContact( true ),
     SignalStrength( 0 ),
