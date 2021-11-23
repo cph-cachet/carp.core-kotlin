@@ -52,8 +52,9 @@ class MutableDataStreamBatch : DataStreamBatch
     /**
      * Append a sequence to a non-existing or previously appended data stream in this batch.
      *
-     * @throws IllegalArgumentException when the start of the [sequence] range precedes the end of
-     *   a previously appended sequence to the same data stream.
+     * @throws IllegalArgumentException when:
+     *  - the start of the [sequence] range precedes the end of a previously appended sequence to the same data stream
+     *  - the sync point of [sequence] is older than that of previous sequences in this batch
      */
     fun appendSequence( sequence: DataStreamSequence )
     {
@@ -69,6 +70,8 @@ class MutableDataStreamBatch : DataStreamBatch
         val last = sequenceList.last()
         require( last.range.last < sequence.range.first )
             { "Sequence range start lies before the end of a previously appended sequence to the same data stream." }
+        require( last.syncPoint.synchronizedOn <= sequence.syncPoint.synchronizedOn )
+            { "The sync point contained in this sequence can't have been obtained before a previous sync point." }
 
         // Merge sequence with last sequence if possible; add new sequence otherwise.
         if ( last.isImmediatelyFollowedBy( sequence ) )

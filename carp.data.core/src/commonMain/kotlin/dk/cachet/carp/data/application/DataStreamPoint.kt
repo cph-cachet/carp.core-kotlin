@@ -27,7 +27,7 @@ data class DataStreamPoint<out TData : Data>(
     /**
      * The most recent synchronization information which was determined for this or a previous [DataStreamPoint].
      */
-    val syncPoint: SyncPoint
+    val syncPoint: SyncPoint = SyncPoint.UTC
 )
 {
     init

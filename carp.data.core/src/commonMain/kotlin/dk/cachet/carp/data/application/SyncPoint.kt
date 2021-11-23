@@ -29,3 +29,13 @@ data class SyncPoint(
     @Required
     val relativeClockSpeed: Double = 1.0
 )
+{
+    companion object
+    {
+        /**
+         * The default [SyncPoint] for timestamps that are already synchronized to UTC time.
+         * A synchronization conversion using this sync point is a no-op.
+         */
+        val UTC: SyncPoint = SyncPoint( Instant.fromEpochSeconds( 0 ) )
+    }
+}
