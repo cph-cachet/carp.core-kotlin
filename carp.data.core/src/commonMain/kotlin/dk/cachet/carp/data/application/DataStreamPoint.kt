@@ -39,6 +39,20 @@ data class DataStreamPoint<out TData : Data>(
 
     val dataStream: DataStreamId
         get() = DataStreamId( studyDeploymentId, deviceRoleName, measurement.dataType )
+
+    /**
+     * Convert this [DataStreamPoint] to one for which the [measurement] is synchronized to UTC time using [syncPoint].
+     */
+    fun synchronizeToUTC(): DataStreamPoint<TData>
+    {
+        // Early out in case no synchronization is needed.
+        if ( syncPoint == SyncPoint.UTC ) return this
+
+        return copy(
+            measurement = measurement.synchronizeToUTC( syncPoint ),
+            syncPoint = SyncPoint.UTC
+        )
+    }
 }
 
 
