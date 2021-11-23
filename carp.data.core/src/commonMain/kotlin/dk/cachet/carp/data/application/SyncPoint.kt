@@ -1,16 +1,17 @@
 package dk.cachet.carp.data.application
 
+import dk.cachet.carp.common.application.toEpochMicroseconds
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 
 
 /**
- * Information about a sensor clock at the timestamp [synchronizedOn] on a master device
- * which allows converting sensor timestamps to UTC time in microseconds.
+ * Information about a sensor clock at [synchronizedOn] on a master device
+ * which allows converting sensor time to UTC time in microseconds.
  *
  * The required units/sign to convert to UTC microseconds are determined by the formula:
- * (sensorTimeStamp * [relativeClockSpeed]) + [utcOffset]
+ * syncedTime = [synchronizedOn] + (sensorTime + [utcOffset] - [synchronizedOn]) / [relativeClockSpeed]
  */
 @Serializable
 data class SyncPoint(
@@ -19,12 +20,13 @@ data class SyncPoint(
      */
     val synchronizedOn: Instant,
     /**
-     * The offset to be added to the sensor time stamps after having multiplied by [relativeClockSpeed].
+     * UTC time in microseconds minus sensor time at the moment in time defined by [synchronizedOn].
      */
     @Required
     val utcOffset: Long = 0,
     /**
-     * The value to multiply sensor time stamps by.
+     * The relative clock speed of the sensor clock compared to UTC time incrementing by microseconds.
+     * E.g., if the sensor clock increments by 2 every microsecond, the relative clock speed is 2.
      */
     @Required
     val relativeClockSpeed: Double = 1.0
@@ -33,9 +35,21 @@ data class SyncPoint(
     companion object
     {
         /**
-         * The default [SyncPoint] for timestamps that are already synchronized to UTC time.
+         * The default [SyncPoint] for sensors of which the clock is already synchronized to UTC time in microseconds.
          * A synchronization conversion using this sync point is a no-op.
          */
         val UTC: SyncPoint = SyncPoint( Instant.fromEpochSeconds( 0 ) )
+    }
+
+
+    /**
+     * Converts [timestamp] to UTC time in microseconds using this [SyncPoint].
+     */
+    fun synchronizeTimestamp( timestamp: Long ): Long
+    {
+        val syncedOn = synchronizedOn.toEpochMicroseconds()
+        val synced = syncedOn + (timestamp + utcOffset - syncedOn) / relativeClockSpeed
+
+        return synced.toLong()
     }
 }
