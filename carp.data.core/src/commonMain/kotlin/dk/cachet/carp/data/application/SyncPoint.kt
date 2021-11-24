@@ -1,6 +1,7 @@
 package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.toEpochMicroseconds
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
@@ -39,6 +40,16 @@ data class SyncPoint(
          * A synchronization conversion using this sync point is a no-op.
          */
         val UTC: SyncPoint = SyncPoint( Instant.fromEpochSeconds( 0 ) )
+
+        /**
+         * Create a [SyncPoint] at the current point in time coinciding with a sensor measurement reported at [timestamp]
+         * for a sensor clock running at [relativeClockSpeed].
+         */
+        fun forCurrentTimestamp( timestamp: Long, relativeClockSpeed: Double = 1.0 ): SyncPoint
+        {
+            val now = Clock.System.now()
+            return SyncPoint( now, now.toEpochMicroseconds() - timestamp, relativeClockSpeed )
+        }
     }
 
 
