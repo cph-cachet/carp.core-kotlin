@@ -1,7 +1,6 @@
 package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.toEpochMicroseconds
-import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
@@ -12,7 +11,7 @@ import kotlinx.serialization.Serializable
  * which allows converting sensor time to UTC time in microseconds.
  *
  * The required units/sign to convert to UTC microseconds are determined by the formula:
- * syncedTime = [synchronizedOn] + (sensorTime + [utcOffset] - [synchronizedOn]) / [relativeClockSpeed]
+ * syncedTime = [relativeClockSpeed] * (sensorTime - [sensorTimestampAtSyncPoint]) + [synchronizedOn]
  */
 @Serializable
 data class SyncPoint(
@@ -21,13 +20,15 @@ data class SyncPoint(
      */
     val synchronizedOn: Instant,
     /**
-     * UTC time in microseconds minus sensor time at the moment in time defined by [synchronizedOn].
+     * The sensor time at [synchronizedOn].
      */
     @Required
-    val utcOffset: Long = 0,
+    val sensorTimestampAtSyncPoint: Long = synchronizedOn.toEpochMicroseconds(),
     /**
-     * The relative clock speed of the sensor clock compared to UTC time incrementing by microseconds.
-     * E.g., if the sensor clock increments by 2 every microsecond, the relative clock speed is 2.
+     * The relative clock speed of UTC time compared to the sensor clock,
+     * calculated as the variation of UTC time divided by the variation of sensor time.
+     *
+     * E.g., if the sensor clock runs half as fast as UTC time, the relative clock speed is 2.
      */
     @Required
     val relativeClockSpeed: Double = 1.0
@@ -40,16 +41,6 @@ data class SyncPoint(
          * A synchronization conversion using this sync point is a no-op.
          */
         val UTC: SyncPoint = SyncPoint( Instant.fromEpochSeconds( 0 ) )
-
-        /**
-         * Create a [SyncPoint] at the current point in time coinciding with a sensor measurement reported at [timestamp]
-         * for a sensor clock running at [relativeClockSpeed].
-         */
-        fun forCurrentTimestamp( timestamp: Long, relativeClockSpeed: Double = 1.0 ): SyncPoint
-        {
-            val now = Clock.System.now()
-            return SyncPoint( now, now.toEpochMicroseconds() - timestamp, relativeClockSpeed )
-        }
     }
 
 
@@ -58,8 +49,8 @@ data class SyncPoint(
      */
     fun synchronizeTimestamp( timestamp: Long ): Long
     {
-        val syncedOn = synchronizedOn.toEpochMicroseconds()
-        val synced = syncedOn + (timestamp + utcOffset - syncedOn) / relativeClockSpeed
+        val synced = relativeClockSpeed * (timestamp - sensorTimestampAtSyncPoint) +
+            synchronizedOn.toEpochMicroseconds()
 
         return synced.toLong()
     }

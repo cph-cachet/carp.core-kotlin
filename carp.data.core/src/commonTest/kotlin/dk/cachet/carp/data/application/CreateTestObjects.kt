@@ -46,7 +46,7 @@ fun createDoubleSpeedSyncPoint(): SyncPoint
 
     return SyncPoint(
         now,
-        -nowMicros, // Since the sensor clock runs twice as fast, subtracting it from UTC time equals negative UTC time.
-        2.0
+        nowMicros * 2,
+        0.5
     )
 }
