@@ -67,6 +67,15 @@ val STUBS_SERIAL_MODULE = SerializersModule {
 fun createTestJSON(): Json = createDefaultJSON( STUBS_SERIAL_MODULE )
 
 /**
+ * Replace the type name of [data] in this JSON string with [unknownTypeName].
+ */
+fun String.makeUnknown(
+    data: StubData,
+    unknownTypeName: String = "com.unknown.UnknownData"
+): String =
+    this.makeUnknown( data, Data::class, "data", data.data, unknownTypeName )
+
+/**
  * Replace the type name of [deviceDescriptor] in this JSON string with [unknownTypeName].
  */
 @ExperimentalSerializationApi

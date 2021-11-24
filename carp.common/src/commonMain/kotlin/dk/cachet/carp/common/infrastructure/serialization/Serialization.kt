@@ -45,6 +45,9 @@ val COMMON_SERIAL_MODULE = SerializersModule {
             CustomInputSerializer( String::class, Int::class )
         )
         subclass( Sex::class, PolymorphicEnumSerializer( Sex.serializer() ) )
+
+        subclass( CustomData::class )
+        default { DataSerializer }
     }
     polymorphic( InputElement::class )
     {
