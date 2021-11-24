@@ -9,6 +9,15 @@ import kotlin.test.*
 class SyncPointTest
 {
     @Test
+    fun forCurrentTimestamp_succeeds()
+    {
+        val doubleSpeed = SyncPoint.forCurrentTimestamp( 0, 2.0 )
+        val zeroAtUTC = doubleSpeed.utcOffset
+
+        assertEquals( zeroAtUTC + 500, doubleSpeed.synchronizeTimestamp( 1000 ) )
+    }
+
+    @Test
     fun synchronizeTimestamp_for_double_speed_clock_succeeds()
     {
         val doubleSpeed = createDoubleSpeedSyncPoint()
