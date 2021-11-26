@@ -45,7 +45,7 @@ class DataStreamPointTest
     }
 
     @Test
-    fun synchronizeToUTC_succeeds()
+    fun synchronize_succeeds()
     {
         val doubleSpeed = createDoubleSpeedSyncPoint()
         val point = DataStreamPoint(
@@ -57,8 +57,8 @@ class DataStreamPointTest
             doubleSpeed
         )
 
-        val synchronized = point.synchronizeToUTC()
+        val synchronized = point.synchronize()
         assertEquals( 500, synchronized.measurement.sensorStartTime )
-        assertEquals( SyncPoint.UTC, synchronized.syncPoint )
+        assertEquals( SyncPoint.UnixEpoch, synchronized.syncPoint )
     }
 }
