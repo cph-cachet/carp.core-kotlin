@@ -8,9 +8,9 @@ import kotlinx.serialization.Serializable
 
 /**
  * Information about a sensor clock at [synchronizedOn] on a master device
- * which allows converting sensor time to UTC time in microseconds.
+ * which allows converting sensor time to number of microseconds since the Unix epoch.
  *
- * The required units/sign to convert to UTC microseconds are determined by the formula:
+ * The required units/sign to carry out this conversion are determined by the formula:
  * syncedTime = [relativeClockSpeed] * (sensorTime - [sensorTimestampAtSyncPoint]) + [synchronizedOn]
  */
 @Serializable
@@ -37,17 +37,18 @@ data class SyncPoint(
     companion object
     {
         /**
-         * The default [SyncPoint] for sensors of which the clock is already synchronized to UTC time in microseconds.
-         * A synchronization conversion using this sync point is a no-op.
+         * The default [SyncPoint] for sensors which return timestamps as number of microseconds since the Unix epoch.
+         * Applying this [SyncPoint] to timestamps is a no-op.
          */
-        val UTC: SyncPoint = SyncPoint( Instant.fromEpochSeconds( 0 ) )
+        val UnixEpoch: SyncPoint = SyncPoint( Instant.fromEpochSeconds( 0 ) )
     }
 
 
     /**
-     * Converts [timestamp] to UTC time in microseconds using this [SyncPoint].
+     * Convert [timestamp] obtained by the sensor clock this [SyncPoint] relates to
+     * into number of microseconds since the Unix epoch.
      */
-    fun synchronizeTimestamp( timestamp: Long ): Long
+    fun applyToTimestamp( timestamp: Long ): Long
     {
         val synced = relativeClockSpeed * (timestamp - sensorTimestampAtSyncPoint) +
             synchronizedOn.toEpochMicroseconds()

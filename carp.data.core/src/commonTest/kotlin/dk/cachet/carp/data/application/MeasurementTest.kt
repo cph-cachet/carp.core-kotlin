@@ -36,23 +36,23 @@ class MeasurementTest
     }
 
     @Test
-    fun synchronizeToUTC_succeeds()
+    fun synchronize_succeeds()
     {
         val point = Measurement( 1000, null, STUB_DATA_POINT_TYPE, StubDataPoint() )
 
         val doubleSpeed = createDoubleSpeedSyncPoint()
-        val syncedPoint = point.synchronizeToUTC( doubleSpeed )
+        val syncedPoint = point.synchronize( doubleSpeed )
         assertEquals( 500, syncedPoint.sensorStartTime )
         assertNull( syncedPoint.sensorEndTime )
     }
 
     @Test
-    fun synchronizeToUTC_converts_both_start_and_end_time()
+    fun synchronize_converts_both_start_and_end_time()
     {
         val point = Measurement( 1000, 2000, STUB_DATA_TIME_SPAN_TYPE, StubDataTimeSpan() )
 
         val doubleSpeed = createDoubleSpeedSyncPoint()
-        val syncedPoint = point.synchronizeToUTC( doubleSpeed )
+        val syncedPoint = point.synchronize( doubleSpeed )
         assertEquals( 500, syncedPoint.sensorStartTime )
         assertEquals( 1000, syncedPoint.sensorEndTime )
     }

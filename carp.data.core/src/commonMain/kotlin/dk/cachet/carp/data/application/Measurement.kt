@@ -42,14 +42,14 @@ data class Measurement<out TData : Data>(
         else DataTimeType.TIME_SPAN
 
     /**
-     * Convert this [Measurement] to one synchronized to UTC time using [syncPoint].
+     * Convert this [Measurement] to one synchronized using [syncPoint].
      */
-    fun synchronizeToUTC( syncPoint: SyncPoint ): Measurement<TData> =
+    fun synchronize( syncPoint: SyncPoint ): Measurement<TData> =
         copy(
-            sensorStartTime = syncPoint.synchronizeTimestamp( sensorStartTime ),
+            sensorStartTime = syncPoint.applyToTimestamp( sensorStartTime ),
             sensorEndTime =
                 if ( sensorEndTime == null ) sensorEndTime
-                else syncPoint.synchronizeTimestamp( sensorEndTime )
+                else syncPoint.applyToTimestamp( sensorEndTime )
         )
 }
 

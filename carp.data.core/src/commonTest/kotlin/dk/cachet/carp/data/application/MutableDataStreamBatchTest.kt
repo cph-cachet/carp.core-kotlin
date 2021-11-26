@@ -79,7 +79,7 @@ class MutableDataStreamBatchTest
             dataStream,
             0,
             stubTriggerIds,
-            SyncPoint.UTC
+            SyncPoint.UnixEpoch
         )
         firstSequence.appendMeasurements( measurement( StubData(), 0 ) )
         batch.appendSequence( firstSequence )
@@ -153,7 +153,7 @@ class MutableDataStreamBatchTest
             dataStream,
             1,
             stubTriggerIds,
-            SyncPoint.UTC
+            SyncPoint.UnixEpoch
         )
         newSequence.appendMeasurements( measurement( StubData(), 0 ) )
         assertFailsWith<IllegalArgumentException> { batch.appendSequence( newSequence ) }

@@ -92,7 +92,7 @@ class MutableDataStreamSequence(
     override val dataStream: DataStreamId,
     override val firstSequenceId: Long,
     triggerIds: List<Int>,
-    override val syncPoint: SyncPoint = SyncPoint.UTC
+    override val syncPoint: SyncPoint = SyncPoint.UnixEpoch
 ) : DataStreamSequence
 {
     override val triggerIds: List<Int> = triggerIds.toList()
@@ -154,7 +154,7 @@ object DataStreamSequenceSerializer : KSerializer<DataStreamSequence>
         override val firstSequenceId: Long,
         override val measurements: List<Measurement<*>>,
         override val triggerIds: List<Int>,
-        override val syncPoint: SyncPoint = SyncPoint.UTC
+        override val syncPoint: SyncPoint = SyncPoint.UnixEpoch
     ) : DataStreamSequence
     {
         init { throwIfIllegalInitialization() }
