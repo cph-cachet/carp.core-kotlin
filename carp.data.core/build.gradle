@@ -10,3 +10,13 @@ publishing {
         }
     }
 }
+
+kotlin {
+    sourceSets {
+        jsMain {
+            dependencies {
+                implementation(npm("big.js", versions.bigJs))
+            }
+        }
+    }
+}

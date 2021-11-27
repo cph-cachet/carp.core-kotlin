@@ -42,17 +42,13 @@ data class SyncPoint(
          */
         val UnixEpoch: SyncPoint = SyncPoint( Instant.fromEpochSeconds( 0 ) )
     }
-
-
-    /**
-     * Convert [timestamp] obtained by the sensor clock this [SyncPoint] relates to
-     * into number of microseconds since the Unix epoch.
-     */
-    fun applyToTimestamp( timestamp: Long ): Long
-    {
-        val synced = relativeClockSpeed * (timestamp - sensorTimestampAtSyncPoint) +
-            synchronizedOn.toEpochMicroseconds()
-
-        return synced.toLong()
-    }
 }
+
+
+/**
+ * Convert [timestamp] obtained by the sensor clock this [SyncPoint] relates to
+ * into number of microseconds since the Unix epoch.
+ *
+ * This requires a platform-specific implementation in order not to lose any precision; big decimal needs to be used.
+ */
+expect fun SyncPoint.applyToTimestamp( timestamp: Long ): Long
