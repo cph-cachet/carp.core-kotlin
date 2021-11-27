@@ -23,4 +23,13 @@ class SyncPointTest
         val synchronized = SyncPoint.UnixEpoch.applyToTimestamp( 1000 )
         assertEquals( 1000, synchronized )
     }
+
+    @Test
+    fun applyToTimestamp_has_accurate_precision()
+    {
+        val bigNumber = 290017789727876000L
+
+        val noOp = SyncPoint.UnixEpoch.applyToTimestamp( bigNumber )
+        assertEquals( bigNumber, noOp )
+    }
 }
