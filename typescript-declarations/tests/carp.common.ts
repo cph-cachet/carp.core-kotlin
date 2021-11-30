@@ -1,27 +1,35 @@
-import { expect } from 'chai'
+import {expect} from 'chai'
 import VerifyModule from './VerifyModule'
 
-import { kotlin } from 'kotlin'
-import toSet = kotlin.collections.toSet_us0mfu$
+import {kotlin} from 'kotlin'
 
-import { dk } from 'carp.core-kotlin-carp.common'
-import EmailAddress = dk.cachet.carp.common.application.EmailAddress
-import NamespacedId = dk.cachet.carp.common.application.NamespacedId
-import Trilean = dk.cachet.carp.common.application.Trilean
-import UUID = dk.cachet.carp.common.application.UUID
-import toTrilean = dk.cachet.carp.common.application.toTrilean_1v8dcc$
-import DefaultDeviceRegistration = dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
-import CarpInputDataTypes = dk.cachet.carp.common.application.data.input.CarpInputDataTypes
-import SelectOne = dk.cachet.carp.common.application.data.input.elements.SelectOne
-import Text = dk.cachet.carp.common.application.data.input.elements.Text
-import DeviceRegistration = dk.cachet.carp.common.application.devices.DeviceRegistration
-import Smartphone = dk.cachet.carp.common.application.devices.Smartphone
-import AccountIdentity = dk.cachet.carp.common.application.users.AccountIdentity
-import EmailAccountIdentity = dk.cachet.carp.common.application.users.EmailAccountIdentity
-import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute
-import Username = dk.cachet.carp.common.application.users.Username
-import UsernameAccountIdentity = dk.cachet.carp.common.application.users.UsernameAccountIdentity
-import emailAccountIdentityFromString = dk.cachet.carp.common.application.users.EmailAccountIdentity_init_61zpoe$
+import {dk} from 'carp.core-kotlin-carp.common'
+import toSet = kotlin.collections.toSet_us0mfu$;
+import Duration = kotlin.time.Duration;
+import EmailAddress = dk.cachet.carp.common.application.EmailAddress;
+import NamespacedId = dk.cachet.carp.common.application.NamespacedId;
+import Trilean = dk.cachet.carp.common.application.Trilean;
+import UUID = dk.cachet.carp.common.application.UUID;
+import toTrilean = dk.cachet.carp.common.application.toTrilean_1v8dcc$;
+import DefaultDeviceRegistration = dk.cachet.carp.common.application.devices.DefaultDeviceRegistration;
+import CarpInputDataTypes = dk.cachet.carp.common.application.data.input.CarpInputDataTypes;
+import SelectOne = dk.cachet.carp.common.application.data.input.elements.SelectOne;
+import Text = dk.cachet.carp.common.application.data.input.elements.Text;
+import DeviceRegistration = dk.cachet.carp.common.application.devices.DeviceRegistration;
+import Smartphone = dk.cachet.carp.common.application.devices.Smartphone;
+import AccountIdentity = dk.cachet.carp.common.application.users.AccountIdentity;
+import EmailAccountIdentity = dk.cachet.carp.common.application.users.EmailAccountIdentity;
+import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute;
+import Username = dk.cachet.carp.common.application.users.Username;
+import UsernameAccountIdentity = dk.cachet.carp.common.application.users.UsernameAccountIdentity;
+import emailAccountIdentityFromString = dk.cachet.carp.common.application.users.EmailAccountIdentity_init_61zpoe$;
+import WebTask = dk.cachet.carp.common.application.tasks.WebTask;
+import ElapsedTimeTrigger = dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger;
+import ManualTrigger = dk.cachet.carp.common.application.triggers.ManualTrigger;
+import ScheduledTrigger = dk.cachet.carp.common.application.triggers.ScheduledTrigger;
+import RecurrenceRule = dk.cachet.carp.common.application.RecurrenceRule;
+import TimeOfDay = dk.cachet.carp.common.application.TimeOfDay;
+import TaskControl = dk.cachet.carp.common.application.triggers.TaskControl;
 
 
 describe( "carp.common", () => {
@@ -52,6 +60,19 @@ describe( "carp.common", () => {
             UsernameAccountIdentity.Companion,
             [ "ParticipantAttribute", new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ) ],
             ParticipantAttribute.Companion,
+            new ElapsedTimeTrigger("device", Duration.Companion.INFINITE),
+            ["Trigger", new ElapsedTimeTrigger("device", Duration.Companion.INFINITE)],
+            ["Trigger", new ManualTrigger("device", "manual", "")],
+            new ManualTrigger("device", "manual", ""),
+            new ScheduledTrigger("device", new TimeOfDay(10,10,10), RecurrenceRule.Companion.fromString_61zpoe$("RRULE:FREQ=WEEKLY;COUNT=10")),
+            TimeOfDay.Companion,
+            ["Trigger", new ScheduledTrigger("device", new TimeOfDay(10,10,10), RecurrenceRule.Companion.fromString_61zpoe$("RRULE:FREQ=WEEKLY;COUNT=10"))],
+            new WebTask("name", undefined, "", "url.com"),
+            ["TaskDescriptor", new WebTask("name", undefined, "", "url.com")],
+            WebTask.Companion,
+            RecurrenceRule.Companion.fromString_61zpoe$("RRULE:FREQ=WEEKLY;COUNT=10"),
+            RecurrenceRule.Companion,
+            new TaskControl(1,"name", "destination", 0)
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.common', instances )
