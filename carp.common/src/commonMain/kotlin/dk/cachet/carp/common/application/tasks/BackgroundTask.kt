@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.application.tasks
 
+import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
@@ -23,7 +24,7 @@ data class BackgroundTask(
      */
     @Serializable( DurationSerializer::class )
     val duration: Duration = Duration.INFINITE
-) : TaskDescriptor
+) : TaskDescriptor<NoData> // Not an interactive task, so uploads no data other than measures.
 
 
 /**

@@ -20,7 +20,7 @@ class UseCompositeTaskWarning internal constructor() : DeploymentWarning
     data class OverlappingTasks(
         val trigger: Trigger<*>,
         val targetDevice: AnyDeviceDescriptor,
-        val tasks: List<TaskDescriptor>
+        val tasks: List<TaskDescriptor<*>>
     )
 
     override val description: String =

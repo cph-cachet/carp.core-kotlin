@@ -19,9 +19,9 @@ class UnstartedTasksWarning internal constructor() : DeploymentWarning
 
     override fun isIssuePresent( protocol: StudyProtocol ): Boolean = getUnstartedTasks( protocol ).any()
 
-    fun getUnstartedTasks( protocol: StudyProtocol ): Set<TaskDescriptor>
+    fun getUnstartedTasks( protocol: StudyProtocol ): Set<TaskDescriptor<*>>
     {
-        val startedTasks: List<TaskDescriptor> = protocol.triggers.flatMap { (triggerId, _) ->
+        val startedTasks: List<TaskDescriptor<*>> = protocol.triggers.flatMap { (triggerId, _) ->
             protocol.getTaskControls( triggerId )
                 .filter { it.control == TaskControl.Control.Start }
                 .map { it.task }

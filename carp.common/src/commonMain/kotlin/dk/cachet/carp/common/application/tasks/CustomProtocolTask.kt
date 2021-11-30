@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.application.tasks
 
+import dk.cachet.carp.common.application.data.NoData
 import kotlinx.serialization.Serializable
 
 
@@ -13,7 +14,7 @@ data class CustomProtocolTask(
      * A definition on how to run a study on a master device, serialized as a string.
      */
     val studyProtocol: String
-) : TaskDescriptor
+) : TaskDescriptor<NoData>
 {
     /**
      * Description is empty, since it is likely defined in [studyProtocol] in a different format.

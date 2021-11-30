@@ -39,7 +39,7 @@ data class MasterDeviceDeployment(
     /**
      * All tasks which should be able to be executed on this or connected devices.
      */
-    val tasks: Set<TaskDescriptor> = emptySet(),
+    val tasks: Set<TaskDescriptor<*>> = emptySet(),
     /**
      * All triggers originating from this device and connected devices, stored per assigned id unique within the study protocol.
      */
@@ -77,7 +77,7 @@ data class MasterDeviceDeployment(
          * The set of tasks which may be sent to this device over the course of the deployment,
          * or an empty set in case there are none.
          */
-        val tasks: Set<TaskDescriptor>
+        val tasks: Set<TaskDescriptor<*>>
     )
 
 
@@ -130,7 +130,7 @@ data class MasterDeviceDeployment(
         }
     }
 
-    private fun getDeviceTasks( device: AnyDeviceDescriptor ): Set<TaskDescriptor> = taskControls
+    private fun getDeviceTasks( device: AnyDeviceDescriptor ): Set<TaskDescriptor<*>> = taskControls
         .filter { it.destinationDeviceRoleName == device.roleName }
         .map { triggered -> tasks.first { it.name == triggered.taskName } }
         .toSet()

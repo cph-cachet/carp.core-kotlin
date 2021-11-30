@@ -110,7 +110,7 @@ fun String.makeUnknown(
  */
 @ExperimentalSerializationApi
 fun String.makeUnknown(
-    taskDescriptor: TaskDescriptor,
+    taskDescriptor: TaskDescriptor<*>,
     unknownTypeName: String = "com.unknown.UnknownTaskDescriptor"
 ): String =
     this.makeUnknown( taskDescriptor, TaskDescriptor::class, "name", taskDescriptor.name, unknownTypeName )

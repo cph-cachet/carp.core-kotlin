@@ -48,8 +48,8 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
         data class MasterDeviceAdded( val device: AnyMasterDeviceDescriptor ) : Event()
         data class ConnectedDeviceAdded( val connected: AnyDeviceDescriptor, val master: AnyMasterDeviceDescriptor ) : Event()
         data class TriggerAdded( val trigger: Trigger<*> ) : Event()
-        data class TaskAdded( val task: TaskDescriptor ) : Event()
-        data class TaskRemoved( val task: TaskDescriptor ) : Event()
+        data class TaskAdded( val task: TaskDescriptor<*> ) : Event()
+        data class TaskRemoved( val task: TaskDescriptor<*> ) : Event()
         data class TaskControlAdded( val control: TaskControl ) : Event()
         data class TaskControlRemoved( val control: TaskControl ) : Event()
         data class ExpectedParticipantDataAdded( val attribute: ParticipantAttribute ) : Event()
@@ -95,7 +95,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
             snapshot.taskControls.forEach { control ->
                 val triggerMatch = snapshot.triggers.entries.singleOrNull { it.key == control.triggerId }
                     ?: throw IllegalArgumentException( "Can't find trigger with id '${control.triggerId}' in snapshot." )
-                val task: TaskDescriptor = protocol.tasks.singleOrNull { it.name == control.taskName }
+                val task: TaskDescriptor<*> = protocol.tasks.singleOrNull { it.name == control.taskName }
                     ?: throw IllegalArgumentException( "Can't find task with name '${control.taskName}' in snapshot." )
                 val device: AnyDeviceDescriptor = protocol.devices.singleOrNull { it.roleName == control.destinationDeviceRoleName }
                     ?: throw IllegalArgumentException( "Can't find device with role name '${control.destinationDeviceRoleName}' in snapshot." )
@@ -203,7 +203,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      */
     fun addTaskControl(
         trigger: Trigger<*>,
-        task: TaskDescriptor,
+        task: TaskDescriptor<*>,
         destinationDevice: AnyDeviceDescriptor,
         control: Control
     ): Boolean
@@ -265,7 +265,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
     /**
      * Gets all the tasks triggered for the specified [device].
      */
-    fun getTasksForDevice( device: AnyDeviceDescriptor ): Set<TaskDescriptor>
+    fun getTasksForDevice( device: AnyDeviceDescriptor ): Set<TaskDescriptor<*>>
     {
         return triggerControls
             .flatMap { it.value }
@@ -280,7 +280,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      * @throws IllegalArgumentException in case a task with the specified name already exists.
      * @return True if the [task] has been added; false if it is already included in this configuration.
      */
-    override fun addTask( task: TaskDescriptor ): Boolean =
+    override fun addTask( task: TaskDescriptor<*> ): Boolean =
         super.addTask( task )
         .eventIf( true ) { Event.TaskAdded( task ) }
 
@@ -290,7 +290,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      *
      * @return True if the [task] has been removed; false if it is not included in this configuration.
      */
-    override fun removeTask( task: TaskDescriptor ): Boolean
+    override fun removeTask( task: TaskDescriptor<*> ): Boolean
     {
         // Remove all controls which control this task.
         triggerControls.values.forEach { controls ->

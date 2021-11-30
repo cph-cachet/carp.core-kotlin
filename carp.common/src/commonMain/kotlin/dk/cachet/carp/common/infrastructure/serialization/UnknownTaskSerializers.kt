@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
+import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.tasks.Measure
 import kotlinx.serialization.KSerializer
@@ -12,14 +13,14 @@ import kotlinx.serialization.json.Json
  */
 @Serializable( TaskDescriptorSerializer::class )
 data class CustomTaskDescriptor( override val className: String, override val jsonSource: String, val serializer: Json ) :
-    TaskDescriptor, UnknownPolymorphicWrapper
+    TaskDescriptor<NoData>, UnknownPolymorphicWrapper
 {
     @Serializable
     private data class BaseMembers(
         override val name: String,
         override val measures: List<Measure> = emptyList(),
         override val description: String? = null
-    ) : TaskDescriptor
+    ) : TaskDescriptor<NoData>
 
     override val name: String
     override val measures: List<Measure>
@@ -37,5 +38,5 @@ data class CustomTaskDescriptor( override val className: String, override val js
 /**
  * Custom serializer for [TaskDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [TaskDescriptor].
  */
-object TaskDescriptorSerializer : KSerializer<TaskDescriptor>
+object TaskDescriptorSerializer : KSerializer<TaskDescriptor<*>>
     by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) } )

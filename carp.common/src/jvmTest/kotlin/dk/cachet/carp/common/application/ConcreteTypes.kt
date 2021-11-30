@@ -17,6 +17,6 @@ val concreteInputElementTypes: List<KClass<out InputElement<*>>> = findConcreteT
 val concreteDeviceDescriptorTypes: List<KClass<out AnyDeviceDescriptor>> = findConcreteTypes()
 val concreteDeviceRegistrationTypes: List<KClass<out DeviceRegistration>> = findConcreteTypes()
 val concreteSamplingConfigurationTypes: List<KClass<out SamplingConfiguration>> = findConcreteTypes()
-val concreteTaskDescriptorTypes: List<KClass<out TaskDescriptor>> = findConcreteTypes()
+val concreteTaskDescriptorTypes: List<KClass<out TaskDescriptor<*>>> = findConcreteTypes()
 val concreteTriggerTypes: List<KClass<out Trigger<*>>> = findConcreteTypes()
 val concreteAccountIdentityTypes: List<KClass<out AccountIdentity>> = findConcreteTypes()
