@@ -3,7 +3,6 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.tasks.Measure
-import dk.cachet.carp.common.application.tasks.getAllExpectedDataTypes
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
@@ -48,17 +47,5 @@ class CustomTaskDescriptorTest
         {
             CustomTaskDescriptor( "Irrelevant", serialized, JSON )
         }
-    }
-
-    @Test
-    fun getInteractiveDataTypes_and_getAllExpectedDataTypes_is_unsupported()
-    {
-        val measures: List<Measure> = listOf( Measure.DataStream( STUB_DATA_TYPE ) )
-        val task = StubTaskDescriptor( "Unknown", measures )
-        val serialized: String = JSON.encodeToString( StubTaskDescriptor.serializer(), task )
-        val customTask = CustomTaskDescriptor( "Task", serialized, JSON )
-
-        assertFailsWith<UnsupportedOperationException> { customTask.getInteractionDataTypes() }
-        assertFailsWith<UnsupportedOperationException> { customTask.getAllExpectedDataTypes() }
     }
 }

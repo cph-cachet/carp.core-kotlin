@@ -1,6 +1,5 @@
 package dk.cachet.carp.common.application.tasks
 
-import dk.cachet.carp.common.application.data.DataType
 import kotlinx.serialization.Serializable
 
 
@@ -25,9 +24,4 @@ data class CustomProtocolTask(
      * This list is empty, since measures are defined in [studyProtocol] in a different format.
      */
     override val measures: List<Measure> = emptyList()
-
-    /**
-     * This set is empty, since interaction data types are defined in [studyProtocol] in a different format.
-     */
-    override fun getInteractionDataTypes(): Set<DataType> = emptySet()
 }

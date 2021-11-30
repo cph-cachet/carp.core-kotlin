@@ -1,7 +1,6 @@
 package dk.cachet.carp.common.application.tasks
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.tasks.WebTask.UrlVariable
 import kotlinx.serialization.Serializable
 
@@ -47,11 +46,6 @@ data class WebTask(
         TRIGGER_ID( markup( "trigger id" ) );
     }
 
-
-    /**
-     * This set is empty, since the execution of the task is delegated to a web page.
-     */
-    override fun getInteractionDataTypes(): Set<DataType> = emptySet()
 
     /**
      * Replace the variables in [url] with the specified runtime values, if the variables are present.

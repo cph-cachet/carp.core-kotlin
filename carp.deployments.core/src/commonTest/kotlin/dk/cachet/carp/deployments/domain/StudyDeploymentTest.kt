@@ -10,12 +10,10 @@ import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.tasks.Measure
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.CustomMasterDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.serialization.CustomTaskDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
@@ -34,8 +32,6 @@ import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
 import kotlinx.datetime.Clock
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.test.*
 
@@ -100,11 +96,10 @@ class StudyDeploymentTest
     }
 
     @Test
-    fun requiredDataStreams_is_complete_for_known_types()
+    fun requiredDataStreams_is_complete()
     {
         val masterDevice = StubMasterDeviceDescriptor()
         val connectedDevice = StubDeviceDescriptor()
-        val interactionResultType = DataType( "some.namespace", "interactionresult" )
         val protocol = createEmptyProtocol().apply {
             addMasterDevice( masterDevice )
             addConnectedDevice( connectedDevice, masterDevice )
@@ -114,8 +109,7 @@ class StudyDeploymentTest
             val task = StubTaskDescriptor(
                 "Task",
                 listOf( stubMeasure, trigger.measure() ),
-                "Description",
-                setOf( interactionResultType )
+                "Description"
 
             )
             addTaskControl( trigger.start( task, masterDevice ) )
@@ -127,40 +121,15 @@ class StudyDeploymentTest
         val dataStreams = deployment.requiredDataStreams
         assertEquals( deployment.id, dataStreams.studyDeploymentId )
         val expectedMasterDeviceTypes =
-            listOf( STUB_DATA_TYPE, CarpDataTypes.TRIGGERED_TASK.type, interactionResultType )
+            listOf( STUB_DATA_TYPE, CarpDataTypes.TRIGGERED_TASK.type, CarpDataTypes.COMPLETED_TASK.type )
                 .map { DataStreamsConfiguration.ExpectedDataStream( masterDevice.roleName, it ) }
         val expectedConnectedDeviceType =
-            DataStreamsConfiguration.ExpectedDataStream( connectedDevice.roleName, STUB_DATA_TYPE )
+            listOf( STUB_DATA_TYPE, CarpDataTypes.COMPLETED_TASK.type )
+                .map { DataStreamsConfiguration.ExpectedDataStream( connectedDevice.roleName, it ) }
         assertEquals(
             ( expectedMasterDeviceTypes + expectedConnectedDeviceType ).toSet(),
             dataStreams.expectedDataStreams
         )
-    }
-
-    @Serializable
-    data class UnknownTaskDescriptor( @Required override val name: String = "Unknown task" ) : TaskDescriptor
-    {
-        override val measures: List<Measure> = emptyList()
-        override val description: String = ""
-        override fun getInteractionDataTypes(): Set<DataType> =
-            setOf( DataType( "namespace", "unknownInteractionType" ) )
-    }
-
-    @Test
-    fun requiredDataStreams_doesnt_contain_interaction_tasks_for_unknown_tasks()
-    {
-        val protocol = createEmptyProtocol().apply {
-            val masterDevice = StubMasterDeviceDescriptor()
-            addMasterDevice( masterDevice )
-
-            val trigger = addTrigger( masterDevice.atStartOfStudy() )
-            val serializedTask: String = JSON.encodeToString( UnknownTaskDescriptor.serializer(), UnknownTaskDescriptor() )
-            val unknownTask = CustomTaskDescriptor( "some.unknown.TaskDescriptor", serializedTask, JSON )
-            addTaskControl( trigger.start( unknownTask, masterDevice ) )
-        }
-        val deployment: StudyDeployment = studyDeploymentFor( protocol )
-
-        assertEquals( emptySet(), deployment.requiredDataStreams.expectedDataStreams )
     }
 
     @Test

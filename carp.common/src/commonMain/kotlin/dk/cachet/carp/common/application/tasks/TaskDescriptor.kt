@@ -30,12 +30,6 @@ interface TaskDescriptor
      * A description of this task, emphasizing the reason why the data is collected.
      */
     val description: String?
-
-
-    /**
-     * Get data types of all data which may be collected as the result of user interactions for this task.
-     */
-    fun getInteractionDataTypes(): Set<DataType>
 }
 
 
@@ -51,7 +45,7 @@ fun TaskDescriptor.getAllExpectedDataTypes(): Set<DataType> =
             is Measure.DataStream -> measure.type
         }
     }
-    .plus( getInteractionDataTypes() )
+    .plus( CarpDataTypes.COMPLETED_TASK.type )
     .toSet()
 
 

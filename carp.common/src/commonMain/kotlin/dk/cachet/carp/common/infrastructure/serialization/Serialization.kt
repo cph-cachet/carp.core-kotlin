@@ -25,6 +25,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     {
         // DataType classes.
         subclass( Acceleration::class )
+        subclass( CompletedTask::class )
         subclass( ECG::class )
         subclass( FreeFormText::class )
         subclass( Geolocation::class )

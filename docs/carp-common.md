@@ -23,6 +23,7 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | [acceleration](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Acceleration.kt) | Acceleration along perpendicular x, y, and z axes. |
 | [signalstrength](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/SignalStrength.kt) | The received signal strength of a wireless device. |
 | [triggeredtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/TriggeredTask.kt) | A task which was started or stopped by a trigger, referring to identifiers in the study protocol. |
+| [completedtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/CompletedTask.kt) | An interactive task which was completed over the course of a specified time interval. |
 
 ## Device descriptors
 
