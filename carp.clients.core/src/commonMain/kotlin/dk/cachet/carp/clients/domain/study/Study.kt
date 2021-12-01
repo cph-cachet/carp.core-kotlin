@@ -58,17 +58,17 @@ class Study(
      */
     fun getStatus(): StudyStatus
     {
-        val status = deploymentStatus ?: return StudyStatus.DeploymentNotStarted(id)
+        val status = deploymentStatus ?: return StudyStatus.DeploymentNotStarted( id )
 
         return when ( status )
         {
             is StudyDeploymentStatus.Invited -> error( "Client device should already be registered." )
             is StudyDeploymentStatus.DeployingDevices ->
-                StudyStatus.Deploying.fromStudyDeploymentStatus(id, status, deploymentInformation)
+                StudyStatus.Deploying.fromStudyDeploymentStatus( id, status, deploymentInformation )
             is StudyDeploymentStatus.Running ->
-                StudyStatus.Running(id, status, checkNotNull(deploymentInformation))
+                StudyStatus.Running( id, status, checkNotNull( deploymentInformation ) )
             is StudyDeploymentStatus.Stopped ->
-                StudyStatus.Stopped(id, status, deploymentInformation)
+                StudyStatus.Stopped( id, status, deploymentInformation )
         }
     }
 
@@ -78,7 +78,7 @@ class Study(
     fun deploymentStatusReceived( deploymentStatus: StudyDeploymentStatus )
     {
         this.deploymentStatus = deploymentStatus
-        event(Event.DeploymentStatusReceived(deploymentStatus))
+        event( Event.DeploymentStatusReceived( deploymentStatus ) )
     }
 
     /**
@@ -94,7 +94,7 @@ class Study(
             { "The deployment is intended for a device with a different role name." }
 
         deploymentInformation = deployment
-        event(Event.DeviceDeploymentReceived(deployment))
+        event( Event.DeviceDeploymentReceived( deployment ) )
     }
 
     /**
@@ -158,5 +158,5 @@ class Study(
     /**
      * Get a serializable snapshot of the current state of this [Study].
      */
-    override fun getSnapshot(): StudySnapshot = StudySnapshot.fromStudy(this)
+    override fun getSnapshot(): StudySnapshot = StudySnapshot.fromStudy( this )
 }

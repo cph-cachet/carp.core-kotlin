@@ -41,5 +41,5 @@ data class StudySnapshot(
         }
     }
 
-    override fun toObject(): Study = Study.fromSnapshot(this)
+    override fun toObject(): Study = Study.fromSnapshot( this )
 }

@@ -34,7 +34,7 @@ fun <TData : Data> getDataType( dataKlass: KClass<TData> ): DataType =
     }
 
 /**
- * Initialize a [DataStreamId] with the specified [studyDeploymentId and [deviceRoleName].
+ * Initialize a [DataStreamId] with the specified [studyDeploymentId] and [deviceRoleName].
  * The [DataType] is extracted from the serializer associated with the class of [TData].
  */
 inline fun <reified TData : Data> dataStreamId( studyDeploymentId: UUID, deviceRoleName: String ): DataStreamId =
