@@ -57,11 +57,17 @@ object CarpDataTypes : DataTypeMetaDataMap()
      */
     val SENSOR_SKIN_CONTACT = add( SENSOR_SKIN_CONTACT_TYPE_NAME, "Sensor skin contact", DataTimeType.POINT )
 
-    internal const val ACCELERATION_TYPE_NAME = "$CARP_NAMESPACE.acceleration"
+    internal const val NON_GRAVITATIONAL_ACCELERATION_TYPE_NAME = "$CARP_NAMESPACE.nongravitationalacceleration"
     /**
-     * Acceleration along perpendicular x, y, and z axes.
+     * Acceleration along perpendicular x, y, and z axes, excluding gravity.
      */
-    val ACCELERATION = add( ACCELERATION_TYPE_NAME, "Accelerometry", DataTimeType.POINT )
+    val NON_GRAVITATIONAL_ACCELERATION = add( NON_GRAVITATIONAL_ACCELERATION_TYPE_NAME, "Acceleration without gravity", DataTimeType.POINT )
+
+    internal const val ANGULAR_VELOCITY_TYPE_NAME = "$CARP_NAMESPACE.angularvelocity"
+    /**
+     * Rate of rotation around perpendicular x, y, and z axes.
+     */
+    val ANGULAR_VELOCITY = add( ANGULAR_VELOCITY_TYPE_NAME, "Angular velocity", DataTimeType.POINT )
 
     internal const val SIGNAL_STRENGTH_TYPE_NAME = "$CARP_NAMESPACE.signalstrength"
     /**
