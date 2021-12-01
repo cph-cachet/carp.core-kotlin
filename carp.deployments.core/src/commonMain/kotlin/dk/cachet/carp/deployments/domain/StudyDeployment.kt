@@ -8,7 +8,6 @@ import dk.cachet.carp.common.application.tasks.getAllExpectedDataTypes
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
-import dk.cachet.carp.common.infrastructure.serialization.CustomTaskDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
@@ -137,7 +136,6 @@ class StudyDeployment private constructor(
             id,
             protocol.devices.flatMap { device ->
                 protocol.getTasksForDevice( device )
-                    .filter { it !is CustomTaskDescriptor } // Can't retrieve expected data types for unknown tasks.
                     .flatMap { it.getAllExpectedDataTypes() }
                     .map { DataStreamsConfiguration.ExpectedDataStream( device.roleName, it ) }
             }.toSet()

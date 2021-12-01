@@ -10,22 +10,22 @@ import dk.cachet.carp.common.domain.ExtractUniqueKeyMap
  * Task names of added [TaskDescriptor]s should be unique.
  */
 @Suppress( "Immutable", "DataClass" )
-class EmptyTaskConfiguration : AbstractMap<String, TaskDescriptor>(), TaskConfiguration
+class EmptyTaskConfiguration : AbstractMap<String, TaskDescriptor<*>>(), TaskConfiguration
 {
-    private val _tasks: ExtractUniqueKeyMap<String, TaskDescriptor> =
+    private val _tasks: ExtractUniqueKeyMap<String, TaskDescriptor<*>> =
         ExtractUniqueKeyMap( { task -> task.name } )
         {
             key -> IllegalArgumentException( "Task name \"$key\" is not unique within task configuration." )
         }
 
-    override val entries: Set<Map.Entry<String, TaskDescriptor>>
+    override val entries: Set<Map.Entry<String, TaskDescriptor<*>>>
         get() = _tasks.entries
 
-    override val tasks: Set<TaskDescriptor>
+    override val tasks: Set<TaskDescriptor<*>>
         get() = _tasks.values.toSet()
 
 
-    override fun addTask( task: TaskDescriptor ): Boolean = _tasks.tryAddIfKeyIsNew( task )
+    override fun addTask( task: TaskDescriptor<*> ): Boolean = _tasks.tryAddIfKeyIsNew( task )
 
-    override fun removeTask( task: TaskDescriptor ): Boolean = _tasks.remove( task )
+    override fun removeTask( task: TaskDescriptor<*> ): Boolean = _tasks.remove( task )
 }

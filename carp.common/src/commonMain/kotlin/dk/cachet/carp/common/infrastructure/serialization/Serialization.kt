@@ -25,6 +25,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     {
         // DataType classes.
         subclass( AngularVelocity::class )
+        subclass( CompletedTask::class )
         subclass( ECG::class )
         subclass( FreeFormText::class )
         subclass( Geolocation::class )
@@ -46,6 +47,9 @@ val COMMON_SERIAL_MODULE = SerializersModule {
             CustomInputSerializer( String::class, Int::class )
         )
         subclass( Sex::class, PolymorphicEnumSerializer( Sex.serializer() ) )
+
+        subclass( CustomData::class )
+        default { DataSerializer }
     }
     polymorphic( InputElement::class )
     {

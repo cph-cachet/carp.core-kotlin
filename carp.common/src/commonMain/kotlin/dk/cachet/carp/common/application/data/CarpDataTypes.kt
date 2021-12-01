@@ -80,4 +80,10 @@ object CarpDataTypes : DataTypeMetaDataMap()
      * A task which was started or stopped by a trigger, referring to identifiers in the study protocol.
      */
     val TRIGGERED_TASK = add( TRIGGERED_TASK_TYPE_NAME, "Triggered task", DataTimeType.POINT )
+
+    internal const val COMPLETED_TASK_TYPE_NAME = "$CARP_NAMESPACE.completedtask"
+    /**
+     * An interactive task which was completed over the course of a specified time interval.
+     */
+    val COMPLETED_TASK = add( COMPLETED_TASK_TYPE_NAME, "Completed task", DataTimeType.TIME_SPAN )
 }
