@@ -1,9 +1,6 @@
 package dk.cachet.carp.common.application.devices
 
-import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.application.sampling.BatteryAwareSamplingConfiguration
-import dk.cachet.carp.common.application.sampling.Granularity
-import dk.cachet.carp.common.application.sampling.GranularitySamplingConfiguration
+import dk.cachet.carp.common.application.sampling.NoOptionsSamplingConfiguration
 import kotlin.test.*
 
 
@@ -13,37 +10,24 @@ import kotlin.test.*
 class DeviceDescriptorTest
 {
     @Test
-    fun getDefaultSamplingConfiguration_succeeds()
+    fun validateModifiedDefaultSamplingConfigurations_with_correct_configuration()
     {
-        val typeMetaData = Smartphone.Sensors.GEOLOCATION
-        val device = Smartphone( "Irrelevant" )
-
-        val configuration = device.getDefaultSamplingConfiguration( typeMetaData.dataType.type )
-        assertEquals( typeMetaData.default, configuration )
-    }
-
-    @Test
-    fun getDefaultSamplingConfiguration_returns_overridden_defaultSamplingConfiguration()
-    {
-        val typeMetaData = Smartphone.Sensors.GEOLOCATION
-        val dataType = typeMetaData.dataType.type
-        val configurationOverride = BatteryAwareSamplingConfiguration(
-            GranularitySamplingConfiguration( Granularity.Coarse ),
-            GranularitySamplingConfiguration( Granularity.Coarse ),
-            GranularitySamplingConfiguration( Granularity.Coarse )
+        val validConfigurations = mapOf(
+            Smartphone.Sensors.GEOLOCATION.dataType.type to Smartphone.Sensors.GEOLOCATION.default
         )
-        val device = Smartphone( "Irrelevant", mapOf( dataType to configurationOverride ) )
+        val device = Smartphone( "Irrelevant", false, validConfigurations )
 
-        val configuration = device.getDefaultSamplingConfiguration( dataType )
-        assertEquals( configurationOverride, configuration )
+        device.validateDefaultSamplingConfiguration()
     }
 
     @Test
-    fun getDefaultSamplingConfiguration_fails_for_unsupported_type()
+    fun validateModifiedDefaultSamplingConfigurations_with_invalid_configuration()
     {
-        val device = Smartphone( "Irrelevant" )
+        val invalidConfigurations = mapOf(
+            Smartphone.Sensors.GEOLOCATION.dataType.type to NoOptionsSamplingConfiguration
+        )
+        val device = Smartphone( "Irrelevant", false, invalidConfigurations )
 
-        val unsupportedType = DataType( "unsupported", "type" )
-        assertFailsWith<IllegalArgumentException> { device.getDefaultSamplingConfiguration( unsupportedType ) }
+        assertFailsWith<IllegalStateException> { device.validateDefaultSamplingConfiguration() }
     }
 }

@@ -27,7 +27,7 @@ data class DataStreamPoint<out TData : Data>(
     /**
      * The most recent synchronization information which was determined for this or a previous [DataStreamPoint].
      */
-    val syncPoint: SyncPoint
+    val syncPoint: SyncPoint = SyncPoint.UnixEpoch
 )
 {
     init
@@ -39,6 +39,20 @@ data class DataStreamPoint<out TData : Data>(
 
     val dataStream: DataStreamId
         get() = DataStreamId( studyDeploymentId, deviceRoleName, measurement.dataType )
+
+    /**
+     * Convert this [DataStreamPoint] to one for which the [measurement] is synchronized using [syncPoint].
+     */
+    fun synchronize(): DataStreamPoint<TData>
+    {
+        // Early out in case no synchronization is needed.
+        if ( syncPoint == SyncPoint.UnixEpoch ) return this
+
+        return copy(
+            measurement = measurement.synchronize( syncPoint ),
+            syncPoint = SyncPoint.UnixEpoch
+        )
+    }
 }
 
 

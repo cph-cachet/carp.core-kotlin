@@ -39,9 +39,9 @@ sealed class RecruitmentServiceRequest
         RecruitmentServiceInvoker<List<Participant>> by createServiceInvoker( RecruitmentService::getParticipants, studyId )
 
     @Serializable
-    data class DeployParticipantGroup( val studyId: UUID, val group: Set<AssignParticipantDevices> ) :
+    data class InviteNewParticipantGroup( val studyId: UUID, val group: Set<AssignParticipantDevices> ) :
         RecruitmentServiceRequest(),
-        RecruitmentServiceInvoker<ParticipantGroupStatus> by createServiceInvoker( RecruitmentService::deployParticipantGroup, studyId, group )
+        RecruitmentServiceInvoker<ParticipantGroupStatus> by createServiceInvoker( RecruitmentService::inviteNewParticipantGroup, studyId, group )
 
     @Serializable
     data class GetParticipantGroupStatusList( val studyId: UUID ) :

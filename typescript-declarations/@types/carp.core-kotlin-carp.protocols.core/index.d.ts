@@ -2,13 +2,18 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 {
     import { kotlin } from 'kotlin'
     import HashSet = kotlin.collections.HashSet
+    import HashMap = kotlin.collections.HashMap
 
     import { kotlinx as kxd } from 'Kotlin-DateTime-library-kotlinx-datetime-js-legacy'
     import Instant = kxd.datetime.Instant
 
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import UUID = cdk.cachet.carp.common.application.UUID
+    import DeviceDescriptor = cdk.cachet.carp.common.application.devices.DeviceDescriptor
     import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
+    import TaskDescriptor = cdk.cachet.carp.common.application.tasks.TaskDescriptor
+    import TaskControl = cdk.cachet.carp.common.application.triggers.TaskControl
+    import Trigger = cdk.cachet.carp.common.application.triggers.Trigger
 
 
     namespace dk.cachet.carp.protocols.application
@@ -47,6 +52,10 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             readonly id: StudyProtocolId
             readonly description: string
             readonly createdOn: Instant
+            readonly masterDevices: HashSet<DeviceDescriptor>
+            readonly tasks: HashSet<TaskDescriptor>
+            readonly triggers: HashMap<Number, Trigger>
+            readonly taskControls: Set<TaskControl>
             readonly expectedParticipantData: HashSet<ParticipantAttribute>
         }
         interface StudyProtocolSnapshot$Companion { serializer(): any }

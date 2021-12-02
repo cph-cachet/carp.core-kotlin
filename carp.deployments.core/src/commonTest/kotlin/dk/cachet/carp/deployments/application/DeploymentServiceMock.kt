@@ -9,6 +9,7 @@ import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.test.Mock
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
 private typealias Service = DeploymentService
@@ -27,9 +28,8 @@ class DeploymentServiceMock(
 {
     companion object
     {
-        private val emptyStatus: StudyDeploymentStatus = StudyDeploymentStatus.DeployingDevices(
-            UUID( "00000000-0000-0000-0000-000000000000"),
-            listOf(), null )
+        private val emptyStatus: StudyDeploymentStatus =
+            StudyDeploymentStatus.DeployingDevices( Clock.System.now(), UUID.randomUUID(), emptyList(), emptyList(), null )
         private val emptyMasterDeviceDeployment: MasterDeviceDeployment = MasterDeviceDeployment(
             StubMasterDeviceDescriptor(),
             DefaultDeviceRegistration( "Test" ) )
@@ -64,9 +64,9 @@ class DeploymentServiceMock(
         getDeviceDeploymentForResult
         .also { trackSuspendCall( Service::getDeviceDeploymentFor, studyDeploymentId, masterDeviceRoleName ) }
 
-    override suspend fun deploymentSuccessful( studyDeploymentId: UUID, masterDeviceRoleName: String, deviceDeploymentLastUpdatedOn: Instant ) =
+    override suspend fun deviceDeployed( studyDeploymentId: UUID, masterDeviceRoleName: String, deviceDeploymentLastUpdatedOn: Instant ) =
         deploymentSuccessfulResult
-        .also { trackSuspendCall( Service::deploymentSuccessful, studyDeploymentId, masterDeviceRoleName, deviceDeploymentLastUpdatedOn ) }
+        .also { trackSuspendCall( Service::deviceDeployed, studyDeploymentId, masterDeviceRoleName, deviceDeploymentLastUpdatedOn ) }
 
     override suspend fun stop( studyDeploymentId: UUID ) =
         stopResult

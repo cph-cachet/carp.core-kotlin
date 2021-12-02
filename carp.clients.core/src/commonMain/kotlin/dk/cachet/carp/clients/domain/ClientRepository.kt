@@ -1,5 +1,6 @@
 package dk.cachet.carp.clients.domain
 
+import dk.cachet.carp.clients.domain.study.Study
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 
@@ -20,32 +21,32 @@ interface ClientRepository
     suspend fun setDeviceRegistration( registration: DeviceRegistration )
 
     /**
-     * Adds the specified [studyRuntime] to the repository.
+     * Adds the specified [study] to the repository.
      *
-     * @throws IllegalArgumentException when a [StudyRuntime] which has the same study deployment ID and device role name already exists.
+     * @throws IllegalArgumentException when a [Study] which has the same study deployment ID and device role name already exists.
      */
-    suspend fun addStudyRuntime( studyRuntime: StudyRuntime )
+    suspend fun addStudy( study: Study )
 
     /**
-     * Return the [StudyRuntime] with [studyDeploymentId] and [deviceRoleName], or null when no such [StudyRuntime] is found.
+     * Return the [Study] with [studyDeploymentId] and [deviceRoleName], or null when no such [Study] is found.
      */
-    suspend fun getStudyRuntimeBy( studyDeploymentId: UUID, deviceRoleName: String ): StudyRuntime?
+    suspend fun getStudyBy( studyDeploymentId: UUID, deviceRoleName: String ): Study?
 
     /**
-     * Return all [StudyRuntime]s for the client.
+     * Return all [Study]s for the client.
      */
-    suspend fun getStudyRuntimeList(): List<StudyRuntime>
+    suspend fun getStudyList(): List<Study>
 
     /**
-     * Update a [StudyRuntime] which is already stored in the repository.
+     * Update a [study] which is already stored in the repository.
      *
-     * @throws IllegalArgumentException when no previous version of this study runtime is stored in the repository.
+     * @throws IllegalArgumentException when no previous version of this study is stored in the repository.
      */
-    suspend fun updateStudyRuntime( runtime: StudyRuntime )
+    suspend fun updateStudy( study: Study )
 
     /**
-     * Remove a [StudyRuntime] which is already stored in the repository.
-     * In case [runtime] is not stored in this repository, nothing happens.
+     * Remove a [study] which is already stored in the repository.
+     * In case [study] is not stored in this repository, nothing happens.
      */
-    suspend fun removeStudyRuntime( runtime: StudyRuntime )
+    suspend fun removeStudy( study: Study )
 }

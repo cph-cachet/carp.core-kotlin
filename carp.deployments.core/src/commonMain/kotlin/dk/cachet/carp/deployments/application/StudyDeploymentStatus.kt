@@ -3,6 +3,7 @@ package dk.cachet.carp.deployments.application
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.deployments.application.users.ParticipantStatus
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -13,11 +14,21 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class StudyDeploymentStatus
 {
+    /**
+     * The time when the deployment was created.
+     */
+    abstract val createdOn: Instant
+
     abstract val studyDeploymentId: UUID
     /**
      * The list of all devices part of this study deployment and their status.
      */
     abstract val devicesStatus: List<DeviceDeploymentStatus>
+
+    /**
+     * The list of all participants and their status in this study deployment.
+     */
+    abstract val participantsStatus: List<ParticipantStatus>
 
     /**
      * The time when the study deployment was ready for the first time (all devices deployed); null otherwise.
@@ -30,8 +41,10 @@ sealed class StudyDeploymentStatus
      */
     @Serializable
     data class Invited(
+        override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
+        override val participantsStatus: List<ParticipantStatus>,
         override val startedOn: Instant?
     ) : StudyDeploymentStatus()
 
@@ -40,19 +53,24 @@ sealed class StudyDeploymentStatus
      */
     @Serializable
     data class DeployingDevices(
+        override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
+        override val participantsStatus: List<ParticipantStatus>,
         override val startedOn: Instant?
     ) : StudyDeploymentStatus()
 
     /**
-     * All master devices have been successfully deployed.
+     * All master devices have been successfully deployed and data collection has started
+     * on the time specified by [startedOn].
      */
     @Serializable
-    data class DeploymentReady(
+    data class Running(
+        override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
-        override val startedOn: Instant?
+        override val participantsStatus: List<ParticipantStatus>,
+        override val startedOn: Instant
     ) : StudyDeploymentStatus()
 
     /**
@@ -60,9 +78,12 @@ sealed class StudyDeploymentStatus
      */
     @Serializable
     data class Stopped(
+        override val createdOn: Instant,
         override val studyDeploymentId: UUID,
         override val devicesStatus: List<DeviceDeploymentStatus>,
-        override val startedOn: Instant?
+        override val participantsStatus: List<ParticipantStatus>,
+        override val startedOn: Instant?,
+        val stoppedOn: Instant
     ) : StudyDeploymentStatus()
 
 

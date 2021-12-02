@@ -69,9 +69,9 @@ interface DeploymentRepositoryTest
     @Test
     fun getStudyDeploymentsBy_succeeds() = runSuspendTest {
         val repo = createRepository()
-        val protocolSnapshot = createSingleMasterWithConnectedDeviceProtocol().getSnapshot()
-        val deployment1 = StudyDeployment( protocolSnapshot )
-        val deployment2 = StudyDeployment( protocolSnapshot )
+        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val deployment1 = studyDeploymentFor( protocol )
+        val deployment2 = studyDeploymentFor( protocol )
         repo.add( deployment1 )
         repo.add( deployment2 )
 

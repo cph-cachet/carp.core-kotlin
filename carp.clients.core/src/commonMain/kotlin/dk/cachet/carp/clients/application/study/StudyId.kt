@@ -1,12 +1,12 @@
-package dk.cachet.carp.clients.domain
+package dk.cachet.carp.clients.application.study
 
 import dk.cachet.carp.common.application.UUID
 
 
 /**
- * Uniquely identifies a [StudyRuntime] running on a [ClientManager].
+ * Uniquely identifies a [Study] added to a [ClientManager].
  */
-data class StudyRuntimeId(
+data class StudyId(
     /**
      * The ID of the deployed study for which to collect data.
      */

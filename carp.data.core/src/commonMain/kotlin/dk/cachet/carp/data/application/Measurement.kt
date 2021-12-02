@@ -40,6 +40,17 @@ data class Measurement<out TData : Data>(
     fun getDataTimeType(): DataTimeType =
         if ( sensorEndTime == null ) DataTimeType.POINT
         else DataTimeType.TIME_SPAN
+
+    /**
+     * Convert this [Measurement] to one synchronized using [syncPoint].
+     */
+    fun synchronize( syncPoint: SyncPoint ): Measurement<TData> =
+        copy(
+            sensorStartTime = syncPoint.applyToTimestamp( sensorStartTime ),
+            sensorEndTime =
+                if ( sensorEndTime == null ) sensorEndTime
+                else syncPoint.applyToTimestamp( sensorEndTime )
+        )
 }
 
 

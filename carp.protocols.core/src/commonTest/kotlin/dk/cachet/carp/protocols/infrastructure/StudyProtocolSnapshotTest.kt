@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.infrastructure
 
+import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.MasterDeviceDescriptor
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceDescriptor
@@ -119,9 +120,9 @@ class StudyProtocolSnapshotTest
         // (1) Add unknown master with unknown sampling configuration and unknown connected device.
         val unknownSamplingConfiguration = StubSamplingConfiguration( "Unknown" )
         val samplingConfiguration = mapOf(
-            STUB_DATA_TYPE to unknownSamplingConfiguration
+            DataType( "unknown", "type" ) to unknownSamplingConfiguration
         )
-        val master = StubMasterDeviceDescriptor( "Unknown", samplingConfiguration )
+        val master = StubMasterDeviceDescriptor( "Unknown", false, samplingConfiguration )
         protocol.addMasterDevice( master )
         val connected = StubDeviceDescriptor( "Unknown 2" )
         protocol.addConnectedDevice( connected, master )

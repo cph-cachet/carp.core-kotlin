@@ -7,6 +7,7 @@ import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
+import kotlinx.datetime.Clock
 import kotlin.test.*
 
 
@@ -16,7 +17,6 @@ import kotlin.test.*
 class RecruitmentTest
 {
     private val studyId = UUID.randomUUID()
-    private val studyDeploymentId = UUID.randomUUID()
     private val participantEmail = EmailAddress( "test@test.com" )
 
 
@@ -28,7 +28,7 @@ class RecruitmentTest
         val protocol = createEmptyProtocol()
         val invitation = StudyInvitation( "Test", "A study" )
         recruitment.lockInStudy( protocol.getSnapshot(), invitation )
-        recruitment.addParticipation( participant, studyDeploymentId )
+        recruitment.addParticipantGroup( setOf( participant.id ) )
 
         val snapshot = recruitment.getSnapshot()
         val fromSnapshot = Recruitment.fromSnapshot( snapshot )
@@ -36,7 +36,7 @@ class RecruitmentTest
         assertEquals( recruitment.studyId, fromSnapshot.studyId )
         assertEquals( recruitment.getStatus(), fromSnapshot.getStatus() )
         assertEquals( recruitment.participants, fromSnapshot.participants )
-        assertEquals( recruitment.participations, fromSnapshot.participations )
+        assertEquals( recruitment.participantGroups, fromSnapshot.participantGroups )
     }
 
     @Test
@@ -95,7 +95,7 @@ class RecruitmentTest
     }
 
     @Test
-    fun addParticipation_succeeds()
+    fun addParticipantGroup_succeeds()
     {
         val recruitment = Recruitment( studyId )
         val participant = recruitment.addParticipant( participantEmail )
@@ -104,21 +104,26 @@ class RecruitmentTest
 
         assertTrue( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
 
-        recruitment.addParticipation( participant, studyDeploymentId )
-        assertEquals( Recruitment.Event.ParticipationAdded( participant, studyDeploymentId ), recruitment.consumeEvents().last() )
-        assertEquals( participant, recruitment.participations[ studyDeploymentId ]?.singleOrNull() )
+        val participantIds = setOf( participant.id )
+        val group = recruitment.addParticipantGroup( participantIds )
+        assertEquals( Recruitment.Event.ParticipantGroupAdded( participantIds ), recruitment.consumeEvents().last() )
+        assertEquals(
+            participant.id,
+            recruitment.participantGroups[ group.id ]?.participantIds?.singleOrNull()
+        )
     }
 
     @Test
-    fun addParticipation_fails_when_study_protocol_not_locked_in()
+    fun addParticipantGroup_fails_when_study_protocol_not_locked_in()
     {
         val recruitment = Recruitment( studyId )
         val participant = recruitment.addParticipant( participantEmail )
 
         assertFalse( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
 
-        assertFailsWith<IllegalStateException> { recruitment.addParticipation( participant, studyDeploymentId ) }
-        val participationEvents = recruitment.consumeEvents().filterIsInstance<Recruitment.Event.ParticipationAdded>()
+        val participantIds = setOf( participant.id )
+        assertFailsWith<IllegalStateException> { recruitment.addParticipantGroup( participantIds ) }
+        val participationEvents = recruitment.consumeEvents().filterIsInstance<Recruitment.Event.ParticipantGroupAdded>()
         assertEquals( 0, participationEvents.count() )
     }
 
@@ -129,12 +134,13 @@ class RecruitmentTest
         val participant = recruitment.addParticipant( participantEmail )
         val protocol = createEmptyProtocol()
         recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation( "Some study" ) )
-        recruitment.addParticipation( participant, studyDeploymentId )
+        val group = recruitment.addParticipantGroup( setOf( participant.id ) )
 
-        val stubDeploymentStatus = StudyDeploymentStatus.DeployingDevices( studyDeploymentId, emptyList(), null )
+        val stubDeploymentStatus =
+            StudyDeploymentStatus.DeployingDevices( Clock.System.now(), group.id, emptyList(), emptyList(), null )
         val groupStatus = recruitment.getParticipantGroupStatus( stubDeploymentStatus )
 
-        assertEquals( studyDeploymentId, groupStatus.id )
+        assertEquals( group.id, groupStatus.id )
         assertEquals( setOf( participant ), groupStatus.participants )
     }
 
@@ -144,7 +150,8 @@ class RecruitmentTest
         val recruitment = Recruitment( studyId )
 
         val unknownId = UUID.randomUUID()
-        val stubDeploymentStatus = StudyDeploymentStatus.DeployingDevices( unknownId, emptyList(), null )
+        val stubDeploymentStatus =
+            StudyDeploymentStatus.DeployingDevices( Clock.System.now(), unknownId, emptyList(), emptyList(), null )
         assertFailsWith<IllegalArgumentException> {
             recruitment.getParticipantGroupStatus( stubDeploymentStatus )
         }

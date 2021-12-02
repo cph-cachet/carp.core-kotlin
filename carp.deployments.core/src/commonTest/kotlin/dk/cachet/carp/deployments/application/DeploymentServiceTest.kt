@@ -43,7 +43,7 @@ abstract class DeploymentServiceTest
         deploymentService.registerDevice( deploymentId, masterDevice.roleName, masterDevice.createRegistration() )
 
         val deployment = deploymentService.getDeviceDeploymentFor( deploymentId, masterDevice.roleName )
-        assertEquals( preregistration, deployment.connectedDeviceConfigurations[ connectedDevice.roleName ] )
+        assertEquals( preregistration, deployment.connectedDeviceRegistrations[ connectedDevice.roleName ] )
     }
 
     @Test
@@ -206,7 +206,7 @@ abstract class DeploymentServiceTest
             { deploymentService.unregisterDevice( studyDeploymentId, master.roleName ) }
         val deviceDeployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, master.roleName )
         assertFailsWith<IllegalStateException>
-            { deploymentService.deploymentSuccessful( studyDeploymentId, master.roleName, deviceDeployment.lastUpdatedOn ) }
+            { deploymentService.deviceDeployed( studyDeploymentId, master.roleName, deviceDeployment.lastUpdatedOn ) }
     }
 
 

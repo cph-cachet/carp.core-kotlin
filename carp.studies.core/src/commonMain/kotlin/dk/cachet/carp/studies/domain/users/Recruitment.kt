@@ -6,9 +6,9 @@ import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import dk.cachet.carp.deployments.application.throwIfInvalidInvitations
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
-import dk.cachet.carp.deployments.application.throwIfInvalid
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
@@ -25,7 +25,7 @@ class Recruitment( val studyId: UUID ) :
     sealed class Event : DomainEvent()
     {
         data class ParticipantAdded( val participant: Participant ) : Event()
-        data class ParticipationAdded( val participant: Participant, val studyDeploymentId: UUID ) : Event()
+        data class ParticipantGroupAdded( val participantIds: Set<UUID> ) : Event()
     }
 
 
@@ -40,12 +40,7 @@ class Recruitment( val studyId: UUID ) :
                 recruitment.lockInStudy( snapshot.studyProtocol, snapshot.invitation )
             }
             snapshot.participants.forEach { recruitment._participants.add( it ) }
-            for ( (deploymentId, participantIds) in snapshot.participations )
-            {
-                recruitment._participations[ deploymentId ] = participantIds
-                    .map { id -> recruitment.participants.first { it.id == id } }
-                    .toMutableSet()
-            }
+            snapshot.participantGroups.forEach { recruitment._participantGroups[ it.key ] = it.value }
 
             return recruitment
         }
@@ -141,34 +136,38 @@ class Recruitment( val studyId: UUID ) :
             )
         }
         val protocol = status.studyProtocol
-        protocol.throwIfInvalid( invitations )
+        protocol.throwIfInvalidInvitations( invitations )
 
         return Pair( protocol, invitations )
     }
 
     /**
-     * Per study deployment ID, the set of participants that participate in it.
+     * Per study deployment ID, the group of participants that participates in it.
      */
-    val participations: Map<UUID, Set<Participant>>
-        get() = _participations
+    val participantGroups: Map<UUID, StagedParticipantGroup>
+        get() = _participantGroups
 
-    private val _participations: MutableMap<UUID, MutableSet<Participant>> = mutableMapOf()
+    private val _participantGroups: MutableMap<UUID, StagedParticipantGroup> = mutableMapOf()
 
     /**
-     * Specify that [participant] of this recruitment participates in the study deployment with [studyDeploymentId].
+     * Create and add the participants identified by [participantIds] as a participant group.
      *
-     * @throws IllegalArgumentException when [participant] is not a participant in this recruitment.
+     * @throws IllegalArgumentException when one or more of the participants aren't in this recruitment.
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    fun addParticipation( participant: Participant, studyDeploymentId: UUID )
+    fun addParticipantGroup( participantIds: Set<UUID> ): StagedParticipantGroup
     {
-        require( participant in participants ) { "The participant is not part of this recruitment." }
+        require( participantIds.all { id -> id in participants.map { it.id } } )
+            { "One of the participants for which to create a participant group isn't part of this recruitment." }
         check( getStatus() is RecruitmentStatus.ReadyForDeployment ) { "The study is not yet ready for deployment." }
 
-        _participations
-            .getOrPut( studyDeploymentId ) { mutableSetOf() }
-            .add( participant )
-            .eventIf( true ) { Event.ParticipationAdded( participant, studyDeploymentId ) }
+        val group = StagedParticipantGroup()
+        group.addParticipants( participantIds )
+
+        _participantGroups[ group.id ] = group
+        event( Event.ParticipantGroupAdded( participantIds ) )
+
+        return group
     }
 
     /**
@@ -179,11 +178,11 @@ class Recruitment( val studyId: UUID ) :
     fun getParticipantGroupStatus( studyDeploymentStatus: StudyDeploymentStatus ): ParticipantGroupStatus
     {
         val deploymentId = studyDeploymentStatus.studyDeploymentId
-        val participants: Set<Participant> = _participations.getOrElse( deploymentId ) { emptySet() }
-        require( participations.isNotEmpty() )
+        val group: StagedParticipantGroup = requireNotNull( _participantGroups[ deploymentId ] )
             { "A study deployment with ID \"$deploymentId\" is not part of this recruitment." }
 
-        return ParticipantGroupStatus( studyDeploymentStatus, participants )
+        val participants = group.participantIds.map { id -> _participants.first { it.id == id } }
+        return ParticipantGroupStatus.InDeployment.fromDeploymentStatus( participants.toSet(), studyDeploymentStatus )
     }
 
     /**

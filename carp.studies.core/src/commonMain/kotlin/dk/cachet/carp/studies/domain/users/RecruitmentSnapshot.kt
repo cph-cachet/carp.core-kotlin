@@ -16,10 +16,7 @@ data class RecruitmentSnapshot(
     val studyProtocol: StudyProtocolSnapshot?,
     val invitation: StudyInvitation?,
     val participants: Set<Participant> = emptySet(),
-    /**
-     * Per study deployment ID, the IDs of the participants participating in it.
-     */
-    val participations: Map<UUID, Set<UUID>> = emptyMap()
+    val participantGroups: Map<UUID, StagedParticipantGroup> = emptyMap()
 ) : Snapshot<Recruitment>
 {
     companion object
@@ -37,9 +34,7 @@ data class RecruitmentSnapshot(
                 studyProtocol = status.studyProtocol
                 invitation = status.invitation
             }
-            val participations = recruitment.participations.mapValues {
-                (_, participants) -> participants.map { it.id }.toSet()
-            }
+            val participations = recruitment.participantGroups
 
             return RecruitmentSnapshot(
                 recruitment.studyId,

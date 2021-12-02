@@ -1,3 +1,5 @@
+@file:Suppress( "WildcardImport" )
+
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.application.UUID
@@ -14,13 +16,7 @@ import dk.cachet.carp.protocols.domain.configuration.EmptyDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantDataConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyTaskConfiguration
 import dk.cachet.carp.protocols.domain.configuration.StudyProtocolComposition
-import dk.cachet.carp.protocols.domain.deployment.DeploymentError
-import dk.cachet.carp.protocols.domain.deployment.DeploymentIssue
-import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
-import dk.cachet.carp.protocols.domain.deployment.UnexpectedMeasuresWarning
-import dk.cachet.carp.protocols.domain.deployment.UnstartedTasksWarning
-import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
-import dk.cachet.carp.protocols.domain.deployment.UseCompositeTaskWarning
+import dk.cachet.carp.protocols.domain.deployment.*
 
 
 /**
@@ -52,8 +48,8 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
         data class MasterDeviceAdded( val device: AnyMasterDeviceDescriptor ) : Event()
         data class ConnectedDeviceAdded( val connected: AnyDeviceDescriptor, val master: AnyMasterDeviceDescriptor ) : Event()
         data class TriggerAdded( val trigger: Trigger<*> ) : Event()
-        data class TaskAdded( val task: TaskDescriptor ) : Event()
-        data class TaskRemoved( val task: TaskDescriptor ) : Event()
+        data class TaskAdded( val task: TaskDescriptor<*> ) : Event()
+        data class TaskRemoved( val task: TaskDescriptor<*> ) : Event()
         data class TaskControlAdded( val control: TaskControl ) : Event()
         data class TaskControlRemoved( val control: TaskControl ) : Event()
         data class ExpectedParticipantDataAdded( val attribute: ParticipantAttribute ) : Event()
@@ -99,7 +95,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
             snapshot.taskControls.forEach { control ->
                 val triggerMatch = snapshot.triggers.entries.singleOrNull { it.key == control.triggerId }
                     ?: throw IllegalArgumentException( "Can't find trigger with id '${control.triggerId}' in snapshot." )
-                val task: TaskDescriptor = protocol.tasks.singleOrNull { it.name == control.taskName }
+                val task: TaskDescriptor<*> = protocol.tasks.singleOrNull { it.name == control.taskName }
                     ?: throw IllegalArgumentException( "Can't find task with name '${control.taskName}' in snapshot." )
                 val device: AnyDeviceDescriptor = protocol.devices.singleOrNull { it.roleName == control.destinationDeviceRoleName }
                     ?: throw IllegalArgumentException( "Can't find device with role name '${control.destinationDeviceRoleName}' in snapshot." )
@@ -127,7 +123,9 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      * Add a [masterDevice] which is responsible for aggregating and synchronizing incoming data.
      * Its role name should be unique in the protocol.
      *
-     * @throws IllegalArgumentException in case a device with the specified role name already exists.
+     * @throws IllegalArgumentException when:
+     *  - a device with the specified role name already exists
+     *  - [masterDevice] contains invalid default sampling configurations
      * @return True if the [masterDevice] has been added; false if it is already set as a master device.
      */
     override fun addMasterDevice( masterDevice: AnyMasterDeviceDescriptor ): Boolean =
@@ -141,6 +139,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      * @throws IllegalArgumentException when:
      *   - a device with the specified role name already exists
      *   - [masterDevice] is not part of the device configuration
+     *   - [device] contains invalid default sampling configurations
      * @return True if the [device] has been added; false if it is already connected to the specified [masterDevice].
      */
     override fun addConnectedDevice( device: AnyDeviceDescriptor, masterDevice: AnyMasterDeviceDescriptor ): Boolean =
@@ -204,7 +203,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      */
     fun addTaskControl(
         trigger: Trigger<*>,
-        task: TaskDescriptor,
+        task: TaskDescriptor<*>,
         destinationDevice: AnyDeviceDescriptor,
         control: Control
     ): Boolean
@@ -266,7 +265,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
     /**
      * Gets all the tasks triggered for the specified [device].
      */
-    fun getTasksForDevice( device: AnyDeviceDescriptor ): Set<TaskDescriptor>
+    fun getTasksForDevice( device: AnyDeviceDescriptor ): Set<TaskDescriptor<*>>
     {
         return triggerControls
             .flatMap { it.value }
@@ -281,7 +280,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      * @throws IllegalArgumentException in case a task with the specified name already exists.
      * @return True if the [task] has been added; false if it is already included in this configuration.
      */
-    override fun addTask( task: TaskDescriptor ): Boolean =
+    override fun addTask( task: TaskDescriptor<*> ): Boolean =
         super.addTask( task )
         .eventIf( true ) { Event.TaskAdded( task ) }
 
@@ -291,7 +290,7 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      *
      * @return True if the [task] has been removed; false if it is not included in this configuration.
      */
-    override fun removeTask( task: TaskDescriptor ): Boolean
+    override fun removeTask( task: TaskDescriptor<*> ): Boolean
     {
         // Remove all controls which control this task.
         triggerControls.values.forEach { controls ->
@@ -364,7 +363,9 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
      */
     private val possibleDeploymentIssues: List<DeploymentIssue> = listOf(
         NoMasterDeviceError(),
+        OnlyOptionalDevicesWarning(),
         UnstartedTasksWarning(),
+        BackgroundTaskWithNoMeasuresWarning(),
         UseCompositeTaskWarning(),
         UnusedDevicesWarning(),
         UnexpectedMeasuresWarning()

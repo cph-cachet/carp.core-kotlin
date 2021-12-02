@@ -37,7 +37,7 @@ class DeploymentServiceHost(
      *  - [protocol] is invalid
      *  - [invitations] is empty
      *  - any of the assigned device roles in [invitations] is not part of the study [protocol]
-     *  - not all master devices part of the study [protocol] have been assigned a participant
+     *  - not all necessary master devices part of the study [protocol] have been assigned a participant
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
     override suspend fun createStudyDeployment(
@@ -50,9 +50,8 @@ class DeploymentServiceHost(
         connectedDevicePreregistrations: Map<String, DeviceRegistration>
     ): StudyDeploymentStatus
     {
-        protocol.throwIfInvalid( invitations, connectedDevicePreregistrations )
-
-        val newDeployment = StudyDeployment( protocol, id )
+        protocol.throwIfInvalidPreregistrations( connectedDevicePreregistrations )
+        val newDeployment = StudyDeployment.fromInvitations( protocol, invitations, id )
         connectedDevicePreregistrations.forEach { (connected, registration) ->
             val device = protocol.connectedDevices.first { it.roleName == connected }
             newDeployment.registerDevice( device, registration )
@@ -200,7 +199,7 @@ class DeploymentServiceHost(
      * - the [deviceDeploymentLastUpdatedOn] does not match the expected timestamp. The deployment might be outdated.
      * @throws IllegalStateException when the deployment cannot be deployed yet, or the deployment has stopped.
      */
-    override suspend fun deploymentSuccessful(
+    override suspend fun deviceDeployed(
         studyDeploymentId: UUID,
         masterDeviceRoleName: String,
         deviceDeploymentLastUpdatedOn: Instant
@@ -214,8 +213,8 @@ class DeploymentServiceHost(
 
         val deploymentStatus = deployment.getStatus()
 
-        // Once the deployment is ready, open the required data streams.
-        if ( deploymentStatus is StudyDeploymentStatus.DeploymentReady )
+        // Once the deployment is running, open the required data streams.
+        if ( deploymentStatus is StudyDeploymentStatus.Running )
         {
             dataStreamService.openDataStreams( deployment.requiredDataStreams )
         }
@@ -236,7 +235,7 @@ class DeploymentServiceHost(
         if ( !deployment.isStopped )
         {
             // Close all data streams used by the deployment.
-            if ( deployment.getStatus() is StudyDeploymentStatus.DeploymentReady )
+            if ( deployment.getStatus() is StudyDeploymentStatus.Running )
             {
                 dataStreamService.closeDataStreams( setOf( studyDeploymentId ) )
             }

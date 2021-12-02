@@ -9,7 +9,6 @@ import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHost
-import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.ProtocolOwner
@@ -65,8 +64,8 @@ class StudiesCodeSamples
             val participation = AssignParticipantDevices( participant.id, setOf( patientPhone.roleName ) )
             val participantGroup = setOf( participation )
 
-            val groupStatus: ParticipantGroupStatus = recruitmentService.deployParticipantGroup( studyId, participantGroup )
-            val isInvited = groupStatus.studyDeploymentStatus is StudyDeploymentStatus.Invited // True.
+            val groupStatus: ParticipantGroupStatus = recruitmentService.inviteNewParticipantGroup( studyId, participantGroup )
+            val isInvited = groupStatus is ParticipantGroupStatus.Invited // True.
         }
     }
 

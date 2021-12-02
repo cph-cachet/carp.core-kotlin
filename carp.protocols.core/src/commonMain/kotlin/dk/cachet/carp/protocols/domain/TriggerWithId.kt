@@ -30,11 +30,11 @@ fun Trigger<*>.within( protocol: StudyProtocol ): TriggerWithId =
 /**
  * Specify that a [task] should start on the specified [destinationDevice] once this [Trigger] initiates.
  */
-fun TriggerWithId.start( task: TaskDescriptor, destinationDevice: AnyDeviceDescriptor ) =
+fun TriggerWithId.start( task: TaskDescriptor<*>, destinationDevice: AnyDeviceDescriptor ) =
     this.trigger.start( task, destinationDevice )
 
 /**
  * Specify that a [task] should stop on the specified [destinationDevice] once this [Trigger] initiates.
  */
-fun TriggerWithId.stop( task: TaskDescriptor, destinationDevice: AnyDeviceDescriptor ) =
+fun TriggerWithId.stop( task: TaskDescriptor<*>, destinationDevice: AnyDeviceDescriptor ) =
     this.trigger.stop( task, destinationDevice )

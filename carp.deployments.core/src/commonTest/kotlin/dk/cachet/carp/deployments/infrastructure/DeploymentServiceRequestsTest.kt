@@ -29,7 +29,7 @@ class DeploymentServiceRequestsTest : ApplicationServiceRequestsTest<DeploymentS
             DeploymentServiceRequest.RegisterDevice( UUID.randomUUID(), "Test role", DefaultDeviceRegistration( "Device ID" ) ),
             DeploymentServiceRequest.UnregisterDevice( UUID.randomUUID(), "Test role" ),
             DeploymentServiceRequest.GetDeviceDeploymentFor( UUID.randomUUID(), "Test role" ),
-            DeploymentServiceRequest.DeploymentSuccessful( UUID.randomUUID(), "Test role", Clock.System.now() ),
+            DeploymentServiceRequest.DeviceDeployed( UUID.randomUUID(), "Test role", Clock.System.now() ),
             DeploymentServiceRequest.Stop( UUID.randomUUID() )
         )
     }

@@ -10,6 +10,7 @@ import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.test.Mock
+import kotlinx.datetime.Clock
 
 // TODO: Due to a bug, `Service` cannot be used here, although that would be preferred.
 //       Change this once this is fixed: https://youtrack.jetbrains.com/issue/KT-24700
@@ -27,9 +28,11 @@ class RecruitmentServiceMock(
 {
     companion object
     {
-        private val groupStatus = ParticipantGroupStatus(
-            StudyDeploymentStatus.Invited( UUID.randomUUID(), emptyList(), null ),
-            emptySet() )
+        private val now = Clock.System.now()
+        private val groupStatus = ParticipantGroupStatus.InDeployment.fromDeploymentStatus(
+            emptySet(),
+            StudyDeploymentStatus.Invited( now, UUID.randomUUID(), emptyList(), emptyList(), null )
+        )
     }
 
 
@@ -45,9 +48,9 @@ class RecruitmentServiceMock(
         getParticipantsResult
         .also { trackSuspendCall( RecruitmentService::getParticipants, studyId ) }
 
-    override suspend fun deployParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ) =
+    override suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ) =
         deployParticipantResult
-        .also { trackSuspendCall( RecruitmentService::deployParticipantGroup, studyId, group ) }
+        .also { trackSuspendCall( RecruitmentService::inviteNewParticipantGroup, studyId, group ) }
 
     override suspend fun getParticipantGroupStatusList( studyId: UUID ) =
         getParticipantGroupStatusListResult

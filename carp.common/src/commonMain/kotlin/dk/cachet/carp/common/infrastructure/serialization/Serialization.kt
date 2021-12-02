@@ -24,11 +24,13 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     polymorphic( Data::class )
     {
         // DataType classes.
-        subclass( Acceleration::class )
+        subclass( AngularVelocity::class )
+        subclass( CompletedTask::class )
         subclass( ECG::class )
         subclass( FreeFormText::class )
         subclass( Geolocation::class )
         subclass( HeartRate::class )
+        subclass( NonGravitationalAcceleration::class )
         // HACK: explicit serializer needs to be registered for object declarations due to limitation of the JS legacy backend.
         // https://github.com/Kotlin/kotlinx.serialization/issues/1138#issuecomment-707989920
         // This can likely be removed once we upgrade to the new IR backend.
@@ -45,6 +47,9 @@ val COMMON_SERIAL_MODULE = SerializersModule {
             CustomInputSerializer( String::class, Int::class )
         )
         subclass( Sex::class, PolymorphicEnumSerializer( Sex.serializer() ) )
+
+        subclass( CustomData::class )
+        default { DataSerializer }
     }
     polymorphic( InputElement::class )
     {

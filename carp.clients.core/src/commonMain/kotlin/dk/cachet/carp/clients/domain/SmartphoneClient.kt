@@ -1,5 +1,6 @@
 package dk.cachet.carp.clients.domain
 
+import dk.cachet.carp.clients.application.ClientManager
 import dk.cachet.carp.clients.domain.data.ConnectedDeviceDataCollector
 import dk.cachet.carp.clients.domain.data.DeviceDataCollector
 import dk.cachet.carp.clients.domain.data.DeviceDataCollectorFactory
@@ -10,7 +11,7 @@ import dk.cachet.carp.deployments.application.DeploymentService
 
 
 /**
- * Allows managing [StudyRuntime]s on a smartphone.
+ * Allows managing [Study]s on a smartphone.
  */
 class SmartphoneClient(
     /**

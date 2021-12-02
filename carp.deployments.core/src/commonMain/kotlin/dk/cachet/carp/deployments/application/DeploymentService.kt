@@ -53,7 +53,7 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
      *  - [protocol] is invalid
      *  - [invitations] is empty
      *  - any of the assigned device roles in [invitations] is not part of the study [protocol]
-     *  - not all master devices part of the study [protocol] have been assigned a participant
+     *  - not all necessary master devices part of the study [protocol] have been assigned a participant
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
     suspend fun createStudyDeployment(
@@ -133,7 +133,7 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
      * - the [deviceDeploymentLastUpdatedOn] does not match the expected timestamp. The deployment might be outdated.
      * @throws IllegalStateException when the deployment cannot be deployed yet, or the deployment has stopped.
      */
-    suspend fun deploymentSuccessful(
+    suspend fun deviceDeployed(
         studyDeploymentId: UUID,
         masterDeviceRoleName: String,
         deviceDeploymentLastUpdatedOn: Instant

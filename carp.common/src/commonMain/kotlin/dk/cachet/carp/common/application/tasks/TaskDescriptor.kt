@@ -3,6 +3,7 @@ package dk.cachet.carp.common.application.tasks
 import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
 import dk.cachet.carp.common.application.data.CarpDataTypes
+import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.DataType
 import kotlinx.serialization.Polymorphic
 
@@ -14,7 +15,7 @@ import kotlinx.serialization.Polymorphic
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
-interface TaskDescriptor
+interface TaskDescriptor<TData : Data>
 {
     /**
      * A name which uniquely identifies the task.
@@ -30,12 +31,6 @@ interface TaskDescriptor
      * A description of this task, emphasizing the reason why the data is collected.
      */
     val description: String?
-
-
-    /**
-     * Get data types of all data which may be collected as the result of user interactions for this task.
-     */
-    fun getInteractionDataTypes(): Set<DataType>
 }
 
 
@@ -43,7 +38,7 @@ interface TaskDescriptor
  * Get data types of all data which may be collected, either passively as part of task measures,
  * or as the result of user interactions, for this task.
  */
-fun TaskDescriptor.getAllExpectedDataTypes(): Set<DataType> =
+fun TaskDescriptor<*>.getAllExpectedDataTypes(): Set<DataType> =
     measures.map { measure ->
         when ( measure )
         {
@@ -51,7 +46,7 @@ fun TaskDescriptor.getAllExpectedDataTypes(): Set<DataType> =
             is Measure.DataStream -> measure.type
         }
     }
-    .plus( getInteractionDataTypes() )
+    .plus( CarpDataTypes.COMPLETED_TASK.type )
     .toSet()
 
 
@@ -59,7 +54,7 @@ fun TaskDescriptor.getAllExpectedDataTypes(): Set<DataType> =
  * A helper class to configure and construct immutable [TaskDescriptor] classes.
  */
 @TaskDescriptorBuilderDsl
-abstract class TaskDescriptorBuilder<TTaskDescriptor : TaskDescriptor>
+abstract class TaskDescriptorBuilder<TTaskDescriptor : TaskDescriptor<*>>
 {
     /**
      * The data which needs to be collected/measures as part of this task.

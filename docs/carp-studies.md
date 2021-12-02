@@ -3,6 +3,26 @@
 Supports management of research studies, including the recruitment of participants and assigning metadata (e.g., contact information).
 This subsystem maps pseudonymized data (managed by the 'deployments' subsystem) to actual participants.
 
+## Study and participant group state
+
+Most of [the `StudyService` endpoints](#application-services) return the current status of the study after the requested operation has executed.
+Depending on the current state of the study, different operations are available. This is represented by [`StudyStatus`](../carp.studies.core/src/commonMain/kotlin/dk/cachet/carp/studies/application/StudyStatus.kt).
+
+When a study is first created, you can configure it (`StudyStatus.Configuring`), e.g., set a description and study protocol.
+Once the study goes live (`StudyService.goLive()`), it can be deployed to participant groups (`StudyStatus.Live`),
+but, the study description and protocol can no longer be modified; they are "locked in".
+
+Participant groups are managed through `RecruitmentService`. The status of participant groups is represented by [`ParticipantGroupStatus`](../carp.studies.core/src/commonMain/kotlin/dk/cachet/carp/studies/application/users/ParticipantGroupStatus.kt),
+which reflects the underlying state machine:
+
+![Participant group state machine](https://i.imgur.com/VIv3HKk.png)
+
+Note: `createParticipantGroup` and `inviteParticipantGroup` are envisioned new endpoints currently not yet available.
+
+Once a participant group is `InDeployment`, the state of the underlying `studyDeploymentStatus` determines the concrete `ParticipantGroupStatus`.
+Calling `RecruitmentService.stopParticipantGroup()` will stop the underlying deployment, but the deployment can also be stopped by participants in the study.
+More detailed information about the study deployment process, e.g., the remaining devices to register, can be retrieved through `studyDeploymentStatus`.
+
 ## Application services
 
 The _'Require'_ and _'Grant'_ column lists claim-based authorization recommendations for implementing infrastructures.
@@ -34,6 +54,6 @@ Allows setting recruitment goals, adding participants to studies, and creating d
 | `addParticipant` | Add a participant identified by a specified email address to a study. | manage study: `studyId` | |
 | `getParticipant` | Returns the participant with a specified ID for a study. | manage study: `studyId` | |
 | `getParticipants` | Get all participants for a study. | manage study: `studyId` | |
-| `deployParticipantGroup` | Deploy a study to a group of previously added participants. | manage study: `studyId` | |
+| `inviteNewParticipantGroup` | Create and instantly invite a group of previously added participants to a study. | manage study: `studyId` | |
 | `getParticipantGroupStatusList` | Get the status of all deployed participant groups in a study. | manage study: `studyId` | |
 | `stopParticipantGroup` | Stop the study deployment in a study of a participant group. No further changes to this deployment will be allowed and no more data will be collected. | manage study: `studyId` | |

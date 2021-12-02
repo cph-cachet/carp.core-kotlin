@@ -35,6 +35,12 @@ abstract class DeviceDescriptor<
     abstract val roleName: String
 
     /**
+     * Determines whether device registration for this device is optional prior to starting a study,
+     * i.e., whether the study can run without this device or not.
+     */
+    abstract val isOptional: Boolean
+
+    /**
      * The set of [DataType]s defining which data stream data can be collected on this device.
      */
     abstract fun getSupportedDataTypes(): Set<DataType>
@@ -46,14 +52,21 @@ abstract class DeviceDescriptor<
      */
     abstract val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration>
 
+
     /**
-     * Get the default sampling configuration to be used for measurements of [dataType].
-     * The configuration to use may still be overridden by individual data stream measures.
+     * Do nothing in case [defaultSamplingConfiguration] is valid; throw [IllegalStateException] otherwise.
+     * Only known supported data types can be validated; unexpected data types are ignored.
      */
-    fun getDefaultSamplingConfiguration( dataType: DataType ): SamplingConfiguration =
-        defaultSamplingConfiguration[ dataType ]
-            ?: getDataTypeSamplingSchemes()[ dataType ]?.default
-            ?: throw IllegalArgumentException( "The specified `dataType` is not supported on this device." )
+    fun validateDefaultSamplingConfiguration()
+    {
+        val canBeValidated = getSupportedDataTypes()
+        for ( (dataType, samplingConfiguration) in defaultSamplingConfiguration.filter { it.key in canBeValidated } )
+        {
+            val samplingScheme = checkNotNull( getDataTypeSamplingSchemes()[ dataType ] )
+            check( samplingScheme.isValid( samplingConfiguration ) )
+                { "The sampling configuration for data type `$dataType` is invalid." }
+        }
+    }
 
     /**
      * Return sampling schemes for all the sensors available on this device.
@@ -61,7 +74,7 @@ abstract class DeviceDescriptor<
      * Implementations of [DeviceDescriptor] should simply return the mandatory inner object
      * `object Sensors : DataTypeSamplingSchemeMap()` here.
      */
-    protected abstract fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap
+    abstract fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap
 
     protected abstract fun createDeviceRegistrationBuilder(): TRegistrationBuilder
 

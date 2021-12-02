@@ -1,6 +1,6 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
-import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.tasks.Measure
 import kotlinx.serialization.KSerializer
@@ -13,17 +13,14 @@ import kotlinx.serialization.json.Json
  */
 @Serializable( TaskDescriptorSerializer::class )
 data class CustomTaskDescriptor( override val className: String, override val jsonSource: String, val serializer: Json ) :
-    TaskDescriptor, UnknownPolymorphicWrapper
+    TaskDescriptor<NoData>, UnknownPolymorphicWrapper
 {
     @Serializable
     private data class BaseMembers(
         override val name: String,
         override val measures: List<Measure> = emptyList(),
         override val description: String? = null
-    ) : TaskDescriptor
-    {
-        override fun getInteractionDataTypes(): Set<DataType> = emptySet()
-    }
+    ) : TaskDescriptor<NoData>
 
     override val name: String
     override val measures: List<Measure>
@@ -36,13 +33,10 @@ data class CustomTaskDescriptor( override val className: String, override val js
         name = baseMembers.name
         measures = baseMembers.measures
     }
-
-    override fun getInteractionDataTypes(): Set<DataType> =
-        throw UnsupportedOperationException( "The task needs to be known at runtime to determine interaction data types." )
 }
 
 /**
  * Custom serializer for [TaskDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [TaskDescriptor].
  */
-object TaskDescriptorSerializer : KSerializer<TaskDescriptor>
+object TaskDescriptorSerializer : KSerializer<TaskDescriptor<*>>
     by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) } )

@@ -112,16 +112,59 @@ declare module 'carp.core-kotlin-carp.studies.core'
         interface Participant$Companion { serializer(): any }
 
 
-        class ParticipantGroupStatus
+        abstract class ParticipantGroupStatus
         {
-            constructor( studyDeploymentStatus: StudyDeploymentStatus, participants: HashSet<Participant> )
-
             static get Companion(): ParticipantGroupStatus$Companion
 
-            readonly studyDeploymentStatus: StudyDeploymentStatus
+            readonly id: UUID
             readonly participants: HashSet<Participant>
         }
         interface ParticipantGroupStatus$Companion { serializer(): any }
+
+        namespace ParticipantGroupStatus
+        {
+            class Staged extends ParticipantGroupStatus
+            {
+                constructor( id: UUID, participants: HashSet<Participant> )
+            }
+            abstract class InDeployment extends ParticipantGroupStatus
+            {
+                readonly invitedOn: Instant
+                readonly studyDeploymentStatus: StudyDeploymentStatus
+            }
+            class Invited extends InDeployment
+            {
+                constructor(
+                    id: UUID,
+                    participants: HashSet<Participant>,
+                    invitedOn: Instant,
+                    studyDeploymentStatus: StudyDeploymentStatus )
+            }
+            class Running extends InDeployment
+            {
+                constructor(
+                    id: UUID,
+                    participants: HashSet<Participant>,
+                    invitedOn: Instant,
+                    studyDeploymentStatus: StudyDeploymentStatus,
+                    startedOn: Instant )
+
+                readonly startedOn: Instant
+            }
+            class Stopped extends InDeployment
+            {
+                constructor(
+                    id: UUID,
+                    participants: HashSet<Participant>,
+                    invitedOn: Instant,
+                    studyDeploymentStatus: StudyDeploymentStatus,
+                    startedOn: Instant | null,
+                    stoppedOn: Instant )
+
+                readonly startedOn: Instant | null
+                readonly stoppedOn: Instant
+            }
+        }
 
 
         class StudyOwner
@@ -209,7 +252,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             {
                 constructor( studyId: UUID )
             }
-            class DeployParticipantGroup extends RecruitmentServiceRequest
+            class InviteNewParticipantGroup extends RecruitmentServiceRequest
             {
                 constructor( studyId: UUID, group: HashSet<AssignParticipantDevices> )
             }
