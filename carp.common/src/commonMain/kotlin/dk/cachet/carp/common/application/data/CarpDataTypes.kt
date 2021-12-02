@@ -57,11 +57,17 @@ object CarpDataTypes : DataTypeMetaDataMap()
      */
     val SENSOR_SKIN_CONTACT = add( SENSOR_SKIN_CONTACT_TYPE_NAME, "Sensor skin contact", DataTimeType.POINT )
 
-    internal const val ACCELERATION_TYPE_NAME = "$CARP_NAMESPACE.acceleration"
+    internal const val NON_GRAVITATIONAL_ACCELERATION_TYPE_NAME = "$CARP_NAMESPACE.nongravitationalacceleration"
     /**
-     * Acceleration along perpendicular x, y, and z axes.
+     * Acceleration along perpendicular x, y, and z axes, excluding gravity.
      */
-    val ACCELERATION = add( ACCELERATION_TYPE_NAME, "Accelerometry", DataTimeType.POINT )
+    val NON_GRAVITATIONAL_ACCELERATION = add( NON_GRAVITATIONAL_ACCELERATION_TYPE_NAME, "Acceleration without gravity", DataTimeType.POINT )
+
+    internal const val ANGULAR_VELOCITY_TYPE_NAME = "$CARP_NAMESPACE.angularvelocity"
+    /**
+     * Rate of rotation around perpendicular x, y, and z axes.
+     */
+    val ANGULAR_VELOCITY = add( ANGULAR_VELOCITY_TYPE_NAME, "Angular velocity", DataTimeType.POINT )
 
     internal const val SIGNAL_STRENGTH_TYPE_NAME = "$CARP_NAMESPACE.signalstrength"
     /**
@@ -74,4 +80,10 @@ object CarpDataTypes : DataTypeMetaDataMap()
      * A task which was started or stopped by a trigger, referring to identifiers in the study protocol.
      */
     val TRIGGERED_TASK = add( TRIGGERED_TASK_TYPE_NAME, "Triggered task", DataTimeType.POINT )
+
+    internal const val COMPLETED_TASK_TYPE_NAME = "$CARP_NAMESPACE.completedtask"
+    /**
+     * An interactive task which was completed over the course of a specified time interval.
+     */
+    val COMPLETED_TASK = add( COMPLETED_TASK_TYPE_NAME, "Completed task", DataTimeType.TIME_SPAN )
 }

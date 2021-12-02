@@ -22,7 +22,7 @@ open class TaskDescriptorList private constructor( private val list: MutableList
     val BACKGROUND = add { BackgroundTaskBuilder() }
 
 
-    protected fun <TTaskDescriptor : TaskDescriptor, TBuilder : TaskDescriptorBuilder<TTaskDescriptor>> add(
+    protected fun <TTaskDescriptor : TaskDescriptor<*>, TBuilder : TaskDescriptorBuilder<TTaskDescriptor>> add(
         builder: () -> TBuilder
     ): SupportedTaskDescriptor<TTaskDescriptor, TBuilder> = SupportedTaskDescriptor( builder ).also { list.add( it ) }
 }
@@ -31,7 +31,7 @@ open class TaskDescriptorList private constructor( private val list: MutableList
 /**
  * A [TaskDescriptor] which is listed as a supported task on a [DeviceDescriptor].
  */
-class SupportedTaskDescriptor<TTaskDescriptor : TaskDescriptor, TBuilder : TaskDescriptorBuilder<TTaskDescriptor>>(
+class SupportedTaskDescriptor<TTaskDescriptor : TaskDescriptor<*>, TBuilder : TaskDescriptorBuilder<TTaskDescriptor>>(
     private val createBuilder: () -> TBuilder
 )
 {

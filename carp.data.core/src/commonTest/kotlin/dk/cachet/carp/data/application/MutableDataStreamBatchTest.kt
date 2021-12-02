@@ -5,6 +5,7 @@ import dk.cachet.carp.common.infrastructure.test.StubData
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.data.infrastructure.dataStreamId
 import dk.cachet.carp.data.infrastructure.measurement
+import kotlinx.datetime.Clock
 import kotlin.test.*
 
 
@@ -70,6 +71,33 @@ class MutableDataStreamBatchTest
     }
 
     @Test
+    fun appendSequence_succeeds_with_new_syncpoint()
+    {
+        val batch = MutableDataStreamBatch()
+        val dataStream = dataStreamId<StubData>( UUID.randomUUID(), "Device" )
+        val firstSequence = MutableDataStreamSequence(
+            dataStream,
+            0,
+            stubTriggerIds,
+            SyncPoint.UnixEpoch
+        )
+        firstSequence.appendMeasurements( measurement( StubData(), 0 ) )
+        batch.appendSequence( firstSequence )
+
+        val newSequence = MutableDataStreamSequence(
+            dataStream,
+            1,
+            stubTriggerIds,
+            stubSyncPoint
+        )
+        newSequence.appendMeasurements( measurement( StubData(), 0 ) )
+        batch.appendSequence( newSequence )
+
+        assertEquals( 2, batch.sequences.count() ) // Due to the different sync point, the sequence is not merged.
+        assertEquals( 2, batch.getDataStreamPoints( dataStream ).toList().count() )
+    }
+
+    @Test
     fun appendSequence_merges_sequence_when_there_is_no_sequence_gap()
     {
         val batch = MutableDataStreamBatch()
@@ -105,6 +133,30 @@ class MutableDataStreamBatchTest
         {
             batch.appendSequence( overlappingSequence )
         }
+    }
+
+    @Test
+    fun appendSequence_fails_for_older_sync_point()
+    {
+        val batch = MutableDataStreamBatch()
+        val dataStream = dataStreamId<StubData>( UUID.randomUUID(), "Device" )
+        val firstSequence = MutableDataStreamSequence(
+            dataStream,
+            0,
+            stubTriggerIds,
+            SyncPoint( Clock.System.now() )
+        )
+        firstSequence.appendMeasurements( measurement( StubData(), 0 ) )
+        batch.appendSequence( firstSequence )
+
+        val newSequence = MutableDataStreamSequence(
+            dataStream,
+            1,
+            stubTriggerIds,
+            SyncPoint.UnixEpoch
+        )
+        newSequence.appendMeasurements( measurement( StubData(), 0 ) )
+        assertFailsWith<IllegalArgumentException> { batch.appendSequence( newSequence ) }
     }
 
     @Test

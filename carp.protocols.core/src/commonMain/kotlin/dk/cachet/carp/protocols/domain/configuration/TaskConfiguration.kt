@@ -13,7 +13,7 @@ interface TaskConfiguration
     /**
      * The tasks which measure data and/or present output on a device.
      */
-    val tasks: Set<TaskDescriptor>
+    val tasks: Set<TaskDescriptor<*>>
 
     /**
      * Add a [task] to this configuration.
@@ -21,12 +21,12 @@ interface TaskConfiguration
      * @throws IllegalArgumentException in case a task with the specified name already exists.
      * @return True if the [task] has been added; false if it is already included in this configuration.
      */
-    fun addTask( task: TaskDescriptor ): Boolean
+    fun addTask( task: TaskDescriptor<*> ): Boolean
 
     /**
      * Remove a [task] currently present in this configuration.
      *
      * @return True if the [task] has been removed; false if it is not included in this configuration.
      */
-    fun removeTask( task: TaskDescriptor ): Boolean
+    fun removeTask( task: TaskDescriptor<*> ): Boolean
 }

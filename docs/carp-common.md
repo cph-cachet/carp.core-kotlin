@@ -15,14 +15,16 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | --- | --- |
 | [freeformtext](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/FreeFormText.kt) | Text of which the interpretation is left up to the specific application. |
 | [geolocation](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Geolocation.kt) | Geographic location data, representing longitude and latitude. |
+| [stepcount](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/StepCount.kt) | The number of steps a participant has taken in a specified time interval. |
 | [ecg](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/ECG.kt) | Electrocardiogram data of a single lead. |
 | [heartrate](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/HeartRate.kt) | Number of heart contractions (beats) per minute. |
 | [rrinterval](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/RRInterval.kt) | The time interval between two consecutive heartbeats (R-R interval). |
 | [sensorskincontact](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/SensorSkinContact.kt) | Whether a sensor requiring contact with skin is making proper contact at a specific point in time. |
-| [stepcount](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/StepCount.kt) | The number of steps a participant has taken in a specified time interval. |
-| [acceleration](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Acceleration.kt) | Acceleration along perpendicular x, y, and z axes. |
+| [nongravitationalacceleration](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/NonGravitationalAcceleration.kt) | Acceleration excluding gravity along perpendicular x, y, and z axes. |
+| [angularvelocity](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/AngularVelocity.kt) | Rate of rotation around perpendicular x, y, and z axes. |
 | [signalstrength](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/SignalStrength.kt) | The received signal strength of a wireless device. |
 | [triggeredtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/TriggeredTask.kt) | A task which was started or stopped by a trigger, referring to identifiers in the study protocol. |
+| [completedtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/CompletedTask.kt) | An interactive task which was completed over the course of a specified time interval. |
 
 ## Device descriptors
 

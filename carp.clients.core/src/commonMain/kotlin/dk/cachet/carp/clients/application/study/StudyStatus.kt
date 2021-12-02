@@ -9,13 +9,13 @@ import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 
 
 /**
- * Describes the status of a [Study].
+ * Describes the status of a study.
  */
 @ImplementAsDataClass
 sealed class StudyStatus
 {
     /**
-     * Unique ID of the study on the [ClientManager].
+     * Unique ID of the study on the client manager.
      */
     abstract val id: StudyId
 
@@ -168,6 +168,6 @@ private fun getDevicesRegistrationStatus( deployment: MasterDeviceDeployment ) =
     .getRuntimeDeviceInfo()
     .map {
         val registration = it.registration
-        if ( registration == null ) DeviceRegistrationStatus.Unregistered(it.descriptor)
-        else DeviceRegistrationStatus.Registered(it.descriptor, registration)
+        if ( registration == null ) DeviceRegistrationStatus.Unregistered( it.descriptor )
+        else DeviceRegistrationStatus.Registered( it.descriptor, registration )
     }.associateBy { it.device }

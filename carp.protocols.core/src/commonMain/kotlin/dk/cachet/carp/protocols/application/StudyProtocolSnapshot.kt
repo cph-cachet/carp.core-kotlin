@@ -24,7 +24,7 @@ data class StudyProtocolSnapshot(
     val masterDevices: Set<AnyMasterDeviceDescriptor> = emptySet(),
     val connectedDevices: Set<AnyDeviceDescriptor> = emptySet(),
     val connections: Set<DeviceConnection> = emptySet(),
-    val tasks: Set<TaskDescriptor> = emptySet(),
+    val tasks: Set<TaskDescriptor<*>> = emptySet(),
     val triggers: Map<Int, Trigger<*>> = emptyMap(),
     val taskControls: Set<TaskControl> = emptySet(),
     val expectedParticipantData: Set<ParticipantAttribute> = emptySet(),

@@ -1,16 +1,17 @@
 package dk.cachet.carp.data.application
 
+import dk.cachet.carp.common.application.toEpochMicroseconds
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 
 
 /**
- * Information about a sensor clock at the timestamp [synchronizedOn] on a master device
- * which allows converting sensor timestamps to UTC time in microseconds.
+ * Information about a sensor clock at [synchronizedOn] on a master device
+ * which allows converting sensor time to number of microseconds since the Unix epoch.
  *
- * The required units/sign to convert to UTC microseconds are determined by the formula:
- * (sensorTimeStamp * [relativeClockSpeed]) + [utcOffset]
+ * The required units/sign to carry out this conversion are determined by the formula:
+ * syncedTime = [relativeClockSpeed] * (sensorTime - [sensorTimestampAtSyncPoint]) + [synchronizedOn]
  */
 @Serializable
 data class SyncPoint(
@@ -19,13 +20,35 @@ data class SyncPoint(
      */
     val synchronizedOn: Instant,
     /**
-     * The offset to be added to the sensor time stamps after having multiplied by [relativeClockSpeed].
+     * The sensor time at [synchronizedOn].
      */
     @Required
-    val utcOffset: Long = 0,
+    val sensorTimestampAtSyncPoint: Long = synchronizedOn.toEpochMicroseconds(),
     /**
-     * The value to multiply sensor time stamps by.
+     * The relative clock speed of UTC time compared to the sensor clock,
+     * calculated as the variation of UTC time divided by the variation of sensor time.
+     *
+     * E.g., if the sensor clock runs half as fast as UTC time, the relative clock speed is 2.
      */
     @Required
     val relativeClockSpeed: Double = 1.0
 )
+{
+    companion object
+    {
+        /**
+         * The default [SyncPoint] for sensors which return timestamps as number of microseconds since the Unix epoch.
+         * Applying this [SyncPoint] to timestamps is a no-op.
+         */
+        val UnixEpoch: SyncPoint = SyncPoint( Instant.fromEpochSeconds( 0 ) )
+    }
+}
+
+
+/**
+ * Convert [timestamp] obtained by the sensor clock this [SyncPoint] relates to
+ * into number of microseconds since the Unix epoch.
+ *
+ * This requires a platform-specific implementation in order not to lose any precision; big decimal needs to be used.
+ */
+expect fun SyncPoint.applyToTimestamp( timestamp: Long ): Long
