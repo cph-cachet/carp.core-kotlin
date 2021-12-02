@@ -24,7 +24,6 @@ declare module 'carp.core-kotlin-carp.common'
         }
         interface EmailAddress$Companion { serializer(): any }
 
-
         class NamespacedId
         {
             constructor( namespace: string, name: string )
@@ -36,6 +35,25 @@ declare module 'carp.core-kotlin-carp.common'
         }
         interface NamespacedId$Companion { serializer(): any }
 
+        class RecurrenceRule
+        {
+            static get Companion(): RecurrenceRule$Companion
+
+            toString(): String
+        }
+        interface RecurrenceRule$Companion
+        {
+            serializer(): any
+            fromString_61zpoe$( rrule: String ): RecurrenceRule
+        }
+
+        class TimeOfDay
+        {
+            constructor( hour: Number, minutes: Number, seconds: Number )
+
+            static get Companion(): TimeOfDay$Companion
+        }
+        interface TimeOfDay$Companion { serializer(): any }
 
         class Trilean
         {
@@ -45,7 +63,6 @@ declare module 'carp.core-kotlin-carp.common'
             static values(): Array<Trilean>
         }
         function toTrilean_1v8dcc$( bool: boolean ): Trilean
-
 
         class UUID
         {
@@ -90,14 +107,18 @@ declare module 'carp.core-kotlin-carp.common'
         }
     }
 
-    namespace dk.cachet.carp.common.application.tasks {
-        abstract class TaskDescriptor {
+
+    namespace dk.cachet.carp.common.application.tasks
+    {
+        abstract class TaskDescriptor
+        {
             readonly name: String
             readonly description?: String
         }
 
-        class WebTask extends TaskDescriptor {
-            constructor( name: String, measures: any, description: String, url: String)
+        class WebTask extends TaskDescriptor
+        {
+            constructor( name: String, measures: any, description: String, url: String )
 
             static get Companion(): WebTask$Companion
 
@@ -106,54 +127,48 @@ declare module 'carp.core-kotlin-carp.common'
         interface WebTask$Companion { serializer(): any }
     }
 
-    namespace dk.cachet.carp.common.application.triggers {
-        abstract class Trigger {
+
+    namespace dk.cachet.carp.common.application.triggers
+    {
+        abstract class Trigger
+        {
             readonly requiresMasterDevice: Boolean
             readonly sourceDeviceRoleName: String
         }
 
-        class ElapsedTimeTrigger extends Trigger {
-            constructor(sourceDeviceRoleName: String, elapsedTime: Duration)
+        class ElapsedTimeTrigger extends Trigger
+        {
+            constructor( sourceDeviceRoleName: String, elapsedTime: Duration )
+
             readonly elapsedTime: Duration
 
         }
-        class ManualTrigger extends Trigger {
-            constructor(sourceDeviceRoleName: String, label: String, description?: String)
+
+        class ManualTrigger extends Trigger
+        {
+            constructor( sourceDeviceRoleName: String, label: String, description?: String )
+
             readonly label: String
             readonly description?: String
         }
-        class ScheduledTrigger extends Trigger {
-            constructor(sourceDeviceRoleName: String, time: TimeOfDay, recurrenceRule: RecurrenceRule)
+
+        class ScheduledTrigger extends Trigger
+        {
+            constructor( sourceDeviceRoleName: String, time: TimeOfDay, recurrenceRule: RecurrenceRule )
+
             readonly time: TimeOfDay
             readonly recurrenceRule: RecurrenceRule
         }
 
-        class TaskControl{
-            constructor(triggerId: Number, taskName: String, destinationDeviceRoleName: String, control: Number)
+        class TaskControl
+        {
+            constructor( triggerId: Number, taskName: String, destinationDeviceRoleName: String, control: Number )
+
             readonly triggerId: Number
             readonly taskName: String
             readonly destinationDeviceRoleName: String
             readonly control: Number
         }
-    }
-
-    namespace dk.cachet.carp.common.application {
-        class TimeOfDay {
-            constructor(hour: Number, minutes: Number, seconds: Number)
-
-            static get Companion(): TimeOfDay$Companion
-        }
-        interface TimeOfDay$Companion { serializer(): any }
-
-        class RecurrenceRule {
-            static get Companion(): RecurrenceRule$Companion
-            toString(): String
-        }
-        interface RecurrenceRule$Companion {
-            serializer(): any
-            fromString_61zpoe$(rrule: String): RecurrenceRule
-        }
-
     }
 
 
@@ -233,6 +248,7 @@ declare module 'carp.core-kotlin-carp.common'
             }
         }
     }
+
 
     namespace dk.cachet.carp.common.application.data.input
     {
