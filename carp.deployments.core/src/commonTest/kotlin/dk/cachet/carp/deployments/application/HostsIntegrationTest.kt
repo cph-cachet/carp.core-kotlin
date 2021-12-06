@@ -115,10 +115,10 @@ class HostsIntegrationTest
 
     @Test
     fun removing_deployment_removes_participant_group_and_data_streams() = runSuspendTest {
-        var deploymentsRemoved: DeploymentService.Event.StudyDeploymentsRemoved? = null
-        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentsRemoved::class, this )
+        var deploymentRemoved: DeploymentService.Event.StudyDeploymentRemoved? = null
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentRemoved::class, this )
         {
-            deploymentsRemoved = it
+            deploymentRemoved = it
         }
         eventBus.activateHandlers( this )
 
@@ -138,7 +138,7 @@ class HostsIntegrationTest
 
         deploymentService.removeStudyDeployments( setOf( deploymentId ) )
 
-        assertEquals( setOf( deploymentId ), deploymentsRemoved?.deploymentIds )
+        assertEquals( deploymentId, deploymentRemoved?.studyDeploymentId )
         assertFailsWith<IllegalArgumentException> { participationService.getParticipantData( deploymentId ) }
         assertFailsWith<IllegalArgumentException> { dataStreamService.getDataStream( dataStreamId, 0 ) }
     }

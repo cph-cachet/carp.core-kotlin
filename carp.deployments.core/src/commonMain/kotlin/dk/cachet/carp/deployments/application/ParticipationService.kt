@@ -17,7 +17,7 @@ import kotlinx.serialization.Serializable
 interface ParticipationService : ApplicationService<ParticipationService, ParticipationService.Event>
 {
     @Serializable
-    sealed class Event : IntegrationEvent<ParticipationService>()
+    sealed class Event : IntegrationEvent<ParticipationService>
 
 
     /**

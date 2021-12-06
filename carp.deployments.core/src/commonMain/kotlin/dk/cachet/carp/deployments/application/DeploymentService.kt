@@ -18,25 +18,27 @@ import kotlinx.serialization.Serializable
 interface DeploymentService : ApplicationService<DeploymentService, DeploymentService.Event>
 {
     @Serializable
-    sealed class Event : IntegrationEvent<DeploymentService>()
+    sealed class Event( override val aggregateId: String? ) : IntegrationEvent<DeploymentService>
     {
+        constructor( aggregateId: UUID ) : this( aggregateId.stringRepresentation )
+
         @Serializable
         data class StudyDeploymentCreated(
             val studyDeploymentId: UUID,
             val protocol: StudyProtocolSnapshot,
             val invitations: List<ParticipantInvitation>,
             val connectedDevicePreregistrations: Map<String, DeviceRegistration>
-        ) : Event()
+        ) : Event( studyDeploymentId )
         @Serializable
-        data class StudyDeploymentsRemoved( val deploymentIds: Set<UUID> ) : Event()
+        data class StudyDeploymentRemoved( val studyDeploymentId: UUID ) : Event( studyDeploymentId )
         @Serializable
-        data class StudyDeploymentStopped( val studyDeploymentId: UUID ) : Event()
+        data class StudyDeploymentStopped( val studyDeploymentId: UUID ) : Event( studyDeploymentId )
         @Serializable
         data class DeviceRegistrationChanged(
             val studyDeploymentId: UUID,
             val device: AnyDeviceDescriptor,
             val registration: DeviceRegistration?
-        ) : Event()
+        ) : Event( studyDeploymentId )
     }
 
 

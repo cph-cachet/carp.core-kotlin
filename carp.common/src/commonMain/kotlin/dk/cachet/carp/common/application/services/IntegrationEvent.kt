@@ -3,7 +3,6 @@ package dk.cachet.carp.common.application.services
 import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
 import kotlinx.serialization.Polymorphic
-import kotlinx.serialization.Serializable
 
 
 /**
@@ -11,8 +10,16 @@ import kotlinx.serialization.Serializable
  *
  * Integration events need to be immutable.
  */
-@Serializable
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
-abstract class IntegrationEvent<out TApplicationService : ApplicationService<out TApplicationService, *>>
+interface IntegrationEvent<out TApplicationService : ApplicationService<out TApplicationService, *>>
+{
+    /**
+     * All events related to the same aggregate ID are handled in order.
+     *
+     * In case the event pertains to an aggregate root,
+     * specify its ID to ensure correct handling of business logic in the domain.
+     */
+    val aggregateId: String?
+}

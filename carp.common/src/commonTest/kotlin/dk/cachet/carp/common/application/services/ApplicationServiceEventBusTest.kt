@@ -14,7 +14,7 @@ class ApplicationServiceEventBusTest
     interface TestService : ApplicationService<TestService, Event>
 
     @Serializable
-    sealed class Event : IntegrationEvent<TestService>()
+    sealed class Event( override val aggregateId: String? = null ) : IntegrationEvent<TestService>
     {
         @Serializable
         object SomeEvent : Event()
@@ -23,7 +23,7 @@ class ApplicationServiceEventBusTest
     interface OtherService : ApplicationService<OtherService, OtherEvent>
 
     @Serializable
-    sealed class OtherEvent : IntegrationEvent<OtherService>()
+    sealed class OtherEvent( override val aggregateId: String? = null ) : IntegrationEvent<OtherService>
     {
         @Serializable
         object SomeOtherEvent : OtherEvent()

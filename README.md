@@ -89,6 +89,12 @@ which subsequently get passed to the deployments and clients subsystem.
      
    - **carp.detekt**: Includes static code analysis extensions for [detekt](https://github.com/arturbosch/detekt), used when building this project to ensure conventions are followed.
 
+Each of the subsystems expose [**application service interfaces with corresponding integration events**](carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/services).
+Synchronous communication between subsystems happens via dependency injected application service interfaces,
+which implementing infrastructures are expected to implement as remote procedure calls (RPCs).
+Asynchronous communication between subsystems happens via an event bus,
+which implementing infrastructures are expected to implement using a message queue which guarantees order for all `IntegrationEvent`'s sharing the same `aggregateId`.
+
 Not all subsystems are implemented yet.
 Currently, this project contains an unstable (not backwards compatible) alpha version of the protocols, studies, deployments, clients, and data subsystems.
 Many changes will happen as the rest of the infrastructure is implemented.
