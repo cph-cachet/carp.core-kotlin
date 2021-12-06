@@ -15,7 +15,7 @@ import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
  */
 interface RecruitmentService : ApplicationService<RecruitmentService, RecruitmentService.Event>
 {
-    sealed class Event : IntegrationEvent<RecruitmentService>()
+    sealed class Event : IntegrationEvent<RecruitmentService>
 
 
     /**

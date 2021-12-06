@@ -15,16 +15,18 @@ import kotlinx.serialization.Serializable
 interface StudyService : ApplicationService<StudyService, StudyService.Event>
 {
     @Serializable
-    sealed class Event : IntegrationEvent<StudyService>()
+    sealed class Event( override val aggregateId: String? ) : IntegrationEvent<StudyService>
     {
-        @Serializable
-        data class StudyCreated( val study: StudyDetails ) : Event()
+        constructor( aggregateId: UUID ) : this( aggregateId.stringRepresentation )
 
         @Serializable
-        data class StudyGoneLive( val study: StudyDetails ) : Event()
+        data class StudyCreated( val study: StudyDetails ) : Event( study.studyId )
 
         @Serializable
-        data class StudyRemoved( val studyId: UUID ) : Event()
+        data class StudyGoneLive( val study: StudyDetails ) : Event( study.studyId )
+
+        @Serializable
+        data class StudyRemoved( val studyId: UUID ) : Event( studyId )
     }
 
 

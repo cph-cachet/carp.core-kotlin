@@ -13,7 +13,7 @@ import kotlinx.serialization.Serializable
 interface DataStreamService : ApplicationService<DataStreamService, DataStreamService.Event>
 {
     @Serializable
-    sealed class Event : IntegrationEvent<DataStreamService>()
+    sealed class Event : IntegrationEvent<DataStreamService>
 
 
     /**

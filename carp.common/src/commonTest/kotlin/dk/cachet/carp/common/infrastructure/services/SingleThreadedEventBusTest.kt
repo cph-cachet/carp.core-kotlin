@@ -17,7 +17,7 @@ class SingleThreadedEventBusTest
     interface TestService : ApplicationService<TestService, BaseIntegrationEvent>
 
     @Serializable
-    sealed class BaseIntegrationEvent : IntegrationEvent<TestService>()
+    sealed class BaseIntegrationEvent( override val aggregateId: String? = null ) : IntegrationEvent<TestService>
     {
         @Serializable
         data class SomeIntegrationEvent( val data: String ) : BaseIntegrationEvent()

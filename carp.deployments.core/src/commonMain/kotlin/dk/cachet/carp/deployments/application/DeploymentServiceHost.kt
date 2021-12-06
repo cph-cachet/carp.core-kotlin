@@ -82,7 +82,7 @@ class DeploymentServiceHost(
 
         dataStreamService.removeDataStreams( studyDeploymentIds )
 
-        eventBus.publish( DeploymentService.Event.StudyDeploymentsRemoved( studyDeploymentIds ) )
+        studyDeploymentIds.forEach { eventBus.publish( DeploymentService.Event.StudyDeploymentRemoved( it ) ) }
         return removedIds
     }
 
