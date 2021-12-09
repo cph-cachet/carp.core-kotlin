@@ -20,7 +20,7 @@ import dk.cachet.carp.studies.application.users.participantIds
  * Represents a set of [participants] recruited for a study identified by [studyId].
  */
 class Recruitment( val studyId: UUID ) :
-    AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>()
+    AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>( studyId )
 {
     sealed class Event : DomainEvent()
     {

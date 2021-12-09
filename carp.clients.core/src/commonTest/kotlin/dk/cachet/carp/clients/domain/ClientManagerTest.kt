@@ -1,7 +1,6 @@
 package dk.cachet.carp.clients.domain
 
 import dk.cachet.carp.clients.application.ClientManager
-import dk.cachet.carp.clients.application.study.StudyId
 import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.clients.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.application.UUID
@@ -124,8 +123,7 @@ class ClientManagerTest
         val (deploymentService, _) = createStudyDeployment( createDependentSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
 
-        val unknownStudyId = StudyId( unknownId, "Unknown device role" )
-        assertFailsWith<IllegalArgumentException> { client.tryDeployment( unknownStudyId ) }
+        assertFailsWith<IllegalArgumentException> { client.tryDeployment( unknownId ) }
     }
 
     @Test
@@ -163,10 +161,7 @@ class ClientManagerTest
         val (deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
 
-        assertFailsWith<IllegalArgumentException>
-        {
-            client.stopStudy( StudyId( unknownId, "Unknown device role" ) )
-        }
+        assertFailsWith<IllegalArgumentException> { client.stopStudy( unknownId ) }
     }
 
     @Test

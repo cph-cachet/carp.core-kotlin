@@ -10,13 +10,12 @@ import createDefaultJSON = cdk.cachet.carp.common.infrastructure.serialization.c
 
 import { dk } from 'carp.core-kotlin-carp.protocols.core'
 import ProtocolVersion = dk.cachet.carp.protocols.application.ProtocolVersion
-import StudyProtocolId = dk.cachet.carp.protocols.application.StudyProtocolId
 import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import ProtocolOwner = dk.cachet.carp.protocols.domain.ProtocolOwner
 import ProtocolFactoryServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceRequest
 import ProtocolServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest
 
-const serializedSnapshot = `{"id":{"ownerId":"27879e75-ccc1-4866-9ab3-4ece1b735052","name":"Test protocol"},"description":"Test description","createdOn":"2021-06-18T14:28:14.229Z","masterDevices":[{"$type":"dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor","isMasterDevice":true,"roleName":"Stub master device","defaultSamplingConfiguration":{}}],"connectedDevices":[{"$type":"dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor","roleName":"Stub device","defaultSamplingConfiguration":{}},{"$type":"dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor","isMasterDevice":true,"roleName":"Chained master","defaultSamplingConfiguration":{}},{"$type":"dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor","roleName":"Chained connected","defaultSamplingConfiguration":{}}],"connections":[{"roleName":"Stub device","connectedToRoleName":"Stub master device"},{"roleName":"Chained master","connectedToRoleName":"Stub master device"},{"roleName":"Chained connected","connectedToRoleName":"Chained master"}],"tasks":[{"$type":"dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor","name":"Task","measures":[{"$type":"dk.cachet.carp.common.application.tasks.Measure.DataStream","type":"dk.cachet.carp.stub","overrideSamplingConfiguration":null}],"description":null}],"triggers":{"0":{"$type":"dk.cachet.carp.common.infrastructure.test.StubTrigger","sourceDeviceRoleName":"Stub device","uniqueProperty":"Unique"}},"taskControls":[{"triggerId":0,"taskName":"Task","destinationDeviceRoleName":"Stub master device","control":"Start"}],"expectedParticipantData":[{"$type":"dk.cachet.carp.common.application.users.ParticipantAttribute.DefaultParticipantAttribute","inputDataType":"some.type"}],"applicationData":""}`
+const serializedSnapshot = `{"id":"27879e75-ccc1-4866-9ab3-4ece1b735052","ownerId":"9586f572-58fd-11ec-bf63-0242ac130002","name":"Test protocol","description":"Test description","createdOn":"2021-06-18T14:28:14.229Z","masterDevices":[{"$type":"dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor","isMasterDevice":true,"roleName":"Stub master device","defaultSamplingConfiguration":{}}],"connectedDevices":[{"$type":"dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor","roleName":"Stub device","defaultSamplingConfiguration":{}},{"$type":"dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor","isMasterDevice":true,"roleName":"Chained master","defaultSamplingConfiguration":{}},{"$type":"dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor","roleName":"Chained connected","defaultSamplingConfiguration":{}}],"connections":[{"roleName":"Stub device","connectedToRoleName":"Stub master device"},{"roleName":"Chained master","connectedToRoleName":"Stub master device"},{"roleName":"Chained connected","connectedToRoleName":"Chained master"}],"tasks":[{"$type":"dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor","name":"Task","measures":[{"$type":"dk.cachet.carp.common.application.tasks.Measure.DataStream","type":"dk.cachet.carp.stub","overrideSamplingConfiguration":null}],"description":null}],"triggers":{"0":{"$type":"dk.cachet.carp.common.infrastructure.test.StubTrigger","sourceDeviceRoleName":"Stub device","uniqueProperty":"Unique"}},"taskControls":[{"triggerId":0,"taskName":"Task","destinationDeviceRoleName":"Stub master device","control":"Start"}],"expectedParticipantData":[{"$type":"dk.cachet.carp.common.application.users.ParticipantAttribute.DefaultParticipantAttribute","inputDataType":"some.type"}],"applicationData":""}`
 
 
 describe( "carp.protocols.core", () => {
@@ -29,8 +28,6 @@ describe( "carp.protocols.core", () => {
         const instances = [
             new ProtocolVersion( "Version" ),
             ProtocolVersion.Companion,
-            new StudyProtocolId( UUID.Companion.randomUUID(), "Name" ),
-            StudyProtocolId.Companion,
             studyProtocolSnapshot,
             StudyProtocolSnapshot.Companion,
             new ProtocolOwner(),

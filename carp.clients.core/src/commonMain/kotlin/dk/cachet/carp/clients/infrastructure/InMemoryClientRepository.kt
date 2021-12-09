@@ -37,7 +37,7 @@ class InMemoryClientRepository : ClientRepository
     override suspend fun addStudy( study: Study )
     {
         val deploymentId = study.studyDeploymentId
-        val deviceRoleName = study.id.deviceRoleName
+        val deviceRoleName = study.deviceRoleName
         require( studies.none { it.studyDeploymentId == deploymentId && it.deviceRoleName == deviceRoleName } )
 
         studies.add( study.getSnapshot() )
@@ -85,6 +85,6 @@ class InMemoryClientRepository : ClientRepository
     private fun findStudySnapshot( runtime: Study ): StudySnapshot? =
         studies.firstOrNull {
             it.studyDeploymentId == runtime.studyDeploymentId &&
-            it.deviceRoleName == runtime.id.deviceRoleName
+            it.deviceRoleName == runtime.deviceRoleName
         }
 }

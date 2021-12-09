@@ -16,6 +16,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ParticipantGroupSnapshot(
+    override val id: UUID,
     override val createdOn: Instant,
     val studyDeploymentId: UUID,
     val assignedMasterDevices: Set<AssignedMasterDevice>,
@@ -33,6 +34,7 @@ data class ParticipantGroupSnapshot(
          */
         fun fromParticipantGroup( group: ParticipantGroup ): ParticipantGroupSnapshot =
             ParticipantGroupSnapshot(
+                group.studyDeploymentId,
                 group.createdOn,
                 group.studyDeploymentId,
                 group.assignedMasterDevices.toSet(),

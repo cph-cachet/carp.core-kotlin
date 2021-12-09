@@ -11,9 +11,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StudySnapshot(
+    override val id: UUID,
+    override val createdOn: Instant,
     val studyDeploymentId: UUID,
     val deviceRoleName: String,
-    override val createdOn: Instant,
     val deploymentStatus: StudyDeploymentStatus?,
     val deploymentInformation: MasterDeviceDeployment?,
 ) : Snapshot<Study>
@@ -32,9 +33,10 @@ data class StudySnapshot(
                 }
 
             return StudySnapshot(
+                study.id,
+                study.createdOn,
                 study.studyDeploymentId,
                 study.deviceRoleName,
-                study.createdOn,
                 (status as? StudyStatus.DeploymentStatusAvailable)?.deploymentStatus,
                 deploymentInformation
             )

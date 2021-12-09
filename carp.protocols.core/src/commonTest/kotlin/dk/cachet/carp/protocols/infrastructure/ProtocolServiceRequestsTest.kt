@@ -5,7 +5,6 @@ import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.application.ProtocolServiceMock
-import dk.cachet.carp.protocols.application.StudyProtocolId
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
@@ -26,10 +25,10 @@ class ProtocolServiceRequestsTest : ApplicationServiceRequestsTest<ProtocolServi
         val REQUESTS: List<ProtocolServiceRequest> = listOf(
             ProtocolServiceRequest.Add( createComplexProtocol().getSnapshot(), "Initial" ),
             ProtocolServiceRequest.AddVersion( createComplexProtocol().getSnapshot(), "Updated" ),
-            ProtocolServiceRequest.UpdateParticipantDataConfiguration( StudyProtocolId( UUID.randomUUID(), "Name" ), "Version", emptySet() ),
-            ProtocolServiceRequest.GetBy( StudyProtocolId( UUID.randomUUID(), "Name" ), "Version" ),
+            ProtocolServiceRequest.UpdateParticipantDataConfiguration( UUID.randomUUID(), "Version", emptySet() ),
+            ProtocolServiceRequest.GetBy( UUID.randomUUID(), "Version" ),
             ProtocolServiceRequest.GetAllFor( UUID.randomUUID() ),
-            ProtocolServiceRequest.GetVersionHistoryFor( StudyProtocolId( UUID.randomUUID(), "Name" ) )
+            ProtocolServiceRequest.GetVersionHistoryFor( UUID.randomUUID() )
         )
     }
 

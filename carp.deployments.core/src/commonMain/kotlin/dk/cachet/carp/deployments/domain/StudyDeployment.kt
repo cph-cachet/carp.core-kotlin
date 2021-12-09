@@ -31,8 +31,8 @@ import kotlinx.datetime.Instant
 class StudyDeployment private constructor(
     val protocolSnapshot: StudyProtocolSnapshot,
     val participants: List<ParticipantStatus>,
-    val id: UUID = UUID.randomUUID()
-) : AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>()
+    id: UUID = UUID.randomUUID()
+) : AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>( id )
 {
     sealed class Event : DomainEvent()
     {
@@ -71,7 +71,7 @@ class StudyDeployment private constructor(
             val deployment = StudyDeployment(
                 snapshot.studyProtocolSnapshot,
                 snapshot.participants.toList(),
-                snapshot.studyDeploymentId )
+                snapshot.id )
             deployment.createdOn = snapshot.createdOn
             deployment.startedOn = snapshot.startedOn
 

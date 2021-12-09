@@ -5,7 +5,6 @@ import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.test.runSuspendTest
@@ -116,7 +115,7 @@ interface ProtocolServiceTest
         val service = createService()
 
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
-        val unknownId = StudyProtocolId( ProtocolOwner().id, "Unknown protocol" )
+        val unknownId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException>
         {
             service.updateParticipantDataConfiguration( unknownId, "Unknown version", setOf( attribute ) )
@@ -140,7 +139,7 @@ interface ProtocolServiceTest
     fun getBy_fails_for_nonexisting_protocol() = runSuspendTest {
         val service = createService()
 
-        val unknownId = StudyProtocolId( UUID.randomUUID(), "Unknown" )
+        val unknownId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException> { service.getBy( unknownId, "Nope" ) }
     }
 
@@ -163,8 +162,8 @@ interface ProtocolServiceTest
     fun getAllFor_returns_empty_list_when_none_found() = runSuspendTest {
         val service = createService()
 
-        val unknown = UUID.randomUUID()
-        assertTrue( service.getAllFor( unknown ).isEmpty() )
+        val unknownId = UUID.randomUUID()
+        assertTrue( service.getAllFor( unknownId ).isEmpty() )
     }
 
     @Test
@@ -183,8 +182,8 @@ interface ProtocolServiceTest
     fun getVersionHistoryFor_fails_when_protocol_not_found() = runSuspendTest {
         val service = createService()
 
-        val unknown = StudyProtocolId( UUID.randomUUID(), "Unknown" )
-        assertFailsWith<IllegalArgumentException> { service.getVersionHistoryFor( unknown ) }
+        val unknownId = UUID.randomUUID()
+        assertFailsWith<IllegalArgumentException> { service.getVersionHistoryFor( unknownId ) }
     }
 
     private fun modifyProtocol( protocol: StudyProtocol ): StudyProtocol =

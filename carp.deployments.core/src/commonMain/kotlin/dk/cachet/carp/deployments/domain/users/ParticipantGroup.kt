@@ -28,7 +28,7 @@ class ParticipantGroup private constructor(
     val studyDeploymentId: UUID,
     assignedMasterDevices: Set<AssignedMasterDevice>,
     val expectedData: Set<ParticipantAttribute>
-) : AggregateRoot<ParticipantGroup, ParticipantGroupSnapshot, ParticipantGroup.Event>()
+) : AggregateRoot<ParticipantGroup, ParticipantGroupSnapshot, ParticipantGroup.Event>( studyDeploymentId )
 {
     sealed class Event : DomainEvent()
     {
