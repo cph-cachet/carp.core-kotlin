@@ -9,7 +9,6 @@ import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
-import dk.cachet.carp.protocols.application.StudyProtocolId
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.configuration.DeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.DeviceConfigurationTest
@@ -105,15 +104,6 @@ class StudyProtocolTest
         }
     }
 
-
-    @Test
-    fun id_set_to_ownerId_and_name()
-    {
-        val owner = ProtocolOwner()
-        val protocol = StudyProtocol( owner, "Name" )
-
-        assertEquals( StudyProtocolId( owner.id, "Name" ), protocol.id )
-    }
 
     @Test
     fun one_master_device_needed_for_deployment()

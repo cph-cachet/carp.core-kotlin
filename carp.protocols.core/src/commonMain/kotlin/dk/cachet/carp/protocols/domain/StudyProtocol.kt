@@ -10,7 +10,6 @@ import dk.cachet.carp.common.application.triggers.Trigger
 import dk.cachet.carp.common.application.triggers.TaskControl.Control as Control
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.DomainEvent
-import dk.cachet.carp.protocols.application.StudyProtocolId
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.configuration.EmptyDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantDataConfiguration
@@ -24,8 +23,17 @@ import dk.cachet.carp.protocols.domain.deployment.*
  * the optional devices ([AnyDeviceDescriptor]) connected to them, and the [Trigger]'s which lead to data collection on said devices.
  */
 @Suppress( "TooManyFunctions" ) // TODO: some of the device and task configuration methods are overridden solely to add events. Can this be refactored?
-class StudyProtocol private constructor( val ownerId: UUID, val name: String, val description: String? ) :
-    StudyProtocolComposition( EmptyDeviceConfiguration(), EmptyTaskConfiguration(), EmptyParticipantDataConfiguration() )
+class StudyProtocol private constructor(
+    val ownerId: UUID,
+    val name: String,
+    val description: String?,
+    id: UUID = UUID.randomUUID()
+) : StudyProtocolComposition(
+        EmptyDeviceConfiguration(),
+        EmptyTaskConfiguration(),
+        EmptyParticipantDataConfiguration(),
+        id
+    )
 {
     constructor(
         /**
@@ -61,7 +69,12 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
     {
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
-            val protocol = StudyProtocol( snapshot.id.ownerId, snapshot.id.name, snapshot.description ).apply {
+            val protocol = StudyProtocol(
+                snapshot.ownerId,
+                snapshot.name,
+                snapshot.description,
+                snapshot.id
+            ).apply {
                 createdOn = snapshot.createdOn
                 applicationData = snapshot.applicationData
             }
@@ -111,12 +124,6 @@ class StudyProtocol private constructor( val ownerId: UUID, val name: String, va
             return protocol
         }
     }
-
-
-    /**
-     * A study protocol is uniquely identified by the [ownerId] and it's [name].
-     */
-    val id: StudyProtocolId = StudyProtocolId( ownerId, name )
 
 
     /**

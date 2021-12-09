@@ -3,7 +3,6 @@ package dk.cachet.carp.protocols.domain
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
 import dk.cachet.carp.protocols.application.ProtocolVersion
-import dk.cachet.carp.protocols.application.StudyProtocolId
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.test.runSuspendTest
 import kotlinx.datetime.Instant
@@ -112,7 +111,7 @@ interface StudyProtocolRepositoryTest
         val initialVersion = ProtocolVersion( "Initial", Instant.fromEpochMilliseconds( 0 ) )
         repo.add( protocol, initialVersion )
 
-        val protocol2 = StudyProtocol( owner, name )
+        val protocol2 = StudyProtocol.fromSnapshot( protocol.getSnapshot() )
         protocol2.addMasterDevice( StubMasterDeviceDescriptor() )
         val newVersion = ProtocolVersion( "New version", Instant.fromEpochMilliseconds( 1 ) )
         repo.addVersion( protocol2, newVersion )
@@ -130,14 +129,15 @@ interface StudyProtocolRepositoryTest
         val name = "Study"
 
         val protocol1 = StudyProtocol( owner, name )
+        val protocol1Snapshot = protocol1.getSnapshot()
         repo.add( protocol1, ProtocolVersion( "Initial" ) )
 
-        val protocol2 = StudyProtocol( owner, name )
+        val protocol2 = StudyProtocol.fromSnapshot( protocol1Snapshot )
         protocol2.addMasterDevice( StubMasterDeviceDescriptor( "Device" ) )
         val version2 = ProtocolVersion( "Version 2" )
         repo.addVersion( protocol2, version2 )
 
-        val protocol3 = StudyProtocol( owner, name )
+        val protocol3 = StudyProtocol.fromSnapshot( protocol1Snapshot )
         protocol3.addMasterDevice( StubMasterDeviceDescriptor( "Other device" ) )
         repo.addVersion( protocol3, ProtocolVersion( "Version 3" ) )
 
@@ -148,22 +148,11 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun getBy_returns_null_for_owner_which_does_not_exist() = runSuspendTest {
+    fun getBy_returns_null_for_id_which_does_not_exist() = runSuspendTest {
         val repo = createRepository()
 
-        val unknownId = StudyProtocolId( UUID.randomUUID(), "Study" )
+        val unknownId = UUID.randomUUID()
         assertNull( repo.getBy( unknownId, "Study" ) )
-    }
-
-    @Test
-    fun getBy_returns_null_for_name_which_does_not_exist() = runSuspendTest {
-        val repo = createRepository()
-        val owner = ProtocolOwner()
-        val protocol = StudyProtocol( owner, "Study" )
-        repo.add( protocol, ProtocolVersion( "Initial" ) )
-
-        val idWithUnknownName = StudyProtocolId( owner.id, "Non-existing name" )
-        assertNull( repo.getBy( idWithUnknownName ) )
     }
 
     @Test
@@ -186,7 +175,7 @@ interface StudyProtocolRepositoryTest
 
         val protocol2 = StudyProtocol( owner, "Study 2" )
         repo.add( protocol2, ProtocolVersion( "Initial", Instant.fromEpochMilliseconds( 0 ) ) )
-        val protocol2Latest = StudyProtocol( owner, "Study 2" )
+        val protocol2Latest = StudyProtocol.fromSnapshot( protocol2.getSnapshot() )
         protocol2Latest.addMasterDevice( StubMasterDeviceDescriptor() )
         val later = Instant.fromEpochMilliseconds( 1 )
         repo.addVersion( protocol2Latest, ProtocolVersion( "Latest should be retrieved", later ) )
@@ -228,7 +217,7 @@ interface StudyProtocolRepositoryTest
     fun getVersionHistoryFor_fails_when_protocol_does_not_exist() = runSuspendTest {
         val repo = createRepository()
 
-        val unknownId = StudyProtocolId( UUID.randomUUID(), "Unknown" )
+        val unknownId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException> { repo.getVersionHistoryFor( unknownId ) }
     }
 }

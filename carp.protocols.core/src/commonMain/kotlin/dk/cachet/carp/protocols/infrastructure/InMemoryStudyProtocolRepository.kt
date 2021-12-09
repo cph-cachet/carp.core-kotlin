@@ -2,7 +2,6 @@ package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.protocols.application.ProtocolVersion
-import dk.cachet.carp.protocols.application.StudyProtocolId
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolRepository
@@ -13,7 +12,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocolRepository
  */
 class InMemoryStudyProtocolRepository : StudyProtocolRepository
 {
-    private val _protocols: MutableMap<StudyProtocolId, MutableMap<ProtocolVersion, StudyProtocolSnapshot>> = mutableMapOf()
+    private val _protocols: MutableMap<UUID, MutableMap<ProtocolVersion, StudyProtocolSnapshot>> = mutableMapOf()
 
 
     /**
@@ -65,7 +64,7 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
      *
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      */
-    override suspend fun getBy( id: StudyProtocolId, versionTag: String? ): StudyProtocol?
+    override suspend fun getBy( id: UUID, versionTag: String? ): StudyProtocol?
     {
         val versions = _protocols[ id ] ?: return null
 
@@ -85,7 +84,7 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
     override suspend fun getAllFor( ownerId: UUID ): Sequence<StudyProtocol>
     {
         return _protocols
-            .filter { it.key.ownerId == ownerId }
+            .filter { it.value.values.any { protocol -> protocol.ownerId == ownerId } }
             .map {
                 val versions = it.value
                 val latest = versions.getLatest()
@@ -99,7 +98,7 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
      *
      * @throws IllegalArgumentException when a protocol with the specified [id] does not exist.
      */
-    override suspend fun getVersionHistoryFor( id: StudyProtocolId ): List<ProtocolVersion>
+    override suspend fun getVersionHistoryFor( id: UUID ): List<ProtocolVersion>
     {
         val versions = getVersionsOrThrow( id )
 
@@ -107,7 +106,7 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
     }
 
 
-    private fun getVersionsOrThrow( id: StudyProtocolId ) = _protocols[ id ]
+    private fun getVersionsOrThrow( id: UUID ) = _protocols[ id ]
         ?: throw IllegalArgumentException( "The specified protocol is not stored in this repository" )
 
     private fun MutableMap<ProtocolVersion, StudyProtocolSnapshot>.getLatest() =

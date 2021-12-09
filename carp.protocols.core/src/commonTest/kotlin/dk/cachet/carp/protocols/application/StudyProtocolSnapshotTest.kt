@@ -98,19 +98,25 @@ class StudyProtocolSnapshotTest
             ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "othertype" ) ),
         )
 
-        val ownerId = UUID( "ef26be3f-2de8-4779-a608-bb6e027e4b75" )
+        val protocolId = UUID.randomUUID()
         val createdOn = Clock.System.now()
-        val protocolId = StudyProtocolId( ownerId, "Study" )
+        val ownerId = UUID( "ef26be3f-2de8-4779-a608-bb6e027e4b75" )
+        val name = "Study name"
+        val description = "Description"
         val snapshot = StudyProtocolSnapshot(
             protocolId,
-            "Description",
             createdOn,
+            ownerId,
+            name,
+            description,
             masterDevices.toSet(), connectedDevices.toSet(), connections.toSet(),
             tasks.toSet(), triggers, triggeredTasks.toSet(), expectedParticipantData.toSet(), "" )
         val reorganizedSnapshot = StudyProtocolSnapshot(
             protocolId,
-            "Description",
             createdOn,
+            ownerId,
+            name,
+            description,
             masterDevices.reversed().toSet(), connectedDevices.reversed().toSet(), connections.reversed().toSet(),
             tasks.reversed().toSet(), triggers, triggeredTasks.reversed().toSet(), expectedParticipantData.reversed().toSet(), "" )
 
@@ -156,9 +162,11 @@ class StudyProtocolSnapshotTest
         val trigger = StubTrigger( masterDevice )
 
         val correctSnapshot = StudyProtocolSnapshot(
-            StudyProtocolId( UUID.randomUUID(), "Name" ),
-            "Description",
+            UUID.randomUUID(),
             Clock.System.now(),
+            UUID.randomUUID(),
+            "Name",
+            "Description",
             masterDevices = setOf( masterDevice ),
             tasks = setOf( task ),
             triggers = mapOf( 0 to trigger ),

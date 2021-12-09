@@ -1,6 +1,5 @@
 package dk.cachet.carp.clients.domain.study
 
-import dk.cachet.carp.clients.application.study.StudyId
 import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.clients.domain.data.DataListener
 import dk.cachet.carp.common.application.UUID
@@ -23,8 +22,9 @@ class Study(
     /**
      * The role name of the device this runtime is intended for within the deployment identified by [studyDeploymentId].
      */
-    val deviceRoleName: String
-) : AggregateRoot<Study, StudySnapshot, Study.Event>()
+    val deviceRoleName: String,
+    id: UUID = UUID.randomUUID()
+) : AggregateRoot<Study, StudySnapshot, Study.Event>( id )
 {
     sealed class Event : DomainEvent()
     {
@@ -36,18 +36,13 @@ class Study(
     companion object Factory
     {
         internal fun fromSnapshot( snapshot: StudySnapshot ): Study =
-            Study( snapshot.studyDeploymentId, snapshot.deviceRoleName ).apply {
+            Study( snapshot.studyDeploymentId, snapshot.deviceRoleName, snapshot.id ).apply {
                 createdOn = snapshot.createdOn
                 deploymentStatus = snapshot.deploymentStatus
                 deploymentInformation = snapshot.deploymentInformation
             }
     }
 
-
-    /**
-     * Composite ID for this study, comprised of the [studyDeploymentId] and [deviceRoleName].
-     */
-    val id: StudyId get() = StudyId( studyDeploymentId, deviceRoleName )
 
     private var deploymentStatus: StudyDeploymentStatus? = null
     private var deploymentInformation: MasterDeviceDeployment? = null
@@ -64,7 +59,7 @@ class Study(
         {
             is StudyDeploymentStatus.Invited -> error( "Client device should already be registered." )
             is StudyDeploymentStatus.DeployingDevices ->
-                StudyStatus.Deploying.fromStudyDeploymentStatus( id, status, deploymentInformation )
+                StudyStatus.Deploying.fromStudyDeploymentStatus( id, deviceRoleName, status, deploymentInformation )
             is StudyDeploymentStatus.Running ->
                 StudyStatus.Running( id, status, checkNotNull( deploymentInformation ) )
             is StudyDeploymentStatus.Stopped ->
