@@ -101,7 +101,7 @@ interface ProtocolServiceTest
         val version = "Version"
         service.add( protocol.getSnapshot(), version )
 
-        val newAttribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "otherType" ) )
+        val newAttribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "other_type" ) )
         val updated = service.updateParticipantDataConfiguration( protocol.id, version, setOf( newAttribute ) )
         val retrieved = service.getBy( protocol.id, version )
 

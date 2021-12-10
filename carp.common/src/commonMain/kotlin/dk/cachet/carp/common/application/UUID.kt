@@ -31,6 +31,8 @@ expect class UUID( stringRepresentation: String )
 
 
     override fun toString(): String
+
+    fun toNonDashedString(): String
 }
 
 
