@@ -34,7 +34,7 @@ data class ParticipantGroupSnapshot(
          */
         fun fromParticipantGroup( group: ParticipantGroup ): ParticipantGroupSnapshot =
             ParticipantGroupSnapshot(
-                group.studyDeploymentId,
+                group.id,
                 group.createdOn,
                 group.studyDeploymentId,
                 group.assignedMasterDevices.toSet(),
