@@ -14,13 +14,15 @@ import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.application.users.participantIds
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 
 /**
  * Represents a set of [participants] recruited for a study identified by [studyId].
  */
-class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID() ) :
-    AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>( id )
+class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: Instant = Clock.System.now() ) :
+    AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>( id, createdOn )
 {
     sealed class Event : DomainEvent()
     {
@@ -33,8 +35,7 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID() ) :
     {
         fun fromSnapshot( snapshot: RecruitmentSnapshot ): Recruitment
         {
-            val recruitment = Recruitment( snapshot.studyId, snapshot.id )
-            recruitment.createdOn = snapshot.createdOn
+            val recruitment = Recruitment( snapshot.studyId, snapshot.id, snapshot.createdOn )
             if ( snapshot.studyProtocol != null && snapshot.invitation != null )
             {
                 recruitment.lockInStudy( snapshot.studyProtocol, snapshot.invitation )
