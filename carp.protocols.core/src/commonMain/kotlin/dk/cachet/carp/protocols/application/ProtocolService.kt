@@ -70,7 +70,7 @@ interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.
      * @return This returns the last version of each [StudyProtocolSnapshot] owned by the requested owner,
      *   or an empty list when none are found.
      */
-    suspend fun getAllFor( ownerId: UUID ): List<StudyProtocolSnapshot>
+    suspend fun getAllForOwner( ownerId: UUID ): List<StudyProtocolSnapshot>
 
     /**
      * Returns all stored versions for the protocol with the specified [protocolId].

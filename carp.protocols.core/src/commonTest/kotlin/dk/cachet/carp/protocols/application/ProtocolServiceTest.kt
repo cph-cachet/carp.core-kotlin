@@ -144,7 +144,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun getAllFor_returns_last_version_of_each_protocol() = runSuspendTest {
+    fun getAllForOwner_returns_last_version_of_each_protocol() = runSuspendTest {
         val service = createService()
         val protocol1 = createEmptyProtocol( "Protocol 1" )
         service.add( protocol1.getSnapshot() )
@@ -154,16 +154,16 @@ interface ProtocolServiceTest
         service.addVersion( protocol2.getSnapshot(), "Version 2" )
 
         val ownerId = protocol1.ownerId // Also owner of protocol2; `createEmptyProtocol` has a fixed owner.
-        val protocols = service.getAllFor( ownerId )
+        val protocols = service.getAllForOwner( ownerId )
         assertEquals( setOf( protocol1.getSnapshot(), protocol2.getSnapshot() ), protocols.toSet() )
     }
 
     @Test
-    fun getAllFor_returns_empty_list_when_none_found() = runSuspendTest {
+    fun getAllForOwner_returns_empty_list_when_none_found() = runSuspendTest {
         val service = createService()
 
         val unknownId = UUID.randomUUID()
-        assertTrue( service.getAllFor( unknownId ).isEmpty() )
+        assertTrue( service.getAllForOwner( unknownId ).isEmpty() )
     }
 
     @Test

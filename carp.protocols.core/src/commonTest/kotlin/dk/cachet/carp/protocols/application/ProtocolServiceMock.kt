@@ -36,9 +36,9 @@ class ProtocolServiceMock(
         return getByResult
     }
 
-    override suspend fun getAllFor( ownerId: UUID ): List<StudyProtocolSnapshot>
+    override suspend fun getAllForOwner( ownerId: UUID ): List<StudyProtocolSnapshot>
     {
-        trackSuspendCall( ProtocolService::getAllFor, ownerId )
+        trackSuspendCall( ProtocolService::getAllForOwner, ownerId )
         return getAllForResult
     }
 

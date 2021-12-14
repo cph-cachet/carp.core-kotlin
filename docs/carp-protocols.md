@@ -69,7 +69,7 @@ In case you want to support organizations this could be the ID of the organizati
 | `addVersion` | Add a new version for a specified study protocol. | protocol owner: `protocol.ownerId` | |
 | `updateParticipantDataConfiguration` | Replace expected participant data for a specified study protocol. | protocol owner: `protocol.ownerId` | |
 | `getBy` | Find the study protocol with the specified id. | protocol owner: `protocol.ownerId` | |
-| `getAllFor` | Find all study protocols owned by a specific owner. | protocol owner: `ownerId` | |
+| `getAllForOwner` | Find all study protocols owned by a specific owner. | protocol owner: `ownerId` | |
 | `getVersionHistoryFor` | Returns all stored versions for the study protocol with the given id. |  protocol owner: `protocol.ownerId` | |
 
 ### [`ProtocolFactoryService`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/application/ProtocolFactoryService.kt)

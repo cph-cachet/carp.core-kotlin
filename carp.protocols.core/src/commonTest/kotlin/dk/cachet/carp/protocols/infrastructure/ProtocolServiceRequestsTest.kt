@@ -27,7 +27,7 @@ class ProtocolServiceRequestsTest : ApplicationServiceRequestsTest<ProtocolServi
             ProtocolServiceRequest.AddVersion( createComplexProtocol().getSnapshot(), "Updated" ),
             ProtocolServiceRequest.UpdateParticipantDataConfiguration( UUID.randomUUID(), "Version", emptySet() ),
             ProtocolServiceRequest.GetBy( UUID.randomUUID(), "Version" ),
-            ProtocolServiceRequest.GetAllFor( UUID.randomUUID() ),
+            ProtocolServiceRequest.GetAllForOwner( UUID.randomUUID() ),
             ProtocolServiceRequest.GetVersionHistoryFor( UUID.randomUUID() )
         )
     }

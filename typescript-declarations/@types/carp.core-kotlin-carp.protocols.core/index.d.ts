@@ -97,7 +97,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             {
                 constructor( protocolId: UUID, versionTag?: string )
             }
-            class GetAllFor extends ProtocolServiceRequest
+            class GetAllForOwner extends ProtocolServiceRequest
             {
                 constructor( ownerId: UUID )
             }

@@ -58,7 +58,7 @@ interface StudyProtocolRepository
      *
      * @return This returns the last version of each [StudyProtocol] owned by the requested owner.
      */
-    suspend fun getAllFor( ownerId: UUID ): Sequence<StudyProtocol>
+    suspend fun getAllForOwner( ownerId: UUID ): Sequence<StudyProtocol>
 
     /**
      * Returns all stored versions for the [StudyProtocol] with the specified [id].

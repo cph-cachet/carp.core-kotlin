@@ -41,9 +41,9 @@ sealed class ProtocolServiceRequest
         ServiceInvoker<ProtocolService, StudyProtocolSnapshot> by createServiceInvoker( ProtocolService::getBy, protocolId, versionTag )
 
     @Serializable
-    data class GetAllFor( val ownerId: UUID ) :
+    data class GetAllForOwner( val ownerId: UUID ) :
         ProtocolServiceRequest(),
-        ServiceInvoker<ProtocolService, List<StudyProtocolSnapshot>> by createServiceInvoker( ProtocolService::getAllFor, ownerId )
+        ServiceInvoker<ProtocolService, List<StudyProtocolSnapshot>> by createServiceInvoker( ProtocolService::getAllForOwner, ownerId )
 
     @Serializable
     data class GetVersionHistoryFor( val protocolId: UUID ) :
