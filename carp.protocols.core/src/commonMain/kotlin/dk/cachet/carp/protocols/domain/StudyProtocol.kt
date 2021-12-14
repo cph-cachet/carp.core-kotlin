@@ -16,6 +16,8 @@ import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantDataConfigu
 import dk.cachet.carp.protocols.domain.configuration.EmptyTaskConfiguration
 import dk.cachet.carp.protocols.domain.configuration.StudyProtocolComposition
 import dk.cachet.carp.protocols.domain.deployment.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 
 /**
@@ -27,12 +29,14 @@ class StudyProtocol private constructor(
     val ownerId: UUID,
     val name: String,
     val description: String?,
-    id: UUID = UUID.randomUUID()
+    id: UUID = UUID.randomUUID(),
+    createdOn: Instant = Clock.System.now()
 ) : StudyProtocolComposition(
         EmptyDeviceConfiguration(),
         EmptyTaskConfiguration(),
         EmptyParticipantDataConfiguration(),
-        id
+        id,
+        createdOn
     )
 {
     constructor(
@@ -73,11 +77,10 @@ class StudyProtocol private constructor(
                 snapshot.ownerId,
                 snapshot.name,
                 snapshot.description,
-                snapshot.id
-            ).apply {
-                createdOn = snapshot.createdOn
-                applicationData = snapshot.applicationData
-            }
+                snapshot.id,
+                snapshot.createdOn
+            )
+            protocol.applicationData = snapshot.applicationData
 
             // Add master devices.
             snapshot.masterDevices.forEach { protocol.addMasterDevice( it ) }
