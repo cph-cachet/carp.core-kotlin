@@ -27,8 +27,9 @@ import dk.cachet.carp.protocols.domain.configuration.isValidParticipantData
 class ParticipantGroup private constructor(
     val studyDeploymentId: UUID,
     assignedMasterDevices: Set<AssignedMasterDevice>,
-    val expectedData: Set<ParticipantAttribute>
-) : AggregateRoot<ParticipantGroup, ParticipantGroupSnapshot, ParticipantGroup.Event>( studyDeploymentId )
+    val expectedData: Set<ParticipantAttribute>,
+    id: UUID = UUID.randomUUID()
+) : AggregateRoot<ParticipantGroup, ParticipantGroupSnapshot, ParticipantGroup.Event>( id )
 {
     sealed class Event : DomainEvent()
     {
@@ -58,7 +59,12 @@ class ParticipantGroup private constructor(
 
         fun fromSnapshot( snapshot: ParticipantGroupSnapshot ): ParticipantGroup
         {
-            val group = ParticipantGroup( snapshot.studyDeploymentId, snapshot.assignedMasterDevices, snapshot.expectedData )
+            val group = ParticipantGroup(
+                snapshot.studyDeploymentId,
+                snapshot.assignedMasterDevices,
+                snapshot.expectedData,
+                snapshot.id
+            )
             group.isStudyDeploymentStopped = snapshot.isStudyDeploymentStopped
             group.createdOn = snapshot.createdOn
 

@@ -19,8 +19,8 @@ import dk.cachet.carp.studies.application.users.participantIds
 /**
  * Represents a set of [participants] recruited for a study identified by [studyId].
  */
-class Recruitment( val studyId: UUID ) :
-    AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>( studyId )
+class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID() ) :
+    AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>( id )
 {
     sealed class Event : DomainEvent()
     {
@@ -33,7 +33,7 @@ class Recruitment( val studyId: UUID ) :
     {
         fun fromSnapshot( snapshot: RecruitmentSnapshot ): Recruitment
         {
-            val recruitment = Recruitment( snapshot.studyId )
+            val recruitment = Recruitment( snapshot.studyId, snapshot.id )
             recruitment.createdOn = snapshot.createdOn
             if ( snapshot.studyProtocol != null && snapshot.invitation != null )
             {
