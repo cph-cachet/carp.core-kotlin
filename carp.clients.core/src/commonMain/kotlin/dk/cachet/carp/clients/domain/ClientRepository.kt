@@ -28,9 +28,14 @@ interface ClientRepository
     suspend fun addStudy( study: Study )
 
     /**
+     * Return the [Study] with [studyId], or null when no such [Study] is found.
+     */
+    suspend fun getStudy( studyId: UUID ): Study?
+
+    /**
      * Return the [Study] with [studyDeploymentId] and [deviceRoleName], or null when no such [Study] is found.
      */
-    suspend fun getStudyBy( studyDeploymentId: UUID, deviceRoleName: String ): Study?
+    suspend fun getStudyByDeployment( studyDeploymentId: UUID, deviceRoleName: String ): Study?
 
     /**
      * Return all [Study]s for the client.
@@ -40,7 +45,7 @@ interface ClientRepository
     /**
      * Update a [study] which is already stored in the repository.
      *
-     * @throws IllegalArgumentException when no previous version of this study is stored in the repository.
+     * @throws IllegalArgumentException when no study with the same id is stored in the repository.
      */
     suspend fun updateStudy( study: Study )
 

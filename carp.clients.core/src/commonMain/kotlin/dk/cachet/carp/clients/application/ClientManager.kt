@@ -79,7 +79,7 @@ abstract class ClientManager<
      */
     suspend fun addStudy( studyDeploymentId: UUID, deviceRoleName: String ): StudyStatus
     {
-        require( repository.getStudyBy( studyDeploymentId, deviceRoleName ) == null )
+        require( repository.getStudyByDeployment( studyDeploymentId, deviceRoleName ) == null )
             { "A study with the same study deployment ID and device role name has already been added." }
 
         val study = Study( studyDeploymentId, deviceRoleName )
@@ -141,9 +141,8 @@ abstract class ClientManager<
         return newStatus
     }
 
-    private suspend fun getStudy( studyId: UUID ): Study =
-        requireNotNull( repository.getStudyList().firstOrNull { it.id == studyId } )
-            { "The specified study does not exist." }
+    private suspend fun getStudy( studyId: UUID ): Study = requireNotNull( repository.getStudy( studyId ) )
+        { "The specified study does not exist." }
 
     /**
      * Once a connected device has been registered, this returns a manager which provides access to the status of the [registeredDevice].

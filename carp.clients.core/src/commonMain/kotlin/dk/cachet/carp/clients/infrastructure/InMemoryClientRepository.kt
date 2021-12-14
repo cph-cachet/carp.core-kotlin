@@ -44,9 +44,16 @@ class InMemoryClientRepository : ClientRepository
     }
 
     /**
+     * Return the [Study] with [studyId], or null when no such [Study] is found.
+     */
+    override suspend fun getStudy( studyId: UUID ): Study? = studies
+        .firstOrNull { it.id == studyId }
+        ?.let { Study.fromSnapshot( it ) }
+
+    /**
      * Return the [Study] with [studyDeploymentId] and [deviceRoleName], or null when no such [Study] is found.
      */
-    override suspend fun getStudyBy( studyDeploymentId: UUID, deviceRoleName: String ): Study? =
+    override suspend fun getStudyByDeployment( studyDeploymentId: UUID, deviceRoleName: String ): Study? =
         studies
             .filter { it.studyDeploymentId == studyDeploymentId && it.deviceRoleName == deviceRoleName }
             .map { Study.fromSnapshot( it ) }
@@ -61,7 +68,7 @@ class InMemoryClientRepository : ClientRepository
     /**
      * Update a [study] which is already stored in the repository.
      *
-     * @throws IllegalArgumentException when no previous version of this study is stored in the repository.
+     * @throws IllegalArgumentException when no study with the same id is stored in the repository.
      */
     override suspend fun updateStudy( study: Study )
     {
@@ -82,9 +89,5 @@ class InMemoryClientRepository : ClientRepository
         studies.remove( storedStudy )
     }
 
-    private fun findStudySnapshot( runtime: Study ): StudySnapshot? =
-        studies.firstOrNull {
-            it.studyDeploymentId == runtime.studyDeploymentId &&
-            it.deviceRoleName == runtime.deviceRoleName
-        }
+    private fun findStudySnapshot( runtime: Study ): StudySnapshot? = studies.firstOrNull { it.id == runtime.id }
 }
