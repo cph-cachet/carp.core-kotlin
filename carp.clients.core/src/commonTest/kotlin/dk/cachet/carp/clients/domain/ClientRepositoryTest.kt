@@ -33,9 +33,13 @@ interface ClientRepositoryTest
         repo.addStudy( study )
 
         // Study can be retrieved by ID.
+        val retrievedById = repo.getStudy( study.id )
+        assertNotNull( retrievedById )
+
+        // Study can be retrieved by deployment.
         val deploymentId = study.studyDeploymentId
         val roleName = study.deviceRoleName
-        val retrievedStudy = repo.getStudyBy( deploymentId, roleName )
+        val retrievedStudy = repo.getStudyByDeployment( deploymentId, roleName )
         assertNotNull( retrievedStudy )
 
         // Study is included in list.
@@ -54,11 +58,19 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun getStudyBy_is_null_for_unknown_study() = runSuspendTest {
+    fun getStudy_is_null_for_unknown_study() = runSuspendTest {
         val repo = createRepository()
 
         val unknownId = UUID.randomUUID()
-        assertNull( repo.getStudyBy( unknownId, "Unknown" ) )
+        assertNull( repo.getStudy( unknownId ) )
+    }
+
+    @Test
+    fun getStudyByDeployment_is_null_for_unknown_study() = runSuspendTest {
+        val repo = createRepository()
+
+        val unknownId = UUID.randomUUID()
+        assertNull( repo.getStudyByDeployment( unknownId, "Unknown" ) )
     }
 
     @Test
@@ -95,7 +107,7 @@ interface ClientRepositoryTest
         repo.updateStudy( study )
 
         // Verify whether changes were stored.
-        val retrievedStudy = repo.getStudyBy( deploymentId, deviceRoleName )
+        val retrievedStudy = repo.getStudyByDeployment( deploymentId, deviceRoleName )
         assertNotNull( retrievedStudy )
         assertEquals( study.getSnapshot(), retrievedStudy.getSnapshot() )
     }
@@ -118,7 +130,7 @@ interface ClientRepositoryTest
 
         val deploymentId = study.studyDeploymentId
         val roleName = study.deviceRoleName
-        assertNull( repo.getStudyBy( deploymentId, roleName ) )
+        assertNull( repo.getStudyByDeployment( deploymentId, roleName ) )
         assertEquals( 0, repo.getStudyList().count() )
     }
 
