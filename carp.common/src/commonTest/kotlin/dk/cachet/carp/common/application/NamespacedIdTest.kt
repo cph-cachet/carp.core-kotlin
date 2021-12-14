@@ -31,7 +31,7 @@ class NamespacedIdTest
     {
         assertFailsWith<IllegalArgumentException>
         {
-            NamespacedId( "some.namespace", "contains-hyphen!" )
+            NamespacedId( "some.namespace", "contains-hyphen" )
         }
     }
 
@@ -40,7 +40,7 @@ class NamespacedIdTest
     {
         assertFailsWith<IllegalArgumentException>
         {
-            NamespacedId("some.namespace.", "name")
+            NamespacedId( "some.namespace.", "name" )
         }
     }
 
@@ -49,7 +49,7 @@ class NamespacedIdTest
     {
         assertFailsWith<IllegalArgumentException>
         {
-            NamespacedId(".some.namespace", "name")
+            NamespacedId( ".some.namespace", "name" )
         }
     }
 
@@ -58,7 +58,7 @@ class NamespacedIdTest
     {
         val namespace = "some.namespace"
         val name = "typename"
-        val fqName = NamespacedId(namespace, name)
+        val fqName = NamespacedId( namespace, name )
 
         assertEquals( "$namespace.$name", fqName.toString() )
     }

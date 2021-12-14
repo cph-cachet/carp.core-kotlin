@@ -37,8 +37,6 @@ actual class UUID actual constructor( actual val stringRepresentation: String )
 
     actual override fun toString(): String = stringRepresentation
 
-    actual fun toNonDashedString(): String = stringRepresentation.replace("-", "")
-
     override fun equals( other: Any? ): Boolean
     {
         if ( this === other ) return true

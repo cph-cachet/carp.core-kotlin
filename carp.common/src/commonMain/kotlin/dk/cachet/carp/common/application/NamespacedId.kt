@@ -7,23 +7,23 @@ import kotlinx.serialization.Serializable
 
 /**
  * A uniquely named identifier within a [namespace].
- * The [namespace] format is lowercase alphanumeric (and underscores) words delimited by dots.
- * Example: "tld.domain.subdomain"
- *
- * The [name] format is a single lowercase alphanumeric (and underscores) word.
- * Example: "myname" or "my_name"
  */
 @Serializable( with = NamespacedIdSerializer::class )
 data class NamespacedId(
     /**
      * Uniquely identifies the organization/person who determines how to interpret [name].
-     * To prevent conflicts, a reverse domain namespace is suggested: e.g., "org.openmhealth" or "dk.cachet.carp".
+     * The expected format is lowercase alphanumeric (and underscores) words delimited by dots.
+     * To prevent conflicts, a reverse domain namespace is suggested.
+     *
+     * Example: "tld.domain.subdomain", "org.openmhealth", or "dk.cachet.carp".
      */
     val namespace: String,
     /**
      * Uniquely identifies something within the [namespace].
-     *
+     * The expected format is a single lowercase alphanumeric (and underscores) word.
      * The name may not contain any periods. Periods are reserved for namespaces.
+     *
+     * Example: "myname" or "my_name".
      */
     val name: String
 )
@@ -40,8 +40,8 @@ data class NamespacedId(
     companion object
     {
         /**
-         * Initializes a [NamespacedId] based on a string, formatted as: "<namespace>.<name>". It tries to be fairly
-         * lenient and will lowercase and trim the input.
+         * Initializes a [NamespacedId] based on a string, formatted as: "<namespace>.<name>".
+         * It is fairly lenient and will lowercase and trim the input.
          *
          * @throws IllegalArgumentException when no namespace is specified, i.e., [fullyQualifiedName] should contain at least one period.
          *   [name] will be set to the characters after the last period.
