@@ -166,7 +166,7 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun getAllFor_owner_succeeds() = runSuspendTest {
+    fun getAllForOwner_succeeds() = runSuspendTest {
         val repo = createRepository()
         val owner = ProtocolOwner()
 
@@ -180,7 +180,7 @@ interface StudyProtocolRepositoryTest
         val later = Instant.fromEpochMilliseconds( 1 )
         repo.addVersion( protocol2Latest, ProtocolVersion( "Latest should be retrieved", later ) )
 
-        val protocols: Sequence<StudyProtocol> = repo.getAllFor( owner.id )
+        val protocols: Sequence<StudyProtocol> = repo.getAllForOwner( owner.id )
 
         // StudyProtocol does not implement equals, but snapshot does, so compare snapshots.
         val snapshots: Set<StudyProtocolSnapshot> = protocols.map { it.getSnapshot() }.toSet()
@@ -189,11 +189,11 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun getAllFor_is_empty_when_no_protocols_are_stored_for_owner() = runSuspendTest {
+    fun getAllForOwner_is_empty_when_no_protocols_are_stored_for_owner() = runSuspendTest {
         val repo = createRepository()
 
         val unknown = UUID.randomUUID()
-        val protocols = repo.getAllFor( unknown )
+        val protocols = repo.getAllForOwner( unknown )
         assertTrue( protocols.count() == 0 )
     }
 

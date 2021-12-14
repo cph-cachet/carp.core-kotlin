@@ -91,8 +91,8 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
      * @return This returns the last version of each [StudyProtocolSnapshot] owned by the requested owner,
      *   or an empty list when none are found.
      */
-    override suspend fun getAllFor( ownerId: UUID ): List<StudyProtocolSnapshot> =
-        repository.getAllFor( ownerId ).map { it.getSnapshot() }.toList()
+    override suspend fun getAllForOwner( ownerId: UUID ): List<StudyProtocolSnapshot> =
+        repository.getAllForOwner( ownerId ).map { it.getSnapshot() }.toList()
 
     /**
      * Returns all stored versions for the protocol with the specified [protocolId].

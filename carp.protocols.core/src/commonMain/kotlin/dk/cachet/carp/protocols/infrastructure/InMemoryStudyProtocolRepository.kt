@@ -81,7 +81,7 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
      *
      * @return This returns the last version of each [StudyProtocol] owned by the requested owner.
      */
-    override suspend fun getAllFor( ownerId: UUID ): Sequence<StudyProtocol>
+    override suspend fun getAllForOwner( ownerId: UUID ): Sequence<StudyProtocol>
     {
         return _protocols
             .filter { it.value.values.any { protocol -> protocol.ownerId == ownerId } }
