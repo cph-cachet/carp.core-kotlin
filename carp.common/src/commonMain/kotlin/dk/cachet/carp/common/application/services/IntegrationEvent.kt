@@ -16,7 +16,8 @@ import kotlinx.serialization.Polymorphic
 interface IntegrationEvent<out TApplicationService : ApplicationService<out TApplicationService, *>>
 {
     /**
-     * All events related to the same aggregate ID are handled in order.
+     * All events related to the same aggregate ID are handled in order,
+     * or no ordering is required in case `null`.
      *
      * In case the event pertains to an aggregate root,
      * specify its ID to ensure correct handling of business logic in the domain.
