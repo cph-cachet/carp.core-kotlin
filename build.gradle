@@ -84,7 +84,7 @@ configure( subprojects - detektModule ) {
                 useJUnitPlatform()
             }
         }
-        js(LEGACY) {
+        js(IR) {
             binaries.executable()
             browser()
         }
