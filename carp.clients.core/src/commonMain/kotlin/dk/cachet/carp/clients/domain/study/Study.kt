@@ -1,6 +1,5 @@
 package dk.cachet.carp.clients.domain.study
 
-import dk.cachet.carp.clients.application.study.StudyId
 import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.clients.domain.data.DataListener
 import dk.cachet.carp.common.application.UUID
@@ -9,6 +8,8 @@ import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 
 /**
@@ -23,8 +24,10 @@ class Study(
     /**
      * The role name of the device this runtime is intended for within the deployment identified by [studyDeploymentId].
      */
-    val deviceRoleName: String
-) : AggregateRoot<Study, StudySnapshot, Study.Event>()
+    val deviceRoleName: String,
+    id: UUID = UUID.randomUUID(),
+    createdOn: Instant = Clock.System.now()
+) : AggregateRoot<Study, StudySnapshot, Study.Event>( id, createdOn )
 {
     sealed class Event : DomainEvent()
     {
@@ -36,18 +39,12 @@ class Study(
     companion object Factory
     {
         internal fun fromSnapshot( snapshot: StudySnapshot ): Study =
-            Study( snapshot.studyDeploymentId, snapshot.deviceRoleName ).apply {
-                createdOn = snapshot.createdOn
+            Study( snapshot.studyDeploymentId, snapshot.deviceRoleName, snapshot.id, snapshot.createdOn ).apply {
                 deploymentStatus = snapshot.deploymentStatus
                 deploymentInformation = snapshot.deploymentInformation
             }
     }
 
-
-    /**
-     * Composite ID for this study, comprised of the [studyDeploymentId] and [deviceRoleName].
-     */
-    val id: StudyId get() = StudyId( studyDeploymentId, deviceRoleName )
 
     private var deploymentStatus: StudyDeploymentStatus? = null
     private var deploymentInformation: MasterDeviceDeployment? = null
@@ -64,7 +61,7 @@ class Study(
         {
             is StudyDeploymentStatus.Invited -> error( "Client device should already be registered." )
             is StudyDeploymentStatus.DeployingDevices ->
-                StudyStatus.Deploying.fromStudyDeploymentStatus( id, status, deploymentInformation )
+                StudyStatus.Deploying.fromStudyDeploymentStatus( id, deviceRoleName, status, deploymentInformation )
             is StudyDeploymentStatus.Running ->
                 StudyStatus.Running( id, status, checkNotNull( deploymentInformation ) )
             is StudyDeploymentStatus.Stopped ->

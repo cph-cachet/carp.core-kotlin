@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
 interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.Event>
 {
     @Serializable
-    sealed class Event : IntegrationEvent<ProtocolService>()
+    sealed class Event : IntegrationEvent<ProtocolService>
 
 
     /**
@@ -51,7 +51,7 @@ interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.
      * @return The updated [StudyProtocolSnapshot].
      */
     suspend fun updateParticipantDataConfiguration(
-        protocolId: StudyProtocolId,
+        protocolId: UUID,
         versionTag: String,
         expectedParticipantData: Set<ParticipantAttribute>
     ): StudyProtocolSnapshot
@@ -62,7 +62,7 @@ interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      * @throws IllegalArgumentException when a protocol with [protocolId] or [versionTag] does not exist.
      */
-    suspend fun getBy( protocolId: StudyProtocolId, versionTag: String? = null ): StudyProtocolSnapshot
+    suspend fun getBy( protocolId: UUID, versionTag: String? = null ): StudyProtocolSnapshot
 
     /**
      * Find all [StudyProtocolSnapshot]'s owned by the owner with [ownerId].
@@ -70,12 +70,12 @@ interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.
      * @return This returns the last version of each [StudyProtocolSnapshot] owned by the requested owner,
      *   or an empty list when none are found.
      */
-    suspend fun getAllFor( ownerId: UUID ): List<StudyProtocolSnapshot>
+    suspend fun getAllForOwner( ownerId: UUID ): List<StudyProtocolSnapshot>
 
     /**
      * Returns all stored versions for the protocol with the specified [protocolId].
      *
      * @throws IllegalArgumentException when a protocol with [protocolId] does not exist.
      */
-    suspend fun getVersionHistoryFor( protocolId: StudyProtocolId ): List<ProtocolVersion>
+    suspend fun getVersionHistoryFor( protocolId: UUID ): List<ProtocolVersion>
 }

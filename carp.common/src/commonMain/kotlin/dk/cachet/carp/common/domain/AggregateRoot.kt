@@ -1,21 +1,21 @@
 package dk.cachet.carp.common.domain
 
-import kotlinx.datetime.Clock
+import dk.cachet.carp.common.application.UUID
 import kotlinx.datetime.Instant
 
 
 /**
- * A root objects which ensures the integrity of underlying state as a whole, tracks events raised from within,
- * and for which an immutable 'snapshot' at any given moment in time can be obtained.
+ * A root object with a unique [id] which ensures the integrity of underlying state as a whole,
+ * tracks events raised from within, and for which an immutable 'snapshot' at any given moment in time can be obtained.
  */
-abstract class AggregateRoot<TRoot, TSnapshot : Snapshot<TRoot>, TEvent : DomainEvent>
-{
+abstract class AggregateRoot<TRoot, TSnapshot : Snapshot<TRoot>, TEvent : DomainEvent>(
+    val id: UUID,
     /**
      * The date when this object was created.
      */
-    var createdOn: Instant = Clock.System.now()
-        protected set
-
+    val createdOn: Instant
+)
+{
     private val events: MutableList<TEvent> = mutableListOf()
 
     /**

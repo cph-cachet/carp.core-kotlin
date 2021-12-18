@@ -35,7 +35,8 @@ class StudyDeploymentProxy(
      */
     suspend fun tryDeployment( study: Study, deviceRegistration: DeviceRegistration )
     {
-        val (studyDeploymentId: UUID, deviceRoleName: String) = study.id
+        val studyDeploymentId: UUID = study.studyDeploymentId
+        val deviceRoleName: String = study.deviceRoleName
 
         // Register the client device in the study deployment.
         val studyStatus: StudyDeploymentStatus =

@@ -8,7 +8,6 @@ import dk.cachet.carp.clients.domain.data.DeviceDataCollector
 import dk.cachet.carp.clients.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.clients.domain.study.Study
 import dk.cachet.carp.clients.domain.study.StudyDeploymentProxy
-import dk.cachet.carp.clients.application.study.StudyId
 import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
@@ -80,7 +79,7 @@ abstract class ClientManager<
      */
     suspend fun addStudy( studyDeploymentId: UUID, deviceRoleName: String ): StudyStatus
     {
-        require( repository.getStudyBy( studyDeploymentId, deviceRoleName ) == null )
+        require( repository.getStudyByDeployment( studyDeploymentId, deviceRoleName ) == null )
             { "A study with the same study deployment ID and device role name has already been added." }
 
         val study = Study( studyDeploymentId, deviceRoleName )
@@ -99,7 +98,7 @@ abstract class ClientManager<
      * - deployment failed because of unexpected study deployment ID, device role name, or device registration
      * @throws UnsupportedOperationException if deployment failed since the runtime does not support all requirements of the study.
      */
-    suspend fun tryDeployment( studyId: StudyId ): StudyStatus
+    suspend fun tryDeployment( studyId: UUID ): StudyStatus
     {
         require( isConfigured() ) { "The client has not been configured yet." }
 
@@ -126,7 +125,7 @@ abstract class ClientManager<
      *
      * @throws IllegalArgumentException in case no [Study] with the given [studyId] exists.
      */
-    suspend fun stopStudy( studyId: StudyId ): StudyStatus
+    suspend fun stopStudy( studyId: UUID ): StudyStatus
     {
         val study = getStudy( studyId )
         val status = study.getStatus()
@@ -142,9 +141,8 @@ abstract class ClientManager<
         return newStatus
     }
 
-    private suspend fun getStudy( studyId: StudyId ): Study =
-        requireNotNull( repository.getStudyList().firstOrNull { it.id == studyId } )
-            { "The specified study does not exist." }
+    private suspend fun getStudy( studyId: UUID ): Study = requireNotNull( repository.getStudy( studyId ) )
+        { "The specified study does not exist." }
 
     /**
      * Once a connected device has been registered, this returns a manager which provides access to the status of the [registeredDevice].

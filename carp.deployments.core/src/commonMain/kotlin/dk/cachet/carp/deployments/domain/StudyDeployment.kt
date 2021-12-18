@@ -31,8 +31,9 @@ import kotlinx.datetime.Instant
 class StudyDeployment private constructor(
     val protocolSnapshot: StudyProtocolSnapshot,
     val participants: List<ParticipantStatus>,
-    val id: UUID = UUID.randomUUID()
-) : AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>()
+    id: UUID = UUID.randomUUID(),
+    createdOn: Instant = Clock.System.now()
+) : AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>( id, createdOn )
 {
     sealed class Event : DomainEvent()
     {
@@ -71,8 +72,9 @@ class StudyDeployment private constructor(
             val deployment = StudyDeployment(
                 snapshot.studyProtocolSnapshot,
                 snapshot.participants.toList(),
-                snapshot.studyDeploymentId )
-            deployment.createdOn = snapshot.createdOn
+                snapshot.id,
+                snapshot.createdOn
+            )
             deployment.startedOn = snapshot.startedOn
 
             // Replay device registration history.

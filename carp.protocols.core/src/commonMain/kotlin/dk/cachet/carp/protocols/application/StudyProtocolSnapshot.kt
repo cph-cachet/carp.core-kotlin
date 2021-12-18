@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.application
 
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
@@ -18,9 +19,11 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class StudyProtocolSnapshot(
-    val id: StudyProtocolId,
-    val description: String? = null,
+    override val id: UUID,
     override val createdOn: Instant,
+    val ownerId: UUID,
+    val name: String,
+    val description: String? = null,
     val masterDevices: Set<AnyMasterDeviceDescriptor> = emptySet(),
     val connectedDevices: Set<AnyDeviceDescriptor> = emptySet(),
     val connections: Set<DeviceConnection> = emptySet(),
@@ -47,9 +50,11 @@ data class StudyProtocolSnapshot(
             val triggers = protocol.triggers.associate { it.id to it.trigger }
 
             return StudyProtocolSnapshot(
-                protocol.id,
-                description = protocol.description,
+                id = protocol.id,
                 createdOn = protocol.createdOn,
+                ownerId = protocol.ownerId,
+                name = protocol.name,
+                description = protocol.description,
                 masterDevices = protocol.masterDevices.toSet(),
                 connectedDevices = protocol.devices.minus( protocol.masterDevices ).toSet(),
                 connections = protocol.masterDevices.flatMap { getConnections( protocol, it ) }.toSet(),

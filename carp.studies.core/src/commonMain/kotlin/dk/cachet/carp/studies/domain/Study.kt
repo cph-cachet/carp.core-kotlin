@@ -9,6 +9,8 @@ import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.StudyDetails
 import dk.cachet.carp.studies.application.StudyStatus
 import dk.cachet.carp.studies.application.users.StudyOwner
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 
 /**
@@ -31,8 +33,9 @@ class Study(
      * A description of the study, shared with participants once they are invited to the study.
      */
     invitation: StudyInvitation = StudyInvitation( name ),
-    val id: UUID = UUID.randomUUID()
-) : AggregateRoot<Study, StudySnapshot, Study.Event>()
+    id: UUID = UUID.randomUUID(),
+    createdOn: Instant = Clock.System.now()
+) : AggregateRoot<Study, StudySnapshot, Study.Event>( id, createdOn )
 {
     sealed class Event : DomainEvent()
     {
@@ -47,8 +50,14 @@ class Study(
     {
         fun fromSnapshot( snapshot: StudySnapshot ): Study
         {
-            val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.description, snapshot.invitation, snapshot.studyId )
-            study.createdOn = snapshot.createdOn
+            val study = Study(
+                StudyOwner( snapshot.ownerId ),
+                snapshot.name,
+                snapshot.description,
+                snapshot.invitation,
+                snapshot.id,
+                snapshot.createdOn
+            )
             study.protocolSnapshot = snapshot.protocolSnapshot
             study.isLive = snapshot.isLive
 

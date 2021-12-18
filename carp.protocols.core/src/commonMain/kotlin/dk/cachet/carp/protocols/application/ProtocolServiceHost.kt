@@ -52,7 +52,7 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
      * @return The updated [StudyProtocolSnapshot].
      */
     override suspend fun updateParticipantDataConfiguration(
-        protocolId: StudyProtocolId,
+        protocolId: UUID,
         versionTag: String,
         expectedParticipantData: Set<ParticipantAttribute>
     ): StudyProtocolSnapshot
@@ -77,7 +77,7 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      * @throws IllegalArgumentException when a protocol with [protocolId] or [versionTag] does not exist.
      */
-    override suspend fun getBy( protocolId: StudyProtocolId, versionTag: String? ): StudyProtocolSnapshot
+    override suspend fun getBy( protocolId: UUID, versionTag: String? ): StudyProtocolSnapshot
     {
         val protocol: StudyProtocol? = repository.getBy( protocolId, versionTag )
         requireNotNull( protocol ) { "No protocol found for the specified owner with the given name and version." }
@@ -91,14 +91,14 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
      * @return This returns the last version of each [StudyProtocolSnapshot] owned by the requested owner,
      *   or an empty list when none are found.
      */
-    override suspend fun getAllFor( ownerId: UUID ): List<StudyProtocolSnapshot> =
-        repository.getAllFor( ownerId ).map { it.getSnapshot() }.toList()
+    override suspend fun getAllForOwner( ownerId: UUID ): List<StudyProtocolSnapshot> =
+        repository.getAllForOwner( ownerId ).map { it.getSnapshot() }.toList()
 
     /**
      * Returns all stored versions for the protocol with the specified [protocolId].
      *
      * @throws IllegalArgumentException when a protocol with [protocolId] does not exist.
      */
-    override suspend fun getVersionHistoryFor( protocolId: StudyProtocolId ): List<ProtocolVersion> =
+    override suspend fun getVersionHistoryFor( protocolId: UUID ): List<ProtocolVersion> =
         repository.getVersionHistoryFor( protocolId )
 }

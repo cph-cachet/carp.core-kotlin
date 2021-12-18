@@ -36,8 +36,8 @@ class ParticipationServiceHost(
                 val group = participantGroupService.createAndInviteParticipantGroup( created )
                 participationRepository.putParticipantGroup( group )
             }
-            event { removed: DeploymentService.Event.StudyDeploymentsRemoved ->
-                participationRepository.removeParticipantGroups( removed.deploymentIds )
+            event { removed: DeploymentService.Event.StudyDeploymentRemoved ->
+                participationRepository.removeParticipantGroups( setOf( removed.studyDeploymentId ) )
             }
 
             // Notify participant group that associated study deployment has stopped.

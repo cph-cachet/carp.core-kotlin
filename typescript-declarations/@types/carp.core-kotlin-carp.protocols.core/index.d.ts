@@ -30,18 +30,6 @@ declare module 'carp.core-kotlin-carp.protocols.core'
         interface ProtocolVersion$Companion { serializer(): any }
 
 
-        class StudyProtocolId
-        {
-            constructor( ownerId: UUID, name: string )
-
-            static get Companion(): StudyProtocolId$Companion
-
-            readonly ownerId: UUID
-            readonly name: string
-        }
-        interface StudyProtocolId$Companion { serializer(): any }
-
-
         class StudyProtocolSnapshot
         {
             // No manual initialization needed in TypeScript. Serialization should be used.
@@ -49,9 +37,11 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
             static get Companion(): StudyProtocolSnapshot$Companion
 
-            readonly id: StudyProtocolId
-            readonly description: string
+            readonly id: UUID
             readonly createdOn: Instant
+            readonly ownerId: UUID
+            readonly name: string
+            readonly description: string
             readonly masterDevices: HashSet<DeviceDescriptor>
             readonly tasks: HashSet<TaskDescriptor>
             readonly triggers: HashMap<Number, Trigger>
@@ -80,7 +70,6 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
     namespace dk.cachet.carp.protocols.infrastructure
     {
-        import StudyProtocolId = dk.cachet.carp.protocols.application.StudyProtocolId
         import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
         
@@ -102,19 +91,19 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             }
             class UpdateParticipantDataConfiguration extends ProtocolServiceRequest
             {
-                constructor( protocolId: StudyProtocolId, versionTag: string, expectedParticipantData: HashSet<ParticipantAttribute> )
+                constructor( protocolId: UUID, versionTag: string, expectedParticipantData: HashSet<ParticipantAttribute> )
             }
             class GetBy extends ProtocolServiceRequest
             {
-                constructor( protocolId: StudyProtocolId, versionTag?: string )
+                constructor( protocolId: UUID, versionTag?: string )
             }
-            class GetAllFor extends ProtocolServiceRequest
+            class GetAllForOwner extends ProtocolServiceRequest
             {
                 constructor( ownerId: UUID )
             }
             class GetVersionHistoryFor extends ProtocolServiceRequest
             {
-                constructor( protocolId: StudyProtocolId )
+                constructor( protocolId: UUID )
             }
         }
 

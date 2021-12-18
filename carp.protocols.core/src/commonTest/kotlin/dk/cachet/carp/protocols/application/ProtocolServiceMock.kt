@@ -21,7 +21,7 @@ class ProtocolServiceMock(
         trackSuspendCall( ProtocolService::addVersion, protocol, versionTag )
 
     override suspend fun updateParticipantDataConfiguration(
-        protocolId: StudyProtocolId,
+        protocolId: UUID,
         versionTag: String,
         expectedParticipantData: Set<ParticipantAttribute>
     ): StudyProtocolSnapshot
@@ -30,19 +30,19 @@ class ProtocolServiceMock(
         return updateParticipantDataConfigurationResult
     }
 
-    override suspend fun getBy( protocolId: StudyProtocolId, versionTag: String? ): StudyProtocolSnapshot
+    override suspend fun getBy( protocolId: UUID, versionTag: String? ): StudyProtocolSnapshot
     {
         trackSuspendCall( ProtocolService::getBy, protocolId, versionTag )
         return getByResult
     }
 
-    override suspend fun getAllFor( ownerId: UUID ): List<StudyProtocolSnapshot>
+    override suspend fun getAllForOwner( ownerId: UUID ): List<StudyProtocolSnapshot>
     {
-        trackSuspendCall( ProtocolService::getAllFor, ownerId )
+        trackSuspendCall( ProtocolService::getAllForOwner, ownerId )
         return getAllForResult
     }
 
-    override suspend fun getVersionHistoryFor( protocolId: StudyProtocolId ): List<ProtocolVersion>
+    override suspend fun getVersionHistoryFor( protocolId: UUID ): List<ProtocolVersion>
     {
         trackSuspendCall( ProtocolService::getVersionHistoryFor, protocolId )
         return getVersionHistoryForResult

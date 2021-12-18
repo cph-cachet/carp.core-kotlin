@@ -2,6 +2,7 @@ package dk.cachet.carp.clients.application.study
 
 import dk.cachet.carp.clients.domain.DeviceRegistrationStatus
 import dk.cachet.carp.common.application.ImplementAsDataClass
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
@@ -17,13 +18,13 @@ sealed class StudyStatus
     /**
      * Unique ID of the study on the client manager.
      */
-    abstract val id: StudyId
+    abstract val id: UUID
 
 
     /**
      * The study deployment process hasn't been started yet.
      */
-    data class DeploymentNotStarted( override val id: StudyId ) : StudyStatus()
+    data class DeploymentNotStarted( override val id: UUID ) : StudyStatus()
 
     /**
      * Once a deployment for this study has started, a [deploymentStatus] is available,
@@ -47,12 +48,13 @@ sealed class StudyStatus
              * for a client which may or may not yet have received its [deploymentInformation].
              */
             fun fromStudyDeploymentStatus(
-                id: StudyId,
+                id: UUID,
+                deviceRoleName: String,
                 deployingDevices: StudyDeploymentStatus.DeployingDevices,
                 deploymentInformation: MasterDeviceDeployment?
             ): Deploying
             {
-                return when ( val deviceStatus = deployingDevices.getDeviceStatus( id.deviceRoleName ) )
+                return when ( val deviceStatus = deployingDevices.getDeviceStatus( deviceRoleName ) )
                 {
                     is DeviceDeploymentStatus.Unregistered -> error( "Client device should already be registered." )
                     is DeviceDeploymentStatus.NotDeployed ->
@@ -77,7 +79,7 @@ sealed class StudyStatus
      * other master devices in the study deployment need to be registered first.
      */
     data class AwaitingOtherDeviceRegistrations(
-        override val id: StudyId,
+        override val id: UUID,
         override val deploymentStatus: StudyDeploymentStatus
     ) : Deploying()
 
@@ -85,7 +87,7 @@ sealed class StudyStatus
      * The study deployment is ready to deliver the deployment information to this master device.
      */
     data class AwaitingDeviceDeployment(
-        override val id: StudyId,
+        override val id: UUID,
         override val deploymentStatus: StudyDeploymentStatus
     ) : Deploying()
 
@@ -109,7 +111,7 @@ sealed class StudyStatus
      * once all [remainingDevicesToRegister] have been registered.
      */
     data class RegisteringDevices(
-        override val id: StudyId,
+        override val id: UUID,
         override val deploymentStatus: StudyDeploymentStatus,
         override val deploymentInformation: MasterDeviceDeployment
     ) : Deploying(), DeviceDeploymentReceived
@@ -129,7 +131,7 @@ sealed class StudyStatus
      * but awaiting deployment of other devices in this study deployment.
      */
     data class AwaitingOtherDeviceDeployments(
-        override val id: StudyId,
+        override val id: UUID,
         override val deploymentStatus: StudyDeploymentStatus,
         override val deploymentInformation: MasterDeviceDeployment,
     ) : Deploying(), DeviceDeploymentReceived
@@ -142,7 +144,7 @@ sealed class StudyStatus
      * Study deployment has completed and the study is now running.
      */
     data class Running(
-        override val id: StudyId,
+        override val id: UUID,
         override val deploymentStatus: StudyDeploymentStatus,
         override val deploymentInformation: MasterDeviceDeployment
     ) : StudyStatus(), DeviceDeploymentReceived, DeploymentStatusAvailable
@@ -155,7 +157,7 @@ sealed class StudyStatus
      * Study status when deployment has been stopped, either by this client or researcher.
      */
     data class Stopped internal constructor(
-        override val id: StudyId,
+        override val id: UUID,
         override val deploymentStatus: StudyDeploymentStatus,
         val deploymentInformation: MasterDeviceDeployment?
     ) : StudyStatus(), DeploymentStatusAvailable

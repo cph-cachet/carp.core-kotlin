@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class StudyDeploymentSnapshot(
-    val studyDeploymentId: UUID,
+    override val id: UUID,
     override val createdOn: Instant,
     val studyProtocolSnapshot: StudyProtocolSnapshot,
     val participants: List<ParticipantStatus>,

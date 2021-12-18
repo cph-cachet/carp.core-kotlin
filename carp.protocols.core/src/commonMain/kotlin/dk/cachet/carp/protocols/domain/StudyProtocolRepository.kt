@@ -2,7 +2,6 @@ package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.protocols.application.ProtocolVersion
-import dk.cachet.carp.protocols.application.StudyProtocolId
 
 
 /**
@@ -43,28 +42,28 @@ interface StudyProtocolRepository
      *
      * @param versionTag The tag of the specific version of the protocol to return. The latest version is returned when not specified.
      */
-    suspend fun getBy( id: StudyProtocolId, versionTag: String? = null ): StudyProtocol?
+    suspend fun getBy( id: UUID, versionTag: String? = null ): StudyProtocol?
 
     /**
      * Return the [StudyProtocol] with the specified [id].
      *
      * @throws IllegalArgumentException when the requested protocol is not found.
      */
-    suspend fun getByOrThrow( id: StudyProtocolId, versionTag: String? = null ): StudyProtocol =
+    suspend fun getByOrThrow( id: UUID, versionTag: String? = null ): StudyProtocol =
         getBy( id, versionTag )
-            ?: throw IllegalArgumentException( "A protocol named \"${id.name}\" for owner with ID \"${id.ownerId}\" with the specified version tag does not exist." )
+            ?: throw IllegalArgumentException( "A protocol with ID \"$id\" and the specified version tag does not exist." )
 
     /**
      * Find all [StudyProtocol]'s owned by the owner with [ownerId], or an empty sequence if none are found.
      *
      * @return This returns the last version of each [StudyProtocol] owned by the requested owner.
      */
-    suspend fun getAllFor( ownerId: UUID ): Sequence<StudyProtocol>
+    suspend fun getAllForOwner( ownerId: UUID ): Sequence<StudyProtocol>
 
     /**
      * Returns all stored versions for the [StudyProtocol] with the specified [id].
      *
      * @throws IllegalArgumentException when a protocol with the specified [id] does not exist.
      */
-    suspend fun getVersionHistoryFor( id: StudyProtocolId ): List<ProtocolVersion>
+    suspend fun getVersionHistoryFor( id: UUID ): List<ProtocolVersion>
 }

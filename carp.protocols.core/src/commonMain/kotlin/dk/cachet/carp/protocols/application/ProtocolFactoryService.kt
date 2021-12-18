@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
 interface ProtocolFactoryService : ApplicationService<ProtocolFactoryService, ProtocolFactoryService.Event>
 {
     @Serializable
-    sealed class Event : IntegrationEvent<ProtocolFactoryService>()
+    sealed class Event : IntegrationEvent<ProtocolFactoryService>
 
 
     /**

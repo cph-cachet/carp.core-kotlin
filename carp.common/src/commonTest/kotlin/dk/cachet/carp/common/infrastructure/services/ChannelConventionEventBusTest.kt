@@ -32,7 +32,7 @@ class ChannelConventionEventBusTest
     interface TestService1 : ApplicationService<TestService1, Service1Event>
 
     @Serializable
-    sealed class Service1Event : IntegrationEvent<TestService1>()
+    sealed class Service1Event( override val aggregateId: String? = null ) : IntegrationEvent<TestService1>
     {
         @Serializable
         data class SomeEvent( val data: String ) : Service1Event()
@@ -44,7 +44,7 @@ class ChannelConventionEventBusTest
     interface TestService2 : ApplicationService<TestService2, Service2Event>
 
     @Serializable
-    sealed class Service2Event : IntegrationEvent<TestService2>()
+    sealed class Service2Event( override val aggregateId: String? = null ) : IntegrationEvent<TestService2>
     {
         @Serializable
         data class SomeEvent( val data: String ) : Service2Event()

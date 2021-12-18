@@ -59,6 +59,6 @@ class InMemoryDeploymentRepository : DeploymentRepository
     override suspend fun remove( studyDeploymentIds: Set<UUID> ): Set<UUID> =
         studyDeploymentIds
             .mapNotNull { studyDeployments.remove( it ) }
-            .map { it.studyDeploymentId }
+            .map { it.id }
             .toSet()
 }

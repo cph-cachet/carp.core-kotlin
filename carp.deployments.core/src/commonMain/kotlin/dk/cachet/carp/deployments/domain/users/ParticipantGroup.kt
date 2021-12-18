@@ -16,6 +16,8 @@ import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.configuration.isValidParticipantData
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 
 /**
@@ -27,8 +29,10 @@ import dk.cachet.carp.protocols.domain.configuration.isValidParticipantData
 class ParticipantGroup private constructor(
     val studyDeploymentId: UUID,
     assignedMasterDevices: Set<AssignedMasterDevice>,
-    val expectedData: Set<ParticipantAttribute>
-) : AggregateRoot<ParticipantGroup, ParticipantGroupSnapshot, ParticipantGroup.Event>()
+    val expectedData: Set<ParticipantAttribute>,
+    id: UUID = UUID.randomUUID(),
+    createdOn: Instant = Clock.System.now()
+) : AggregateRoot<ParticipantGroup, ParticipantGroupSnapshot, ParticipantGroup.Event>( id, createdOn )
 {
     sealed class Event : DomainEvent()
     {
@@ -58,9 +62,14 @@ class ParticipantGroup private constructor(
 
         fun fromSnapshot( snapshot: ParticipantGroupSnapshot ): ParticipantGroup
         {
-            val group = ParticipantGroup( snapshot.studyDeploymentId, snapshot.assignedMasterDevices, snapshot.expectedData )
+            val group = ParticipantGroup(
+                snapshot.studyDeploymentId,
+                snapshot.assignedMasterDevices,
+                snapshot.expectedData,
+                snapshot.id,
+                snapshot.createdOn
+            )
             group.isStudyDeploymentStopped = snapshot.isStudyDeploymentStopped
-            group.createdOn = snapshot.createdOn
 
             // Add participations.
             snapshot.participations.forEach { p -> group._participations.add( p.copy() ) }
