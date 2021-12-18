@@ -3,7 +3,6 @@ package dk.cachet.carp.common.infrastructure.serialization
 import dk.cachet.carp.common.infrastructure.reflect.AccessInternals
 import dk.cachet.carp.common.infrastructure.reflect.reflectIfAvailable
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
@@ -64,7 +63,6 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
     )
 
 
-    @InternalSerializationApi
     override fun serialize( encoder: Encoder, value: P )
     {
         // This serializer assumes JSON serialization with class discriminator configured for polymorphism.
@@ -81,13 +79,12 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
 
         // HACK: Modify kotlinx.serialization internals to ensure the encoder is not in polymorphic mode.
         //  Otherwise, `encoder.encodeJsonElement` encodes type information, but this is already represented in the wrapped unknown object.
-        AccessInternals.setField( encoder, "writePolymorphic", false )
+        AccessInternals.setField( encoder, "polymorphicDiscriminator", null )
 
         // Output the originally wrapped JSON.
         encoder.encodeJsonElement( unknown )
     }
 
-    @InternalSerializationApi
     override fun deserialize( decoder: Decoder ): P
     {
         // This serializer assumes JSON serialization with class discriminator configured for polymorphism.

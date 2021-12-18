@@ -12,15 +12,15 @@ buildscript {
 
         versions = [
             // Kotlin multiplatform versions.
-            kotlin:'1.5.31',
-            serialization:'1.2.2',
+            kotlin:'1.6.10',
+            serialization:'1.3.1',
             coroutines:'1.5.2',
-            datetime:'0.2.1',
+            datetime:'0.3.1',
 
             // JVM versions.
             jvmTarget:'1.8',
             dokkaPlugin:'1.5.30',
-            reflections:'0.9.12',
+            reflections:'0.10.2',
 
             // JS versions.
             nodePlugin:'3.1.1',
