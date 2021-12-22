@@ -14,6 +14,7 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.serializer
+import kotlin.js.JsExport
 import kotlin.reflect.KClass
 
 
@@ -23,6 +24,7 @@ import kotlin.reflect.KClass
  * @throws IllegalArgumentException when no [KSerializer] is associated with [dataKlass].
  */
 @OptIn( InternalSerializationApi::class, ExperimentalSerializationApi::class )
+@JsExport
 fun <TData : Data> getDataType( dataKlass: KClass<TData> ): DataType =
     try
     {
@@ -54,6 +56,7 @@ inline fun <reified TData : Data> measurement(
  * Determines whether the [DataType] and [DataTimeType] of [measurement] corresponds to the expected values for [Data]
  * as determined by [DataTypeMetaDataMap], or [Trilean.UNKNOWN] in case the type of [Data] is not registered.
  */
+@JsExport
 fun DataTypeMetaDataMap.isValidMeasurement( measurement: Measurement<*> ): Trilean
 {
     val expectedDataType = getDataType( measurement.data::class )

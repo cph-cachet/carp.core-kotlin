@@ -5,6 +5,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 
 /**
@@ -88,6 +90,7 @@ sealed interface DataStreamSequence : Sequence<DataStreamPoint<*>>
  * A mutable sequence of consecutive [measurements] for a [dataStream] starting from [firstSequenceId]
  * which all share the same [triggerIds] and [syncPoint].
  */
+@JsExport
 class MutableDataStreamSequence(
     override val dataStream: DataStreamId,
     override val firstSequenceId: Long,
@@ -109,6 +112,7 @@ class MutableDataStreamSequence(
      *
      * @throws IllegalArgumentException when any of the [measurements] is of a different data type than [dataStream].
      */
+    @JsName( "appendMeasurementList" )
     fun appendMeasurements( measurements: List<Measurement<*>> )
     {
         require( measurements.all { it.dataType == dataStream.dataType } )
@@ -146,6 +150,7 @@ class MutableDataStreamSequence(
 /**
  * Serializer for any [DataStreamSequence], which doesn't guarantee the concrete type is retained.
  */
+@JsExport
 object DataStreamSequenceSerializer : KSerializer<DataStreamSequence>
 {
     @Serializable

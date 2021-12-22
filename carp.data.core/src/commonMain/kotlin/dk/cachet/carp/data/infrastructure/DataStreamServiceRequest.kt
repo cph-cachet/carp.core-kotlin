@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.UUID
@@ -9,6 +11,7 @@ import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 
 /**

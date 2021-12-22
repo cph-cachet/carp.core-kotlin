@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.toEpochMicroseconds
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 
 /**
@@ -14,6 +15,7 @@ import kotlinx.serialization.Serializable
  * syncedTime = [relativeClockSpeed] * (sensorTime - [sensorTimestampAtSyncPoint]) + [synchronizedOn]
  */
 @Serializable
+@JsExport
 data class SyncPoint(
     /**
      * The UTC time as measured on the master device when it determined the synchronization point.

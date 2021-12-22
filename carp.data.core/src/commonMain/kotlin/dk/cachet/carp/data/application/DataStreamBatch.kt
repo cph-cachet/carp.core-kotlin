@@ -5,6 +5,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlin.js.JsExport
 
 
 /**
@@ -37,6 +38,7 @@ interface DataStreamBatch : Sequence<DataStreamPoint<*>>
 /**
  * A mutable collection of non-overlapping data stream [sequences].
  */
+@JsExport
 class MutableDataStreamBatch : DataStreamBatch
 {
     private val sequenceMap: MutableMap<DataStreamId, MutableList<MutableDataStreamSequence>> = mutableMapOf()
@@ -131,6 +133,7 @@ class MutableDataStreamBatch : DataStreamBatch
 /**
  * Serializer [DataStreamBatch] as a list of [DataStreamSequence].
  */
+@JsExport
 object DataStreamBatchSerializer : KSerializer<DataStreamBatch>
 {
     private val serializer = ListSerializer( DataStreamSequenceSerializer )
