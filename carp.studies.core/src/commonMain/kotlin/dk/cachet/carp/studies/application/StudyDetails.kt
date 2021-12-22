@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.UUID
@@ -6,6 +8,7 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.users.StudyOwner
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 
 /**

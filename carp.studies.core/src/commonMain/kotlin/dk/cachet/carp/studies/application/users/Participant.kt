@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.studies.application.users
 
 import dk.cachet.carp.common.application.UUID
@@ -5,6 +7,7 @@ import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.studies.domain.Study
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 
 /**

@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.EmailAddress
@@ -9,6 +11,7 @@ import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 // TODO: Due to a bug, `Service` and `Invoker` cannot be used here, although that would be preferred.
 //       Change this once this is fixed: https://youtrack.jetbrains.com/issue/KT-24700

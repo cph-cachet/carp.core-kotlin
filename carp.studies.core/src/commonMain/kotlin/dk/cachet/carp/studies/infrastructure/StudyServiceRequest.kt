@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.UUID
@@ -10,6 +12,7 @@ import dk.cachet.carp.studies.application.StudyDetails
 import dk.cachet.carp.studies.application.StudyStatus
 import dk.cachet.carp.studies.application.users.StudyOwner
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 private typealias Service = StudyService
 private typealias Invoker<T> = ServiceInvoker<StudyService, T>
