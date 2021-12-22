@@ -1,6 +1,9 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application.data
 
 import dk.cachet.carp.common.application.EnumObjectMap
+import kotlin.js.JsExport
 
 
 /**

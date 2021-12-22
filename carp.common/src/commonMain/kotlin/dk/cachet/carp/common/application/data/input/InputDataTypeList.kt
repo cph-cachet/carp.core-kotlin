@@ -1,8 +1,12 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application.data.input
 
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.elements.AnyInputElement
 import dk.cachet.carp.common.application.data.input.elements.InputElement
+import kotlin.js.JsExport
+import kotlin.js.JsName
 import kotlin.reflect.KClass
 
 
@@ -14,6 +18,7 @@ import kotlin.reflect.KClass
  */
 open class InputDataTypeList private constructor( val list: MutableList<InputDataType> ) : List<InputDataType> by list
 {
+    @JsName( "create" )
     constructor() : this( mutableListOf() )
 
     private val _inputElements: MutableMap<InputDataType, AnyInputElement> = mutableMapOf()

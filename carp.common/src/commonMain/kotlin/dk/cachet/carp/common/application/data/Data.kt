@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 
 /**
@@ -20,4 +21,5 @@ interface Data
  * This should not be serialized; instead, nullable `Data` should be used.
  */
 @Serializable
+@JsExport
 object NoData : Data

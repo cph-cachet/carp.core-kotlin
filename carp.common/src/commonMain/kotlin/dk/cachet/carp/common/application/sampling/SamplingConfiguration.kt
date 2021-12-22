@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceDescriptorBuilder
 import dk.cachet.carp.common.application.devices.DeviceDescriptorBuilderDsl
 import kotlinx.serialization.Polymorphic
+import kotlin.js.JsExport
 
 
 /**
@@ -51,6 +52,7 @@ interface SamplingConfigurationBuilder<TConfig : SamplingConfiguration>
  * A base class which can be used by [DeviceDescriptorBuilder]s to initialize sampling configurations for all data types available on the device.
  */
 @DeviceDescriptorBuilderDsl
+@JsExport
 open class SamplingConfigurationMapBuilder
 {
     private val samplingConfigurations: MutableMap<DataType, SamplingConfiguration> = mutableMapOf()

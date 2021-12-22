@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application.triggers
 
 import dk.cachet.carp.common.application.RecurrenceRule
@@ -6,6 +8,8 @@ import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 
 /**
@@ -24,6 +28,7 @@ data class ScheduledTrigger private constructor(
     @Transient
     override val requiresMasterDevice: Boolean = true
 
+    @JsName( "create" )
     constructor(
         /**
          * The master device on which this trigger is evaluated.

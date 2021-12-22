@@ -1,6 +1,9 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application.data.input
 
 import dk.cachet.carp.common.application.data.input.elements.SelectOne
+import kotlin.js.JsExport
 
 
 /**

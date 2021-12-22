@@ -9,6 +9,7 @@ import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfigurationMapBuilder
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 import kotlin.reflect.KClass
 
 
@@ -23,6 +24,7 @@ import kotlin.reflect.KClass
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
+@JsExport
 abstract class DeviceDescriptor<
     TRegistration : DeviceRegistration,
     out TRegistrationBuilder : DeviceRegistrationBuilder<TRegistration>
@@ -121,6 +123,7 @@ typealias DeviceType = KClass<out AnyDeviceDescriptor>
  * A helper class to configure and construct immutable [DeviceDescriptor] classes.
  */
 @DeviceDescriptorBuilderDsl
+@JsExport
 abstract class DeviceDescriptorBuilder<TSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilder>
 {
     private var samplingConfigurationBuilder: TSamplingConfigurationMapBuilder.() -> Unit = { }

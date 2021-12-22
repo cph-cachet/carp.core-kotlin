@@ -1,9 +1,12 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.EnumObjectMap
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.tasks.Measure
+import kotlin.js.JsExport
 
 
 /**

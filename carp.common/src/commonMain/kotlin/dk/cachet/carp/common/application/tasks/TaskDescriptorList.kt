@@ -1,6 +1,10 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application.tasks
 
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 
 /**
@@ -12,6 +16,7 @@ import dk.cachet.carp.common.application.devices.DeviceDescriptor
 open class TaskDescriptorList private constructor( private val list: MutableList<SupportedTaskDescriptor<*, *>> ) :
     List<SupportedTaskDescriptor<*, *>> by list
 {
+    @JsName( "create" )
     constructor() : this( mutableListOf() )
 
     /**

@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application
 
 import kotlinx.serialization.Serializable

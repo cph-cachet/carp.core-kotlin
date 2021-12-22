@@ -1,9 +1,12 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 import kotlin.time.Duration
 
 

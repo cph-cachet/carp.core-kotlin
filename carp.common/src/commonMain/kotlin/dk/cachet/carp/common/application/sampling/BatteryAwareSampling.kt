@@ -1,8 +1,11 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 import kotlin.reflect.KClass
 
 

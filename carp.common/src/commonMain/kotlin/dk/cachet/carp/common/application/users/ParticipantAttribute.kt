@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application.users
 
 import dk.cachet.carp.common.application.UUID
@@ -9,6 +11,7 @@ import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.data.input.elements.InputElement
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 
 /**

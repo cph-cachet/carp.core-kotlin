@@ -1,4 +1,5 @@
 @file:Suppress( "WildcardImport" )
+@file:JsExport
 
 package dk.cachet.carp.common.infrastructure.serialization
 
@@ -14,6 +15,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.*
+import kotlin.js.JsExport
 
 
 /**

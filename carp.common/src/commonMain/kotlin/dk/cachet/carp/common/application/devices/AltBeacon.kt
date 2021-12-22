@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.Trilean
@@ -11,6 +13,7 @@ import dk.cachet.carp.common.application.tasks.TaskDescriptorList
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 import kotlin.reflect.KClass
 
 

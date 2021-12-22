@@ -1,7 +1,11 @@
+@file:JsExport
+
 /**
  * Namespace which contains CARP data type definitions.
  */
 package dk.cachet.carp.common.application.data
+
+import kotlin.js.JsExport
 
 
 /**

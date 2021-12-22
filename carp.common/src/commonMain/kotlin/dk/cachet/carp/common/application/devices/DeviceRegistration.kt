@@ -8,6 +8,7 @@ import kotlinx.datetime.Instant
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 
 /**
@@ -20,6 +21,7 @@ import kotlinx.serialization.Serializable
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
+@JsExport
 abstract class DeviceRegistration
 {
     /**

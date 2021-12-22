@@ -1,4 +1,9 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application
+
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 
 /**
@@ -12,6 +17,7 @@ open class EnumObjectMap<K, V> private constructor(
     val keyOf: (V) -> K
 ) : Map<K, V> by map
 {
+    @JsName( "fromKeySelector" )
     constructor(
         /**
          * Specifies how to retrieve the key for the specified element.

@@ -1,4 +1,5 @@
 @file:Suppress( "WildcardImport" )
+@file:JsExport
 
 package dk.cachet.carp.common.application.devices
 
@@ -8,6 +9,8 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.*
 import dk.cachet.carp.common.application.tasks.*
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
+import kotlin.js.JsName
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 
@@ -26,6 +29,7 @@ data class Smartphone(
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 ) : MasterDeviceDescriptor<SmartphoneDeviceRegistration, SmartphoneDeviceRegistrationBuilder>()
 {
+    @JsName( "build" )
     constructor( roleName: String, isOptional: Boolean = false, builder: SmartphoneBuilder.() -> Unit ) :
         this( roleName, isOptional, SmartphoneBuilder().apply( builder ).buildSamplingConfiguration() )
 

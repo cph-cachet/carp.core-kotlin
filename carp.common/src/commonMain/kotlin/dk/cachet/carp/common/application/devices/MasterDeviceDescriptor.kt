@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 import kotlin.time.Duration
 
 
@@ -13,6 +14,7 @@ import kotlin.time.Duration
  */
 @Serializable
 @Polymorphic
+@JsExport
 abstract class MasterDeviceDescriptor<TRegistration : DeviceRegistration, out TBuilder : DeviceRegistrationBuilder<TRegistration>> :
     DeviceDescriptor<TRegistration, TBuilder>()
 {

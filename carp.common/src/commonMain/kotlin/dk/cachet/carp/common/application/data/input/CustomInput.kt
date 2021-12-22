@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application.data.input
 
 import dk.cachet.carp.common.application.data.Data
@@ -16,6 +18,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
 import kotlinx.serialization.serializer
+import kotlin.js.JsExport
 import kotlin.reflect.KClass
 
 

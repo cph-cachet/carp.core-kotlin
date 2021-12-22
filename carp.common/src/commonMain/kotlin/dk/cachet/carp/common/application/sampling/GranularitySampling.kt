@@ -3,12 +3,14 @@ package dk.cachet.carp.common.application.sampling
 import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.devices.DeviceDescriptor
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 
 /**
  * Sampling scheme which provides only indirect control over how data is sampled by specifying a desired level of [Granularity].
  * The levels of granularity correspond to expected degrees of power consumption.
  */
+@JsExport
 class GranularitySamplingScheme( dataType: DataTypeMetaData, val defaultGranularity: Granularity ) :
     DataTypeSamplingScheme<GranularitySamplingConfigurationBuilder>(
         dataType,
@@ -50,6 +52,7 @@ enum class Granularity
  * corresponding to expected degrees of power consumption.
  */
 @Serializable
+@JsExport
 data class GranularitySamplingConfiguration( val granularity: Granularity ) : SamplingConfiguration
 
 
@@ -57,6 +60,7 @@ data class GranularitySamplingConfiguration( val granularity: Granularity ) : Sa
  * A helper class to configure and construct immutable [GranularitySamplingConfiguration] objects
  * as part of setting up a [DeviceDescriptor].
  */
+@JsExport
 class GranularitySamplingConfigurationBuilder( var granularity: Granularity ) :
     SamplingConfigurationBuilder<GranularitySamplingConfiguration>
 {
