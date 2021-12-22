@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -5,6 +7,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 
 /**
