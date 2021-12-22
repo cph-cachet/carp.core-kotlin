@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.data.DataType
@@ -13,6 +15,7 @@ import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSeriali
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 
 /**

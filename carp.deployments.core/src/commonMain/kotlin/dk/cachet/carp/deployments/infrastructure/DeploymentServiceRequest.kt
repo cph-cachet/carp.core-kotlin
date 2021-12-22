@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.deployments.infrastructure
 
 import dk.cachet.carp.common.application.UUID
@@ -11,6 +13,7 @@ import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 private typealias Service = DeploymentService
 private typealias Invoker<T> = ServiceInvoker<DeploymentService, T>

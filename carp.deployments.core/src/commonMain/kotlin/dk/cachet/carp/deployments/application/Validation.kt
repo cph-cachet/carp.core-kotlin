@@ -1,8 +1,11 @@
+@file:JsExport
+
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import kotlin.js.JsExport
 
 
 /**

@@ -1,3 +1,5 @@
+@file:JsExport
+
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.UUID
@@ -6,6 +8,8 @@ import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.deployments.application.users.ParticipantStatus
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 
 /**
@@ -106,6 +110,7 @@ sealed class StudyDeploymentStatus
     /**
      * Get the status of a [device] in this study deployment.
      */
+    @JsName( "getDeviceStatusByDeviceDescriptor" )
     fun getDeviceStatus( device: AnyDeviceDescriptor ): DeviceDeploymentStatus =
         devicesStatus.firstOrNull { it.device == device }
             ?: throw IllegalArgumentException( "The given device was not found in this study deployment." )
@@ -113,6 +118,7 @@ sealed class StudyDeploymentStatus
     /**
      * Get the status of a device with the given [deviceRoleName] in this study deployment.
      */
+    @JsName( "getDeviceStatusByDeviceRoleName" )
     fun getDeviceStatus( deviceRoleName: String ): DeviceDeploymentStatus =
         devicesStatus.firstOrNull { it.device.roleName == deviceRoleName }
             ?: throw IllegalArgumentException( "The device with the given role name was not found in this study deployment." )

@@ -1,8 +1,11 @@
+@file:JsExport
+
 package dk.cachet.carp.deployments.application.users
 
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 
 /**
