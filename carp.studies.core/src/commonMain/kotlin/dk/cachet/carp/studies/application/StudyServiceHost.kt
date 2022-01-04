@@ -4,7 +4,6 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.StudyRepository
 
@@ -18,16 +17,18 @@ class StudyServiceHost(
 ) : StudyService
 {
     /**
-     * Create a new study for the specified [owner].
+     * Create a new study for the specified person or group with [ownerId].
      */
     override suspend fun createStudy(
-        owner: StudyOwner,
+        ownerId: UUID,
         /**
-         * A descriptive name for the study, assigned by, and only visible to, the [owner].
+         * A descriptive name for the study, assigned by, and only visible to,
+         * the person or group with [ownerId].
          */
         name: String,
         /**
-         * An optional description of the study, assigned by, and only visible to, the [owner].
+         * An optional description of the study, assigned by, and only visible to,
+         * the person or group with [ownerId].
          */
         description: String?,
         /**
@@ -38,7 +39,7 @@ class StudyServiceHost(
     ): StudyStatus
     {
         val ensuredInvitation = invitation ?: StudyInvitation( name )
-        val study = Study( owner, name, description, ensuredInvitation )
+        val study = Study( ownerId, name, description, ensuredInvitation )
 
         repository.add( study )
         eventBus.publish( StudyService.Event.StudyCreated( study.getStudyDetails() ) )
@@ -47,7 +48,7 @@ class StudyServiceHost(
     }
 
     /**
-     * Set study details which are visible only to the [StudyOwner].
+     * Set study details which are visible only to the study owner.
      *
      * @param studyId The id of the study to update the study details for.
      * @param name A descriptive name for the study.
@@ -96,10 +97,10 @@ class StudyServiceHost(
     }
 
     /**
-     * Get status for all studies created by the specified [owner].
+     * Get status for all studies created by the person or group with the specified [ownerId].
      */
-    override suspend fun getStudiesOverview( owner: StudyOwner ): List<StudyStatus> =
-        repository.getForOwner( owner ).map { it.getStatus() }
+    override suspend fun getStudiesOverview( ownerId: UUID ): List<StudyStatus> =
+        repository.getForOwner( ownerId ).map { it.getStatus() }
 
     /**
      * Specify an [invitation], shared with participants once they are invited to the study with the specified [studyId].

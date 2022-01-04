@@ -5,7 +5,6 @@ package dk.cachet.carp.studies.application
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.studies.domain.createComplexStudy
 import dk.cachet.carp.test.Mock
 import kotlinx.datetime.Clock
@@ -17,7 +16,7 @@ class StudyServiceMock(
     private val createStudyResult: StudyStatus = studyStatus,
     private val updateInternalDescriptionResult: StudyStatus = studyStatus,
     private val getStudyDetailsResult: StudyDetails = StudyDetails(
-        UUID.randomUUID(), StudyOwner(), "Name", Clock.System.now(),
+        UUID.randomUUID(), UUID.randomUUID(), "Name", Clock.System.now(),
         "Description", StudyInvitation( "Some study" ), createComplexStudy().protocolSnapshot
     ),
     private val getStudyStatusResult: StudyStatus = studyStatus,
@@ -39,9 +38,9 @@ class StudyServiceMock(
     }
 
 
-    override suspend fun createStudy( owner: StudyOwner, name: String, description: String?, invitation: StudyInvitation? ) =
+    override suspend fun createStudy( ownerId: UUID, name: String, description: String?, invitation: StudyInvitation? ) =
         createStudyResult
-        .also { trackSuspendCall( Service::createStudy, owner, name, description, invitation ) }
+        .also { trackSuspendCall( Service::createStudy, ownerId, name, description, invitation ) }
 
     override suspend fun setInternalDescription( studyId: UUID, name: String, description: String ) =
         updateInternalDescriptionResult
@@ -55,9 +54,9 @@ class StudyServiceMock(
         getStudyStatusResult
         .also { trackSuspendCall( Service::getStudyStatus, studyId ) }
 
-    override suspend fun getStudiesOverview( owner: StudyOwner ) =
+    override suspend fun getStudiesOverview( ownerId: UUID ) =
         getStudiesOverviewResult
-        .also { trackSuspendCall( Service::getStudiesOverview, owner ) }
+        .also { trackSuspendCall( Service::getStudiesOverview, ownerId ) }
 
     override suspend fun setInvitation( studyId: UUID, invitation: StudyInvitation ) =
         setInvitationResult

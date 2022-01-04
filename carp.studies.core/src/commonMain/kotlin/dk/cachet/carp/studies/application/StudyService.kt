@@ -5,7 +5,6 @@ import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.studies.application.users.StudyOwner
 import kotlinx.serialization.Serializable
 
 
@@ -31,16 +30,18 @@ interface StudyService : ApplicationService<StudyService, StudyService.Event>
 
 
     /**
-     * Create a new study for the specified [owner].
+     * Create a new study for the specified person or group with [ownerId].
      */
     suspend fun createStudy(
-        owner: StudyOwner,
+        ownerId: UUID,
         /**
-         * A descriptive name for the study, assigned by, and only visible to, the [owner].
+         * A descriptive name for the study, assigned by, and only visible to,
+         * the person or group with [ownerId].
          */
         name: String,
         /**
-         * An optional description of the study, assigned by, and only visible to, the [owner].
+         * An optional description of the study, assigned by, and only visible to,
+         * the person or group with [ownerId].
          */
         description: String? = null,
         /**
@@ -51,7 +52,7 @@ interface StudyService : ApplicationService<StudyService, StudyService.Event>
     ): StudyStatus
 
     /**
-     * Set study details which are visible only to the [StudyOwner].
+     * Set study details which are visible only to the study owner.
      *
      * @param studyId The id of the study to update the study details for.
      * @param name A descriptive name for the study.
@@ -78,9 +79,9 @@ interface StudyService : ApplicationService<StudyService, StudyService.Event>
     suspend fun getStudyStatus( studyId: UUID ): StudyStatus
 
     /**
-     * Get status for all studies created by the specified [owner].
+     * Get status for all studies created by the person or group with the specified [ownerId].
      */
-    suspend fun getStudiesOverview( owner: StudyOwner ): List<StudyStatus>
+    suspend fun getStudiesOverview( ownerId: UUID ): List<StudyStatus>
 
     /**
      * Specify an [invitation], shared with participants once they are invited to the study with the specified [studyId].

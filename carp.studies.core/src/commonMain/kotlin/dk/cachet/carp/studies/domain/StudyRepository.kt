@@ -1,7 +1,6 @@
 package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.studies.application.users.StudyOwner
 
 
 /**
@@ -22,9 +21,9 @@ interface StudyRepository
     suspend fun getById( studyId: UUID ): Study?
 
     /**
-     * Returns the studies created by the specified [owner].
+     * Returns the studies created by the owner with [ownerId].
      */
-    suspend fun getForOwner( owner: StudyOwner ): List<Study>
+    suspend fun getForOwner( ownerId: UUID ): List<Study>
 
     /**
      * Update a [study] which is already stored in this repository.

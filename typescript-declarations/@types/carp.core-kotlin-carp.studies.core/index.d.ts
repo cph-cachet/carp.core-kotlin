@@ -22,13 +22,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
     namespace dk.cachet.carp.studies.application
     {
-        import StudyOwner = dk.cachet.carp.studies.application.users.StudyOwner
-
-
         class StudyDetails
         {
             constructor(
-                studyId: UUID, studyOwner: StudyOwner, name: string, createdOn: Instant,
+                studyId: UUID, ownerId: UUID, name: string, createdOn: Instant,
                 description: string | null,
                 invitation: StudyInvitation,
                 protocolSnapshot: StudyProtocolSnapshot | null )
@@ -36,7 +33,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             static get Companion(): StudyDetails$Companion
 
             readonly studyId: UUID
-            readonly studyOwner: StudyOwner
+            readonly ownerId: UUID
             readonly name: string
             readonly createdOn: Instant
             readonly description: string | null
@@ -165,24 +162,12 @@ declare module 'carp.core-kotlin-carp.studies.core'
                 readonly stoppedOn: Instant
             }
         }
-
-
-        class StudyOwner
-        {
-            constructor( id?: UUID )
-
-            static get Companion(): StudyOwner$Companion
-
-            readonly id: UUID
-        }
-        interface StudyOwner$Companion { serializer(): any }
     }
 
 
     namespace dk.cachet.carp.studies.infrastructure
     {
         import AssignParticipantDevices = dk.cachet.carp.studies.application.users.AssignParticipantDevices
-        import StudyOwner = dk.cachet.carp.studies.application.users.StudyOwner
 
 
         abstract class StudyServiceRequest
@@ -195,7 +180,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
         {
             class CreateStudy extends StudyServiceRequest
             {
-                constructor( owner: StudyOwner, name: string, description?: string | null, invitation?: StudyInvitation )
+                constructor( ownerId: UUID, name: string, description?: string | null, invitation?: StudyInvitation )
             }
             class SetInternalDescription extends StudyServiceRequest
             {
@@ -211,7 +196,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             }
             class GetStudiesOverview extends StudyServiceRequest
             {
-                constructor( owner: StudyOwner )
+                constructor( ownerId: UUID )
             }
             class SetInvitation extends StudyServiceRequest
             {

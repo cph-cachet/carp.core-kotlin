@@ -8,25 +8,27 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.StudyDetails
 import dk.cachet.carp.studies.application.StudyStatus
-import dk.cachet.carp.studies.application.users.StudyOwner
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
 
 /**
- * Represents a study which can be pilot tested and eventually 'go live', for which a recruitment goal can be set, and participants can be recruited.
+ * Represents a study which can be pilot tested and eventually 'go live',
+ * for which a recruitment goal can be set, and participants can be recruited.
  */
 class Study(
     /**
-     * The person or group that created this [Study].
+     * The ID of the person or group that created this [Study].
      */
-    val owner: StudyOwner,
+    val ownerId: UUID,
     /**
-     * A descriptive name for the study, assigned by, and only visible to, the [StudyOwner].
+     * A descriptive name for the study, assigned by, and only visible to,
+     * the person or group with [ownerId].
      */
     name: String,
     /**
-     * A description for the study, assigned by, and only visible to, the [StudyOwner].
+     * A description for the study, assigned by, and only visible to,
+     * the person or group with [ownerId].
      */
     description: String? = null,
     /**
@@ -51,7 +53,7 @@ class Study(
         fun fromSnapshot( snapshot: StudySnapshot ): Study
         {
             val study = Study(
-                StudyOwner( snapshot.ownerId ),
+                snapshot.ownerId,
                 snapshot.name,
                 snapshot.description,
                 snapshot.invitation,
@@ -70,7 +72,8 @@ class Study(
 
 
     /**
-     * A descriptive name for the study, assigned by, and only visible to, the [StudyOwner].
+     * A descriptive name for the study, assigned by, and only visible to,
+     * the person or group with [ownerId].
      */
     var name: String = name
         set( value )
@@ -80,7 +83,8 @@ class Study(
         }
 
     /**
-     * A description for the study, assigned by, and only visible to, the [StudyOwner].
+     * A description for the study, assigned by, and only visible to,
+     * the person or group with [ownerId].
      */
     var description: String? = description
         set( value )
@@ -119,7 +123,7 @@ class Study(
      * Get [StudyDetails] for this [Study].
      */
     fun getStudyDetails(): StudyDetails =
-        StudyDetails( id, owner, name, createdOn, description, invitation, protocolSnapshot )
+        StudyDetails( id, ownerId, name, createdOn, description, invitation, protocolSnapshot )
 
     val canSetStudyProtocol: Boolean get() = !isLive
 

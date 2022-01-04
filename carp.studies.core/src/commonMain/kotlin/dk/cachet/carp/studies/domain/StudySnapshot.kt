@@ -32,7 +32,7 @@ data class StudySnapshot(
             return StudySnapshot(
                 id = study.id,
                 createdOn = study.createdOn,
-                ownerId = study.owner.id,
+                ownerId = study.ownerId,
                 name = study.name,
                 description = study.description,
                 invitation = study.invitation,
