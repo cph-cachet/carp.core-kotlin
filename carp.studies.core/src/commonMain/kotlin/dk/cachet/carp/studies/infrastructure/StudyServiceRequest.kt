@@ -8,7 +8,6 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyDetails
 import dk.cachet.carp.studies.application.StudyStatus
-import dk.cachet.carp.studies.application.users.StudyOwner
 import kotlinx.serialization.Serializable
 
 private typealias Service = StudyService
@@ -23,12 +22,12 @@ sealed class StudyServiceRequest
 {
     @Serializable
     data class CreateStudy(
-        val owner: StudyOwner,
+        val ownerId: UUID,
         val name: String,
         val description: String? = null,
         val invitation: StudyInvitation? = null
     ) : StudyServiceRequest(),
-        Invoker<StudyStatus> by createServiceInvoker( Service::createStudy, owner, name, description, invitation )
+        Invoker<StudyStatus> by createServiceInvoker( Service::createStudy, ownerId, name, description, invitation )
 
     @Serializable
     data class SetInternalDescription( val studyId: UUID, val name: String, val description: String ) :
@@ -46,9 +45,9 @@ sealed class StudyServiceRequest
         Invoker<StudyStatus> by createServiceInvoker( Service::getStudyStatus, studyId )
 
     @Serializable
-    data class GetStudiesOverview( val owner: StudyOwner ) :
+    data class GetStudiesOverview( val ownerId: UUID ) :
         StudyServiceRequest(),
-        Invoker<List<StudyStatus>> by createServiceInvoker( Service::getStudiesOverview, owner )
+        Invoker<List<StudyStatus>> by createServiceInvoker( Service::getStudiesOverview, ownerId )
 
     @Serializable
     data class SetInvitation( val studyId: UUID, val invitation: StudyInvitation ) :

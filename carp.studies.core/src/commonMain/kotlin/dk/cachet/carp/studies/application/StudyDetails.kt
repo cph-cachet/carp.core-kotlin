@@ -3,7 +3,6 @@ package dk.cachet.carp.studies.application
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.studies.application.users.StudyOwner
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -15,9 +14,9 @@ import kotlinx.serialization.Serializable
 data class StudyDetails(
     val studyId: UUID,
     /**
-     * The person or group that created this study.
+     * The ID of the person or group that created this study.
      */
-    val studyOwner: StudyOwner,
+    val ownerId: UUID,
     /**
      * A descriptive name for the study, assigned by, and only visible to, the [StudyOwner].
      */

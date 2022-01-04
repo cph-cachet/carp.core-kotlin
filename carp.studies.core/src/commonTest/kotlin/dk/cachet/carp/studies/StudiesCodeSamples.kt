@@ -22,7 +22,6 @@ import dk.cachet.carp.studies.application.StudyStatus
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
-import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
 import dk.cachet.carp.test.runSuspendTest
@@ -37,8 +36,8 @@ class StudiesCodeSamples
         val (studyService, recruitmentService) = createEndpoints()
 
         // Create a new study.
-        val studyOwner = StudyOwner()
-        var studyStatus: StudyStatus = studyService.createStudy( studyOwner, "Example study" )
+        val ownerId = UUID.randomUUID()
+        var studyStatus: StudyStatus = studyService.createStudy( ownerId, "Example study" )
         val studyId: UUID = studyStatus.studyId
 
         // Let the study use the protocol from the 'carp.protocols' example above.

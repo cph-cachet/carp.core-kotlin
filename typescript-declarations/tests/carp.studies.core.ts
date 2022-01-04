@@ -33,7 +33,6 @@ import StudyStatus = dk.cachet.carp.studies.application.StudyStatus
 import AssignParticipantDevices = dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import Participant = dk.cachet.carp.studies.application.users.Participant
 import ParticipantGroupStatus = dk.cachet.carp.studies.application.users.ParticipantGroupStatus
-import StudyOwner = dk.cachet.carp.studies.application.users.StudyOwner
 import getAssignedParticipantIds = dk.cachet.carp.studies.application.users.participantIds_ttprz$
 import getAssignedDeviceRoles = dk.cachet.carp.studies.application.users.deviceRoles_ttprz$
 import RecruitmentServiceRequest = dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest
@@ -47,7 +46,7 @@ describe( "carp.studies.core", () => {
         const invitedDeploymentStatus = new StudyDeploymentStatus.Invited( now, deploymentId, new ArrayList<DeviceDeploymentStatus>( [] ), new ArrayList<ParticipantStatus>( [] ), null )
 
         const instances = [
-            new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", Clock.System.now(), "Description", new StudyInvitation( "Some study" ), null ),
+            new StudyDetails( UUID.Companion.randomUUID(), UUID.Companion.randomUUID(), "Name", Clock.System.now(), "Description", new StudyInvitation( "Some study" ), null ),
             StudyDetails.Companion,
             [ "StudyStatus", new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true ) ],
             new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true ),
@@ -64,8 +63,6 @@ describe( "carp.studies.core", () => {
             new ParticipantGroupStatus.Running( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus, now ),
             new ParticipantGroupStatus.Stopped( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus, null, now ),
             ParticipantGroupStatus.Companion,
-            new StudyOwner(),
-            StudyOwner.Companion,
             RecruitmentServiceRequest.Companion,
             StudyServiceRequest.Companion,
         ]
@@ -95,14 +92,6 @@ describe( "carp.studies.core", () => {
     } )
 
 
-    describe( "StudyOwner", () => {
-        it( "initializes with default id", () => {
-            const owner = new StudyOwner()
-            expect( owner.id ).instanceOf( UUID )
-        } )
-    } )
-
-
     describe( "StudyStatus", () => {
         it ( "can typecheck StudyStatus", () => {
             const configuring = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true )
@@ -121,7 +110,7 @@ describe( "carp.studies.core", () => {
     describe( "StudyServiceRequest", () => {
         it( "can serialize requests with polymorphic serializer", () => {
             const createStudy = new StudyServiceRequest.CreateStudy(
-                new StudyOwner(),
+                UUID.Companion.randomUUID(),
                 "Test study",
                 "This is a study description",
                 new StudyInvitation( "Some study" )

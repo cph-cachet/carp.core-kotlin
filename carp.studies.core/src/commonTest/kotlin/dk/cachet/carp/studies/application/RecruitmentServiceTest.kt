@@ -10,7 +10,6 @@ import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
-import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -32,7 +31,7 @@ interface RecruitmentServiceTest
     @Test
     fun adding_and_retrieving_participant_succeeds() = runSuspendTest {
         val (recruitmentService, studyService) = createService()
-        val study = studyService.createStudy( StudyOwner(), "Test" )
+        val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
 
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
@@ -58,7 +57,7 @@ interface RecruitmentServiceTest
     @Test
     fun addParticipant_twice_returns_same_participant() = runSuspendTest {
         val (recruitmentService, studyService) = createService()
-        val study = studyService.createStudy( StudyOwner(), "Test" )
+        val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
 
         val email = EmailAddress( "test@test.com" )
@@ -70,7 +69,7 @@ interface RecruitmentServiceTest
     @Test
     fun getParticipant_fails_for_unknown_id() = runSuspendTest {
         val (recruitmentService, studyService) = createService()
-        val study = studyService.createStudy( StudyOwner(), "Test" )
+        val study = studyService.createStudy( UUID.randomUUID(), "Test" )
 
         // Unknown study Id.
         assertFailsWith<IllegalArgumentException> { recruitmentService.getParticipant( unknownId, unknownId ) }
@@ -256,7 +255,7 @@ interface RecruitmentServiceTest
         val validSnapshot = protocol.getSnapshot()
 
         // Create live study from protocol.
-        val status = service.createStudy( StudyOwner(), "Test" )
+        val status = service.createStudy( UUID.randomUUID(), "Test" )
         val studyId = status.studyId
         service.setProtocol( studyId, validSnapshot )
         service.goLive( studyId )

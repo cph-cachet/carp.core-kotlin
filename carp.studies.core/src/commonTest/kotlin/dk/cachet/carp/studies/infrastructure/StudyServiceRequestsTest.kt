@@ -7,7 +7,6 @@ import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceMock
-import dk.cachet.carp.studies.application.users.StudyOwner
 
 
 /**
@@ -25,11 +24,11 @@ class StudyServiceRequestsTest : ApplicationServiceRequestsTest<StudyService, St
         private val studyId = UUID.randomUUID()
 
         val REQUESTS: List<StudyServiceRequest> = listOf(
-            StudyServiceRequest.CreateStudy( StudyOwner(), "Test", "Description", StudyInvitation( "Some study" ) ),
+            StudyServiceRequest.CreateStudy( UUID.randomUUID(), "Test", "Description", StudyInvitation( "Some study" ) ),
             StudyServiceRequest.SetInternalDescription( studyId, "New name", "New description" ),
             StudyServiceRequest.GetStudyDetails( studyId ),
             StudyServiceRequest.GetStudyStatus( studyId ),
-            StudyServiceRequest.GetStudiesOverview( StudyOwner() ),
+            StudyServiceRequest.GetStudiesOverview( UUID.randomUUID() ),
             StudyServiceRequest.SetInvitation( studyId, StudyInvitation( "Some study" ) ),
             StudyServiceRequest.SetProtocol( studyId, StudyProtocol( ProtocolOwner(), "Test" ).getSnapshot() ),
             StudyServiceRequest.GoLive( studyId ),
