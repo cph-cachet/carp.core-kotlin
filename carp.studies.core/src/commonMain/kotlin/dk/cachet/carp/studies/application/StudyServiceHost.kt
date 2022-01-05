@@ -17,18 +17,16 @@ class StudyServiceHost(
 ) : StudyService
 {
     /**
-     * Create a new study for the specified person or group with [ownerId].
+     * Create a new study for the entity (e.g., person or group) with [ownerId].
      */
     override suspend fun createStudy(
         ownerId: UUID,
         /**
-         * A descriptive name for the study, assigned by, and only visible to,
-         * the person or group with [ownerId].
+         * A descriptive name for the study, assigned by, and only visible to, the entity with [ownerId].
          */
         name: String,
         /**
-         * An optional description of the study, assigned by, and only visible to,
-         * the person or group with [ownerId].
+         * An optional description of the study, assigned by, and only visible to, the entity with [ownerId].
          */
         description: String?,
         /**
@@ -97,7 +95,7 @@ class StudyServiceHost(
     }
 
     /**
-     * Get status for all studies created by the person or group with the specified [ownerId].
+     * Get status for all studies created by the entity (e.g. person or group) with the specified [ownerId].
      */
     override suspend fun getStudiesOverview( ownerId: UUID ): List<StudyStatus> =
         repository.getForOwner( ownerId ).map { it.getStatus() }

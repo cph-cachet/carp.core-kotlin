@@ -14,11 +14,11 @@ import kotlinx.serialization.Serializable
 data class StudyDetails(
     val studyId: UUID,
     /**
-     * The ID of the person or group that created this study.
+     * The ID of the entity (e.g., person or group) that created this study.
      */
     val ownerId: UUID,
     /**
-     * A descriptive name for the study, assigned by, and only visible to, the [StudyOwner].
+     * A descriptive name for the study, assigned by, and only visible to, the study owner.
      */
     val name: String,
     /**
@@ -26,7 +26,7 @@ data class StudyDetails(
      */
     val createdOn: Instant,
     /**
-     * A description for the study, assigned by, and only visible to, the [StudyOwner].
+     * A description for the study, assigned by, and only visible to, the study owner.
      */
     val description: String?,
     /**
