@@ -1,13 +1,13 @@
 package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.test.Mock
 
 
 class ProtocolFactoryServiceMock(
-    private val createCustomProtocolResult: StudyProtocolSnapshot = StudyProtocol( ProtocolOwner(), "Mock" ).getSnapshot()
+    private val createCustomProtocolResult: StudyProtocolSnapshot =
+        StudyProtocol( UUID.randomUUID(), "Mock" ).getSnapshot()
 ) : Mock<ProtocolFactoryService>(), ProtocolFactoryService
 {
     override suspend fun createCustomProtocol(

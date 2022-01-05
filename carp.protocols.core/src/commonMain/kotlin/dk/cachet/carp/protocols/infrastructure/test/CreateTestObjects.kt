@@ -13,7 +13,6 @@ import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 
 
@@ -25,8 +24,8 @@ fun createEmptyProtocol( name: String = "Test protocol" ): StudyProtocol
 {
     JSON = createDefaultJSON( STUBS_SERIAL_MODULE )
 
-    val alwaysSameOwner = ProtocolOwner( UUID( "27879e75-ccc1-4866-9ab3-4ece1b735052" ) )
-    return StudyProtocol( alwaysSameOwner, name, "Test description" )
+    val alwaysSameOwnerId = UUID( "27879e75-ccc1-4866-9ab3-4ece1b735052" )
+    return StudyProtocol( alwaysSameOwnerId, name, "Test description" )
 }
 
 /**

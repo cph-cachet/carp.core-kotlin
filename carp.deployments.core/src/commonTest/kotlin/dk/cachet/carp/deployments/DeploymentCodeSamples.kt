@@ -15,7 +15,6 @@ import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.test.runSuspendTest
@@ -72,8 +71,8 @@ class DeploymentCodeSamples
      */
     private fun createExampleProtocol(): StudyProtocol
     {
-        val owner = ProtocolOwner()
-        val protocol = StudyProtocol( owner, "Track patient movement" )
+        val ownerId = UUID.randomUUID()
+        val protocol = StudyProtocol( ownerId, "Track patient movement" )
 
         val phone = Smartphone( "Patient's phone" )
         protocol.addMasterDevice( phone )

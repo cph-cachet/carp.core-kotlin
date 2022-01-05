@@ -2,14 +2,15 @@ package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.ParticipantAttribute
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.test.Mock
 
 
 class ProtocolServiceMock(
-    val updateParticipantDataConfigurationResult: StudyProtocolSnapshot = StudyProtocol( ProtocolOwner(), "Mock" ).getSnapshot(),
-    val getByResult: StudyProtocolSnapshot = StudyProtocol( ProtocolOwner(), "Mock" ).getSnapshot(),
+    val updateParticipantDataConfigurationResult: StudyProtocolSnapshot =
+        StudyProtocol( UUID.randomUUID(), "Mock" ).getSnapshot(),
+    val getByResult: StudyProtocolSnapshot =
+        StudyProtocol( UUID.randomUUID(), "Mock" ).getSnapshot(),
     val getAllForResult: List<StudyProtocolSnapshot> = listOf(),
     val getVersionHistoryForResult: List<ProtocolVersion> = listOf()
 ) : Mock<ProtocolService>(), ProtocolService

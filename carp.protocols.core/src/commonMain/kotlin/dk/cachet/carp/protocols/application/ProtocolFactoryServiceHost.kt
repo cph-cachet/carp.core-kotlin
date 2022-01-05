@@ -3,7 +3,6 @@ package dk.cachet.carp.protocols.application
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.CustomProtocolDevice
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
 
@@ -28,11 +27,7 @@ class ProtocolFactoryServiceHost : ProtocolFactoryService
         description: String?
     ): StudyProtocolSnapshot
     {
-        // Get protocol owner.
-        // TODO: If `ProtocolOwner` ever takes additional fields this needs to be retrieved from the repository.
-        val owner = ProtocolOwner( ownerId )
-
-        val protocol = StudyProtocol( owner, name, description )
+        val protocol = StudyProtocol( ownerId, name, description )
         val customDevice = CustomProtocolDevice( "Custom device" )
         protocol.addMasterDevice( customDevice )
         val task = CustomProtocolTask( "Custom device task", customProtocol )
