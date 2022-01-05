@@ -13,7 +13,6 @@ import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlinx.datetime.Clock
@@ -104,7 +103,7 @@ class StudyTest
 
     private fun singleDeviceDeployment( device: AnyMasterDeviceDescriptor ) =
         StudyDeployment.fromInvitations(
-            StudyProtocol( ProtocolOwner(), "Test" ).apply { addMasterDevice( device ) }.getSnapshot(),
+            StudyProtocol( UUID.randomUUID(), "Test" ).apply { addMasterDevice( device ) }.getSnapshot(),
             listOf(
                 ParticipantInvitation(
                     UUID.randomUUID(),
@@ -120,7 +119,7 @@ class StudyTest
         device: AnyMasterDeviceDescriptor,
         dependentDevice: AnyMasterDeviceDescriptor
     ) = StudyDeployment.fromInvitations(
-        StudyProtocol( ProtocolOwner(), "Test" ).apply {
+        StudyProtocol( UUID.randomUUID(), "Test" ).apply {
             addMasterDevice( device )
             addMasterDevice( dependentDevice )
         }.getSnapshot(),

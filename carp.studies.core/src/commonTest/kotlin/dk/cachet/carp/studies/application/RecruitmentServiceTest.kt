@@ -6,7 +6,6 @@ import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
@@ -249,7 +248,7 @@ interface RecruitmentServiceTest
     private suspend fun createLiveStudy( service: StudyService ): Pair<UUID, StudyProtocolSnapshot>
     {
         // Create deployable protocol.
-        val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
+        val protocol = StudyProtocol( UUID.randomUUID(), "Test protocol" )
         protocol.addMasterDevice( Smartphone( "User's phone" ) )
         protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
         val validSnapshot = protocol.getSnapshot()

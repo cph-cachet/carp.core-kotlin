@@ -5,7 +5,6 @@ import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
@@ -189,7 +188,7 @@ interface StudyServiceTest
         val service = createService()
         val status = service.createStudy( UUID.randomUUID(), "Test" )
 
-        val protocol = StudyProtocol( ProtocolOwner(), "Not deployable" )
+        val protocol = StudyProtocol( UUID.randomUUID(), "Not deployable" )
         assertFailsWith<IllegalArgumentException> { service.setProtocol( status.studyId, protocol.getSnapshot() ) }
     }
 
@@ -268,7 +267,7 @@ interface StudyServiceTest
 
     private fun createDeployableProtocol(): StudyProtocolSnapshot
     {
-        val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
+        val protocol = StudyProtocol( UUID.randomUUID(), "Test protocol" )
 
         // Add master device, needed for it to be deployable.
         protocol.addMasterDevice( Smartphone( "User's phone" ) )

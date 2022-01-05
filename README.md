@@ -169,8 +169,8 @@ The following shows how the subystems interact to create a study protocol, insta
 
 ```kotlin
 // Create a new study protocol.
-val owner = ProtocolOwner()
-val protocol = StudyProtocol( owner, "Track patient movement" )
+val ownerId = UUID.randomUUID()
+val protocol = StudyProtocol( ownerId, "Track patient movement" )
 
 // Define which devices are used for data collection.
 val phone = Smartphone( "Patient's phone" )

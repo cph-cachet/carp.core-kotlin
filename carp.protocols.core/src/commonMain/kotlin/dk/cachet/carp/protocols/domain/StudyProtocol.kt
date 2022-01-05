@@ -25,10 +25,19 @@ import kotlinx.datetime.Instant
  * the optional devices ([AnyDeviceDescriptor]) connected to them, and the [Trigger]'s which lead to data collection on said devices.
  */
 @Suppress( "TooManyFunctions" ) // TODO: some of the device and task configuration methods are overridden solely to add events. Can this be refactored?
-class StudyProtocol private constructor(
+class StudyProtocol(
+    /**
+     * The entity (e.g., person or group) that created this [StudyProtocol].
+     */
     val ownerId: UUID,
+    /**
+     * A unique descriptive name for the protocol assigned by the [ProtocolOwner].
+     */
     val name: String,
-    val description: String?,
+    /**
+     * An optional description for the study protocol.
+     */
+    val description: String? = null,
     id: UUID = UUID.randomUUID(),
     createdOn: Instant = Clock.System.now()
 ) : StudyProtocolComposition(
@@ -39,22 +48,6 @@ class StudyProtocol private constructor(
         createdOn
     )
 {
-    constructor(
-        /**
-         * The person or group that created this [StudyProtocol].
-         */
-        owner: ProtocolOwner,
-        /**
-         * A unique descriptive name for the protocol assigned by the [ProtocolOwner].
-         */
-        name: String,
-        /**
-         * An optional description for the study protocol.
-         */
-        description: String? = null
-    ) : this( owner.id, name, description )
-
-
     sealed class Event : DomainEvent()
     {
         data class MasterDeviceAdded( val device: AnyMasterDeviceDescriptor ) : Event()

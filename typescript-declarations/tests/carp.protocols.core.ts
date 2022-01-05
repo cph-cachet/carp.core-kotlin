@@ -11,7 +11,6 @@ import createDefaultJSON = cdk.cachet.carp.common.infrastructure.serialization.c
 import { dk } from 'carp.core-kotlin-carp.protocols.core'
 import ProtocolVersion = dk.cachet.carp.protocols.application.ProtocolVersion
 import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import ProtocolOwner = dk.cachet.carp.protocols.domain.ProtocolOwner
 import ProtocolFactoryServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceRequest
 import ProtocolServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest
 
@@ -30,8 +29,6 @@ describe( "carp.protocols.core", () => {
             ProtocolVersion.Companion,
             studyProtocolSnapshot,
             StudyProtocolSnapshot.Companion,
-            new ProtocolOwner(),
-            ProtocolOwner.Companion,
             ProtocolFactoryServiceRequest.Companion,
             ProtocolServiceRequest.Companion,
         ]

@@ -3,7 +3,6 @@ package dk.cachet.carp.studies.domain
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.deployments.application.users.StudyInvitation
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.StudyStatus
 import kotlin.test.*
@@ -79,7 +78,7 @@ class StudyTest
     {
         val study = createStudy()
 
-        val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
+        val protocol = StudyProtocol( UUID.randomUUID(), "Test protocol" )
         assertFailsWith<IllegalArgumentException> { study.protocolSnapshot = protocol.getSnapshot() }
         assertEquals( 0, study.consumeEvents().count() )
     }
@@ -160,7 +159,7 @@ class StudyTest
 
     private fun setDeployableProtocol( study: Study )
     {
-        val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
+        val protocol = StudyProtocol( UUID.randomUUID(), "Test protocol" )
         protocol.addMasterDevice( Smartphone( "User's phone" ) ) // One master device is needed to deploy.
         study.protocolSnapshot = protocol.getSnapshot()
     }

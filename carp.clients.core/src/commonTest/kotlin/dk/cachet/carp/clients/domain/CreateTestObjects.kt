@@ -20,7 +20,6 @@ import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 
 
@@ -33,7 +32,8 @@ val deviceSmartphoneDependsOn: AnyMasterDeviceDescriptor = Smartphone( "Some oth
  */
 fun createSmartphoneStudy(): StudyProtocol
 {
-    val protocol = StudyProtocol( ProtocolOwner(), "Smartphone study" )
+    val ownerId = UUID.randomUUID()
+    val protocol = StudyProtocol( ownerId, "Smartphone study" )
     protocol.addMasterDevice( smartphone )
     return protocol
 }
@@ -43,7 +43,8 @@ fun createSmartphoneStudy(): StudyProtocol
  */
 fun createSmartphoneWithConnectedDeviceStudy(): StudyProtocol
 {
-    val protocol = StudyProtocol( ProtocolOwner(), "Smartphone study" )
+    val ownerId = UUID.randomUUID()
+    val protocol = StudyProtocol( ownerId, "Smartphone study" )
     protocol.addMasterDevice( smartphone )
     protocol.addConnectedDevice( connectedDevice, smartphone )
     return protocol
@@ -54,7 +55,8 @@ fun createSmartphoneWithConnectedDeviceStudy(): StudyProtocol
  */
 fun createDependentSmartphoneStudy(): StudyProtocol
 {
-    val protocol = StudyProtocol( ProtocolOwner(), "Smartphone study" )
+    val ownerId = UUID.randomUUID()
+    val protocol = StudyProtocol( ownerId, "Smartphone study" )
     protocol.addMasterDevice( smartphone )
     // TODO: Right now simply adding another master device is sufficient to create a dependency.
     //       However, when optimizing this to figure out dependencies based on triggers this might no longer be the case and tests might fail.

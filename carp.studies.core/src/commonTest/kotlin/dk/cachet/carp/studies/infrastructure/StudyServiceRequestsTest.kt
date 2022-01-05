@@ -3,7 +3,6 @@ package dk.cachet.carp.studies.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.deployments.application.users.StudyInvitation
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceMock
@@ -30,7 +29,7 @@ class StudyServiceRequestsTest : ApplicationServiceRequestsTest<StudyService, St
             StudyServiceRequest.GetStudyStatus( studyId ),
             StudyServiceRequest.GetStudiesOverview( UUID.randomUUID() ),
             StudyServiceRequest.SetInvitation( studyId, StudyInvitation( "Some study" ) ),
-            StudyServiceRequest.SetProtocol( studyId, StudyProtocol( ProtocolOwner(), "Test" ).getSnapshot() ),
+            StudyServiceRequest.SetProtocol( studyId, StudyProtocol( UUID.randomUUID(), "Test" ).getSnapshot() ),
             StudyServiceRequest.GoLive( studyId ),
             StudyServiceRequest.Remove( studyId )
         )

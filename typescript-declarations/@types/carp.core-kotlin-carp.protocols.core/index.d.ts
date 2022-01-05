@@ -52,22 +52,6 @@ declare module 'carp.core-kotlin-carp.protocols.core'
     }
 
 
-    namespace dk.cachet.carp.protocols.domain
-    {
-        import UUID = cdk.cachet.carp.common.application.UUID
-
-        class ProtocolOwner
-        {
-            constructor( id?: UUID )
-
-            static get Companion(): ProtocolOwner$Companion
-
-            readonly id: UUID
-        }
-        interface ProtocolOwner$Companion { serializer(): any }
-    }
-
-
     namespace dk.cachet.carp.protocols.infrastructure
     {
         import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
