@@ -18,17 +18,15 @@ import kotlinx.datetime.Instant
  */
 class Study(
     /**
-     * The ID of the person or group that created this [Study].
+     * The ID of the entity (e.g., person or group) that created this [Study].
      */
     val ownerId: UUID,
     /**
-     * A descriptive name for the study, assigned by, and only visible to,
-     * the person or group with [ownerId].
+     * A descriptive name for the study, assigned by, and only visible to, the entity with [ownerId].
      */
     name: String,
     /**
-     * A description for the study, assigned by, and only visible to,
-     * the person or group with [ownerId].
+     * A description for the study, assigned by, and only visible to, the entity with [ownerId].
      */
     description: String? = null,
     /**
@@ -72,8 +70,7 @@ class Study(
 
 
     /**
-     * A descriptive name for the study, assigned by, and only visible to,
-     * the person or group with [ownerId].
+     * A descriptive name for the study, assigned by, and only visible to, the entity with [ownerId].
      */
     var name: String = name
         set( value )
@@ -83,8 +80,7 @@ class Study(
         }
 
     /**
-     * A description for the study, assigned by, and only visible to,
-     * the person or group with [ownerId].
+     * A description for the study, assigned by, and only visible to, the entity with [ownerId].
      */
     var description: String? = description
         set( value )
