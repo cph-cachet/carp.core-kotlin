@@ -7,7 +7,7 @@ import dk.cachet.carp.protocols.application.ProtocolVersion
 /**
  * A repository which handles persisting different versions of [StudyProtocol]s.
  *
- * Protocol names are unique to a [ProtocolOwner].
+ * Protocol names are unique to a protocol owner.
  * Version tags are unique to a [StudyProtocol].
  */
 interface StudyProtocolRepository

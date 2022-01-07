@@ -31,7 +31,7 @@ class StudyProtocol(
      */
     val ownerId: UUID,
     /**
-     * A unique descriptive name for the protocol assigned by the [ProtocolOwner].
+     * A unique descriptive name for the protocol assigned by the protocol owner.
      */
     val name: String,
     /**
