@@ -24,7 +24,8 @@ interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.
      *
      * @param versionTag An optional label used to identify this first version of the [protocol]. "Initial" by default.
      * @throws IllegalArgumentException when:
-     *   - [protocol] already exists
+     *   - a [protocol] with the same id already exists
+     *   - a different [protocol] with the same owner and name in the latest version already exists
      *   - [protocol] is invalid
      */
     suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String = "Initial" )
@@ -36,6 +37,7 @@ interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.
      * @param versionTag An optional unique label used to identify this specific version of the [protocol]. The current date/time by default.
      * @throws IllegalArgumentException when:
      *   - [protocol] is not yet stored in the repository
+     *   - a different [protocol] with the same owner and name in the latest version already exists
      *   - [protocol] is invalid
      *   - the [versionTag] is already in use
      */

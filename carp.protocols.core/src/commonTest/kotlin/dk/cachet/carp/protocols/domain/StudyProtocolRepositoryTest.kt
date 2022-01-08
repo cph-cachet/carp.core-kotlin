@@ -9,6 +9,9 @@ import kotlinx.datetime.Instant
 import kotlin.test.*
 
 
+private val ownerId = UUID.randomUUID()
+
+
 /**
  * Tests for implementations of [StudyProtocolRepository].
  */
@@ -23,7 +26,7 @@ interface StudyProtocolRepositoryTest
     @Test
     fun add_protocol_and_retrieving_it_succeeds() = runSuspendTest {
         val repo = createRepository()
-        val protocol = StudyProtocol( UUID.randomUUID(), "Name" )
+        val protocol = StudyProtocol( ownerId, "Name" )
 
         repo.add( protocol, ProtocolVersion( "Initial" ) )
         val retrieved = repo.getBy( protocol.id )
@@ -34,19 +37,47 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
-    fun add_fails_for_existing_protocol() = runSuspendTest {
+    fun add_fails_for_existing_protocol_with_same_id() = runSuspendTest {
         val repo = createRepository()
         val protocol = StudyProtocol( UUID.randomUUID(), "Study" )
         repo.add( protocol, ProtocolVersion( "Initial" ) )
 
+        val sameIdProtocol = StudyProtocol( UUID.randomUUID(), "Study", null, protocol.id )
         val differentVersion = ProtocolVersion( "Version doesn't determine identity." )
-        assertFailsWith<IllegalArgumentException> { repo.add( protocol, differentVersion ) }
+        assertFailsWith<IllegalArgumentException> { repo.add( sameIdProtocol, differentVersion ) }
+    }
+
+    @Test
+    fun add_fails_for_existing_protocol_with_same_owner_and_name() = runSuspendTest {
+        val repo = createRepository()
+        val protocolName = "Study"
+        val protocol = StudyProtocol( ownerId, protocolName )
+        repo.add( protocol, ProtocolVersion( "Initial" ) )
+
+        val sameOwnerNameProtocol = StudyProtocol( ownerId, protocolName )
+        val differentVersion = ProtocolVersion( "Version doesn't determine identity." )
+        assertFailsWith<IllegalArgumentException> { repo.add( sameOwnerNameProtocol, differentVersion ) }
+    }
+
+    @Test
+    fun add_protocol_succeeds_for_same_name_used_in_old_version() = runSuspendTest {
+        val repo = createRepository()
+        val originalProtocolName = "Study"
+        val protocol = StudyProtocol( ownerId, originalProtocolName )
+        repo.add( protocol, ProtocolVersion( "Initial" ) )
+        repo.addVersion(
+            StudyProtocol( ownerId, "New name", null, protocol.id ),
+            ProtocolVersion( "Second version" )
+        )
+
+        val priorNameProtocol = StudyProtocol( ownerId, originalProtocolName )
+        repo.add( priorNameProtocol, ProtocolVersion( "Latest" ) )
     }
 
     @Test
     fun addVersion_succeeds() = runSuspendTest {
         val repo = createRepository()
-        val protocol = StudyProtocol( UUID.randomUUID(), "Name" )
+        val protocol = StudyProtocol( ownerId, "Name" )
         repo.add( protocol, ProtocolVersion( "Initial" ) )
 
         protocol.addMasterDevice( StubMasterDeviceDescriptor() )
@@ -62,14 +93,14 @@ interface StudyProtocolRepositoryTest
     fun addVersion_fails_for_protocol_which_does_not_exist() = runSuspendTest {
         val repo = createRepository()
 
-        val protocol = StudyProtocol( UUID.randomUUID(), "Study" )
+        val protocol = StudyProtocol( ownerId, "Study" )
         assertFailsWith<IllegalArgumentException> { repo.addVersion( protocol, ProtocolVersion( "New version" ) ) }
     }
 
     @Test
     fun addVersion_fails_for_version_which_is_already_in_use() = runSuspendTest {
         val repo = createRepository()
-        val protocol = StudyProtocol( UUID.randomUUID(), "Study" )
+        val protocol = StudyProtocol( ownerId, "Study" )
         val version = ProtocolVersion( "Version" )
         repo.add( protocol, version )
 
@@ -78,9 +109,24 @@ interface StudyProtocolRepositoryTest
     }
 
     @Test
+    fun addVersion_fails_for_existing_protocol_with_same_owner_and_name() = runSuspendTest {
+        val repo = createRepository()
+        val protocol = StudyProtocol( ownerId, "Name" )
+        repo.add( protocol, ProtocolVersion( "Initial" ) )
+        val protocol2 = StudyProtocol( ownerId, "Study 2" )
+        repo.add( protocol2, ProtocolVersion( "Initial" ) )
+
+        val newVersionProtocol2 = StudyProtocol( ownerId, protocol.name, null, protocol2.id )
+        assertFailsWith<IllegalArgumentException>
+        {
+            repo.addVersion( newVersionProtocol2, ProtocolVersion( "New version" ) )
+        }
+    }
+
+    @Test
     fun replace_succeeds() = runSuspendTest {
         val repo = createRepository()
-        val protocol = StudyProtocol( UUID.randomUUID(), "Study" )
+        val protocol = StudyProtocol( ownerId, "Study" )
         val version = ProtocolVersion( "Version" )
         repo.add( protocol, version )
 
@@ -97,14 +143,28 @@ interface StudyProtocolRepositoryTest
     fun replace_fails_for_protocol_which_does_not_exist() = runSuspendTest {
         val repo = createRepository()
 
-        val protocol = StudyProtocol( UUID.randomUUID(), "Study")
+        val protocol = StudyProtocol( ownerId, "Study")
         assertFailsWith<IllegalArgumentException> { repo.replace( protocol, ProtocolVersion( "Version" )) }
+    }
+
+    @Test
+    fun replace_fails_for_existing_protocol_with_same_owner_and_name() = runSuspendTest {
+        val repo = createRepository()
+        val protocol = StudyProtocol( ownerId, "Name" )
+        repo.add( protocol, ProtocolVersion( "Initial" ) )
+        val protocol2 = StudyProtocol( ownerId, "Study 2" )
+        repo.add( protocol2, ProtocolVersion( "Initial" ) )
+
+        val replaceVersionProtocol2 = StudyProtocol( ownerId, protocol.name, null, protocol2.id )
+        assertFailsWith<IllegalArgumentException>
+        {
+            repo.replace( replaceVersionProtocol2, ProtocolVersion( "New version" ) )
+        }
     }
 
     @Test
     fun getBy_gets_latest_when_version_not_specified() = runSuspendTest {
         val repo = createRepository()
-        val ownerId = UUID.randomUUID()
         val name = "Study"
 
         val protocol = StudyProtocol( ownerId, name )
@@ -125,7 +185,6 @@ interface StudyProtocolRepositoryTest
     @Test
     fun getBy_for_a_specific_version_succeeds() = runSuspendTest {
         val repo = createRepository()
-        val ownerId = UUID.randomUUID()
         val name = "Study"
 
         val protocol1 = StudyProtocol( ownerId, name )
@@ -158,7 +217,7 @@ interface StudyProtocolRepositoryTest
     @Test
     fun getBy_returns_null_for_version_which_does_not_exist() = runSuspendTest {
         val repo = createRepository()
-        val protocol = StudyProtocol( UUID.randomUUID(), "Study" )
+        val protocol = StudyProtocol( ownerId, "Study" )
         repo.add( protocol, ProtocolVersion( "Initial" ) )
         repo.addVersion( protocol, ProtocolVersion( "Update" ) )
 
@@ -168,7 +227,6 @@ interface StudyProtocolRepositoryTest
     @Test
     fun getAllForOwner_succeeds() = runSuspendTest {
         val repo = createRepository()
-        val ownerId = UUID.randomUUID()
 
         val protocol1 = StudyProtocol( ownerId, "Study 1" )
         repo.add( protocol1, ProtocolVersion( "Initial" ) )
@@ -200,7 +258,7 @@ interface StudyProtocolRepositoryTest
     @Test
     fun getVersionHistoryFor_succeeds() = runSuspendTest {
         val repo = createRepository()
-        val protocol = StudyProtocol( UUID.randomUUID(), "Study" )
+        val protocol = StudyProtocol( ownerId, "Study" )
         val initialVersion = ProtocolVersion( "Initial" )
         repo.add( protocol, initialVersion )
         val version1 = ProtocolVersion( "Version 1" )

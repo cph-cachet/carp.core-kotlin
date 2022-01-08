@@ -16,24 +16,29 @@ interface StudyProtocolRepository
      * Add the specified study [protocol] to the repository.
      *
      * @param version Identifies this first initial version of the [protocol].
-     * @throws IllegalArgumentException when a [protocol] with the same owner and name already exists.
+     * @throws IllegalArgumentException when:
+     *   - a [protocol] with the same id already exists
+     *   - a different [protocol] with the same owner and name in the latest version already exists
      */
     suspend fun add( protocol: StudyProtocol, version: ProtocolVersion )
 
     /**
      * Add a new [version] for the specified study [protocol] in the repository,
-     * of which a previous version with the same owner and name is already stored.
+     * of which a previous version with the same id is already stored.
      *
      * @throws IllegalArgumentException when:
      *   - the [protocol] is not yet stored in the repository
      *   - the tag specified in [version] is already in use
+     *   - a different [protocol] with the same owner and name in the latest version already exists
      */
     suspend fun addVersion( protocol: StudyProtocol, version: ProtocolVersion )
 
     /**
      * Replace a [version] of a [protocol], of which a previous version with the same owner and name is already stored.
      *
-     * @throws IllegalArgumentException when the [protocol] with [version] to replace is not found.
+     * @throws IllegalArgumentException when:
+     *   - the [protocol] with [version] to replace is not found
+     *   - a different [protocol] with the same owner and name in the latest version already exists
      */
     suspend fun replace( protocol: StudyProtocol, version: ProtocolVersion )
 

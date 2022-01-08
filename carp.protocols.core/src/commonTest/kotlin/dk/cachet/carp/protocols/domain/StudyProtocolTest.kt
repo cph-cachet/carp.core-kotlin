@@ -418,6 +418,7 @@ class StudyProtocolTest
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
         val fromSnapshot = StudyProtocol.fromSnapshot( snapshot )
 
+        assertEquals( protocol.id, fromSnapshot.id )
         assertEquals( protocol.ownerId, fromSnapshot.ownerId )
         assertEquals( protocol.name, fromSnapshot.name )
         assertEquals( protocol.description, fromSnapshot.description )
@@ -427,9 +428,9 @@ class StudyProtocolTest
         assertEquals( protocol.triggers, fromSnapshot.triggers )
         assertEquals( protocol.tasks, fromSnapshot.tasks )
         protocol.triggers.forEach {
-            val triggeredTasks = protocol.getTaskControls( it.id )
-            val fromSnapshotTriggeredTasks = fromSnapshot.getTaskControls( it.id )
-            assertEquals( triggeredTasks.count(), triggeredTasks.intersect( fromSnapshotTriggeredTasks ).count() )
+            val triggeredTasks = protocol.getTaskControls( it.id ).toSet()
+            val fromSnapshotTriggeredTasks = fromSnapshot.getTaskControls( it.id ).toSet()
+            assertEquals( triggeredTasks, fromSnapshotTriggeredTasks )
         }
         assertEquals( protocol.expectedParticipantData, fromSnapshot.expectedParticipantData )
         assertEquals( protocol.applicationData, fromSnapshot.applicationData )
@@ -443,10 +444,12 @@ class StudyProtocolTest
         masterDevice: AnyMasterDeviceDescriptor
     ): Boolean
     {
-        val protocolConnected = protocol.getConnectedDevices( masterDevice ).sortedWith( compareBy { it.roleName } )
-        val snapshotConnected = fromSnapshot.getConnectedDevices( masterDevice ).sortedWith( compareBy { it.roleName } )
+        val protocolConnected = protocol.getConnectedDevices( masterDevice ).toSet()
+        val snapshotConnected = fromSnapshot.getConnectedDevices( masterDevice ).toSet()
 
-        val areSameDevices = snapshotConnected.count() == protocolConnected.intersect( snapshotConnected ).count()
-        return areSameDevices && protocolConnected.filterIsInstance<AnyMasterDeviceDescriptor>().all { connectedDevicesAreSame( protocol, fromSnapshot, it ) }
+        val areSameDevices = protocolConnected == snapshotConnected
+        return areSameDevices && protocolConnected.filterIsInstance<AnyMasterDeviceDescriptor>().all {
+            connectedDevicesAreSame( protocol, fromSnapshot, it )
+        }
     }
 }
