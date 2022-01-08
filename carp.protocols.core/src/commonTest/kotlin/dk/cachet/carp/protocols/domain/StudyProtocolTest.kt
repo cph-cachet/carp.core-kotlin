@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
 
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
 import dk.cachet.carp.common.application.triggers.TaskControl.Control as Control
@@ -104,6 +105,40 @@ class StudyProtocolTest
         }
     }
 
+
+    @Test
+    fun name_and_description_change_succeeds()
+    {
+        val protocol = StudyProtocol( UUID.randomUUID(), "Initial name" )
+
+        val newName = "New name"
+        val newDescription = "New description"
+        protocol.name = newName
+        protocol.description = newDescription
+        assertEquals( newName, protocol.name )
+        assertEquals( newDescription, protocol.description )
+        val events = protocol.consumeEvents()
+        assertEquals(
+            StudyProtocol.Event.NameChanged( newName ),
+            events.filterIsInstance<StudyProtocol.Event.NameChanged>().single()
+        )
+        assertEquals(
+            StudyProtocol.Event.DescriptionChanged( newDescription ),
+            events.filterIsInstance<StudyProtocol.Event.DescriptionChanged>().single()
+        )
+    }
+
+    @Test
+    fun name_and_description_change_triggers_no_event_for_same_values()
+    {
+        val name = "Name"
+        val description = "Description"
+        val protocol = StudyProtocol( UUID.randomUUID(), name, description )
+
+        protocol.name = name
+        protocol.description = description
+        assertTrue( protocol.consumeEvents().isEmpty() )
+    }
 
     @Test
     fun one_master_device_needed_for_deployment()

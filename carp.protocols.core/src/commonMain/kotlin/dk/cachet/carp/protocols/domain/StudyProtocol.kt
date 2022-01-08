@@ -33,11 +33,11 @@ class StudyProtocol(
     /**
      * A unique descriptive name for the protocol assigned by the protocol owner.
      */
-    val name: String,
+    name: String,
     /**
      * An optional description for the study protocol.
      */
-    val description: String? = null,
+    description: String? = null,
     id: UUID = UUID.randomUUID(),
     createdOn: Instant = Clock.System.now()
 ) : StudyProtocolComposition(
@@ -50,6 +50,8 @@ class StudyProtocol(
 {
     sealed class Event : DomainEvent()
     {
+        data class NameChanged( val name: String ) : Event()
+        data class DescriptionChanged( val description: String? ) : Event()
         data class MasterDeviceAdded( val device: AnyMasterDeviceDescriptor ) : Event()
         data class ConnectedDeviceAdded( val connected: AnyDeviceDescriptor, val master: AnyMasterDeviceDescriptor ) : Event()
         data class TriggerAdded( val trigger: Trigger<*> ) : Event()
@@ -120,6 +122,37 @@ class StudyProtocol(
             return protocol
         }
     }
+
+
+    private var _name: String = name
+    /**
+     * A unique descriptive name for the protocol assigned by the protocol owner.
+     */
+    var name: String
+        get() = _name
+        set( value )
+        {
+            if ( _name != value )
+            {
+                _name = value
+                event( Event.NameChanged( value ) )
+            }
+        }
+
+    private var _description: String? = description
+    /**
+     * An optional description for the study protocol.
+     */
+    var description: String?
+        get() = _description
+        set( value )
+        {
+            if ( _description != value )
+            {
+                _description = value
+                event( Event.DescriptionChanged( value ) )
+            }
+        }
 
 
     /**
