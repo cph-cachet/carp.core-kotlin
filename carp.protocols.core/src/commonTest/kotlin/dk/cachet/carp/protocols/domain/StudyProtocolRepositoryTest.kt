@@ -65,10 +65,8 @@ interface StudyProtocolRepositoryTest
         val originalProtocolName = "Study"
         val protocol = StudyProtocol( ownerId, originalProtocolName )
         repo.add( protocol, ProtocolVersion( "Initial" ) )
-        repo.addVersion(
-            StudyProtocol( ownerId, "New name", null, protocol.id ),
-            ProtocolVersion( "Second version" )
-        )
+        protocol.name = "New name"
+        repo.addVersion( protocol, ProtocolVersion( "Second version" ) )
 
         val priorNameProtocol = StudyProtocol( ownerId, originalProtocolName )
         repo.add( priorNameProtocol, ProtocolVersion( "Latest" ) )
@@ -116,10 +114,10 @@ interface StudyProtocolRepositoryTest
         val protocol2 = StudyProtocol( ownerId, "Study 2" )
         repo.add( protocol2, ProtocolVersion( "Initial" ) )
 
-        val newVersionProtocol2 = StudyProtocol( ownerId, protocol.name, null, protocol2.id )
+        protocol2.name = protocol.name
         assertFailsWith<IllegalArgumentException>
         {
-            repo.addVersion( newVersionProtocol2, ProtocolVersion( "New version" ) )
+            repo.addVersion( protocol2, ProtocolVersion( "New version" ) )
         }
     }
 
@@ -155,11 +153,8 @@ interface StudyProtocolRepositoryTest
         val protocol2 = StudyProtocol( ownerId, "Study 2" )
         repo.add( protocol2, ProtocolVersion( "Initial" ) )
 
-        val replaceVersionProtocol2 = StudyProtocol( ownerId, protocol.name, null, protocol2.id )
-        assertFailsWith<IllegalArgumentException>
-        {
-            repo.replace( replaceVersionProtocol2, ProtocolVersion( "New version" ) )
-        }
+        protocol2.name = protocol.name
+        assertFailsWith<IllegalArgumentException> { repo.replace( protocol2, ProtocolVersion( "New version" ) ) }
     }
 
     @Test
