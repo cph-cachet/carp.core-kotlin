@@ -98,7 +98,7 @@ declare module 'carp.core-kotlin-carp.common'
 
         class DefaultDeviceRegistration extends DeviceRegistration
         {
-            constructor( deviceId: string )
+            constructor( deviceId?: string )
         }
 
         class Smartphone extends DeviceDescriptor
