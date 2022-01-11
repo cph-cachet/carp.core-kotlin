@@ -126,7 +126,7 @@ class CustomDeviceRegistrationTest
     @Test
     fun initialization_from_json_extracts_base_DeviceRegistration_properties()
     {
-        val registration = DefaultDeviceRegistration( "Unknown" )
+        val registration = DefaultDeviceRegistration()
         val serialized: String = JSON.encodeToString( DefaultDeviceRegistration.serializer(), registration )
 
         val custom = CustomDeviceRegistration( "Irrelevant", serialized, JSON )

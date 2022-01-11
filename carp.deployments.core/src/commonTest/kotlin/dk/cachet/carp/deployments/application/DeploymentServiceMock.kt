@@ -32,7 +32,7 @@ class DeploymentServiceMock(
             StudyDeploymentStatus.DeployingDevices( Clock.System.now(), UUID.randomUUID(), emptyList(), emptyList(), null )
         private val emptyMasterDeviceDeployment: MasterDeviceDeployment = MasterDeviceDeployment(
             StubMasterDeviceDescriptor(),
-            DefaultDeviceRegistration( "Test" ) )
+            DefaultDeviceRegistration() )
     }
 
 

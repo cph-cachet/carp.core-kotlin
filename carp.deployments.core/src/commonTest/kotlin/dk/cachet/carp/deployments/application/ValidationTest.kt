@@ -115,7 +115,7 @@ class ValidationTest
         val deviceRoleName = "Master"
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName ).getSnapshot()
 
-        val preregistrations = mapOf( "Unknown" to DefaultDeviceRegistration( "ID" ) )
+        val preregistrations = mapOf( "Unknown" to DefaultDeviceRegistration() )
 
         assertFailsWith<IllegalArgumentException> {
             protocol.throwIfInvalidPreregistrations( preregistrations )

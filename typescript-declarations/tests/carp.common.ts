@@ -52,7 +52,7 @@ describe( "carp.common", () => {
             new Text( "How are you feeling?" ),
             Text.Companion,
             [ "DeviceDescriptor", new Smartphone( "Role", toSet( [] ) ) ],
-            [ "DeviceRegistration", new DefaultDeviceRegistration( "some device id" ) ],
+            [ "DeviceRegistration", new DefaultDeviceRegistration() ],
             DeviceRegistration.Companion,
             [ "TaskDescriptor", new WebTask( "name", undefined, "", "url.com" ) ],
             new WebTask( "name", undefined, "", "url.com" ),

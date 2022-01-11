@@ -11,7 +11,7 @@ class DefaultDeviceRegistrationTest
     @Test
     fun builder_sets_deviceId()
     {
-        val registration = DefaultDeviceRegistrationBuilder( "Default ID" ).apply {
+        val registration = DefaultDeviceRegistrationBuilder().apply {
             deviceId = "Custom ID"
         }.build()
 

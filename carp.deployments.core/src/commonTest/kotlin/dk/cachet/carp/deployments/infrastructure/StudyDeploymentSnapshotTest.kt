@@ -77,7 +77,7 @@ class StudyDeploymentSnapshotTest
         val master = StubMasterDeviceDescriptor( "Stub" )
         protocol.addMasterDevice( master )
         val deployment = studyDeploymentFor( protocol )
-        val registration = DefaultDeviceRegistration( "0" )
+        val registration = DefaultDeviceRegistration()
         deployment.registerDevice( master, registration )
 
         var serialized: String = JSON.encodeToString( deployment.getSnapshot() )
