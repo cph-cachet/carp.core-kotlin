@@ -39,12 +39,12 @@ declare module 'carp.core-kotlin-carp.common'
         {
             static get Companion(): RecurrenceRule$Companion
 
-            toString(): String
+            toString(): string
         }
         interface RecurrenceRule$Companion
         {
             serializer(): any
-            fromString_61zpoe$( rrule: String ): RecurrenceRule
+            fromString_61zpoe$( rrule: string ): RecurrenceRule
         }
 
         class TimeOfDay
@@ -84,7 +84,7 @@ declare module 'carp.core-kotlin-carp.common'
     {
         abstract class DeviceDescriptor
         {
-            readonly roleName: String
+            readonly roleName: string
         }
 
         abstract class DeviceRegistration
@@ -113,17 +113,17 @@ declare module 'carp.core-kotlin-carp.common'
     {
         abstract class TaskDescriptor
         {
-            readonly name: String
-            readonly description?: String
+            readonly name: string
+            readonly description: string | null;
         }
 
         class WebTask extends TaskDescriptor
         {
-            constructor( name: String, measures: any, description: String, url: String )
+            constructor( name: string, measures: any, description: string, url: string )
 
             static get Companion(): WebTask$Companion
 
-            readonly url: String
+            readonly url: string
         }
         interface WebTask$Companion { serializer(): any }
     }
@@ -134,12 +134,12 @@ declare module 'carp.core-kotlin-carp.common'
         abstract class Trigger
         {
             readonly requiresMasterDevice: Boolean
-            readonly sourceDeviceRoleName: String
+            readonly sourceDeviceRoleName: string
         }
 
         class ElapsedTimeTrigger extends Trigger
         {
-            constructor( sourceDeviceRoleName: String, elapsedTime: Duration )
+            constructor( sourceDeviceRoleName: string, elapsedTime: Duration )
 
             readonly elapsedTime: Duration
 
@@ -147,15 +147,15 @@ declare module 'carp.core-kotlin-carp.common'
 
         class ManualTrigger extends Trigger
         {
-            constructor( sourceDeviceRoleName: String, label: String, description?: String )
+            constructor( sourceDeviceRoleName: string, label: string, description?: string | null )
 
-            readonly label: String
-            readonly description?: String
+            readonly label: string
+            readonly description: string | null;
         }
 
         class ScheduledTrigger extends Trigger
         {
-            constructor( sourceDeviceRoleName: String, time: TimeOfDay, recurrenceRule: RecurrenceRule )
+            constructor( sourceDeviceRoleName: string, time: TimeOfDay, recurrenceRule: RecurrenceRule )
 
             readonly time: TimeOfDay
             readonly recurrenceRule: RecurrenceRule
@@ -163,11 +163,11 @@ declare module 'carp.core-kotlin-carp.common'
 
         class TaskControl
         {
-            constructor( triggerId: Number, taskName: String, destinationDeviceRoleName: String, control: Number )
+            constructor( triggerId: Number, taskName: string, destinationDeviceRoleName: string, control: Number )
 
             readonly triggerId: Number
-            readonly taskName: String
-            readonly destinationDeviceRoleName: String
+            readonly taskName: string
+            readonly destinationDeviceRoleName: string
             readonly control: Number
         }
     }
