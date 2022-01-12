@@ -92,6 +92,7 @@ declare module 'carp.core-kotlin-carp.common'
             static get Companion(): DeviceRegistration$Companion  
             
             readonly deviceId: string
+            readonly deviceDisplayName: string | null;
             readonly registrationCreatedOn: Instant
         }
         interface DeviceRegistration$Companion { serializer(): any }

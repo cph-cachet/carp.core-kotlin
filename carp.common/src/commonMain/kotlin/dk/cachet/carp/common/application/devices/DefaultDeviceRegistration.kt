@@ -14,16 +14,18 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DefaultDeviceRegistration(
     @Required
+    override val deviceDisplayName: String? = null,
+    @Required
     override val deviceId: String = UUID.randomUUID().toString()
 ) : DeviceRegistration()
 
 
 /**
- * A default device registration builder which solely involves assigning a unique ID to the device.
+ * A default device registration builder which solely involves assigning a display name and unique ID to the device.
  * By default, a unique ID (UUID) is generated.
  */
 @Serializable( with = NotSerializable::class )
-class DefaultDeviceRegistrationBuilder : DeviceRegistrationBuilder<DefaultDeviceRegistration>
+class DefaultDeviceRegistrationBuilder : DeviceRegistrationBuilder<DefaultDeviceRegistration>()
 {
     /**
      * Override the default assigned UUID which has been set as device ID.
@@ -31,5 +33,5 @@ class DefaultDeviceRegistrationBuilder : DeviceRegistrationBuilder<DefaultDevice
      */
     var deviceId: String = UUID.randomUUID().toString()
 
-    override fun build(): DefaultDeviceRegistration = DefaultDeviceRegistration( deviceId )
+    override fun build(): DefaultDeviceRegistration = DefaultDeviceRegistration( deviceDisplayName, deviceId )
 }
