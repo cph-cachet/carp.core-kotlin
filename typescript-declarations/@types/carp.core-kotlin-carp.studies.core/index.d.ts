@@ -180,7 +180,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
         {
             class CreateStudy extends StudyServiceRequest
             {
-                constructor( ownerId: UUID, name: string, description?: string | null, invitation?: StudyInvitation )
+                constructor( ownerId: UUID, name: string, description?: string | null, invitation?: StudyInvitation | null )
             }
             class SetInternalDescription extends StudyServiceRequest
             {

@@ -38,8 +38,8 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             abstract class NotDeployed
             {
                 readonly isReadyForDeployment: Boolean
-                readonly remainingDevicesToRegisterToObtainDeployment: HashSet<String>
-                readonly remainingDevicesToRegisterBeforeDeployment: HashSet<String>
+                readonly remainingDevicesToRegisterToObtainDeployment: HashSet<string>
+                readonly remainingDevicesToRegisterBeforeDeployment: HashSet<string>
 
             }
             class Unregistered extends NotDeployed
@@ -47,16 +47,16 @@ declare module 'carp.core-kotlin-carp.deployments.core'
                 constructor(
                     device: any,
                     canBeDeployed: Boolean,
-                    remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
-                    remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
+                    remainingDevicesToRegisterToObtainDeployment: HashSet<string>,
+                    remainingDevicesToRegisterBeforeDeployment: HashSet<string> )
             }
             class Registered extends NotDeployed
             {
                 constructor(
                     device: any,
                     canBeDeployed: Boolean,
-                    remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
-                    remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
+                    remainingDevicesToRegisterToObtainDeployment: HashSet<string>,
+                    remainingDevicesToRegisterBeforeDeployment: HashSet<string> )
             }
             class Deployed extends DeviceDeploymentStatus 
             {
@@ -66,8 +66,8 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             {
                 constructor(
                     device: any,
-                    remainingDevicesToRegisterToObtainDeployment: HashSet<String>,
-                    remainingDevicesToRegisterBeforeDeployment: HashSet<String> )
+                    remainingDevicesToRegisterToObtainDeployment: HashSet<string>,
+                    remainingDevicesToRegisterBeforeDeployment: HashSet<string> )
             }
         }
 
@@ -82,7 +82,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
                 tasks?: HashSet<any>,
                 triggers?: HashMap<number, any>,
                 taskControls?: HashSet<any>,
-                applicationData?: String | null )
+                applicationData?: string | null )
 
                 static get Companion(): MasterDeviceDeployment$Companion
 
@@ -93,7 +93,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
                 readonly tasks: HashSet<any>
                 readonly triggers: HashMap<number, any>
                 readonly taskControls: HashSet<any>
-                readonly applicationData: String | null
+                readonly applicationData: string | null
         }
         interface MasterDeviceDeployment$Companion { serializer(): any }
 
@@ -237,7 +237,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         {
             class CreateStudyDeployment extends DeploymentServiceRequest
             {
-                constructor( protocol: StudyProtocolSnapshot, invitations: ArrayList<ParticipantInvitation>, connectedDevicePreregistrations?: HashMap<String, DeviceRegistration> )
+                constructor( protocol: StudyProtocolSnapshot, invitations: ArrayList<ParticipantInvitation>, connectedDevicePreregistrations?: HashMap<string, DeviceRegistration> )
             }
             class GetStudyDeploymentStatus extends DeploymentServiceRequest
             {
