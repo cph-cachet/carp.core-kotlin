@@ -131,6 +131,7 @@ class CustomDeviceRegistrationTest
 
         val custom = CustomDeviceRegistration( "Irrelevant", serialized, JSON )
         assertEquals( registration.deviceId, custom.deviceId )
+        assertEquals( registration.deviceDisplayName, custom.deviceDisplayName )
     }
 
     @Serializable

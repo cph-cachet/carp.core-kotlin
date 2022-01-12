@@ -10,7 +10,11 @@ import kotlinx.serialization.Serializable
  * A [DeviceRegistration] for devices which have a MAC address.
  */
 @Serializable
-data class MACAddressDeviceRegistration( val macAddress: MACAddress ) : DeviceRegistration()
+data class MACAddressDeviceRegistration(
+    val macAddress: MACAddress,
+    @Required
+    override val deviceDisplayName: String? = null
+) : DeviceRegistration()
 {
     // TODO: Remove this workaround once JS serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/716
     @Suppress( "UNNECESSARY_SAFE_CALL" )
@@ -20,9 +24,10 @@ data class MACAddressDeviceRegistration( val macAddress: MACAddress ) : DeviceRe
 
 
 @Serializable( with = NotSerializable::class )
-class MACAddressDeviceRegistrationBuilder : DeviceRegistrationBuilder<MACAddressDeviceRegistration>
+class MACAddressDeviceRegistrationBuilder : DeviceRegistrationBuilder<MACAddressDeviceRegistration>()
 {
     var macAddress: String = ""
 
-    override fun build(): MACAddressDeviceRegistration = MACAddressDeviceRegistration( MACAddress.parse( macAddress ) )
+    override fun build(): MACAddressDeviceRegistration =
+        MACAddressDeviceRegistration( MACAddress.parse( macAddress ), deviceDisplayName )
 }

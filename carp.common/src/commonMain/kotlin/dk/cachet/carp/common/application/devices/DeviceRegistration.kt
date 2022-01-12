@@ -31,6 +31,13 @@ abstract class DeviceRegistration
     @Required
     abstract val deviceId: String
 
+    /**
+     * An optional concise textual representation for display purposes describing the key specifications of the device.
+     * E.g., device manufacturer, name, and operating system version.
+     */
+    @Required
+    abstract val deviceDisplayName: String?
+
     @Required
     val registrationCreatedOn: Instant = Clock.System.now()
 }
@@ -44,12 +51,20 @@ abstract class DeviceRegistration
  */
 @Serializable( NotSerializable::class )
 @DeviceRegistrationBuilderDsl
-interface DeviceRegistrationBuilder<T : DeviceRegistration>
+abstract class DeviceRegistrationBuilder<T : DeviceRegistration>
 {
+    /**
+     * An optional concise textual representation for display purposes describing the key specifications of the device.
+     * E.g., device manufacturer, name, and operating system version.
+     *
+     * In case this is not set, the builder may derive a default name based on the other registration properties.
+     */
+    var deviceDisplayName: String? = null
+
     /**
      * Build the immutable [DeviceRegistration] using the current configuration of this [DeviceRegistrationBuilder].
      */
-    fun build(): T
+    abstract fun build(): T
 }
 
 /**
