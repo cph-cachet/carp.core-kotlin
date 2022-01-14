@@ -1,9 +1,4 @@
-def commonModule = subprojects.find { it.name == 'carp.common' }
-def coreModules = subprojects.findAll { it.name.endsWith( '.core' ) }
-def detektModule = subprojects.find { it.name == 'carp.detekt' }
-
-
-// Load plugin dependencies.
+// Load plugin dependencies and initialize build variables.
 buildscript {
     ext {
         // Version used for all submodule artifacts.
@@ -31,6 +26,10 @@ buildscript {
             detektVerifyImplementation:'1.2.2',
             nexusPublishPlugin:'1.1.0'
         ]
+
+        commonModule = subprojects.find { it.name == 'carp.common' }
+        coreModules = subprojects.findAll { it.name.endsWith( '.core' ) }
+        devOpsModules = subprojects.findAll { it.name == 'carp.detekt' || it.name == 'rpc' }
     }
 
     dependencies {
@@ -65,7 +64,7 @@ if (publishPropertiesFile.exists())
 
 // Configure all subprojects as testable, publishable, Kotlin multiplatform projects.
 // A `kotlinx.serialization` dependency is added to serialize domain models.
-configure( subprojects - detektModule ) {
+configure( subprojects - devOpsModules ) {
     version = globalVersion
 
     repositories {

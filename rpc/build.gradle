@@ -1,0 +1,18 @@
+group 'rpc'
+
+repositories {
+    mavenCentral()
+}
+
+apply {
+    plugin("kotlin")
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "org.reflections:reflections:${versions.reflections}"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serialization}"
+
+    def generateForProjects = coreModules + commonModule
+    generateForProjects.each {implementation project(":${it.name}") }
+}
