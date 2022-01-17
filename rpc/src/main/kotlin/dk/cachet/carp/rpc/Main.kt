@@ -20,7 +20,7 @@ fun main( args: Array<String> )
         .associateWith { appService ->
             val requestObjectName = "${appService.simpleName}Request"
             val requestObject = serializableObjects.single { it.simpleName == requestObjectName }
-            requireNotNull( requestObject )
+            checkNotNull( requestObject )
                 { "Could not find request object for ${appService.name}. Searched for: $requestObjectName" }
 
             generateExampleRequests( appService, requestObject )
@@ -33,7 +33,7 @@ fun main( args: Array<String> )
         val subsystem = Regex( Regex.escape( NAMESPACE ) + "\\.([^.]+)" )
             .find( appService.`package`.name )
             ?.groupValues?.lastOrNull()
-        requireNotNull( subsystem ) { "${appService.name} is residing in an unexpected namespace." }
+        checkNotNull( subsystem ) { "${appService.name} is residing in an unexpected namespace." }
 
         val subsystemFolder = File( outputFolder, subsystem )
         val serviceFolder = File( subsystemFolder, appService.simpleName )
