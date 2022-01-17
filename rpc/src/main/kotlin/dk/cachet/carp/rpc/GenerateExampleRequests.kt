@@ -3,15 +3,19 @@ package dk.cachet.carp.rpc
 import dk.cachet.carp.common.application.services.ApplicationService
 
 
-fun generateExampleRequests(
-    applicationServiceInterface: Class<out ApplicationService<*, *>>,
+/**
+ * Generate a single [ExampleRequest] using the corresponding request object for each of the methods in
+ * application service [AS].
+ */
+fun <AS : ApplicationService<AS, *>> generateExampleRequests(
+    applicationServiceInterface: Class<out ApplicationService<AS, *>>,
     requestObjectSuperType: Class<*>
-)
+): List<ExampleRequest<AS>>
 {
     val requests = applicationServiceInterface.methods
     val requestObjects = requestObjectSuperType.classes
 
-    requests.associateWith { request ->
+    return requests.map { request ->
         val requestObjectName = request.name.replaceFirstChar { it.uppercase() }
         val requestObject = requestObjects.singleOrNull { it.simpleName == requestObjectName }
         requireNotNull( requestObject )
@@ -21,5 +25,14 @@ fun generateExampleRequests(
             }
 
         // TODO: For each request object, generate example JSON request and response.
+        val requestObjectJson = ""
+        val responseJson = ""
+
+        ExampleRequest(
+            applicationServiceInterface,
+            request,
+            ExampleRequest.JsonExample( requestObject, requestObjectJson ),
+            ExampleRequest.JsonExample( request.returnType, responseJson )
+        )
     }
 }
