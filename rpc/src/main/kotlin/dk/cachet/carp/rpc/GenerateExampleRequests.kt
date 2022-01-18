@@ -7,11 +7,11 @@ import dk.cachet.carp.common.application.data.*
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.data.application.*
-import dk.cachet.carp.data.infrastructure.DataStreamServiceRequest
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.kotlinFunction
 
@@ -53,10 +53,7 @@ fun <AS : ApplicationService<AS, *>> generateExampleRequests(
 
         // Create example JSON request and response.
         val requestObjectJson = json.encodeToString( requestObjectSerializer, example.request )
-        @Suppress( "UNCHECKED_CAST" )
-        val responseSerializer =
-            (example.overrideResponseSerializer ?: request.returnType.kotlin.serializer()) as KSerializer<Any>
-        val responseJson = json.encodeToString( responseSerializer, example.response )
+        val responseJson = json.encodeToString( example.getResponseSerializer( request ), example.response )
 
         ExampleRequest(
             applicationServiceInterface,
@@ -68,13 +65,24 @@ fun <AS : ApplicationService<AS, *>> generateExampleRequests(
 }
 
 
-private class Example( val request: Any, val response: Any, val overrideResponseSerializer: KSerializer<*>? = null )
+private class Example(
+    val request: Any,
+    val response: Any = Unit,
+    val overrideResponseSerializer: KSerializer<*>? = null
+)
+{
+    @Suppress( "UNCHECKED_CAST" )
+    fun getResponseSerializer( request: Method ): KSerializer<Any> = getSerializer( request ) as KSerializer<Any>
+
+    @OptIn( InternalSerializationApi::class )
+    private fun getSerializer( request: Method ): KSerializer<*>
+    {
+        if ( overrideResponseSerializer != null ) return overrideResponseSerializer
+
+        val returnType = request.kotlinFunction!!.returnType
+        return serializer( returnType )
+    }
+}
 
 private val exampleRequests: Map<KFunction<*>, Example> = mapOf(
-    // TODO: Add an example for each request.
-    DataStreamService::getDataStream to Example(
-        request = DataStreamServiceRequest.GetDataStream( DataStreamId( UUID.randomUUID(), "Test", DataType( "namespace", "name" ) ), 0 ),
-        response = MutableDataStreamBatch(),
-        overrideResponseSerializer = DataStreamBatchSerializer
-    )
 )
