@@ -23,6 +23,7 @@ import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.*
 import dk.cachet.carp.studies.application.*
 import dk.cachet.carp.studies.infrastructure.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -124,6 +125,16 @@ private val startOfStudyTriggerId = phoneProtocol.triggers.entries.first { it.va
 private val expectedParticipantData = setOf<ParticipantAttribute>(
     ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
 )
+
+// Example protocol factory protocols.
+private val customProtocol = runBlocking {
+    ProtocolFactoryServiceHost().createCustomProtocol(
+        ownerId,
+        "Fictional Company study",
+        """{"collect-data": "heartrate, gps"}""",
+        "Collect heartrate and GPS using Fictional Company's software."
+    )
+}
 
 // Study matching the example protocol.
 private val studyId = UUID( "791fd191-4279-482f-9ef5-5b4508efd959" )
@@ -250,6 +261,17 @@ private val exampleRequests: Map<KFunction<*>, Example> = mapOf(
             ProtocolVersion( "Version 2: new name", protocolCreatedOn + 10.seconds ),
             ProtocolVersion( "Version 3: ask participant data", protocolCreatedOn + 20.seconds )
         )
+    ),
+
+    // ProtocolFactoryService
+    ProtocolFactoryService::createCustomProtocol to Example(
+        request = ProtocolFactoryServiceRequest.CreateCustomProtocol(
+            ownerId,
+            customProtocol.name,
+            customProtocol.tasks.filterIsInstance<CustomProtocolTask>().single().studyProtocol,
+            customProtocol.description
+        ),
+        response = customProtocol
     ),
 
     // StudyService
