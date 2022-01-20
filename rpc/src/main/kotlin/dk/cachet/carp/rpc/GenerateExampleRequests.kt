@@ -1,4 +1,4 @@
-@file:Suppress( "WildcardImport", "MagicNumber" )
+@file:Suppress( "WildcardImport", "MagicNumber", "BooleanLiteralArgument" )
 
 package dk.cachet.carp.rpc
 
@@ -21,6 +21,8 @@ import dk.cachet.carp.protocols.application.*
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.*
+import dk.cachet.carp.studies.application.*
+import dk.cachet.carp.studies.infrastructure.*
 import kotlinx.datetime.Instant
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -123,6 +125,14 @@ private val expectedParticipantData = setOf<ParticipantAttribute>(
     ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
 )
 
+// Study matching the example protocol.
+private val studyId = UUID( "791fd191-4279-482f-9ef5-5b4508efd959" )
+private const val studyName = "Copenhagen transportation study"
+private const val studyDescription = "Track how people walk/bike in Copenhagen."
+private val studyCreatedOn = Instant.fromEpochSeconds( 1642503800 )
+private val studyConfiguringStatus = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, true, true, false, false )
+private val studyLiveStatus = StudyStatus.Live( studyId, studyName, studyCreatedOn, false, false, true )
+
 // Deployment data matching the example protocol.
 private val deploymentId = UUID( "c9cc5317-48da-45f2-958e-58bc07f34681" )
 private val deploymentIds = setOf( deploymentId, UUID( "d4a9bba4-860e-4c58-a356-8a91605dc1ee" ) )
@@ -130,7 +140,7 @@ private val deploymentCreatedOn = Instant.fromEpochSeconds( 1642504000 )
 private val participantId = UUID( "32880e82-01c9-40cf-a6ed-17ff3348f251" )
 private val participantAccount = UsernameAccountIdentity( "Boaty McBoatface" )
 private val studyInvitation = StudyInvitation(
-    "Track nonmotorized transport",
+    studyName,
     "Participate in this study, which keeps track of how much you walk and bike!",
     "{\"trialGroup\", \"A\"}"
 )
@@ -240,6 +250,47 @@ private val exampleRequests: Map<KFunction<*>, Example> = mapOf(
             ProtocolVersion( "Version 2: new name", protocolCreatedOn + 10.seconds ),
             ProtocolVersion( "Version 3: ask participant data", protocolCreatedOn + 20.seconds )
         )
+    ),
+
+    // StudyService
+    StudyService::createStudy to Example(
+        request = StudyServiceRequest.CreateStudy( ownerId, studyName, studyDescription, studyInvitation ),
+        response = studyConfiguringStatus
+    ),
+    StudyService::setInternalDescription to Example(
+        request = StudyServiceRequest.SetInternalDescription( studyId, "Copenhagen/Denmark transportation study", studyDescription ),
+        response = studyConfiguringStatus.copy( name = "Copenhagen/Denmark transportation study" )
+    ),
+    StudyService::getStudyDetails to Example(
+        request = StudyServiceRequest.GetStudyDetails( studyId ),
+        response = StudyDetails( studyId, ownerId, studyName, studyCreatedOn, studyDescription, studyInvitation, phoneProtocol )
+    ),
+    StudyService::getStudyStatus to Example(
+        request = StudyServiceRequest.GetStudyStatus( studyId ),
+        response = studyLiveStatus
+    ),
+    StudyService::getStudiesOverview to Example(
+        request = StudyServiceRequest.GetStudiesOverview( ownerId ),
+        response = listOf(
+            studyConfiguringStatus,
+            StudyStatus.Live( UUID( "3566eb9c-1d2f-4ed9-bf8a-8ea43638773d" ), "Heartrate study", Instant.fromEpochSeconds( 1642514000 ), false, false , true )
+        )
+    ),
+    StudyService::setInvitation to Example(
+        request = StudyServiceRequest.SetInvitation( studyId, studyInvitation ),
+        response = studyConfiguringStatus
+    ),
+    StudyService::setProtocol to Example(
+        request = StudyServiceRequest.SetProtocol( studyId, phoneProtocol ),
+        response = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, true, true, false, true )
+    ),
+    StudyService::goLive to Example(
+        request = StudyServiceRequest.GoLive( studyId ),
+        response = studyLiveStatus
+    ),
+    StudyService::remove to Example(
+        request = StudyServiceRequest.Remove( studyId ),
+        response = true
     ),
 
     // DeploymentService
