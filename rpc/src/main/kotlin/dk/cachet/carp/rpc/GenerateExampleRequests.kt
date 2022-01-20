@@ -32,6 +32,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
+import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.kotlinFunction
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -85,6 +86,15 @@ fun <AS : ApplicationService<AS, *>> generateExampleRequests(
     }
 }
 
+private fun <T : DeviceRegistration> T.setRegistrationCreatedOn( createdOn: Instant ): T
+{
+    val backingField = DeviceRegistration::registrationCreatedOn.javaField!!
+    backingField.isAccessible = true
+    backingField.set( this, createdOn )
+
+    return this
+}
+
 
 // Example protocol with a single smartphone.
 private val ownerId = UUID( "491f03fc-964b-4783-86a6-a528bbfe4e94" )
@@ -135,7 +145,7 @@ private val customProtocol = runBlocking {
         """{"collect-data": "heartrate, gps"}""",
         "Collect heartrate and GPS using Fictional Company's software."
     )
-}
+}.copy( id = UUID( "4d8c75c7-9604-48fa-8f9b-5ed3e4bd5df8" ), createdOn = protocolCreatedOn )
 
 // Study matching the example protocol.
 private val studyId = UUID( "791fd191-4279-482f-9ef5-5b4508efd959" )
@@ -167,10 +177,10 @@ private val bikeBeaconPreregistration = bikeBeacon.createRegistration {
     organizationId = UUID( "4e990957-0838-414c-bf25-2d391e2990b5" )
     majorId = 42
     minorId = 42
-}
+}.setRegistrationCreatedOn( deploymentCreatedOn )
 private val phoneRegistration = phone.createRegistration {
     deviceId = UUID( "fc7b41b0-e9e2-4b5d-8c3d-5119b556a3f0" ).toString()
-}
+}.setRegistrationCreatedOn( Instant.fromEpochSeconds( 1642514110 ) )
 private val bikeBeaconStatus = DeviceDeploymentStatus.Registered( bikeBeacon, false, emptySet(), emptySet() )
 private val participantsStatus = listOf( ParticipantStatus( participantId, setOf( phone.roleName ) ) )
 private val invitedDeploymentStatus = StudyDeploymentStatus.Invited(
