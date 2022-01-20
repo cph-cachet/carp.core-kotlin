@@ -1,4 +1,4 @@
-@file:Suppress( "WildcardImport", "MagicNumber", "BooleanLiteralArgument" )
+@file:Suppress( "WildcardImport", "MagicNumber", "BooleanLiteralArgument", "TopLevelPropertyNaming" )
 
 package dk.cachet.carp.rpc
 
@@ -295,7 +295,7 @@ private val exampleRequests: Map<KFunction<*>, Example> = mapOf(
         request = StudyServiceRequest.GetStudiesOverview( ownerId ),
         response = listOf(
             studyConfiguringStatus,
-            StudyStatus.Live( UUID( "3566eb9c-1d2f-4ed9-bf8a-8ea43638773d" ), "Heartrate study", Instant.fromEpochSeconds( 1642514000 ), false, false , true )
+            StudyStatus.Live( UUID( "3566eb9c-1d2f-4ed9-bf8a-8ea43638773d" ), "Heartrate study", Instant.fromEpochSeconds( 1642514000 ), false, false, true )
         )
     ),
     StudyService::setInvitation to Example(
