@@ -4,7 +4,7 @@ package dk.cachet.carp.rpc
 
 import dk.cachet.carp.common.application.*
 import dk.cachet.carp.common.application.data.*
-import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
+import dk.cachet.carp.common.application.data.input.*
 import dk.cachet.carp.common.application.devices.*
 import dk.cachet.carp.common.application.sampling.*
 import dk.cachet.carp.common.application.services.*
@@ -150,12 +150,17 @@ private val deploymentIds = setOf( deploymentId, UUID( "d4a9bba4-860e-4c58-a356-
 private val deploymentCreatedOn = Instant.fromEpochSeconds( 1642504000 )
 private val participantId = UUID( "32880e82-01c9-40cf-a6ed-17ff3348f251" )
 private val participantAccount = UsernameAccountIdentity( "Boaty McBoatface" )
+private val participantAccountId = UUID( "ca60cb7f-de18-44b6-baf9-3c8e6a73005a" )
 private val studyInvitation = StudyInvitation(
     studyName,
     "Participate in this study, which keeps track of how much you walk and bike!",
     "{\"trialGroup\", \"A\"}"
 )
 private val participantInvitation = ParticipantInvitation( participantId, setOf( phone.roleName ), participantAccount, studyInvitation )
+private val participantData = ParticipantData(
+    deploymentId,
+    mapOf( CarpInputDataTypes.SEX to Sex.Male )
+)
 private val bikeBeaconPreregistration = bikeBeacon.createRegistration {
     manufacturerId = 0x118
     organizationId = UUID( "4e990957-0838-414c-bf25-2d391e2990b5" )
@@ -384,6 +389,30 @@ private val exampleRequests: Map<KFunction<*>, Example> = mapOf(
             deploymentStartedOn,
             Instant.fromEpochSeconds( 1642506000 )
         )
+    ),
+
+    // ParticipationService
+    ParticipationService::getActiveParticipationInvitations to Example(
+        request = ParticipationServiceRequest.GetActiveParticipationInvitations( participantAccountId ),
+        response = setOf(
+            ActiveParticipationInvitation(
+                Participation( deploymentId, participantId ),
+                studyInvitation,
+                setOf( AssignedMasterDevice( phone ) )
+            )
+        )
+    ),
+    ParticipationService::getParticipantData to Example(
+        request = ParticipationServiceRequest.GetParticipantData( deploymentId ),
+        response = participantData
+    ),
+    ParticipationService::getParticipantDataList to Example(
+        request = ParticipationServiceRequest.GetParticipantDataList( setOf( deploymentId ) ),
+        response = listOf( participantData )
+    ),
+    ParticipationService::setParticipantData to Example(
+        request = ParticipationServiceRequest.SetParticipantData( deploymentId, participantData.data ),
+        response = participantData
     ),
 
     // DataStreamService
