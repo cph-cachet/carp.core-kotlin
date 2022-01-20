@@ -22,6 +22,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.*
 import dk.cachet.carp.studies.application.*
+import dk.cachet.carp.studies.application.users.*
 import dk.cachet.carp.studies.infrastructure.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
@@ -149,7 +150,7 @@ private val deploymentId = UUID( "c9cc5317-48da-45f2-958e-58bc07f34681" )
 private val deploymentIds = setOf( deploymentId, UUID( "d4a9bba4-860e-4c58-a356-8a91605dc1ee" ) )
 private val deploymentCreatedOn = Instant.fromEpochSeconds( 1642504000 )
 private val participantId = UUID( "32880e82-01c9-40cf-a6ed-17ff3348f251" )
-private val participantAccount = UsernameAccountIdentity( "Boaty McBoatface" )
+private val participantAccount = EmailAccountIdentity( "boaty@mcboatface.com" )
 private val participantAccountId = UUID( "ca60cb7f-de18-44b6-baf9-3c8e6a73005a" )
 private val studyInvitation = StudyInvitation(
     studyName,
@@ -182,6 +183,29 @@ private val invitedDeploymentStatus = StudyDeploymentStatus.Invited(
     participantsStatus,
     null
 )
+private val runningDeploymentStatus = StudyDeploymentStatus.Running(
+    deploymentCreatedOn,
+    deploymentId,
+    listOf(
+        DeviceDeploymentStatus.Deployed( phone ),
+        bikeBeaconStatus
+    ),
+    participantsStatus,
+    Instant.fromEpochSeconds( 1642504500 )
+)
+private val stoppedDeploymentStatus = StudyDeploymentStatus.Stopped(
+    deploymentCreatedOn,
+    deploymentId,
+    listOf(
+        DeviceDeploymentStatus.Deployed( phone ),
+        bikeBeaconStatus
+    ),
+    participantsStatus,
+    runningDeploymentStatus.startedOn,
+    Instant.fromEpochSeconds( 1642506000 )
+)
+private val participants = setOf( Participant( participantAccount, participantId ) )
+private val participantGroupInvitedOn = Instant.fromEpochSeconds( 1642514010 )
 private val phoneDeviceDeployment = MasterDeviceDeployment(
     phone,
     phoneRegistration,
@@ -195,7 +219,6 @@ private val phoneDeviceDeployment = MasterDeviceDeployment(
     ),
     phoneProtocol.applicationData
 )
-private val deploymentStartedOn = Instant.fromEpochSeconds( 1642504500 )
 
 // Data matching the example protocol.
 private val phoneGeoDataStream = dataStreamId<Geolocation>( deploymentId, phone.roleName )
@@ -320,6 +343,35 @@ private val exampleRequests: Map<KFunction<*>, Example> = mapOf(
         response = true
     ),
 
+    // RecruitmentService
+    RecruitmentService::addParticipant to Example(
+        request = RecruitmentServiceRequest.AddParticipant( studyId, participantAccount.emailAddress ),
+        response = Participant( participantAccount, participantId )
+    ),
+    RecruitmentService::getParticipant to Example(
+        request = RecruitmentServiceRequest.GetParticipant( studyId, participantId ),
+        response = Participant( participantAccount, participantId )
+    ),
+    RecruitmentService::getParticipants to Example(
+        request = RecruitmentServiceRequest.GetParticipants( studyId ),
+        response = listOf(
+            Participant( participantAccount, participantId ),
+            Participant( UsernameAccountIdentity( "John Doe" ), UUID( "d7436912-ac9f-4f9b-a29e-376af8a0fbb4" ) )
+        )
+    ),
+    RecruitmentService::inviteNewParticipantGroup to Example(
+        request = RecruitmentServiceRequest.InviteNewParticipantGroup( studyId, setOf( AssignParticipantDevices( participantId, setOf( phone.roleName ) )) ),
+        response = ParticipantGroupStatus.Invited( deploymentId, participants, participantGroupInvitedOn, invitedDeploymentStatus )
+    ),
+    RecruitmentService::getParticipantGroupStatusList to Example(
+        request = RecruitmentServiceRequest.GetParticipantGroupStatusList( studyId ),
+        response = listOf( ParticipantGroupStatus.Running( deploymentId, participants, participantGroupInvitedOn, runningDeploymentStatus, runningDeploymentStatus.startedOn ) )
+    ),
+    RecruitmentService::stopParticipantGroup to Example(
+        request = RecruitmentServiceRequest.StopParticipantGroup( studyId, deploymentId ),
+        response = ParticipantGroupStatus.Stopped( deploymentId, participants, participantGroupInvitedOn, stoppedDeploymentStatus, stoppedDeploymentStatus.startedOn, stoppedDeploymentStatus.stoppedOn )
+    ),
+
     // DeploymentService
     DeploymentService::createStudyDeployment to Example(
         request = DeploymentServiceRequest.CreateStudyDeployment(
@@ -365,30 +417,11 @@ private val exampleRequests: Map<KFunction<*>, Example> = mapOf(
     ),
     DeploymentService::deviceDeployed to Example(
         request = DeploymentServiceRequest.DeviceDeployed( deploymentId, phone.roleName, phoneDeviceDeployment.lastUpdatedOn ),
-        response = StudyDeploymentStatus.Running(
-            deploymentCreatedOn,
-            deploymentId,
-            listOf(
-                DeviceDeploymentStatus.Deployed( phone ),
-                bikeBeaconStatus
-            ),
-            participantsStatus,
-            deploymentStartedOn
-        )
+        response = runningDeploymentStatus
     ),
     DeploymentService::stop to Example(
         request = DeploymentServiceRequest.Stop( deploymentId ),
-        response = StudyDeploymentStatus.Stopped(
-            deploymentCreatedOn,
-            deploymentId,
-            listOf(
-                DeviceDeploymentStatus.Deployed( phone ),
-                bikeBeaconStatus
-            ),
-            participantsStatus,
-            deploymentStartedOn,
-            Instant.fromEpochSeconds( 1642506000 )
-        )
+        response = stoppedDeploymentStatus
     ),
 
     // ParticipationService
