@@ -18,9 +18,9 @@ fun main( args: Array<String> )
         serviceFolder.mkdirs()
 
         examples.forEach {
-            val requestFileName = it.method.name + "-example.json"
+            val requestFileName = it.method.name + ".json"
             File( serviceFolder, requestFileName ).writeText( it.requestObject.json )
-            val responseFileName = it.method.name + "-response-example.json"
+            val responseFileName = it.method.name + "-response.json"
             File( serviceFolder, responseFileName ).writeText( it.response.json )
         }
     }

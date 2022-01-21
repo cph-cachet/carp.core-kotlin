@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "sensorStartTime": { "type": "integer" },
+    "sensorEndTime": {
+      "description": "If set, sensorEndTime needs to lie after sensorStartTime.",
+      "type": [ "integer", "null" ]
+    },
+    "data": { "$ref": "../common/data/Data.json"}
+  },
+  "required": [ "sensorStartTime", "data" ],
+  "additionalProperties": false
+}

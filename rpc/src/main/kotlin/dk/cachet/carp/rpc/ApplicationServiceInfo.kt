@@ -52,8 +52,7 @@ class ApplicationServiceInfo private constructor(
 
     val requestObjectName: String = requestObjectKlass.simpleName
 
-    val jsonExamplesFolder = File( JSON_EXAMPLES_FOLDER, "$subsystemName/$requestObjectName" )
+    val jsonExamplesFolder = File( JSON_EXAMPLES_FOLDER, "$subsystemName/${serviceKlass.simpleName}" )
 
-    val requestSchemaFile =
-        File( "json-schemas/$subsystemName/$requestObjectName/$requestObjectName-schema.json" )
+    val requestSchemaPath = "schemas/$subsystemName/${serviceKlass.simpleName}/$requestObjectName.json"
 }
