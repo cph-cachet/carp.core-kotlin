@@ -7,7 +7,7 @@ import dk.cachet.carp.common.application.data.*
 import dk.cachet.carp.common.application.data.input.*
 import dk.cachet.carp.common.application.devices.*
 import dk.cachet.carp.common.application.sampling.*
-import dk.cachet.carp.common.application.services.*
+import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.tasks.*
 import dk.cachet.carp.common.application.triggers.*
 import dk.cachet.carp.common.application.users.*
@@ -39,14 +39,14 @@ import kotlin.time.Duration.Companion.seconds
 
 
 /**
- * Generate a single [ExampleRequest] using the corresponding request object for each of the methods in
- * application service [AS].
+ * Generate a single [ExampleRequest] using the corresponding request object of type [requestObjectSuperType]
+ * for each of the methods in [applicationServiceInterface].
  */
 @OptIn( InternalSerializationApi::class )
-fun <AS : ApplicationService<AS, *>> generateExampleRequests(
-    applicationServiceInterface: Class<out ApplicationService<AS, *>>,
+fun generateExampleRequests(
+    applicationServiceInterface: Class<out ApplicationService<*, *>>,
     requestObjectSuperType: Class<*>
-): List<ExampleRequest<AS>>
+): List<ExampleRequest>
 {
     val requests = applicationServiceInterface.methods
     val requestObjects = requestObjectSuperType.classes
@@ -78,7 +78,6 @@ fun <AS : ApplicationService<AS, *>> generateExampleRequests(
         val responseJson = json.encodeToString( example.getResponseSerializer( request ), example.response )
 
         ExampleRequest(
-            applicationServiceInterface,
             request,
             ExampleRequest.JsonExample( requestObject, requestObjectJson ),
             ExampleRequest.JsonExample( request.returnType, responseJson )
