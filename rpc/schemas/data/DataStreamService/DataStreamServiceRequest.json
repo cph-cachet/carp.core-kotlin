@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    {
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.OpenDataStreams" },
+        "configuration": { "$ref": "../DataStreamsConfiguration.json" }
+      },
+      "required": [ "$type", "configuration" ],
+      "additionalProperties": false
+	},
+    {
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.AppendToDataStreams" },
+        "studyDeploymentId": { "type": "string", "format": "uuid" },
+        "batch": { "$ref": "../DataStreamBatch.json" }
+      },
+      "required": [ "$type", "studyDeploymentId", "batch" ],
+      "additionalProperties": false
+	},
+    {
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.GetDataStream" },
+        "dataStream": { "$ref": "../DataStreamId.json" },
+        "fromSequenceId": { "type": "integer" },
+        "toSequenceIdInclusive": { "type": ["integer", "null"] }
+      },
+      "required": [ "$type", "dataStream", "fromSequenceId" ],
+      "additionalProperties": false
+	},
+    {
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.CloseDataStreams" },
+        "studyDeploymentIds": {
+          "type": "array",
+          "items": { "type": "string", "format": "uuid" }
+        }
+      },
+      "required": [ "$type", "studyDeploymentIds" ],
+      "additionalProperties": false
+	},
+    {
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.RemoveDataStreams" },
+        "studyDeploymentIds": {
+          "type": "array",
+          "items": { "type": "string", "format": "uuid" }
+        }
+      },
+      "required": [ "$type", "studyDeploymentIds" ],
+      "additionalProperties": false
+	}
+  ]
+}
