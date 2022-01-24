@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "triggerId": { "type": "integer" },
+    "taskName": { "type": "string" },
+    "destinationDeviceRoleName": { "type": "string" },
+    "control": { "$ref": "#Control" }
+  },
+  "required": [ "triggerId", "taskName", "destinationDeviceRoleName", "control" ],
+  "additionalProperties": false,
+  "$defs": {
+    "Control": {
+      "$anchor": "Control",
+      "type": "string",
+      "enum": [ "Start", "Stop" ]
+    }
+  }
+}

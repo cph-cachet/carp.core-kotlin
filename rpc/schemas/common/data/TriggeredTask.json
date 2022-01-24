@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "$type": { "const": "dk.cachet.carp.triggeredtask" },
+    "triggerId": { "type": "integer" },
+    "taskName": { "type": "string" },
+    "destinationDeviceRoleName": { "type": "string" },
+    "control": { "$ref": "../triggers/TaskControl.json#Control" },
+    "triggerData": {
+      "oneOf": [
+        { "$ref": "Data.json" },
+        { "type": "null" }
+      ]
+    }
+  },
+  "required": [ "$type", "triggerId", "taskName", "destinationDeviceRoleName", "control" ],
+  "additionalProperties": false
+}
