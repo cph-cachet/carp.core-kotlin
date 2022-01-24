@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "$type": { "const": "dk.cachet.carp.stepcount" },
+    "steps": { "type": "integer" }
+  },
+  "required": [ "$type", "steps" ],
+  "additionalProperties": false
+}

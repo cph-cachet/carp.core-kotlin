@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "$type": { "const": "dk.cachet.carp.angularvelocity" },
+    "x": { "type": "number" },
+    "y": { "type": "number" },
+    "z": { "type": "number" }
+  },
+  "required": [ "$type", "x", "y", "z" ],
+  "additionalProperties": false
+}

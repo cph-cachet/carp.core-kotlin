@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "$type": { "const": "dk.cachet.carp.signalstrength" },
+    "rssi": { "$ref": "../Short.json" }
+  },
+  "required": [ "$type", "rssi" ],
+  "additionalProperties": false
+}
