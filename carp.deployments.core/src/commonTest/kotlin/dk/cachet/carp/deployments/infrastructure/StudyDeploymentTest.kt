@@ -70,7 +70,7 @@ class StudyDeploymentTest
         val master = StubMasterDeviceDescriptor( "Unknown" )
         protocol.addMasterDevice( master )
         val deployment = studyDeploymentFor( protocol )
-        val registration = DefaultDeviceRegistration( "0" )
+        val registration = DefaultDeviceRegistration()
         deployment.registerDevice( master, registration )
 
         // Mimic unknown device and registration.

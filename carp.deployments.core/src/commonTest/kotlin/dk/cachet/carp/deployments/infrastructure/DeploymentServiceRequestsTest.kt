@@ -26,7 +26,7 @@ class DeploymentServiceRequestsTest : ApplicationServiceRequestsTest<DeploymentS
             DeploymentServiceRequest.RemoveStudyDeployments( emptySet() ),
             DeploymentServiceRequest.GetStudyDeploymentStatus( UUID.randomUUID() ),
             DeploymentServiceRequest.GetStudyDeploymentStatusList( setOf( UUID.randomUUID() ) ),
-            DeploymentServiceRequest.RegisterDevice( UUID.randomUUID(), "Test role", DefaultDeviceRegistration( "Device ID" ) ),
+            DeploymentServiceRequest.RegisterDevice( UUID.randomUUID(), "Test role", DefaultDeviceRegistration() ),
             DeploymentServiceRequest.UnregisterDevice( UUID.randomUUID(), "Test role" ),
             DeploymentServiceRequest.GetDeviceDeploymentFor( UUID.randomUUID(), "Test role" ),
             DeploymentServiceRequest.DeviceDeployed( UUID.randomUUID(), "Test role", Clock.System.now() ),

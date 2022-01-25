@@ -158,15 +158,20 @@ data class CustomDeviceRegistration(
 ) : DeviceRegistration(), UnknownPolymorphicWrapper
 {
     @Serializable
-    private data class BaseMembers( override val deviceId: String ) : DeviceRegistration()
+    private data class BaseMembers(
+        override val deviceId: String,
+        override val deviceDisplayName: String?
+    ) : DeviceRegistration()
 
     override val deviceId: String
+    override val deviceDisplayName: String?
 
     init
     {
         val json = Json( serializer ) { ignoreUnknownKeys = true }
         val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
         deviceId = baseMembers.deviceId
+        deviceDisplayName = baseMembers.deviceDisplayName
     }
 }
 

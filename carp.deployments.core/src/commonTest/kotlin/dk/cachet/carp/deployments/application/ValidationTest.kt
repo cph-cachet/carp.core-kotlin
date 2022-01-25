@@ -115,7 +115,7 @@ class ValidationTest
         val deviceRoleName = "Master"
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName ).getSnapshot()
 
-        val preregistrations = mapOf( "Unknown" to DefaultDeviceRegistration( "ID" ) )
+        val preregistrations = mapOf( "Unknown" to DefaultDeviceRegistration() )
 
         assertFailsWith<IllegalArgumentException> {
             protocol.throwIfInvalidPreregistrations( preregistrations )
@@ -129,7 +129,12 @@ class ValidationTest
         val connectedRoleName = "Connected"
         val protocol = createSingleMasterWithConnectedDeviceProtocol( masterRoleName, connectedRoleName ).getSnapshot()
 
-        val invalidRegistration = object : DeviceRegistration() { override val deviceId: String = "Invalid" }
+        val invalidRegistration =
+            object : DeviceRegistration()
+            {
+                override val deviceId: String = "Invalid"
+                override val deviceDisplayName: String? = null
+            }
         val preregistrations = mapOf( connectedRoleName to invalidRegistration )
 
         assertFailsWith<IllegalArgumentException> {

@@ -53,6 +53,7 @@ class ClientCodeSamples
             // Depending on the device type, different options are available.
             // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
             deviceId = "xxxxxxxxx"
+            deviceDisplayName = "Pixel 6 Pro (Android 12)"
         }
         var status: StudyStatus = client.addStudy( studyDeploymentId, deviceToUse )
 

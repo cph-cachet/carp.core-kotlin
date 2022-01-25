@@ -140,7 +140,7 @@ class StudyDeploymentTest
         protocol.addMasterDevice( device )
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
-        val registration = DefaultDeviceRegistration( "0" )
+        val registration = DefaultDeviceRegistration()
         deployment.registerDevice( device, registration )
 
         assertEquals( 1, deployment.registeredDevices.size )
@@ -182,7 +182,7 @@ class StudyDeploymentTest
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         val invalidDevice = StubMasterDeviceDescriptor( "Not part of deployment" )
-        val registration = DefaultDeviceRegistration( "0" )
+        val registration = DefaultDeviceRegistration()
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -199,11 +199,11 @@ class StudyDeploymentTest
         protocol.addMasterDevice( device )
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
-        deployment.registerDevice( device, DefaultDeviceRegistration( "0" ) )
+        deployment.registerDevice( device, DefaultDeviceRegistration() )
 
         assertFailsWith<IllegalArgumentException>
         {
-            deployment.registerDevice( device, DefaultDeviceRegistration( "1" ))
+            deployment.registerDevice( device, DefaultDeviceRegistration() )
         }
         assertEquals( 1, deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceRegistered>().count() )
     }
@@ -227,8 +227,8 @@ class StudyDeploymentTest
         protocol.addConnectedDevice( connectedCustom, masterCustom )
 
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
-        deployment.registerDevice( masterCustom, DefaultDeviceRegistration( "0" ) )
-        deployment.registerDevice( connectedCustom, DefaultDeviceRegistration( "1" ) )
+        deployment.registerDevice( masterCustom, DefaultDeviceRegistration() )
+        deployment.registerDevice( connectedCustom, DefaultDeviceRegistration() )
     }
 
     @Test
@@ -241,7 +241,7 @@ class StudyDeploymentTest
         protocol.addConnectedDevice( connected, master )
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
-        val registration = DefaultDeviceRegistration( "0" )
+        val registration = DefaultDeviceRegistration()
         deployment.registerDevice( master, registration )
 
         assertFailsWith<IllegalArgumentException>
@@ -268,8 +268,9 @@ class StudyDeploymentTest
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         // Even though these two devices are registered using the same ID, this should succeed since they are of different types.
-        deployment.registerDevice( device1Custom, DefaultDeviceRegistration( "0" ) )
-        deployment.registerDevice( device2Custom, DefaultDeviceRegistration( "0" ) )
+        val registration = DefaultDeviceRegistration()
+        deployment.registerDevice( device1Custom, registration )
+        deployment.registerDevice( device2Custom, registration )
     }
 
     @Test
@@ -295,7 +296,7 @@ class StudyDeploymentTest
         val device = StubMasterDeviceDescriptor()
         protocol.addMasterDevice( device )
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
-        val registration = DefaultDeviceRegistration( "0" )
+        val registration = DefaultDeviceRegistration()
         deployment.registerDevice( device, registration )
 
         deployment.unregisterDevice( device )
@@ -547,7 +548,7 @@ class StudyDeploymentTest
         protocol.addTaskControl( master.atStartOfStudy().start( masterTask, master ) )
         protocol.addTaskControl( master.atStartOfStudy().start( connectedTask, connected ) )
         val deployment = studyDeploymentFor( protocol )
-        val registration = DefaultDeviceRegistration( "Registered master" )
+        val registration = DefaultDeviceRegistration()
         deployment.registerDevice( master, registration )
         deployment.registerDevice( connected, connected.createRegistration() )
 
@@ -556,7 +557,7 @@ class StudyDeploymentTest
         protocol.addMasterDevice( ignoredMaster ) // Normally, this dependent device would block obtaining deployment.
 
         val deviceDeployment: MasterDeviceDeployment = deployment.getDeviceDeploymentFor( master )
-        assertEquals( "Registered master", deviceDeployment.registration.deviceId )
+        assertEquals( registration, deviceDeployment.registration )
         assertEquals( protocol.getConnectedDevices( master ).toSet(), deviceDeployment.connectedDevices )
         assertEquals( 1, deviceDeployment.connectedDeviceRegistrations.count() )
         assertEquals( protocol.applicationData, deviceDeployment.applicationData )
@@ -580,13 +581,14 @@ class StudyDeploymentTest
         val master = protocol.masterDevices.first { it.roleName == "Master" }
         val connected = protocol.devices.first { it.roleName == "Connected" }
         val deployment = studyDeploymentFor( protocol )
-        deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
+        deployment.registerDevice( master, DefaultDeviceRegistration() )
 
-        deployment.registerDevice( connected, DefaultDeviceRegistration( "42" ) )
+        val preregistration = DefaultDeviceRegistration()
+        deployment.registerDevice( connected, preregistration )
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
 
         assertEquals( "Connected", deviceDeployment.connectedDeviceRegistrations.keys.single() )
-        assertEquals( "42", deviceDeployment.connectedDeviceRegistrations.getValue( "Connected" ).deviceId )
+        assertEquals( preregistration, deviceDeployment.connectedDeviceRegistrations.getValue( "Connected" ) )
     }
 
     @Test
@@ -595,7 +597,7 @@ class StudyDeploymentTest
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
         val master = protocol.masterDevices.first { it.roleName == "Master" }
         val deployment = studyDeploymentFor( protocol )
-        deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
+        deployment.registerDevice( master, DefaultDeviceRegistration() )
 
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
 
@@ -615,8 +617,8 @@ class StudyDeploymentTest
         val task = StubTaskDescriptor( "Stub task", listOf( measure ) )
         protocol.addTaskControl( StubTrigger( sourceMaster ).start( task, targetMaster ) )
         val deployment = studyDeploymentFor( protocol )
-        deployment.registerDevice( sourceMaster, DefaultDeviceRegistration( "0" ) )
-        deployment.registerDevice( targetMaster, DefaultDeviceRegistration( "1" ) )
+        deployment.registerDevice( sourceMaster, DefaultDeviceRegistration() )
+        deployment.registerDevice( targetMaster, DefaultDeviceRegistration() )
 
         val sourceDeployment = deployment.getDeviceDeploymentFor( sourceMaster )
         val targetDeployment = deployment.getDeviceDeploymentFor( targetMaster )
@@ -774,7 +776,7 @@ class StudyDeploymentTest
         val protocol = createSingleMasterWithConnectedDeviceProtocol( "Master", "Connected" )
         val master = protocol.masterDevices.first { it.roleName == "Master" }
         val deployment = studyDeploymentFor( protocol )
-        deployment.registerDevice( master, DefaultDeviceRegistration( "0" ) )
+        deployment.registerDevice( master, DefaultDeviceRegistration() )
         val deviceDeployment = deployment.getDeviceDeploymentFor( master )
 
         assertFailsWith<IllegalStateException> { deployment.deviceDeployed( master, deviceDeployment.lastUpdatedOn ) }

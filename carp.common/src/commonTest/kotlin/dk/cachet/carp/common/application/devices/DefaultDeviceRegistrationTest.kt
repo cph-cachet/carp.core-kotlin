@@ -9,12 +9,17 @@ import kotlin.test.*
 class DefaultDeviceRegistrationTest
 {
     @Test
-    fun builder_sets_deviceId()
+    fun builder_sets_properties()
     {
-        val registration = DefaultDeviceRegistrationBuilder( "Default ID" ).apply {
-            deviceId = "Custom ID"
+        val deviceId = "Custom ID"
+        val deviceDisplayName = "Device name"
+
+        val registration = DefaultDeviceRegistrationBuilder().apply {
+            this.deviceId = deviceId
+            this.deviceDisplayName = deviceDisplayName
         }.build()
 
-        assertEquals( "Custom ID", registration.deviceId )
+        assertEquals( deviceId, registration.deviceId )
+        assertEquals( deviceDisplayName, registration.deviceDisplayName )
     }
 }

@@ -49,7 +49,7 @@ val commonInstances = listOf(
     Smartphone( "User's phone" ),
 
     // Shared device registrations in `devices` namespace.
-    DefaultDeviceRegistration( "Some device" ),
+    DefaultDeviceRegistration(),
     MACAddressDeviceRegistration( MACAddress( "00-00-00-00-00-00" ) ),
 
     // `sampling` namespace.
