@@ -16,7 +16,11 @@
         "configuration": { "$ref": "../DataStreamsConfiguration.json" }
       },
       "required": [ "$type", "configuration" ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "OpenDataStreams-Response",
+        "$ref": "../../common/Unit.json"
+      }
     },
     "AppendToDataStreams": {
       "$anchor": "AppendToDataStreams",
@@ -28,6 +32,10 @@
       },
       "required": [ "$type", "studyDeploymentId", "batch" ],
       "additionalProperties": false,
+      "Response": {
+        "$anchor": "AppendToDataStreams-Response",
+        "$ref": "../../common/Unit.json"
+      }
     },
     "GetDataStream": {
       "$anchor": "GetDataStream",
@@ -39,7 +47,11 @@
         "toSequenceIdInclusive": { "type": ["integer", "null"] }
       },
       "required": [ "$type", "dataStream", "fromSequenceId" ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetDataStream-Response",
+        "$ref": "../DataStreamBatch.json"
+      }
     },
     "CloseDataStreams": {
       "$anchor": "CloseDataStreams",
@@ -52,7 +64,11 @@
         }
       },
       "required": [ "$type", "studyDeploymentIds" ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "CloseDataStreams-Response",
+        "$ref": "../../common/Unit.json"
+      }
     },
     "RemoveDataStreams": {
       "type": "object",
@@ -64,7 +80,11 @@
         }
       },
       "required": [ "$type", "studyDeploymentIds" ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "RemoveDataStreams-Response",
+        "type": "boolean"
+      }
     }
   }
 }

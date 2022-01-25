@@ -25,11 +25,25 @@ class JsonSchemasTest
                 catch ( _: JsonSchemaException ) { break }
 
             @Suppress( "UnreachableCode" ) // Seemingly a bug in detekt 1.18.1
-            requests.forEach {
-                val requestJson = mapper.readTree( it.requestObject.json )
-                val errors = requestSchema.validate( requestJson )
-                check( errors.isEmpty() )
-                    { "JSON schema \"$requestSchema\" doesn't match generated JSON example of \"${it.requestObject.klass}\": $errors" }
+            for ( r in requests )
+            {
+                // Validate request.
+                val requestJson = mapper.readTree( r.requestObject.json )
+                val requestErrors = requestSchema.validate( requestJson )
+                check( requestErrors.isEmpty() )
+                    { "JSON schema \"$requestSchema\" doesn't match generated JSON example of \"${r.requestObject.klass}\": $requestErrors" }
+
+                // Validate response.
+                val requestObjectName = r.requestObject.klass.simpleName
+                val responseSchemaNode = requestSchema.getRefSchemaNode( "#/\$defs/$requestObjectName/Response" )
+                val responseSchema = schemaFactory.getSchema( requestSchema.currentUri, responseSchemaNode )
+                val responseJson = mapper.readTree( r.response.json )
+                val responseErrors = responseSchema.validate( responseJson )
+                check( responseErrors.isEmpty() )
+                {
+                    "JSON schema response defined in \"$requestSchema\" for \"$requestObjectName\" " +
+                    "doesn't match generated JSON example of \"${r.response.klass}\": $responseErrors"
+                }
             }
         }
     }
