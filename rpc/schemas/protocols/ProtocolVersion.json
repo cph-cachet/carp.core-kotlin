@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "tag": { "type": "string" },
+    "date": { "type": "string", "format": "date-time" }
+  },
+  "required": [ "tag", "date" ],
+  "additionalProperties": false
+}
