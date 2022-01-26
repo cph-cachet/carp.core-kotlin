@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    { "$ref": "#/$defs/Add" },
+    { "$ref": "#/$defs/AddVersion" },
+    { "$ref": "#/$defs/UpdateParticipantDataConfiguration" },
+    { "$ref": "#/$defs/GetBy" },
+    { "$ref": "#/$defs/GetAllForOwner" },
+    { "$ref": "#/$defs/GetVersionHistoryFor" }
+  ],
+  "$defs": {
+    "Add": {
+      "$anchor": "Add",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.Add" },
+        "protocol": { "$ref": "../StudyProtocolSnapshot.json" },
+        "versionTag": { "type": "string" }
+      },
+      "required": [ "$type", "protocol" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "Add-Response",
+        "$ref": "../../common/Unit.json"
+      }
+    },
+    "AddVersion": {
+      "$anchor": "AddVersion",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.AddVersion" },
+        "protocol": { "$ref": "../StudyProtocolSnapshot.json" },
+        "versionTag": { "type": "string" }
+      },
+      "required": [ "$type", "protocol" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "AddVersion-Response",
+        "$ref": "../../common/Unit.json"
+      }
+    },
+    "UpdateParticipantDataConfiguration": {
+      "$anchor": "UpdateParticipantDataConfiguration",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.UpdateParticipantDataConfiguration" },
+        "protocolId": { "type": "string", "format": "uuid" },
+        "versionTag": { "type": "string" },
+        "expectedParticipantData": {
+          "type": "array",
+          "items": { "$ref": "../../common/users/ParticipantAttribute.json" }
+        }
+      },
+      "required": [ "$type", "protocolId", "versionTag", "expectedParticipantData" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "UpdateParticipantDataConfiguration-Response",
+        "$ref": "../StudyProtocolSnapshot.json"
+      }
+    },
+    "GetBy": {
+      "$anchor": "GetBy",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.GetBy" },
+        "protocolId": { "type": "string", "format": "uuid" },
+        "versionTag": { "type": [ "string", "null" ] }
+      },
+      "required": [ "$type", "protocolId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetBy-Response",
+        "$ref": "../StudyProtocolSnapshot.json"
+      }
+    },
+    "GetAllForOwner": {
+      "$anchor": "GetAllForOwner",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.GetAllForOwner" },
+        "ownerId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "$type", "ownerId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetAllForOwner-Response",
+        "type": "array",
+        "items": { "$ref": "../StudyProtocolSnapshot.json" }
+      }
+    },
+    "GetVersionHistoryFor": {
+      "$anchor": "GetVersionHistoryFor",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.GetVersionHistoryFor" },
+        "protocolId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "$type", "protocolId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetVersionHistoryFor-Response",
+        "type": "array",
+        "items": { "$ref": "../ProtocolVersion.json" }
+      }
+    }
+  }
+}
