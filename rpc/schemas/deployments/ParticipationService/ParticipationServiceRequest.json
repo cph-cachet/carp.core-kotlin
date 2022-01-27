@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    { "$ref": "#/$defs/GetActiveParticipationInvitations" },
+    { "$ref": "#/$defs/GetParticipantData" },
+    { "$ref": "#/$defs/GetParticipantDataList" },
+    { "$ref": "#/$defs/SetParticipantData" }
+  ],
+  "$defs": {
+    "GetActiveParticipationInvitations": {
+      "$anchor": "GetActiveParticipationInvitations",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetActiveParticipationInvitations" },
+        "accountId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "$type", "accountId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetActiveParticipationInvitations-Response",
+        "type": "array",
+        "items": { "$ref": "../users/ActiveParticipationInvitation.json"}
+      }
+    },
+    "GetParticipantData": {
+      "$anchor": "GetParticipantData",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetParticipantData" },
+        "studyDeploymentId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "$type", "studyDeploymentId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetParticipantData-Response",
+        "$ref": "../users/ParticipantData.json"
+      }
+    },
+    "GetParticipantDataList": {
+      "$anchor": "GetParticipantDataList",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetParticipantDataList" },
+        "studyDeploymentIds": {
+          "type": "array",
+          "items": { "type": "string", "format": "uuid" }
+        }
+      },
+      "required": [ "$type", "studyDeploymentIds" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetParticipantDataList-Response",
+        "type": "array",
+        "items": { "$ref": "../users/ParticipantData.json" }
+      }
+    },
+    "SetParticipantData": {
+      "$anchor": "SetParticipantData",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.SetParticipantData" },
+        "studyDeploymentId": { "type": "string", "format": "uuid" },
+        "data": { "$ref": "../users/ParticipantDataMap.json" }
+      },
+      "required": [ "$type", "studyDeploymentId", "data" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "SetParticipantData-Response",
+        "$ref": "../users/ParticipantData.json"
+      }
+    }
+  }
+}

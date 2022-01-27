@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "participation": { "$ref": "../users/Participation.json" },
+    "invitation": { "$ref": "../users/StudyInvitation.json" },
+    "assignedDevices": {
+      "type": "array",
+      "items": { "$ref": "../users/AssignedMasterDevice.json" }
+    }
+  },
+  "required": [ "participation", "invitation", "assignedDevices" ],
+  "additionalProperties": false
+}
