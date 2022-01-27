@@ -1,30 +1,22 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "type": "object",
-  "allOf": [
-    {
+  "oneOf": [
+    { "$ref": "#/$defs/Unregistered" },
+    { "$ref": "#/$defs/Registered" },
+    { "$ref": "#/$defs/Deployed" },
+    { "$ref": "#/$defs/NeedsRedeployment" }
+  ],
+  "$defs": {
+    "DeviceDeploymentStatus": {
       "type": "object",
       "properties": {
         "device": { "$ref": "../common/devices/DeviceDescriptor.json" }
       },
-      "required": [ "device" ]
+      "required": [ "$type", "device" ]
     },
-    {
-      "oneOf": [
-        { "$ref": "#/$defs/Unregistered" },
-        { "$ref": "#/$defs/Registered" },
-        { "$ref": "#/$defs/Deployed" },
-        { "$ref": "#/$defs/NeedsRedeployment" }
-      ]
-    }
-  ],
-  "$defs": {
-    "Unregistered": {
-      "$anchor": "Unregistered",
+    "NotDeployed": {
       "type": "object",
       "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Unregistered" },
-        "canBeDeployed": { "type": "boolean" },
         "remainingDevicesToRegisterToObtainDeployment": {
           "type": "array",
           "items": { "type": "string" }
@@ -34,48 +26,43 @@
           "items": { "type": "string" }
         }
       },
-      "required": [ "$type", "canBeDeployed", "remainingDevicesToRegisterToObtainDeployment", "remainingDevicesToRegisterBeforeDeployment" ]
+      "required": [ "remainingDevicesToRegisterToObtainDeployment", "remainingDevicesToRegisterBeforeDeployment" ]
+    },
+    "Unregistered": {
+      "$anchor": "Unregistered",
+      "allOf": [ "#/$defs/DeviceDeploymentStatus", "#/$defs/NotDeployed" ],
+      "properties": {
+        "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Unregistered" },
+        "canBeDeployed": { "type": "boolean" }
+      },
+      "required": [ "canBeDeployed" ],
+      "unevaluatedProperties": false
     },
     "Registered": {
       "$anchor": "Registered",
-      "type": "object",
+      "allOf": [ "#/$defs/DeviceDeploymentStatus", "#/$defs/NotDeployed" ],
       "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Registered" },
-        "canBeDeployed": { "type": "boolean" },
-        "remainingDevicesToRegisterToObtainDeployment": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "remainingDevicesToRegisterBeforeDeployment": {
-          "type": "array",
-          "items": { "type": "string" }
-        }
+        "canBeDeployed": { "type": "boolean" }
       },
-      "required": [ "$type", "canBeDeployed", "remainingDevicesToRegisterToObtainDeployment", "remainingDevicesToRegisterBeforeDeployment" ]
+      "required": [ "canBeDeployed" ],
+      "unevaluatedProperties": false
     },
     "Deployed": {
       "$anchor": "Deployed",
-      "type": "object",
+      "allOf": [ "#/$defs/DeviceDeploymentStatus" ],
       "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Deployed" }
       },
-      "required": [ "$type" ]
+      "unevaluatedProperties": false
     },
     "NeedsRedeployment": {
       "$anchor": "NeedsRedeployment",
-      "type": "object",
+      "allOf": [ "#/$defs/DeviceDeploymentStatus", "#/$defs/NotDeployed" ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.NeedsRedeployment" },
-        "remainingDevicesToRegisterToObtainDeployment": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "remainingDevicesToRegisterBeforeDeployment": {
-          "type": "array",
-          "items": { "type": "string" }
-        }
+        "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.NeedsRedeployment" }
       },
-      "required": [ "$type", "remainingDevicesToRegisterToObtainDeployment", "remainingDevicesToRegisterBeforeDeployment" ]
+      "unevaluatedProperties": false
     }
   }
 }
