@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    { "$ref": "#/$defs/Staged" },
+    { "$ref": "#/$defs/Invited" },
+    { "$ref": "#/$defs/Running" },
+    { "$ref": "#/$defs/Stopped" }
+  ],
+  "$defs": {
+    "ParticipantGroupStatus": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "participants": {
+          "type": "array",
+          "items": { "$ref": "../users/Participant.json" }
+        }
+      },
+      "required": [ "$type", "id", "participants" ]
+    },
+    "InDeployment": {
+      "allOf": [ { "$ref": "#/$defs/ParticipantGroupStatus" } ],
+      "properties": {
+        "invitedOn": { "type": "string", "format": "date-time" },
+        "studyDeploymentStatus": { "$ref": "../../deployments/StudyDeploymentStatus.json" }
+      },
+      "required": [ "invitedOn", "studyDeploymentStatus" ]
+    },
+    "Staged": {
+      "$anchor": "Staged",
+      "allOf": [ { "$ref": "#/$defs/ParticipantGroupStatus" } ],
+      "properties": {
+        "$type": { "const": "dk.cachet.carp.studies.application.users.ParticipantGroupStatus.Staged" }
+      },
+      "unevaluatedProperties": false
+    },
+    "Invited": {
+      "$anchor": "Invited",
+      "allOf": [ { "$ref": "#/$defs/InDeployment" } ],
+      "properties": {
+        "$type": { "const": "dk.cachet.carp.studies.application.users.ParticipantGroupStatus.Invited" }
+      },
+      "unevaluatedProperties": false
+    },
+    "Running": {
+      "$anchor": "DeployingDevices",
+      "allOf": [ { "$ref": "#/$defs/InDeployment" } ],
+      "properties": {
+        "$type": { "const": "dk.cachet.carp.studies.application.users.ParticipantGroupStatus.Running" },
+        "startedOn": { "type": "string", "format": "date-time" }
+      },
+      "required": [ "startedOn" ],
+      "unevaluatedProperties": false
+    },
+    "Stopped": {
+      "$anchor": "Running",
+      "allOf": [ { "$ref": "#/$defs/InDeployment" } ],
+      "properties": {
+        "$type": { "const": "dk.cachet.carp.studies.application.users.ParticipantGroupStatus.Stopped" },
+        "startedOn": {
+          "oneOf": [
+            { "type": "string", "format": "date-time" },
+            { "type": "null" }
+          ]
+        },
+        "stoppedOn": { "type": "string", "format": "date-time" }
+      },
+      "required": [ "startedOn", "stoppedOn" ],
+      "unevaluatedProperties": false
+    }
+  }
+}
