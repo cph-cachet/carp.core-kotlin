@@ -22,7 +22,9 @@ class JsonSchemasTest
             val requestSchemaURI = URI( "file:${appService.requestSchemaPath}" )
             val requestSchema =
                 try { schemaFactory.getSchema( requestSchemaURI ) }
-                catch ( _: JsonSchemaException ) { continue }
+                catch ( _: JsonSchemaException ) { null }
+            checkNotNull( requestSchema )
+                { "Could not locate JSON schema for \"${appService.requestObjectName}\". Searched for: $requestSchemaURI" }
 
             @Suppress( "UnreachableCode" ) // Seemingly a bug in detekt 1.18.1
             for ( r in requests )
