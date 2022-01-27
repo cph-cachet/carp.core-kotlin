@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "participantId": { "type": "string", "format": "uuid" },
+    "assignedMasterDeviceRoleNames": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "required": [ "participantId", "assignedMasterDeviceRoleNames" ],
+  "additionalProperties": false
+}
