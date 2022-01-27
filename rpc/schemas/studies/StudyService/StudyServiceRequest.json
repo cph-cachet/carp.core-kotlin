@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    { "$ref": "#/$defs/CreateStudy" },
+    { "$ref": "#/$defs/SetInternalDescription" },
+    { "$ref": "#/$defs/GetStudyDetails" },
+    { "$ref": "#/$defs/GetStudyStatus" },
+    { "$ref": "#/$defs/GetStudiesOverview" },
+    { "$ref": "#/$defs/SetInvitation" },
+    { "$ref": "#/$defs/SetProtocol" },
+    { "$ref": "#/$defs/GoLive" },
+    { "$ref": "#/$defs/Remove" }
+  ],
+  "$defs": {
+    "CreateStudy": {
+      "$anchor": "CreateStudy",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.CreateStudy" },
+        "ownerId": { "type": "string", "format": "uuid" },
+        "name": { "type": "string" },
+        "description": { "type": [ "string", "null" ] },
+        "invitation": {
+          "oneOff": [
+            { "type": "null" },
+            { "$ref": "../../deployments/users/StudyInvitation.json" }
+          ]
+        }
+      },
+      "required": [ "$type", "ownerId", "name" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "CreateStudy-Response",
+        "$ref": "../StudyStatus.json"
+      }
+    },
+    "SetInternalDescription": {
+      "$anchor": "SetInternalDescription",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.SetInternalDescription" },
+        "studyId": { "type": "string", "format": "uuid" },
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": [ "$type", "studyId", "name", "description" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "SetInternalDescription-Response",
+        "$ref": "../StudyStatus.json"
+      }
+    },
+    "GetStudyDetails": {
+      "$anchor": "GetStudyDetails",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.GetStudyDetails" },
+        "studyId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "$type", "studyId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetStudyDetails-Response",
+        "$ref": "../StudyDetails.json"
+      }
+    },
+    "GetStudyStatus": {
+      "$anchor": "GetStudyStatus",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.GetStudyStatus" },
+        "studyId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "$type", "studyId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetStudyStatus-Response",
+        "$ref": "../StudyStatus.json"
+      }
+    },
+    "GetStudiesOverview": {
+      "$anchor": "GetStudiesOverview",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.GetStudiesOverview" },
+        "ownerId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "$type", "ownerId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetStudiesOverview-Response",
+        "type": "array",
+        "items": { "$ref": "../StudyStatus.json" }
+      }
+    },
+    "SetInvitation": {
+      "$anchor": "SetInvitation",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.SetInvitation" },
+        "studyId": { "type": "string", "format": "uuid" },
+        "invitation": { "$ref": "../../deployments/users/StudyInvitation.json" }
+      },
+      "required": [ "$type", "studyId", "invitation" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "SetInvitation-Response",
+        "$ref": "../StudyStatus.json"
+      }
+    },
+    "SetProtocol": {
+      "$anchor": "SetProtocol",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.SetProtocol" },
+        "studyId": { "type": "string", "format": "uuid" },
+        "protocol": { "$ref": "../../protocols/StudyProtocolSnapshot.json" }
+      },
+      "required": [ "$type", "studyId", "protocol" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "SetProtocol-Response",
+        "$ref": "../StudyStatus.json"
+      }
+    },
+    "GoLive": {
+      "$anchor": "GoLive",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.GoLive" },
+        "studyId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "$type", "studyId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GoLive-Response",
+        "$ref": "../StudyStatus.json"
+      }
+    },
+    "Remove": {
+      "$anchor": "Remove",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.Remove" },
+        "studyId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "$type", "studyId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "Remove-Response",
+        "type": "boolean"
+      }
+    }
+  }
+}
