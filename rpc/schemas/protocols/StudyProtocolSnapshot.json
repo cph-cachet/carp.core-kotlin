@@ -25,12 +25,8 @@
     },
     "triggers": {
       "type": "object",
-      "propertyNames": {
-        "pattern": "^\\d$"
-      },
-      "patternProperties": {
-        "^\\d$": { "$ref": "../common/triggers/Trigger.json" }
-      }
+      "propertyNames": { "pattern": "^\\d$" },
+      "additionalProperties": { "$ref": "../common/triggers/Trigger.json" }
     },
     "taskControls": {
       "type": "array",
@@ -40,7 +36,7 @@
       "type": "array",
       "items": { "$ref": "../common/users/ParticipantAttribute.json" }
     },
-    "applicationData": { "type": [ "object", "null" ] }
+    "applicationData": { "$ref":  "../common/ApplicationData.json" }
   },
   "required": [ "id", "createdOn", "ownerId", "name" ],
   "additionalProperties": false,

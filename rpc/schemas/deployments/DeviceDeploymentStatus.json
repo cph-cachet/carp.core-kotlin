@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "device": { "$ref": "../common/devices/DeviceDescriptor.json" }
+      },
+      "required": [ "device" ]
+    },
+    {
+      "oneOf": [
+        { "$ref": "#/$defs/Unregistered" },
+        { "$ref": "#/$defs/Registered" },
+        { "$ref": "#/$defs/Deployed" },
+        { "$ref": "#/$defs/NeedsRedeployment" }
+      ]
+    }
+  ],
+  "$defs": {
+    "Unregistered": {
+      "$anchor": "Unregistered",
+      "type": "object",
+      "properties": {
+        "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Unregistered" },
+        "canBeDeployed": { "type": "boolean" },
+        "remainingDevicesToRegisterToObtainDeployment": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "remainingDevicesToRegisterBeforeDeployment": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": [ "$type", "canBeDeployed", "remainingDevicesToRegisterToObtainDeployment", "remainingDevicesToRegisterBeforeDeployment" ]
+    },
+    "Registered": {
+      "$anchor": "Registered",
+      "type": "object",
+      "properties": {
+        "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Registered" },
+        "canBeDeployed": { "type": "boolean" },
+        "remainingDevicesToRegisterToObtainDeployment": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "remainingDevicesToRegisterBeforeDeployment": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": [ "$type", "canBeDeployed", "remainingDevicesToRegisterToObtainDeployment", "remainingDevicesToRegisterBeforeDeployment" ]
+    },
+    "Deployed": {
+      "$anchor": "Deployed",
+      "type": "object",
+      "properties": {
+        "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Deployed" }
+      },
+      "required": [ "$type" ]
+    },
+    "NeedsRedeployment": {
+      "$anchor": "NeedsRedeployment",
+      "type": "object",
+      "properties": {
+        "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.NeedsRedeployment" },
+        "remainingDevicesToRegisterToObtainDeployment": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "remainingDevicesToRegisterBeforeDeployment": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": [ "$type", "remainingDevicesToRegisterToObtainDeployment", "remainingDevicesToRegisterBeforeDeployment" ]
+    }
+  }
+}
