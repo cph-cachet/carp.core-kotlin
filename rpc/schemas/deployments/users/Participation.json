@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "studyDeploymentId": { "type": "string", "format": "uuid" },
+    "participantId": { "type": "string", "format": "uuid" }
+  },
+  "required": [ "studyDeploymentId", "participantId" ],
+  "additionalProperties": false
+}
