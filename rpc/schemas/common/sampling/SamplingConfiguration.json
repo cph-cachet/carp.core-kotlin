@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "allOf": [
+    { "$ref": "#/$defs/SamplingConfiguration" },
+    {
+      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.sampling.BatteryAwareSamplingConfiguration" } } },
+      "then": { "$ref": "BatteryAwareSamplingConfiguration.json" }
+    },
+    {
+      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.sampling.GranularitySamplingConfiguration" } } },
+      "then": { "$ref": "GranularitySamplingConfiguration.json" }
+    },
+    {
+      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.sampling.IntervalSamplingConfiguration" } } },
+      "then": { "$ref": "IntervalSamplingConfiguration.json" }
+    },
+    {
+      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.sampling.NoOptionsSamplingConfiguration" } } },
+      "then": { "$ref": "NoOptionsSamplingConfiguration.json" }
+    }
+  ],
+  "$defs": {
+    "SamplingConfiguration": {
+      "type": "object",
+      "properties": {
+        "$type": true
+      },
+      "required": [ "$type" ]
+    }
+  }
+}

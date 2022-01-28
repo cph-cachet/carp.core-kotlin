@@ -10,6 +10,7 @@
     "ParticipantGroupStatus": {
       "type": "object",
       "properties": {
+        "$type": true,
         "id": { "type": "string", "format": "uuid" },
         "participants": {
           "type": "array",

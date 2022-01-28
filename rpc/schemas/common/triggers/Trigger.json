@@ -1,4 +1,28 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "type": "object"
+  "allOf": [
+    { "$ref": "#/$defs/Trigger" },
+    {
+      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger" } } },
+      "then": { "$ref": "ElapsedTimeTrigger.json" }
+    },
+    {
+      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.triggers.ManualTrigger" } } },
+      "then": { "$ref": "ManualTrigger.json" }
+    },
+    {
+      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.triggers.ScheduledTrigger" } } },
+      "then": { "$ref": "ScheduledTrigger.json" }
+    }
+  ],
+  "$defs": {
+    "Trigger": {
+      "type": "object",
+      "properties": {
+        "$type": true,
+        "sourceDeviceRoleName": { "type": "string" }
+      },
+      "required": [ "$type", "sourceDeviceRoleName" ]
+    }
+  }
 }

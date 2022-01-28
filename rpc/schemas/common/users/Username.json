@@ -2,7 +2,8 @@
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
   "properties": {
-    "$type": { "$ref": "NamespacedId.json" }
+    "name": { "type": "string" }
   },
-  "required": [ "$type" ]
+  "required": [ "name" ],
+  "additionalProperties": false
 }

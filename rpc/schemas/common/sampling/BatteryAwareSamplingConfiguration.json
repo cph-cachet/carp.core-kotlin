@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "allOf": [ { "$ref": "SamplingConfiguration.json#/$defs/SamplingConfiguration" } ],
+  "properties": {
+    "$type": { "const": "dk.cachet.carp.common.application.sampling.BatteryAwareSamplingConfiguration" },
+    "normal": { "$ref": "SamplingConfiguration.json" },
+    "low": { "$ref": "SamplingConfiguration.json" },
+    "critical": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "SamplingConfiguration.json" }
+      ]
+    }
+  },
+  "required": [ "normal", "low" ],
+  "unevaluatedProperties": false
+}
