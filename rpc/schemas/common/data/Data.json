@@ -1,7 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "allOf": [
-    { "$ref": "../Polymorphic.json" },
+    {
+      "type": "object",
+      "properties": {
+        "$type": { "$ref": "../NamespacedId.json" }
+      },
+      "required": [ "$type" ]
+    },
     {
       "if": { "properties": { "$type": { "const": "dk.cachet.carp.freeformtext" } } },
       "then": { "$ref": "FreeFormText.json" }
@@ -49,6 +55,14 @@
     {
       "if": { "properties": { "$type": { "const": "dk.cachet.carp.completedtask" } } },
       "then": { "$ref": "CompletedTask.json" }
+    },
+    {
+      "if": { "properties": { "$type": { "const": "dk.cachet.carp.input.custom" } } },
+      "then": { "$ref": "input/CustomInput.json" }
+    },
+    {
+      "if": { "properties": { "$type": { "const": "dk.cachet.carp.input.sex" } } },
+      "then": { "$ref": "input/Sex.json" }
     }
   ]
 }

@@ -10,6 +10,7 @@
     "DeviceDeploymentStatus": {
       "type": "object",
       "properties": {
+        "$type": true,
         "device": { "$ref": "../common/devices/DeviceDescriptor.json" }
       },
       "required": [ "$type", "device" ]

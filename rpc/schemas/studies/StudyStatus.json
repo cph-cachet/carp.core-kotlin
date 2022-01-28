@@ -8,6 +8,7 @@
     "StudyStatus": {
       "type": "object",
       "properties": {
+        "$type": true,
         "studyId": { "type": "string", "format": "uuid" },
         "name": { "type": "string" },
         "createdOn": { "type": "string", "format": "date-time" },

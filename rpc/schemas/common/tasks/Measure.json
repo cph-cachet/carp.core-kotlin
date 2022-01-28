@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/DataStream" },
+    { "$ref": "#/$defs/TriggerData" }
+  ],
+  "$defs": {
+    "DataStream": {
+      "$anchor": "DataStream",
+      "type": "object",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.common.application.tasks.Measure.DataStream" },
+        "type": { "$ref": "../NamespacedId.json" },
+        "overrideSamplingConfiguration": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "../sampling/SamplingConfiguration.json" }
+          ]
+        }
+      },
+      "required": [ "$type", "type" ],
+      "additionalProperties": false
+    },
+    "TriggerData": {
+      "$anchor": "TriggerData",
+  	  "properties": {
+        "$type": { "const": "dk.cachet.carp.common.application.tasks.Measure.TriggerData" },
+        "triggerId": { "type": "integer" }
+      },
+      "required": [ "$type", "triggerId" ],
+      "additionalProperties": false
+    }
+  }
+}
