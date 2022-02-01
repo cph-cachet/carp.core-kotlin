@@ -199,7 +199,7 @@ task setSnapshotVersion {
         def snapshotVersion = "${versionSplit[0]}-SNAPSHOT"
         version = snapshotVersion
 
-        (rootProject.subprojects - detektModule).each { project ->
+        (rootProject.subprojects - devOpsModules).each { project ->
             project.version = snapshotVersion
         }
     }
