@@ -10,9 +10,10 @@ import dk.cachet.carp.data.application.DataStreamsConfiguration
 
 
 /**
- * A proxy for a data stream [service] which notifies of incoming requests and responses through [log].
+ * A proxy for a data stream [service] which notifies of incoming requests and responses through [log]
+ * and keeps a history of requests in [loggedRequests].
  */
-class DataStreamServiceLog( service: DataStreamService, log: (LoggedRequest<DataStreamService>) -> Unit ) :
+class DataStreamServiceLog( service: DataStreamService, log: (LoggedRequest<DataStreamService>) -> Unit = { } ) :
     ApplicationServiceLog<DataStreamService>( service, log ),
     DataStreamService
 {

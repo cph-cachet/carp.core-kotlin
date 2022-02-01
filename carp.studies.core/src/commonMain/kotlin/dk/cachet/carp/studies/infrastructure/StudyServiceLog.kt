@@ -11,9 +11,10 @@ import dk.cachet.carp.studies.application.StudyStatus
 
 
 /**
- * A proxy for a study [service] which notifies of incoming requests and responses through [log].
+ * A proxy for a study [service] which notifies of incoming requests and responses through [log]
+ * and keeps a history of requests in [loggedRequests].
  */
-class StudyServiceLog( service: StudyService, log: (LoggedRequest<StudyService>) -> Unit ) :
+class StudyServiceLog( service: StudyService, log: (LoggedRequest<StudyService>) -> Unit = { } ) :
     ApplicationServiceLog<StudyService>( service, log ),
     StudyService
 {

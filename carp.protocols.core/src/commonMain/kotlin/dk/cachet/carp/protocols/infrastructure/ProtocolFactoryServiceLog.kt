@@ -8,10 +8,13 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
 
 /**
- * A proxy for a protocol factory [service] which notifies of incoming requests and responses through [log].
+ * A proxy for a protocol factory [service] which notifies of incoming requests and responses through [log]
+ * and keeps a history of requests in [loggedRequests].
  */
-class ProtocolFactoryServiceLog( service: ProtocolFactoryService, log: (LoggedRequest<ProtocolFactoryService>) -> Unit ) :
-    ApplicationServiceLog<ProtocolFactoryService>( service, log ),
+class ProtocolFactoryServiceLog(
+    service: ProtocolFactoryService,
+    log: (LoggedRequest<ProtocolFactoryService>) -> Unit = { }
+) : ApplicationServiceLog<ProtocolFactoryService>( service, log ),
     ProtocolFactoryService
 {
     override suspend fun createCustomProtocol(

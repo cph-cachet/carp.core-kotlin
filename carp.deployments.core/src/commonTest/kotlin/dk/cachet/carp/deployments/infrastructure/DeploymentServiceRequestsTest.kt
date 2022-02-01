@@ -4,7 +4,6 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
-import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
@@ -39,14 +38,11 @@ class DeploymentServiceRequestsTest : ApplicationServiceRequestsTest<DeploymentS
     }
 
 
-    override fun createServiceLog(
-        log: (LoggedRequest<DeploymentService>) -> Unit
-    ): ApplicationServiceLog<DeploymentService> =
-        DeploymentServiceLog(
-            DeploymentServiceHost(
-                InMemoryDeploymentRepository(),
-                InMemoryDataStreamService(),
-                SingleThreadedEventBus().createApplicationServiceAdapter( DeploymentService::class ) ),
-            log
+    override fun createServiceLog(): ApplicationServiceLog<DeploymentService> = DeploymentServiceLog(
+        DeploymentServiceHost(
+            InMemoryDeploymentRepository(),
+            InMemoryDataStreamService(),
+            SingleThreadedEventBus().createApplicationServiceAdapter( DeploymentService::class )
         )
+    )
 }

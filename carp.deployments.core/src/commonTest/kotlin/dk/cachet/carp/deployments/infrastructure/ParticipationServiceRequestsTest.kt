@@ -5,7 +5,6 @@ import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
-import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.deployments.application.ParticipationService
@@ -36,15 +35,11 @@ class ParticipationServiceRequestsTest : ApplicationServiceRequestsTest<Particip
     }
 
 
-    override fun createServiceLog(
-        log: (LoggedRequest<ParticipationService>) -> Unit
-    ): ApplicationServiceLog<ParticipationService> =
-        ParticipationServiceLog(
-            ParticipationServiceHost(
-                InMemoryParticipationRepository(),
-                ParticipantGroupService( InMemoryAccountService() ),
-                SingleThreadedEventBus().createApplicationServiceAdapter( ParticipationService::class )
-            ),
-            log
+    override fun createServiceLog(): ApplicationServiceLog<ParticipationService> = ParticipationServiceLog(
+        ParticipationServiceHost(
+            InMemoryParticipationRepository(),
+            ParticipantGroupService( InMemoryAccountService() ),
+            SingleThreadedEventBus().createApplicationServiceAdapter( ParticipationService::class )
         )
+    )
 }

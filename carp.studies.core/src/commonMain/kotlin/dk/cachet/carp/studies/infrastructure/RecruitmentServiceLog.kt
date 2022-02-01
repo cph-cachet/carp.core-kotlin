@@ -11,9 +11,10 @@ import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 
 
 /**
- * A proxy for a recruitment [service] which notifies of incoming requests and responses through [log].
+ * A proxy for a recruitment [service] which notifies of incoming requests and responses through [log]
+ * and keeps a history of requests in [loggedRequests].
  */
-class RecruitmentServiceLog( service: RecruitmentService, log: (LoggedRequest<RecruitmentService>) -> Unit ) :
+class RecruitmentServiceLog( service: RecruitmentService, log: (LoggedRequest<RecruitmentService>) -> Unit = { } ) :
     ApplicationServiceLog<RecruitmentService>( service, log ),
     RecruitmentService
 {
