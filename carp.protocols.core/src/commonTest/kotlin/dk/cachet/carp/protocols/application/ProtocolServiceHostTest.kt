@@ -8,5 +8,10 @@ import dk.cachet.carp.protocols.infrastructure.InMemoryStudyProtocolRepository
  */
 class ProtocolServiceHostTest : ProtocolServiceTest
 {
-    override fun createService(): ProtocolService = ProtocolServiceHost( InMemoryStudyProtocolRepository() )
+    companion object
+    {
+        fun createService(): ProtocolService = ProtocolServiceHost( InMemoryStudyProtocolRepository() )
+    }
+
+    override fun createService(): ProtocolService = ProtocolServiceHostTest.createService()
 }

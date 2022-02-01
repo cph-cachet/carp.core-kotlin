@@ -1,6 +1,5 @@
 package dk.cachet.carp.deployments.application
 
-import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
@@ -15,26 +14,30 @@ import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
 /**
  * Tests for [ParticipationServiceHost].
  */
-class ParticipationServiceHostTest : ParticipationServiceTest()
+class ParticipationServiceHostTest : ParticipationServiceTest
 {
-    override fun createService(
-        participantDataInputTypes: InputDataTypeList
-    ): Triple<ParticipationService, DeploymentService, AccountService>
+    companion object
     {
-        val eventBus: EventBus = SingleThreadedEventBus()
+        fun createService(): Triple<ParticipationService, DeploymentService, AccountService>
+        {
+            val eventBus: EventBus = SingleThreadedEventBus()
 
-        val deploymentService = DeploymentServiceHost(
-            InMemoryDeploymentRepository(),
-            InMemoryDataStreamService(),
-            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
+            val deploymentService = DeploymentServiceHost(
+                InMemoryDeploymentRepository(),
+                InMemoryDataStreamService(),
+                eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
-        val accountService = InMemoryAccountService()
+            val accountService = InMemoryAccountService()
 
-        val participationService = ParticipationServiceHost(
-            InMemoryParticipationRepository(),
-            ParticipantGroupService( accountService ),
-            eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
+            val participationService = ParticipationServiceHost(
+                InMemoryParticipationRepository(),
+                ParticipantGroupService( accountService ),
+                eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
-        return Triple( participationService, deploymentService, accountService )
+            return Triple( participationService, deploymentService, accountService )
+        }
     }
+
+    override fun createService(): Triple<ParticipationService, DeploymentService, AccountService> =
+        ParticipationServiceHostTest.createService()
 }

@@ -3,7 +3,6 @@ package dk.cachet.carp.deployments.application
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
-import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.users.AccountIdentity
@@ -24,14 +23,18 @@ private val unknownId: UUID = UUID.randomUUID()
 /**
  * Tests for implementations of [ParticipationService].
  */
-abstract class ParticipationServiceTest
+interface ParticipationServiceTest
 {
+    companion object
+    {
+        private const val deviceRoleName: String = "Master"
+    }
+
+
     /**
      * Create a deployment service and account service it depends on to be used in the tests.
      */
-    abstract fun createService(
-        participantDataInputTypes: InputDataTypeList = CarpInputDataTypes
-    ): Triple<ParticipationService, DeploymentService, AccountService>
+    fun createService(): Triple<ParticipationService, DeploymentService, AccountService>
 
 
     @Test
@@ -61,8 +64,7 @@ abstract class ParticipationServiceTest
 
     @Test
     fun getParticipantData_initially_returns_null_for_all_expected_data() = runSuspendTest {
-        val (participationService, deploymentService, _) =
-            createService( CarpInputDataTypes )
+        val (participationService, deploymentService, _) = createService()
 
         // Create protocol with expected 'sex' participant data.
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
@@ -81,7 +83,7 @@ abstract class ParticipationServiceTest
 
     @Test
     fun getParticipantData_fails_for_unknown_deploymentId() = runSuspendTest {
-        val (participationService, _, _) = createService( CarpInputDataTypes )
+        val (participationService, _, _) = createService()
 
         assertFailsWith<IllegalArgumentException> { participationService.getParticipantData( unknownId ) }
     }
@@ -113,8 +115,7 @@ abstract class ParticipationServiceTest
 
     @Test
     fun setParticipantData_succeeds() = runSuspendTest {
-        val (participationService, deploymentService, _) =
-            createService( CarpInputDataTypes )
+        val (participationService, deploymentService, _) = createService()
 
         // Create protocol with expected 'sex' participant data.
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
@@ -133,7 +134,7 @@ abstract class ParticipationServiceTest
 
     @Test
     fun setParticipantData_fails_for_unknown_deploymentId() = runSuspendTest {
-        val (participationService, _, _) = createService( CarpInputDataTypes )
+        val (participationService, _, _) = createService()
 
         val toSet = mapOf( CarpInputDataTypes.SEX to Sex.Male )
         assertFailsWith<IllegalArgumentException>
@@ -144,8 +145,7 @@ abstract class ParticipationServiceTest
 
     @Test
     fun setParticipantData_fails_for_unexpected_input_for_protocol() = runSuspendTest {
-        val (participationService, deploymentService, _) =
-            createService( CarpInputDataTypes )
+        val (participationService, deploymentService, _) = createService()
         val studyDeploymentId = addTestDeployment( deploymentService )
 
         val toSet = mapOf( CarpInputDataTypes.SEX to Sex.Male )
@@ -157,8 +157,7 @@ abstract class ParticipationServiceTest
 
     @Test
     fun setParticipantData_fails_for_invalid_data() = runSuspendTest {
-        val (participationService, deploymentService, _) =
-            createService( CarpInputDataTypes )
+        val (participationService, deploymentService, _) = createService()
 
         // Create protocol with expected 'sex' participant data.
         val protocol = createSingleMasterDeviceProtocol( deviceRoleName )
@@ -174,9 +173,6 @@ abstract class ParticipationServiceTest
             participationService.setParticipantData( studyDeploymentId, toSet )
         }
     }
-
-
-    private val deviceRoleName: String = "Master"
 
     /**
      * Add a test deployment to [deploymentService] for a protocol with a single master device with [deviceRoleName].

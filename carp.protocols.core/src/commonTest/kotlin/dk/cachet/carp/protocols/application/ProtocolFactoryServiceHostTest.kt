@@ -6,5 +6,10 @@ package dk.cachet.carp.protocols.application
  */
 class ProtocolFactoryServiceHostTest : ProtocolFactoryServiceTest
 {
-    override fun createService(): ProtocolFactoryService = ProtocolFactoryServiceHost()
+    companion object
+    {
+        fun createService(): ProtocolFactoryService = ProtocolFactoryServiceHost()
+    }
+
+    override fun createService(): ProtocolFactoryService = ProtocolFactoryServiceHostTest.createService()
 }

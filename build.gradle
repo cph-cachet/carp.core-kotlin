@@ -24,7 +24,8 @@ buildscript {
             // DevOps versions.
             detektPlugin:'1.18.1',
             detektVerifyImplementation:'1.2.2',
-            nexusPublishPlugin:'1.1.0'
+            nexusPublishPlugin:'1.1.0',
+            apacheCommons:'2.11.0'
         ]
 
         commonModule = subprojects.find { it.name == 'carp.common' }
@@ -100,11 +101,6 @@ configure( subprojects - devOpsModules ) {
                 }
             }
         }
-    }
-
-    // JVM test configuration.
-    jvmTest {
-        useJUnitPlatform()
     }
 
     // Publish configuration.

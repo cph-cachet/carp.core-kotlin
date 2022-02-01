@@ -10,12 +10,21 @@ import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 /**
  * Tests for [DeploymentServiceHost].
  */
-class DeploymentServiceHostTest : DeploymentServiceTest()
+class DeploymentServiceHostTest : DeploymentServiceTest
 {
-    private val eventBus: EventBus = SingleThreadedEventBus()
+    companion object
+    {
+        fun createService(): DeploymentService
+        {
+            val eventBus: EventBus = SingleThreadedEventBus()
 
-    override fun createService(): DeploymentService = DeploymentServiceHost(
-        InMemoryDeploymentRepository(),
-        InMemoryDataStreamService(),
-        eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
+            return DeploymentServiceHost(
+                InMemoryDeploymentRepository(),
+                InMemoryDataStreamService(),
+                eventBus.createApplicationServiceAdapter( DeploymentService::class )
+            )
+        }
+    }
+
+    override fun createService(): DeploymentService = DeploymentServiceHostTest.createService()
 }

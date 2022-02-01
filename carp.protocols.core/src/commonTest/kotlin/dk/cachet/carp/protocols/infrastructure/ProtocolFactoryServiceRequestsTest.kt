@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.protocols.application.ProtocolFactoryService
-import dk.cachet.carp.protocols.application.ProtocolFactoryServiceHost
+import dk.cachet.carp.protocols.application.ProtocolFactoryServiceHostTest
 
 
 /**
@@ -25,5 +25,5 @@ class ProtocolFactoryServiceRequestsTest : ApplicationServiceRequestsTest<Protoc
 
 
     override fun createServiceLog(): ApplicationServiceLog<ProtocolFactoryService> =
-        ProtocolFactoryServiceLog( ProtocolFactoryServiceHost() )
+        ProtocolFactoryServiceLog( ProtocolFactoryServiceHostTest.createService() )
 }

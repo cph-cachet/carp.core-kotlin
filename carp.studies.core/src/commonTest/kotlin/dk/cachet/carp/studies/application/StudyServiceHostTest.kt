@@ -10,11 +10,16 @@ import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
  */
 class StudyServiceHostTest : StudyServiceTest
 {
-    override fun createService(): StudyService
+    companion object
     {
-        val eventBus = SingleThreadedEventBus()
-        val serviceBus = eventBus.createApplicationServiceAdapter( StudyService::class )
+        fun createService(): StudyService
+        {
+            val eventBus = SingleThreadedEventBus()
+            val serviceBus = eventBus.createApplicationServiceAdapter( StudyService::class )
 
-        return StudyServiceHost( InMemoryStudyRepository(), serviceBus )
+            return StudyServiceHost( InMemoryStudyRepository(), serviceBus )
+        }
     }
+
+    override fun createService(): StudyService = StudyServiceHostTest.createService()
 }

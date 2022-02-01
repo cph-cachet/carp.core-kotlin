@@ -15,27 +15,32 @@ import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
  */
 class RecruitmentServiceHostTest : RecruitmentServiceTest
 {
-    override fun createService(): Pair<RecruitmentService, StudyService>
+    companion object
     {
-        val eventBus = SingleThreadedEventBus()
+        fun createService(): Pair<RecruitmentService, StudyService>
+        {
+            val eventBus = SingleThreadedEventBus()
 
-        // Create dependent study service.
-        val studyRepo = InMemoryStudyRepository()
-        val studyService = StudyServiceHost(
-            studyRepo,
-            eventBus.createApplicationServiceAdapter( StudyService::class ) )
+            // Create dependent study service.
+            val studyRepo = InMemoryStudyRepository()
+            val studyService = StudyServiceHost(
+                studyRepo,
+                eventBus.createApplicationServiceAdapter( StudyService::class ) )
 
-        // Create dependent deployment service.
-        val deploymentService = DeploymentServiceHost(
-            InMemoryDeploymentRepository(),
-            InMemoryDataStreamService(),
-            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
+            // Create dependent deployment service.
+            val deploymentService = DeploymentServiceHost(
+                InMemoryDeploymentRepository(),
+                InMemoryDataStreamService(),
+                eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
 
-        val participantService = RecruitmentServiceHost(
-            InMemoryParticipantRepository(),
-            deploymentService,
-            eventBus.createApplicationServiceAdapter( RecruitmentService::class ) )
+            val participantService = RecruitmentServiceHost(
+                InMemoryParticipantRepository(),
+                deploymentService,
+                eventBus.createApplicationServiceAdapter( RecruitmentService::class ) )
 
-        return Pair( participantService, studyService )
+            return Pair( participantService, studyService )
+        }
     }
+
+    override fun createService(): Pair<RecruitmentService, StudyService> = RecruitmentServiceHostTest.createService()
 }

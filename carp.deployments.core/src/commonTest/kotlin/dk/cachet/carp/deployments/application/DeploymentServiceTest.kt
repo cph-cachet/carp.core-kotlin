@@ -17,12 +17,12 @@ private val unknownId: UUID = UUID.randomUUID()
 /**
  * Tests for implementations of [DeploymentService].
  */
-abstract class DeploymentServiceTest
+interface DeploymentServiceTest
 {
     /**
      * Create a deployment service to be used in the tests.
      */
-    abstract fun createService(): DeploymentService
+    fun createService(): DeploymentService
 
 
     @Test
