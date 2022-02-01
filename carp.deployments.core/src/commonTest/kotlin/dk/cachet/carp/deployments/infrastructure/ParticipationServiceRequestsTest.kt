@@ -3,9 +3,14 @@ package dk.cachet.carp.deployments.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.Sex
+import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.LoggedRequest
+import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.deployments.application.ParticipationService
-import dk.cachet.carp.deployments.application.ParticipationServiceMock
+import dk.cachet.carp.deployments.application.ParticipationServiceHost
+import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
 
 
 /**
@@ -13,7 +18,6 @@ import dk.cachet.carp.deployments.application.ParticipationServiceMock
  */
 class ParticipationServiceRequestsTest : ApplicationServiceRequestsTest<ParticipationService, ParticipationServiceRequest>(
     ParticipationService::class,
-    ParticipationServiceMock(),
     ParticipationServiceRequest.serializer(),
     REQUESTS
 )
@@ -30,4 +34,17 @@ class ParticipationServiceRequestsTest : ApplicationServiceRequestsTest<Particip
             )
         )
     }
+
+
+    override fun createServiceLog(
+        log: (LoggedRequest<ParticipationService>) -> Unit
+    ): ApplicationServiceLog<ParticipationService> =
+        ParticipationServiceLog(
+            ParticipationServiceHost(
+                InMemoryParticipationRepository(),
+                ParticipantGroupService( InMemoryAccountService() ),
+                SingleThreadedEventBus().createApplicationServiceAdapter( ParticipationService::class )
+            ),
+            log
+        )
 }

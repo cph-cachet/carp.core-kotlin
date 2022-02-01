@@ -2,17 +2,17 @@ package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
-import dk.cachet.carp.data.application.DataStreamServiceMock
 import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.data.application.MutableDataStreamBatch
 
 
 class DataStreamServiceRequestsTest : ApplicationServiceRequestsTest<DataStreamService, DataStreamServiceRequest>(
     DataStreamService::class,
-    DataStreamServiceMock(),
     DataStreamServiceRequest.serializer(),
     REQUESTS
 )
@@ -30,4 +30,10 @@ class DataStreamServiceRequestsTest : ApplicationServiceRequestsTest<DataStreamS
             DataStreamServiceRequest.RemoveDataStreams( setOf( UUID.randomUUID() ) )
         )
     }
+
+
+    override fun createServiceLog(
+        log: (LoggedRequest<DataStreamService>) -> Unit
+    ): ApplicationServiceLog<DataStreamService> =
+        DataStreamServiceLog( InMemoryDataStreamService(), log )
 }

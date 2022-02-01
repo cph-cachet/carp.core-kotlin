@@ -2,9 +2,11 @@ package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.serialization.JSON
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.protocols.application.ProtocolService
-import dk.cachet.carp.protocols.application.ProtocolServiceMock
+import dk.cachet.carp.protocols.application.ProtocolServiceHost
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
@@ -15,7 +17,6 @@ import kotlin.test.*
  */
 class ProtocolServiceRequestsTest : ApplicationServiceRequestsTest<ProtocolService, ProtocolServiceRequest>(
     ProtocolService::class,
-    ProtocolServiceMock(),
     ProtocolServiceRequest.serializer(),
     REQUESTS
 )
@@ -33,25 +34,34 @@ class ProtocolServiceRequestsTest : ApplicationServiceRequestsTest<ProtocolServi
     }
 
 
+    override fun createServiceLog(
+        log: (LoggedRequest<ProtocolService>) -> Unit
+    ): ApplicationServiceLog<ProtocolService> =
+        ProtocolServiceLog( ProtocolServiceHost( InMemoryStudyProtocolRepository() ), log )
+
+
     @Test
     fun invokeOn_deserialized_request_requires_copy() = runSuspendTest {
+        val loggedRequests: MutableList<LoggedRequest<ProtocolService>> = mutableListOf()
+        val serviceLog = createServiceLog { log -> loggedRequests.add( log ) }
+
         val request = ProtocolServiceRequest.Add( createComplexProtocol().getSnapshot(), "Initial" )
         val serializer = ProtocolServiceRequest.serializer()
         val serialized = JSON.encodeToString( serializer, request )
         val parsed = JSON.decodeFromString( serializer, serialized ) as ProtocolServiceRequest.Add
-        val mock = serviceMock as ProtocolService
+        val service = serviceLog as ProtocolService
 
         // `ServiceInvoker` class delegation is not initialized as part of deserialization:
         // https://github.com/Kotlin/kotlinx.serialization/issues/241#issuecomment-555020729
         assertFails() // This throws a 'TypeError', which seems to be an inaccessible type.
         {
-            parsed.invokeOn( mock )
+            parsed.invokeOn( service )
         }
 
         // But, it is initialized as part of copying the data object.
         // This is a suitable workaround for now for anyone that needs access to `ServiceInvoker`.
         val parsedCopy = parsed.copy()
-        parsedCopy.invokeOn( mock )
-        assertTrue( serviceMock.wasCalled( parsedCopy.function ) )
+        parsedCopy.invokeOn( service )
+        assertEquals( parsedCopy, loggedRequests.single().request )
     }
 }
