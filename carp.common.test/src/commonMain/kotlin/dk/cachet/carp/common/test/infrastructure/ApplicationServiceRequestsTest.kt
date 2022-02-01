@@ -3,7 +3,6 @@ package dk.cachet.carp.common.test.infrastructure
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.infrastructure.reflect.reflectIfAvailable
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
-import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.test.JsIgnore
@@ -24,7 +23,7 @@ abstract class ApplicationServiceRequestsTest<TService : ApplicationService<TSer
     private val requests: List<TRequest>
 )
 {
-    abstract fun createServiceLog( log: (LoggedRequest<TService>) -> Unit ): ApplicationServiceLog<TService>
+    abstract fun createServiceLog(): ApplicationServiceLog<TService>
 
 
     @Suppress( "UNCHECKED_CAST" )
@@ -48,16 +47,15 @@ abstract class ApplicationServiceRequestsTest<TService : ApplicationService<TSer
     @Suppress( "UNCHECKED_CAST" )
     @Test
     fun invokeOk_requests_call_service() = runSuspendTest {
-        val loggedRequests: MutableList<LoggedRequest<TService>> = mutableListOf()
-        val serviceLog = createServiceLog { log -> loggedRequests.add( log ) }
+        val serviceLog = createServiceLog()
 
         requests.forEach { request ->
             val serviceInvoker = request as ServiceInvoker<TService, *>
             try { serviceInvoker.invokeOn( serviceLog as TService ) }
             catch ( ignore: Exception ) { } // Requests do not have to succeed to verify request arrived.
-            assertEquals( request, loggedRequests.single().request )
+            assertTrue( serviceLog.wasCalled( request ) )
 
-            loggedRequests.clear()
+            serviceLog.clear()
         }
     }
 

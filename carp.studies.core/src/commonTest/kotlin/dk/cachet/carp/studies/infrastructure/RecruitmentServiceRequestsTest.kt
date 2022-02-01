@@ -4,7 +4,6 @@ import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
-import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
@@ -39,9 +38,7 @@ class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<Recruitmen
     }
 
 
-    override fun createServiceLog(
-        log: (LoggedRequest<RecruitmentService>) -> Unit
-    ): ApplicationServiceLog<RecruitmentService>
+    override fun createServiceLog(): ApplicationServiceLog<RecruitmentService>
     {
         val eventBus = SingleThreadedEventBus()
 
@@ -54,8 +51,7 @@ class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<Recruitmen
                     eventBus.createApplicationServiceAdapter( DeploymentService::class )
                 ),
                 eventBus.createApplicationServiceAdapter( RecruitmentService::class )
-            ),
-            log
+            )
         )
     }
 }

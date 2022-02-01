@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Identifies an [Account].
+ * Identifies an account.
  */
 @Polymorphic
 interface AccountIdentity
@@ -26,7 +26,7 @@ interface AccountIdentity
 }
 
 /**
- * Identifies an [Account] by an [emailAddress] somebody has access to.
+ * Identifies an account by an [emailAddress] somebody has access to.
  */
 @Serializable
 data class EmailAccountIdentity( val emailAddress: EmailAddress ) : AccountIdentity
@@ -35,7 +35,7 @@ data class EmailAccountIdentity( val emailAddress: EmailAddress ) : AccountIdent
 }
 
 /**
- * Identifies an [Account] by a unique [username].
+ * Identifies an account by a unique [username].
  */
 @Serializable
 data class UsernameAccountIdentity( val username: Username ) : AccountIdentity

@@ -3,7 +3,6 @@ package dk.cachet.carp.protocols.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
-import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.application.ProtocolServiceHost
@@ -34,16 +33,14 @@ class ProtocolServiceRequestsTest : ApplicationServiceRequestsTest<ProtocolServi
     }
 
 
-    override fun createServiceLog(
-        log: (LoggedRequest<ProtocolService>) -> Unit
-    ): ApplicationServiceLog<ProtocolService> =
-        ProtocolServiceLog( ProtocolServiceHost( InMemoryStudyProtocolRepository() ), log )
+    override fun createServiceLog(): ApplicationServiceLog<ProtocolService> = ProtocolServiceLog(
+        ProtocolServiceHost( InMemoryStudyProtocolRepository() )
+    )
 
 
     @Test
     fun invokeOn_deserialized_request_requires_copy() = runSuspendTest {
-        val loggedRequests: MutableList<LoggedRequest<ProtocolService>> = mutableListOf()
-        val serviceLog = createServiceLog { log -> loggedRequests.add( log ) }
+        val serviceLog = createServiceLog()
 
         val request = ProtocolServiceRequest.Add( createComplexProtocol().getSnapshot(), "Initial" )
         val serializer = ProtocolServiceRequest.serializer()
@@ -62,6 +59,6 @@ class ProtocolServiceRequestsTest : ApplicationServiceRequestsTest<ProtocolServi
         // This is a suitable workaround for now for anyone that needs access to `ServiceInvoker`.
         val parsedCopy = parsed.copy()
         parsedCopy.invokeOn( service )
-        assertEquals( parsedCopy, loggedRequests.single().request )
+        assertTrue( serviceLog.wasCalled( request ) )
     }
 }

@@ -4,13 +4,19 @@ import dk.cachet.carp.common.application.services.ApplicationService
 
 
 /**
- * A proxy for [ApplicationService] which notifies of incoming requests and responses through [log].
+ * A proxy for [ApplicationService] which notifies of incoming requests and responses through [log]
+ * and keeps a history of requests in [loggedRequests].
  */
 open class ApplicationServiceLog<TService : ApplicationService<TService, *>>(
     private val service: TService,
-    private val log: (LoggedRequest<TService>) -> Unit
+    private val log: (LoggedRequest<TService>) -> Unit = { }
 )
 {
+    private val _loggedRequests: MutableList<LoggedRequest<TService>> = mutableListOf()
+    val loggedRequests: List<LoggedRequest<TService>>
+        get() = _loggedRequests.toList()
+
+
     /**
      * Execute the [request] and log it including the response.
      */
@@ -21,14 +27,31 @@ open class ApplicationServiceLog<TService : ApplicationService<TService, *>>(
             try { request.invokeOn( service ) }
             catch ( ex: Exception )
             {
-                log( LoggedRequest.Failed( request, ex ) )
+                addLog( LoggedRequest.Failed( request, ex ) )
                 throw ex
             }
 
-        log( LoggedRequest.Succeeded( request, response ) )
+        addLog( LoggedRequest.Succeeded( request, response ) )
 
         return response
     }
+
+    private fun addLog( loggedRequest: LoggedRequest<TService> )
+    {
+        _loggedRequests.add( loggedRequest )
+        log( loggedRequest )
+    }
+
+    /**
+     * Determines whether the given [request] is present in [loggedRequests].
+     */
+    fun wasCalled( request: ServiceInvoker<TService, *> ): Boolean =
+        _loggedRequests.map { it.request }.contains( request )
+
+    /**
+     * Clear the current [loggedRequests].
+     */
+    fun clear() = _loggedRequests.clear()
 }
 
 
