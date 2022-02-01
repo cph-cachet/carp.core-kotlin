@@ -2,16 +2,10 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
-import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
-import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
-import dk.cachet.carp.deployments.application.DeploymentService
-import dk.cachet.carp.deployments.application.DeploymentServiceHost
-import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.studies.application.RecruitmentService
-import dk.cachet.carp.studies.application.RecruitmentServiceHost
+import dk.cachet.carp.studies.application.RecruitmentServiceHostTest
 
 
 /**
@@ -38,20 +32,6 @@ class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<Recruitmen
     }
 
 
-    override fun createServiceLog(): ApplicationServiceLog<RecruitmentService>
-    {
-        val eventBus = SingleThreadedEventBus()
-
-        return RecruitmentServiceLog(
-            RecruitmentServiceHost(
-                InMemoryParticipantRepository(),
-                DeploymentServiceHost(
-                    InMemoryDeploymentRepository(),
-                    InMemoryDataStreamService(),
-                    eventBus.createApplicationServiceAdapter( DeploymentService::class )
-                ),
-                eventBus.createApplicationServiceAdapter( RecruitmentService::class )
-            )
-        )
-    }
+    override fun createServiceLog(): ApplicationServiceLog<RecruitmentService> =
+        RecruitmentServiceLog( RecruitmentServiceHostTest.createService().first )
 }
