@@ -2,10 +2,11 @@ package dk.cachet.carp.common.test.infrastructure
 
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.infrastructure.reflect.reflectIfAvailable
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.test.JsIgnore
-import dk.cachet.carp.test.Mock
 import dk.cachet.carp.test.runSuspendTest
 import kotlinx.serialization.KSerializer
 import kotlin.reflect.KClass
@@ -16,14 +17,16 @@ import kotlin.test.*
  * Base class to test whether a request object exists per method defined in an application service,
  * whether it can be serialized, and whether the service invoker works.
  */
-@Suppress( "FunctionName", "UnnecessaryAbstractClass" )
-abstract class ApplicationServiceRequestsTest<TService : ApplicationService<*, *>, TRequest>(
+@Suppress( "FunctionName" )
+abstract class ApplicationServiceRequestsTest<TService : ApplicationService<TService, *>, TRequest>(
     private val serviceKlass: KClass<TService>,
-    protected val serviceMock: Mock<TService>,
     private val requestSerializer: KSerializer<TRequest>,
     private val requests: List<TRequest>
 )
 {
+    abstract fun createServiceLog( log: (LoggedRequest<TService>) -> Unit ): ApplicationServiceLog<TService>
+
+
     @Suppress( "UNCHECKED_CAST" )
     @Test
     @JsIgnore // Reflection is not available on JS runtime.
@@ -44,13 +47,17 @@ abstract class ApplicationServiceRequestsTest<TService : ApplicationService<*, *
 
     @Suppress( "UNCHECKED_CAST" )
     @Test
-    fun invokeOn_requests_call_service() = runSuspendTest {
+    fun invokeOk_requests_call_service() = runSuspendTest {
+        val loggedRequests: MutableList<LoggedRequest<TService>> = mutableListOf()
+        val serviceLog = createServiceLog { log -> loggedRequests.add( log ) }
+
         requests.forEach { request ->
             val serviceInvoker = request as ServiceInvoker<TService, *>
-            val function = serviceInvoker.function
-            serviceInvoker.invokeOn( serviceMock as TService )
-            assertTrue( serviceMock.wasCalled( function, serviceInvoker.overloadIdentifier ) )
-            serviceMock.reset()
+            try { serviceInvoker.invokeOn( serviceLog as TService ) }
+            catch ( ignore: Exception ) { } // Requests do not have to succeed to verify request arrived.
+            assertEquals( request, loggedRequests.single().request )
+
+            loggedRequests.clear()
         }
     }
 

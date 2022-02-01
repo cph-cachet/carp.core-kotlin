@@ -2,9 +2,14 @@ package dk.cachet.carp.deployments.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
+import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.LoggedRequest
+import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
+import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService
-import dk.cachet.carp.deployments.application.DeploymentServiceMock
+import dk.cachet.carp.deployments.application.DeploymentServiceHost
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlinx.datetime.Clock
 
@@ -14,7 +19,6 @@ import kotlinx.datetime.Clock
  */
 class DeploymentServiceRequestsTest : ApplicationServiceRequestsTest<DeploymentService, DeploymentServiceRequest>(
     DeploymentService::class,
-    DeploymentServiceMock(),
     DeploymentServiceRequest.serializer(),
     REQUESTS
 )
@@ -33,4 +37,16 @@ class DeploymentServiceRequestsTest : ApplicationServiceRequestsTest<DeploymentS
             DeploymentServiceRequest.Stop( UUID.randomUUID() )
         )
     }
+
+
+    override fun createServiceLog(
+        log: (LoggedRequest<DeploymentService>) -> Unit
+    ): ApplicationServiceLog<DeploymentService> =
+        DeploymentServiceLog(
+            DeploymentServiceHost(
+                InMemoryDeploymentRepository(),
+                InMemoryDataStreamService(),
+                SingleThreadedEventBus().createApplicationServiceAdapter( DeploymentService::class ) ),
+            log
+        )
 }

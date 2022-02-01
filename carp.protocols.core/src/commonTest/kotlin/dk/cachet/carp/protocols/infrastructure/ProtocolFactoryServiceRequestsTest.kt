@@ -1,9 +1,11 @@
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.protocols.application.ProtocolFactoryService
-import dk.cachet.carp.protocols.application.ProtocolFactoryServiceMock
+import dk.cachet.carp.protocols.application.ProtocolFactoryServiceHost
 
 
 /**
@@ -11,7 +13,6 @@ import dk.cachet.carp.protocols.application.ProtocolFactoryServiceMock
  */
 class ProtocolFactoryServiceRequestsTest : ApplicationServiceRequestsTest<ProtocolFactoryService, ProtocolFactoryServiceRequest>(
     ProtocolFactoryService::class,
-    ProtocolFactoryServiceMock(),
     ProtocolFactoryServiceRequest.serializer(),
     REQUESTS
 )
@@ -22,4 +23,10 @@ class ProtocolFactoryServiceRequestsTest : ApplicationServiceRequestsTest<Protoc
             ProtocolFactoryServiceRequest.CreateCustomProtocol( UUID.randomUUID(), "Name", "...", "Description" )
         )
     }
+
+
+    override fun createServiceLog(
+        log: (LoggedRequest<ProtocolFactoryService>) -> Unit
+    ): ApplicationServiceLog<ProtocolFactoryService> =
+        ProtocolFactoryServiceLog( ProtocolFactoryServiceHost(), log )
 }
