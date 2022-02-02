@@ -1,14 +1,21 @@
 package dk.cachet.carp.rpc
 
+import dk.cachet.carp.common.application.ApplicationServiceInfo
 import kotlin.test.*
 
 
 internal val exampleApplicationServiceRequests: Map<ApplicationServiceInfo, List<ExampleRequest>> =
-    applicationServices.associateWith { generateExampleRequests( it.serviceKlass, it.requestObjectKlass ) }
+    applicationServices.associateWith { generateExampleRequests( it.serviceKlass, it.requestObjectClass ) }
 
 
 class GenerateExampleRequestsTest
 {
+    @Test
+    fun can_find_application_services()
+    {
+        assertFalse( applicationServices.isEmpty() )
+    }
+
     @Test
     @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
     fun generateExampleRequests_always_generates_same_JSON()
@@ -17,7 +24,7 @@ class GenerateExampleRequestsTest
             val firstRun =
                 exampleApplicationServiceRequests[ service ]!!.associateBy { it.method }
             val secondRun =
-                generateExampleRequests( service.serviceKlass, service.requestObjectKlass ).associateBy { it.method }
+                generateExampleRequests( service.serviceKlass, service.requestObjectClass ).associateBy { it.method }
 
             firstRun.forEach { (method, firstExample) ->
                 val secondExample = secondRun[ method ]

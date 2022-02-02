@@ -1,11 +1,13 @@
-package dk.cachet.carp.common.infrastructure.versioning
+package dk.cachet.carp.common.test.infrastructure.versioning
 
+import dk.cachet.carp.common.application.ApplicationServiceInfo
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
 import java.io.File
 import org.apache.commons.io.FileUtils
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInfo
+import kotlin.reflect.KClass
 import kotlin.test.*
 
 
@@ -18,11 +20,13 @@ val TEST_REQUESTS_FOLDER = File( "build/test-requests/" )
  * Extend from this base class along with a test interface for which to log requests.
  */
 open class OutputTestRequests<TService : ApplicationService<TService, *>>(
+    applicationServiceKlass: KClass<TService>,
     loggedService: ApplicationServiceLog<TService>
 )
 {
     @Suppress( "UNCHECKED_CAST" )
     val loggedService: TService = loggedService as TService
+    val applicationServiceInfo = ApplicationServiceInfo( applicationServiceKlass.java )
 
     companion object
     {

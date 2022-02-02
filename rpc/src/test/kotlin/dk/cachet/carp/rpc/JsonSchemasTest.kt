@@ -19,7 +19,8 @@ class JsonSchemasTest
         for ( (appService, requests) in exampleApplicationServiceRequests )
         {
             // Find request schema, or skip in case no schema is defined yet.
-            val requestSchemaURI = URI( "file:${appService.requestSchemaPath}" )
+            val schemaPath = appService.requestSchemaUri.path.replaceFirst( "/", "" )
+            val requestSchemaURI = URI( "file:$schemaPath" )
             val requestSchema =
                 try { schemaFactory.getSchema( requestSchemaURI ) }
                 catch ( _: JsonSchemaException ) { null }
