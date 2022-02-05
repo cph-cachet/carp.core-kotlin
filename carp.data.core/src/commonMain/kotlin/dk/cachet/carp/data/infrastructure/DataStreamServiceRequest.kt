@@ -1,13 +1,14 @@
 package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
-import dk.cachet.carp.common.infrastructure.services.createServiceInvoker
+import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.data.application.DataStreamBatch
 import dk.cachet.carp.data.application.DataStreamBatchSerializer
 import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 
 
@@ -15,36 +16,50 @@ import kotlinx.serialization.Serializable
  * Serializable application service requests to [DataStreamServiceRequest] which can be executed on demand.
  */
 @Serializable
-sealed class DataStreamServiceRequest
+sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<DataStreamService, TReturn>
 {
+    object Serializer : KSerializer<DataStreamServiceRequest<*>> by ignoreTypeParameters( ::serializer )
+
+
     @Serializable
-    data class OpenDataStreams( val configuration: DataStreamsConfiguration ) :
-        DataStreamServiceRequest(),
-        ServiceInvoker<DataStreamService, Unit> by createServiceInvoker( DataStreamService::openDataStreams, configuration )
+    data class OpenDataStreams( val configuration: DataStreamsConfiguration ) : DataStreamServiceRequest<Unit>()
+    {
+        override suspend fun invokeOn( service: DataStreamService ) = service.openDataStreams( configuration )
+    }
 
     @Serializable
     data class AppendToDataStreams(
         val studyDeploymentId: UUID,
         @Serializable( DataStreamBatchSerializer::class )
         val batch: DataStreamBatch
-    ) : DataStreamServiceRequest(),
-        ServiceInvoker<DataStreamService, Unit> by createServiceInvoker( DataStreamService::appendToDataStreams, studyDeploymentId, batch )
+    ) : DataStreamServiceRequest<Unit>()
+    {
+        override suspend fun invokeOn( service: DataStreamService ) =
+            service.appendToDataStreams( studyDeploymentId, batch )
+    }
 
     @Serializable
     data class GetDataStream(
         val dataStream: DataStreamId,
         val fromSequenceId: Long,
         val toSequenceIdInclusive: Long? = null
-    ) : DataStreamServiceRequest(),
-        ServiceInvoker<DataStreamService, DataStreamBatch> by createServiceInvoker( DataStreamService::getDataStream, dataStream, fromSequenceId, toSequenceIdInclusive )
+    ) : DataStreamServiceRequest<DataStreamBatch>()
+    {
+        override suspend fun invokeOn( service: DataStreamService ) =
+            service.getDataStream( dataStream, fromSequenceId, toSequenceIdInclusive )
+    }
 
     @Serializable
     data class CloseDataStreams( val studyDeploymentIds: Set<UUID> ) :
-        DataStreamServiceRequest(),
-        ServiceInvoker<DataStreamService, Unit> by createServiceInvoker( DataStreamService::closeDataStreams, studyDeploymentIds )
+        DataStreamServiceRequest<Unit>()
+    {
+        override suspend fun invokeOn( service: DataStreamService ) = service.closeDataStreams( studyDeploymentIds )
+    }
 
     @Serializable
     data class RemoveDataStreams( val studyDeploymentIds: Set<UUID> ) :
-        DataStreamServiceRequest(),
-        ServiceInvoker<DataStreamService, Boolean> by createServiceInvoker( DataStreamService::removeDataStreams, studyDeploymentIds )
+        DataStreamServiceRequest<Boolean>()
+    {
+        override suspend fun invokeOn( service: DataStreamService ) = service.removeDataStreams( studyDeploymentIds )
+    }
 }

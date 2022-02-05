@@ -229,9 +229,8 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
         abstract class DeploymentServiceRequest
         {
-            static get Companion(): DeploymentServiceRequest$Companion
+            static get Serializer(): any
         }
-        interface DeploymentServiceRequest$Companion { serializer(): any }
 
         namespace DeploymentServiceRequest
         {
@@ -272,9 +271,8 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
         abstract class ParticipationServiceRequest
         {
-            static get Companion(): ParticipationServiceRequest$Companion
+            static get Serializer(): any
         }
-        interface ParticipationServiceRequest$Companion { serializer(): any }
 
         namespace ParticipationServiceRequest
         {

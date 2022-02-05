@@ -12,15 +12,14 @@ import dk.cachet.carp.deployments.application.ParticipationServiceHostTest
 /**
  * Tests for [ParticipationServiceRequest]'s.
  */
-class ParticipationServiceRequestsTest : ApplicationServiceRequestsTest<ParticipationService, ParticipationServiceRequest>(
-    ParticipationService::class,
-    ParticipationServiceRequest.serializer(),
+class ParticipationServiceRequestsTest : ApplicationServiceRequestsTest<ParticipationService, ParticipationServiceRequest<*>>(
+    ParticipationServiceRequest.Serializer,
     REQUESTS
 )
 {
     companion object
     {
-        val REQUESTS: List<ParticipationServiceRequest> = listOf(
+        val REQUESTS: List<ParticipationServiceRequest<*>> = listOf(
             ParticipationServiceRequest.GetActiveParticipationInvitations( UUID.randomUUID() ),
             ParticipationServiceRequest.GetParticipantData( UUID.randomUUID() ),
             ParticipationServiceRequest.GetParticipantDataList( emptySet() ),

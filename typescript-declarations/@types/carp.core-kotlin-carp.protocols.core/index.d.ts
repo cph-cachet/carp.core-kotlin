@@ -59,9 +59,8 @@ declare module 'carp.core-kotlin-carp.protocols.core'
         
         abstract class ProtocolServiceRequest
         {
-            static get Companion(): ProtocolServiceRequest$Companion
+            static get Serializer(): any
         }
-        interface ProtocolServiceRequest$Companion { serializer(): any }
 
         namespace ProtocolServiceRequest
         {
@@ -94,9 +93,8 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
         abstract class ProtocolFactoryServiceRequest
         {
-            static get Companion(): ProtocolFactoryServiceRequest$Companion
+            static get Serializer(): any
         }
-        interface ProtocolFactoryServiceRequest$Companion { serializer(): any }
 
         namespace ProtocolFactoryServiceRequest
         {

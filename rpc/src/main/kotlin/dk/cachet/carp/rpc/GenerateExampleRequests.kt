@@ -53,7 +53,9 @@ fun generateExampleRequests(
 
     val json = Json( createDefaultJSON() ) { prettyPrint = true }
     @Suppress( "UNCHECKED_CAST" )
-    val requestObjectSerializer = requestObjectSuperType.kotlin.serializer() as KSerializer<Any>
+    val requestObjectSerializer = requestObjectSuperType
+        .declaredClasses.single { it.simpleName == "Serializer" }
+        .kotlin.objectInstance as KSerializer<Any>
 
     return requests.map { request ->
         val requestName = applicationServiceInterface.name + "." + request.name
