@@ -28,9 +28,7 @@ describe( "carp.protocols.core", () => {
             new ProtocolVersion( "Version" ),
             ProtocolVersion.Companion,
             studyProtocolSnapshot,
-            StudyProtocolSnapshot.Companion,
-            ProtocolFactoryServiceRequest.Companion,
-            ProtocolServiceRequest.Companion,
+            StudyProtocolSnapshot.Companion
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.protocols.core', instances )

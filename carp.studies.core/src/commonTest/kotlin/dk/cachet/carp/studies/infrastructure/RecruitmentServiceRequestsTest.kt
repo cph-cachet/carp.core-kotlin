@@ -11,9 +11,8 @@ import dk.cachet.carp.studies.application.RecruitmentServiceHostTest
 /**
  * Tests for [RecruitmentServiceRequest]'s.
  */
-class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<RecruitmentService, RecruitmentServiceRequest>(
-    RecruitmentService::class,
-    RecruitmentServiceRequest.serializer(),
+class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<RecruitmentService, RecruitmentServiceRequest<*>>(
+    RecruitmentServiceRequest.Serializer,
     REQUESTS
 )
 {
@@ -21,7 +20,7 @@ class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<Recruitmen
     {
         private val studyId = UUID.randomUUID()
 
-        val REQUESTS: List<RecruitmentServiceRequest> = listOf(
+        val REQUESTS: List<RecruitmentServiceRequest<*>> = listOf(
             RecruitmentServiceRequest.AddParticipant( studyId, EmailAddress( "test@test.com" ) ),
             RecruitmentServiceRequest.GetParticipant( studyId, UUID.randomUUID() ),
             RecruitmentServiceRequest.GetParticipants( studyId ),

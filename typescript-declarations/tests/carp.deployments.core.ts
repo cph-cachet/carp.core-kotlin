@@ -69,8 +69,8 @@ describe( "carp.deployments.core", () => {
             Participation.Companion,
             studyInvitation,
             StudyInvitation.Companion,
-            DeploymentServiceRequest.Companion,
-            ParticipationServiceRequest.Companion,
+            [ "DeploymentServiceRequest", new DeploymentServiceRequest.Stop( UUID.Companion.randomUUID() ) ],
+            [ "ParticipationServiceRequest", new ParticipationServiceRequest.GetParticipantData( UUID.Companion.randomUUID() ) ]
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.deployments.core', instances )

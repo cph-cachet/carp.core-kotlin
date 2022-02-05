@@ -10,15 +10,14 @@ import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.data.application.MutableDataStreamBatch
 
 
-class DataStreamServiceRequestsTest : ApplicationServiceRequestsTest<DataStreamService, DataStreamServiceRequest>(
-    DataStreamService::class,
-    DataStreamServiceRequest.serializer(),
+class DataStreamServiceRequestsTest : ApplicationServiceRequestsTest<DataStreamService, DataStreamServiceRequest<*>>(
+    DataStreamServiceRequest.Serializer,
     REQUESTS
 )
 {
     companion object
     {
-        val REQUESTS: List<DataStreamServiceRequest> = listOf(
+        val REQUESTS: List<DataStreamServiceRequest<*>> = listOf(
             DataStreamServiceRequest.OpenDataStreams( DataStreamsConfiguration( UUID.randomUUID(), emptySet() ) ),
             DataStreamServiceRequest.AppendToDataStreams( UUID.randomUUID(), MutableDataStreamBatch() ),
             DataStreamServiceRequest.GetDataStream(

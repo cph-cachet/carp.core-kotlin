@@ -62,9 +62,7 @@ describe( "carp.studies.core", () => {
             new ParticipantGroupStatus.Invited( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus ),
             new ParticipantGroupStatus.Running( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus, now ),
             new ParticipantGroupStatus.Stopped( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus, null, now ),
-            ParticipantGroupStatus.Companion,
-            RecruitmentServiceRequest.Companion,
-            StudyServiceRequest.Companion,
+            ParticipantGroupStatus.Companion
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.studies.core', instances )
@@ -117,7 +115,7 @@ describe( "carp.studies.core", () => {
             )
 
             const json: Json = createDefaultJSON()
-            const serializer = StudyServiceRequest.Companion.serializer()
+            const serializer = StudyServiceRequest.Serializer
             const serialized = json.encodeToString_tf03ej$( serializer, createStudy )
             expect( serialized ).has.string( "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.CreateStudy" )
         } )
@@ -145,7 +143,7 @@ describe( "carp.studies.core", () => {
             )
 
             const json: Json = createDefaultJSON()
-            const serializer = RecruitmentServiceRequest.Companion.serializer()
+            const serializer = RecruitmentServiceRequest.Serializer
             const serialized = json.encodeToString_tf03ej$( serializer, deployGroup )
             expect( serialized ).is.not.undefined
         } )

@@ -172,9 +172,8 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
         abstract class StudyServiceRequest
         {
-            static get Companion(): StudyServiceRequest$Companion
+            static get Serializer(): any
         }
-        interface StudyServiceRequest$Companion { serializer(): any }
 
         namespace StudyServiceRequest
         {
@@ -219,9 +218,8 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
         abstract class RecruitmentServiceRequest
         {
-            static get Companion(): RecruitmentServiceRequest$Companion
+            static get Serializer(): any
         }
-        interface RecruitmentServiceRequest$Companion { serializer(): any }
 
         namespace RecruitmentServiceRequest
         {

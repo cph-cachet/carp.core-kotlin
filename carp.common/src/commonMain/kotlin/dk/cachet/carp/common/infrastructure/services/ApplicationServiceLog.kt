@@ -20,7 +20,7 @@ open class ApplicationServiceLog<TService : ApplicationService<TService, *>>(
     /**
      * Execute the [request] and log it including the response.
      */
-    protected suspend fun <TReturn> log( request: ServiceInvoker<TService, TReturn> ): TReturn
+    protected suspend fun <TReturn> log( request: ApplicationServiceRequest<TService, TReturn> ): TReturn
     {
         @Suppress( "TooGenericExceptionCaught" )
         val response =
@@ -45,7 +45,7 @@ open class ApplicationServiceLog<TService : ApplicationService<TService, *>>(
     /**
      * Determines whether the given [request] is present in [loggedRequests].
      */
-    fun wasCalled( request: ServiceInvoker<TService, *> ): Boolean =
+    fun wasCalled( request: ApplicationServiceRequest<TService, *> ): Boolean =
         _loggedRequests.map { it.request }.contains( request )
 
     /**
@@ -58,17 +58,17 @@ open class ApplicationServiceLog<TService : ApplicationService<TService, *>>(
 /**
  * An intercepted [request] and response to the application service [TService].
  */
-sealed class LoggedRequest<TService>( val request: ServiceInvoker<TService, *> )
+sealed class LoggedRequest<TService>( val request: ApplicationServiceRequest<TService, *> )
 {
     /**
      * The intercepted [request] succeeded and returned [response].
      */
-    class Succeeded<TService>( request: ServiceInvoker<TService, *>, val response: Any? ) :
+    class Succeeded<TService>( request: ApplicationServiceRequest<TService, *>, val response: Any? ) :
         LoggedRequest<TService>( request )
 
     /**
      * The intercepted [request] failed with an [exception].
      */
-    class Failed<TService>( request: ServiceInvoker<TService, *>, val exception: Exception ) :
+    class Failed<TService>( request: ApplicationServiceRequest<TService, *>, val exception: Exception ) :
         LoggedRequest<TService>( request )
 }

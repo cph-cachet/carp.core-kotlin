@@ -13,15 +13,14 @@ import kotlinx.datetime.Clock
 /**
  * Tests for [DeploymentServiceRequest]'s.
  */
-class DeploymentServiceRequestsTest : ApplicationServiceRequestsTest<DeploymentService, DeploymentServiceRequest>(
-    DeploymentService::class,
-    DeploymentServiceRequest.serializer(),
+class DeploymentServiceRequestsTest : ApplicationServiceRequestsTest<DeploymentService, DeploymentServiceRequest<*>>(
+    DeploymentServiceRequest.Serializer,
     REQUESTS
 )
 {
     companion object
     {
-        private val REQUESTS: List<DeploymentServiceRequest> = listOf(
+        private val REQUESTS: List<DeploymentServiceRequest<*>> = listOf(
             DeploymentServiceRequest.CreateStudyDeployment( UUID.randomUUID(), createEmptyProtocol().getSnapshot(), listOf() ),
             DeploymentServiceRequest.RemoveStudyDeployments( emptySet() ),
             DeploymentServiceRequest.GetStudyDeploymentStatus( UUID.randomUUID() ),

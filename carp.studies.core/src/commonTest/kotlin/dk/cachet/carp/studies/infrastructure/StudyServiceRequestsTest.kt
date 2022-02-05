@@ -12,9 +12,8 @@ import dk.cachet.carp.studies.application.StudyServiceHostTest
 /**
  * Tests for [StudyServiceRequest]'s.
  */
-class StudyServiceRequestsTest : ApplicationServiceRequestsTest<StudyService, StudyServiceRequest>(
-    StudyService::class,
-    StudyServiceRequest.serializer(),
+class StudyServiceRequestsTest : ApplicationServiceRequestsTest<StudyService, StudyServiceRequest<*>>(
+    StudyServiceRequest.Serializer,
     REQUESTS
 )
 {
@@ -22,7 +21,7 @@ class StudyServiceRequestsTest : ApplicationServiceRequestsTest<StudyService, St
     {
         private val studyId = UUID.randomUUID()
 
-        val REQUESTS: List<StudyServiceRequest> = listOf(
+        val REQUESTS: List<StudyServiceRequest<*>> = listOf(
             StudyServiceRequest.CreateStudy( UUID.randomUUID(), "Test", "Description", StudyInvitation( "Some study" ) ),
             StudyServiceRequest.SetInternalDescription( studyId, "New name", "New description" ),
             StudyServiceRequest.GetStudyDetails( studyId ),
