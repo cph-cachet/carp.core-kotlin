@@ -1,17 +1,20 @@
 package dk.cachet.carp.common.infrastructure.services
 
 import dk.cachet.carp.common.application.services.ApplicationService
+import dk.cachet.carp.common.infrastructure.reflect.AccessInternals
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SealedClassSerializer
+import kotlinx.serialization.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
-import kotlinx.serialization.serializer
+import kotlinx.serialization.json.JsonClassDiscriminator
 
 
 /**
@@ -188,12 +191,17 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
         }
 
 
+    @OptIn( ExperimentalSerializationApi::class )
     private val sealedSerializer = SealedClassSerializer(
         LoggedRequest::class.simpleName!!,
         LoggedRequest::class,
         arrayOf( LoggedRequest.Succeeded::class, LoggedRequest.Failed::class ),
         arrayOf( succeededSerializer, failedSerializer )
-    )
+    ).also {
+        // HACK: Change class discriminator so that it does not depend on JsonConfiguration.
+        //   For now the secondary constructor which allows setting annotations is internal; it may become public later.
+        AccessInternals.setField( it, "_annotations", listOf( JsonClassDiscriminator("outcome" ) ) )
+    }
 
     override val descriptor: SerialDescriptor = sealedSerializer.descriptor
 
