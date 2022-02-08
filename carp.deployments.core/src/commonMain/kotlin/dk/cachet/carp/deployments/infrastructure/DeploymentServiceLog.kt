@@ -17,7 +17,7 @@ import kotlinx.datetime.Instant
  * and keeps a history of requests in [loggedRequests].
  */
 class DeploymentServiceLog( service: DeploymentService, log: (LoggedRequest<DeploymentService>) -> Unit = { } ) :
-    ApplicationServiceLog<DeploymentService>( service, log ),
+    ApplicationServiceLog<DeploymentService>( DeploymentService::class, service, log ),
     DeploymentService
 {
     override suspend fun createStudyDeployment(

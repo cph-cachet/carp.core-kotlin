@@ -7,6 +7,7 @@ import dk.cachet.carp.protocols.application.ProtocolFactoryService
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
 
 
 /**
@@ -26,6 +27,7 @@ sealed class ProtocolFactoryServiceRequest<out TReturn> : ApplicationServiceRequ
         val description: String?
     ) : ProtocolFactoryServiceRequest<StudyProtocolSnapshot>()
     {
+        override fun getResponseSerializer() = serializer<StudyProtocolSnapshot>()
         override suspend fun invokeOn( service: ProtocolFactoryService ) =
             service.createCustomProtocol( ownerId, name, customProtocol, description )
     }

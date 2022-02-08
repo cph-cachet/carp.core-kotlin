@@ -1,6 +1,8 @@
 package dk.cachet.carp.common.application
 
 import dk.cachet.carp.common.application.services.ApplicationService
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
+import kotlinx.serialization.KSerializer
 import java.net.URI
 
 
@@ -17,6 +19,7 @@ class ApplicationServiceInfo( val serviceKlass: Class<out ApplicationService<*, 
 
     val requestObjectName: String = "${serviceName}Request"
     val requestObjectClass: Class<*>
+    val requestObjectSerializer: KSerializer<ApplicationServiceRequest<*, *>>
 
     val requestSchemaUri: URI
 
@@ -42,6 +45,17 @@ class ApplicationServiceInfo( val serviceKlass: Class<out ApplicationService<*, 
             catch ( _: ClassNotFoundException ) { null }
         requestObjectClass = checkNotNull( requestObject )
             { "Could not find request object for \"${serviceKlass.name}\". Expected at: $requestObjectFullName" }
+
+        // Get request serializer.
+        @Suppress( "UNCHECKED_CAST" )
+        val requestObjectSerializerLookup = requestObjectClass
+            .declaredClasses.single { it.simpleName == "Serializer" }
+            .getField( "INSTANCE" ).get( null ) as? KSerializer<ApplicationServiceRequest<*, *>>
+        requestObjectSerializer = checkNotNull( requestObjectSerializerLookup )
+            {
+                "Could not find request object serializer for \"${requestObjectName}\". " +
+                "Expected it to be defined as an inner object named \"Serializer\"."
+            }
 
         requestSchemaUri = URI( "https://carp.cachet.dk/schemas/$subsystemName/$serviceName/$requestObjectName.json" )
     }

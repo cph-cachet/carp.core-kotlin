@@ -15,7 +15,7 @@ import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
  * and keeps a history of requests in [loggedRequests].
  */
 class RecruitmentServiceLog( service: RecruitmentService, log: (LoggedRequest<RecruitmentService>) -> Unit = { } ) :
-    ApplicationServiceLog<RecruitmentService>( service, log ),
+    ApplicationServiceLog<RecruitmentService>( RecruitmentService::class, service, log ),
     RecruitmentService
 {
     override suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant =

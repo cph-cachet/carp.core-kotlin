@@ -12,6 +12,7 @@ import dk.cachet.carp.common.application.tasks.*
 import dk.cachet.carp.common.application.triggers.*
 import dk.cachet.carp.common.application.users.*
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
+import dk.cachet.carp.common.infrastructure.services.*
 import dk.cachet.carp.data.application.*
 import dk.cachet.carp.data.infrastructure.*
 import dk.cachet.carp.deployments.application.*
@@ -27,10 +28,7 @@ import dk.cachet.carp.studies.infrastructure.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.serializer
-import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.kotlinFunction
@@ -52,10 +50,6 @@ fun generateExampleRequests(
     val requestObjects = requestObjectSuperType.classes
 
     val json = Json( createDefaultJSON() ) { prettyPrint = true }
-    @Suppress( "UNCHECKED_CAST" )
-    val requestObjectSerializer = requestObjectSuperType
-        .declaredClasses.single { it.simpleName == "Serializer" }
-        .kotlin.objectInstance as KSerializer<Any>
 
     return requests.map { request ->
         val requestName = applicationServiceInterface.name + "." + request.name
@@ -75,9 +69,9 @@ fun generateExampleRequests(
         check( request.returnType.isInstance( example.response ) )
             { "Incorrect response instance provided for $requestName." }
 
-        // Create example JSON request and response.
-        val requestObjectJson = json.encodeToString( requestObjectSerializer, example.request )
-        val responseJson = json.encodeToString( example.getResponseSerializer( request ), example.response )
+        // Create example JSON.
+        val requestObjectJson = example.encodeRequestToString( json )
+        val responseJson = example.encodeResponseToString( json )
 
         ExampleRequest(
             request,
@@ -254,46 +248,32 @@ private val phoneDataStreamBatch = MutableDataStreamBatch().apply {
 }
 
 
-private class Example(
-    val request: Any,
-    val response: Any = Unit,
-    val overrideResponseSerializer: KSerializer<*>? = null
-)
-{
-    @Suppress( "UNCHECKED_CAST" )
-    fun getResponseSerializer( request: Method ): KSerializer<Any> = getSerializer( request ) as KSerializer<Any>
+inline fun <reified TService : ApplicationService<TService, *>, TResponse> example(
+    request: ApplicationServiceRequest<TService, TResponse>,
+    response: Any? = Unit
+) = LoggedRequest.Succeeded( TService::class, request, response )
 
-    @OptIn( InternalSerializationApi::class )
-    private fun getSerializer( request: Method ): KSerializer<*>
-    {
-        if ( overrideResponseSerializer != null ) return overrideResponseSerializer
-
-        val returnType = request.kotlinFunction!!.returnType
-        return serializer( returnType )
-    }
-}
-
-private val exampleRequests: Map<KFunction<*>, Example> = mapOf(
+private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = mapOf(
     // ProtocolService
-    ProtocolService::add to Example(
+    ProtocolService::add to example(
         request = ProtocolServiceRequest.Add( phoneProtocol, "Version 1" )
     ),
-    ProtocolService::addVersion to Example(
+    ProtocolService::addVersion to example(
         request = ProtocolServiceRequest.AddVersion( phoneProtocol.copy( name = "Walking/biking study" ), "Version 2: new name" )
     ),
-    ProtocolService::updateParticipantDataConfiguration to Example(
+    ProtocolService::updateParticipantDataConfiguration to example(
         request = ProtocolServiceRequest.UpdateParticipantDataConfiguration( protocolId, "Version 3: ask participant data", expectedParticipantData ),
         response = phoneProtocol.copy( expectedParticipantData = expectedParticipantData )
     ),
-    ProtocolService::getBy to Example(
+    ProtocolService::getBy to example(
         request = ProtocolServiceRequest.GetBy( protocolId, "Version 1" ),
         response = phoneProtocol
     ),
-    ProtocolService::getAllForOwner to Example(
+    ProtocolService::getAllForOwner to example(
         request = ProtocolServiceRequest.GetAllForOwner( ownerId ),
         response = listOf( phoneProtocol )
     ),
-    ProtocolService::getVersionHistoryFor to Example(
+    ProtocolService::getVersionHistoryFor to example(
         request = ProtocolServiceRequest.GetVersionHistoryFor( protocolId ),
         response = listOf(
             ProtocolVersion( "Version 1", protocolCreatedOn ),
@@ -303,7 +283,7 @@ private val exampleRequests: Map<KFunction<*>, Example> = mapOf(
     ),
 
     // ProtocolFactoryService
-    ProtocolFactoryService::createCustomProtocol to Example(
+    ProtocolFactoryService::createCustomProtocol to example(
         request = ProtocolFactoryServiceRequest.CreateCustomProtocol(
             ownerId,
             customProtocol.name,
@@ -314,77 +294,77 @@ private val exampleRequests: Map<KFunction<*>, Example> = mapOf(
     ),
 
     // StudyService
-    StudyService::createStudy to Example(
+    StudyService::createStudy to example(
         request = StudyServiceRequest.CreateStudy( ownerId, studyName, studyDescription, studyInvitation ),
         response = studyConfiguringStatus
     ),
-    StudyService::setInternalDescription to Example(
+    StudyService::setInternalDescription to example(
         request = StudyServiceRequest.SetInternalDescription( studyId, "Copenhagen/Denmark transportation study", studyDescription ),
         response = studyConfiguringStatus.copy( name = "Copenhagen/Denmark transportation study" )
     ),
-    StudyService::getStudyDetails to Example(
+    StudyService::getStudyDetails to example(
         request = StudyServiceRequest.GetStudyDetails( studyId ),
         response = StudyDetails( studyId, ownerId, studyName, studyCreatedOn, studyDescription, studyInvitation, phoneProtocol )
     ),
-    StudyService::getStudyStatus to Example(
+    StudyService::getStudyStatus to example(
         request = StudyServiceRequest.GetStudyStatus( studyId ),
         response = studyLiveStatus
     ),
-    StudyService::getStudiesOverview to Example(
+    StudyService::getStudiesOverview to example(
         request = StudyServiceRequest.GetStudiesOverview( ownerId ),
         response = listOf(
             studyConfiguringStatus,
             StudyStatus.Live( UUID( "3566eb9c-1d2f-4ed9-bf8a-8ea43638773d" ), "Heartrate study", Instant.fromEpochSeconds( 1642514000 ), false, false, true )
         )
     ),
-    StudyService::setInvitation to Example(
+    StudyService::setInvitation to example(
         request = StudyServiceRequest.SetInvitation( studyId, studyInvitation ),
         response = studyConfiguringStatus
     ),
-    StudyService::setProtocol to Example(
+    StudyService::setProtocol to example(
         request = StudyServiceRequest.SetProtocol( studyId, phoneProtocol ),
         response = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, true, true, false, true )
     ),
-    StudyService::goLive to Example(
+    StudyService::goLive to example(
         request = StudyServiceRequest.GoLive( studyId ),
         response = studyLiveStatus
     ),
-    StudyService::remove to Example(
+    StudyService::remove to example(
         request = StudyServiceRequest.Remove( studyId ),
         response = true
     ),
 
     // RecruitmentService
-    RecruitmentService::addParticipant to Example(
+    RecruitmentService::addParticipant to example(
         request = RecruitmentServiceRequest.AddParticipant( studyId, participantAccount.emailAddress ),
         response = Participant( participantAccount, participantId )
     ),
-    RecruitmentService::getParticipant to Example(
+    RecruitmentService::getParticipant to example(
         request = RecruitmentServiceRequest.GetParticipant( studyId, participantId ),
         response = Participant( participantAccount, participantId )
     ),
-    RecruitmentService::getParticipants to Example(
+    RecruitmentService::getParticipants to example(
         request = RecruitmentServiceRequest.GetParticipants( studyId ),
         response = listOf(
             Participant( participantAccount, participantId ),
             Participant( UsernameAccountIdentity( "John Doe" ), UUID( "d7436912-ac9f-4f9b-a29e-376af8a0fbb4" ) )
         )
     ),
-    RecruitmentService::inviteNewParticipantGroup to Example(
+    RecruitmentService::inviteNewParticipantGroup to example(
         request = RecruitmentServiceRequest.InviteNewParticipantGroup( studyId, setOf( AssignParticipantDevices( participantId, setOf( phone.roleName ) )) ),
         response = ParticipantGroupStatus.Invited( deploymentId, participants, participantGroupInvitedOn, invitedDeploymentStatus )
     ),
-    RecruitmentService::getParticipantGroupStatusList to Example(
+    RecruitmentService::getParticipantGroupStatusList to example(
         request = RecruitmentServiceRequest.GetParticipantGroupStatusList( studyId ),
         response = listOf( ParticipantGroupStatus.Running( deploymentId, participants, participantGroupInvitedOn, runningDeploymentStatus, runningDeploymentStatus.startedOn ) )
     ),
-    RecruitmentService::stopParticipantGroup to Example(
+    RecruitmentService::stopParticipantGroup to example(
         request = RecruitmentServiceRequest.StopParticipantGroup( studyId, deploymentId ),
         response = ParticipantGroupStatus.Stopped( deploymentId, participants, participantGroupInvitedOn, stoppedDeploymentStatus, stoppedDeploymentStatus.startedOn, stoppedDeploymentStatus.stoppedOn )
     ),
 
     // DeploymentService
-    DeploymentService::createStudyDeployment to Example(
+    DeploymentService::createStudyDeployment to example(
         request = DeploymentServiceRequest.CreateStudyDeployment(
             deploymentId,
             phoneProtocol,
@@ -393,19 +373,19 @@ private val exampleRequests: Map<KFunction<*>, Example> = mapOf(
         ),
         response = invitedDeploymentStatus
     ),
-    DeploymentService::removeStudyDeployments to Example(
+    DeploymentService::removeStudyDeployments to example(
         request = DeploymentServiceRequest.RemoveStudyDeployments( deploymentIds ),
         response = setOf( deploymentId )
     ),
-    DeploymentService::getStudyDeploymentStatus to Example(
+    DeploymentService::getStudyDeploymentStatus to example(
         request = DeploymentServiceRequest.GetStudyDeploymentStatus( deploymentId ),
         response = invitedDeploymentStatus
     ),
-    DeploymentService::getStudyDeploymentStatusList to Example(
+    DeploymentService::getStudyDeploymentStatusList to example(
         request = DeploymentServiceRequest.GetStudyDeploymentStatusList( setOf( deploymentId ) ),
         response = listOf( invitedDeploymentStatus )
     ),
-    DeploymentService::registerDevice to Example(
+    DeploymentService::registerDevice to example(
         request = DeploymentServiceRequest.RegisterDevice( deploymentId, phone.roleName, phoneRegistration ),
         response = StudyDeploymentStatus.DeployingDevices(
             deploymentCreatedOn,
@@ -418,25 +398,25 @@ private val exampleRequests: Map<KFunction<*>, Example> = mapOf(
             null
         )
     ),
-    DeploymentService::unregisterDevice to Example(
+    DeploymentService::unregisterDevice to example(
         request = DeploymentServiceRequest.UnregisterDevice( deploymentId, phone.roleName ),
         response = invitedDeploymentStatus
     ),
-    DeploymentService::getDeviceDeploymentFor to Example(
+    DeploymentService::getDeviceDeploymentFor to example(
         request = DeploymentServiceRequest.GetDeviceDeploymentFor( deploymentId, phone.roleName ),
         response = phoneDeviceDeployment
     ),
-    DeploymentService::deviceDeployed to Example(
+    DeploymentService::deviceDeployed to example(
         request = DeploymentServiceRequest.DeviceDeployed( deploymentId, phone.roleName, phoneDeviceDeployment.lastUpdatedOn ),
         response = runningDeploymentStatus
     ),
-    DeploymentService::stop to Example(
+    DeploymentService::stop to example(
         request = DeploymentServiceRequest.Stop( deploymentId ),
         response = stoppedDeploymentStatus
     ),
 
     // ParticipationService
-    ParticipationService::getActiveParticipationInvitations to Example(
+    ParticipationService::getActiveParticipationInvitations to example(
         request = ParticipationServiceRequest.GetActiveParticipationInvitations( participantAccountId ),
         response = setOf(
             ActiveParticipationInvitation(
@@ -446,35 +426,34 @@ private val exampleRequests: Map<KFunction<*>, Example> = mapOf(
             )
         )
     ),
-    ParticipationService::getParticipantData to Example(
+    ParticipationService::getParticipantData to example(
         request = ParticipationServiceRequest.GetParticipantData( deploymentId ),
         response = participantData
     ),
-    ParticipationService::getParticipantDataList to Example(
+    ParticipationService::getParticipantDataList to example(
         request = ParticipationServiceRequest.GetParticipantDataList( setOf( deploymentId ) ),
         response = listOf( participantData )
     ),
-    ParticipationService::setParticipantData to Example(
+    ParticipationService::setParticipantData to example(
         request = ParticipationServiceRequest.SetParticipantData( deploymentId, participantData.data ),
         response = participantData
     ),
 
     // DataStreamService
-    DataStreamService::openDataStreams to Example(
+    DataStreamService::openDataStreams to example(
         request = DataStreamServiceRequest.OpenDataStreams( DataStreamsConfiguration( deploymentId, expectedDataStreams ) )
     ),
-    DataStreamService::appendToDataStreams to Example(
+    DataStreamService::appendToDataStreams to example(
         request = DataStreamServiceRequest.AppendToDataStreams( deploymentId, phoneDataStreamBatch )
     ),
-    DataStreamService::getDataStream to Example(
+    DataStreamService::getDataStream to example(
         request = DataStreamServiceRequest.GetDataStream( phoneGeoDataStream, 0, 100 ),
-        response = MutableDataStreamBatch().apply { appendSequence( geoDataSequence ) },
-        overrideResponseSerializer = DataStreamBatchSerializer
+        response = MutableDataStreamBatch().apply { appendSequence( geoDataSequence ) }
     ),
-    DataStreamService::closeDataStreams to Example(
+    DataStreamService::closeDataStreams to example(
         request = DataStreamServiceRequest.CloseDataStreams( deploymentIds )
     ),
-    DataStreamService::removeDataStreams to Example(
+    DataStreamService::removeDataStreams to example(
         request = DataStreamServiceRequest.RemoveDataStreams( deploymentIds ),
         response = true
     )

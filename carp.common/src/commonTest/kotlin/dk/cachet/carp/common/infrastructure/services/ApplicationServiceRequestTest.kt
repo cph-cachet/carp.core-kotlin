@@ -8,6 +8,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.serializer
 import kotlinx.serialization.json.Json
 import kotlin.test.*
 
@@ -33,6 +34,7 @@ class ApplicationServiceRequestTest
         @Serializable
         data class Operation( val parameter: Int ) : TestServiceRequest<Int>()
         {
+            override fun getResponseSerializer() = serializer<Int>()
             override suspend fun invokeOn( service: TestService ): Int = service.operation( parameter )
         }
     }

@@ -12,6 +12,7 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.datetime.Instant
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
 
 
 /**
@@ -31,6 +32,7 @@ sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<D
         val connectedDevicePreregistrations: Map<String, DeviceRegistration> = emptyMap()
     ) : DeploymentServiceRequest<StudyDeploymentStatus>()
     {
+        override fun getResponseSerializer() = serializer<StudyDeploymentStatus>()
         override suspend fun invokeOn( service: DeploymentService ) =
             service.createStudyDeployment( id, protocol, invitations, connectedDevicePreregistrations )
     }
@@ -38,6 +40,7 @@ sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<D
     @Serializable
     data class RemoveStudyDeployments( val studyDeploymentIds: Set<UUID> ) : DeploymentServiceRequest<Set<UUID>>()
     {
+        override fun getResponseSerializer() = serializer<Set<UUID>>()
         override suspend fun invokeOn( service: DeploymentService ) =
             service.removeStudyDeployments( studyDeploymentIds )
     }
@@ -46,6 +49,7 @@ sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<D
     data class GetStudyDeploymentStatus( val studyDeploymentId: UUID ) :
         DeploymentServiceRequest<StudyDeploymentStatus>()
     {
+        override fun getResponseSerializer() = serializer<StudyDeploymentStatus>()
         override suspend fun invokeOn( service: DeploymentService ) =
             service.getStudyDeploymentStatus( studyDeploymentId )
     }
@@ -54,6 +58,7 @@ sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<D
     data class GetStudyDeploymentStatusList( val studyDeploymentIds: Set<UUID> ) :
         DeploymentServiceRequest<List<StudyDeploymentStatus>>()
     {
+        override fun getResponseSerializer() = serializer<List<StudyDeploymentStatus>>()
         override suspend fun invokeOn( service: DeploymentService ) =
             service.getStudyDeploymentStatusList( studyDeploymentIds )
     }
@@ -65,6 +70,7 @@ sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<D
         val registration: DeviceRegistration
     ) : DeploymentServiceRequest<StudyDeploymentStatus>()
     {
+        override fun getResponseSerializer() = serializer<StudyDeploymentStatus>()
         override suspend fun invokeOn( service: DeploymentService ) =
             service.registerDevice( studyDeploymentId, deviceRoleName, registration )
     }
@@ -73,6 +79,7 @@ sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<D
     data class UnregisterDevice( val studyDeploymentId: UUID, val deviceRoleName: String ) :
         DeploymentServiceRequest<StudyDeploymentStatus>()
     {
+        override fun getResponseSerializer() = serializer<StudyDeploymentStatus>()
         override suspend fun invokeOn( service: DeploymentService ) =
             service.unregisterDevice( studyDeploymentId, deviceRoleName )
     }
@@ -81,6 +88,7 @@ sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<D
     data class GetDeviceDeploymentFor( val studyDeploymentId: UUID, val masterDeviceRoleName: String ) :
         DeploymentServiceRequest<MasterDeviceDeployment>()
     {
+        override fun getResponseSerializer() = serializer<MasterDeviceDeployment>()
         override suspend fun invokeOn( service: DeploymentService ) =
             service.getDeviceDeploymentFor( studyDeploymentId, masterDeviceRoleName )
     }
@@ -92,6 +100,7 @@ sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<D
         val deviceDeploymentLastUpdatedOn: Instant
     ) : DeploymentServiceRequest<StudyDeploymentStatus>()
     {
+        override fun getResponseSerializer() = serializer<StudyDeploymentStatus>()
         override suspend fun invokeOn( service: DeploymentService ) =
             service.deviceDeployed( studyDeploymentId, masterDeviceRoleName, deviceDeploymentLastUpdatedOn )
     }
@@ -99,6 +108,7 @@ sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<D
     @Serializable
     data class Stop( val studyDeploymentId: UUID ) : DeploymentServiceRequest<StudyDeploymentStatus>()
     {
+        override fun getResponseSerializer() = serializer<StudyDeploymentStatus>()
         override suspend fun invokeOn( service: DeploymentService ) = service.stop( studyDeploymentId )
     }
 }
