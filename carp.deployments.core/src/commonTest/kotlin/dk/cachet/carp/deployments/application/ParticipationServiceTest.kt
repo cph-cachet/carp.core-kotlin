@@ -1,12 +1,12 @@
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.infrastructure.test.StubData
 import dk.cachet.carp.deployments.application.users.AssignedMasterDevice
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
@@ -166,8 +166,7 @@ interface ParticipationServiceTest
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
-        val wrongData = object : Data { }
-        val toSet = mapOf( CarpInputDataTypes.SEX to wrongData )
+        val toSet = mapOf( CarpInputDataTypes.SEX to StubData() )
         assertFailsWith<IllegalArgumentException>
         {
             participationService.setParticipantData( studyDeploymentId, toSet )

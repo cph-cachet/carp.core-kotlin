@@ -15,7 +15,7 @@ import dk.cachet.carp.studies.application.StudyStatus
  * and keeps a history of requests in [loggedRequests].
  */
 class StudyServiceLog( service: StudyService, log: (LoggedRequest<StudyService>) -> Unit = { } ) :
-    ApplicationServiceLog<StudyService>( StudyService::class, service, log ),
+    ApplicationServiceLog<StudyService>( service, log ),
     StudyService
 {
     override suspend fun createStudy(

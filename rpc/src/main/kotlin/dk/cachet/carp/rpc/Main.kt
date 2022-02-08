@@ -20,7 +20,7 @@ fun main( args: Array<String> )
 {
     // Create example requests for all request objects and responses of application service methods.
     val exampleRequests = applicationServices
-        .associateWith { generateExampleRequests( it.serviceKlass, it.requestObjectClass ) }
+        .associateWith { generateExampleRequests( it ) }
 
     // Output example requests.
     val jsonExamplesFolder = File( "build/rpc-examples/" )

@@ -15,7 +15,7 @@ import dk.cachet.carp.deployments.application.users.ParticipantData
  * and keeps a history of requests in [loggedRequests].
  */
 class ParticipationServiceLog( service: ParticipationService, log: (LoggedRequest<ParticipationService>) -> Unit = { } ) :
-    ApplicationServiceLog<ParticipationService>( ParticipationService::class, service, log ),
+    ApplicationServiceLog<ParticipationService>( service, log ),
     ParticipationService
 {
     override suspend fun getActiveParticipationInvitations( accountId: UUID ): Set<ActiveParticipationInvitation> =

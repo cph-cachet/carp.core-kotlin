@@ -27,8 +27,9 @@ import dk.cachet.carp.studies.application.users.*
 import dk.cachet.carp.studies.infrastructure.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
-import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.kotlinFunction
@@ -37,22 +38,18 @@ import kotlin.time.Duration.Companion.seconds
 
 
 /**
- * Generate a single [ExampleRequest] using the corresponding request object of type [requestObjectSuperType]
- * for each of the methods in [applicationServiceInterface].
+ * Generate a single [ExampleRequest] for each of the methods in the application service identified by [serviceInfo].
  */
-@OptIn( InternalSerializationApi::class )
-fun generateExampleRequests(
-    applicationServiceInterface: Class<out ApplicationService<*, *>>,
-    requestObjectSuperType: Class<*>
-): List<ExampleRequest>
+fun generateExampleRequests( serviceInfo: ApplicationServiceInfo ): List<ExampleRequest>
 {
-    val requests = applicationServiceInterface.methods
+    val requestObjectSuperType = serviceInfo.requestObjectClass
+    val requests = serviceInfo.serviceKlass.methods
     val requestObjects = requestObjectSuperType.classes
 
     val json = Json( createDefaultJSON() ) { prettyPrint = true }
 
     return requests.map { request ->
-        val requestName = applicationServiceInterface.name + "." + request.name
+        val requestName = serviceInfo.serviceName + "." + request.name
         val requestObjectName = request.name.replaceFirstChar { it.uppercase() }
         val requestObject = requestObjects.singleOrNull { it.simpleName == requestObjectName }
         checkNotNull( requestObject )
@@ -70,8 +67,12 @@ fun generateExampleRequests(
             { "Incorrect response instance provided for $requestName." }
 
         // Create example JSON.
-        val requestObjectJson = example.encodeRequestToString( json )
-        val responseJson = example.encodeResponseToString( json )
+        val exampleJson = json.encodeToJsonElement(
+            LoggedRequestSerializer( serviceInfo.requestObjectSerializer ),
+            example
+        ) as JsonObject
+        val requestObjectJson = json.encodeToString( checkNotNull( exampleJson[ "request" ] ) )
+        val responseJson = json.encodeToString( checkNotNull( exampleJson[ "response" ] ) )
 
         ExampleRequest(
             request,
@@ -248,10 +249,10 @@ private val phoneDataStreamBatch = MutableDataStreamBatch().apply {
 }
 
 
-inline fun <reified TService : ApplicationService<TService, *>, TResponse> example(
+fun <TService : ApplicationService<TService, *>, TResponse> example(
     request: ApplicationServiceRequest<TService, TResponse>,
     response: Any? = Unit
-) = LoggedRequest.Succeeded( TService::class, request, response )
+) = LoggedRequest.Succeeded( request, response )
 
 private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = mapOf(
     // ProtocolService

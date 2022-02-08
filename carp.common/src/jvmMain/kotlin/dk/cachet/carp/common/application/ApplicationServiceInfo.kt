@@ -19,7 +19,7 @@ class ApplicationServiceInfo( val serviceKlass: Class<out ApplicationService<*, 
 
     val requestObjectName: String = "${serviceName}Request"
     val requestObjectClass: Class<*>
-    val requestObjectSerializer: KSerializer<ApplicationServiceRequest<*, *>>
+    val requestObjectSerializer: KSerializer<out ApplicationServiceRequest<*, *>>
 
     val requestSchemaUri: URI
 

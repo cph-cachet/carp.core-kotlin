@@ -14,7 +14,7 @@ import dk.cachet.carp.data.application.DataStreamsConfiguration
  * and keeps a history of requests in [loggedRequests].
  */
 class DataStreamServiceLog( service: DataStreamService, log: (LoggedRequest<DataStreamService>) -> Unit = { } ) :
-    ApplicationServiceLog<DataStreamService>( DataStreamService::class, service, log ),
+    ApplicationServiceLog<DataStreamService>( service, log ),
     DataStreamService
 {
     override suspend fun openDataStreams( configuration: DataStreamsConfiguration ) =
