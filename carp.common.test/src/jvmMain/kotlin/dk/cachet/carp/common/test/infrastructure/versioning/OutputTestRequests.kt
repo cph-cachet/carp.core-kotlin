@@ -3,6 +3,10 @@ package dk.cachet.carp.common.test.infrastructure.versioning
 import dk.cachet.carp.common.application.ApplicationServiceInfo
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.LoggedRequestSerializer
+import dk.cachet.carp.common.infrastructure.test.createTestJSON
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 import java.io.File
 import org.apache.commons.io.FileUtils
 import org.junit.jupiter.api.BeforeAll
@@ -49,10 +53,19 @@ open class OutputTestRequests<TService : ApplicationService<TService, *>>(
     @AfterTest
     fun outputLoggedRequests( info: TestInfo )
     {
-        val testName = info.testMethod.get().name
+        // Serialize requests as json.
+        @Suppress( "UNCHECKED_CAST" )
+        val service = loggedService as ApplicationServiceLog<TService>
+        val requests = service.loggedRequests
+        val json = Json( createTestJSON() ) { prettyPrint = true }
+        val serializer = ListSerializer(
+            LoggedRequestSerializer( applicationServiceInfo.requestObjectSerializer )
+        )
+        val loggedRequestsJson = json.encodeToString( serializer, requests )
 
-        // Output logged requests.
+        // Output to file.
+        val testName = info.testMethod.get().name
         val output = File( testFolder, "$testName.json" )
-        output.createNewFile() // TODO: Output requests.
+        output.writeText( loggedRequestsJson )
     }
 }

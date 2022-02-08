@@ -14,7 +14,7 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 class ProtocolFactoryServiceLog(
     service: ProtocolFactoryService,
     log: (LoggedRequest<ProtocolFactoryService>) -> Unit = { }
-) : ApplicationServiceLog<ProtocolFactoryService>( ProtocolFactoryService::class, service, log ),
+) : ApplicationServiceLog<ProtocolFactoryService>( service, log ),
     ProtocolFactoryService
 {
     override suspend fun createCustomProtocol(

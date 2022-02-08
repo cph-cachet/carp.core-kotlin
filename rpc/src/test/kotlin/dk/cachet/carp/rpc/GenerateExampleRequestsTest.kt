@@ -5,7 +5,7 @@ import kotlin.test.*
 
 
 internal val exampleApplicationServiceRequests: Map<ApplicationServiceInfo, List<ExampleRequest>> =
-    applicationServices.associateWith { generateExampleRequests( it.serviceKlass, it.requestObjectClass ) }
+    applicationServices.associateWith { generateExampleRequests( it ) }
 
 
 class GenerateExampleRequestsTest
@@ -24,7 +24,7 @@ class GenerateExampleRequestsTest
             val firstRun =
                 exampleApplicationServiceRequests[ service ]!!.associateBy { it.method }
             val secondRun =
-                generateExampleRequests( service.serviceKlass, service.requestObjectClass ).associateBy { it.method }
+                generateExampleRequests( service ).associateBy { it.method }
 
             firstRun.forEach { (method, firstExample) ->
                 val secondExample = secondRun[ method ]
