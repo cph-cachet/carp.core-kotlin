@@ -10,6 +10,7 @@ import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
 
 
 /**
@@ -24,6 +25,7 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
     @Serializable
     data class OpenDataStreams( val configuration: DataStreamsConfiguration ) : DataStreamServiceRequest<Unit>()
     {
+        override fun getResponseSerializer() = serializer<Unit>()
         override suspend fun invokeOn( service: DataStreamService ) = service.openDataStreams( configuration )
     }
 
@@ -34,6 +36,7 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
         val batch: DataStreamBatch
     ) : DataStreamServiceRequest<Unit>()
     {
+        override fun getResponseSerializer() = serializer<Unit>()
         override suspend fun invokeOn( service: DataStreamService ) =
             service.appendToDataStreams( studyDeploymentId, batch )
     }
@@ -45,6 +48,7 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
         val toSequenceIdInclusive: Long? = null
     ) : DataStreamServiceRequest<DataStreamBatch>()
     {
+        override fun getResponseSerializer() = DataStreamBatchSerializer
         override suspend fun invokeOn( service: DataStreamService ) =
             service.getDataStream( dataStream, fromSequenceId, toSequenceIdInclusive )
     }
@@ -53,6 +57,7 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
     data class CloseDataStreams( val studyDeploymentIds: Set<UUID> ) :
         DataStreamServiceRequest<Unit>()
     {
+        override fun getResponseSerializer() = serializer<Unit>()
         override suspend fun invokeOn( service: DataStreamService ) = service.closeDataStreams( studyDeploymentIds )
     }
 
@@ -60,6 +65,7 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
     data class RemoveDataStreams( val studyDeploymentIds: Set<UUID> ) :
         DataStreamServiceRequest<Boolean>()
     {
+        override fun getResponseSerializer() = serializer<Boolean>()
         override suspend fun invokeOn( service: DataStreamService ) = service.removeDataStreams( studyDeploymentIds )
     }
 }

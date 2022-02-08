@@ -14,7 +14,7 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
  * and keeps a history of requests in [loggedRequests].
  */
 class ProtocolServiceLog( service: ProtocolService, log: (LoggedRequest<ProtocolService>) -> Unit = { } ) :
-    ApplicationServiceLog<ProtocolService>( service, log ),
+    ApplicationServiceLog<ProtocolService>( ProtocolService::class, service, log ),
     ProtocolService
 {
     override suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String ) =

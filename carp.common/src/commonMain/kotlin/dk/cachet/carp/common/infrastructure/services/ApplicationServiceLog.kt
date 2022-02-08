@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.infrastructure.services
 
 import dk.cachet.carp.common.application.services.ApplicationService
+import kotlin.reflect.KClass
 
 
 /**
@@ -8,6 +9,7 @@ import dk.cachet.carp.common.application.services.ApplicationService
  * and keeps a history of requests in [loggedRequests].
  */
 open class ApplicationServiceLog<TService : ApplicationService<TService, *>>(
+    private val serviceKlass: KClass<TService>,
     private val service: TService,
     private val log: (LoggedRequest<TService>) -> Unit = { }
 )
@@ -27,11 +29,11 @@ open class ApplicationServiceLog<TService : ApplicationService<TService, *>>(
             try { request.invokeOn( service ) }
             catch ( ex: Exception )
             {
-                addLog( LoggedRequest.Failed( request, ex ) )
+                addLog( LoggedRequest.Failed( serviceKlass, request, ex ) )
                 throw ex
             }
 
-        addLog( LoggedRequest.Succeeded( request, response ) )
+        addLog( LoggedRequest.Succeeded( serviceKlass, request, response ) )
 
         return response
     }
@@ -56,19 +58,28 @@ open class ApplicationServiceLog<TService : ApplicationService<TService, *>>(
 
 
 /**
- * An intercepted [request] and response to the application service [TService].
+ * An intercepted [request] and response to an application service identified by [serviceKlass].
  */
-sealed class LoggedRequest<TService>( val request: ApplicationServiceRequest<TService, *> )
+sealed class LoggedRequest<TService : ApplicationService<TService, *>>(
+    val serviceKlass: KClass<TService>,
+    val request: ApplicationServiceRequest<TService, *>
+)
 {
     /**
      * The intercepted [request] succeeded and returned [response].
      */
-    class Succeeded<TService>( request: ApplicationServiceRequest<TService, *>, val response: Any? ) :
-        LoggedRequest<TService>( request )
+    class Succeeded<TService : ApplicationService<TService, *>>(
+        serviceKlass: KClass<TService>,
+        request: ApplicationServiceRequest<TService, *>,
+        val response: Any?
+    ) : LoggedRequest<TService>( serviceKlass, request )
 
     /**
      * The intercepted [request] failed with an [exception].
      */
-    class Failed<TService>( request: ApplicationServiceRequest<TService, *>, val exception: Exception ) :
-        LoggedRequest<TService>( request )
+    class Failed<TService : ApplicationService<TService, *>>(
+        serviceKlass: KClass<TService>,
+        request: ApplicationServiceRequest<TService, *>,
+        val exception: Exception
+    ) : LoggedRequest<TService>( serviceKlass, request )
 }
