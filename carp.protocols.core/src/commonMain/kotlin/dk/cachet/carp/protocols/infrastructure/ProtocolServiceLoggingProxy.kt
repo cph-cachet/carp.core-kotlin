@@ -1,10 +1,10 @@
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
-import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.application.ProtocolVersion
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
@@ -16,13 +16,14 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
  */
 class ProtocolServiceLoggingProxy(
     service: ProtocolService,
+    eventBus: EventBus,
     log: (LoggedRequest<ProtocolService, ProtocolService.Event>) -> Unit = { }
 ) :
     ApplicationServiceLoggingProxy<ProtocolService, ProtocolService.Event>(
         service,
         ProtocolService::class,
         ProtocolService.Event::class,
-        SingleThreadedEventBus(),
+        eventBus,
         log
     ),
     ProtocolService

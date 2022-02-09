@@ -1,9 +1,9 @@
 package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
-import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.data.application.DataStreamBatch
 import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
@@ -16,13 +16,14 @@ import dk.cachet.carp.data.application.DataStreamsConfiguration
  */
 class DataStreamServiceLoggingProxy(
     service: DataStreamService,
+    eventBus: EventBus,
     log: (LoggedRequest<DataStreamService, DataStreamService.Event>) -> Unit = { }
 ) :
     ApplicationServiceLoggingProxy<DataStreamService, DataStreamService.Event>(
         service,
         DataStreamService::class,
         DataStreamService.Event::class,
-        SingleThreadedEventBus(),
+        eventBus,
         log
     ),
     DataStreamService
