@@ -16,9 +16,16 @@ import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
  */
 class ParticipationServiceHostTest : ParticipationServiceTest
 {
+    data class DependentServices(
+        val participationService: ParticipationService,
+        val deploymentService: DeploymentService,
+        val accountService: AccountService,
+        val eventBus: EventBus
+    )
+
     companion object
     {
-        fun createService(): Triple<ParticipationService, DeploymentService, AccountService>
+        fun createService(): DependentServices
         {
             val eventBus: EventBus = SingleThreadedEventBus()
 
@@ -34,10 +41,12 @@ class ParticipationServiceHostTest : ParticipationServiceTest
                 ParticipantGroupService( accountService ),
                 eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
-            return Triple( participationService, deploymentService, accountService )
+            return DependentServices( participationService, deploymentService, accountService, eventBus )
         }
     }
 
     override fun createService(): Triple<ParticipationService, DeploymentService, AccountService> =
-        ParticipationServiceHostTest.createService()
+        ParticipationServiceHostTest
+            .createService()
+            .let { Triple( it.participationService, it.deploymentService, it.accountService ) }
 }

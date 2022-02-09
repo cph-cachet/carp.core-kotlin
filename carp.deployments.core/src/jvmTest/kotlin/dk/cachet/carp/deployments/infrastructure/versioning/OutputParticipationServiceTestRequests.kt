@@ -14,10 +14,10 @@ private val services = ParticipationServiceHostTest.createService()
 class OutputParticipationServiceTestRequests :
     OutputTestRequests<ParticipationService>(
         ParticipationService::class,
-        ParticipationServiceLog( services.first )
+        ParticipationServiceLog( services.participationService, services.eventBus )
     ),
     ParticipationServiceTest
 {
     override fun createService(): Triple<ParticipationService, DeploymentService, AccountService> =
-        Triple( loggedService, services.second, services.third )
+        Triple( loggedService, services.deploymentService, services.accountService )
 }

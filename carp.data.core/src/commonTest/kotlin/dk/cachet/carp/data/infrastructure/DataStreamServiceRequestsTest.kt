@@ -30,6 +30,6 @@ class DataStreamServiceRequestsTest : ApplicationServiceRequestsTest<DataStreamS
     }
 
 
-    override fun createServiceLog(): ApplicationServiceLog<DataStreamService> =
+    override fun createServiceLog(): ApplicationServiceLog<DataStreamService, DataStreamService.Event> =
         DataStreamServiceLog( InMemoryDataStreamService() )
 }

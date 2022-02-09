@@ -3,6 +3,7 @@ package dk.cachet.carp.deployments.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.deployments.application.ParticipationService
@@ -14,8 +15,18 @@ import dk.cachet.carp.deployments.application.users.ParticipantData
  * A proxy for a participation [service] which notifies of incoming requests and responses through [log]
  * and keeps a history of requests in [loggedRequests].
  */
-class ParticipationServiceLog( service: ParticipationService, log: (LoggedRequest<ParticipationService>) -> Unit = { } ) :
-    ApplicationServiceLog<ParticipationService>( service, log ),
+class ParticipationServiceLog(
+    service: ParticipationService,
+    eventBus: EventBus,
+    log: (LoggedRequest<ParticipationService, ParticipationService.Event>) -> Unit = { }
+) :
+    ApplicationServiceLog<ParticipationService, ParticipationService.Event>(
+        service,
+        ParticipationService::class,
+        ParticipationService.Event::class,
+        eventBus,
+        log
+    ),
     ParticipationService
 {
     override suspend fun getActiveParticipationInvitations( accountId: UUID ): Set<ActiveParticipationInvitation> =

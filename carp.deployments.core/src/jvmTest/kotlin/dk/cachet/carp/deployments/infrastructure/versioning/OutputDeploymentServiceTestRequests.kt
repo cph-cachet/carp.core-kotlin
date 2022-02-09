@@ -7,10 +7,12 @@ import dk.cachet.carp.deployments.application.DeploymentServiceTest
 import dk.cachet.carp.deployments.infrastructure.DeploymentServiceLog
 
 
+private val services = DeploymentServiceHostTest.createService()
+
 class OutputDeploymentServiceTestRequests :
     OutputTestRequests<DeploymentService>(
         DeploymentService::class,
-        DeploymentServiceLog( DeploymentServiceHostTest.createService() )
+        DeploymentServiceLog( services.first, services.second )
     ),
     DeploymentServiceTest
 {

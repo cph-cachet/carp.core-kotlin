@@ -67,10 +67,7 @@ fun generateExampleRequests( serviceInfo: ApplicationServiceInfo ): List<Example
             { "Incorrect response instance provided for $requestName." }
 
         // Create example JSON.
-        val exampleJson = json.encodeToJsonElement(
-            LoggedRequestSerializer( serviceInfo.requestObjectSerializer ),
-            example
-        ) as JsonObject
+        val exampleJson = json.encodeToJsonElement( serviceInfo.loggedRequestSerializer, example ) as JsonObject
         val requestObjectJson = json.encodeToString( checkNotNull( exampleJson[ "request" ] ) )
         val responseJson = json.encodeToString( checkNotNull( exampleJson[ "response" ] ) )
 
@@ -252,9 +249,9 @@ private val phoneDataStreamBatch = MutableDataStreamBatch().apply {
 fun <TService : ApplicationService<TService, *>, TResponse> example(
     request: ApplicationServiceRequest<TService, TResponse>,
     response: Any? = Unit
-) = LoggedRequest.Succeeded( request, response )
+) = LoggedRequest.Succeeded( request, emptyList(), response )
 
-private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = mapOf(
+private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = mapOf(
     // ProtocolService
     ProtocolService::add to example(
         request = ProtocolServiceRequest.Add( phoneProtocol, "Version 1" )

@@ -14,17 +14,19 @@ class DeploymentServiceHostTest : DeploymentServiceTest
 {
     companion object
     {
-        fun createService(): DeploymentService
+        fun createService(): Pair<DeploymentService, EventBus>
         {
             val eventBus: EventBus = SingleThreadedEventBus()
 
-            return DeploymentServiceHost(
+            val deploymentService = DeploymentServiceHost(
                 InMemoryDeploymentRepository(),
                 InMemoryDataStreamService(),
                 eventBus.createApplicationServiceAdapter( DeploymentService::class )
             )
+
+            return Pair( deploymentService, eventBus )
         }
     }
 
-    override fun createService(): DeploymentService = DeploymentServiceHostTest.createService()
+    override fun createService(): DeploymentService = DeploymentServiceHostTest.createService().first
 }

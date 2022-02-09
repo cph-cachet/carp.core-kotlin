@@ -29,6 +29,6 @@ class ProtocolServiceRequestsTest : ApplicationServiceRequestsTest<ProtocolServi
     }
 
 
-    override fun createServiceLog(): ApplicationServiceLog<ProtocolService> =
+    override fun createServiceLog(): ApplicationServiceLog<ProtocolService, ProtocolService.Event> =
         ProtocolServiceLog( ProtocolServiceHostTest.createService() )
 }

@@ -31,6 +31,8 @@ class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<Recruitmen
     }
 
 
-    override fun createServiceLog(): ApplicationServiceLog<RecruitmentService> =
-        RecruitmentServiceLog( RecruitmentServiceHostTest.createService().first )
+    override fun createServiceLog(): ApplicationServiceLog<RecruitmentService, RecruitmentService.Event> =
+        RecruitmentServiceHostTest
+            .createService()
+            .let { RecruitmentServiceLog( it.first, it.third ) }
 }
