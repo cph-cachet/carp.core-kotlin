@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.devices.Smartphone
+import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -21,10 +22,16 @@ private val unknownId: UUID = UUID.randomUUID()
  */
 interface RecruitmentServiceTest
 {
+    data class DependentServices(
+        val recruitmentService: RecruitmentService,
+        val studyService: StudyService,
+        val eventBus: EventBus
+    )
+
     /**
      * Create a recruitment service and study service it depends on to be used in the tests.
      */
-    fun createService(): Pair<RecruitmentService, StudyService>
+    fun createService(): DependentServices
 
 
     @Test
