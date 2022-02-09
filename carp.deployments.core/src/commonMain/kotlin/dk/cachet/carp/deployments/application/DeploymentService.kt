@@ -3,6 +3,7 @@ package dk.cachet.carp.deployments.application
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
@@ -15,6 +16,7 @@ import kotlinx.serialization.Serializable
  * Application service which allows deploying study protocols to participants
  * and retrieving [MasterDeviceDeployment]'s for participating master devices as defined in the protocol.
  */
+@ApiVersion( 1, 0 )
 interface DeploymentService : ApplicationService<DeploymentService, DeploymentService.Event>
 {
     @Serializable

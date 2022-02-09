@@ -2,6 +2,7 @@ package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.CustomProtocolDevice
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
@@ -11,6 +12,7 @@ import kotlinx.serialization.Serializable
 /**
  * Factory methods to create [StudyProtocolSnapshot]'s according to predefined templates.
  */
+@ApiVersion( 1, 0 )
 interface ProtocolFactoryService : ApplicationService<ProtocolFactoryService, ProtocolFactoryService.Event>
 {
     @Serializable
