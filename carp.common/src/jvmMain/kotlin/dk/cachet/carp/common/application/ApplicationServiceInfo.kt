@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.application
 
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
@@ -20,9 +21,12 @@ import java.net.URI
 @Suppress( "MagicNumber" )
 class ApplicationServiceInfo( val serviceKlass: Class<out ApplicationService<*, *>> )
 {
+    val serviceName: String = serviceKlass.simpleName
+    val apiVersion: ApiVersion = checkNotNull( serviceKlass.getAnnotation( ApiVersion::class.java ) )
+        { "Application service \"${serviceKlass.name}\" is missing an \"${ApiVersion::class.simpleName}\" annotation." }
+
     val subsystemName: String
     val subsystemNamespace: String
-    val serviceName: String = serviceKlass.simpleName
 
     val requestObjectName: String = "${serviceName}Request"
     val requestObjectClass: Class<*>

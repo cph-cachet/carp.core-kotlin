@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.users.ParticipantAttribute
@@ -13,6 +14,7 @@ import kotlinx.serialization.Serializable
  * Application service which allows managing (multiple versions of) [StudyProtocolSnapshot]'s,
  * which can be instantiated locally through [StudyProtocol].
  */
+@ApiVersion( 1, 0 )
 interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.Event>
 {
     @Serializable

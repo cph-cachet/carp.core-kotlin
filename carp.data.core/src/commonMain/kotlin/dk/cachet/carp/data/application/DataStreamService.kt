@@ -2,6 +2,7 @@ package dk.cachet.carp.data.application
 
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import kotlinx.serialization.Serializable
@@ -10,6 +11,7 @@ import kotlinx.serialization.Serializable
 /**
  * Store and retrieve [DataStreamPoint]s for study deployments.
  */
+@ApiVersion( 1, 0 )
 interface DataStreamService : ApplicationService<DataStreamService, DataStreamService.Event>
 {
     @Serializable
