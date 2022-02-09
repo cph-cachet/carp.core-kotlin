@@ -7,7 +7,7 @@ import dk.cachet.carp.data.infrastructure.DataStreamServiceLoggingProxy
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 
 
-class OutputDataServiceTestRequests :
+class OutputDataStreamServiceTestRequests :
     OutputTestRequests<DataStreamService>(
         DataStreamService::class,
         DataStreamServiceLoggingProxy( InMemoryDataStreamService() )

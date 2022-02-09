@@ -11,7 +11,7 @@ import dk.cachet.carp.deployments.application.DeploymentService
 
 
 /**
- * Allows managing [Study]s on a smartphone.
+ * Allows managing studies on a smartphone.
  */
 class SmartphoneClient(
     /**
