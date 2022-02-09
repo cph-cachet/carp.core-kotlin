@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
+import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.test.StubData
@@ -31,10 +32,17 @@ interface ParticipationServiceTest
     }
 
 
+    data class DependentServices(
+        val participationService: ParticipationService,
+        val deploymentService: DeploymentService,
+        val accountService: AccountService,
+        val eventBus: EventBus
+    )
+
     /**
      * Create a deployment service and account service it depends on to be used in the tests.
      */
-    fun createService(): Triple<ParticipationService, DeploymentService, AccountService>
+    fun createService(): DependentServices
 
 
     @Test

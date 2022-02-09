@@ -4,7 +4,6 @@ import dk.cachet.carp.common.test.infrastructure.versioning.OutputTestRequests
 import dk.cachet.carp.studies.application.RecruitmentService
 import dk.cachet.carp.studies.application.RecruitmentServiceHostTest
 import dk.cachet.carp.studies.application.RecruitmentServiceTest
-import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.infrastructure.RecruitmentServiceLoggingProxy
 
 
@@ -13,9 +12,14 @@ private val services = RecruitmentServiceHostTest.createService()
 class OutputProtocolServiceTestRequests :
     OutputTestRequests<RecruitmentService>(
         RecruitmentService::class,
-        RecruitmentServiceLoggingProxy( services.first, services.third )
+        RecruitmentServiceLoggingProxy( services.recruitmentService, services.eventBus )
     ),
     RecruitmentServiceTest
 {
-    override fun createService(): Pair<RecruitmentService, StudyService> = Pair( loggedService, services.second )
+    override fun createService() =
+        RecruitmentServiceTest.DependentServices(
+            loggedService,
+            services.studyService,
+            services.eventBus
+        )
 }
