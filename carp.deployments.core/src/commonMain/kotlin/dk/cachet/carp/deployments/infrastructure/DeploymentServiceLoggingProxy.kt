@@ -3,7 +3,7 @@ package dk.cachet.carp.deployments.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.services.EventBus
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
@@ -15,14 +15,14 @@ import kotlinx.datetime.Instant
 
 /**
  * A proxy for a deployment [service] which notifies of incoming requests and responses through [log]
- * and keeps a history of requests in [loggedRequests].
+ * and keeps a history of requests in [loggedRequests] and published events in [loggedEvents].
  */
-class DeploymentServiceLog(
+class DeploymentServiceLoggingProxy(
     service: DeploymentService,
     eventBus: EventBus,
     log: (LoggedRequest<DeploymentService, DeploymentService.Event>) -> Unit = { }
 ) :
-    ApplicationServiceLog<DeploymentService, DeploymentService.Event>(
+    ApplicationServiceLoggingProxy<DeploymentService, DeploymentService.Event>(
         service,
         DeploymentService::class,
         DeploymentService.Event::class,

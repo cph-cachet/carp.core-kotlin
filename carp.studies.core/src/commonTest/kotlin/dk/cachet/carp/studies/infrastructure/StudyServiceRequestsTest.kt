@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -35,6 +35,6 @@ class StudyServiceRequestsTest : ApplicationServiceRequestsTest<StudyService, St
     }
 
 
-    override fun createServiceLog(): ApplicationServiceLog<StudyService, StudyService.Event> =
-        StudyServiceHostTest.createService().let { StudyServiceLog( it.first, it.second ) }
+    override fun createServiceLoggingProxy(): ApplicationServiceLoggingProxy<StudyService, StudyService.Event> =
+        StudyServiceHostTest.createService().let { StudyServiceLoggingProxy( it.first, it.second ) }
 }

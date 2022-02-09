@@ -1,7 +1,7 @@
 package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.data.application.DataStreamBatch
@@ -11,14 +11,14 @@ import dk.cachet.carp.data.application.DataStreamsConfiguration
 
 
 /**
- * A proxy for a data stream [service] which notifies of incoming requests and responses through [log]
- * and keeps a history of requests in [loggedRequests].
+ * A proxy for a data stream [service] which notifies of incoming requests, responses, and events through [log]
+ * and keeps a history of requests in [loggedRequests] and published events in [loggedEvents].
  */
-class DataStreamServiceLog(
+class DataStreamServiceLoggingProxy(
     service: DataStreamService,
     log: (LoggedRequest<DataStreamService, DataStreamService.Event>) -> Unit = { }
 ) :
-    ApplicationServiceLog<DataStreamService, DataStreamService.Event>(
+    ApplicationServiceLoggingProxy<DataStreamService, DataStreamService.Event>(
         service,
         DataStreamService::class,
         DataStreamService.Event::class,

@@ -24,9 +24,12 @@ import kotlin.reflect.KClass
 
 /**
  * A proxy for [ApplicationService] which notifies of incoming requests and responses through [log]
- * and keeps a history of requests in [loggedRequests].
+ * and keeps a history of requests in [loggedRequests] and published events in [loggedEvents].
  */
-open class ApplicationServiceLog<TService : ApplicationService<TService, TEvent>, TEvent : IntegrationEvent<TService>>(
+open class ApplicationServiceLoggingProxy<
+    TService : ApplicationService<TService, TEvent>,
+    TEvent : IntegrationEvent<TService>
+>(
     private val service: TService,
     serviceKlass: KClass<TService>,
     eventKlass: KClass<TEvent>,

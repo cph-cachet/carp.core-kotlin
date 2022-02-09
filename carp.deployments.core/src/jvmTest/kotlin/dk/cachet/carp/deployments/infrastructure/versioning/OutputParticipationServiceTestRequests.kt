@@ -6,7 +6,7 @@ import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.ParticipationServiceHostTest
 import dk.cachet.carp.deployments.application.ParticipationServiceTest
 import dk.cachet.carp.deployments.domain.users.AccountService
-import dk.cachet.carp.deployments.infrastructure.ParticipationServiceLog
+import dk.cachet.carp.deployments.infrastructure.ParticipationServiceLoggingProxy
 
 
 private val services = ParticipationServiceHostTest.createService()
@@ -14,7 +14,7 @@ private val services = ParticipationServiceHostTest.createService()
 class OutputParticipationServiceTestRequests :
     OutputTestRequests<ParticipationService>(
         ParticipationService::class,
-        ParticipationServiceLog( services.participationService, services.eventBus )
+        ParticipationServiceLoggingProxy( services.participationService, services.eventBus )
     ),
     ParticipationServiceTest
 {

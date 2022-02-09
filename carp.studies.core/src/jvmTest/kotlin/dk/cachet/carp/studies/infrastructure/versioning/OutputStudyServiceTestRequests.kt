@@ -4,7 +4,7 @@ import dk.cachet.carp.common.test.infrastructure.versioning.OutputTestRequests
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceHostTest
 import dk.cachet.carp.studies.application.StudyServiceTest
-import dk.cachet.carp.studies.infrastructure.StudyServiceLog
+import dk.cachet.carp.studies.infrastructure.StudyServiceLoggingProxy
 
 
 private val services = StudyServiceHostTest.createService()
@@ -12,7 +12,7 @@ private val services = StudyServiceHostTest.createService()
 class OutputStudyServiceTestRequests :
     OutputTestRequests<StudyService>(
         StudyService::class,
-        StudyServiceLog( services.first, services.second )
+        StudyServiceLoggingProxy( services.first, services.second )
     ),
     StudyServiceTest
 {
