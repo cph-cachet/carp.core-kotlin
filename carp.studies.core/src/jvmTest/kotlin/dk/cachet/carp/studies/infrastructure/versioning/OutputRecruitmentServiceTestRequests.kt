@@ -13,7 +13,7 @@ private val services = RecruitmentServiceHostTest.createService()
 class OutputProtocolServiceTestRequests :
     OutputTestRequests<RecruitmentService>(
         RecruitmentService::class,
-        RecruitmentServiceLog( services.first )
+        RecruitmentServiceLog( services.first, services.third )
     ),
     RecruitmentServiceTest
 {

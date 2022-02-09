@@ -31,6 +31,8 @@ class ParticipationServiceRequestsTest : ApplicationServiceRequestsTest<Particip
     }
 
 
-    override fun createServiceLog(): ApplicationServiceLog<ParticipationService> =
-        ParticipationServiceLog( ParticipationServiceHostTest.createService().first )
+    override fun createServiceLog(): ApplicationServiceLog<ParticipationService, ParticipationService.Event> =
+        ParticipationServiceHostTest
+            .createService()
+            .let { ParticipationServiceLog( it.participationService, it.eventBus ) }
 }

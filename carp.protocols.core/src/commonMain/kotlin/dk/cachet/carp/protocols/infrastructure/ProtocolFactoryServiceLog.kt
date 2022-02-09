@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
+import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.protocols.application.ProtocolFactoryService
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
@@ -13,8 +14,15 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
  */
 class ProtocolFactoryServiceLog(
     service: ProtocolFactoryService,
-    log: (LoggedRequest<ProtocolFactoryService>) -> Unit = { }
-) : ApplicationServiceLog<ProtocolFactoryService>( service, log ),
+    log: (LoggedRequest<ProtocolFactoryService, ProtocolFactoryService.Event>) -> Unit = { }
+) :
+    ApplicationServiceLog<ProtocolFactoryService, ProtocolFactoryService.Event>(
+        service,
+        ProtocolFactoryService::class,
+        ProtocolFactoryService.Event::class,
+        SingleThreadedEventBus(),
+        log
+    ),
     ProtocolFactoryService
 {
     override suspend fun createCustomProtocol(

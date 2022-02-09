@@ -1,6 +1,7 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.deployments.application.users.StudyInvitation
@@ -14,8 +15,18 @@ import dk.cachet.carp.studies.application.StudyStatus
  * A proxy for a study [service] which notifies of incoming requests and responses through [log]
  * and keeps a history of requests in [loggedRequests].
  */
-class StudyServiceLog( service: StudyService, log: (LoggedRequest<StudyService>) -> Unit = { } ) :
-    ApplicationServiceLog<StudyService>( service, log ),
+class StudyServiceLog(
+    service: StudyService,
+    eventBus: EventBus,
+    log: (LoggedRequest<StudyService, StudyService.Event>) -> Unit = { }
+) :
+    ApplicationServiceLog<StudyService, StudyService.Event>(
+        service,
+        StudyService::class,
+        StudyService.Event::class,
+        eventBus,
+        log
+    ),
     StudyService
 {
     override suspend fun createStudy(

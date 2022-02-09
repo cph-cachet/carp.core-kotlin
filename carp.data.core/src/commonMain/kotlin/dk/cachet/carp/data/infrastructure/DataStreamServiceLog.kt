@@ -3,6 +3,7 @@ package dk.cachet.carp.data.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
+import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.data.application.DataStreamBatch
 import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
@@ -13,8 +14,17 @@ import dk.cachet.carp.data.application.DataStreamsConfiguration
  * A proxy for a data stream [service] which notifies of incoming requests and responses through [log]
  * and keeps a history of requests in [loggedRequests].
  */
-class DataStreamServiceLog( service: DataStreamService, log: (LoggedRequest<DataStreamService>) -> Unit = { } ) :
-    ApplicationServiceLog<DataStreamService>( service, log ),
+class DataStreamServiceLog(
+    service: DataStreamService,
+    log: (LoggedRequest<DataStreamService, DataStreamService.Event>) -> Unit = { }
+) :
+    ApplicationServiceLog<DataStreamService, DataStreamService.Event>(
+        service,
+        DataStreamService::class,
+        DataStreamService.Event::class,
+        SingleThreadedEventBus(),
+        log
+    ),
     DataStreamService
 {
     override suspend fun openDataStreams( configuration: DataStreamsConfiguration ) =

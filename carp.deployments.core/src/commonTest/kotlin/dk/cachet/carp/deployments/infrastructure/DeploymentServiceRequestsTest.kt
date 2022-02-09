@@ -34,6 +34,8 @@ class DeploymentServiceRequestsTest : ApplicationServiceRequestsTest<DeploymentS
     }
 
 
-    override fun createServiceLog(): ApplicationServiceLog<DeploymentService> =
-        DeploymentServiceLog( DeploymentServiceHostTest.createService() )
+    override fun createServiceLog(): ApplicationServiceLog<DeploymentService, DeploymentService.Event> =
+        DeploymentServiceHostTest
+            .createService()
+            .let { DeploymentServiceLog( it.first, it.second ) }
 }

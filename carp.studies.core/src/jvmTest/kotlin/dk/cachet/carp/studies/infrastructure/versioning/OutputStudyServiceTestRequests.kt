@@ -7,10 +7,12 @@ import dk.cachet.carp.studies.application.StudyServiceTest
 import dk.cachet.carp.studies.infrastructure.StudyServiceLog
 
 
+private val services = StudyServiceHostTest.createService()
+
 class OutputStudyServiceTestRequests :
     OutputTestRequests<StudyService>(
         StudyService::class,
-        StudyServiceLog( StudyServiceHostTest.createService() )
+        StudyServiceLog( services.first, services.second )
     ),
     StudyServiceTest
 {

@@ -24,7 +24,7 @@ abstract class ApplicationServiceRequestsTest<
     private val requests: List<TRequest>
 )
 {
-    abstract fun createServiceLog(): ApplicationServiceLog<TService>
+    abstract fun createServiceLog(): ApplicationServiceLog<TService, *>
 
 
     @ExperimentalSerializationApi

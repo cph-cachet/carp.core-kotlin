@@ -23,6 +23,6 @@ class ProtocolFactoryServiceRequestsTest : ApplicationServiceRequestsTest<Protoc
     }
 
 
-    override fun createServiceLog(): ApplicationServiceLog<ProtocolFactoryService> =
+    override fun createServiceLog(): ApplicationServiceLog<ProtocolFactoryService, ProtocolFactoryService.Event> =
         ProtocolFactoryServiceLog( ProtocolFactoryServiceHostTest.createService() )
 }

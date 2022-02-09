@@ -21,7 +21,11 @@ class ApplicationServiceRequestTest
     interface TestService : ApplicationService<TestService, TestService.Event>
     {
         @Serializable
-        sealed class Event : IntegrationEvent<TestService>
+        sealed class Event( override val aggregateId: String? ) : IntegrationEvent<TestService>
+        {
+            @Serializable
+            data class OperationOccurred( val parameter: Int ) : Event( parameter.toString() )
+        }
 
         suspend fun operation( parameter: Int ): Int
     }

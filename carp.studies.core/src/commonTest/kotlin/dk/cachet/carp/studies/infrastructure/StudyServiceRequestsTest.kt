@@ -35,6 +35,6 @@ class StudyServiceRequestsTest : ApplicationServiceRequestsTest<StudyService, St
     }
 
 
-    override fun createServiceLog(): ApplicationServiceLog<StudyService> =
-        StudyServiceLog( StudyServiceHostTest.createService() )
+    override fun createServiceLog(): ApplicationServiceLog<StudyService, StudyService.Event> =
+        StudyServiceHostTest.createService().let { StudyServiceLog( it.first, it.second ) }
 }
