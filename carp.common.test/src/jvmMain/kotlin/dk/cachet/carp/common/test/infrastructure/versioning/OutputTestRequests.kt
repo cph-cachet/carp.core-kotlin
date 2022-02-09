@@ -2,7 +2,7 @@ package dk.cachet.carp.common.test.infrastructure.versioning
 
 import dk.cachet.carp.common.application.ApplicationServiceInfo
 import dk.cachet.carp.common.application.services.ApplicationService
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -24,7 +24,7 @@ val TEST_REQUESTS_FOLDER = File( "build/test-requests/" )
  */
 open class OutputTestRequests<TService : ApplicationService<TService, *>>(
     applicationServiceKlass: KClass<TService>,
-    loggedService: ApplicationServiceLog<TService, *>
+    loggedService: ApplicationServiceLoggingProxy<TService, *>
 )
 {
     @Suppress( "UNCHECKED_CAST" )
@@ -54,7 +54,7 @@ open class OutputTestRequests<TService : ApplicationService<TService, *>>(
     {
         // Serialize requests as json.
         @Suppress( "UNCHECKED_CAST" )
-        val service = loggedService as ApplicationServiceLog<TService, *>
+        val service = loggedService as ApplicationServiceLoggingProxy<TService, *>
         val requests = service.loggedRequests
         val json = Json( createTestJSON() ) { prettyPrint = true }
         val serializer = ListSerializer( applicationServiceInfo.loggedRequestSerializer )

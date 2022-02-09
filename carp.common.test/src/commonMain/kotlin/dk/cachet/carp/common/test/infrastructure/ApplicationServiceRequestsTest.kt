@@ -1,7 +1,7 @@
 package dk.cachet.carp.common.test.infrastructure
 
 import dk.cachet.carp.common.application.services.ApplicationService
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.test.runSuspendTest
@@ -24,7 +24,7 @@ abstract class ApplicationServiceRequestsTest<
     private val requests: List<TRequest>
 )
 {
-    abstract fun createServiceLog(): ApplicationServiceLog<TService, *>
+    abstract fun createServiceLoggingProxy(): ApplicationServiceLoggingProxy<TService, *>
 
 
     @ExperimentalSerializationApi
@@ -43,7 +43,7 @@ abstract class ApplicationServiceRequestsTest<
     @Suppress( "UNCHECKED_CAST" )
     @Test
     fun invokeOn_requests_call_service() = runSuspendTest {
-        val serviceLog = createServiceLog()
+        val serviceLog = createServiceLoggingProxy()
 
         requests.forEach { request ->
             try { request.invokeOn( serviceLog as TService ) }

@@ -7,7 +7,7 @@ import kotlin.test.*
 
 
 /**
- * Tests for [ApplicationServiceLog] relying on core infrastructure.
+ * Tests for [ApplicationServiceLoggingProxy] relying on core infrastructure.
  */
 class ApplicationServiceLogTest
 {

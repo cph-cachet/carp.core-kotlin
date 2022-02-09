@@ -4,13 +4,13 @@ import dk.cachet.carp.common.test.infrastructure.versioning.OutputTestRequests
 import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.application.ProtocolServiceHostTest
 import dk.cachet.carp.protocols.application.ProtocolServiceTest
-import dk.cachet.carp.protocols.infrastructure.ProtocolServiceLog
+import dk.cachet.carp.protocols.infrastructure.ProtocolServiceLoggingProxy
 
 
 class OutputProtocolServiceTestRequests :
     OutputTestRequests<ProtocolService>(
         ProtocolService::class,
-        ProtocolServiceLog( ProtocolServiceHostTest.createService() )
+        ProtocolServiceLoggingProxy( ProtocolServiceHostTest.createService() )
     ),
     ProtocolServiceTest
 {

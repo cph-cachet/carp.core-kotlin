@@ -3,7 +3,7 @@ package dk.cachet.carp.deployments.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.Sex
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.ParticipationServiceHostTest
@@ -31,8 +31,8 @@ class ParticipationServiceRequestsTest : ApplicationServiceRequestsTest<Particip
     }
 
 
-    override fun createServiceLog(): ApplicationServiceLog<ParticipationService, ParticipationService.Event> =
+    override fun createServiceLoggingProxy(): ApplicationServiceLoggingProxy<ParticipationService, ParticipationService.Event> =
         ParticipationServiceHostTest
             .createService()
-            .let { ParticipationServiceLog( it.participationService, it.eventBus ) }
+            .let { ParticipationServiceLoggingProxy( it.participationService, it.eventBus ) }
 }

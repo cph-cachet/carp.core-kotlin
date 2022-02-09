@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.protocols.application.ProtocolFactoryService
@@ -10,13 +10,13 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
 /**
  * A proxy for a protocol factory [service] which notifies of incoming requests and responses through [log]
- * and keeps a history of requests in [loggedRequests].
+ * and keeps a history of requests in [loggedRequests] and published events in [loggedEvents].
  */
-class ProtocolFactoryServiceLog(
+class ProtocolFactoryServiceLoggingProxy(
     service: ProtocolFactoryService,
     log: (LoggedRequest<ProtocolFactoryService, ProtocolFactoryService.Event>) -> Unit = { }
 ) :
-    ApplicationServiceLog<ProtocolFactoryService, ProtocolFactoryService.Event>(
+    ApplicationServiceLoggingProxy<ProtocolFactoryService, ProtocolFactoryService.Event>(
         service,
         ProtocolFactoryService::class,
         ProtocolFactoryService.Event::class,

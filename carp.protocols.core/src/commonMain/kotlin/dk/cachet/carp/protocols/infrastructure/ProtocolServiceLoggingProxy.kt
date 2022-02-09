@@ -2,7 +2,7 @@ package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.ParticipantAttribute
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.protocols.application.ProtocolService
@@ -12,13 +12,13 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
 /**
  * A proxy for a protocol [service] which notifies of incoming requests and responses through [log]
- * and keeps a history of requests in [loggedRequests].
+ * and keeps a history of requests in [loggedRequests] and published events in [loggedEvents].
  */
-class ProtocolServiceLog(
+class ProtocolServiceLoggingProxy(
     service: ProtocolService,
     log: (LoggedRequest<ProtocolService, ProtocolService.Event>) -> Unit = { }
 ) :
-    ApplicationServiceLog<ProtocolService, ProtocolService.Event>(
+    ApplicationServiceLoggingProxy<ProtocolService, ProtocolService.Event>(
         service,
         ProtocolService::class,
         ProtocolService.Event::class,

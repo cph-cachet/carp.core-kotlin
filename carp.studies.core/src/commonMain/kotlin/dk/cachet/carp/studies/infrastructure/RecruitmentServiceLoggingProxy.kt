@@ -3,7 +3,7 @@ package dk.cachet.carp.studies.infrastructure
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.EventBus
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLog
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.studies.application.RecruitmentService
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
@@ -13,14 +13,14 @@ import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 
 /**
  * A proxy for a recruitment [service] which notifies of incoming requests and responses through [log]
- * and keeps a history of requests in [loggedRequests].
+ * and keeps a history of requests in [loggedRequests] and published events in [loggedEvents].
  */
-class RecruitmentServiceLog(
+class RecruitmentServiceLoggingProxy(
     service: RecruitmentService,
     eventBus: EventBus,
     log: (LoggedRequest<RecruitmentService, RecruitmentService.Event>) -> Unit = { }
 ) :
-    ApplicationServiceLog<RecruitmentService, RecruitmentService.Event>(
+    ApplicationServiceLoggingProxy<RecruitmentService, RecruitmentService.Event>(
         service,
         RecruitmentService::class,
         RecruitmentService.Event::class,
