@@ -7,6 +7,7 @@ import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingPr
 import dk.cachet.carp.common.infrastructure.services.EventBusLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.studies.application.RecruitmentService
+import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
@@ -26,6 +27,7 @@ class RecruitmentServiceLoggingProxy(
         EventBusLog(
             eventBus,
             EventBusLog.Subscription( RecruitmentService::class, RecruitmentService.Event::class ),
+            EventBusLog.Subscription( StudyService::class, StudyService.Event::class )
         ),
         log
     ),

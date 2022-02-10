@@ -249,7 +249,7 @@ private val phoneDataStreamBatch = MutableDataStreamBatch().apply {
 fun <TService : ApplicationService<TService, *>, TResponse> example(
     request: ApplicationServiceRequest<TService, TResponse>,
     response: Any? = Unit
-) = LoggedRequest.Succeeded( request, emptyList(), response )
+) = LoggedRequest.Succeeded( request, emptyList(), emptyList(), response )
 
 private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = mapOf(
     // ProtocolService

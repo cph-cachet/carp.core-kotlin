@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.ApiVersion
+import dk.cachet.carp.common.application.services.DependentServices
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
@@ -15,6 +16,7 @@ import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
  * adding participants to studies, and creating deployments for them.
  */
 @ApiVersion( 1, 0 )
+@DependentServices( StudyService::class )
 interface RecruitmentService : ApplicationService<RecruitmentService, RecruitmentService.Event>
 {
     sealed class Event : IntegrationEvent<RecruitmentService>
