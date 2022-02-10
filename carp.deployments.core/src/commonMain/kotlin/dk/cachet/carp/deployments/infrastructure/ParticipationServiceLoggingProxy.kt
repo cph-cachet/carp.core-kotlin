@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
+import dk.cachet.carp.common.infrastructure.services.EventBusLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
@@ -22,9 +23,10 @@ class ParticipationServiceLoggingProxy(
 ) :
     ApplicationServiceLoggingProxy<ParticipationService, ParticipationService.Event>(
         service,
-        ParticipationService::class,
-        ParticipationService.Event::class,
-        eventBus,
+        EventBusLog(
+            eventBus,
+            EventBusLog.Subscription( ParticipationService::class, ParticipationService.Event::class ),
+        ),
         log
     ),
     ParticipationService

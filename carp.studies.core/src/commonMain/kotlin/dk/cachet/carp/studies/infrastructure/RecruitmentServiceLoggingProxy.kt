@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
+import dk.cachet.carp.common.infrastructure.services.EventBusLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.studies.application.RecruitmentService
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
@@ -22,9 +23,10 @@ class RecruitmentServiceLoggingProxy(
 ) :
     ApplicationServiceLoggingProxy<RecruitmentService, RecruitmentService.Event>(
         service,
-        RecruitmentService::class,
-        RecruitmentService.Event::class,
-        eventBus,
+        EventBusLog(
+            eventBus,
+            EventBusLog.Subscription( RecruitmentService::class, RecruitmentService.Event::class ),
+        ),
         log
     ),
     RecruitmentService

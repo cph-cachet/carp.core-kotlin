@@ -1,8 +1,6 @@
 package dk.cachet.carp.common.infrastructure.services
 
-import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.ApplicationService
-import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.infrastructure.reflect.AccessInternals
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -19,7 +17,6 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
 import kotlinx.serialization.json.JsonClassDiscriminator
-import kotlin.reflect.KClass
 
 
 /**
@@ -31,24 +28,13 @@ open class ApplicationServiceLoggingProxy<
     TEvent : IntegrationEvent<TService>
 >(
     private val service: TService,
-    serviceKlass: KClass<TService>,
-    eventKlass: KClass<TEvent>,
-    eventBus: EventBus,
+    private val eventBusLog: EventBusLog,
     private val log: (LoggedRequest<TService, TEvent>) -> Unit = { }
 )
 {
     private val _loggedRequests: MutableList<LoggedRequest<TService, TEvent>> = mutableListOf()
     val loggedRequests: List<LoggedRequest<TService, TEvent>>
         get() = _loggedRequests.toList()
-
-    private val loggedEvents: MutableList<TEvent> = mutableListOf()
-
-    init
-    {
-        val subscriber = UUID.randomUUID()
-        eventBus.registerHandler( serviceKlass, eventKlass, subscriber ) { event -> loggedEvents.add( event ) }
-        eventBus.activateHandlers( subscriber )
-    }
 
     /**
      * Execute the [request] and log it including the response.
@@ -60,16 +46,14 @@ open class ApplicationServiceLoggingProxy<
             try { request.invokeOn( service ) }
             catch ( ex: Exception )
             {
-                addLog( LoggedRequest.Failed( request, captureEvents(), ex::class.simpleName!! ) )
+                addLog( LoggedRequest.Failed( request, eventBusLog.retrieveAndEmptyLog(), ex::class.simpleName!! ) )
                 throw ex
             }
 
-        addLog( LoggedRequest.Succeeded( request, captureEvents(), response ) )
+        addLog( LoggedRequest.Succeeded( request, eventBusLog.retrieveAndEmptyLog(), response ) )
 
         return response
     }
-
-    private fun captureEvents(): List<IntegrationEvent<TService>> = loggedEvents.toList().also { loggedEvents.clear() }
 
     private fun addLog( loggedRequest: LoggedRequest<TService, TEvent> )
     {
@@ -97,14 +81,14 @@ open class ApplicationServiceLoggingProxy<
 sealed interface LoggedRequest<TService : ApplicationService<TService, TEvent>, TEvent : IntegrationEvent<TService>>
 {
     val request: ApplicationServiceRequest<TService, *>
-    val events: List<IntegrationEvent<TService>>
+    val events: List<IntegrationEvent<*>>
 
     /**
      * The intercepted [request] succeeded and returned [response].
      */
     data class Succeeded<TService : ApplicationService<TService, TEvent>, TEvent : IntegrationEvent<TService>>(
         override val request: ApplicationServiceRequest<TService, *>,
-        override val events: List<IntegrationEvent<TService>>,
+        override val events: List<IntegrationEvent<*>>,
         val response: Any?
     ) : LoggedRequest<TService, TEvent>
 
@@ -113,7 +97,7 @@ sealed interface LoggedRequest<TService : ApplicationService<TService, TEvent>, 
      */
     data class Failed<TService : ApplicationService<TService, TEvent>, TEvent : IntegrationEvent<TService>>(
         override val request: ApplicationServiceRequest<TService, *>,
-        override val events: List<IntegrationEvent<TService>>,
+        override val events: List<IntegrationEvent<*>>,
         val exceptionType: String
     ) : LoggedRequest<TService, TEvent>
 }
@@ -129,7 +113,7 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
      */
     requestSerializer: KSerializer<out ApplicationServiceRequest<*, *>>, // TODO: Specify TService here, preventing casts.
     /**
-     * The serializer for events published by [TService] which can polymorphically serialize any of the events.
+     * A serializer for any of the events that may be received or are published by [TService].
      */
     eventSerializer: KSerializer<out IntegrationEvent<*>>
 ) : KSerializer<LoggedRequest<*, *>>

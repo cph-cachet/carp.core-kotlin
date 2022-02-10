@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
+import dk.cachet.carp.common.infrastructure.services.EventBusLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.MasterDeviceDeployment
@@ -24,9 +25,10 @@ class DeploymentServiceLoggingProxy(
 ) :
     ApplicationServiceLoggingProxy<DeploymentService, DeploymentService.Event>(
         service,
-        DeploymentService::class,
-        DeploymentService.Event::class,
-        eventBus,
+        EventBusLog(
+            eventBus,
+            EventBusLog.Subscription( DeploymentService::class, DeploymentService.Event::class )
+        ),
         log
     ),
     DeploymentService

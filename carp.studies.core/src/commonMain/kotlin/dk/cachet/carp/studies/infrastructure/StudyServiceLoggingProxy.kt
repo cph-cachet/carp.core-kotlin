@@ -3,6 +3,7 @@ package dk.cachet.carp.studies.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
+import dk.cachet.carp.common.infrastructure.services.EventBusLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
@@ -22,9 +23,10 @@ class StudyServiceLoggingProxy(
 ) :
     ApplicationServiceLoggingProxy<StudyService, StudyService.Event>(
         service,
-        StudyService::class,
-        StudyService.Event::class,
-        eventBus,
+        EventBusLog(
+            eventBus,
+            EventBusLog.Subscription( StudyService::class, StudyService.Event::class )
+        ),
         log
     ),
     StudyService
