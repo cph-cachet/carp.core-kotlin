@@ -16,7 +16,9 @@ class ApplicationServiceLogTest
     {
         val request: LoggedRequest<*, *> = LoggedRequest.Succeeded(
             request = TestServiceRequest.Operation( 42 ),
-            events = listOf( TestService.Event.OperationOccurred( 42 ) ),
+            // Preceding events would normally be of different application services.
+            precedingEvents = listOf( TestService.Event.OperationOccurred( 0 ) ),
+            publishedEvents = listOf( TestService.Event.OperationOccurred( 42 ) ),
             response = 42
         )
 
@@ -33,7 +35,9 @@ class ApplicationServiceLogTest
     {
         val request: LoggedRequest<*, *> = LoggedRequest.Failed(
             request = TestServiceRequest.Operation( 10 ),
-            events = listOf( TestService.Event.OperationOccurred( 10 ) ),
+            // Preceding events would normally be of different application services.
+            precedingEvents = listOf( TestService.Event.OperationOccurred( 0 ) ),
+            publishedEvents = listOf( TestService.Event.OperationOccurred( 10 ) ),
             exceptionType = IllegalArgumentException::class.simpleName!!
         )
 

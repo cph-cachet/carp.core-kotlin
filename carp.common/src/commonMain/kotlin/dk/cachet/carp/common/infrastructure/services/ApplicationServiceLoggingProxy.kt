@@ -41,16 +41,24 @@ open class ApplicationServiceLoggingProxy<
      */
     protected suspend fun <TReturn> log( request: ApplicationServiceRequest<TService, TReturn> ): TReturn
     {
+        val precedingEvents = eventBusLog.retrieveAndEmptyLog()
+
         @Suppress( "TooGenericExceptionCaught" )
         val response =
             try { request.invokeOn( service ) }
             catch ( ex: Exception )
             {
-                addLog( LoggedRequest.Failed( request, eventBusLog.retrieveAndEmptyLog(), ex::class.simpleName!! ) )
+                val failed = LoggedRequest.Failed(
+                    request,
+                    precedingEvents,
+                    eventBusLog.retrieveAndEmptyLog(),
+                    ex::class.simpleName!!
+                )
+                addLog( failed )
                 throw ex
             }
 
-        addLog( LoggedRequest.Succeeded( request, eventBusLog.retrieveAndEmptyLog(), response ) )
+        addLog( LoggedRequest.Succeeded( request, precedingEvents, eventBusLog.retrieveAndEmptyLog(), response ) )
 
         return response
     }
@@ -81,14 +89,16 @@ open class ApplicationServiceLoggingProxy<
 sealed interface LoggedRequest<TService : ApplicationService<TService, TEvent>, TEvent : IntegrationEvent<TService>>
 {
     val request: ApplicationServiceRequest<TService, *>
-    val events: List<IntegrationEvent<*>>
+    val precedingEvents: List<IntegrationEvent<*>>
+    val publishedEvents: List<IntegrationEvent<*>>
 
     /**
      * The intercepted [request] succeeded and returned [response].
      */
     data class Succeeded<TService : ApplicationService<TService, TEvent>, TEvent : IntegrationEvent<TService>>(
         override val request: ApplicationServiceRequest<TService, *>,
-        override val events: List<IntegrationEvent<*>>,
+        override val precedingEvents: List<IntegrationEvent<*>>,
+        override val publishedEvents: List<IntegrationEvent<*>>,
         val response: Any?
     ) : LoggedRequest<TService, TEvent>
 
@@ -97,7 +107,8 @@ sealed interface LoggedRequest<TService : ApplicationService<TService, TEvent>, 
      */
     data class Failed<TService : ApplicationService<TService, TEvent>, TEvent : IntegrationEvent<TService>>(
         override val request: ApplicationServiceRequest<TService, *>,
-        override val events: List<IntegrationEvent<*>>,
+        override val precedingEvents: List<IntegrationEvent<*>>,
+        override val publishedEvents: List<IntegrationEvent<*>>,
         val exceptionType: String
     ) : LoggedRequest<TService, TEvent>
 }
@@ -120,6 +131,7 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
 {
     private val eventsSerializer = ListSerializer( eventSerializer )
 
+    @Suppress( "MagicNumber" )
     private val succeededSerializer =
         object : KSerializer<LoggedRequest.Succeeded<*, *>>
         {
@@ -130,9 +142,10 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
             override val descriptor: SerialDescriptor =
                 buildClassSerialDescriptor( LoggedRequest.Succeeded::class.simpleName!! )
                 {
-                    element( "request", requestSerializer.descriptor )
-                    element( "events", eventsSerializer.descriptor )
-                    element( "response", responseSerialDescriptor )
+                    element( LoggedRequest<*, *>::request.name, requestSerializer.descriptor )
+                    element( LoggedRequest<*, *>::precedingEvents.name, eventsSerializer.descriptor )
+                    element( LoggedRequest<*, *>::publishedEvents.name, eventsSerializer.descriptor )
+                    element( LoggedRequest.Succeeded<*, *>::response.name, responseSerialDescriptor )
                 }
 
             @Suppress( "UNCHECKED_CAST" )
@@ -143,8 +156,9 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
                 encoder.encodeStructure( descriptor )
                 {
                     encodeSerializableElement( descriptor, 0, requestSerializer as KSerializer<Any>, value.request )
-                    encodeSerializableElement( descriptor, 1, eventsSerializer as KSerializer<Any>, value.events )
-                    encodeSerializableElement( descriptor, 2, responseSerializer, value.response )
+                    encodeSerializableElement( descriptor, 1, eventsSerializer as KSerializer<Any>, value.precedingEvents )
+                    encodeSerializableElement( descriptor, 2, eventsSerializer as KSerializer<Any>, value.publishedEvents )
+                    encodeSerializableElement( descriptor, 3, responseSerializer, value.response )
                 }
             }
 
@@ -152,23 +166,27 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
             override fun deserialize( decoder: Decoder ): LoggedRequest.Succeeded<*, *>
             {
                 var request: ApplicationServiceRequest<*, *>? = null
-                var events: List<IntegrationEvent<*>>? = null
+                var precedingEvents: List<IntegrationEvent<*>>? = null
+                var publishedEvents: List<IntegrationEvent<*>>? = null
                 var response: Any? = null
                 decoder.decodeStructure( descriptor )
                 {
                     request = decodeSerializableElement( descriptor, 0, requestSerializer )
-                    events = decodeSerializableElement( descriptor, 1, eventsSerializer )
-                    response = decodeSerializableElement( descriptor, 2, request!!.getResponseSerializer() )
+                    precedingEvents = decodeSerializableElement( descriptor, 1, eventsSerializer )
+                    publishedEvents = decodeSerializableElement( descriptor, 2, eventsSerializer )
+                    response = decodeSerializableElement( descriptor, 3, request!!.getResponseSerializer() )
                 }
 
                 return LoggedRequest.Succeeded(
                     checkNotNull( request ) as ApplicationServiceRequest<TService, *>,
-                    checkNotNull( events ) as List<IntegrationEvent<TService>>,
+                    checkNotNull( precedingEvents ) as List<IntegrationEvent<TService>>,
+                    checkNotNull( publishedEvents ) as List<IntegrationEvent<TService>>,
                     response
                 )
             }
         }
 
+    @Suppress( "MagicNumber" )
     private val failedSerializer =
         object : KSerializer<LoggedRequest.Failed<*, *>>
         {
@@ -177,9 +195,10 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
             override val descriptor: SerialDescriptor =
                 buildClassSerialDescriptor( LoggedRequest.Failed::class.simpleName!! )
                 {
-                    element( "request", requestSerializer.descriptor )
-                    element( "events", requestSerializer.descriptor )
-                    element( "exception", exceptionSerializer.descriptor )
+                    element( LoggedRequest<*, *>::request.name, requestSerializer.descriptor )
+                    element( LoggedRequest<*, *>::precedingEvents.name, eventsSerializer.descriptor )
+                    element( LoggedRequest<*, *>::publishedEvents.name, eventsSerializer.descriptor )
+                    element( LoggedRequest.Failed<*, *>::exceptionType.name, exceptionSerializer.descriptor )
                 }
 
             @Suppress( "UNCHECKED_CAST" )
@@ -188,8 +207,9 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
                 encoder.encodeStructure( descriptor )
                 {
                     encodeSerializableElement( descriptor, 0, requestSerializer as KSerializer<Any>, value.request )
-                    encodeSerializableElement( descriptor, 1, eventsSerializer as KSerializer<Any>, value.events )
-                    encodeSerializableElement( descriptor, 2, exceptionSerializer, value.exceptionType )
+                    encodeSerializableElement( descriptor, 1, eventsSerializer as KSerializer<Any>, value.precedingEvents )
+                    encodeSerializableElement( descriptor, 2, eventsSerializer as KSerializer<Any>, value.publishedEvents )
+                    encodeSerializableElement( descriptor, 3, exceptionSerializer, value.exceptionType )
                 }
             }
 
@@ -197,18 +217,21 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
             override fun deserialize( decoder: Decoder ): LoggedRequest.Failed<*, *>
             {
                 var request: ApplicationServiceRequest<*, *>? = null
-                var events: List<IntegrationEvent<*>>? = null
+                var precedingEvents: List<IntegrationEvent<*>>? = null
+                var publishedEvents: List<IntegrationEvent<*>>? = null
                 var exceptionType: String? = null
                 decoder.decodeStructure( descriptor )
                 {
                     request = decodeSerializableElement( descriptor, 0, requestSerializer )
-                    events = decodeSerializableElement( descriptor, 1, eventsSerializer )
-                    exceptionType = decodeSerializableElement( descriptor, 2, exceptionSerializer )
+                    precedingEvents = decodeSerializableElement( descriptor, 1, eventsSerializer )
+                    publishedEvents = decodeSerializableElement( descriptor, 2, eventsSerializer )
+                    exceptionType = decodeSerializableElement( descriptor, 3, exceptionSerializer )
                 }
 
                 return LoggedRequest.Failed(
                     checkNotNull( request ) as ApplicationServiceRequest<TService, *>,
-                    checkNotNull( events ) as List<IntegrationEvent<TService>>,
+                    checkNotNull( precedingEvents ) as List<IntegrationEvent<TService>>,
+                    checkNotNull( publishedEvents ) as List<IntegrationEvent<TService>>,
                     checkNotNull( exceptionType )
                 )
             }

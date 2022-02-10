@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.services.ApiVersion
+import dk.cachet.carp.common.application.services.DependentServices
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployments.application.users.ParticipantData
 import kotlinx.serialization.Serializable
@@ -16,6 +17,7 @@ import kotlinx.serialization.Serializable
  * and managing data related to participants which is input by users.
  */
 @ApiVersion( 1, 0 )
+@DependentServices( DeploymentService::class )
 interface ParticipationService : ApplicationService<ParticipationService, ParticipationService.Event>
 {
     @Serializable
