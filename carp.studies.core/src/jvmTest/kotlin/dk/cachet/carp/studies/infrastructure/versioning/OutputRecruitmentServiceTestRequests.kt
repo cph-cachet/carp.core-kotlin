@@ -7,19 +7,20 @@ import dk.cachet.carp.studies.application.RecruitmentServiceTest
 import dk.cachet.carp.studies.infrastructure.RecruitmentServiceLoggingProxy
 
 
-private val services = RecruitmentServiceHostTest.createService()
-
-class OutputProtocolServiceTestRequests :
-    OutputTestRequests<RecruitmentService>(
-        RecruitmentService::class,
-        RecruitmentServiceLoggingProxy( services.recruitmentService, services.eventBus )
-    ),
+class OutputRecruitmentServiceTestRequests :
+    OutputTestRequests<RecruitmentService>( RecruitmentService::class ),
     RecruitmentServiceTest
 {
-    override fun createService() =
-        RecruitmentServiceTest.DependentServices(
-            loggedService,
+    override fun createService(): RecruitmentServiceTest.DependentServices
+    {
+        val services = RecruitmentServiceHostTest.createService()
+        val service = RecruitmentServiceLoggingProxy( services.recruitmentService, services.eventBus )
+        loggedService = service
+
+        return RecruitmentServiceTest.DependentServices(
+            service,
             services.studyService,
             services.eventBus
         )
+    }
 }

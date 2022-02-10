@@ -7,20 +7,21 @@ import dk.cachet.carp.deployments.application.ParticipationServiceTest
 import dk.cachet.carp.deployments.infrastructure.ParticipationServiceLoggingProxy
 
 
-private val services = ParticipationServiceHostTest.createService()
-
 class OutputParticipationServiceTestRequests :
-    OutputTestRequests<ParticipationService>(
-        ParticipationService::class,
-        ParticipationServiceLoggingProxy( services.participationService, services.eventBus )
-    ),
+    OutputTestRequests<ParticipationService>( ParticipationService::class ),
     ParticipationServiceTest
 {
-    override fun createService() =
-        ParticipationServiceTest.DependentServices(
-            loggedService,
+    override fun createService(): ParticipationServiceTest.DependentServices
+    {
+        val services = ParticipationServiceHostTest.createService()
+        val service = ParticipationServiceLoggingProxy( services.participationService, services.eventBus )
+        loggedService = service
+
+        return ParticipationServiceTest.DependentServices(
+            service,
             services.deploymentService,
             services.accountService,
             services.eventBus
         )
+    }
 }

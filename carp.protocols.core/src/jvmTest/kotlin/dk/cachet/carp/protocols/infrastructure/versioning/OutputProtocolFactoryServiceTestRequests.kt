@@ -9,11 +9,10 @@ import dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceLoggingProx
 
 
 class OutputProtocolFactoryServiceTestRequests :
-    OutputTestRequests<ProtocolFactoryService>(
-        ProtocolFactoryService::class,
-        ProtocolFactoryServiceLoggingProxy( ProtocolFactoryServiceHostTest.createService(), SingleThreadedEventBus() )
-    ),
+    OutputTestRequests<ProtocolFactoryService>( ProtocolFactoryService::class ),
     ProtocolFactoryServiceTest
 {
-    override fun createService(): ProtocolFactoryService = loggedService
+    override fun createService(): ProtocolFactoryService =
+        ProtocolFactoryServiceLoggingProxy( ProtocolFactoryServiceHostTest.createService(), SingleThreadedEventBus() )
+            .also { loggedService = it }
 }
