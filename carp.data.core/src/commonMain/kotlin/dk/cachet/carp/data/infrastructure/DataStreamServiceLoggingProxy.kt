@@ -3,6 +3,7 @@ package dk.cachet.carp.data.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
+import dk.cachet.carp.common.infrastructure.services.EventBusLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.data.application.DataStreamBatch
 import dk.cachet.carp.data.application.DataStreamId
@@ -21,9 +22,10 @@ class DataStreamServiceLoggingProxy(
 ) :
     ApplicationServiceLoggingProxy<DataStreamService, DataStreamService.Event>(
         service,
-        DataStreamService::class,
-        DataStreamService.Event::class,
-        eventBus,
+        EventBusLog(
+            eventBus,
+            EventBusLog.Subscription( DataStreamService::class, DataStreamService.Event::class )
+        ),
         log
     ),
     DataStreamService

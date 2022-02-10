@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
+import dk.cachet.carp.common.infrastructure.services.EventBusLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.protocols.application.ProtocolFactoryService
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
@@ -19,9 +20,10 @@ class ProtocolFactoryServiceLoggingProxy(
 ) :
     ApplicationServiceLoggingProxy<ProtocolFactoryService, ProtocolFactoryService.Event>(
         service,
-        ProtocolFactoryService::class,
-        ProtocolFactoryService.Event::class,
-        eventBus,
+        EventBusLog(
+            eventBus,
+            EventBusLog.Subscription( ProtocolFactoryService::class, ProtocolFactoryService.Event::class )
+        ),
         log
     ),
     ProtocolFactoryService

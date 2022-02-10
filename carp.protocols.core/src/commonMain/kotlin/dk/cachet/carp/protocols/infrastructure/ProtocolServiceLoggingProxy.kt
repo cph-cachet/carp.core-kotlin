@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
+import dk.cachet.carp.common.infrastructure.services.EventBusLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.application.ProtocolVersion
@@ -21,9 +22,10 @@ class ProtocolServiceLoggingProxy(
 ) :
     ApplicationServiceLoggingProxy<ProtocolService, ProtocolService.Event>(
         service,
-        ProtocolService::class,
-        ProtocolService.Event::class,
-        eventBus,
+        EventBusLog(
+            eventBus,
+            EventBusLog.Subscription( ProtocolService::class, ProtocolService.Event::class )
+        ),
         log
     ),
     ProtocolService
