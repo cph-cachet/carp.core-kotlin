@@ -20,16 +20,14 @@ val TEST_REQUESTS_FOLDER = File( "build/test-requests/" )
 /**
  * Outputs all logged requests of a [loggedService] while running unit tests to the build folder.
  *
- * Extend from this base class along with a test interface for which to log requests.
+ * Extend from this base class along with a test interface for which to log requests,
+ * and implement `createService` by returning a logging service proxy and setting [loggedService].
  */
-open class OutputTestRequests<TService : ApplicationService<TService, *>>(
-    applicationServiceKlass: KClass<TService>,
-    loggedService: ApplicationServiceLoggingProxy<TService, *>
-)
+open class OutputTestRequests<TService : ApplicationService<TService, *>>( applicationServiceKlass: KClass<TService> )
 {
     @Suppress( "UNCHECKED_CAST" )
-    val loggedService: TService = loggedService as TService
-    val applicationServiceInfo = ApplicationServiceInfo( applicationServiceKlass.java )
+    protected var loggedService: ApplicationServiceLoggingProxy<TService, *>? = null
+    private val applicationServiceInfo = ApplicationServiceInfo( applicationServiceKlass.java )
 
     companion object
     {
@@ -52,9 +50,10 @@ open class OutputTestRequests<TService : ApplicationService<TService, *>>(
     @AfterTest
     fun outputLoggedRequests( info: TestInfo )
     {
+        val service = checkNotNull( loggedService )
+            { "`loggedService` needs to be set in `createService`." }
+
         // Serialize requests as json.
-        @Suppress( "UNCHECKED_CAST" )
-        val service = loggedService as ApplicationServiceLoggingProxy<TService, *>
         val requests = service.loggedRequests
         val json = Json( createTestJSON() ) { prettyPrint = true }
         val serializer = ListSerializer( applicationServiceInfo.loggedRequestSerializer )

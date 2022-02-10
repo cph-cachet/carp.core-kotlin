@@ -7,14 +7,15 @@ import dk.cachet.carp.studies.application.StudyServiceTest
 import dk.cachet.carp.studies.infrastructure.StudyServiceLoggingProxy
 
 
-private val services = StudyServiceHostTest.createService()
-
 class OutputStudyServiceTestRequests :
-    OutputTestRequests<StudyService>(
-        StudyService::class,
-        StudyServiceLoggingProxy( services.first, services.second )
-    ),
+    OutputTestRequests<StudyService>( StudyService::class ),
     StudyServiceTest
 {
-    override fun createService(): StudyService = loggedService
+    override fun createService(): StudyService
+    {
+        val services = StudyServiceHostTest.createService()
+
+        return StudyServiceLoggingProxy( services.first, services.second )
+            .also { loggedService = it }
+    }
 }

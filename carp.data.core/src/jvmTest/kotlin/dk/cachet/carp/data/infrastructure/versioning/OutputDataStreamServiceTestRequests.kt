@@ -9,11 +9,10 @@ import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 
 
 class OutputDataStreamServiceTestRequests :
-    OutputTestRequests<DataStreamService>(
-        DataStreamService::class,
-        DataStreamServiceLoggingProxy( InMemoryDataStreamService(), SingleThreadedEventBus() )
-    ),
+    OutputTestRequests<DataStreamService>( DataStreamService::class ),
     DataStreamServiceTest
 {
-    override fun createService(): DataStreamService = loggedService
+    override fun createService(): DataStreamService =
+        DataStreamServiceLoggingProxy( InMemoryDataStreamService(), SingleThreadedEventBus() )
+            .also { loggedService = it }
 }

@@ -7,14 +7,15 @@ import dk.cachet.carp.deployments.application.DeploymentServiceTest
 import dk.cachet.carp.deployments.infrastructure.DeploymentServiceLoggingProxy
 
 
-private val services = DeploymentServiceHostTest.createService()
-
 class OutputDeploymentServiceTestRequests :
-    OutputTestRequests<DeploymentService>(
-        DeploymentService::class,
-        DeploymentServiceLoggingProxy( services.first, services.second )
-    ),
+    OutputTestRequests<DeploymentService>( DeploymentService::class ),
     DeploymentServiceTest
 {
-    override fun createService(): DeploymentService = loggedService
+    override fun createService(): DeploymentService
+    {
+        val services = DeploymentServiceHostTest.createService()
+
+        return DeploymentServiceLoggingProxy( services.first, services.second )
+            .also { loggedService = it }
+    }
 }
