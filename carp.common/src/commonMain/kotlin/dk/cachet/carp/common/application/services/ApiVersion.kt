@@ -10,3 +10,16 @@ package dk.cachet.carp.common.application.services
 @Target( AnnotationTarget.CLASS )
 @Retention( AnnotationRetention.RUNTIME )
 annotation class ApiVersion( val major: Int, val minor: Int )
+{
+    companion object
+    {
+        fun toString( version: ApiVersion ) = "${version.major}.${version.minor}"
+
+        /**
+         * Determines whether [version] is more recent than [otherVersion].
+         */
+        fun isMoreRecent( version: ApiVersion, otherVersion: ApiVersion ): Boolean =
+            if ( version.major > otherVersion.major ) true
+            else version.major == otherVersion.major && version.minor > otherVersion.minor
+    }
+}
