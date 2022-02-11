@@ -1,11 +1,13 @@
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.protocols.application.ProtocolFactoryService
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.serializer
 
@@ -16,6 +18,9 @@ import kotlinx.serialization.serializer
 @Serializable
 sealed class ProtocolFactoryServiceRequest<out TReturn> : ApplicationServiceRequest<ProtocolFactoryService, TReturn>
 {
+    @Required
+    override val apiVersion: ApiVersion = ProtocolFactoryService.API_VERSION
+
     object Serializer : KSerializer<ProtocolFactoryServiceRequest<*>> by ignoreTypeParameters( ::serializer )
 
 

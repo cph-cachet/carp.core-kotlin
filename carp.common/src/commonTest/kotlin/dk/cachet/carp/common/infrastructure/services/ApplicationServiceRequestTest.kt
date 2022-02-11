@@ -1,10 +1,12 @@
 package dk.cachet.carp.common.infrastructure.services
 
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.test.runSuspendTest
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
@@ -20,6 +22,8 @@ class ApplicationServiceRequestTest
 {
     interface TestService : ApplicationService<TestService, TestService.Event>
     {
+        companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+
         @Serializable
         sealed class Event( override val aggregateId: String? ) : IntegrationEvent<TestService>
         {
@@ -33,6 +37,8 @@ class ApplicationServiceRequestTest
     @Serializable
     sealed class TestServiceRequest<out TReturn> : ApplicationServiceRequest<TestService, TReturn>
     {
+        @Required
+        override val apiVersion: ApiVersion = TestService.API_VERSION
         object Serializer : KSerializer<TestServiceRequest<*>> by ignoreTypeParameters( ::serializer )
 
         @Serializable
@@ -47,7 +53,6 @@ class ApplicationServiceRequestTest
     @Test
     fun can_serialize_and_deserialize_request()
     {
-
         val request = TestServiceRequest.Operation( 42 )
         val serialized = Json.encodeToString( request )
         val parsed = Json.decodeFromString<TestServiceRequest.Operation>( serialized )

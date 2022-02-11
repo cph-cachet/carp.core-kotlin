@@ -1,6 +1,7 @@
 package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.data.application.DataStreamBatch
@@ -9,6 +10,7 @@ import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.serializer
 
@@ -19,6 +21,9 @@ import kotlinx.serialization.serializer
 @Serializable
 sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<DataStreamService, TReturn>
 {
+    @Required
+    override val apiVersion: ApiVersion = DataStreamService.API_VERSION
+
     object Serializer : KSerializer<DataStreamServiceRequest<*>> by ignoreTypeParameters( ::serializer )
 
 

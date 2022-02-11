@@ -48,7 +48,10 @@ class ApplicationServiceInfo( val serviceKlass: ServiceClass )
         {
             val retrievedObject = klass
                 .declaredClasses.singleOrNull { it.simpleName == name }
-                ?.declaredFields?.singleOrNull { it.name.endsWith( "INSTANCE" ) }
+                ?.declaredFields?.singleOrNull {
+                    // May be prepended with $ signs.
+                    it.name.endsWith( "INSTANCE" )
+                }
                 ?.let {
                     it.isAccessible = true
                     it.get( null )

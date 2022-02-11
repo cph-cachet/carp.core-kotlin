@@ -1,6 +1,7 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.deployments.application.users.StudyInvitation
@@ -9,6 +10,7 @@ import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyDetails
 import dk.cachet.carp.studies.application.StudyStatus
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.serializer
 
@@ -19,6 +21,9 @@ import kotlinx.serialization.serializer
 @Serializable
 sealed class StudyServiceRequest<out TReturn> : ApplicationServiceRequest<StudyService, TReturn>
 {
+    @Required
+    override val apiVersion: ApiVersion = StudyService.API_VERSION
+
     object Serializer : KSerializer<StudyServiceRequest<*>> by ignoreTypeParameters( ::serializer )
 
 

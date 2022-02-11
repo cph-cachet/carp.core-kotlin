@@ -13,6 +13,8 @@ declare module 'carp.core-kotlin-carp.deployments.core'
     import UUID = cdk.cachet.carp.common.application.UUID
     import DeviceRegistration = cdk.cachet.carp.common.application.devices.DeviceRegistration
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
+    import ApplicationServiceRequest = cdk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
+    import ApiVersion = cdk.cachet.carp.common.application.services.ApiVersion
 
     import { dk as pdk } from 'carp.core-kotlin-carp.protocols.core'
     import StudyProtocolSnapshot = pdk.cachet.carp.protocols.application.StudyProtocolSnapshot
@@ -227,8 +229,10 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         import ParticipantInvitation = dk.cachet.carp.deployments.application.users.ParticipantInvitation
 
 
-        abstract class DeploymentServiceRequest
+        abstract class DeploymentServiceRequest implements ApplicationServiceRequest
         {
+            readonly apiVersion: ApiVersion
+
             static get Serializer(): any
         }
 
@@ -269,8 +273,10 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         }
 
 
-        abstract class ParticipationServiceRequest
+        abstract class ParticipationServiceRequest implements ApplicationServiceRequest
         {
+            readonly apiVersion: ApiVersion
+
             static get Serializer(): any
         }
 

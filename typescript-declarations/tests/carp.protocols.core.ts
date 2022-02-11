@@ -28,7 +28,9 @@ describe( "carp.protocols.core", () => {
             new ProtocolVersion( "Version" ),
             ProtocolVersion.Companion,
             studyProtocolSnapshot,
-            StudyProtocolSnapshot.Companion
+            StudyProtocolSnapshot.Companion,
+            [ "ProtocolServiceRequest", new ProtocolServiceRequest.GetAllForOwner( UUID.Companion.randomUUID() ) ],
+            [ "ProtocolFactoryServiceRequest", new ProtocolFactoryServiceRequest.CreateCustomProtocol( UUID.Companion.randomUUID(), "", "" ) ]
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.protocols.core', instances )

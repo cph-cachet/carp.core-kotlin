@@ -7,14 +7,16 @@
     { "$ref": "#/$defs/SetParticipantData" }
   ],
   "$defs": {
+    "ApiVersion": { "const": "1.0" },
     "GetActiveParticipationInvitations": {
       "$anchor": "GetActiveParticipationInvitations",
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetActiveParticipationInvitations" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "accountId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "accountId" ],
+      "required": [ "$type", "apiVersion", "accountId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetActiveParticipationInvitations-Response",
@@ -27,9 +29,10 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetParticipantData" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "studyDeploymentId" ],
+      "required": [ "$type", "apiVersion", "studyDeploymentId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetParticipantData-Response",
@@ -41,12 +44,13 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetParticipantDataList" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentIds": {
           "type": "array",
           "items": { "type": "string", "format": "uuid" }
         }
       },
-      "required": [ "$type", "studyDeploymentIds" ],
+      "required": [ "$type", "apiVersion", "studyDeploymentIds" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetParticipantDataList-Response",
@@ -59,10 +63,11 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.SetParticipantData" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
         "data": { "$ref": "../users/ParticipantDataMap.json" }
       },
-      "required": [ "$type", "studyDeploymentId", "data" ],
+      "required": [ "$type", "apiVersion", "studyDeploymentId", "data" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "SetParticipantData-Response",
