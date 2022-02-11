@@ -11,9 +11,10 @@ import kotlinx.serialization.Serializable
 /**
  * Store and retrieve [DataStreamPoint]s for study deployments.
  */
-@ApiVersion( 1, 0 )
 interface DataStreamService : ApplicationService<DataStreamService, DataStreamService.Event>
 {
+    companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+
     @Serializable
     sealed class Event : IntegrationEvent<DataStreamService>
 

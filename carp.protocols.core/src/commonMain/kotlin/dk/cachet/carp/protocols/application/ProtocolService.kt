@@ -14,9 +14,10 @@ import kotlinx.serialization.Serializable
  * Application service which allows managing (multiple versions of) [StudyProtocolSnapshot]'s,
  * which can be instantiated locally through [StudyProtocol].
  */
-@ApiVersion( 1, 0 )
 interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.Event>
 {
+    companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+
     @Serializable
     sealed class Event : IntegrationEvent<ProtocolService>
 

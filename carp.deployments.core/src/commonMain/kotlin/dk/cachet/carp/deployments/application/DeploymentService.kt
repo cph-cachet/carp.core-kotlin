@@ -16,9 +16,10 @@ import kotlinx.serialization.Serializable
  * Application service which allows deploying study protocols to participants
  * and retrieving [MasterDeviceDeployment]'s for participating master devices as defined in the protocol.
  */
-@ApiVersion( 1, 0 )
 interface DeploymentService : ApplicationService<DeploymentService, DeploymentService.Event>
 {
+    companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+
     @Serializable
     sealed class Event( override val aggregateId: String? ) : IntegrationEvent<DeploymentService>
     {

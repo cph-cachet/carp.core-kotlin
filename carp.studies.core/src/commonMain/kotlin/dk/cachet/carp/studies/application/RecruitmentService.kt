@@ -15,10 +15,11 @@ import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
  * Application service which allows setting recruitment goals,
  * adding participants to studies, and creating deployments for them.
  */
-@ApiVersion( 1, 0 )
 @DependentServices( StudyService::class )
 interface RecruitmentService : ApplicationService<RecruitmentService, RecruitmentService.Event>
 {
+    companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+
     sealed class Event : IntegrationEvent<RecruitmentService>
 
 

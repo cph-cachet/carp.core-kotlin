@@ -12,9 +12,10 @@ import kotlinx.serialization.Serializable
 /**
  * Factory methods to create [StudyProtocolSnapshot]'s according to predefined templates.
  */
-@ApiVersion( 1, 0 )
 interface ProtocolFactoryService : ApplicationService<ProtocolFactoryService, ProtocolFactoryService.Event>
 {
+    companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+
     @Serializable
     sealed class Event : IntegrationEvent<ProtocolFactoryService>
 

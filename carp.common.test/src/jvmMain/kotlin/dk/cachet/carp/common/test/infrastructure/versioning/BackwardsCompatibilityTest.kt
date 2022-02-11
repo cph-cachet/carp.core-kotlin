@@ -50,9 +50,9 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
                 minor = versionMatch.groups[ 2 ]!!.value.toInt()
             )
             assertFalse(
-                ApiVersion.isMoreRecent( version, currentVersion ),
-                "Impossible to have test sources for version \"${ApiVersion.toString( version )}\" " +
-                "which is more recent than the current API version \"${ApiVersion.toString( currentVersion )}\"."
+                version.isMoreRecent( currentVersion ),
+                "Impossible to have test sources for version \"$version\" " +
+                "which is more recent than the current API version \"$currentVersion\"."
             )
             version
         }
@@ -71,8 +71,7 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
     @Ignore
     fun test_requests_for_current_api_version_available()
     {
-        val currentVersion: String = ApiVersion.toString( currentVersion )
-        val testRequests = File( testRequestsFolder, currentVersion )
+        val testRequests = File( testRequestsFolder, currentVersion.toString() )
 
         assertTrue( testRequests.exists() )
     }
@@ -84,7 +83,7 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
         val loggedRequestsSerializer = ListSerializer( serializer<LoggedJsonRequest>() )
 
         val testFiles = compatibleTests.flatMap { version ->
-            val testDirectory = File( testRequestsFolder, ApiVersion.toString( version ) )
+            val testDirectory = File( testRequestsFolder, version.toString() )
             FileUtils.listFiles( testDirectory, arrayOf( "json" ), true )
         }
 
