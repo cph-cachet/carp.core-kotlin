@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
   "properties": {
-    "$type": { "const": "dk.cachet.carp.geolocation" },
+    "__type": { "const": "dk.cachet.carp.geolocation" },
     "latitude": { "type": "number" },
     "longitude": { "type": "number" }
   },
-  "required": [ "$type", "latitude", "longitude" ],
+  "required": [ "__type", "latitude", "longitude" ],
   "additionalProperties": false
 }

@@ -10,7 +10,7 @@
       "$anchor": "DataStream",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.common.application.tasks.Measure.DataStream" },
+        "__type": { "const": "dk.cachet.carp.common.application.tasks.Measure.DataStream" },
         "type": { "$ref": "../NamespacedId.json" },
         "overrideSamplingConfiguration": {
           "oneOf": [
@@ -19,16 +19,16 @@
           ]
         }
       },
-      "required": [ "$type", "type" ],
+      "required": [ "__type", "type" ],
       "additionalProperties": false
     },
     "TriggerData": {
       "$anchor": "TriggerData",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.common.application.tasks.Measure.TriggerData" },
+        "__type": { "const": "dk.cachet.carp.common.application.tasks.Measure.TriggerData" },
         "triggerId": { "type": "integer" }
       },
-      "required": [ "$type", "triggerId" ],
+      "required": [ "__type", "triggerId" ],
       "additionalProperties": false
     }
   }

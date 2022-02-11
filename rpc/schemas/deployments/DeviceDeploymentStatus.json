@@ -10,10 +10,10 @@
     "DeviceDeploymentStatus": {
       "type": "object",
       "properties": {
-        "$type": true,
+        "__type": true,
         "device": { "$ref": "../common/devices/DeviceDescriptor.json" }
       },
-      "required": [ "$type", "device" ]
+      "required": [ "__type", "device" ]
     },
     "NotDeployed": {
       "type": "object",
@@ -33,7 +33,7 @@
       "$anchor": "Unregistered",
       "allOf": [ "#/$defs/DeviceDeploymentStatus", "#/$defs/NotDeployed" ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Unregistered" },
+        "__type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Unregistered" },
         "canBeDeployed": { "type": "boolean" }
       },
       "required": [ "canBeDeployed" ],
@@ -43,7 +43,7 @@
       "$anchor": "Registered",
       "allOf": [ "#/$defs/DeviceDeploymentStatus", "#/$defs/NotDeployed" ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Registered" },
+        "__type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Registered" },
         "canBeDeployed": { "type": "boolean" }
       },
       "required": [ "canBeDeployed" ],
@@ -53,7 +53,7 @@
       "$anchor": "Deployed",
       "allOf": [ "#/$defs/DeviceDeploymentStatus" ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Deployed" }
+        "__type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Deployed" }
       },
       "unevaluatedProperties": false
     },
@@ -61,7 +61,7 @@
       "$anchor": "NeedsRedeployment",
       "allOf": [ "#/$defs/DeviceDeploymentStatus", "#/$defs/NotDeployed" ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.NeedsRedeployment" }
+        "__type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.NeedsRedeployment" }
       },
       "unevaluatedProperties": false
     }

@@ -10,14 +10,14 @@
     "ParticipantGroupStatus": {
       "type": "object",
       "properties": {
-        "$type": true,
+        "__type": true,
         "id": { "type": "string", "format": "uuid" },
         "participants": {
           "type": "array",
           "items": { "$ref": "../users/Participant.json" }
         }
       },
-      "required": [ "$type", "id", "participants" ]
+      "required": [ "__type", "id", "participants" ]
     },
     "InDeployment": {
       "allOf": [ { "$ref": "#/$defs/ParticipantGroupStatus" } ],
@@ -31,7 +31,7 @@
       "$anchor": "Staged",
       "allOf": [ { "$ref": "#/$defs/ParticipantGroupStatus" } ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.studies.application.users.ParticipantGroupStatus.Staged" }
+        "__type": { "const": "dk.cachet.carp.studies.application.users.ParticipantGroupStatus.Staged" }
       },
       "unevaluatedProperties": false
     },
@@ -39,7 +39,7 @@
       "$anchor": "Invited",
       "allOf": [ { "$ref": "#/$defs/InDeployment" } ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.studies.application.users.ParticipantGroupStatus.Invited" }
+        "__type": { "const": "dk.cachet.carp.studies.application.users.ParticipantGroupStatus.Invited" }
       },
       "unevaluatedProperties": false
     },
@@ -47,7 +47,7 @@
       "$anchor": "DeployingDevices",
       "allOf": [ { "$ref": "#/$defs/InDeployment" } ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.studies.application.users.ParticipantGroupStatus.Running" },
+        "__type": { "const": "dk.cachet.carp.studies.application.users.ParticipantGroupStatus.Running" },
         "startedOn": { "type": "string", "format": "date-time" }
       },
       "required": [ "startedOn" ],
@@ -57,7 +57,7 @@
       "$anchor": "Running",
       "allOf": [ { "$ref": "#/$defs/InDeployment" } ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.studies.application.users.ParticipantGroupStatus.Stopped" },
+        "__type": { "const": "dk.cachet.carp.studies.application.users.ParticipantGroupStatus.Stopped" },
         "startedOn": {
           "oneOf": [
             { "type": "string", "format": "date-time" },

@@ -3,7 +3,7 @@
   "type": "object",
   "allOf": [ { "$ref": "TaskDescriptor.json#/$defs/TaskDescriptor" } ],
   "properties": {
-    "$type": { "const": "dk.cachet.carp.common.application.tasks.BackgroundTask" },
+    "__type": { "const": "dk.cachet.carp.common.application.tasks.BackgroundTask" },
     "duration": { "type": "string", "format": "duration" }
   },
   "unevaluatedProperties": false

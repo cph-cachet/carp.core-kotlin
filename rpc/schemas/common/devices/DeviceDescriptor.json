@@ -3,15 +3,15 @@
   "allOf": [
     { "$ref": "#/$defs/DeviceDescriptor" },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.devices.AltBeacon" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.devices.AltBeacon" } } },
       "then": { "$ref": "AltBeacon.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.devices.BLEHeartRateDevice" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.devices.BLEHeartRateDevice" } } },
       "then": { "$ref": "BLEHeartRateDevice.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.devices.CustomProtocolDevice" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.devices.CustomProtocolDevice" } } },
       "then": { "$ref": "CustomProtocolDevice.json" }
     }
   ],
@@ -19,7 +19,7 @@
     "DeviceDescriptor": {
       "type": "object",
       "properties": {
-        "$type": true,
+        "__type": true,
         "roleName": { "type": "string" },
         "isOptional": { "type": "boolean" },
         "defaultSamplingConfiguration": {
@@ -28,7 +28,7 @@
           "additionalProperties": { "$ref": "../sampling/SamplingConfiguration.json" }
         }
       },
-      "required": [ "$type", "roleName" ]
+      "required": [ "__type", "roleName" ]
     }
   }
 }

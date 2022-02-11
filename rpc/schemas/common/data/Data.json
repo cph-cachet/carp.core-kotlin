@@ -4,64 +4,64 @@
     {
       "type": "object",
       "properties": {
-        "$type": { "$ref": "../NamespacedId.json" }
+        "__type": { "$ref": "../NamespacedId.json" }
       },
-      "required": [ "$type" ]
+      "required": [ "__type" ]
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.freeformtext" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.freeformtext" } } },
       "then": { "$ref": "FreeFormText.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.geolocation" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.geolocation" } } },
       "then": { "$ref": "Geolocation.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.stepcount" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.stepcount" } } },
       "then": { "$ref": "StepCount.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.ecg" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.ecg" } } },
       "then": { "$ref": "ECG.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.heartrate" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.heartrate" } } },
       "then": { "$ref": "HeartRate.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.rrinterval" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.rrinterval" } } },
       "then": { "$ref": "RRInterval.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.sensorskincontact" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.sensorskincontact" } } },
       "then": { "$ref": "SensorSkinContact.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.nongravitationalacceleration" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.nongravitationalacceleration" } } },
       "then": { "$ref": "NonGravitationalAcceleration.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.angularvelocity" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.angularvelocity" } } },
       "then": { "$ref": "AngularVelocity.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.signalstrength" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.signalstrength" } } },
       "then": { "$ref": "SignalStrength.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.triggeredtask" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.triggeredtask" } } },
       "then": { "$ref": "TriggeredTask.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.completedtask" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.completedtask" } } },
       "then": { "$ref": "CompletedTask.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.input.custom" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.input.custom" } } },
       "then": { "$ref": "input/CustomInput.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.input.sex" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.input.sex" } } },
       "then": { "$ref": "input/Sex.json" }
     }
   ]

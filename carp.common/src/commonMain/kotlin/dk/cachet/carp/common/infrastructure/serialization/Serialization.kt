@@ -146,7 +146,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 /**
  * Name of the class descriptor property for polymorphic serialization.
  */
-const val CLASS_DISCRIMINATOR: String = "\$type"
+const val CLASS_DISCRIMINATOR: String = "__type"
 
 /**
  * A default CARP infrastructure serializer capable of serializing all [dk.cachet.carp.common] types.

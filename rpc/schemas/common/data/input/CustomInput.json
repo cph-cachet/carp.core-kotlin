@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
   "properties": {
-    "$type": { "const": "dk.cachet.carp.input.custom" },
+    "__type": { "const": "dk.cachet.carp.input.custom" },
     "dataType": { "type": "string" },
     "input": true
   },
-  "required": [ "$type", "dataType", "input" ],
+  "required": [ "__type", "dataType", "input" ],
   "additionalProperties": false
 }

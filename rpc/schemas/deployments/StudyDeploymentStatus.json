@@ -10,7 +10,7 @@
     "StudyDeploymentStatus": {
       "type": "object",
       "properties": {
-        "$type": true,
+        "__type": true,
         "createdOn": { "type": "string", "format": "date-time" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
         "devicesStatus": {
@@ -28,13 +28,13 @@
           ]
         }
       },
-      "required": [ "$type", "createdOn", "studyDeploymentId", "devicesStatus", "participantsStatus", "startedOn" ]
+      "required": [ "__type", "createdOn", "studyDeploymentId", "devicesStatus", "participantsStatus", "startedOn" ]
     },
     "Invited": {
       "$anchor": "Invited",
       "allOf": [ { "$ref": "#/$defs/StudyDeploymentStatus" } ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.application.StudyDeploymentStatus.Invited" }
+        "__type": { "const": "dk.cachet.carp.deployments.application.StudyDeploymentStatus.Invited" }
       },
       "unevaluatedProperties": false
     },
@@ -42,7 +42,7 @@
       "$anchor": "DeployingDevices",
       "allOf": [ { "$ref": "#/$defs/StudyDeploymentStatus" } ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.application.StudyDeploymentStatus.DeployingDevices" }
+        "__type": { "const": "dk.cachet.carp.deployments.application.StudyDeploymentStatus.DeployingDevices" }
       },
       "unevaluatedProperties": false
     },
@@ -50,7 +50,7 @@
       "$anchor": "Running",
       "allOf": [ { "$ref": "#/$defs/StudyDeploymentStatus" } ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.application.StudyDeploymentStatus.Running" },
+        "__type": { "const": "dk.cachet.carp.deployments.application.StudyDeploymentStatus.Running" },
         "startedOn": { "type": "string", "format": "date-time" }
       },
       "unevaluatedProperties": false
@@ -59,7 +59,7 @@
       "$anchor": "Stopped",
       "allOf": [ { "$ref": "#/$defs/StudyDeploymentStatus" } ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.application.StudyDeploymentStatus.Stopped" },
+        "__type": { "const": "dk.cachet.carp.deployments.application.StudyDeploymentStatus.Stopped" },
         "stoppedOn": { "type": "string", "format": "date-time" }
       },
       "required": [ "stoppedOn" ],

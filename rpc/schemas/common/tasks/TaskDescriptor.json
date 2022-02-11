@@ -3,15 +3,15 @@
   "allOf": [
     { "$ref": "#/$defs/TaskDescriptor" },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.tasks.BackgroundTask" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.tasks.BackgroundTask" } } },
       "then": { "$ref": "BackgroundTask.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.tasks.CustomProtocolTask" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.tasks.CustomProtocolTask" } } },
       "then": { "$ref": "CustomProtocolTask.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.tasks.WebTask" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.tasks.WebTask" } } },
       "then": { "$ref": "WebTask.json" }
     }
   ],
@@ -19,7 +19,7 @@
     "TaskDescriptor": {
       "type": "object",
       "properties": {
-        "$type": true,
+        "__type": true,
         "name": { "type": "string" },
         "measures": {
           "type": "array",
@@ -27,7 +27,7 @@
         },
         "description": { "type": [ "string", "null" ] }
       },
-      "required": [ "$type", "name" ]
+      "required": [ "__type", "name" ]
     }
   }
 }

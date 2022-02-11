@@ -12,11 +12,11 @@
       "$anchor": "GetActiveParticipationInvitations",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetActiveParticipationInvitations" },
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetActiveParticipationInvitations" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "accountId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "apiVersion", "accountId" ],
+      "required": [ "__type", "apiVersion", "accountId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetActiveParticipationInvitations-Response",
@@ -28,11 +28,11 @@
       "$anchor": "GetParticipantData",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetParticipantData" },
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetParticipantData" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "apiVersion", "studyDeploymentId" ],
+      "required": [ "__type", "apiVersion", "studyDeploymentId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetParticipantData-Response",
@@ -43,14 +43,14 @@
       "$anchor": "GetParticipantDataList",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetParticipantDataList" },
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetParticipantDataList" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentIds": {
           "type": "array",
           "items": { "type": "string", "format": "uuid" }
         }
       },
-      "required": [ "$type", "apiVersion", "studyDeploymentIds" ],
+      "required": [ "__type", "apiVersion", "studyDeploymentIds" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetParticipantDataList-Response",
@@ -62,12 +62,12 @@
       "$anchor": "SetParticipantData",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.SetParticipantData" },
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.SetParticipantData" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
         "data": { "$ref": "../users/ParticipantDataMap.json" }
       },
-      "required": [ "$type", "apiVersion", "studyDeploymentId", "data" ],
+      "required": [ "__type", "apiVersion", "studyDeploymentId", "data" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "SetParticipantData-Response",

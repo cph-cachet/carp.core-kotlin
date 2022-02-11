@@ -17,7 +17,7 @@
       "$anchor": "CreateStudyDeployment",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.CreateStudyDeployment" },
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.CreateStudyDeployment" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "id": { "type": "string", "format": "uuid" },
         "protocol": { "$ref":  "../../protocols/StudyProtocolSnapshot.json" },
@@ -30,7 +30,7 @@
           "additionalProperties": { "$ref": "../../common/devices/DeviceRegistration.json" }
         }
       },
-      "required": [ "$type", "apiVersion", "id", "protocol", "invitations", "connectedDevicePreregistrations" ],
+      "required": [ "__type", "apiVersion", "id", "protocol", "invitations", "connectedDevicePreregistrations" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "CreateStudyDeployment-Response",
@@ -41,14 +41,14 @@
       "$anchor": "RemoveStudyDeployments",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.RemoveStudyDeployments" },
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.RemoveStudyDeployments" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentIds": {
           "type": "array",
           "items": { "type": "string", "format": "uuid" }
         }
       },
-      "required": [ "$type", "apiVersion", "studyDeploymentIds" ],
+      "required": [ "__type", "apiVersion", "studyDeploymentIds" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "RemoveStudyDeployments-Response",
@@ -60,11 +60,11 @@
       "$anchor": "GetStudyDeploymentStatus",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetStudyDeploymentStatus" },
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetStudyDeploymentStatus" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "apiVersion", "studyDeploymentId" ],
+      "required": [ "__type", "apiVersion", "studyDeploymentId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetStudyDeploymentStatus-Response",
@@ -75,14 +75,14 @@
       "$anchor": "GetStudyDeploymentStatusList",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetStudyDeploymentStatusList" },
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetStudyDeploymentStatusList" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentIds": {
           "type": "array",
           "items": { "type": "string", "format": "uuid" }
         }
       },
-      "required": [ "$type", "apiVersion", "studyDeploymentIds" ],
+      "required": [ "__type", "apiVersion", "studyDeploymentIds" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetStudyDeploymentStatusList-Response",
@@ -94,13 +94,13 @@
       "$anchor": "RegisterDevice",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.RegisterDevice" },
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.RegisterDevice" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
         "deviceRoleName": { "type": "string" },
         "registration": { "$ref": "../../common/devices/DeviceRegistration.json" }
       },
-      "required": [ "$type", "apiVersion", "studyDeploymentId", "deviceRoleName", "registration" ],
+      "required": [ "__type", "apiVersion", "studyDeploymentId", "deviceRoleName", "registration" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "RegisterDevice-Response",
@@ -111,12 +111,12 @@
       "$anchor": "UnregisterDevice",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.UnregisterDevice" },
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.UnregisterDevice" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
         "deviceRoleName": { "type": "string" }
       },
-      "required": [ "$type", "apiVersion", "studyDeploymentId", "deviceRoleName" ],
+      "required": [ "__type", "apiVersion", "studyDeploymentId", "deviceRoleName" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "UnregisterDevice-Response",
@@ -127,12 +127,12 @@
       "$anchor": "GetDeviceDeploymentFor",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetDeviceDeploymentFor" },
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetDeviceDeploymentFor" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
         "masterDeviceRoleName": { "type": "string" }
       },
-      "required": [ "$type", "apiVersion", "studyDeploymentId", "masterDeviceRoleName" ],
+      "required": [ "__type", "apiVersion", "studyDeploymentId", "masterDeviceRoleName" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetDeviceDeploymentFor-Response",
@@ -143,13 +143,13 @@
       "$anchor": "DeviceDeployed",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.DeviceDeployed" },
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.DeviceDeployed" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
         "masterDeviceRoleName": { "type": "string" },
         "deviceDeploymentLastUpdatedOn": { "type": "string", "format": "date-time" }
       },
-      "required": [ "$type", "apiVersion", "studyDeploymentId", "masterDeviceRoleName", "deviceDeploymentLastUpdatedOn" ],
+      "required": [ "__type", "apiVersion", "studyDeploymentId", "masterDeviceRoleName", "deviceDeploymentLastUpdatedOn" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "DeviceDeployed-Response",
@@ -160,11 +160,11 @@
       "$anchor": "Stop",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.Stop" },
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.Stop" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "apiVersion", "studyDeploymentId" ],
+      "required": [ "__type", "apiVersion", "studyDeploymentId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "Stop-Response",

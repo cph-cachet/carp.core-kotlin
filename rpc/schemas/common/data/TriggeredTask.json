@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
   "properties": {
-    "$type": { "const": "dk.cachet.carp.triggeredtask" },
+    "__type": { "const": "dk.cachet.carp.triggeredtask" },
     "triggerId": { "type": "integer" },
     "taskName": { "type": "string" },
     "destinationDeviceRoleName": { "type": "string" },
@@ -14,6 +14,6 @@
       ]
     }
   },
-  "required": [ "$type", "triggerId", "taskName", "destinationDeviceRoleName", "control" ],
+  "required": [ "__type", "triggerId", "taskName", "destinationDeviceRoleName", "control" ],
   "additionalProperties": false
 }

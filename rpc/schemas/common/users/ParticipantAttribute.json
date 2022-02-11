@@ -10,20 +10,20 @@
       "$anchor": "DefaultParticipantAttribute",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.common.application.users.ParticipantAttribute.DefaultParticipantAttribute" },
+        "__type": { "const": "dk.cachet.carp.common.application.users.ParticipantAttribute.DefaultParticipantAttribute" },
         "inputDataType": { "$ref": "../../common/NamespacedId.json" }
       },
-      "required": [ "$type", "inputDataType" ],
+      "required": [ "__type", "inputDataType" ],
       "additionalProperties": false
     },
     "CustomParticipantAttribute": {
       "$anchor": "CustomParticipantAttribute",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.common.application.users.ParticipantAttribute.CustomParticipantAttribute" },
+        "__type": { "const": "dk.cachet.carp.common.application.users.ParticipantAttribute.CustomParticipantAttribute" },
         "inputDataType": { "$ref": "../../common/NamespacedId.json" },
         "input": { "$ref": "../../common/data/input/elements/InputElement.json" }
       },
-      "required": [ "$type", "inputDataType", "input" ],
+      "required": [ "__type", "inputDataType", "input" ],
       "additionalProperties": false
     }
   }

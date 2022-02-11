@@ -3,15 +3,15 @@
   "allOf": [
     { "$ref": "#/$defs/Trigger" },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger" } } },
       "then": { "$ref": "ElapsedTimeTrigger.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.triggers.ManualTrigger" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.triggers.ManualTrigger" } } },
       "then": { "$ref": "ManualTrigger.json" }
     },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.triggers.ScheduledTrigger" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.triggers.ScheduledTrigger" } } },
       "then": { "$ref": "ScheduledTrigger.json" }
     }
   ],
@@ -19,10 +19,10 @@
     "Trigger": {
       "type": "object",
       "properties": {
-        "$type": true,
+        "__type": true,
         "sourceDeviceRoleName": { "type": "string" }
       },
-      "required": [ "$type", "sourceDeviceRoleName" ]
+      "required": [ "__type", "sourceDeviceRoleName" ]
     }
   }
 }

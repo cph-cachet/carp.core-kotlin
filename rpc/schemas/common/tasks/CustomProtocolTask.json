@@ -3,7 +3,7 @@
   "type": "object",
   "allOf": [ { "$ref": "TaskDescriptor.json#/$defs/TaskDescriptor" } ],
   "properties": {
-    "$type": { "const": "dk.cachet.carp.common.application.tasks.CustomProtocolTask" },
+    "__type": { "const": "dk.cachet.carp.common.application.tasks.CustomProtocolTask" },
     "studyProtocol": { "type": "string" }
   },
   "required": [ "studyProtocol" ],

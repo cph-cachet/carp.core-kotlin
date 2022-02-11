@@ -8,7 +8,7 @@
     "StudyStatus": {
       "type": "object",
       "properties": {
-        "$type": true,
+        "__type": true,
         "studyId": { "type": "string", "format": "uuid" },
         "name": { "type": "string" },
         "createdOn": { "type": "string", "format": "date-time" },
@@ -16,13 +16,13 @@
         "canSetStudyProtocol": { "type": "boolean" },
         "canDeployToParticipants": { "type": "boolean" }
       },
-      "required": [ "$type", "studyId", "name", "createdOn","canSetInvitation", "canSetStudyProtocol",  "canDeployToParticipants" ]
+      "required": [ "__type", "studyId", "name", "createdOn","canSetInvitation", "canSetStudyProtocol",  "canDeployToParticipants" ]
     },
     "Configuring": {
       "$anchor": "Configuring",
       "allOf": [ { "$ref": "#/$defs/StudyStatus" } ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.studies.application.StudyStatus.Configuring" },
+        "__type": { "const": "dk.cachet.carp.studies.application.StudyStatus.Configuring" },
         "canGoLive": { "type": "boolean" }
       },
       "required": [ "canGoLive" ],
@@ -32,7 +32,7 @@
       "$anchor": "Live",
       "allOf": [ { "$ref": "#/$defs/StudyStatus" } ],
       "properties": {
-        "$type": { "const": "dk.cachet.carp.studies.application.StudyStatus.Live" }
+        "__type": { "const": "dk.cachet.carp.studies.application.StudyStatus.Live" }
       },
       "unevaluatedProperties": false
     }

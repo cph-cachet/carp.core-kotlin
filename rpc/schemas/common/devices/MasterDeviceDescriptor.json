@@ -3,7 +3,7 @@
   "allOf": [
     { "$ref": "#/$defs/MasterDeviceDescriptor" },
     {
-      "if": { "properties": { "$type": { "const": "dk.cachet.carp.common.application.devices.Smartphone" } } },
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.devices.Smartphone" } } },
       "then": { "$ref": "Smartphone.json" }
     }
   ],

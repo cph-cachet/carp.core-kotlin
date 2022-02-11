@@ -10,23 +10,23 @@
       "$anchor": "SelectOne",
       "type": "object",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.common.application.data.input.elements.SelectOne" },
+        "__type": { "const": "dk.cachet.carp.common.application.data.input.elements.SelectOne" },
         "prompt": { "type": "string" },
         "options": {
           "type": "array",
           "items": { "type": "string" }
         }
       },
-      "required": [ "$type", "prompt", "options" ],
+      "required": [ "__type", "prompt", "options" ],
       "additionalProperties": false
     },
     "Text": {
       "$anchor": "Text",
   	  "properties": {
-        "$type": { "const": "dk.cachet.carp.common.application.data.input.elements.Text" },
+        "__type": { "const": "dk.cachet.carp.common.application.data.input.elements.Text" },
         "prompt": { "type": "string" }
       },
-      "required": [ "$type", "prompt" ],
+      "required": [ "__type", "prompt" ],
       "additionalProperties": false
     }
   }

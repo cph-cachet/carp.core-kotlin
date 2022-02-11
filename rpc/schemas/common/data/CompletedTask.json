@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
   "properties": {
-    "$type": { "const": "dk.cachet.carp.completedtask" },
+    "__type": { "const": "dk.cachet.carp.completedtask" },
     "taskName": { "type": "string" },
     "taskData": {
       "oneOf": [
@@ -11,6 +11,6 @@
       ]
     }
   },
-  "required": [ "$type", "taskName" ],
+  "required": [ "__type", "taskName" ],
   "additionalProperties": false
 }
