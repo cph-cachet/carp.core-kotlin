@@ -12,11 +12,13 @@
     { "$ref": "#/$defs/Stop" }
   ],
   "$defs": {
+    "ApiVersion": { "const": "1.0" },
     "CreateStudyDeployment": {
       "$anchor": "CreateStudyDeployment",
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.CreateStudyDeployment" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "id": { "type": "string", "format": "uuid" },
         "protocol": { "$ref":  "../../protocols/StudyProtocolSnapshot.json" },
         "invitations": {
@@ -28,7 +30,7 @@
           "additionalProperties": { "$ref": "../../common/devices/DeviceRegistration.json" }
         }
       },
-      "required": [ "$type", "id", "protocol", "invitations", "connectedDevicePreregistrations" ],
+      "required": [ "$type", "apiVersion", "id", "protocol", "invitations", "connectedDevicePreregistrations" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "CreateStudyDeployment-Response",
@@ -40,12 +42,13 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.RemoveStudyDeployments" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentIds": {
           "type": "array",
           "items": { "type": "string", "format": "uuid" }
         }
       },
-      "required": [ "$type", "studyDeploymentIds" ],
+      "required": [ "$type", "apiVersion", "studyDeploymentIds" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "RemoveStudyDeployments-Response",
@@ -58,9 +61,10 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetStudyDeploymentStatus" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "studyDeploymentId" ],
+      "required": [ "$type", "apiVersion", "studyDeploymentId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetStudyDeploymentStatus-Response",
@@ -72,12 +76,13 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetStudyDeploymentStatusList" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentIds": {
           "type": "array",
           "items": { "type": "string", "format": "uuid" }
         }
       },
-      "required": [ "$type", "studyDeploymentIds" ],
+      "required": [ "$type", "apiVersion", "studyDeploymentIds" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetStudyDeploymentStatusList-Response",
@@ -90,11 +95,12 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.RegisterDevice" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
         "deviceRoleName": { "type": "string" },
         "registration": { "$ref": "../../common/devices/DeviceRegistration.json" }
       },
-      "required": [ "$type", "studyDeploymentId", "deviceRoleName", "registration" ],
+      "required": [ "$type", "apiVersion", "studyDeploymentId", "deviceRoleName", "registration" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "RegisterDevice-Response",
@@ -106,10 +112,11 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.UnregisterDevice" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
         "deviceRoleName": { "type": "string" }
       },
-      "required": [ "$type", "studyDeploymentId", "deviceRoleName" ],
+      "required": [ "$type", "apiVersion", "studyDeploymentId", "deviceRoleName" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "UnregisterDevice-Response",
@@ -121,10 +128,11 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetDeviceDeploymentFor" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
         "masterDeviceRoleName": { "type": "string" }
       },
-      "required": [ "$type", "studyDeploymentId", "masterDeviceRoleName" ],
+      "required": [ "$type", "apiVersion", "studyDeploymentId", "masterDeviceRoleName" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetDeviceDeploymentFor-Response",
@@ -136,11 +144,12 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.DeviceDeployed" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
         "masterDeviceRoleName": { "type": "string" },
         "deviceDeploymentLastUpdatedOn": { "type": "string", "format": "date-time" }
       },
-      "required": [ "$type", "studyDeploymentId", "masterDeviceRoleName", "deviceDeploymentLastUpdatedOn" ],
+      "required": [ "$type", "apiVersion", "studyDeploymentId", "masterDeviceRoleName", "deviceDeploymentLastUpdatedOn" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "DeviceDeployed-Response",
@@ -152,9 +161,10 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.Stop" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "studyDeploymentId" ],
+      "required": [ "$type", "apiVersion", "studyDeploymentId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "Stop-Response",

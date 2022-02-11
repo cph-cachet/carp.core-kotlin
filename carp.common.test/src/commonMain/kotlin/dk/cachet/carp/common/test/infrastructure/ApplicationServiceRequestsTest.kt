@@ -8,6 +8,8 @@ import dk.cachet.carp.test.runSuspendTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.elementDescriptors
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlin.test.*
 
 
@@ -63,6 +65,18 @@ abstract class ApplicationServiceRequestsTest<
             val serialized = json.encodeToString( requestSerializer, request )
             val parsed = json.decodeFromString( requestSerializer, serialized )
             assertEquals( request, parsed )
+        }
+    }
+
+    @Test
+    fun serialized_request_contains_api_version()
+    {
+        val json = createTestJSON()
+
+        requests.forEach {
+            val serialized = json.encodeToJsonElement( requestSerializer, it ) as JsonObject
+            val versionKey = ApplicationServiceRequest<*, *>::apiVersion.name
+            assertTrue( serialized[ versionKey ] is JsonElement )
         }
     }
 }

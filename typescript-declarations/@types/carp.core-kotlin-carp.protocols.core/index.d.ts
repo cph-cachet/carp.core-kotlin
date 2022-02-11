@@ -14,6 +14,8 @@ declare module 'carp.core-kotlin-carp.protocols.core'
     import TaskDescriptor = cdk.cachet.carp.common.application.tasks.TaskDescriptor
     import TaskControl = cdk.cachet.carp.common.application.triggers.TaskControl
     import Trigger = cdk.cachet.carp.common.application.triggers.Trigger
+    import ApplicationServiceRequest = cdk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
+    import ApiVersion = cdk.cachet.carp.common.application.services.ApiVersion
 
 
     namespace dk.cachet.carp.protocols.application
@@ -57,8 +59,10 @@ declare module 'carp.core-kotlin-carp.protocols.core'
         import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
         
-        abstract class ProtocolServiceRequest
+        abstract class ProtocolServiceRequest implements ApplicationServiceRequest
         {
+            readonly apiVersion: ApiVersion
+
             static get Serializer(): any
         }
 
@@ -91,8 +95,10 @@ declare module 'carp.core-kotlin-carp.protocols.core'
         }
 
 
-        abstract class ProtocolFactoryServiceRequest
+        abstract class ProtocolFactoryServiceRequest implements ApplicationServiceRequest
         {
+            readonly apiVersion: ApiVersion
+
             static get Serializer(): any
         }
 

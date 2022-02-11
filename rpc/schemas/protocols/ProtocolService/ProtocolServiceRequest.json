@@ -9,15 +9,17 @@
     { "$ref": "#/$defs/GetVersionHistoryFor" }
   ],
   "$defs": {
+    "ApiVersion": { "const": "1.0" },
     "Add": {
       "$anchor": "Add",
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.Add" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "protocol": { "$ref": "../StudyProtocolSnapshot.json" },
         "versionTag": { "type": "string" }
       },
-      "required": [ "$type", "protocol" ],
+      "required": [ "$type", "apiVersion", "protocol" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "Add-Response",
@@ -29,10 +31,11 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.AddVersion" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "protocol": { "$ref": "../StudyProtocolSnapshot.json" },
         "versionTag": { "type": "string" }
       },
-      "required": [ "$type", "protocol" ],
+      "required": [ "$type", "apiVersion", "protocol" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "AddVersion-Response",
@@ -44,6 +47,7 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.UpdateParticipantDataConfiguration" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "protocolId": { "type": "string", "format": "uuid" },
         "versionTag": { "type": "string" },
         "expectedParticipantData": {
@@ -51,7 +55,7 @@
           "items": { "$ref": "../../common/users/ParticipantAttribute.json" }
         }
       },
-      "required": [ "$type", "protocolId", "versionTag", "expectedParticipantData" ],
+      "required": [ "$type", "apiVersion", "protocolId", "versionTag", "expectedParticipantData" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "UpdateParticipantDataConfiguration-Response",
@@ -63,10 +67,11 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.GetBy" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "protocolId": { "type": "string", "format": "uuid" },
         "versionTag": { "type": [ "string", "null" ] }
       },
-      "required": [ "$type", "protocolId" ],
+      "required": [ "$type", "apiVersion", "protocolId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetBy-Response",
@@ -78,9 +83,10 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.GetAllForOwner" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "ownerId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "ownerId" ],
+      "required": [ "$type", "apiVersion", "ownerId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetAllForOwner-Response",
@@ -93,9 +99,10 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.GetVersionHistoryFor" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "protocolId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "protocolId" ],
+      "required": [ "$type", "apiVersion", "protocolId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetVersionHistoryFor-Response",

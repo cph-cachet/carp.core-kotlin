@@ -2,6 +2,7 @@ package dk.cachet.carp.deployments.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.deployments.application.DeploymentService
@@ -11,6 +12,7 @@ import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.datetime.Instant
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.serializer
 
@@ -21,6 +23,9 @@ import kotlinx.serialization.serializer
 @Serializable
 sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<DeploymentService, TReturn>
 {
+    @Required
+    override val apiVersion: ApiVersion = DeploymentService.API_VERSION
+
     object Serializer : KSerializer<DeploymentServiceRequest<*>> by ignoreTypeParameters( ::serializer )
 
 

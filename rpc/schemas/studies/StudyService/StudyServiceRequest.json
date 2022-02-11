@@ -12,11 +12,13 @@
     { "$ref": "#/$defs/Remove" }
   ],
   "$defs": {
+    "ApiVersion": { "const": "1.0" },
     "CreateStudy": {
       "$anchor": "CreateStudy",
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.CreateStudy" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "ownerId": { "type": "string", "format": "uuid" },
         "name": { "type": "string" },
         "description": { "type": [ "string", "null" ] },
@@ -27,7 +29,7 @@
           ]
         }
       },
-      "required": [ "$type", "ownerId", "name" ],
+      "required": [ "$type", "apiVersion", "ownerId", "name" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "CreateStudy-Response",
@@ -39,11 +41,12 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.SetInternalDescription" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyId": { "type": "string", "format": "uuid" },
         "name": { "type": "string" },
         "description": { "type": "string" }
       },
-      "required": [ "$type", "studyId", "name", "description" ],
+      "required": [ "$type", "apiVersion", "studyId", "name", "description" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "SetInternalDescription-Response",
@@ -55,9 +58,10 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.GetStudyDetails" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "studyId" ],
+      "required": [ "$type", "apiVersion", "studyId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetStudyDetails-Response",
@@ -69,9 +73,10 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.GetStudyStatus" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "studyId" ],
+      "required": [ "$type", "apiVersion", "studyId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetStudyStatus-Response",
@@ -83,9 +88,10 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.GetStudiesOverview" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "ownerId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "ownerId" ],
+      "required": [ "$type", "apiVersion", "ownerId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetStudiesOverview-Response",
@@ -98,10 +104,11 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.SetInvitation" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyId": { "type": "string", "format": "uuid" },
         "invitation": { "$ref": "../../deployments/users/StudyInvitation.json" }
       },
-      "required": [ "$type", "studyId", "invitation" ],
+      "required": [ "$type", "apiVersion", "studyId", "invitation" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "SetInvitation-Response",
@@ -113,10 +120,11 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.SetProtocol" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyId": { "type": "string", "format": "uuid" },
         "protocol": { "$ref": "../../protocols/StudyProtocolSnapshot.json" }
       },
-      "required": [ "$type", "studyId", "protocol" ],
+      "required": [ "$type", "apiVersion", "studyId", "protocol" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "SetProtocol-Response",
@@ -128,9 +136,10 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.GoLive" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "studyId" ],
+      "required": [ "$type", "apiVersion", "studyId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GoLive-Response",
@@ -142,9 +151,10 @@
       "type": "object",
   	  "properties": {
         "$type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.Remove" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyId": { "type": "string", "format": "uuid" }
       },
-      "required": [ "$type", "studyId" ],
+      "required": [ "$type", "apiVersion", "studyId" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "Remove-Response",

@@ -296,4 +296,26 @@ declare module 'carp.core-kotlin-carp.common'
     {
         function createDefaultJSON_18xi4u$(): Json
     }
+
+
+    namespace dk.cachet.carp.common.application.services
+    {
+        class ApiVersion
+        {
+            constructor( major: Number, minor: Number )
+
+            readonly major: Number
+            readonly minor: Number
+        }
+    }
+
+    namespace dk.cachet.carp.common.infrastructure.services
+    {
+        import ApiVersion = dk.cachet.carp.common.application.services.ApiVersion
+
+        interface ApplicationServiceRequest
+        {
+            readonly apiVersion: ApiVersion
+        }
+    }
 }

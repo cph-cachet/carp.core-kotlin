@@ -30,6 +30,10 @@ import ParticipantAttribute = dk.cachet.carp.common.application.users.Participan
 import Username = dk.cachet.carp.common.application.users.Username;
 import UsernameAccountIdentity = dk.cachet.carp.common.application.users.UsernameAccountIdentity;
 import emailAccountIdentityFromString = dk.cachet.carp.common.application.users.EmailAccountIdentity_init_61zpoe$;
+import ApiVersion = dk.cachet.carp.common.application.services.ApiVersion
+
+import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
+import DeploymentServiceRequest = ddk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest
 
 
 describe( "carp.common", () => {
@@ -74,7 +78,9 @@ describe( "carp.common", () => {
             new UsernameAccountIdentity( username ),
             UsernameAccountIdentity.Companion,
             [ "ParticipantAttribute", new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ) ],
-            ParticipantAttribute.Companion
+            ParticipantAttribute.Companion,
+            new ApiVersion( 1, 0 ),
+            [ "ApplicationServiceRequest", new DeploymentServiceRequest.GetStudyDeploymentStatus( UUID.Companion.randomUUID() ) ]
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.common', instances )

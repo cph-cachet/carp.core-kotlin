@@ -11,6 +11,8 @@ declare module 'carp.core-kotlin-carp.studies.core'
     import EmailAddress = cdk.cachet.carp.common.application.EmailAddress
     import UUID = cdk.cachet.carp.common.application.UUID
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
+    import ApplicationServiceRequest = cdk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
+    import ApiVersion = cdk.cachet.carp.common.application.services.ApiVersion
 
     import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
     import StudyDeploymentStatus = ddk.cachet.carp.deployments.application.StudyDeploymentStatus
@@ -170,8 +172,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
         import AssignParticipantDevices = dk.cachet.carp.studies.application.users.AssignParticipantDevices
 
 
-        abstract class StudyServiceRequest
+        abstract class StudyServiceRequest implements ApplicationServiceRequest
         {
+            readonly apiVersion: ApiVersion
+
             static get Serializer(): any
         }
 
@@ -216,8 +220,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
         }
 
 
-        abstract class RecruitmentServiceRequest
+        abstract class RecruitmentServiceRequest implements ApplicationServiceRequest
         {
+            readonly apiVersion: ApiVersion
+
             static get Serializer(): any
         }
 

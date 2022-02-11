@@ -62,7 +62,9 @@ describe( "carp.studies.core", () => {
             new ParticipantGroupStatus.Invited( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus ),
             new ParticipantGroupStatus.Running( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus, now ),
             new ParticipantGroupStatus.Stopped( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus, null, now ),
-            ParticipantGroupStatus.Companion
+            ParticipantGroupStatus.Companion,
+            [ "StudyServiceRequest", new StudyServiceRequest.Remove( UUID.Companion.randomUUID() ) ],
+            [ "RecruitmentServiceRequest", new RecruitmentServiceRequest.GetParticipants( UUID.Companion.randomUUID() ) ]
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.studies.core', instances )
