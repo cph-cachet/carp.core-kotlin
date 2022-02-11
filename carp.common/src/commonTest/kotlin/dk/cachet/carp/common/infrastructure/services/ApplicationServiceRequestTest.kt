@@ -27,6 +27,9 @@ class ApplicationServiceRequestTest
         @Serializable
         sealed class Event( override val aggregateId: String? ) : IntegrationEvent<TestService>
         {
+            @Required
+            override val apiVersion: ApiVersion = API_VERSION
+
             @Serializable
             data class OperationOccurred( val parameter: Int ) : Event( parameter.toString() )
         }

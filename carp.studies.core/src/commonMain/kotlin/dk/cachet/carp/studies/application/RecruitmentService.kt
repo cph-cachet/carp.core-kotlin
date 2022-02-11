@@ -6,9 +6,11 @@ import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.DependentServices
+import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
+import kotlinx.serialization.Required
 
 
 /**
@@ -21,6 +23,10 @@ interface RecruitmentService : ApplicationService<RecruitmentService, Recruitmen
     companion object { val API_VERSION = ApiVersion( 1, 0 ) }
 
     sealed class Event : IntegrationEvent<RecruitmentService>
+    {
+        @Required
+        override val apiVersion: ApiVersion = DeploymentService.API_VERSION
+    }
 
 
     /**

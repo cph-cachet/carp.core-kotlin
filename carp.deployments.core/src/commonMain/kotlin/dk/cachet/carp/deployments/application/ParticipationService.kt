@@ -9,6 +9,7 @@ import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.DependentServices
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployments.application.users.ParticipantData
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 
 
@@ -23,6 +24,10 @@ interface ParticipationService : ApplicationService<ParticipationService, Partic
 
     @Serializable
     sealed class Event : IntegrationEvent<ParticipationService>
+    {
+        @Required
+        override val apiVersion: ApiVersion = API_VERSION
+    }
 
 
     /**

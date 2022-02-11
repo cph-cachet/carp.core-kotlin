@@ -11,6 +11,8 @@ import dk.cachet.carp.test.runSuspendTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.serializer
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -34,6 +36,8 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
     private val testRequestsFolder: File =
         File( "src/commonTest/resources/test-requests/${serviceInfo.serviceName}" )
     private lateinit var availableTestVersions: List<ApiVersion>
+    private val loggedRequestsSerializer = ListSerializer( serializer<LoggedJsonRequest>() )
+
 
     @BeforeTest
     fun setup()
@@ -69,18 +73,40 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
      */
     @Test
     @Ignore
-    fun test_requests_for_current_api_version_available()
+    fun versioned_test_requests_for_current_api_version_available()
     {
-        val testRequests = File( testRequestsFolder, currentVersion.toString() )
+        val version = currentVersion.toString()
+        val testDirectory = File( testRequestsFolder, version )
+        assertTrue(
+            testDirectory.exists(),
+            "No test request sources for version \"$version\" found at \"${testDirectory.absolutePath}\"."
+        )
 
-        assertTrue( testRequests.exists() )
+        for ( file in FileUtils.listFiles( testDirectory, arrayOf( "json" ), true ) )
+        {
+            val requests = json.decodeFromString( loggedRequestsSerializer, file.readText() )
+            val requestVersionField = ApplicationServiceRequest<*, *>::apiVersion.name
+            assertTrue(
+                requests.all {
+                    val bleh = it.request[ requestVersionField ]?.jsonPrimitive?.isString == true
+                    bleh
+                     },
+                "Not all request objects in \"${file.absolutePath}\" are versioned with \"$requestVersionField\"."
+            )
+            val eventVersionField = IntegrationEvent<*>::apiVersion.name
+            assertTrue(
+                requests
+                    .flatMap { it.precedingEvents + it.publishedEvents }
+                    .all { (it as? JsonObject)?.get( eventVersionField )?.jsonPrimitive?.isString == true },
+                "Not all events in \"${file.absolutePath}\" are versioned with \"$eventVersionField\"."
+            )
+        }
     }
 
     @Test
     @Ignore
     fun can_replay_backwards_compatible_test_requests() = runSuspendTest {
         val compatibleTests = availableTestVersions.filter { it.major == currentVersion.major }
-        val loggedRequestsSerializer = ListSerializer( serializer<LoggedJsonRequest>() )
 
         val testFiles = compatibleTests.flatMap { version ->
             val testDirectory = File( testRequestsFolder, version.toString() )
@@ -112,7 +138,7 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
                     { "The event \"${event::class}\" isn't an expected event processed by \"${serviceInfo.serviceKlass}\"." }
 
                 // Cast to bypass generic constraint checking. We know the types line up.
-                eventBus.publish( eventSource as KClass<Nothing>, event as IntegrationEvent<Nothing>)
+                eventBus.publish( eventSource as KClass<Nothing>, event as IntegrationEvent<Nothing> )
             }
 
             // Validate whether request outcome corresponds to log.
