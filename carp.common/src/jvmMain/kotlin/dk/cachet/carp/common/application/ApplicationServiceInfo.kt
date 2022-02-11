@@ -44,6 +44,20 @@ class ApplicationServiceInfo( val serviceKlass: ServiceClass )
                 }
         }
 
+        private fun <T> getInnerObject( klass: Class<*>, name: String ): T?
+        {
+            val retrievedObject = klass
+                .declaredClasses.singleOrNull { it.simpleName == name }
+                ?.declaredFields?.singleOrNull { it.name.endsWith( "INSTANCE" ) }
+                ?.let {
+                    it.isAccessible = true
+                    it.get( null )
+                }
+
+            @Suppress( "UNCHECKED_CAST" )
+            return retrievedObject as? T
+        }
+
         private fun getEventSerializer( serviceKlass: ServiceClass ): SealedClassSerializer<IntegrationEvent<*>>
         {
             val eventClass = getEventClass( serviceKlass )
@@ -67,8 +81,7 @@ class ApplicationServiceInfo( val serviceKlass: ServiceClass )
 
 
     val serviceName: String = serviceKlass.simpleName
-    val apiVersion: ApiVersion = checkNotNull( serviceKlass.getAnnotation( ApiVersion::class.java ) )
-        { "Application service \"${serviceKlass.name}\" is missing an \"${ApiVersion::class.simpleName}\" annotation." }
+    val apiVersion: ApiVersion
     val dependentServices: List<ServiceClass> = serviceKlass.getAnnotation( DependentServices::class.java )
         ?.service?.map { it.java } ?: emptyList()
 
@@ -87,6 +100,22 @@ class ApplicationServiceInfo( val serviceKlass: ServiceClass )
 
     init
     {
+        // Get API version.
+        val apiVersionField = "API_VERSION"
+        val apiVersionLookup: ApiVersion? = getInnerObject<Any>( serviceKlass, "Companion" )
+            ?.let { inner ->
+                val versionField = inner::class.java.declaredFields.firstOrNull { it.name == apiVersionField }
+                versionField?.let {
+                    it.isAccessible = true
+                    it.get( inner ) as? ApiVersion
+                }
+            }
+        apiVersion = checkNotNull( apiVersionLookup )
+            {
+                "Could not find `ApiVersion` for \"${serviceKlass.name}\". " +
+                "Expected it to be defined as a field named `$apiVersionField` on an unnamed companion object."
+            }
+
         // Get subsystem information.
         val unexpectedNamespace = IllegalStateException(
             "Application services should be in a namespace matching the following pattern: " +
@@ -109,11 +138,7 @@ class ApplicationServiceInfo( val serviceKlass: ServiceClass )
             { "Could not find request object for \"${serviceKlass.name}\". Expected at: $requestObjectFullName" }
 
         // Get request object serializer.
-        @Suppress( "UNCHECKED_CAST" )
-        val requestObjectSerializerLookup = requestObjectClass
-            .declaredClasses.single { it.simpleName == "Serializer" }
-            .getField( "INSTANCE" ).get( null ) as? KSerializer<ApplicationServiceRequest<*, *>>
-        requestObjectSerializer = checkNotNull( requestObjectSerializerLookup )
+        requestObjectSerializer = checkNotNull( getInnerObject( requestObjectClass, "Serializer" ) )
             {
                 "Could not find request object serializer for \"${requestObjectName}\". " +
                 "Expected it to be defined as an inner object named \"Serializer\"."

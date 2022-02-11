@@ -12,9 +12,10 @@ import kotlinx.serialization.Serializable
 /**
  * Application service which allows creating and managing studies.
  */
-@ApiVersion( 1, 0 )
 interface StudyService : ApplicationService<StudyService, StudyService.Event>
 {
+    companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+
     @Serializable
     sealed class Event( override val aggregateId: String? ) : IntegrationEvent<StudyService>
     {
