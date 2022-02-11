@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.services.createApplicationServiceAdapte
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
+import dk.cachet.carp.test.TestClock
 
 
 /**
@@ -21,7 +22,8 @@ class DeploymentServiceHostTest : DeploymentServiceTest
             val deploymentService = DeploymentServiceHost(
                 InMemoryDeploymentRepository(),
                 InMemoryDataStreamService(),
-                eventBus.createApplicationServiceAdapter( DeploymentService::class )
+                eventBus.createApplicationServiceAdapter( DeploymentService::class ),
+                TestClock
             )
 
             return Pair( deploymentService, eventBus )

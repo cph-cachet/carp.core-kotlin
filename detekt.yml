@@ -78,6 +78,7 @@ verify-implementation:
       - 'kotlin.sequences.Sequence'
       - 'kotlinx.serialization.KSerializer'
       - 'kotlinx.serialization.modules.SerializersModuleCollector'
+      - 'kotlinx.datetime.Clock'
   Immutable:
     active: true
     excludes: *verify-implementation-excludes

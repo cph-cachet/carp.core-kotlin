@@ -56,7 +56,8 @@ class StudyDeployment private constructor(
         fun fromInvitations(
             protocolSnapshot: StudyProtocolSnapshot,
             invitations: List<ParticipantInvitation>,
-            id: UUID = UUID.randomUUID()
+            id: UUID = UUID.randomUUID(),
+            now: Instant = Clock.System.now()
         ): StudyDeployment
         {
             protocolSnapshot.throwIfInvalidInvitations( invitations )
@@ -64,7 +65,7 @@ class StudyDeployment private constructor(
                 ParticipantStatus( it.participantId, it.assignedMasterDeviceRoleNames )
             }
 
-            return StudyDeployment( protocolSnapshot, participants, id )
+            return StudyDeployment( protocolSnapshot, participants, id, now )
         }
 
         fun fromSnapshot( snapshot: StudyDeploymentSnapshot ): StudyDeployment
@@ -471,11 +472,10 @@ class StudyDeployment private constructor(
      * Stop this study deployment.
      * No further changes to this deployment are allowed and no more data should be collected.
      */
-    fun stop()
+    fun stop( now: Instant = Clock.System.now() )
     {
         if ( !isStopped )
         {
-            val now = Clock.System.now()
             stoppedOn = now
             event( Event.Stopped( now ) )
         }

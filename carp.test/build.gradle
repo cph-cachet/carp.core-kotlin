@@ -19,6 +19,7 @@ kotlin {
                 implementation kotlin('test-common')
                 implementation kotlin('test-annotations-common')
                 implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
+                api "org.jetbrains.kotlinx:kotlinx-datetime:${versions.datetime}"
             }
         }
         jvmMain {

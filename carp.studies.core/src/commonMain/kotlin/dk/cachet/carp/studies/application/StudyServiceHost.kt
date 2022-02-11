@@ -1,11 +1,13 @@
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.UUIDFactory
 import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.StudyRepository
+import kotlinx.datetime.Clock
 
 
 /**
@@ -13,7 +15,9 @@ import dk.cachet.carp.studies.domain.StudyRepository
  */
 class StudyServiceHost(
     private val repository: StudyRepository,
-    private val eventBus: ApplicationServiceEventBus<StudyService, StudyService.Event>
+    private val eventBus: ApplicationServiceEventBus<StudyService, StudyService.Event>,
+    private val uuidFactory: UUIDFactory = UUID.Companion,
+    private val clock: Clock = Clock.System
 ) : StudyService
 {
     /**
@@ -37,7 +41,7 @@ class StudyServiceHost(
     ): StudyStatus
     {
         val ensuredInvitation = invitation ?: StudyInvitation( name )
-        val study = Study( ownerId, name, description, ensuredInvitation )
+        val study = Study( ownerId, name, description, ensuredInvitation, uuidFactory.randomUUID(), clock.now() )
 
         repository.add( study )
         eventBus.publish( StudyService.Event.StudyCreated( study.getStudyDetails() ) )

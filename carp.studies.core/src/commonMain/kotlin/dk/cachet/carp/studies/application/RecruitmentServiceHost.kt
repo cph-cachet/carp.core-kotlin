@@ -2,6 +2,7 @@ package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.UUIDFactory
 import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
@@ -10,12 +11,15 @@ import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.ParticipantRepository
 import dk.cachet.carp.studies.domain.users.Recruitment
+import kotlinx.datetime.Clock
 
 
 class RecruitmentServiceHost(
     private val participantRepository: ParticipantRepository,
     private val deploymentService: DeploymentService,
-    private val eventBus: ApplicationServiceEventBus<RecruitmentService, RecruitmentService.Event>
+    private val eventBus: ApplicationServiceEventBus<RecruitmentService, RecruitmentService.Event>,
+    private val uuidFactory: UUIDFactory = UUID.Companion,
+    private val clock: Clock = Clock.System
 ) : RecruitmentService
 {
     init
@@ -23,7 +27,7 @@ class RecruitmentServiceHost(
         eventBus.subscribe {
             // Create a recruitment per study.
             event { created: StudyService.Event.StudyCreated ->
-                val recruitment = Recruitment( created.study.studyId )
+                val recruitment = Recruitment( created.study.studyId, uuidFactory.randomUUID(), clock.now() )
                 participantRepository.addRecruitment( recruitment )
             }
 
@@ -60,7 +64,7 @@ class RecruitmentServiceHost(
     {
         val recruitment = getRecruitmentOrThrow( studyId )
 
-        val participant = recruitment.addParticipant( email )
+        val participant = recruitment.addParticipant( email, uuidFactory.randomUUID() )
         participantRepository.updateRecruitment( recruitment )
 
         return participant
@@ -124,7 +128,7 @@ class RecruitmentServiceHost(
         }
 
         // Create participant group, deploy, and send invitations.
-        val participantGroup = recruitment.addParticipantGroup( toDeployParticipantIds )
+        val participantGroup = recruitment.addParticipantGroup( toDeployParticipantIds, uuidFactory.randomUUID() )
         val deploymentStatus = deploymentService.createStudyDeployment( participantGroup.id, protocol, invitations )
         participantGroup.markAsInvited( deploymentStatus )
 

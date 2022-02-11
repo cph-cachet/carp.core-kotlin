@@ -4,13 +4,17 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolRepository
+import kotlinx.datetime.Clock
 
 
 /**
  * Implementation of [ProtocolService] which allows managing (multiple versions of) [StudyProtocolSnapshot]'s,
  * which can be instantiated locally through [StudyProtocol].
  */
-class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : ProtocolService
+class ProtocolServiceHost(
+    private val repository: StudyProtocolRepository,
+    private val clock: Clock = Clock.System
+) : ProtocolService
 {
     /**
      * Add the specified study [protocol].
@@ -24,7 +28,7 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
     override suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String )
     {
         val initializedProtocol = StudyProtocol.fromSnapshot( protocol )
-        repository.add( initializedProtocol, ProtocolVersion( versionTag ) )
+        repository.add( initializedProtocol, ProtocolVersion( versionTag, clock.now() ) )
     }
 
     /**
@@ -41,7 +45,7 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
     override suspend fun addVersion( protocol: StudyProtocolSnapshot, versionTag: String )
     {
         val initializedProtocol = StudyProtocol.fromSnapshot( protocol )
-        repository.addVersion( initializedProtocol, ProtocolVersion( versionTag ) )
+        repository.addVersion( initializedProtocol, ProtocolVersion( versionTag, clock.now() ) )
     }
 
     /**
