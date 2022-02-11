@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
  * E.g. a 2.0 request will work on a 2.1 hosted service, but not on 1.0 or 3.0.
  */
 @Serializable( ApiVersionSerializer::class )
-class ApiVersion( val major: Int, val minor: Int )
+data class ApiVersion( val major: Int, val minor: Int )
 {
     init
     {

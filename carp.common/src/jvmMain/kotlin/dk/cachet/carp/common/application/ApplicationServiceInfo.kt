@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.services.DependentServices
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.common.infrastructure.services.LoggedRequestSerializer
+import dk.cachet.carp.common.infrastructure.versioning.ApplicationServiceApiMigrator
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SealedClassSerializer
@@ -98,6 +99,7 @@ class ApplicationServiceInfo( val serviceKlass: ServiceClass )
     val requestObjectSerializer: KSerializer<out ApplicationServiceRequest<*, *>>
     val eventSerializer: KSerializer<IntegrationEvent<*>>
     val loggedRequestSerializer: LoggedRequestSerializer<*>
+    val apiMigrator: ApplicationServiceApiMigrator<*>
 
     val requestSchemaUri: URI
 
@@ -169,6 +171,20 @@ class ApplicationServiceInfo( val serviceKlass: ServiceClass )
         )
 
         loggedRequestSerializer = LoggedRequestSerializer( requestObjectSerializer, eventSerializer )
+
+        // Get application service API migrator.
+        val apiMigratorName = "${serviceName}ApiMigrator"
+        val apiMigratorFullName = "$subsystemNamespace.infrastructure.versioning.${apiMigratorName}Kt"
+        val apiMigratorClass: Class<*>? =
+            try { Class.forName( apiMigratorFullName ) }
+            catch ( _: ClassNotFoundException ) { null }
+        val apiMigratorLookup = apiMigratorClass?.declaredMethods
+            ?.firstOrNull { it.name == "get$apiMigratorName" }?.invoke( null ) as? ApplicationServiceApiMigrator<*>
+        apiMigrator = checkNotNull( apiMigratorLookup )
+            {
+                "Could not find API migrator for \"${serviceKlass.name}\". " +
+                "Expected it to be defined as a property named \"$apiMigratorName\" in \"$apiMigratorFullName\"."
+            }
 
         requestSchemaUri = URI( "https://carp.cachet.dk/schemas/$subsystemName/$serviceName/$requestObjectName.json" )
     }
