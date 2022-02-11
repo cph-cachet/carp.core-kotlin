@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 
 
@@ -18,6 +19,10 @@ interface ProtocolFactoryService : ApplicationService<ProtocolFactoryService, Pr
 
     @Serializable
     sealed class Event : IntegrationEvent<ProtocolFactoryService>
+    {
+        @Required
+        override val apiVersion: ApiVersion = API_VERSION
+    }
 
 
     /**

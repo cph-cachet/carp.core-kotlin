@@ -1,9 +1,11 @@
 package dk.cachet.carp.common.infrastructure.services
 
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.services.publish
 import dk.cachet.carp.test.runSuspendTest
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 import kotlin.test.*
@@ -30,10 +32,16 @@ class ChannelConventionEventBusTest
     }
 
     interface TestService1 : ApplicationService<TestService1, Service1Event>
+    {
+        companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+    }
 
     @Serializable
     sealed class Service1Event( override val aggregateId: String? = null ) : IntegrationEvent<TestService1>
     {
+        @Required
+        override val apiVersion: ApiVersion = TestService1.API_VERSION
+
         @Serializable
         data class SomeEvent( val data: String ) : Service1Event()
 
@@ -42,10 +50,16 @@ class ChannelConventionEventBusTest
     }
 
     interface TestService2 : ApplicationService<TestService2, Service2Event>
+    {
+        companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+    }
 
     @Serializable
     sealed class Service2Event( override val aggregateId: String? = null ) : IntegrationEvent<TestService2>
     {
+        @Required
+        override val apiVersion: ApiVersion = TestService2.API_VERSION
+
         @Serializable
         data class SomeEvent( val data: String ) : Service2Event()
     }

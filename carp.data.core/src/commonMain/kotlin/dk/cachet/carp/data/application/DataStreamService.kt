@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 
 
@@ -17,6 +18,10 @@ interface DataStreamService : ApplicationService<DataStreamService, DataStreamSe
 
     @Serializable
     sealed class Event : IntegrationEvent<DataStreamService>
+    {
+        @Required
+        override val apiVersion: ApiVersion = API_VERSION
+    }
 
 
     /**

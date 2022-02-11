@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 
 
@@ -20,6 +21,9 @@ interface StudyService : ApplicationService<StudyService, StudyService.Event>
     sealed class Event( override val aggregateId: String? ) : IntegrationEvent<StudyService>
     {
         constructor( aggregateId: UUID ) : this( aggregateId.stringRepresentation )
+
+        @Required
+        override val apiVersion: ApiVersion = API_VERSION
 
         @Serializable
         data class StudyCreated( val study: StudyDetails ) : Event( study.studyId )

@@ -3,6 +3,7 @@ package dk.cachet.carp.common.application.services
 import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
 import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Required
 
 
 /**
@@ -15,6 +16,9 @@ import kotlinx.serialization.Polymorphic
 @ImplementAsDataClass
 interface IntegrationEvent<out TApplicationService : ApplicationService<out TApplicationService, *>>
 {
+    @Required
+    val apiVersion: ApiVersion
+
     /**
      * All events related to the same aggregate ID are handled in order,
      * or no ordering is required in case `null`.
