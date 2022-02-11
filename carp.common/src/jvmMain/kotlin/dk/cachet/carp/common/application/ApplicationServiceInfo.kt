@@ -14,32 +14,43 @@ import java.net.URI
 import kotlin.reflect.KClass
 
 
+typealias ServiceClass = Class<out ApplicationService<*, *>>
+
 /**
  * Determines associated classes, names, and file locations of code artifacts
  * related to the application service identified by [serviceKlass].
  */
 @OptIn( InternalSerializationApi::class )
 @Suppress( "MagicNumber" )
-class ApplicationServiceInfo( val serviceKlass: Class<out ApplicationService<*, *>> )
+class ApplicationServiceInfo( val serviceKlass: ServiceClass )
 {
     companion object
     {
-        private fun getEventSerializer(
-            serviceKlass: Class<out ApplicationService<*, *>>
-        ): SealedClassSerializer<IntegrationEvent<*>>
+        /**
+         * Returns the [IntegrationEvent] class for [serviceKlass].
+         *
+         * @throws IllegalStateException when the `Event` class is not present or not defined at the expected location.
+         */
+        fun getEventClass( serviceKlass: ServiceClass ): Class<IntegrationEvent<*>>
         {
             val eventKlassLookup = serviceKlass
                 .declaredClasses.singleOrNull { it.simpleName == "Event" }
-                ?.kotlin
-            val eventKlass = checkNotNull( eventKlassLookup )
-            {
-                "Could not find event serializer for \"${serviceKlass.name}\". " +
-                "Expected it to be defined as an inner class named \"Event\"."
-            }
+
+            @Suppress( "UNCHECKED_CAST" )
+            return checkNotNull( eventKlassLookup as? Class<IntegrationEvent<*>> )
+                {
+                    "Could not find event serializer for \"${serviceKlass.name}\". " +
+                    "Expected it to be defined as an inner class named \"Event\"."
+                }
+        }
+
+        private fun getEventSerializer( serviceKlass: ServiceClass ): SealedClassSerializer<IntegrationEvent<*>>
+        {
+            val eventClass = getEventClass( serviceKlass )
 
             // HACK: Seemingly a serializer can't be retrieved for sealed classes with no subtypes. A likely bug.
             //  This can be safely ignored, since there are no events to be serialized.
-            if ( eventKlass.java.declaredClasses.isEmpty() )
+            if ( eventClass.declaredClasses.isEmpty() )
             {
                 return SealedClassSerializer(
                     IntegrationEvent::class.qualifiedName!!,
@@ -50,7 +61,7 @@ class ApplicationServiceInfo( val serviceKlass: Class<out ApplicationService<*, 
             }
 
             @Suppress( "UNCHECKED_CAST" )
-            return eventKlass.serializer() as SealedClassSerializer<IntegrationEvent<*>>
+            return eventClass.kotlin.serializer() as SealedClassSerializer<IntegrationEvent<*>>
         }
     }
 
@@ -58,15 +69,15 @@ class ApplicationServiceInfo( val serviceKlass: Class<out ApplicationService<*, 
     val serviceName: String = serviceKlass.simpleName
     val apiVersion: ApiVersion = checkNotNull( serviceKlass.getAnnotation( ApiVersion::class.java ) )
         { "Application service \"${serviceKlass.name}\" is missing an \"${ApiVersion::class.simpleName}\" annotation." }
-    val dependentServices: List<Class<out ApplicationService<*, *>>> =
-        serviceKlass.getAnnotation( DependentServices::class.java )
-            ?.service?.map { it.java } ?: emptyList()
+    val dependentServices: List<ServiceClass> = serviceKlass.getAnnotation( DependentServices::class.java )
+        ?.service?.map { it.java } ?: emptyList()
 
     val subsystemName: String
     val subsystemNamespace: String
 
     val requestObjectName: String = "${serviceName}Request"
     val requestObjectClass: Class<*>
+    val eventClass: Class<IntegrationEvent<*>> = getEventClass( serviceKlass )
 
     val requestObjectSerializer: KSerializer<out ApplicationServiceRequest<*, *>>
     val eventSerializer: KSerializer<IntegrationEvent<*>>
@@ -133,4 +144,12 @@ class ApplicationServiceInfo( val serviceKlass: Class<out ApplicationService<*, 
 
         requestSchemaUri = URI( "https://carp.cachet.dk/schemas/$subsystemName/$serviceName/$requestObjectName.json" )
     }
+
+
+    /**
+     * Returns the service which is responsible for publishing the [event],
+     * but only in case the event is published by this or one of the [dependentServices]; null otherwise.
+     */
+    fun getEventPublisher( event: IntegrationEvent<*> ): ServiceClass? = dependentServices.plus( serviceKlass )
+        .firstOrNull { getEventClass( it ).isInstance( event ) }
 }
