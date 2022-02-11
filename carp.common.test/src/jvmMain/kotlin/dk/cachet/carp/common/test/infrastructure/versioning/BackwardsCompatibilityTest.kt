@@ -7,10 +7,11 @@ import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
+import dk.cachet.carp.common.infrastructure.versioning.ApplicationServiceApiMigrator
 import dk.cachet.carp.test.runSuspendTest
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.serializer
@@ -123,16 +124,17 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
     private suspend fun replayLoggedRequests( fileName: String, loggedRequests: List<LoggedJsonRequest> )
     {
         val (service, eventBus) = createService()
+        val apiMigrator = serviceInfo.apiMigrator as ApplicationServiceApiMigrator<TService>
 
         loggedRequests.forEachIndexed { index, logged ->
             val replayErrorBase = "Couldn't replay requests in: $fileName. Request #${index + 1}"
 
-            // TODO: Migrate request and preceding events to latest version.
-            val migratedRequest = logged.request
-            val migratedPrecedingEvents = logged.precedingEvents
+            // Migrate request to latest version.
+            val request = apiMigrator.migrateRequest( json, logged.request )
 
             // Publish preceding events.
-            migratedPrecedingEvents.forEach {
+            // TODO: migrate events to new version.
+            logged.precedingEvents.forEach {
                 val event = json.decodeFromJsonElement( serviceInfo.eventSerializer, it )
                 val eventSource = checkNotNull( serviceInfo.getEventPublisher( event )?.kotlin )
                     { "The event \"${event::class}\" isn't an expected event processed by \"${serviceInfo.serviceKlass}\"." }
@@ -142,9 +144,7 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
             }
 
             // Validate whether request outcome corresponds to log.
-            val request = json.decodeFromJsonElement( serviceInfo.requestObjectSerializer, migratedRequest )
-                as ApplicationServiceRequest<TService, *>
-            val response =
+            val response: JsonElement? =
                 try { request.invokeOn( service ) }
                 catch ( ex: Exception )
                 {
@@ -154,20 +154,13 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
                         ex::class.simpleName,
                         "$replayErrorBase failed with the wrong exception type."
                     )
+                    null
                 }
 
             // Validate response in case request should succeed.
             if ( logged is LoggedJsonRequest.Succeeded )
             {
-                // TODO: Migrate response to requested version.
-                val responseSerializer = request.getResponseSerializer() as KSerializer<Any?>
-                val migratedResponse = json.encodeToJsonElement( responseSerializer, response )
-
-                assertEquals(
-                    logged.response,
-                    migratedResponse,
-                    "$replayErrorBase returned the wrong response."
-                )
+                assertEquals( logged.response, response, "$replayErrorBase returned the wrong response." )
             }
         }
     }
