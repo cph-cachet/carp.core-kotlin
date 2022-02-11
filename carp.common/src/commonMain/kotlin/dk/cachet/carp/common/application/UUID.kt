@@ -17,7 +17,7 @@ expect class UUID( stringRepresentation: String )
     val stringRepresentation: String
 
 
-    companion object
+    companion object : UUIDFactory
     {
         /**
          * Parse common [UUID] representations, also allowing upper case hexadecimal digits.
@@ -26,11 +26,16 @@ expect class UUID( stringRepresentation: String )
          */
         fun parse( uuid: String ): UUID
 
-        fun randomUUID(): UUID
+        override fun randomUUID(): UUID
     }
 
 
     override fun toString(): String
+}
+
+interface UUIDFactory
+{
+    fun randomUUID(): UUID
 }
 
 

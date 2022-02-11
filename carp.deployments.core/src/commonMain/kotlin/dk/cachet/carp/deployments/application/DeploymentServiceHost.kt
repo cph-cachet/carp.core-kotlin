@@ -11,6 +11,7 @@ import dk.cachet.carp.deployments.domain.DeploymentRepository
 import dk.cachet.carp.deployments.domain.RegistrableDevice
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
 
@@ -21,7 +22,8 @@ import kotlinx.datetime.Instant
 class DeploymentServiceHost(
     private val repository: DeploymentRepository,
     private val dataStreamService: DataStreamService,
-    private val eventBus: ApplicationServiceEventBus<DeploymentService, DeploymentService.Event>
+    private val eventBus: ApplicationServiceEventBus<DeploymentService, DeploymentService.Event>,
+    private val clock: Clock = Clock.System
 ) : DeploymentService
 {
     /**
@@ -51,7 +53,7 @@ class DeploymentServiceHost(
     ): StudyDeploymentStatus
     {
         protocol.throwIfInvalidPreregistrations( connectedDevicePreregistrations )
-        val newDeployment = StudyDeployment.fromInvitations( protocol, invitations, id )
+        val newDeployment = StudyDeployment.fromInvitations( protocol, invitations, id, clock.now() )
         connectedDevicePreregistrations.forEach { (connected, registration) ->
             val device = protocol.connectedDevices.first { it.roleName == connected }
             newDeployment.registerDevice( device, registration )
@@ -240,7 +242,7 @@ class DeploymentServiceHost(
                 dataStreamService.closeDataStreams( setOf( studyDeploymentId ) )
             }
 
-            deployment.stop()
+            deployment.stop( clock.now() )
             repository.update( deployment )
             eventBus.publish( DeploymentService.Event.StudyDeploymentStopped( studyDeploymentId ) )
         }
