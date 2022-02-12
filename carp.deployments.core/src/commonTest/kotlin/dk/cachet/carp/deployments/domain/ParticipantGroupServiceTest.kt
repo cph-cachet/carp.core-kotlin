@@ -2,7 +2,7 @@ package dk.cachet.carp.deployments.domain
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.AccountIdentity
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
@@ -11,7 +11,7 @@ import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
 import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
-import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -24,7 +24,7 @@ class ParticipantGroupServiceTest
     private lateinit var accountService: AccountService
     private lateinit var service: ParticipantGroupService
 
-    private val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+    private val protocol: StudyProtocol = createSinglePrimaryDeviceProtocol()
     val studyDeploymentId = UUID.randomUUID()
 
     @BeforeTest
@@ -67,11 +67,11 @@ class ParticipantGroupServiceTest
 
     @Test
     fun createAndInviteParticipantGroup_with_multiple_participations_per_account_succeeds() = runSuspendTest {
-        val device1Role = "Master 1"
-        val device2Role = "Master 2"
+        val device1Role = "Primary 1"
+        val device2Role = "Primary 2"
         val protocol = createEmptyProtocol().apply {
-            addMasterDevice( StubMasterDeviceDescriptor( device1Role ) )
-            addMasterDevice( StubMasterDeviceDescriptor( device2Role ) )
+            addPrimaryDevice( StubPrimaryDeviceConfiguration( device1Role ) )
+            addPrimaryDevice( StubPrimaryDeviceConfiguration( device2Role ) )
         }
         val identity = AccountIdentity.fromUsername( "Test" )
         val studyInvitation = StudyInvitation( "Some study" )

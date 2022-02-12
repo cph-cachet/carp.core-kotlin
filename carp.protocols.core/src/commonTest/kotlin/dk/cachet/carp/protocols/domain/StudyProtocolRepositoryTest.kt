@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.protocols.application.ProtocolVersion
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.test.runSuspendTest
@@ -78,7 +78,7 @@ interface StudyProtocolRepositoryTest
         val protocol = StudyProtocol( ownerId, "Name" )
         repo.add( protocol, ProtocolVersion( "Initial" ) )
 
-        protocol.addMasterDevice( StubMasterDeviceDescriptor() )
+        protocol.addPrimaryDevice( StubPrimaryDeviceConfiguration() )
         val newVersion = ProtocolVersion( "New version" )
         repo.addVersion( protocol, newVersion )
 
@@ -102,7 +102,7 @@ interface StudyProtocolRepositoryTest
         val version = ProtocolVersion( "Version" )
         repo.add( protocol, version )
 
-        protocol.addMasterDevice( StubMasterDeviceDescriptor() )
+        protocol.addPrimaryDevice( StubPrimaryDeviceConfiguration() )
         assertFailsWith<IllegalArgumentException> { repo.addVersion( protocol, version ) }
     }
 
@@ -128,7 +128,7 @@ interface StudyProtocolRepositoryTest
         val version = ProtocolVersion( "Version" )
         repo.add( protocol, version )
 
-        protocol.addMasterDevice( StubMasterDeviceDescriptor() )
+        protocol.addPrimaryDevice( StubPrimaryDeviceConfiguration() )
         repo.replace( protocol, version )
 
         val retrieved = repo.getBy( protocol.id, "Version" )
@@ -167,7 +167,7 @@ interface StudyProtocolRepositoryTest
         repo.add( protocol, initialVersion )
 
         val protocol2 = StudyProtocol.fromSnapshot( protocol.getSnapshot() )
-        protocol2.addMasterDevice( StubMasterDeviceDescriptor() )
+        protocol2.addPrimaryDevice( StubPrimaryDeviceConfiguration() )
         val newVersion = ProtocolVersion( "New version", Instant.fromEpochMilliseconds( 1 ) )
         repo.addVersion( protocol2, newVersion )
 
@@ -187,12 +187,12 @@ interface StudyProtocolRepositoryTest
         repo.add( protocol1, ProtocolVersion( "Initial" ) )
 
         val protocol2 = StudyProtocol.fromSnapshot( protocol1Snapshot )
-        protocol2.addMasterDevice( StubMasterDeviceDescriptor( "Device" ) )
+        protocol2.addPrimaryDevice( StubPrimaryDeviceConfiguration( "Device" ) )
         val version2 = ProtocolVersion( "Version 2" )
         repo.addVersion( protocol2, version2 )
 
         val protocol3 = StudyProtocol.fromSnapshot( protocol1Snapshot )
-        protocol3.addMasterDevice( StubMasterDeviceDescriptor( "Other device" ) )
+        protocol3.addPrimaryDevice( StubPrimaryDeviceConfiguration( "Other device" ) )
         repo.addVersion( protocol3, ProtocolVersion( "Version 3" ) )
 
         val retrieved = repo.getBy( protocol2.id, version2.tag )
@@ -229,7 +229,7 @@ interface StudyProtocolRepositoryTest
         val protocol2 = StudyProtocol( ownerId, "Study 2" )
         repo.add( protocol2, ProtocolVersion( "Initial", Instant.fromEpochMilliseconds( 0 ) ) )
         val protocol2Latest = StudyProtocol.fromSnapshot( protocol2.getSnapshot() )
-        protocol2Latest.addMasterDevice( StubMasterDeviceDescriptor() )
+        protocol2Latest.addPrimaryDevice( StubPrimaryDeviceConfiguration() )
         val later = Instant.fromEpochMilliseconds( 1 )
         repo.addVersion( protocol2Latest, ProtocolVersion( "Latest should be retrieved", later ) )
 

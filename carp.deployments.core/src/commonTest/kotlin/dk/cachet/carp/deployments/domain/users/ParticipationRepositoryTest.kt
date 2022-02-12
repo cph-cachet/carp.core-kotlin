@@ -7,7 +7,7 @@ import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.createComplexParticipantGroup
 import dk.cachet.carp.deployments.domain.studyDeploymentFor
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -29,7 +29,7 @@ interface ParticipationRepositoryTest
     @Test
     fun getParticipations_succeeds() = runSuspendTest {
         val repo = createRepository()
-        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        val protocol: StudyProtocol = createSinglePrimaryDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         val group = ParticipantGroup.fromNewDeployment( deployment )
 
@@ -37,13 +37,13 @@ interface ParticipationRepositoryTest
         val account = Account.withEmailIdentity( "test@test.com" )
         val participation = Participation( deployment.id )
         val invitation = StudyInvitation( "Some study" )
-        group.addParticipation( account, invitation, participation, protocol.masterDevices )
+        group.addParticipation( account, invitation, participation, protocol.primaryDevices )
         repo.putParticipantGroup( group )
 
         val expectedInvitations = setOf(
             AccountParticipation(
                 participation,
-                protocol.masterDevices.map { it.roleName }.toSet(),
+                protocol.primaryDevices.map { it.roleName }.toSet(),
                 account.id,
                 invitation
             )
@@ -83,7 +83,7 @@ interface ParticipationRepositoryTest
     @Test
     fun getParticipantGroupList_succeeds() = runSuspendTest {
         val repo = createRepository()
-        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        val protocol: StudyProtocol = createSinglePrimaryDeviceProtocol()
 
         val deployment1 = studyDeploymentFor( protocol )
         val group1 = ParticipantGroup.fromNewDeployment( deployment1 )

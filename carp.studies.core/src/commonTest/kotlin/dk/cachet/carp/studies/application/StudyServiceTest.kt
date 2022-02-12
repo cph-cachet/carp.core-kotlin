@@ -269,8 +269,8 @@ interface StudyServiceTest
     {
         val protocol = StudyProtocol( UUID.randomUUID(), "Test protocol" )
 
-        // Add master device, needed for it to be deployable.
-        protocol.addMasterDevice( Smartphone( "User's phone" ) )
+        // Add primary device, needed for it to be deployable.
+        protocol.addPrimaryDevice( Smartphone( "User's phone" ) )
 
         return protocol.getSnapshot()
     }

@@ -2,12 +2,12 @@ package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.common.application.devices.DeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistrationBuilder
-import dk.cachet.carp.common.application.devices.MasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.PrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import kotlinx.serialization.KSerializer
@@ -18,14 +18,14 @@ import kotlin.reflect.KClass
 
 
 /**
- * A wrapper used to load extending types from [DeviceDescriptor] serialized as JSON which are unknown at runtime.
+ * A wrapper used to load extending types from [DeviceConfiguration] serialized as JSON which are unknown at runtime.
  */
-@Serializable( DeviceDescriptorSerializer::class )
-data class CustomDeviceDescriptor(
+@Serializable( DeviceConfigurationSerializer::class )
+data class CustomDeviceConfiguration(
     override val className: String,
     override val jsonSource: String,
     val serializer: Json
-) : DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
+) : DeviceConfiguration<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
     override val isOptional: Boolean
@@ -59,14 +59,14 @@ data class CustomDeviceDescriptor(
 
 
 /**
- * A wrapper used to load extending types from [MasterDeviceDescriptor] serialized as JSON which are unknown at runtime.
+ * A wrapper used to load extending types from [PrimaryDeviceConfiguration] serialized as JSON which are unknown at runtime.
  */
-@Serializable( MasterDeviceDescriptorSerializer::class )
-data class CustomMasterDeviceDescriptor(
+@Serializable( PrimaryDeviceConfigurationSerializer::class )
+data class CustomPrimaryDeviceConfiguration(
     override val className: String,
     override val jsonSource: String,
     val serializer: Json
-) : MasterDeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
+) : PrimaryDeviceConfiguration<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
 {
     override val roleName: String
     override val isOptional: Boolean
@@ -104,7 +104,7 @@ private data class BaseMembers(
     override val roleName: String,
     override val isOptional: Boolean = false,
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
-) : DeviceDescriptor<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>()
+) : DeviceConfiguration<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>()
 {
     override fun getSupportedDataTypes(): Set<DataType> =
         throw UnsupportedOperationException()
@@ -120,31 +120,31 @@ private data class BaseMembers(
 
 
 /**
- * Custom serializer for [DeviceDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [DeviceDescriptor].
+ * Custom serializer for [DeviceConfiguration] which enables deserializing types that are unknown at runtime, yet extend from [DeviceConfiguration].
  */
-object DeviceDescriptorSerializer : UnknownPolymorphicSerializer<AnyDeviceDescriptor, AnyDeviceDescriptor>( DeviceDescriptor::class, DeviceDescriptor::class, false )
+object DeviceConfigurationSerializer : UnknownPolymorphicSerializer<AnyDeviceConfiguration, AnyDeviceConfiguration>( DeviceConfiguration::class, DeviceConfiguration::class, false )
 {
-    override fun createWrapper( className: String, json: String, serializer: Json ): AnyDeviceDescriptor
+    override fun createWrapper( className: String, json: String, serializer: Json ): AnyDeviceConfiguration
     {
         val jsonObject = serializer.parseToJsonElement( json ) as JsonObject
-        val isMasterDevice = jsonObject.containsKey( AnyMasterDeviceDescriptor::isMasterDevice.name )
+        val isPrimaryDevice = jsonObject.containsKey( AnyPrimaryDeviceConfiguration::isPrimaryDevice.name )
 
-        return if ( isMasterDevice )
+        return if ( isPrimaryDevice )
         {
-            CustomMasterDeviceDescriptor( className, json, serializer )
+            CustomPrimaryDeviceConfiguration( className, json, serializer )
         }
         else
         {
-            CustomDeviceDescriptor( className, json, serializer )
+            CustomDeviceConfiguration( className, json, serializer )
         }
     }
 }
 
 /**
- * Custom serializer for [MasterDeviceDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [MasterDeviceDescriptor].
+ * Custom serializer for [PrimaryDeviceConfiguration] which enables deserializing types that are unknown at runtime, yet extend from [PrimaryDeviceConfiguration].
  */
-object MasterDeviceDescriptorSerializer : KSerializer<AnyMasterDeviceDescriptor>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomMasterDeviceDescriptor( className, json, serializer ) } )
+object PrimaryDeviceConfigurationSerializer : KSerializer<AnyPrimaryDeviceConfiguration>
+    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomPrimaryDeviceConfiguration( className, json, serializer ) } )
 
 
 /**

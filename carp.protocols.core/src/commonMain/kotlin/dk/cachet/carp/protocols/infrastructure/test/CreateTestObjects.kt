@@ -7,8 +7,8 @@ import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
-import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
@@ -29,28 +29,28 @@ fun createEmptyProtocol( name: String = "Test protocol" ): StudyProtocol
 }
 
 /**
- * Creates a study protocol with a single master device.
+ * Creates a study protocol with a single primary device.
  */
-fun createSingleMasterDeviceProtocol( masterDeviceName: String = "Master" ): StudyProtocol
+fun createSinglePrimaryDeviceProtocol( primaryDeviceName: String = "Primary" ): StudyProtocol
 {
     val protocol = createEmptyProtocol()
-    val master = StubMasterDeviceDescriptor( masterDeviceName )
-    protocol.addMasterDevice( master )
+    val primary = StubPrimaryDeviceConfiguration( primaryDeviceName )
+    protocol.addPrimaryDevice( primary )
     return protocol
 }
 
 /**
- * Creates a study protocol with a single master device which has a single connected device.
+ * Creates a study protocol with a single primary device which has a single connected device.
  */
-fun createSingleMasterWithConnectedDeviceProtocol(
-    masterDeviceName: String = "Master",
+fun createSinglePrimaryWithConnectedDeviceProtocol(
+    primaryDeviceName: String = "Primary",
     connectedDeviceName: String = "Connected"
 ): StudyProtocol
 {
     val protocol = createEmptyProtocol()
-    val master = StubMasterDeviceDescriptor( masterDeviceName )
-    protocol.addMasterDevice( master )
-    protocol.addConnectedDevice( StubDeviceDescriptor( connectedDeviceName ), master )
+    val primary = StubPrimaryDeviceConfiguration( primaryDeviceName )
+    protocol.addPrimaryDevice( primary )
+    protocol.addConnectedDevice( StubDeviceConfiguration( connectedDeviceName ), primary )
     return protocol
 }
 
@@ -60,21 +60,21 @@ fun createSingleMasterWithConnectedDeviceProtocol(
 fun createComplexProtocol(): StudyProtocol
 {
     val protocol = createEmptyProtocol()
-    val masterDevice = StubMasterDeviceDescriptor()
-    val connectedDevice = StubDeviceDescriptor()
-    val chainedMasterDevice = StubMasterDeviceDescriptor( "Chained master" )
-    val chainedConnectedDevice = StubDeviceDescriptor( "Chained connected" )
+    val primaryDevice = StubPrimaryDeviceConfiguration()
+    val connectedDevice = StubDeviceConfiguration()
+    val chainedPrimaryDevice = StubPrimaryDeviceConfiguration( "Chained primary" )
+    val chainedConnectedDevice = StubDeviceConfiguration( "Chained connected" )
     val trigger = StubTrigger( connectedDevice )
     val measures = listOf( Measure.DataStream( STUB_DATA_TYPE ) )
     val task = StubTaskDescriptor( "Task", measures )
     val expectedParticipantData = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
     with ( protocol )
     {
-        addMasterDevice( masterDevice )
-        addConnectedDevice( connectedDevice, masterDevice )
-        addConnectedDevice( chainedMasterDevice, masterDevice )
-        addConnectedDevice( chainedConnectedDevice, chainedMasterDevice )
-        addTaskControl( trigger, task, masterDevice, TaskControl.Control.Start )
+        addPrimaryDevice( primaryDevice )
+        addConnectedDevice( connectedDevice, primaryDevice )
+        addConnectedDevice( chainedPrimaryDevice, primaryDevice )
+        addConnectedDevice( chainedConnectedDevice, chainedPrimaryDevice )
+        addTaskControl( trigger, task, primaryDevice, TaskControl.Control.Start )
         addExpectedParticipantData( expectedParticipantData )
     }
 

@@ -3,11 +3,11 @@
   "type": "object",
   "properties": {
     "participantId": { "type": "string", "format": "uuid" },
-    "masterDeviceRoleNames": {
+    "primaryDeviceRoleNames": {
       "type": "array",
       "items": { "type": "string" }
     }
   },
-  "required": [ "participantId", "masterDeviceRoleNames" ],
+  "required": [ "participantId", "primaryDeviceRoleNames" ],
   "additionalProperties": false
 }

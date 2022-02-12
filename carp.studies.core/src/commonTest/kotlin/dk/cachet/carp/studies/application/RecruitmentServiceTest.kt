@@ -97,7 +97,7 @@ interface RecruitmentServiceTest
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
-        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val deviceRoles = protocolSnapshot.primaryDevices.map { it.roleName }.toSet()
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
         val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
         assertEquals( participant, groupStatus.participants.single() )
@@ -130,7 +130,7 @@ interface RecruitmentServiceTest
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
 
-        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val deviceRoles = protocolSnapshot.primaryDevices.map { it.roleName }.toSet()
         val assignParticipant = AssignParticipantDevices( unknownId, deviceRoles )
         assertFailsWith<IllegalArgumentException>
         {
@@ -169,7 +169,7 @@ interface RecruitmentServiceTest
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
-        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val deviceRoles = protocolSnapshot.primaryDevices.map { it.roleName }.toSet()
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
         val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
 
@@ -183,7 +183,7 @@ interface RecruitmentServiceTest
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
-        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val deviceRoles = protocolSnapshot.primaryDevices.map { it.roleName }.toSet()
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
         val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
 
@@ -197,7 +197,7 @@ interface RecruitmentServiceTest
     fun getParticipantGroupStatusList_returns_multiple_deployments() = runSuspendTest {
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
-        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val deviceRoles = protocolSnapshot.primaryDevices.map { it.roleName }.toSet()
 
         val p1 = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
         val assignedP1 = AssignParticipantDevices( p1.id, deviceRoles )
@@ -225,7 +225,7 @@ interface RecruitmentServiceTest
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
-        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val deviceRoles = protocolSnapshot.primaryDevices.map { it.roleName }.toSet()
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
         val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
 
@@ -256,7 +256,7 @@ interface RecruitmentServiceTest
     {
         // Create deployable protocol.
         val protocol = StudyProtocol( UUID.randomUUID(), "Test protocol" )
-        protocol.addMasterDevice( Smartphone( "User's phone" ) )
+        protocol.addPrimaryDevice( Smartphone( "User's phone" ) )
         protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
         val validSnapshot = protocol.getSnapshot()
 

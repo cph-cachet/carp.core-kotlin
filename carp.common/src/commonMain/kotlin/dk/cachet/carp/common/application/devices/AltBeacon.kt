@@ -21,7 +21,7 @@ import kotlin.reflect.KClass
 data class AltBeacon(
     override val roleName: String,
     override val isOptional: Boolean = false,
-) : DeviceDescriptor<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
+) : DeviceConfiguration<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
 {
     object Sensors : DataTypeSamplingSchemeMap()
     {

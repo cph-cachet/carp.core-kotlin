@@ -11,12 +11,12 @@ import kotlinx.datetime.Instant
  * A composition root used to initialize [StudyProtocol] with concrete implementations of its interfaces.
  */
 abstract class StudyProtocolComposition internal constructor(
-    protected val deviceConfiguration: DeviceConfiguration,
+    protected val deviceConfiguration: ProtocolDeviceConfiguration,
     protected val taskConfiguration: TaskConfiguration,
     protected val participantDataConfiguration: ParticipantDataConfiguration,
     id: UUID,
     createdOn: Instant
-) : DeviceConfiguration by deviceConfiguration,
+) : ProtocolDeviceConfiguration by deviceConfiguration,
     TaskConfiguration by taskConfiguration,
     ParticipantDataConfiguration by participantDataConfiguration,
     AggregateRoot<StudyProtocol, StudyProtocolSnapshot, StudyProtocol.Event>( id, createdOn )

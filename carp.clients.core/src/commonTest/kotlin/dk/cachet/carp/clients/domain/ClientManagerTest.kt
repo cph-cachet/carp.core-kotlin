@@ -97,7 +97,7 @@ class ClientManagerTest
 
     @Test
     fun tryDeployment_succeeds_when_already_deployed() = runSuspendTest {
-        // Add a study which instantly deploys given that the protocol only contains one master device.
+        // Add a study which instantly deploys given that the protocol only contains one primary device.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
         val deploymentId = deploymentStatus.studyDeploymentId

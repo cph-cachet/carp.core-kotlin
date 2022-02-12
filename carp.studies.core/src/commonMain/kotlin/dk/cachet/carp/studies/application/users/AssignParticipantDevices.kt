@@ -5,10 +5,10 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Assign master devices, identified by the [masterDeviceRoleNames] of a study protocol, to the participant identified by [participantId].
+ * Assign primary devices, identified by the [primaryDeviceRoleNames] of a study protocol, to the participant identified by [participantId].
  */
 @Serializable
-data class AssignParticipantDevices( val participantId: UUID, val masterDeviceRoleNames: Set<String> )
+data class AssignParticipantDevices( val participantId: UUID, val primaryDeviceRoleNames: Set<String> )
 
 /**
  * Get the unique set of participant IDs defined in a collection of [AssignParticipantDevices].
@@ -16,6 +16,6 @@ data class AssignParticipantDevices( val participantId: UUID, val masterDeviceRo
 fun Collection<AssignParticipantDevices>.participantIds(): Set<UUID> = this.map { it.participantId }.toSet()
 
 /**
- * Get the unique set of master device roles defined in a collection of [AssignParticipantDevices].
+ * Get the unique set of primary device roles defined in a collection of [AssignParticipantDevices].
  */
-fun Collection<AssignParticipantDevices>.deviceRoles(): Set<String> = this.flatMap { it.masterDeviceRoleNames }.toSet()
+fun Collection<AssignParticipantDevices>.deviceRoles(): Set<String> = this.flatMap { it.primaryDeviceRoleNames }.toSet()

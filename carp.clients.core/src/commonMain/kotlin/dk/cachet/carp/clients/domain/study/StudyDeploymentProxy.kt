@@ -52,7 +52,7 @@ class StudyDeploymentProxy(
         // TODO: Handle race condition in case other devices were unregistered in between.
         val device = deviceStatus.device
         val deployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, device.roleName )
-        check( deployment.deviceDescriptor == device )
+        check( deployment.deviceConfiguration == device )
         val remainingDevicesToRegister = studyStatus.devicesStatus
             .map { it.device }
             .filter { it.roleName in deviceStatus.remainingDevicesToRegisterBeforeDeployment }

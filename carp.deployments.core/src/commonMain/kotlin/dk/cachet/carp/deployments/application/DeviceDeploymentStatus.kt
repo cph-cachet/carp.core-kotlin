@@ -1,6 +1,6 @@
 package dk.cachet.carp.deployments.application
 
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import kotlinx.serialization.Serializable
 
 
@@ -13,18 +13,18 @@ sealed class DeviceDeploymentStatus
     /**
      * The description of the device.
      */
-    abstract val device: AnyDeviceDescriptor
+    abstract val device: AnyDeviceConfiguration
 
     /**
-     * Determines whether the device can be deployed by retrieving [MasterDeviceDeployment].
-     * Not all master devices necessarily need deployment; chained master devices do not.
+     * Determines whether the device can be deployed by retrieving [PrimaryDeviceDeployment].
+     * Not all primary devices necessarily need deployment; chained primary devices do not.
      */
     abstract val canBeDeployed: Boolean
 
     /**
      * Determines whether the device requires a device deployment, and if so,
      * whether the deployment configuration (to initialize the device environment) can be obtained.
-     * This requires the specified device and all other master devices it depends on to be registered.
+     * This requires the specified device and all other primary devices it depends on to be registered.
      */
     val canObtainDeviceDeployment: Boolean
         get() = this is Deployed || (this is NotDeployed && this.remainingDevicesToRegisterToObtainDeployment.isEmpty())
@@ -58,7 +58,7 @@ sealed class DeviceDeploymentStatus
      */
     @Serializable
     data class Unregistered(
-        override val device: AnyDeviceDescriptor,
+        override val device: AnyDeviceConfiguration,
         override val canBeDeployed: Boolean,
         override val remainingDevicesToRegisterToObtainDeployment: Set<String>,
         override val remainingDevicesToRegisterBeforeDeployment: Set<String>
@@ -69,18 +69,18 @@ sealed class DeviceDeploymentStatus
      */
     @Serializable
     data class Registered(
-        override val device: AnyDeviceDescriptor,
+        override val device: AnyDeviceConfiguration,
         override val canBeDeployed: Boolean,
         override val remainingDevicesToRegisterToObtainDeployment: Set<String>,
         override val remainingDevicesToRegisterBeforeDeployment: Set<String>
     ) : NotDeployed()
 
     /**
-     * Device deployment status when the device has retrieved its [MasterDeviceDeployment] and was able to load all the necessary plugins to execute the study.
+     * Device deployment status when the device has retrieved its [PrimaryDeviceDeployment] and was able to load all the necessary plugins to execute the study.
      */
     @Serializable
     data class Deployed(
-        override val device: AnyDeviceDescriptor
+        override val device: AnyDeviceConfiguration
     ) : DeviceDeploymentStatus()
     {
         // All devices that have been deployed necessarily can be deployed.
@@ -92,7 +92,7 @@ sealed class DeviceDeploymentStatus
      */
     @Serializable
     data class NeedsRedeployment(
-        override val device: AnyDeviceDescriptor,
+        override val device: AnyDeviceConfiguration,
         override val remainingDevicesToRegisterToObtainDeployment: Set<String>,
         override val remainingDevicesToRegisterBeforeDeployment: Set<String>
     ) : NotDeployed()

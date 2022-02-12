@@ -24,7 +24,7 @@ data class Smartphone(
     override val roleName: String,
     override val isOptional: Boolean = false,
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
-) : MasterDeviceDescriptor<SmartphoneDeviceRegistration, SmartphoneDeviceRegistrationBuilder>()
+) : PrimaryDeviceConfiguration<SmartphoneDeviceRegistration, SmartphoneDeviceRegistrationBuilder>()
 {
     constructor( roleName: String, isOptional: Boolean = false, builder: SmartphoneBuilder.() -> Unit ) :
         this( roleName, isOptional, SmartphoneBuilder().apply( builder ).buildSamplingConfiguration() )
@@ -108,7 +108,7 @@ data class Smartphone(
 /**
  * A helper class to configure and construct immutable [Smartphone] classes.
  */
-class SmartphoneBuilder : DeviceDescriptorBuilder<SmartphoneSamplingConfigurationMapBuilder>()
+class SmartphoneBuilder : DeviceConfigurationBuilder<SmartphoneSamplingConfigurationMapBuilder>()
 {
     override fun createSamplingConfigurationMapBuilder(): SmartphoneSamplingConfigurationMapBuilder =
         SmartphoneSamplingConfigurationMapBuilder()

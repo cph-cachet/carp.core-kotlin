@@ -1,8 +1,8 @@
 package dk.cachet.carp.deployments.domain
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.tasks.getAllExpectedDataTypes
 import dk.cachet.carp.common.application.triggers.TaskControl
@@ -11,7 +11,7 @@ import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicWrapper
 import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
-import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.throwIfInvalidInvitations
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
@@ -37,11 +37,11 @@ class StudyDeployment private constructor(
 {
     sealed class Event : DomainEvent()
     {
-        data class DeviceRegistered( val device: AnyDeviceDescriptor, val registration: DeviceRegistration ) : Event()
-        data class DeviceUnregistered( val device: AnyDeviceDescriptor ) : Event()
-        data class DeviceDeployed( val device: AnyMasterDeviceDescriptor ) : Event()
+        data class DeviceRegistered( val device: AnyDeviceConfiguration, val registration: DeviceRegistration ) : Event()
+        data class DeviceUnregistered( val device: AnyDeviceConfiguration ) : Event()
+        data class DeviceDeployed( val device: AnyPrimaryDeviceConfiguration ) : Event()
         data class Started( val startedOn: Instant ) : Event()
-        data class DeploymentInvalidated( val device: AnyMasterDeviceDescriptor ) : Event()
+        data class DeploymentInvalidated( val device: AnyPrimaryDeviceConfiguration ) : Event()
         data class Stopped( val stoppedOn: Instant ) : Event()
     }
 
@@ -62,7 +62,7 @@ class StudyDeployment private constructor(
         {
             protocolSnapshot.throwIfInvalidInvitations( invitations )
             val participants = invitations.map {
-                ParticipantStatus( it.participantId, it.assignedMasterDeviceRoleNames )
+                ParticipantStatus( it.participantId, it.assignedPrimaryDeviceRoleNames )
             }
 
             return StudyDeployment( protocolSnapshot, participants, id, now )
@@ -97,7 +97,7 @@ class StudyDeployment private constructor(
 
             // Add deployed devices.
             snapshot.deployedDevices.forEach { roleName ->
-                val deployedDevice = deployment.protocolSnapshot.masterDevices.firstOrNull { it.roleName == roleName }
+                val deployedDevice = deployment.protocolSnapshot.primaryDevices.firstOrNull { it.roleName == roleName }
                     ?: throw IllegalArgumentException( "Can't find deployed device with role name '$roleName' in snapshot." )
                 val deviceDeployment = deployment.getDeviceDeploymentFor( deployedDevice )
                 deployment.deviceDeployed( deployedDevice, deviceDeployment.lastUpdatedOn )
@@ -105,7 +105,7 @@ class StudyDeployment private constructor(
 
             // Add invalidated deployed devices.
             val invalidatedDevices = snapshot.invalidatedDeployedDevices.map { invalidatedRoleName ->
-                deployment.protocolSnapshot.masterDevices.firstOrNull { it.roleName == invalidatedRoleName }
+                deployment.protocolSnapshot.primaryDevices.firstOrNull { it.roleName == invalidatedRoleName }
                     ?: throw IllegalArgumentException( "Can't find deployed device with role name '$invalidatedRoleName' in snapshot." )
             }
             deployment._invalidatedDeployedDevices.addAll( invalidatedDevices )
@@ -155,34 +155,34 @@ class StudyDeployment private constructor(
     /**
      * The set of devices which are currently registered for this study deployment.
      */
-    val registeredDevices: Map<AnyDeviceDescriptor, DeviceRegistration>
+    val registeredDevices: Map<AnyDeviceConfiguration, DeviceRegistration>
         get() = _registeredDevices
 
-    private val _registeredDevices: MutableMap<AnyDeviceDescriptor, DeviceRegistration> = mutableMapOf()
+    private val _registeredDevices: MutableMap<AnyDeviceConfiguration, DeviceRegistration> = mutableMapOf()
 
     /**
      * Per device, a list of all device registrations (included old registrations) in the order they were registered.
      */
-    val deviceRegistrationHistory: Map<AnyDeviceDescriptor, List<DeviceRegistration>>
+    val deviceRegistrationHistory: Map<AnyDeviceConfiguration, List<DeviceRegistration>>
         get() = _deviceRegistrationHistory
 
-    private val _deviceRegistrationHistory: MutableMap<AnyDeviceDescriptor, MutableList<DeviceRegistration>> = mutableMapOf()
+    private val _deviceRegistrationHistory: MutableMap<AnyDeviceConfiguration, MutableList<DeviceRegistration>> = mutableMapOf()
 
     /**
      * The set of devices which have been deployed correctly.
      */
-    val deployedDevices: Set<AnyMasterDeviceDescriptor>
+    val deployedDevices: Set<AnyPrimaryDeviceConfiguration>
         get() = _deployedDevices
 
-    private val _deployedDevices: MutableSet<AnyMasterDeviceDescriptor> = mutableSetOf()
+    private val _deployedDevices: MutableSet<AnyPrimaryDeviceConfiguration> = mutableSetOf()
 
     /**
      * Devices which have been previously deployed correctly, but due to changes in device registrations need to be redeployed.
      */
-    val invalidatedDeployedDevices: Set<AnyMasterDeviceDescriptor>
+    val invalidatedDeployedDevices: Set<AnyPrimaryDeviceConfiguration>
         get() = _invalidatedDeployedDevices
 
-    private val _invalidatedDeployedDevices: MutableSet<AnyMasterDeviceDescriptor> = mutableSetOf()
+    private val _invalidatedDeployedDevices: MutableSet<AnyPrimaryDeviceConfiguration> = mutableSetOf()
 
     /**
      * The time when the study deployment was ready for the first time (all necessary devices deployed);
@@ -208,9 +208,9 @@ class StudyDeployment private constructor(
 
         // Initialize information which devices can be registered, deployed, and should be deployed for this deployment.
         _registrableDevices = protocol.devices
-            // Top-level master devices that aren't optional require deployment.
+            // Top-level primary devices that aren't optional require deployment.
             .map {
-                val canBeDeployed = it in protocol.masterDevices
+                val canBeDeployed = it in protocol.primaryDevices
                 val requiresDeployment = canBeDeployed && !it.isOptional
                 RegistrableDevice( it, canBeDeployed, requiresDeployment )
             }
@@ -245,7 +245,7 @@ class StudyDeployment private constructor(
     /**
      * Get the status of a device in this [StudyDeployment].
      */
-    private fun getDeviceStatus( device: AnyDeviceDescriptor ): DeviceDeploymentStatus
+    private fun getDeviceStatus( device: AnyDeviceConfiguration ): DeviceDeploymentStatus
     {
         val needsRedeployment = device in invalidatedDeployedDevices
         val isDeployed = device in deployedDevices
@@ -258,10 +258,10 @@ class StudyDeployment private constructor(
             .plus( device ) // Device itself needs to be registered.
             .minus( alreadyRegistered )
         val mandatoryConnectedDevices =
-            if ( device is AnyMasterDeviceDescriptor ) protocol.getConnectedDevices( device ).filter { !it.isOptional }
+            if ( device is AnyPrimaryDeviceConfiguration ) protocol.getConnectedDevices( device ).filter { !it.isOptional }
             else emptyList()
         val toRegisterBeforeDeployment = toRegisterToObtainDeployment
-            // Master devices require non-optional connected devices to be registered.
+            // Primary devices require non-optional connected devices to be registered.
             .plus( mandatoryConnectedDevices )
             .minus( alreadyRegistered )
 
@@ -279,17 +279,17 @@ class StudyDeployment private constructor(
     /**
      * Get all devices which the passed [device] depends on the registration of.
      */
-    private fun getDependentDevices( device: AnyDeviceDescriptor ): List<AnyDeviceDescriptor> =
+    private fun getDependentDevices( device: AnyDeviceConfiguration ): List<AnyDeviceConfiguration> =
         when ( device )
         {
-            is AnyMasterDeviceDescriptor ->
+            is AnyPrimaryDeviceConfiguration ->
                 // TODO: For now, presume all devices which require deployment may depend on one another.
                 //       This can be optimized by looking at the triggers which determine actual dependencies between devices.
                 _registrableDevices
                     .filter { it.requiresDeployment }
                     .map { it.device }
                     .minus( device )
-            else -> emptyList() // Only master devices can be deployed. Other devices have no 'dependent' devices.
+            else -> emptyList() // Only primary devices can be deployed. Other devices have no 'dependent' devices.
         }
 
     /**
@@ -298,7 +298,7 @@ class StudyDeployment private constructor(
      * @throws IllegalArgumentException when the passed device is not part of this deployment or is already registered.
      * @throws IllegalStateException when this deployment has stopped.
      */
-    fun registerDevice( device: AnyDeviceDescriptor, registration: DeviceRegistration )
+    fun registerDevice( device: AnyDeviceConfiguration, registration: DeviceRegistration )
     {
         val containsDevice: Boolean = _registrableDevices.any { it.device == device }
         require( containsDevice ) { "The passed device is not part of this deployment." }
@@ -340,7 +340,7 @@ class StudyDeployment private constructor(
      * @throws IllegalArgumentException when the passed device is not part of this deployment or is not registered.
      * @throws IllegalStateException when this deployment has stopped.
      */
-    fun unregisterDevice( device: AnyDeviceDescriptor )
+    fun unregisterDevice( device: AnyDeviceConfiguration )
     {
         val containsDevice: Boolean = _registrableDevices.any { it.device == device }
         require( containsDevice ) { "The passed device is not part of this deployment." }
@@ -357,13 +357,13 @@ class StudyDeployment private constructor(
     }
 
     /**
-     * Invalidate deployed master devices which depend on this [device].
+     * Invalidate deployed primary devices which depend on this [device].
      */
-    private fun invalidateDeploymentOfDependentDevices( device: AnyDeviceDescriptor )
+    private fun invalidateDeploymentOfDependentDevices( device: AnyDeviceConfiguration )
     {
-        val dependentMasterDevices = getDependentDevices( device )
-            .filterIsInstance<AnyMasterDeviceDescriptor>()
-        dependentMasterDevices.forEach {
+        val dependentPrimaryDevices = getDependentDevices( device )
+            .filterIsInstance<AnyPrimaryDeviceConfiguration>()
+        dependentPrimaryDevices.forEach {
             _deployedDevices
                 .remove( it )
                 .eventIf( true ) {
@@ -377,12 +377,12 @@ class StudyDeployment private constructor(
      * Get the deployment configuration for the specified [device] in this study deployment.
      *
      * @throws IllegalArgumentException when the passed [device] is not part of the protocol of this study deployment.
-     * @throws IllegalStateException when a [MasterDeviceDeployment] for the passed [device] is not yet available.
+     * @throws IllegalStateException when a [PrimaryDeviceDeployment] for the passed [device] is not yet available.
      */
-    fun getDeviceDeploymentFor( device: AnyMasterDeviceDescriptor ): MasterDeviceDeployment
+    fun getDeviceDeploymentFor( device: AnyPrimaryDeviceConfiguration ): PrimaryDeviceDeployment
     {
         // Verify whether the specified device is part of the protocol of this deployment.
-        require( device in protocolSnapshot.masterDevices ) { "The specified master device is not part of the protocol of this deployment." }
+        require( device in protocolSnapshot.primaryDevices ) { "The specified primary device is not part of the protocol of this deployment." }
 
         // Verify whether the specified device is ready to be deployed.
         val canDeploy = getDeviceStatus( device ).canObtainDeviceDeployment
@@ -391,7 +391,7 @@ class StudyDeployment private constructor(
         val configuration: DeviceRegistration = _registeredDevices[ device ]!! // Must be non-null, otherwise canObtainDeviceDeployment would fail.
 
         // Determine which devices this device needs to connect to and retrieve configuration for preregistered devices.
-        val connectedDevices: Set<AnyDeviceDescriptor> = protocol.getConnectedDevices( device ).toSet()
+        val connectedDevices: Set<AnyDeviceConfiguration> = protocol.getConnectedDevices( device ).toSet()
         val deviceRegistrations: Map<String, DeviceRegistration> = _registeredDevices
             .filter { it.key in connectedDevices }
             .mapKeys { it.key.roleName }
@@ -413,7 +413,7 @@ class StudyDeployment private constructor(
                 TaskControl( pair.first.key, it.task.name, it.destinationDevice.roleName, it.control ) } }
             .toSet()
 
-        return MasterDeviceDeployment(
+        return PrimaryDeviceDeployment(
             device,
             configuration,
             connectedDevices,
@@ -434,10 +434,10 @@ class StudyDeployment private constructor(
      * - the [deviceDeploymentLastUpdatedOn] does not match the expected timestamp. The deployment might be outdated.
      * @throws IllegalStateException when the passed [device] cannot be deployed yet, or the deployment has stopped.
      */
-    fun deviceDeployed( device: AnyMasterDeviceDescriptor, deviceDeploymentLastUpdatedOn: Instant )
+    fun deviceDeployed( device: AnyPrimaryDeviceConfiguration, deviceDeploymentLastUpdatedOn: Instant )
     {
         // Verify whether the specified device is part of the protocol of this deployment.
-        require( device in protocolSnapshot.masterDevices ) { "The specified master device is not part of the protocol of this deployment." }
+        require( device in protocolSnapshot.primaryDevices ) { "The specified primary device is not part of the protocol of this deployment." }
 
         // Verify whether deployment matches the expected deployment.
         val latestDeployment = getDeviceDeploymentFor( device )

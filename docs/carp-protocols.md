@@ -7,13 +7,13 @@ Essentially, this subsystem has no technical dependencies on any particular sens
 
 To configure a `StudyProtocol`, the following domain objects and [common CARP types](carp-common.md) are involved:
 
-![Protocols Domain Objects](https://i.imgur.com/Qy9KIWS.png)
+![Protocols Domain Objects](https://i.imgur.com/ZXvzWru.png)
 
 - [`StudyProtocol`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/StudyProtocol.kt):
-A description of how a study is to be executed, defining the 'master' devices responsible for aggregating data, the optional devices connected to them, and the `Trigger`s which lead to data collection on said devices.
-- [`DeviceDescriptor`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/DeviceDescriptor.kt):
-Describes any type of electronic device, such as a sensor, video camera, desktop computer, or smartphone that collects data which can be incorporated into the platform after it has been processed by a 'master device' (potentially itself).
-- [`MasterDeviceDescriptor`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/MasterDeviceDescriptor.kt):
+A description of how a study is to be executed, defining the 'primary' devices responsible for aggregating data, the optional devices connected to them, and the `Trigger`s which lead to data collection on said devices.
+- [`DeviceConfiguration`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/DeviceConfiguration.kt):
+Describes any type of electronic device, such as a sensor, video camera, desktop computer, or smartphone that collects data which can be incorporated into the platform after it has been processed by a 'primary device' (potentially itself).
+- [`PrimaryDeviceConfiguration`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/PrimaryDeviceConfiguration.kt):
 A device which aggregates, synchronizes, and optionally uploads incoming data received from one or more connected devices (potentially just itself).
 Typically, a desktop computer, smartphone, or web server.
 - [`TaskDescriptor`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/TaskDescriptor.kt):
@@ -39,7 +39,7 @@ Most of these are abstract base types. For information on concrete types extendi
 
 In case the [currently supported built-in types](carp-common.md) do not provide the functionality you require, the following abstract classes can be extended to model your own custom study logic:
 
-- Extend `DeviceDescriptor` or `MasterDeviceDescriptor` to add support for a new type of device, and extend `DeviceRegistration` to specify how a single instance of this device should be uniquely identified, the capabilities it has, and device-specific configuration options needed for the device to operate.
+- Extend `DeviceConfiguration` or `PrimaryDeviceConfiguration` to add support for a new type of device, and extend `DeviceRegistration` to specify how a single instance of this device should be uniquely identified, the capabilities it has, and device-specific configuration options needed for the device to operate.
 Example: [`AltBeacon`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt).  
 - Extend `TaskDescriptor` to provide custom logic on how to schedule the containing `Measure`s, or if you need to trigger custom tasks unrelated to the study protocol in your client application.
 - Specify new `DataType`s by extending from `Data`, and optionally extend from `DataTypeSamplingScheme` and `SamplingConfiguration` to specify a custom configuration on _how_ your new data type can be measured on a specific device.

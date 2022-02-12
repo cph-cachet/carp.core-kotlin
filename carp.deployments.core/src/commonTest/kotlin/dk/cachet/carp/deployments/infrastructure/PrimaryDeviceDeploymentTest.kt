@@ -2,21 +2,21 @@ package dk.cachet.carp.deployments.infrastructure
 
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.infrastructure.serialization.JSON
-import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
-import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
 /**
- * Tests for [MasterDeviceDeployment] relying on core infrastructure.
+ * Tests for [PrimaryDeviceDeployment] relying on core infrastructure.
  */
-class MasterDeviceDeploymentTest
+class PrimaryDeviceDeploymentTest
 {
     @BeforeTest
     fun initializeSerializer()
@@ -27,12 +27,12 @@ class MasterDeviceDeploymentTest
     @Test
     fun can_serialize_and_deserialize_devicedeployment_using_JSON()
     {
-        val device = StubMasterDeviceDescriptor()
-        val connected = StubDeviceDescriptor( "Connected" )
+        val device = StubPrimaryDeviceConfiguration()
+        val connected = StubDeviceConfiguration( "Connected" )
         val task = StubTaskDescriptor( "Task" )
         val trigger = StubTrigger( connected.roleName )
 
-        val deployment = MasterDeviceDeployment(
+        val deployment = PrimaryDeviceDeployment(
             device,
             device.createRegistration(),
             setOf( connected ),
@@ -44,7 +44,7 @@ class MasterDeviceDeploymentTest
         )
 
         val json = JSON.encodeToString( deployment )
-        val parsed: MasterDeviceDeployment = JSON.decodeFromString( json )
+        val parsed: PrimaryDeviceDeployment = JSON.decodeFromString( json )
         assertEquals( deployment, parsed )
     }
 }

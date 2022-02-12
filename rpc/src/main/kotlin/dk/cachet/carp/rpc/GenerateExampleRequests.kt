@@ -119,7 +119,7 @@ private val phoneProtocol = StudyProtocol(
     protocolId,
     protocolCreatedOn
 ).apply {
-    addMasterDevice( phone )
+    addPrimaryDevice( phone )
     addConnectedDevice( bikeBeacon, phone )
     addTaskControl( startOfStudyTrigger.start( measurePhoneMovement, phone ) )
     addTaskControl( startOfStudyTrigger.start( measureBikeProximity, bikeBeacon ) )
@@ -209,7 +209,7 @@ private val stoppedDeploymentStatus = StudyDeploymentStatus.Stopped(
 )
 private val participants = setOf( Participant( participantAccount, participantId ) )
 private val participantGroupInvitedOn = Instant.fromEpochSeconds( 1642514010 )
-private val phoneDeviceDeployment = MasterDeviceDeployment(
+private val phoneDeviceDeployment = PrimaryDeviceDeployment(
     phone,
     phoneRegistration,
     setOf( bikeBeacon ),
@@ -420,7 +420,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
             ActiveParticipationInvitation(
                 Participation( deploymentId, participantId ),
                 studyInvitation,
-                setOf( AssignedMasterDevice( phone ) )
+                setOf( AssignedPrimaryDevice( phone ) )
             )
         )
     ),

@@ -11,7 +11,7 @@
       "type": "object",
       "properties": {
         "__type": true,
-        "device": { "$ref": "../common/devices/DeviceDescriptor.json" }
+        "device": { "$ref": "../common/devices/DeviceConfiguration.json" }
       },
       "required": [ "__type", "device" ]
     },

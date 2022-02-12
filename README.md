@@ -180,7 +180,7 @@ val phone = Smartphone( "Patient's phone" )
         geolocation { batteryNormal { granularity = Granularity.Balanced } }
     }
 }
-protocol.addMasterDevice( phone )
+protocol.addPrimaryDevice( phone )
 
 // Define what needs to be measured, on which device, when.
 val sensors = Smartphone.Sensors
@@ -191,7 +191,7 @@ val trackMovement = Smartphone.Tasks.BACKGROUND.create( "Track movement" ) {
 protocol.addTaskControl( phone.atStartOfStudy().start( trackMovement, phone ) )
 
 // JSON output of the study protocol, compatible with the rest of the CARP infrastructure.
-val json: String = protocol.getSnapshot().toJson()
+val json: String = JSON.encodeToString( protocol.getSnapshot() )
 ```
 
 <a name="example-studies"></a>
@@ -207,7 +207,7 @@ val studyId: UUID = studyStatus.studyId
 
 // Let the study use the protocol from the 'carp.protocols' example above.
 val trackPatientStudy: StudyProtocol = createExampleProtocol()
-val patientPhone: AnyMasterDeviceDescriptor = trackPatientStudy.masterDevices.first() // "Patient's phone"
+val patientPhone: AnyPrimaryDeviceConfiguration = trackPatientStudy.primaryDevices.first() // "Patient's phone"
 val protocolSnapshot: StudyProtocolSnapshot = trackPatientStudy.getSnapshot()
 studyStatus = studyService.setProtocol( studyId, protocolSnapshot )
 
@@ -239,12 +239,12 @@ if ( studyStatus.canDeployToParticipants )
 ```kotlin
 val deploymentService: DeploymentService = createDeploymentEndpoint()
 val trackPatientStudy: StudyProtocol = createExampleProtocol()
-val patientPhone: Smartphone = trackPatientStudy.masterDevices.first() as Smartphone // "Patient's phone"
+val patientPhone: Smartphone = trackPatientStudy.primaryDevices.first() as Smartphone // "Patient's phone"
 
 // This is called by `StudyService` when deploying a participant group.
 val invitation = ParticipantInvitation(
     participantId = UUID.randomUUID(),
-    assignedMasterDeviceRoleNames = setOf( patientPhone.roleName ),
+    assignedPrimaryDeviceRoleNames = setOf( patientPhone.roleName ),
     identity = AccountIdentity.fromEmailAddress( "test@test.com" ),
     invitation = StudyInvitation( "Movement study", "This study tracks your movements." )
 )
@@ -264,10 +264,10 @@ var status = deploymentService.registerDevice( studyDeploymentId, patientPhone.r
 val patientPhoneStatus: DeviceDeploymentStatus = status.getDeviceStatus( patientPhone )
 if ( patientPhoneStatus.canObtainDeviceDeployment ) // True since there are no dependent devices.
 {
-    val deploymentInformation: MasterDeviceDeployment =
+    val deploymentInformation: PrimaryDeviceDeployment =
         deploymentService.getDeviceDeploymentFor( studyDeploymentId, patientPhone.roleName )
     val deployedOn: Instant = deploymentInformation.lastUpdatedOn // To verify correct deployment.
-    deploymentService.deploymentSuccessful( studyDeploymentId, patientPhone.roleName, deployedOn )
+    deploymentService.deviceDeployed( studyDeploymentId, patientPhone.roleName, deployedOn )
 }
 
 // Now that all devices have been registered and deployed, the deployment is running.

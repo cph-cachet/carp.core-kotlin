@@ -1,19 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "allOf": [
-    { "$ref": "#/$defs/MasterDeviceDescriptor" },
+    { "$ref": "#/$defs/PrimaryDeviceConfiguration" },
     {
       "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.devices.Smartphone" } } },
       "then": { "$ref": "Smartphone.json" }
     }
   ],
   "$defs": {
-    "MasterDeviceDescriptor": {
-      "allOf": [ { "$ref": "DeviceDescriptor.json#/$defs/DeviceDescriptor" } ],
+    "PrimaryDeviceConfiguration": {
+      "allOf": [ { "$ref": "DeviceConfiguration.json#/$defs/DeviceConfiguration" } ],
       "properties": {
-        "isMasterDevice": { "const": true }
+        "isPrimaryDevice": { "const": true }
       },
-      "required": [ "isMasterDevice" ]
+      "required": [ "isPrimaryDevice" ]
     }
   }
 }

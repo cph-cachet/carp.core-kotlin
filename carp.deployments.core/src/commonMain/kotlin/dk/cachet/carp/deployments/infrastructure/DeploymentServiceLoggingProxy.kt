@@ -7,7 +7,7 @@ import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingPr
 import dk.cachet.carp.common.infrastructure.services.EventBusLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.deployments.application.DeploymentService
-import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
@@ -63,18 +63,18 @@ class DeploymentServiceLoggingProxy(
 
     override suspend fun getDeviceDeploymentFor(
         studyDeploymentId: UUID,
-        masterDeviceRoleName: String
-    ): MasterDeviceDeployment =
-        log( DeploymentServiceRequest.GetDeviceDeploymentFor( studyDeploymentId, masterDeviceRoleName ) )
+        primaryDeviceRoleName: String
+    ): PrimaryDeviceDeployment =
+        log( DeploymentServiceRequest.GetDeviceDeploymentFor( studyDeploymentId, primaryDeviceRoleName ) )
 
     override suspend fun deviceDeployed(
         studyDeploymentId: UUID,
-        masterDeviceRoleName: String,
+        primaryDeviceRoleName: String,
         deviceDeploymentLastUpdatedOn: Instant
     ): StudyDeploymentStatus = log(
         DeploymentServiceRequest.DeviceDeployed(
             studyDeploymentId,
-            masterDeviceRoleName,
+            primaryDeviceRoleName,
             deviceDeploymentLastUpdatedOn
         )
     )

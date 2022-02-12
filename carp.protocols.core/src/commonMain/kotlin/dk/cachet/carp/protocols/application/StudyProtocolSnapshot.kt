@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.Trigger
@@ -24,8 +24,8 @@ data class StudyProtocolSnapshot(
     val ownerId: UUID,
     val name: String,
     val description: String? = null,
-    val masterDevices: Set<AnyMasterDeviceDescriptor> = emptySet(),
-    val connectedDevices: Set<AnyDeviceDescriptor> = emptySet(),
+    val primaryDevices: Set<AnyPrimaryDeviceConfiguration> = emptySet(),
+    val connectedDevices: Set<AnyDeviceConfiguration> = emptySet(),
     val connections: Set<DeviceConnection> = emptySet(),
     val tasks: Set<TaskDescriptor<*>> = emptySet(),
     val triggers: Map<Int, Trigger<*>> = emptyMap(),
@@ -55,9 +55,9 @@ data class StudyProtocolSnapshot(
                 ownerId = protocol.ownerId,
                 name = protocol.name,
                 description = protocol.description,
-                masterDevices = protocol.masterDevices.toSet(),
-                connectedDevices = protocol.devices.minus( protocol.masterDevices ).toSet(),
-                connections = protocol.masterDevices.flatMap { getConnections( protocol, it ) }.toSet(),
+                primaryDevices = protocol.primaryDevices.toSet(),
+                connectedDevices = protocol.devices.minus( protocol.primaryDevices ).toSet(),
+                connections = protocol.primaryDevices.flatMap { getConnections( protocol, it ) }.toSet(),
                 tasks = protocol.tasks.toSet(),
                 triggers = triggers,
                 taskControls = triggers
@@ -70,13 +70,13 @@ data class StudyProtocolSnapshot(
             )
         }
 
-        private fun getConnections( protocol: StudyProtocol, masterDevice: AnyMasterDeviceDescriptor ): Iterable<DeviceConnection>
+        private fun getConnections( protocol: StudyProtocol, primaryDevice: AnyPrimaryDeviceConfiguration ): Iterable<DeviceConnection>
         {
             val connections: MutableList<DeviceConnection> = mutableListOf()
 
-            protocol.getConnectedDevices( masterDevice ).forEach {
-                connections.add( DeviceConnection( it.roleName, masterDevice.roleName ) )
-                if ( it is AnyMasterDeviceDescriptor )
+            protocol.getConnectedDevices( primaryDevice ).forEach {
+                connections.add( DeviceConnection( it.roleName, primaryDevice.roleName ) )
+                if ( it is AnyPrimaryDeviceConfiguration )
                 {
                     connections.addAll( getConnections( protocol, it ) )
                 }

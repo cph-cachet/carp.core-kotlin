@@ -13,7 +13,7 @@ import dk.cachet.carp.common.application.services.createApplicationServiceAdapte
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
-import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHost
@@ -106,10 +106,10 @@ class ClientCodeSamples
         val protocol = StudyProtocol( ownerId, "Track patient movement" )
 
         val phone = Smartphone( "Patient's phone" )
-        protocol.addMasterDevice( phone )
+        protocol.addPrimaryDevice( phone )
 
         // This is not in the protocols readme, but is needed for the connected device example.
-        val connected = StubDeviceDescriptor( "External sensor" )
+        val connected = StubDeviceConfiguration( "External sensor" )
         protocol.addConnectedDevice( connected, phone )
 
         val sensors = Smartphone.Sensors

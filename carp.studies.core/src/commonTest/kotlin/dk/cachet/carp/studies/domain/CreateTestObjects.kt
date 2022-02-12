@@ -17,7 +17,7 @@ fun createComplexStudy(): Study
 
     // Specify protocol.
     val protocol = StudyProtocol( UUID.randomUUID(), "Test protocol" )
-    protocol.addMasterDevice( Smartphone( "User's phone" ) ) // Needed to make the protocol deployable.
+    protocol.addPrimaryDevice( Smartphone( "User's phone" ) ) // Needed to make the protocol deployable.
     study.protocolSnapshot = protocol.getSnapshot()
 
     // Go live.

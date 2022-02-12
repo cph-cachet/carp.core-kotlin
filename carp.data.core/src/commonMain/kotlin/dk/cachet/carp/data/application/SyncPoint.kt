@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Information about a sensor clock at [synchronizedOn] on a master device
+ * Information about a sensor clock at [synchronizedOn] on a primary device
  * which allows converting sensor time to number of microseconds since the Unix epoch.
  *
  * The required units/sign to carry out this conversion are determined by the formula:
@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SyncPoint(
     /**
-     * The UTC time as measured on the master device when it determined the synchronization point.
+     * The UTC time as measured on the primary device when it determined the synchronization point.
      */
     val synchronizedOn: Instant,
     /**

@@ -14,7 +14,7 @@ import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
 import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
-import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
@@ -81,7 +81,7 @@ class HostsIntegrationTest
     fun when_study_goes_live_recruitment_is_ready_for_deployment() = runSuspendTest {
         val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
-        val protocol = createSingleMasterDeviceProtocol( "Device" )
+        val protocol = createSinglePrimaryDeviceProtocol( "Device" )
         studyService.setProtocol( studyId, protocol.getSnapshot() )
 
         var studyGoneLive: StudyService.Event.StudyGoneLive? = null
@@ -143,7 +143,7 @@ class HostsIntegrationTest
         val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
         val deviceRole = "Phone"
-        val protocol = createSingleMasterDeviceProtocol( deviceRole )
+        val protocol = createSinglePrimaryDeviceProtocol( deviceRole )
         studyService.setProtocol( studyId, protocol.getSnapshot() )
         studyService.goLive( studyId )
 

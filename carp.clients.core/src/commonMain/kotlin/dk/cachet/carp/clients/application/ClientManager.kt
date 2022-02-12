@@ -12,7 +12,7 @@ import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistrationBuilder
-import dk.cachet.carp.common.application.devices.MasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.PrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.DeploymentService
 
 
@@ -20,7 +20,7 @@ import dk.cachet.carp.deployments.application.DeploymentService
  * Allows managing [Study]'s on a client device.
  */
 abstract class ClientManager<
-    TMasterDevice : MasterDeviceDescriptor<TRegistration, TRegistrationBuilder>,
+    TPrimaryDevice : PrimaryDeviceConfiguration<TRegistration, TRegistrationBuilder>,
     TRegistration : DeviceRegistration,
     TRegistrationBuilder : DeviceRegistrationBuilder<TRegistration>
 >(
@@ -33,7 +33,7 @@ abstract class ClientManager<
      */
     private val deploymentService: DeploymentService,
     /**
-     * Determines which [DeviceDataCollector] to use to collect data locally on this master device
+     * Determines which [DeviceDataCollector] to use to collect data locally on this primary device
      * and this factory is used to create [ConnectedDeviceDataCollector] instances for connected devices.
      */
     dataCollectorFactory: DeviceDataCollectorFactory
@@ -110,7 +110,7 @@ abstract class ClientManager<
 
         // Try to deploy the study.
         // IllegalArgumentException's will be thrown here when deployment or role name does not exist, or device is already registered.
-        // TODO: Can/should it be reinforced here that only matching master device type can be deployed?
+        // TODO: Can/should it be reinforced here that only matching primary device type can be deployed?
         val registration = repository.getDeviceRegistration()!!
         studyDeployment.tryDeployment( study, registration )
 

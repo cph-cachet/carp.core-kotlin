@@ -1,7 +1,7 @@
 package dk.cachet.carp.deployments.domain
 
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
-import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
+import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
 import kotlinx.serialization.Serializable
 
 
@@ -13,10 +13,10 @@ data class RegistrableDevice(
     /**
      * The description of the device.
      */
-    val device: AnyDeviceDescriptor,
+    val device: AnyDeviceConfiguration,
     /**
-     * Determines whether the device can be deployed by retrieving [MasterDeviceDeployment].
-     * Not all master devices necessarily need deployment; chained master devices do not.
+     * Determines whether the device can be deployed by retrieving [PrimaryDeviceDeployment].
+     * Not all primary devices necessarily need deployment; chained primary devices do not.
      */
     val canBeDeployed: Boolean,
     /**

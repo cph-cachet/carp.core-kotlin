@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
   "properties": {
-    "device": { "$ref": "../../common/devices/DeviceDescriptor.json" },
+    "device": { "$ref": "../../common/devices/DeviceConfiguration.json" },
     "registration": {
       "oneOf": [
         { "type": "null" },

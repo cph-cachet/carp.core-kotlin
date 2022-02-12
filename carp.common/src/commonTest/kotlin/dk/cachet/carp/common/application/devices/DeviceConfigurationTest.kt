@@ -5,9 +5,9 @@ import kotlin.test.*
 
 
 /**
- * Tests for [DeviceDescriptor].
+ * Tests for [DeviceConfiguration].
  */
-class DeviceDescriptorTest
+class DeviceConfigurationTest
 {
     @Test
     fun validateModifiedDefaultSamplingConfigurations_with_correct_configuration()

@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * A [DeviceRegistration] uniquely identifies a [DeviceDescriptor] once it is deployed in a study,
+ * A [DeviceRegistration] uniquely identifies a [DeviceConfiguration] once it is deployed in a study,
  * contains the necessary details for the client on how to connect to the device,
  * and stores device specifications which may be relevant to the researcher when interpreting collection data,
  * such as brand/model name and operating system version.
@@ -47,7 +47,7 @@ abstract class DeviceRegistration
  * A helper class to configure and construct immutable [DeviceRegistration] classes.
  *
  * TODO: This and extending classes are never expected to be serialized,
- *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceDescriptor].
+ *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceConfiguration].
  */
 @Serializable( NotSerializable::class )
 @DeviceRegistrationBuilderDsl

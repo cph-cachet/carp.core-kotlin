@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
 
 /**
  * Describes any type of electronic device, such as a sensor, video camera, desktop computer, or smartphone
- * that collects data which can be incorporated into the platform after it has been processed by a master device (potentially itself).
+ * that collects data which can be incorporated into the platform after it has been processed by a primary device (potentially itself).
  * Optionally, a device can present output and receive user input.
  *
  * TODO: Does this also allow specifying dynamic devices? E.g., 'closest smartphone'. Perhaps a 'DeviceSelector'?
@@ -23,7 +23,7 @@ import kotlin.reflect.KClass
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
-abstract class DeviceDescriptor<
+abstract class DeviceConfiguration<
     TRegistration : DeviceRegistration,
     out TRegistrationBuilder : DeviceRegistrationBuilder<TRegistration>
 >
@@ -71,7 +71,7 @@ abstract class DeviceDescriptor<
     /**
      * Return sampling schemes for all the sensors available on this device.
      *
-     * Implementations of [DeviceDescriptor] should simply return the mandatory inner object
+     * Implementations of [DeviceConfiguration] should simply return the mandatory inner object
      * `object Sensors : DataTypeSamplingSchemeMap()` here.
      */
     abstract fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap
@@ -86,13 +86,13 @@ abstract class DeviceDescriptor<
         createDeviceRegistrationBuilder().apply( builder ).build()
 
     /**
-     * Return the class information of the [DeviceRegistration] class used to register devices for this [DeviceDescriptor].
+     * Return the class information of the [DeviceRegistration] class used to register devices for this [DeviceConfiguration].
      */
     abstract fun getRegistrationClass(): KClass<TRegistration>
 
     /**
      * Determines whether the device specifications defined in [registration]
-     * live up to the minimum specifications defined by the researcher in this [DeviceDescriptor].
+     * live up to the minimum specifications defined by the researcher in this [DeviceConfiguration].
      */
     abstract fun isValidRegistration( registration: TRegistration ): Trilean
 
@@ -107,21 +107,21 @@ abstract class DeviceDescriptor<
         val isValidType = getRegistrationClass().isInstance( registration )
 
         @Suppress( "UNCHECKED_CAST" )
-        val anyDevice = this as DeviceDescriptor<DeviceRegistration, *>
+        val anyDevice = this as DeviceConfiguration<DeviceRegistration, *>
 
         return !isValidType || ( anyDevice.isValidRegistration( registration ) == Trilean.FALSE )
     }
 }
 
-typealias AnyDeviceDescriptor = DeviceDescriptor<*, *>
-typealias DeviceType = KClass<out AnyDeviceDescriptor>
+typealias AnyDeviceConfiguration = DeviceConfiguration<*, *>
+typealias DeviceType = KClass<out AnyDeviceConfiguration>
 
 
 /**
- * A helper class to configure and construct immutable [DeviceDescriptor] classes.
+ * A helper class to configure and construct immutable [DeviceConfiguration] classes.
  */
-@DeviceDescriptorBuilderDsl
-abstract class DeviceDescriptorBuilder<TSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilder>
+@DeviceConfigurationBuilderDsl
+abstract class DeviceConfigurationBuilder<TSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilder>
 {
     private var samplingConfigurationBuilder: TSamplingConfigurationMapBuilder.() -> Unit = { }
 
@@ -140,8 +140,8 @@ abstract class DeviceDescriptorBuilder<TSamplingConfigurationMapBuilder : Sampli
 }
 
 /**
- * Should be applied to all builders participating in building [DeviceDescriptor]s to prevent misuse of internal DSL.
+ * Should be applied to all builders participating in building [DeviceConfiguration]s to prevent misuse of internal DSL.
  * For more information: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-dsl-marker/index.html
  */
 @DslMarker
-annotation class DeviceDescriptorBuilderDsl
+annotation class DeviceConfigurationBuilderDsl

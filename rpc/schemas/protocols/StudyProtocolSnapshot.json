@@ -7,13 +7,13 @@
     "ownerId": { "type": "string", "format": "uuid" },
     "name": { "type": "string" },
     "description": { "type": [ "string", "null" ] },
-    "masterDevices": {
+    "primaryDevices": {
       "type": "array",
-      "items": { "$ref": "../common/devices/MasterDeviceDescriptor.json" }
+      "items": { "$ref": "../common/devices/PrimaryDeviceConfiguration.json" }
     },
     "connectedDevices": {
       "type": "array",
-      "items": { "$ref": "../common/devices/DeviceDescriptor.json" }
+      "items": { "$ref": "../common/devices/DeviceConfiguration.json" }
     },
     "connections": {
       "type": "array",

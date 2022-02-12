@@ -2,7 +2,7 @@ package dk.cachet.carp.common.application
 
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.elements.InputElement
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
 
 val concreteDataTypes: List<KClass<out Data>> = findConcreteTypes()
 val concreteInputElementTypes: List<KClass<out InputElement<*>>> = findConcreteTypes()
-val concreteDeviceDescriptorTypes: List<KClass<out AnyDeviceDescriptor>> = findConcreteTypes()
+val concreteDeviceConfigurationTypes: List<KClass<out AnyDeviceConfiguration>> = findConcreteTypes()
 val concreteDeviceRegistrationTypes: List<KClass<out DeviceRegistration>> = findConcreteTypes()
 val concreteSamplingConfigurationTypes: List<KClass<out SamplingConfiguration>> = findConcreteTypes()
 val concreteTaskDescriptorTypes: List<KClass<out TaskDescriptor<*>>> = findConcreteTypes()

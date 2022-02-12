@@ -15,7 +15,7 @@ import kotlinx.serialization.Serializable
 data class DataStreamPoint<out TData : Data>(
     /**
      * The sequence number of this [measurement] in the data stream, acting as a unique key.
-     * Sequence numbers are assigned by the master device which coordinates the data collection,
+     * Sequence numbers are assigned by the primary device which coordinates the data collection,
      * starting from zero and incremented by 1 for each new measurement.
      */
     val sequenceId: Long,

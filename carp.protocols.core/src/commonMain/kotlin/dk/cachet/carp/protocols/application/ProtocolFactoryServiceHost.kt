@@ -34,7 +34,7 @@ class ProtocolFactoryServiceHost(
     {
         val protocol = StudyProtocol( ownerId, name, description, uuidFactory.randomUUID(), clock.now() )
         val customDevice = CustomProtocolDevice( "Custom device" )
-        protocol.addMasterDevice( customDevice )
+        protocol.addPrimaryDevice( customDevice )
         val task = CustomProtocolTask( "Custom device task", customProtocol )
         protocol.addTaskControl( customDevice.atStartOfStudy().start( task, customDevice ) )
 

@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.users.ParticipantAttribute
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.test.runSuspendTest
@@ -187,5 +187,5 @@ interface ProtocolServiceTest
     }
 
     private fun modifyProtocol( protocol: StudyProtocol ): StudyProtocol =
-        protocol.apply { addMasterDevice( StubMasterDeviceDescriptor() ) }
+        protocol.apply { addPrimaryDevice( StubPrimaryDeviceConfiguration() ) }
 }

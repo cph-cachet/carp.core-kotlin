@@ -2,9 +2,9 @@ package dk.cachet.carp.clients.domain
 
 import dk.cachet.carp.clients.domain.study.Study
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
-import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.test.runSuspendTest
 import kotlinx.datetime.Clock
@@ -89,21 +89,21 @@ interface ClientRepositoryTest
         repo.addStudy( study )
 
         // Make some changes and update.
-        val masterDevice = StubMasterDeviceDescriptor( deviceRoleName )
-        val registration = masterDevice.createRegistration()
-        val masterDeviceDeployment = MasterDeviceDeployment( StubMasterDeviceDescriptor( deviceRoleName ), registration )
+        val primaryDevice = StubPrimaryDeviceConfiguration( deviceRoleName )
+        val registration = primaryDevice.createRegistration()
+        val primaryDeviceDeployment = PrimaryDeviceDeployment( StubPrimaryDeviceConfiguration( deviceRoleName ), registration )
         study.deploymentStatusReceived(
             StudyDeploymentStatus.DeployingDevices(
                 Clock.System.now(),
                 deploymentId,
                 listOf(
-                    DeviceDeploymentStatus.Registered( masterDevice, true, emptySet(), emptySet() )
+                    DeviceDeploymentStatus.Registered( primaryDevice, true, emptySet(), emptySet() )
                 ),
                 emptyList(),
                 null
             )
         )
-        study.deviceDeploymentReceived( masterDeviceDeployment )
+        study.deviceDeploymentReceived( primaryDeviceDeployment )
         repo.updateStudy( study )
 
         // Verify whether changes were stored.

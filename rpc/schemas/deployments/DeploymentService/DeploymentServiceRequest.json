@@ -130,13 +130,13 @@
         "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetDeviceDeploymentFor" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
-        "masterDeviceRoleName": { "type": "string" }
+        "primaryDeviceRoleName": { "type": "string" }
       },
-      "required": [ "__type", "apiVersion", "studyDeploymentId", "masterDeviceRoleName" ],
+      "required": [ "__type", "apiVersion", "studyDeploymentId", "primaryDeviceRoleName" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetDeviceDeploymentFor-Response",
-        "$ref": "../MasterDeviceDeployment.json"
+        "$ref": "../PrimaryDeviceDeployment.json"
       }
     },
     "DeviceDeployed": {
@@ -146,10 +146,10 @@
         "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.DeviceDeployed" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
-        "masterDeviceRoleName": { "type": "string" },
+        "primaryDeviceRoleName": { "type": "string" },
         "deviceDeploymentLastUpdatedOn": { "type": "string", "format": "date-time" }
       },
-      "required": [ "__type", "apiVersion", "studyDeploymentId", "masterDeviceRoleName", "deviceDeploymentLastUpdatedOn" ],
+      "required": [ "__type", "apiVersion", "studyDeploymentId", "primaryDeviceRoleName", "deviceDeploymentLastUpdatedOn" ],
       "additionalProperties": false,
       "Response": {
         "$anchor": "DeviceDeployed-Response",

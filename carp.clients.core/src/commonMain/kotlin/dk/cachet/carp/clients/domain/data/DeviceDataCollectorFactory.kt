@@ -5,7 +5,7 @@ import dk.cachet.carp.common.application.devices.DeviceType
 
 
 /**
- * Provides a [localDataCollector] to collect data locally on the master device
+ * Provides a [localDataCollector] to collect data locally on the primary device
  * and supports creating [ConnectedDeviceDataCollector] instances for connected devices.
  */
 abstract class DeviceDataCollectorFactory( val localDataCollector: DeviceDataCollector )

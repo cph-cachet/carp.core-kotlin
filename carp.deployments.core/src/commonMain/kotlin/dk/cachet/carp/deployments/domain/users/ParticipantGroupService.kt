@@ -29,8 +29,8 @@ class ParticipantGroupService( val accountService: AccountService )
         for ( invitation in invitations )
         {
             val participation = Participation( studyDeploymentId, invitation.participantId )
-            val assignedDevices = invitation.assignedMasterDeviceRoleNames.map { role ->
-                protocol.masterDevices.first { it.roleName == role }
+            val assignedDevices = invitation.assignedPrimaryDeviceRoleNames.map { role ->
+                protocol.primaryDevices.first { it.roleName == role }
             }
 
             // Ensure an account exists for the given identity and an invitation has been sent out.

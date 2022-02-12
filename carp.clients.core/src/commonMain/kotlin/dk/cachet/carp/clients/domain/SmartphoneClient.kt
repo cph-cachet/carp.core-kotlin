@@ -23,7 +23,7 @@ class SmartphoneClient(
      */
     deploymentService: DeploymentService,
     /**
-     * Determines which [DeviceDataCollector] to use to collect data locally on this master device
+     * Determines which [DeviceDataCollector] to use to collect data locally on this primary device
      * and this factory is used to create [ConnectedDeviceDataCollector] instances for connected devices.
      */
     dataCollectorFactory: DeviceDataCollectorFactory

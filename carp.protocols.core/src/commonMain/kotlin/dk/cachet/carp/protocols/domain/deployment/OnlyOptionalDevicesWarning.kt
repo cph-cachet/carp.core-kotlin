@@ -4,17 +4,17 @@ import dk.cachet.carp.protocols.domain.StudyProtocol
 
 
 /**
- * Evaluates whether a [StudyProtocol] contains only optional master devices.
+ * Evaluates whether a [StudyProtocol] contains only optional primary devices.
  *
- * If all master devices are optional, this means a deployment could "start" without any devices or participants.
+ * If all primary devices are optional, this means a deployment could "start" without any devices or participants.
  */
 class OnlyOptionalDevicesWarning : DeploymentWarning
 {
     override val description: String =
-        "The study protocol only contains optional master devices. " +
+        "The study protocol only contains optional primary devices. " +
         "This implies that a deployment could 'start' without any devices or participants, indicating a problem."
 
 
     override fun isIssuePresent( protocol: StudyProtocol ): Boolean =
-        protocol.masterDevices.all { it.isOptional }
+        protocol.primaryDevices.all { it.isOptional }
 }

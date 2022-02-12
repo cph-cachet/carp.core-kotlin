@@ -13,13 +13,13 @@ import kotlin.time.Duration
  */
 @Serializable
 @Polymorphic
-abstract class MasterDeviceDescriptor<TRegistration : DeviceRegistration, out TBuilder : DeviceRegistrationBuilder<TRegistration>> :
-    DeviceDescriptor<TRegistration, TBuilder>()
+abstract class PrimaryDeviceConfiguration<TRegistration : DeviceRegistration, out TBuilder : DeviceRegistrationBuilder<TRegistration>> :
+    DeviceConfiguration<TRegistration, TBuilder>()
 {
     // This property is only here for (de)serialization purposes.
-    // For unknown types we need to know whether to treat them as master devices or not (in the case of 'DeviceDescriptor' collections).
+    // For unknown types we need to know whether to treat them as primary devices or not (in the case of 'DeviceConfiguration' collections).
     @Required
-    internal val isMasterDevice: Boolean = true
+    internal val isPrimaryDevice: Boolean = true
 
     /**
      * Get a trigger which fires immediately at the start of a study deployment.
@@ -27,4 +27,4 @@ abstract class MasterDeviceDescriptor<TRegistration : DeviceRegistration, out TB
     fun atStartOfStudy(): ElapsedTimeTrigger = ElapsedTimeTrigger( this, Duration.ZERO )
 }
 
-typealias AnyMasterDeviceDescriptor = MasterDeviceDescriptor<*, *>
+typealias AnyPrimaryDeviceConfiguration = PrimaryDeviceConfiguration<*, *>

@@ -55,7 +55,7 @@ describe( "carp.common", () => {
             SelectOne.Companion,
             new Text( "How are you feeling?" ),
             Text.Companion,
-            [ "DeviceDescriptor", new Smartphone( "Role", toSet( [] ) ) ],
+            [ "DeviceConfiguration", new Smartphone( "Role", toSet( [] ) ) ],
             [ "DeviceRegistration", new DefaultDeviceRegistration() ],
             DeviceRegistration.Companion,
             [ "TaskDescriptor", new WebTask( "name", undefined, "", "url.com" ) ],

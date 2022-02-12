@@ -2,11 +2,11 @@
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
   "properties": {
-    "deviceDescriptor": { "$ref": "../common/devices/MasterDeviceDescriptor.json" },
+    "deviceConfiguration": { "$ref": "../common/devices/PrimaryDeviceConfiguration.json" },
     "registration": { "$ref": "../common/devices/DeviceRegistration.json" },
     "connectedDevices": {
       "type": "array",
-      "items": { "$ref": "../common/devices/DeviceDescriptor.json" }
+      "items": { "$ref": "../common/devices/DeviceConfiguration.json" }
     },
     "connectedDeviceRegistrations": {
       "type": "object",
@@ -27,6 +27,6 @@
     },
     "applicationData": { "$ref": "../common/ApplicationData.json" }
   },
-  "required": [ "deviceDescriptor", "registration" ],
+  "required": [ "deviceConfiguration", "registration" ],
   "additionalProperties": false
 }

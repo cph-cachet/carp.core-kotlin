@@ -1,11 +1,11 @@
 package dk.cachet.carp.common.infrastructure.test
 
 import dk.cachet.carp.common.application.data.Data
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
-import dk.cachet.carp.common.application.devices.DeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
-import dk.cachet.carp.common.application.devices.MasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.PrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.triggers.Trigger
@@ -32,19 +32,19 @@ val STUBS_SERIAL_MODULE = SerializersModule {
         subclass( StubDataTimeSpan::class )
     }
 
-    fun PolymorphicModuleBuilder<AnyMasterDeviceDescriptor>.registerMasterDeviceDescriptorSubclasses()
+    fun PolymorphicModuleBuilder<AnyPrimaryDeviceConfiguration>.registerPrimaryDeviceConfigurationSubclasses()
     {
-        subclass( StubMasterDeviceDescriptor::class )
+        subclass( StubPrimaryDeviceConfiguration::class )
     }
 
-    polymorphic( DeviceDescriptor::class )
+    polymorphic( DeviceConfiguration::class )
     {
-        subclass( StubDeviceDescriptor::class )
-        registerMasterDeviceDescriptorSubclasses()
+        subclass( StubDeviceConfiguration::class )
+        registerPrimaryDeviceConfigurationSubclasses()
     }
-    polymorphic( MasterDeviceDescriptor::class )
+    polymorphic( PrimaryDeviceConfiguration::class )
     {
-        registerMasterDeviceDescriptorSubclasses()
+        registerPrimaryDeviceConfigurationSubclasses()
     }
     polymorphic( SamplingConfiguration::class )
     {
@@ -76,24 +76,24 @@ fun String.makeUnknown(
     this.makeUnknown( data, Data::class, "data", data.data, unknownTypeName )
 
 /**
- * Replace the type name of [deviceDescriptor] in this JSON string with [unknownTypeName].
+ * Replace the type name of [deviceConfiguration] in this JSON string with [unknownTypeName].
  */
 @ExperimentalSerializationApi
 fun String.makeUnknown(
-    deviceDescriptor: AnyDeviceDescriptor,
-    unknownTypeName: String = "com.unknown.UnknownDeviceDescriptor"
+    deviceConfiguration: AnyDeviceConfiguration,
+    unknownTypeName: String = "com.unknown.UnknownDeviceConfiguration"
 ): String =
-    this.makeUnknown( deviceDescriptor, DeviceDescriptor::class, "roleName", deviceDescriptor.roleName, unknownTypeName )
+    this.makeUnknown( deviceConfiguration, DeviceConfiguration::class, "roleName", deviceConfiguration.roleName, unknownTypeName )
 
 /**
- * Replace the type name of [masterDeviceDescriptor] in this JSON string with [unknownTypeName].
+ * Replace the type name of [primaryDeviceConfiguration] in this JSON string with [unknownTypeName].
  */
 @ExperimentalSerializationApi
 fun String.makeUnknown(
-    masterDeviceDescriptor: AnyMasterDeviceDescriptor,
-    unknownTypeName: String = "com.unknown.UnknownMasterDeviceDescriptor"
+    primaryDeviceConfiguration: AnyPrimaryDeviceConfiguration,
+    unknownTypeName: String = "com.unknown.UnknownPrimaryDeviceConfiguration"
 ): String =
-    this.makeUnknown( masterDeviceDescriptor, MasterDeviceDescriptor::class, "roleName", masterDeviceDescriptor.roleName, unknownTypeName )
+    this.makeUnknown( primaryDeviceConfiguration, PrimaryDeviceConfiguration::class, "roleName", primaryDeviceConfiguration.roleName, unknownTypeName )
 
 /**
  * Replace the type name of [registration] in this JSON string with [unknownTypeName].

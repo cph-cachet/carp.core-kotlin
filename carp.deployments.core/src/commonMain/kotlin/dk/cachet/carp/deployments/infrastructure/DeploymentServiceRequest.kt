@@ -6,7 +6,7 @@ import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.deployments.application.DeploymentService
-import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
@@ -90,24 +90,24 @@ sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<D
     }
 
     @Serializable
-    data class GetDeviceDeploymentFor( val studyDeploymentId: UUID, val masterDeviceRoleName: String ) :
-        DeploymentServiceRequest<MasterDeviceDeployment>()
+    data class GetDeviceDeploymentFor( val studyDeploymentId: UUID, val primaryDeviceRoleName: String ) :
+        DeploymentServiceRequest<PrimaryDeviceDeployment>()
     {
-        override fun getResponseSerializer() = serializer<MasterDeviceDeployment>()
+        override fun getResponseSerializer() = serializer<PrimaryDeviceDeployment>()
         override suspend fun invokeOn( service: DeploymentService ) =
-            service.getDeviceDeploymentFor( studyDeploymentId, masterDeviceRoleName )
+            service.getDeviceDeploymentFor( studyDeploymentId, primaryDeviceRoleName )
     }
 
     @Serializable
     data class DeviceDeployed(
         val studyDeploymentId: UUID,
-        val masterDeviceRoleName: String,
+        val primaryDeviceRoleName: String,
         val deviceDeploymentLastUpdatedOn: Instant
     ) : DeploymentServiceRequest<StudyDeploymentStatus>()
     {
         override fun getResponseSerializer() = serializer<StudyDeploymentStatus>()
         override suspend fun invokeOn( service: DeploymentService ) =
-            service.deviceDeployed( studyDeploymentId, masterDeviceRoleName, deviceDeploymentLastUpdatedOn )
+            service.deviceDeployed( studyDeploymentId, primaryDeviceRoleName, deviceDeploymentLastUpdatedOn )
     }
 
     @Serializable

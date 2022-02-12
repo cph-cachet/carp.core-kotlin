@@ -1,7 +1,7 @@
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.data.DataTypeMetaData
-import dk.cachet.carp.common.application.devices.DeviceDescriptor
+import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
@@ -35,7 +35,7 @@ data class IntervalSamplingConfiguration(
 
 /**
  * A helper class to configure and construct immutable [IntervalSamplingConfiguration] objects
- * as part of setting up a [DeviceDescriptor].
+ * as part of setting up a [DeviceConfiguration].
  */
 class IntervalSamplingConfigurationBuilder( var interval: Duration ) :
     SamplingConfigurationBuilder<IntervalSamplingConfiguration>

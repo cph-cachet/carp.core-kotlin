@@ -59,27 +59,27 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 
 
     // `devices` namespace.
-    fun PolymorphicModuleBuilder<AnyMasterDeviceDescriptor>.registerMasterDeviceDescriptorSubclasses()
+    fun PolymorphicModuleBuilder<AnyPrimaryDeviceConfiguration>.registerPrimaryDeviceConfigurationSubclasses()
     {
         subclass( CustomProtocolDevice::class )
         subclass( Smartphone::class )
 
-        subclass( CustomMasterDeviceDescriptor::class )
+        subclass( CustomPrimaryDeviceConfiguration::class )
     }
-    polymorphic( DeviceDescriptor::class )
+    polymorphic( DeviceConfiguration::class )
     {
         subclass( AltBeacon::class )
         subclass( BLEHeartRateDevice::class )
-        registerMasterDeviceDescriptorSubclasses()
+        registerPrimaryDeviceConfigurationSubclasses()
 
-        subclass( CustomDeviceDescriptor::class )
-        default { DeviceDescriptorSerializer }
+        subclass( CustomDeviceConfiguration::class )
+        default { DeviceConfigurationSerializer }
     }
-    polymorphic( MasterDeviceDescriptor::class )
+    polymorphic( PrimaryDeviceConfiguration::class )
     {
-        registerMasterDeviceDescriptorSubclasses()
+        registerPrimaryDeviceConfigurationSubclasses()
 
-        default { MasterDeviceDescriptorSerializer }
+        default { PrimaryDeviceConfigurationSerializer }
     }
     polymorphic( DeviceRegistration::class )
     {

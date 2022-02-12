@@ -22,7 +22,7 @@ import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceType
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
-import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
@@ -46,7 +46,7 @@ class StudyDeploymentProxyTest
         val deviceRegistration = smartphone.createRegistration()
         studyDeployment.tryDeployment( study, deviceRegistration )
 
-        // Study status is running and contains registered master device.
+        // Study status is running and contains registered primary device.
         val studyStatus = study.getStatus()
         assertTrue( studyStatus is StudyStatus.Running )
         val registrationStatus = studyStatus.devicesRegistrationStatus.values.singleOrNull()
@@ -54,15 +54,15 @@ class StudyDeploymentProxyTest
         assertEquals( smartphone, registrationStatus.device )
         assertEquals( deviceRegistration, registrationStatus.registration )
 
-        // Master device status in deployment is also set to deployed.
+        // Primary device status in deployment is also set to deployed.
         val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
-        val masterDeviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
-        assertTrue( masterDeviceStatus is DeviceDeploymentStatus.Deployed )
+        val primaryDeviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
+        assertTrue( primaryDeviceStatus is DeviceDeploymentStatus.Deployed )
     }
 
     @Test
     fun tryDeployment_does_not_deploy_when_depending_on_other_devices() = runSuspendTest {
-        // Create a deployment service which contains a study where 'smartphone' depends on another master device.
+        // Create a deployment service which contains a study where 'smartphone' depends on another primary device.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val studyDeployment = StudyDeploymentProxy( deploymentService, createDataListener() )
 
@@ -74,10 +74,10 @@ class StudyDeploymentProxyTest
         val studyStatus = study.getStatus()
         assertTrue( studyStatus is StudyStatus.AwaitingOtherDeviceRegistrations )
 
-        // Master device status in deployment is registered, but not deployed.
+        // Primary device status in deployment is registered, but not deployed.
         val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
-        val masterDeviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
-        assertTrue( masterDeviceStatus is DeviceDeploymentStatus.Registered )
+        val primaryDeviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
+        assertTrue( primaryDeviceStatus is DeviceDeploymentStatus.Registered )
     }
 
     @Test
@@ -99,10 +99,10 @@ class StudyDeploymentProxyTest
         assertTrue( connectedRegistrationStatus is DeviceRegistrationStatus.Unregistered )
         assertEquals( connectedDevice, connectedRegistrationStatus.device )
 
-        // Master device status in deployment is registered, but not deployed.
+        // Primary device status in deployment is registered, but not deployed.
         val newDeploymentStatus = deploymentService.getStudyDeploymentStatus( deploymentStatus.studyDeploymentId )
-        val masterDeviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
-        assertTrue( masterDeviceStatus is DeviceDeploymentStatus.Registered )
+        val primaryDeviceStatus = newDeploymentStatus.getDeviceStatus( smartphone )
+        assertTrue( primaryDeviceStatus is DeviceDeploymentStatus.Registered )
     }
 
     @Test
@@ -145,7 +145,7 @@ class StudyDeploymentProxyTest
 
     @Test
     fun tryDeployment_only_succeeds_after_ready_for_deployment() = runSuspendTest {
-        // Create a study where 'smartphone' depends on another master device ('deviceSmartphoneDependsOn').
+        // Create a study where 'smartphone' depends on another primary device ('deviceSmartphoneDependsOn').
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val studyDeployment = StudyDeploymentProxy( deploymentService, createDataListener() )
         val study = Study( deploymentStatus.studyDeploymentId, smartphone.roleName )
@@ -201,7 +201,7 @@ class StudyDeploymentProxyTest
 
     @Test
     fun tryDeployment_changes_nothing_when_already_deployed() = runSuspendTest {
-        // Create a study which instantly deploys because the protocol only contains one master device.
+        // Create a study which instantly deploys because the protocol only contains one primary device.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val studyDeployment = StudyDeploymentProxy( deploymentService, createDataListener() )
         val study = Study( deploymentStatus.studyDeploymentId, smartphone.roleName )
@@ -218,8 +218,8 @@ class StudyDeploymentProxyTest
     fun tryDeployment_succeeds_when_data_types_of_protocol_measures_are_supported() = runSuspendTest {
         // Create protocol that measures on smartphone and one connected device.
         val protocol = createSmartphoneWithConnectedDeviceStudy()
-        val masterTask = StubTaskDescriptor( "Master measure", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
-        protocol.addTaskControl( smartphone.atStartOfStudy().start( masterTask, smartphone ) )
+        val primaryTask = StubTaskDescriptor( "Primary measure", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
+        protocol.addTaskControl( smartphone.atStartOfStudy().start( primaryTask, smartphone ) )
         val connectedDataType = DataType( "custom", "type" )
         val connectedTask = StubTaskDescriptor( "Connected measure", listOf( Measure.DataStream( connectedDataType ) ) )
         protocol.addTaskControl( smartphone.atStartOfStudy().start( connectedTask, connectedDevice ) )
@@ -227,7 +227,7 @@ class StudyDeploymentProxyTest
         // Create a data listener which supports the requested devices and types in the protocol
         val dataListener = DataListener( StubConnectedDeviceDataCollectorFactory(
             localSupportedDataTypes = setOf( STUB_DATA_TYPE ),
-            mapOf( StubDeviceDescriptor::class to setOf( connectedDataType ) )
+            mapOf( StubDeviceConfiguration::class to setOf( connectedDataType ) )
         ) )
 
         // Create study deployment with preregistered connected device (otherwise study initialization won't complete).

@@ -160,7 +160,7 @@ class StudyTest
     private fun setDeployableProtocol( study: Study )
     {
         val protocol = StudyProtocol( UUID.randomUUID(), "Test protocol" )
-        protocol.addMasterDevice( Smartphone( "User's phone" ) ) // One master device is needed to deploy.
+        protocol.addPrimaryDevice( Smartphone( "User's phone" ) ) // One primaryf device is needed to deploy.
         study.protocolSnapshot = protocol.getSnapshot()
     }
 }

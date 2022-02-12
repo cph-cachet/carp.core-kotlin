@@ -113,7 +113,7 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
      *  - any of the participants specified in [group] does not exist
      *  - [group] is empty
      *  - any of the device roles specified in [group] are not part of the configured study protocol
-     *  - not all master devices part of the study protocol have been assigned a participant
+     *  - not all primary devices part of the study protocol have been assigned a participant
      */
     fun createInvitations( group: Set<AssignParticipantDevices> ): Pair<StudyProtocolSnapshot, List<ParticipantInvitation>>
     {
@@ -131,7 +131,7 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
             val participant = allParticipants.getValue( toAssign.participantId )
             ParticipantInvitation(
                 participant.id,
-                toAssign.masterDeviceRoleNames,
+                toAssign.primaryDeviceRoleNames,
                 participant.accountIdentity,
                 status.invitation
             )

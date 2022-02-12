@@ -2,7 +2,7 @@ package dk.cachet.carp.studies
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
@@ -41,7 +41,7 @@ class StudiesCodeSamples
 
         // Let the study use the protocol from the 'carp.protocols' example above.
         val trackPatientStudy: StudyProtocol = createExampleProtocol()
-        val patientPhone: AnyMasterDeviceDescriptor = trackPatientStudy.masterDevices.first() // "Patient's phone"
+        val patientPhone: AnyPrimaryDeviceConfiguration = trackPatientStudy.primaryDevices.first() // "Patient's phone"
         val protocolSnapshot: StudyProtocolSnapshot = trackPatientStudy.getSnapshot()
         studyStatus = studyService.setProtocol( studyId, protocolSnapshot )
 
@@ -99,7 +99,7 @@ class StudiesCodeSamples
         val protocol = StudyProtocol( ownerId, "Track patient movement" )
 
         val phone = Smartphone( "Patient's phone" )
-        protocol.addMasterDevice( phone )
+        protocol.addPrimaryDevice( phone )
 
         val sensors = Smartphone.Sensors
         val trackMovement = Smartphone.Tasks.BACKGROUND.create( "Track movement" ) {

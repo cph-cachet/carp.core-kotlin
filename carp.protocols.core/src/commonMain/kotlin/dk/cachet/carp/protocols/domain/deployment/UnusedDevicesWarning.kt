@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.deployment
 
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.protocols.domain.StudyProtocol
 
 
@@ -13,16 +13,16 @@ import dk.cachet.carp.protocols.domain.StudyProtocol
 class UnusedDevicesWarning internal constructor() : DeploymentWarning
 {
     override val description =
-        "The study protocol contains devices which are never used as the source or target of triggers, or to relay data (master device). " +
+        "The study protocol contains devices which are never used as the source or target of triggers, or to relay data (primary device). " +
         "These devices thus serve no purpose as part of the specified study protocol."
 
 
     override fun isIssuePresent( protocol: StudyProtocol ): Boolean = getUnusedDevices( protocol ).any()
 
-    fun getUnusedDevices( protocol: StudyProtocol ): Set<AnyDeviceDescriptor>
+    fun getUnusedDevices( protocol: StudyProtocol ): Set<AnyDeviceConfiguration>
     {
         // Get all devices used in triggers.
-        val usedDevices: Set<AnyDeviceDescriptor> = protocol.triggers.flatMap { (triggerId, trigger) ->
+        val usedDevices: Set<AnyDeviceConfiguration> = protocol.triggers.flatMap { (triggerId, trigger) ->
             val usedInTrigger =
                 protocol.getTaskControls( triggerId ).map { it.destinationDevice }.toMutableList()
             usedInTrigger.add( protocol.devices.single { trigger.sourceDeviceRoleName == it.roleName } )
@@ -31,11 +31,11 @@ class UnusedDevicesWarning internal constructor() : DeploymentWarning
 
         val unusedDevices = protocol.devices.minus( usedDevices )
 
-        // Master devices which are not used in triggers but have connected devices used in triggers are still used to relay data.
-        val relayingMasterDevices = unusedDevices.filterIsInstance<AnyMasterDeviceDescriptor>().filter { device ->
+        // Primary devices which are not used in triggers but have connected devices used in triggers are still used to relay data.
+        val relayingPrimaryDevices = unusedDevices.filterIsInstance<AnyPrimaryDeviceConfiguration>().filter { device ->
             protocol.getConnectedDevices( device, true ).any { usedDevices.contains( it ) }
         }
 
-        return unusedDevices.minus( relayingMasterDevices )
+        return unusedDevices.minus( relayingPrimaryDevices )
     }
 }

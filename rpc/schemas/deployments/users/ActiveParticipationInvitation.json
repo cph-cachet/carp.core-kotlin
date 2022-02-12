@@ -6,7 +6,7 @@
     "invitation": { "$ref": "../users/StudyInvitation.json" },
     "assignedDevices": {
       "type": "array",
-      "items": { "$ref": "../users/AssignedMasterDevice.json" }
+      "items": { "$ref": "../users/AssignedPrimaryDevice.json" }
     }
   },
   "required": [ "participation", "invitation", "assignedDevices" ],

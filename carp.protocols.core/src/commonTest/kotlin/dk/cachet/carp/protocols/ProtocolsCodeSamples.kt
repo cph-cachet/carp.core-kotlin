@@ -35,7 +35,7 @@ class ProtocolsCodeSamples
                 geolocation { batteryNormal { granularity = Granularity.Balanced } }
             }
         }
-        protocol.addMasterDevice( phone )
+        protocol.addPrimaryDevice( phone )
 
         // Define what needs to be measured, on which device, when.
         val sensors = Smartphone.Sensors
@@ -55,7 +55,7 @@ class ProtocolsCodeSamples
         val protocol = StudyProtocol( ownerId, "Study for CAMS runtime" )
 
         val phone = CustomProtocolDevice( "CAMS smartphone" )
-        protocol.addMasterDevice( phone )
+        protocol.addPrimaryDevice( phone )
 
         val camsProtocol = """{ "custom": "configuration" }""" // Anything which can be serialized to a string.
         val camsTask = CustomProtocolTask( "Monitor diabetes", camsProtocol )
@@ -71,7 +71,7 @@ class ProtocolsCodeSamples
         val protocol = StudyProtocol( ownerId, "Ping every noon" )
         val phone = Smartphone( "Ping source" )
         val daily = ScheduledTrigger( phone, TimeOfDay( 12, 0, 0 ), RecurrenceRule.daily( 1 ) )
-        protocol.addMasterDevice( phone )
+        protocol.addPrimaryDevice( phone )
         protocol.addTrigger( daily ) // Trigger needs to be added before measure for it can be initialized.
 
         val measurePing = daily.within( protocol ).measure()

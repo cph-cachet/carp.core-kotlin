@@ -2,7 +2,7 @@ package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.concreteAccountIdentityTypes
 import dk.cachet.carp.common.application.concreteDataTypes
-import dk.cachet.carp.common.application.concreteDeviceDescriptorTypes
+import dk.cachet.carp.common.application.concreteDeviceConfigurationTypes
 import dk.cachet.carp.common.application.concreteDeviceRegistrationTypes
 import dk.cachet.carp.common.application.concreteInputElementTypes
 import dk.cachet.carp.common.application.concreteSamplingConfigurationTypes
@@ -33,8 +33,8 @@ class SerializationReflectionTest
         verifyTypesAreRegistered( concreteInputElementTypes )
 
     @Test
-    fun all_DeviceDescriptor_types_registered_for_serialization() =
-        verifyTypesAreRegistered( concreteDeviceDescriptorTypes )
+    fun all_DeviceConfiguration_types_registered_for_serialization() =
+        verifyTypesAreRegistered( concreteDeviceConfigurationTypes )
 
     @Test
     fun all_DeviceRegistration_types_registered_for_serialization() =

@@ -3,13 +3,13 @@
   "type": "object",
   "properties": {
     "participantId": { "type": "string", "format": "uuid" },
-    "assignedMasterDeviceRoleNames": {
+    "assignedPrimaryDeviceRoleNames": {
       "type": "array",
       "items": { "type": "string" }
     },
     "identity": { "$ref": "../../common/users/AccountIdentity.json" },
     "invitation": { "$ref": "../users/StudyInvitation.json" }
   },
-  "required": [ "participantId", "assignedMasterDeviceRoleNames", "identity", "invitation" ],
+  "required": [ "participantId", "assignedPrimaryDeviceRoleNames", "identity", "invitation" ],
   "additionalProperties": false
 }

@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.deployment
 
-import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.protocols.domain.start
@@ -12,11 +12,11 @@ import kotlin.test.*
 class UnusedDevicesWarningTest
 {
     @Test
-    fun isIssuePresent_true_with_unused_master_device()
+    fun isIssuePresent_true_with_unused_primary_device()
     {
         val protocol = createEmptyProtocol()
-        val unusedDevice = StubMasterDeviceDescriptor()
-        protocol.addMasterDevice( unusedDevice )
+        val unusedDevice = StubPrimaryDeviceConfiguration()
+        protocol.addPrimaryDevice( unusedDevice )
 
         val warning = UnusedDevicesWarning()
         assertTrue( warning.isIssuePresent( protocol ) )
@@ -29,13 +29,13 @@ class UnusedDevicesWarningTest
     fun isIssuePresent_true_with_unused_connected_device()
     {
         val protocol = createEmptyProtocol()
-        val master = StubMasterDeviceDescriptor()
-        val unusedConnected = StubDeviceDescriptor()
+        val primary = StubPrimaryDeviceConfiguration()
+        val unusedConnected = StubDeviceConfiguration()
         with ( protocol )
         {
-            addMasterDevice( master )
-            addConnectedDevice( unusedConnected, master )
-            addTaskControl( StubTrigger( master ).start( StubTaskDescriptor(), master ) )
+            addPrimaryDevice( primary )
+            addConnectedDevice( unusedConnected, primary )
+            addTaskControl( StubTrigger( primary ).start( StubTaskDescriptor(), primary ) )
         }
 
         val warning = UnusedDevicesWarning()
@@ -46,15 +46,15 @@ class UnusedDevicesWarningTest
     }
 
     @Test
-    fun isIssuePresent_false_when_master_device_not_used_in_triggers_but_relays_data()
+    fun isIssuePresent_false_when_primary_device_not_used_in_triggers_but_relays_data()
     {
         val protocol = createEmptyProtocol()
-        val master = StubMasterDeviceDescriptor()
-        val connected = StubDeviceDescriptor()
+        val primary = StubPrimaryDeviceConfiguration()
+        val connected = StubDeviceConfiguration()
         with ( protocol )
         {
-            addMasterDevice( master )
-            addConnectedDevice( connected, master )
+            addPrimaryDevice( primary )
+            addConnectedDevice( connected, primary )
             addTaskControl( StubTrigger( connected ).start( StubTaskDescriptor(), connected ) )
         }
 
@@ -64,17 +64,17 @@ class UnusedDevicesWarningTest
     }
 
     @Test
-    fun isIssuePresent_false_when_chained_master_devices_are_not_used_in_triggers_but_relay_data()
+    fun isIssuePresent_false_when_chained_primary_devices_are_not_used_in_triggers_but_relay_data()
     {
         val protocol = createEmptyProtocol()
-        val master1 = StubMasterDeviceDescriptor( "Master 1" )
-        val master2 = StubMasterDeviceDescriptor( "Master 2" )
-        val connected = StubDeviceDescriptor()
+        val primary1 = StubPrimaryDeviceConfiguration( "Primary 1" )
+        val primary2 = StubPrimaryDeviceConfiguration( "Primary 2" )
+        val connected = StubDeviceConfiguration()
         with ( protocol )
         {
-            addMasterDevice( master1 )
-            addConnectedDevice( master2, master1 )
-            addConnectedDevice( connected, master2 )
+            addPrimaryDevice( primary1 )
+            addConnectedDevice( primary2, primary1 )
+            addConnectedDevice( connected, primary2 )
             addTaskControl( StubTrigger( connected ).start( StubTaskDescriptor(), connected ) )
         }
 
@@ -87,11 +87,11 @@ class UnusedDevicesWarningTest
     fun isIssuePresent_false_when_all_devices_are_used_in_triggers()
     {
         val protocol = createEmptyProtocol()
-        val device1 = StubMasterDeviceDescriptor()
-        val device2 = StubDeviceDescriptor()
+        val device1 = StubPrimaryDeviceConfiguration()
+        val device2 = StubDeviceConfiguration()
         with ( protocol )
         {
-            addMasterDevice( device1 )
+            addPrimaryDevice( device1 )
             addConnectedDevice( device2, device1 )
             addTaskControl( StubTrigger( device1 ).start( StubTaskDescriptor(), device2 ) )
         }

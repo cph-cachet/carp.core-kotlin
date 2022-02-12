@@ -1,8 +1,8 @@
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
@@ -16,22 +16,22 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Contains the entire description and configuration for how a single master device participates in running a study.
+ * Contains the entire description and configuration for how a single primary device participates in running a study.
  */
 @Serializable
-data class MasterDeviceDeployment(
+data class PrimaryDeviceDeployment(
     /**
-     * The descriptor for the master device this deployment is intended for.
+     * The configuration for the primary device this deployment is intended for.
      */
-    val deviceDescriptor: AnyMasterDeviceDescriptor,
+    val deviceConfiguration: AnyPrimaryDeviceConfiguration,
     /**
-     * Registrations for this master device.
+     * Registrations for this primary device.
      */
     val registration: DeviceRegistration,
     /**
      * The devices this device needs to connect to.
      */
-    val connectedDevices: Set<AnyDeviceDescriptor> = emptySet(),
+    val connectedDevices: Set<AnyDeviceConfiguration> = emptySet(),
     /**
      * Preregistration of connected devices, including information such as connection properties, stored per role name.
      */
@@ -59,13 +59,13 @@ data class MasterDeviceDeployment(
 )
 {
     /**
-     * Runtime info of a master device or connected device (determined by [isConnectedDevice]) in a study deployment.
+     * Runtime info of a primary device or connected device (determined by [isConnectedDevice]) in a study deployment.
      */
     data class RuntimeDeviceInfo(
-        val descriptor: AnyDeviceDescriptor,
+        val configuration: AnyDeviceConfiguration,
         val isConnectedDevice: Boolean,
         /**
-         * The matching device [registration] for device [descriptor] in case it has been registered; null otherwise.
+         * The matching device [registration] for device [configuration] in case it has been registered; null otherwise.
          */
         val registration: DeviceRegistration?,
         /**
@@ -95,7 +95,7 @@ data class MasterDeviceDeployment(
 
 
     /**
-     * Get info on the master device and each of the devices this device needs to connect to relevant at study runtime.
+     * Get info on the primary device and each of the devices this device needs to connect to relevant at study runtime.
      */
     fun getRuntimeDeviceInfo(): List<RuntimeDeviceInfo> =
         connectedDevices.map {
@@ -108,17 +108,17 @@ data class MasterDeviceDeployment(
             )
         }
         .plus(
-            // Master device runtime info.
+            // Primary device runtime info.
             RuntimeDeviceInfo(
-                deviceDescriptor,
+                deviceConfiguration,
                 isConnectedDevice = false,
                 registration,
-                getDefaultSamplingConfigurations( deviceDescriptor ),
-                getDeviceTasks( deviceDescriptor )
+                getDefaultSamplingConfigurations( deviceConfiguration ),
+                getDeviceTasks( deviceConfiguration )
             )
         )
 
-    private fun getDefaultSamplingConfigurations( device: AnyDeviceDescriptor ): Map<DataType, SamplingConfiguration>
+    private fun getDefaultSamplingConfigurations( device: AnyDeviceConfiguration ): Map<DataType, SamplingConfiguration>
     {
         val samplingSchemes: DataTypeSamplingSchemeMap = device.getDataTypeSamplingSchemes()
 
@@ -130,7 +130,7 @@ data class MasterDeviceDeployment(
         }
     }
 
-    private fun getDeviceTasks( device: AnyDeviceDescriptor ): Set<TaskDescriptor<*>> = taskControls
+    private fun getDeviceTasks( device: AnyDeviceConfiguration ): Set<TaskDescriptor<*>> = taskControls
         .filter { it.destinationDeviceRoleName == device.roleName }
         .map { triggered -> tasks.first { it.name == triggered.taskName } }
         .toSet()

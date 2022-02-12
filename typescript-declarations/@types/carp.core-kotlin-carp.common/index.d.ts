@@ -82,7 +82,7 @@ declare module 'carp.core-kotlin-carp.common'
 
     namespace dk.cachet.carp.common.application.devices
     {
-        abstract class DeviceDescriptor
+        abstract class DeviceConfiguration
         {
             readonly roleName: string
         }
@@ -102,7 +102,7 @@ declare module 'carp.core-kotlin-carp.common'
             constructor( deviceId?: string )
         }
 
-        class Smartphone extends DeviceDescriptor
+        class Smartphone extends DeviceConfiguration
         {
             constructor( roleName: string, defaultSamplingConfiguration: HashMap<NamespacedId, any> )
         }
@@ -133,7 +133,7 @@ declare module 'carp.core-kotlin-carp.common'
     {
         abstract class Trigger
         {
-            readonly requiresMasterDevice: Boolean
+            readonly requiresPrimaryDevice: Boolean
             readonly sourceDeviceRoleName: string
         }
 

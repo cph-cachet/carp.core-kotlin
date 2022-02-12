@@ -3,21 +3,21 @@ package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.InputDataType
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl.Control as Control
 import dk.cachet.carp.common.application.users.ParticipantAttribute
-import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.configuration.DeviceConfiguration
-import dk.cachet.carp.protocols.domain.configuration.DeviceConfigurationTest
+import dk.cachet.carp.protocols.domain.configuration.ProtocolDeviceConfiguration
+import dk.cachet.carp.protocols.domain.configuration.ProtocolDeviceConfigurationTest
 import dk.cachet.carp.protocols.domain.configuration.ParticipantDataConfiguration
 import dk.cachet.carp.protocols.domain.configuration.ParticipantDataConfigurationTest
 import dk.cachet.carp.protocols.domain.configuration.TaskConfiguration
 import dk.cachet.carp.protocols.domain.configuration.TaskConfigurationTest
-import dk.cachet.carp.protocols.domain.deployment.NoMasterDeviceError
+import dk.cachet.carp.protocols.domain.deployment.NoPrimaryDeviceError
 import dk.cachet.carp.protocols.domain.deployment.UnstartedTasksWarning
 import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
 import dk.cachet.carp.protocols.domain.deployment.UseCompositeTaskWarning
@@ -33,9 +33,9 @@ import kotlin.test.*
 class StudyProtocolTest
 {
     @Nested
-    inner class Devices : DeviceConfigurationTest
+    inner class Devices : ProtocolDeviceConfigurationTest
     {
-        override fun createDeviceConfiguration(): DeviceConfiguration = createEmptyProtocol()
+        override fun createDeviceConfiguration(): ProtocolDeviceConfiguration = createEmptyProtocol()
     }
 
     @Nested
@@ -141,22 +141,22 @@ class StudyProtocolTest
     }
 
     @Test
-    fun one_master_device_needed_for_deployment()
+    fun one_primary_device_needed_for_deployment()
     {
-        // By default, no master device is defined in a study protocol.
+        // By default, no primary device is defined in a study protocol.
         val protocol: StudyProtocol = createEmptyProtocol()
 
         // Therefore, the protocol is not deployable, indicated by an error in deployment issues.
         assertFalse( protocol.isDeployable() )
-        assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<NoMasterDeviceError>().count() )
+        assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<NoPrimaryDeviceError>().count() )
     }
 
     @Test
     fun addTrigger_succeeds()
     {
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
-        protocol.addMasterDevice( device )
+        val device = StubPrimaryDeviceConfiguration()
+        protocol.addPrimaryDevice( device )
         val trigger = StubTrigger( device )
 
         val assignedTrigger: TriggerWithId = protocol.addTrigger( trigger )
@@ -168,8 +168,8 @@ class StudyProtocolTest
     fun addTrigger_multiple_times_only_adds_first_time()
     {
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
-        protocol.addMasterDevice( device )
+        val device = StubPrimaryDeviceConfiguration()
+        protocol.addPrimaryDevice( device )
         val trigger = StubTrigger( device )
         val firstAssign: TriggerWithId = protocol.addTrigger( trigger )
 
@@ -184,7 +184,7 @@ class StudyProtocolTest
     fun cant_addTrigger_for_device_not_included_in_the_protocol()
     {
         val protocol = createEmptyProtocol()
-        val trigger = StubTrigger( StubDeviceDescriptor() )
+        val trigger = StubTrigger( StubDeviceConfiguration() )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -195,13 +195,13 @@ class StudyProtocolTest
     }
 
     @Test
-    fun cant_addTrigger_which_requires_a_master_device_for_a_normal_device()
+    fun cant_addTrigger_which_requires_a_primary_device_for_a_normal_device()
     {
         val protocol = createEmptyProtocol()
-        val masterDevice = StubMasterDeviceDescriptor()
-        val connectedDevice = StubDeviceDescriptor()
-        protocol.addMasterDevice( masterDevice )
-        protocol.addConnectedDevice( connectedDevice, masterDevice )
+        val primaryDevice = StubPrimaryDeviceConfiguration()
+        val connectedDevice = StubDeviceConfiguration()
+        protocol.addPrimaryDevice( primaryDevice )
+        protocol.addConnectedDevice( connectedDevice, primaryDevice )
         val trigger = StubTrigger( connectedDevice.roleName, "Unique", true )
 
         assertFailsWith<IllegalArgumentException>
@@ -216,10 +216,10 @@ class StudyProtocolTest
     fun addTaskControl_succeeds()
     {
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
+        val device = StubPrimaryDeviceConfiguration()
         val trigger = StubTrigger( device )
         val task = StubTaskDescriptor()
-        protocol.addMasterDevice( device )
+        protocol.addPrimaryDevice( device )
         protocol.addTrigger( trigger )
 
         val isAdded: Boolean = protocol.addTaskControl( trigger, task, device, Control.Start )
@@ -233,10 +233,10 @@ class StudyProtocolTest
     fun addTaskControl_multiple_times_only_adds_first_time()
     {
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
+        val device = StubPrimaryDeviceConfiguration()
         val trigger = StubTrigger( device )
         val task = StubTaskDescriptor()
-        protocol.addMasterDevice( device )
+        protocol.addPrimaryDevice( device )
         protocol.addTaskControl( trigger.start( task, device ) )
 
         val isAdded = protocol.addTaskControl( trigger.start( task, device ) )
@@ -250,9 +250,9 @@ class StudyProtocolTest
     fun addTaskControl_adds_triggers_which_are_not_yet_included_in_the_protocol()
     {
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
+        val device = StubPrimaryDeviceConfiguration()
         val task = StubTaskDescriptor()
-        protocol.addMasterDevice( device )
+        protocol.addPrimaryDevice( device )
         protocol.addTask( task )
 
         val trigger = StubTrigger( device )
@@ -266,9 +266,9 @@ class StudyProtocolTest
     fun addTaskControl_adds_tasks_which_are_not_yet_included_in_the_protocol()
     {
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
+        val device = StubPrimaryDeviceConfiguration()
         val trigger = StubTrigger( device )
-        protocol.addMasterDevice( device )
+        protocol.addPrimaryDevice( device )
         protocol.addTrigger( trigger )
 
         val task = StubTaskDescriptor()
@@ -282,19 +282,19 @@ class StudyProtocolTest
     fun cant_addTaskControl_for_device_not_included_in_the_protocol()
     {
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
+        val device = StubPrimaryDeviceConfiguration()
         val trigger = StubTrigger( device )
         val task = StubTaskDescriptor()
         with ( protocol )
         {
-            addMasterDevice( device )
+            addPrimaryDevice( device )
             addTrigger( trigger )
             addTask( task )
         }
 
         assertFailsWith<IllegalArgumentException>
         {
-            protocol.addTaskControl( trigger.start( task, StubDeviceDescriptor() ) )
+            protocol.addTaskControl( trigger.start( task, StubDeviceConfiguration() ) )
         }
         assertEquals( 0, protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TaskControlAdded>().count() )
     }
@@ -303,13 +303,13 @@ class StudyProtocolTest
     fun getTaskControls_succeeds()
     {
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
+        val device = StubPrimaryDeviceConfiguration()
         val trigger = StubTrigger( device )
         val otherTrigger = StubTrigger( device, "Different" )
         val task = StubTaskDescriptor( "Task one" )
         with ( protocol )
         {
-            addMasterDevice( device )
+            addPrimaryDevice( device )
             addTaskControl( trigger.start( task, device ) )
             addTaskControl( otherTrigger.start( StubTaskDescriptor( "Task two" ), device ) )
         }
@@ -326,7 +326,7 @@ class StudyProtocolTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            protocol.getTaskControls( StubTrigger( StubDeviceDescriptor() ) )
+            protocol.getTaskControls( StubTrigger( StubDeviceConfiguration() ) )
         }
     }
 
@@ -334,16 +334,16 @@ class StudyProtocolTest
     fun getTasksForDevice_succeeds()
     {
         val protocol = createEmptyProtocol()
-        val master = StubMasterDeviceDescriptor()
-        val connected = StubDeviceDescriptor()
-        protocol.addMasterDevice( master )
-        protocol.addConnectedDevice( connected, master )
-        val masterTask = StubTaskDescriptor( "Master task" )
+        val primary = StubPrimaryDeviceConfiguration()
+        val connected = StubDeviceConfiguration()
+        protocol.addPrimaryDevice( primary )
+        protocol.addConnectedDevice( connected, primary )
+        val priaryTask = StubTaskDescriptor( "Primary task" )
         val connectedTask = StubTaskDescriptor( "Connected task" )
-        protocol.addTaskControl( StubTrigger( master ).start( masterTask, master ) )
-        protocol.addTaskControl( StubTrigger( master ).start( connectedTask, connected ) )
+        protocol.addTaskControl( StubTrigger( primary ).start( priaryTask, primary ) )
+        protocol.addTaskControl( StubTrigger( primary ).start( connectedTask, connected ) )
 
-        assertEquals( setOf( masterTask ), protocol.getTasksForDevice( master ) )
+        assertEquals( setOf( priaryTask ), protocol.getTasksForDevice( primary ) )
         assertEquals( setOf( connectedTask ), protocol.getTasksForDevice( connected ) )
     }
 
@@ -352,10 +352,10 @@ class StudyProtocolTest
     {
         // Create a study protocol with a trigger which triggers two tasks to a single device.
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
+        val device = StubPrimaryDeviceConfiguration()
         val trigger = StubTrigger( device )
         with ( protocol ) {
-            addMasterDevice( device )
+            addPrimaryDevice( device )
             addTaskControl( trigger, StubTaskDescriptor( "Task 1" ), device, Control.Start )
             addTaskControl( trigger, StubTaskDescriptor( "Task 2" ), device, Control.Start )
         }
@@ -369,11 +369,11 @@ class StudyProtocolTest
     {
         // Create a study protocol with a device which is never used.
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
-        val unusedDevice = StubDeviceDescriptor()
+        val device = StubPrimaryDeviceConfiguration()
+        val unusedDevice = StubDeviceConfiguration()
         with ( protocol )
         {
-            addMasterDevice( device )
+            addPrimaryDevice( device )
             addConnectedDevice( unusedDevice, device )
             addTaskControl( StubTrigger( device ), StubTaskDescriptor(), device, Control.Start )
         }
@@ -387,13 +387,13 @@ class StudyProtocolTest
     {
         // Create a study protocol with a task which is initiated by a trigger.
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
+        val device = StubPrimaryDeviceConfiguration()
         val task = StubTaskDescriptor()
         val trigger1 = StubTrigger( device, "Trigger one" )
         val trigger2 = StubTrigger( device, "Trigger two" )
         with ( protocol )
         {
-            addMasterDevice( device )
+            addPrimaryDevice( device )
             addTaskControl( trigger1.start( task, device ) )
             addTaskControl( trigger2.stop( task, device ) )
         }
@@ -459,7 +459,7 @@ class StudyProtocolTest
         assertEquals( protocol.description, fromSnapshot.description )
         assertEquals( protocol.createdOn, fromSnapshot.createdOn )
         assertEquals( protocol.devices, fromSnapshot.devices )
-        protocol.masterDevices.forEach { assertTrue( connectedDevicesAreSame( protocol, fromSnapshot, it ) ) }
+        protocol.primaryDevices.forEach { assertTrue( connectedDevicesAreSame( protocol, fromSnapshot, it ) ) }
         assertEquals( protocol.triggers, fromSnapshot.triggers )
         assertEquals( protocol.tasks, fromSnapshot.tasks )
         protocol.triggers.forEach {
@@ -476,14 +476,14 @@ class StudyProtocolTest
     private fun connectedDevicesAreSame(
         protocol: StudyProtocol,
         fromSnapshot: StudyProtocol,
-        masterDevice: AnyMasterDeviceDescriptor
+        primaryDevice: AnyPrimaryDeviceConfiguration
     ): Boolean
     {
-        val protocolConnected = protocol.getConnectedDevices( masterDevice ).toSet()
-        val snapshotConnected = fromSnapshot.getConnectedDevices( masterDevice ).toSet()
+        val protocolConnected = protocol.getConnectedDevices( primaryDevice ).toSet()
+        val snapshotConnected = fromSnapshot.getConnectedDevices( primaryDevice ).toSet()
 
         val areSameDevices = protocolConnected == snapshotConnected
-        return areSameDevices && protocolConnected.filterIsInstance<AnyMasterDeviceDescriptor>().all {
+        return areSameDevices && protocolConnected.filterIsInstance<AnyPrimaryDeviceConfiguration>().all {
             connectedDevicesAreSame( protocol, fromSnapshot, it )
         }
     }

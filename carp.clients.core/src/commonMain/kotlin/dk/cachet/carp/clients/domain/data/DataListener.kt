@@ -7,7 +7,7 @@ import dk.cachet.carp.common.application.devices.DeviceType
 
 
 /**
- * Allows subscribing to [Data] (e.g., sensors, surveys) of requested [DataType]s on a master device and connected devices
+ * Allows subscribing to [Data] (e.g., sensors, surveys) of requested [DataType]s on a primary device and connected devices
  * by using [DeviceDataCollector] instances provided by [dataCollectorFactory].
  */
 class DataListener( private val dataCollectorFactory: DeviceDataCollectorFactory )
@@ -16,7 +16,7 @@ class DataListener( private val dataCollectorFactory: DeviceDataCollectorFactory
 
 
     /**
-     * Determines whether subscribing to [Data] of a given [dataType] is supported on this master device.
+     * Determines whether subscribing to [Data] of a given [dataType] is supported on this primary device.
      */
     fun supportsData( dataType: DataType ): Boolean =
         dataType in dataCollectorFactory.localDataCollector.supportedDataTypes

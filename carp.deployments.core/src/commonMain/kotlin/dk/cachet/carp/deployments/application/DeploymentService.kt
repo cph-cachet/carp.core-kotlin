@@ -1,7 +1,7 @@
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
@@ -15,7 +15,7 @@ import kotlinx.serialization.Serializable
 
 /**
  * Application service which allows deploying study protocols to participants
- * and retrieving [MasterDeviceDeployment]'s for participating master devices as defined in the protocol.
+ * and retrieving [PrimaryDeviceDeployment]'s for participating primary devices as defined in the protocol.
  */
 interface DeploymentService : ApplicationService<DeploymentService, DeploymentService.Event>
 {
@@ -43,7 +43,7 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
         @Serializable
         data class DeviceRegistrationChanged(
             val studyDeploymentId: UUID,
-            val device: AnyDeviceDescriptor,
+            val device: AnyDeviceConfiguration,
             val registration: DeviceRegistration?
         ) : Event( studyDeploymentId )
     }
@@ -62,7 +62,7 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
      *  - [protocol] is invalid
      *  - [invitations] is empty
      *  - any of the assigned device roles in [invitations] is not part of the study [protocol]
-     *  - not all necessary master devices part of the study [protocol] have been assigned a participant
+     *  - not all necessary primary devices part of the study [protocol] have been assigned a participant
      * @return The [StudyDeploymentStatus] of the newly created study deployment.
      */
     suspend fun createStudyDeployment(
@@ -121,30 +121,30 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
     suspend fun unregisterDevice( studyDeploymentId: UUID, deviceRoleName: String ): StudyDeploymentStatus
 
     /**
-     * Get the deployment configuration for the master device with [masterDeviceRoleName] in the study deployment with [studyDeploymentId].
+     * Get the deployment configuration for the primary device with [primaryDeviceRoleName] in the study deployment with [studyDeploymentId].
      *
      * @throws IllegalArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
-     * - [masterDeviceRoleName] is not present in the deployment
-     * @throws IllegalStateException when the deployment for the requested master device is not yet available.
+     * - [primaryDeviceRoleName] is not present in the deployment
+     * @throws IllegalStateException when the deployment for the requested primary device is not yet available.
      */
-    suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, masterDeviceRoleName: String ): MasterDeviceDeployment
+    suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, primaryDeviceRoleName: String ): PrimaryDeviceDeployment
 
     /**
      * Indicate to stakeholders in the study deployment with [studyDeploymentId]
-     * that the device with [masterDeviceRoleName] was deployed successfully,
+     * that the device with [primaryDeviceRoleName] was deployed successfully,
      * using the device deployment with timestamp [deviceDeploymentLastUpdatedOn],
      * i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it.
      *
      * @throws IllegalArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
-     * - [masterDeviceRoleName] is not present in the deployment
+     * - [primaryDeviceRoleName] is not present in the deployment
      * - the [deviceDeploymentLastUpdatedOn] does not match the expected timestamp. The deployment might be outdated.
      * @throws IllegalStateException when the deployment cannot be deployed yet, or the deployment has stopped.
      */
     suspend fun deviceDeployed(
         studyDeploymentId: UUID,
-        masterDeviceRoleName: String,
+        primaryDeviceRoleName: String,
         deviceDeploymentLastUpdatedOn: Instant
     ): StudyDeploymentStatus
 

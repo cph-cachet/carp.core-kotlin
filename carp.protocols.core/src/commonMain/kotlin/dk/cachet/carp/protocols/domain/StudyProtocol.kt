@@ -3,15 +3,15 @@
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.triggers.Trigger
 import dk.cachet.carp.common.application.triggers.TaskControl.Control as Control
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.configuration.EmptyDeviceConfiguration
+import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantDataConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyTaskConfiguration
 import dk.cachet.carp.protocols.domain.configuration.StudyProtocolComposition
@@ -21,8 +21,8 @@ import kotlinx.datetime.Instant
 
 
 /**
- * A description of how a study is to be executed, defining the type(s) of master device(s) ([AnyMasterDeviceDescriptor]) responsible for aggregating data,
- * the optional devices ([AnyDeviceDescriptor]) connected to them, and the [Trigger]'s which lead to data collection on said devices.
+ * A description of how a study is to be executed, defining the type(s) of primary device(s) ([AnyPrimaryDeviceConfiguration]) responsible for aggregating data,
+ * the optional devices ([AnyDeviceConfiguration]) connected to them, and the [Trigger]'s which lead to data collection on said devices.
  */
 @Suppress( "TooManyFunctions" ) // TODO: some of the device and task configuration methods are overridden solely to add events. Can this be refactored?
 class StudyProtocol(
@@ -41,7 +41,7 @@ class StudyProtocol(
     id: UUID = UUID.randomUUID(),
     createdOn: Instant = Clock.System.now()
 ) : StudyProtocolComposition(
-        EmptyDeviceConfiguration(),
+        EmptyProtocolDeviceConfiguration(),
         EmptyTaskConfiguration(),
         EmptyParticipantDataConfiguration(),
         id,
@@ -52,8 +52,11 @@ class StudyProtocol(
     {
         data class NameChanged( val name: String ) : Event()
         data class DescriptionChanged( val description: String? ) : Event()
-        data class MasterDeviceAdded( val device: AnyMasterDeviceDescriptor ) : Event()
-        data class ConnectedDeviceAdded( val connected: AnyDeviceDescriptor, val master: AnyMasterDeviceDescriptor ) : Event()
+        data class PrimaryDeviceAdded( val device: AnyPrimaryDeviceConfiguration ) : Event()
+        data class ConnectedDeviceAdded(
+            val connected: AnyDeviceConfiguration,
+            val primary: AnyPrimaryDeviceConfiguration
+        ) : Event()
         data class TriggerAdded( val trigger: Trigger<*> ) : Event()
         data class TaskAdded( val task: TaskDescriptor<*> ) : Event()
         data class TaskRemoved( val task: TaskDescriptor<*> ) : Event()
@@ -77,17 +80,17 @@ class StudyProtocol(
             )
             protocol.applicationData = snapshot.applicationData
 
-            // Add master devices.
-            snapshot.masterDevices.forEach { protocol.addMasterDevice( it ) }
+            // Add primary devices.
+            snapshot.primaryDevices.forEach { protocol.addPrimaryDevice( it ) }
 
             // Add connected devices.
-            val allDevices: List<AnyDeviceDescriptor> = snapshot.connectedDevices.plus( snapshot.masterDevices ).toList()
+            val allDevices: List<AnyDeviceConfiguration> = snapshot.connectedDevices.plus( snapshot.primaryDevices ).toList()
             snapshot.connections.forEach { c ->
-                val master: AnyMasterDeviceDescriptor = allDevices.filterIsInstance<AnyMasterDeviceDescriptor>().firstOrNull { it.roleName == c.connectedToRoleName }
-                    ?: throw IllegalArgumentException( "Can't find master device with role name '${c.connectedToRoleName}' in snapshot." )
-                val connected: AnyDeviceDescriptor = allDevices.firstOrNull { it.roleName == c.roleName }
+                val primary: AnyPrimaryDeviceConfiguration = allDevices.filterIsInstance<AnyPrimaryDeviceConfiguration>().firstOrNull { it.roleName == c.connectedToRoleName }
+                    ?: throw IllegalArgumentException( "Can't find primary device with role name '${c.connectedToRoleName}' in snapshot." )
+                val connected: AnyDeviceConfiguration = allDevices.firstOrNull { it.roleName == c.roleName }
                     ?: throw IllegalArgumentException( "Can't find connected device with role name '${c.roleName}' in snapshot." )
-                protocol.addConnectedDevice( connected, master )
+                protocol.addConnectedDevice( connected, primary )
             }
 
             // Add tasks.
@@ -108,7 +111,7 @@ class StudyProtocol(
                     ?: throw IllegalArgumentException( "Can't find trigger with id '${control.triggerId}' in snapshot." )
                 val task: TaskDescriptor<*> = protocol.tasks.singleOrNull { it.name == control.taskName }
                     ?: throw IllegalArgumentException( "Can't find task with name '${control.taskName}' in snapshot." )
-                val device: AnyDeviceDescriptor = protocol.devices.singleOrNull { it.roleName == control.destinationDeviceRoleName }
+                val device: AnyDeviceConfiguration = protocol.devices.singleOrNull { it.roleName == control.destinationDeviceRoleName }
                     ?: throw IllegalArgumentException( "Can't find device with role name '${control.destinationDeviceRoleName}' in snapshot." )
                 protocol.addTaskControl( triggerMatch.value, task, device, control.control )
             }
@@ -156,31 +159,31 @@ class StudyProtocol(
 
 
     /**
-     * Add a [masterDevice] which is responsible for aggregating and synchronizing incoming data.
+     * Add a [primaryDevice] which is responsible for aggregating and synchronizing incoming data.
      * Its role name should be unique in the protocol.
      *
      * @throws IllegalArgumentException when:
      *  - a device with the specified role name already exists
-     *  - [masterDevice] contains invalid default sampling configurations
-     * @return True if the [masterDevice] has been added; false if it is already set as a master device.
+     *  - [primaryDevice] contains invalid default sampling configurations
+     * @return True if the [primaryDevice] has been added; false if it is already set as a primary device.
      */
-    override fun addMasterDevice( masterDevice: AnyMasterDeviceDescriptor ): Boolean =
-        super.addMasterDevice( masterDevice )
-        .eventIf( true ) { Event.MasterDeviceAdded( masterDevice ) }
+    override fun addPrimaryDevice( primaryDevice: AnyPrimaryDeviceConfiguration ): Boolean =
+        super.addPrimaryDevice( primaryDevice )
+        .eventIf( true ) { Event.PrimaryDeviceAdded( primaryDevice ) }
 
     /**
-     * Add a [device] which is connected to a [masterDevice] within this configuration.
+     * Add a [device] which is connected to a [primaryDevice] within this configuration.
      * Its role name should be unique in the protocol.
      *
      * @throws IllegalArgumentException when:
      *   - a device with the specified role name already exists
-     *   - [masterDevice] is not part of the device configuration
+     *   - [primaryDevice] is not part of the device configuration
      *   - [device] contains invalid default sampling configurations
-     * @return True if the [device] has been added; false if it is already connected to the specified [masterDevice].
+     * @return True if the [device] has been added; false if it is already connected to the specified [primaryDevice].
      */
-    override fun addConnectedDevice( device: AnyDeviceDescriptor, masterDevice: AnyMasterDeviceDescriptor ): Boolean =
-        super.addConnectedDevice( device, masterDevice )
-        .eventIf( true ) { Event.ConnectedDeviceAdded( device, masterDevice ) }
+    override fun addConnectedDevice( device: AnyDeviceConfiguration, primaryDevice: AnyPrimaryDeviceConfiguration ): Boolean =
+        super.addConnectedDevice( device, primaryDevice )
+        .eventIf( true ) { Event.ConnectedDeviceAdded( device, primaryDevice ) }
 
     /**
      * Set of triggers in the exact sequence by which they were added to the protocol.
@@ -204,17 +207,17 @@ class StudyProtocol(
      *
      * @throws IllegalArgumentException when:
      *   - [trigger] does not belong to any device specified in the study protocol
-     *   - [trigger] requires a master device and the specified source device is not a master device
+     *   - [trigger] requires a primary device and the specified source device is not a primary device
      * @return The [trigger] and its newly assigned ID, or previously assigned ID in case the trigger is already included in this protocol.
      */
     fun addTrigger( trigger: Trigger<*> ): TriggerWithId
     {
-        val device: AnyDeviceDescriptor = deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
+        val device: AnyDeviceConfiguration = deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
             ?: throw IllegalArgumentException( "The passed trigger does not belong to any device specified in this study protocol." )
 
-        if ( trigger.requiresMasterDevice && device !is AnyMasterDeviceDescriptor )
+        if ( trigger.requiresPrimaryDevice && device !is AnyPrimaryDeviceConfiguration )
         {
-            throw IllegalArgumentException( "The passed trigger cannot be initiated by the specified device since it is not a master device." )
+            throw IllegalArgumentException( "The passed trigger cannot be initiated by the specified device since it is not a primary device." )
         }
 
         val isAdded = _triggers.add( trigger )
@@ -232,7 +235,7 @@ class StudyProtocol(
      * once a [trigger] within this protocol is initiated.
      * In case the [trigger] or [task] is not yet included in this study protocol, it will be added.
      * The [destinationDevice] needs to be added prior to this call since it needs to be set up as
-     * either a master device or connected device.
+     * either a primary device or connected device.
      *
      * @throws IllegalArgumentException when [destinationDevice] is not included in this study protocol.
      * @return True if the task control has been added; false if the same control is already present.
@@ -240,12 +243,12 @@ class StudyProtocol(
     fun addTaskControl(
         trigger: Trigger<*>,
         task: TaskDescriptor<*>,
-        destinationDevice: AnyDeviceDescriptor,
+        destinationDevice: AnyDeviceConfiguration,
         control: Control
     ): Boolean
     {
         // The device needs to be included in the study protocol.
-        // We cannot add it here since we do not know whether it should be a master or connected device.
+        // We cannot add it here since we do not know whether it should be a primary or connected device.
         require( destinationDevice in devices )
             { "The passed device to which the task needs to be sent is not included in this study protocol." }
 
@@ -264,7 +267,7 @@ class StudyProtocol(
      * Add a task to be started or stopped on a device once a trigger within this protocol is initiated.
      * In case the trigger or task defined in [control] is not yet included in this study protocol, it will be added.
      * The destination device defined in [control] needs to be added prior to this call since it needs to be set up as
-     * either a master device or connected device.
+     * either a primary device or connected device.
      *
      * @throws IllegalArgumentException when the destination device is not included in this study protocol.
      * @return True if the task control has been added; false if the same control is already present.
@@ -301,7 +304,7 @@ class StudyProtocol(
     /**
      * Gets all the tasks triggered for the specified [device].
      */
-    fun getTasksForDevice( device: AnyDeviceDescriptor ): Set<TaskDescriptor<*>>
+    fun getTasksForDevice( device: AnyDeviceConfiguration ): Set<TaskDescriptor<*>>
     {
         return triggerControls
             .flatMap { it.value }
@@ -398,7 +401,7 @@ class StudyProtocol(
      * All possible issues related to incomplete or problematic configuration of a [StudyProtocol] which might prevent deployment.
      */
     private val possibleDeploymentIssues: List<DeploymentIssue> = listOf(
-        NoMasterDeviceError(),
+        NoPrimaryDeviceError(),
         OnlyOptionalDevicesWarning(),
         UnstartedTasksWarning(),
         BackgroundTaskWithNoMeasuresWarning(),

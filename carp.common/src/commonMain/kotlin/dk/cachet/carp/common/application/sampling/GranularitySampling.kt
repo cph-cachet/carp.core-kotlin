@@ -1,7 +1,7 @@
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.data.DataTypeMetaData
-import dk.cachet.carp.common.application.devices.DeviceDescriptor
+import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import kotlinx.serialization.Serializable
 
 
@@ -55,7 +55,7 @@ data class GranularitySamplingConfiguration( val granularity: Granularity ) : Sa
 
 /**
  * A helper class to configure and construct immutable [GranularitySamplingConfiguration] objects
- * as part of setting up a [DeviceDescriptor].
+ * as part of setting up a [DeviceConfiguration].
  */
 class GranularitySamplingConfigurationBuilder( var granularity: Granularity ) :
     SamplingConfigurationBuilder<GranularitySamplingConfiguration>

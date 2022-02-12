@@ -15,9 +15,9 @@ data class ParticipantInvitation(
      */
     val participantId: UUID,
     /**
-     * The role names of the master devices in the study protocol which the participant is asked to use.
+     * The role names of the primary devices in the study protocol which the participant is asked to use.
      */
-    val assignedMasterDeviceRoleNames: Set<String>,
+    val assignedPrimaryDeviceRoleNames: Set<String>,
     /**
      * The identity used to authenticate and invite the participant.
      */
