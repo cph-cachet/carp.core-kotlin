@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "allOf": [ { "$ref": "Trigger.json#/$defs/Trigger" } ],
+  "properties": {
+    "__type": { "const": "dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger" },
+    "elapsedTime": { "type": "string", "format": "duration" }
+  },
+  "required": [ "elapsedTime" ],
+  "unevaluatedProperties": false
+}

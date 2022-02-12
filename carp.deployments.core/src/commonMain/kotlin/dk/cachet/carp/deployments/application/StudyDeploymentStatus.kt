@@ -1,8 +1,8 @@
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.users.ParticipantStatus
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
@@ -49,7 +49,7 @@ sealed class StudyDeploymentStatus
     ) : StudyDeploymentStatus()
 
     /**
-     * Participants have started registering devices, but remaining master devices still need to be deployed.
+     * Participants have started registering devices, but remaining primary devices still need to be deployed.
      */
     @Serializable
     data class DeployingDevices(
@@ -61,7 +61,7 @@ sealed class StudyDeploymentStatus
     ) : StudyDeploymentStatus()
 
     /**
-     * All master devices have been successfully deployed and data collection has started
+     * All primary devices have been successfully deployed and data collection has started
      * on the time specified by [startedOn].
      */
     @Serializable
@@ -88,25 +88,25 @@ sealed class StudyDeploymentStatus
 
 
     /**
-     * Returns all [AnyDeviceDescriptor]'s in [devicesStatus] which still require registration.
+     * Returns all [AnyDeviceConfiguration]'s in [devicesStatus] which still require registration.
      */
-    fun getRemainingDevicesToRegister(): Set<AnyDeviceDescriptor> =
+    fun getRemainingDevicesToRegister(): Set<AnyDeviceConfiguration> =
         devicesStatus.filterIsInstance<DeviceDeploymentStatus.Unregistered>().map { it.device }.toSet()
 
     /**
-     * Returns all [AnyMasterDeviceDescriptor] which are ready for deployment and are not deployed with the correct deployment yet.
+     * Returns all [AnyPrimaryDeviceConfiguration] which are ready for deployment and are not deployed with the correct deployment yet.
      */
-    fun getRemainingDevicesReadyToDeploy(): Set<AnyMasterDeviceDescriptor> =
+    fun getRemainingDevicesReadyToDeploy(): Set<AnyPrimaryDeviceConfiguration> =
         devicesStatus
             .filter { it is DeviceDeploymentStatus.NotDeployed && it.canObtainDeviceDeployment }
             .map { it.device }
-            .filterIsInstance<AnyMasterDeviceDescriptor>()
+            .filterIsInstance<AnyPrimaryDeviceConfiguration>()
             .toSet()
 
     /**
      * Get the status of a [device] in this study deployment.
      */
-    fun getDeviceStatus( device: AnyDeviceDescriptor ): DeviceDeploymentStatus =
+    fun getDeviceStatus( device: AnyDeviceConfiguration ): DeviceDeploymentStatus =
         devicesStatus.firstOrNull { it.device == device }
             ?: throw IllegalArgumentException( "The given device was not found in this study deployment." )
 

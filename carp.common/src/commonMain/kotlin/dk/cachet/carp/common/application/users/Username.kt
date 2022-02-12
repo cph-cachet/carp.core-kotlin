@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * A unique name which identifies an [Account].
+ * A unique name which identifies an account.
  */
 @Serializable
 data class Username( val name: String )

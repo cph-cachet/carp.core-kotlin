@@ -28,9 +28,9 @@ val testJson = createDefaultJSON( STUBS_SERIAL_MODULE )
 val unknownInstances = listOf(
     // `infrastructure` namespace.
     unknown( StubData() ) { CustomData( it.first, it.second, it.third ) },
-    unknown( StubDeviceDescriptor() ) { CustomDeviceDescriptor( it.first, it.second, it.third ) },
-    unknown( StubMasterDeviceDescriptor() ) { CustomMasterDeviceDescriptor( it.first, it.second, it.third ) },
-    unknown( DefaultDeviceRegistration( "id" ) ) { CustomDeviceRegistration( it.first, it.second, it.third ) },
+    unknown( StubDeviceConfiguration() ) { CustomDeviceConfiguration( it.first, it.second, it.third ) },
+    unknown( StubPrimaryDeviceConfiguration() ) { CustomPrimaryDeviceConfiguration( it.first, it.second, it.third ) },
+    unknown( DefaultDeviceRegistration() ) { CustomDeviceRegistration( it.first, it.second, it.third ) },
     unknown( StubSamplingConfiguration( "" ) ) { CustomSamplingConfiguration( it.first, it.second, it.third ) },
     unknown( StubTaskDescriptor() ) { CustomTaskDescriptor( it.first, it.second, it.third ) },
     unknown( StubTrigger( "source" ) ) { CustomTrigger( it.first, it.second, it.third ) },

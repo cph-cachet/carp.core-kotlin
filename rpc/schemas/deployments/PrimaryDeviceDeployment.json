@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "deviceConfiguration": { "$ref": "../common/devices/PrimaryDeviceConfiguration.json" },
+    "registration": { "$ref": "../common/devices/DeviceRegistration.json" },
+    "connectedDevices": {
+      "type": "array",
+      "items": { "$ref": "../common/devices/DeviceConfiguration.json" }
+    },
+    "connectedDeviceRegistrations": {
+      "type": "object",
+      "additionalProperties": { "$ref": "../common/devices/DeviceRegistration.json" }
+    },
+    "tasks": {
+      "type": "array",
+      "items": { "$ref": "../common/tasks/TaskDescriptor.json" }
+    },
+    "triggers": {
+      "type": "object",
+      "propertyNames": { "pattern": "^\\d$" },
+      "additionalProperties": { "$ref": "../common/triggers/Trigger.json" }
+    },
+    "taskControls": {
+      "type": "array",
+      "items": { "$ref": "../common/triggers/TaskControl.json" }
+    },
+    "applicationData": { "$ref": "../common/ApplicationData.json" }
+  },
+  "required": [ "deviceConfiguration", "registration" ],
+  "additionalProperties": false
+}

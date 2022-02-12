@@ -14,13 +14,15 @@ import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.application.users.participantIds
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 
 /**
  * Represents a set of [participants] recruited for a study identified by [studyId].
  */
-class Recruitment( val studyId: UUID ) :
-    AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>()
+class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: Instant = Clock.System.now() ) :
+    AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>( id, createdOn )
 {
     sealed class Event : DomainEvent()
     {
@@ -33,8 +35,7 @@ class Recruitment( val studyId: UUID ) :
     {
         fun fromSnapshot( snapshot: RecruitmentSnapshot ): Recruitment
         {
-            val recruitment = Recruitment( snapshot.studyId )
-            recruitment.createdOn = snapshot.createdOn
+            val recruitment = Recruitment( snapshot.studyId, snapshot.id, snapshot.createdOn )
             if ( snapshot.studyProtocol != null && snapshot.invitation != null )
             {
                 recruitment.lockInStudy( snapshot.studyProtocol, snapshot.invitation )
@@ -60,7 +61,7 @@ class Recruitment( val studyId: UUID ) :
      * Add a [Participant] identified by the specified [email] address.
      * In case the [email] was already added before, the same [Participant] is returned.
      */
-    fun addParticipant( email: EmailAddress ): Participant
+    fun addParticipant( email: EmailAddress, id: UUID = UUID.randomUUID() ): Participant
     {
         // Verify whether participant was already added.
         val identity = EmailAccountIdentity( email )
@@ -69,7 +70,7 @@ class Recruitment( val studyId: UUID ) :
         // Add new participant in case it was not added before.
         if ( participant == null )
         {
-            participant = Participant( identity )
+            participant = Participant( identity, id )
             _participants.add( participant )
             event( Event.ParticipantAdded( participant ) )
         }
@@ -112,7 +113,7 @@ class Recruitment( val studyId: UUID ) :
      *  - any of the participants specified in [group] does not exist
      *  - [group] is empty
      *  - any of the device roles specified in [group] are not part of the configured study protocol
-     *  - not all master devices part of the study protocol have been assigned a participant
+     *  - not all primary devices part of the study protocol have been assigned a participant
      */
     fun createInvitations( group: Set<AssignParticipantDevices> ): Pair<StudyProtocolSnapshot, List<ParticipantInvitation>>
     {
@@ -130,7 +131,7 @@ class Recruitment( val studyId: UUID ) :
             val participant = allParticipants.getValue( toAssign.participantId )
             ParticipantInvitation(
                 participant.id,
-                toAssign.masterDeviceRoleNames,
+                toAssign.primaryDeviceRoleNames,
                 participant.accountIdentity,
                 status.invitation
             )
@@ -155,13 +156,13 @@ class Recruitment( val studyId: UUID ) :
      * @throws IllegalArgumentException when one or more of the participants aren't in this recruitment.
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    fun addParticipantGroup( participantIds: Set<UUID> ): StagedParticipantGroup
+    fun addParticipantGroup( participantIds: Set<UUID>, id: UUID = UUID.randomUUID() ): StagedParticipantGroup
     {
         require( participantIds.all { id -> id in participants.map { it.id } } )
             { "One of the participants for which to create a participant group isn't part of this recruitment." }
         check( getStatus() is RecruitmentStatus.ReadyForDeployment ) { "The study is not yet ready for deployment." }
 
-        val group = StagedParticipantGroup()
+        val group = StagedParticipantGroup( id )
         group.addParticipants( participantIds )
 
         _participantGroups[ group.id ] = group

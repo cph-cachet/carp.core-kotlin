@@ -1,14 +1,15 @@
 package dk.cachet.carp.clients.domain.study
 
-import dk.cachet.carp.clients.application.study.StudyId
 import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.clients.domain.data.DataListener
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
-import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 
 /**
@@ -23,34 +24,30 @@ class Study(
     /**
      * The role name of the device this runtime is intended for within the deployment identified by [studyDeploymentId].
      */
-    val deviceRoleName: String
-) : AggregateRoot<Study, StudySnapshot, Study.Event>()
+    val deviceRoleName: String,
+    id: UUID = UUID.randomUUID(),
+    createdOn: Instant = Clock.System.now()
+) : AggregateRoot<Study, StudySnapshot, Study.Event>( id, createdOn )
 {
     sealed class Event : DomainEvent()
     {
         data class DeploymentStatusReceived( val deploymentStatus: StudyDeploymentStatus ) : Event()
-        data class DeviceDeploymentReceived( val deploymentInformation: MasterDeviceDeployment ) : Event()
+        data class DeviceDeploymentReceived( val deploymentInformation: PrimaryDeviceDeployment ) : Event()
     }
 
 
     companion object Factory
     {
         internal fun fromSnapshot( snapshot: StudySnapshot ): Study =
-            Study( snapshot.studyDeploymentId, snapshot.deviceRoleName ).apply {
-                createdOn = snapshot.createdOn
+            Study( snapshot.studyDeploymentId, snapshot.deviceRoleName, snapshot.id, snapshot.createdOn ).apply {
                 deploymentStatus = snapshot.deploymentStatus
                 deploymentInformation = snapshot.deploymentInformation
             }
     }
 
 
-    /**
-     * Composite ID for this study, comprised of the [studyDeploymentId] and [deviceRoleName].
-     */
-    val id: StudyId get() = StudyId( studyDeploymentId, deviceRoleName )
-
     private var deploymentStatus: StudyDeploymentStatus? = null
-    private var deploymentInformation: MasterDeviceDeployment? = null
+    private var deploymentInformation: PrimaryDeviceDeployment? = null
 
 
     /**
@@ -64,7 +61,7 @@ class Study(
         {
             is StudyDeploymentStatus.Invited -> error( "Client device should already be registered." )
             is StudyDeploymentStatus.DeployingDevices ->
-                StudyStatus.Deploying.fromStudyDeploymentStatus( id, status, deploymentInformation )
+                StudyStatus.Deploying.fromStudyDeploymentStatus( id, deviceRoleName, status, deploymentInformation )
             is StudyDeploymentStatus.Running ->
                 StudyStatus.Running( id, status, checkNotNull( deploymentInformation ) )
             is StudyDeploymentStatus.Stopped ->
@@ -82,15 +79,15 @@ class Study(
     }
 
     /**
-     * A new master device [deployment] determining what data to collect for this study has been received.
+     * A new primary device [deployment] determining what data to collect for this study has been received.
      *
      * @throws IllegalArgumentException when the role name [deployment] is intended for is different from the expected [deviceRoleName].
      */
-    fun deviceDeploymentReceived( deployment: MasterDeviceDeployment )
+    fun deviceDeploymentReceived( deployment: PrimaryDeviceDeployment )
     {
         checkNotNull( deploymentStatus )
             { "Can't receive device deployment before having received deployment status." }
-        require( deployment.deviceDescriptor.roleName == deviceRoleName )
+        require( deployment.deviceConfiguration.roleName == deviceRoleName )
             { "The deployment is intended for a device with a different role name." }
 
         deploymentInformation = deployment
@@ -124,7 +121,7 @@ class Study(
             val registration = checkNotNull( device.registration )
 
             // Verify whether connected device is supported.
-            val deviceType = device.descriptor::class
+            val deviceType = device.configuration::class
             if ( device.isConnectedDevice )
             {
                 dataListener.tryGetConnectedDataCollector( deviceType, registration )
@@ -148,7 +145,7 @@ class Study(
                 {
                     throw UnsupportedOperationException(
                         "Subscribing to data of data type \"$dataType\" " +
-                        "on device with role \"${device.descriptor.roleName}\" is not supported on this client."
+                        "on device with role \"${device.configuration.roleName}\" is not supported on this client."
                     )
                 }
             }

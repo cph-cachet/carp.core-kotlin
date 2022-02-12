@@ -2,9 +2,9 @@ package dk.cachet.carp.clients.domain
 
 import dk.cachet.carp.clients.domain.study.Study
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
-import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.test.runSuspendTest
 import kotlinx.datetime.Clock
@@ -33,9 +33,13 @@ interface ClientRepositoryTest
         repo.addStudy( study )
 
         // Study can be retrieved by ID.
+        val retrievedById = repo.getStudy( study.id )
+        assertNotNull( retrievedById )
+
+        // Study can be retrieved by deployment.
         val deploymentId = study.studyDeploymentId
         val roleName = study.deviceRoleName
-        val retrievedStudy = repo.getStudyBy( deploymentId, roleName )
+        val retrievedStudy = repo.getStudyByDeployment( deploymentId, roleName )
         assertNotNull( retrievedStudy )
 
         // Study is included in list.
@@ -54,11 +58,19 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun getStudyBy_is_null_for_unknown_study() = runSuspendTest {
+    fun getStudy_is_null_for_unknown_study() = runSuspendTest {
         val repo = createRepository()
 
         val unknownId = UUID.randomUUID()
-        assertNull( repo.getStudyBy( unknownId, "Unknown" ) )
+        assertNull( repo.getStudy( unknownId ) )
+    }
+
+    @Test
+    fun getStudyByDeployment_is_null_for_unknown_study() = runSuspendTest {
+        val repo = createRepository()
+
+        val unknownId = UUID.randomUUID()
+        assertNull( repo.getStudyByDeployment( unknownId, "Unknown" ) )
     }
 
     @Test
@@ -77,25 +89,25 @@ interface ClientRepositoryTest
         repo.addStudy( study )
 
         // Make some changes and update.
-        val masterDevice = StubMasterDeviceDescriptor( deviceRoleName )
-        val registration = masterDevice.createRegistration()
-        val masterDeviceDeployment = MasterDeviceDeployment( StubMasterDeviceDescriptor( deviceRoleName ), registration )
+        val primaryDevice = StubPrimaryDeviceConfiguration( deviceRoleName )
+        val registration = primaryDevice.createRegistration()
+        val primaryDeviceDeployment = PrimaryDeviceDeployment( StubPrimaryDeviceConfiguration( deviceRoleName ), registration )
         study.deploymentStatusReceived(
             StudyDeploymentStatus.DeployingDevices(
                 Clock.System.now(),
                 deploymentId,
                 listOf(
-                    DeviceDeploymentStatus.Registered( masterDevice, true, emptySet(), emptySet() )
+                    DeviceDeploymentStatus.Registered( primaryDevice, true, emptySet(), emptySet() )
                 ),
                 emptyList(),
                 null
             )
         )
-        study.deviceDeploymentReceived( masterDeviceDeployment )
+        study.deviceDeploymentReceived( primaryDeviceDeployment )
         repo.updateStudy( study )
 
         // Verify whether changes were stored.
-        val retrievedStudy = repo.getStudyBy( deploymentId, deviceRoleName )
+        val retrievedStudy = repo.getStudyByDeployment( deploymentId, deviceRoleName )
         assertNotNull( retrievedStudy )
         assertEquals( study.getSnapshot(), retrievedStudy.getSnapshot() )
     }
@@ -118,7 +130,7 @@ interface ClientRepositoryTest
 
         val deploymentId = study.studyDeploymentId
         val roleName = study.deviceRoleName
-        assertNull( repo.getStudyBy( deploymentId, roleName ) )
+        assertNull( repo.getStudyByDeployment( deploymentId, roleName ) )
         assertEquals( 0, repo.getStudyList().count() )
     }
 

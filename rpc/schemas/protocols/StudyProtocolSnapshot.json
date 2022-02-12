@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "createdOn": { "type": "string", "format": "date-time" },
+    "ownerId": { "type": "string", "format": "uuid" },
+    "name": { "type": "string" },
+    "description": { "type": [ "string", "null" ] },
+    "primaryDevices": {
+      "type": "array",
+      "items": { "$ref": "../common/devices/PrimaryDeviceConfiguration.json" }
+    },
+    "connectedDevices": {
+      "type": "array",
+      "items": { "$ref": "../common/devices/DeviceConfiguration.json" }
+    },
+    "connections": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/DeviceConnection" }
+    },
+    "tasks": {
+      "type": "array",
+      "items": { "$ref": "../common/tasks/TaskDescriptor.json" }
+    },
+    "triggers": {
+      "type": "object",
+      "propertyNames": { "pattern": "^\\d$" },
+      "additionalProperties": { "$ref": "../common/triggers/Trigger.json" }
+    },
+    "taskControls": {
+      "type": "array",
+      "items": { "$ref": "../common/triggers/TaskControl.json" }
+    },
+    "expectedParticipantData": {
+      "type": "array",
+      "items": { "$ref": "../common/users/ParticipantAttribute.json" }
+    },
+    "applicationData": { "$ref":  "../common/ApplicationData.json" }
+  },
+  "required": [ "id", "createdOn", "ownerId", "name" ],
+  "additionalProperties": false,
+  "$defs": {
+    "DeviceConnection": {
+      "type": "object",
+      "properties": {
+        "roleName": { "type": "string" },
+        "connectedToRoleName": { "type": "string" }
+      },
+      "required": [ "roleName", "connectedToRoleName" ],
+      "additionalProperties": false
+    }
+  }
+}

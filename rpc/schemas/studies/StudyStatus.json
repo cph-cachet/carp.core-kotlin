@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    { "$ref": "#/$defs/Configuring" },
+    { "$ref": "#/$defs/Live" }
+  ],
+  "$defs": {
+    "StudyStatus": {
+      "type": "object",
+      "properties": {
+        "__type": true,
+        "studyId": { "type": "string", "format": "uuid" },
+        "name": { "type": "string" },
+        "createdOn": { "type": "string", "format": "date-time" },
+        "canSetInvitation": { "type": "boolean" },
+        "canSetStudyProtocol": { "type": "boolean" },
+        "canDeployToParticipants": { "type": "boolean" }
+      },
+      "required": [ "__type", "studyId", "name", "createdOn","canSetInvitation", "canSetStudyProtocol",  "canDeployToParticipants" ]
+    },
+    "Configuring": {
+      "$anchor": "Configuring",
+      "allOf": [ { "$ref": "#/$defs/StudyStatus" } ],
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.studies.application.StudyStatus.Configuring" },
+        "canGoLive": { "type": "boolean" }
+      },
+      "required": [ "canGoLive" ],
+      "unevaluatedProperties": false
+    },
+    "Live": {
+      "$anchor": "Live",
+      "allOf": [ { "$ref": "#/$defs/StudyStatus" } ],
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.studies.application.StudyStatus.Live" }
+      },
+      "unevaluatedProperties": false
+    }
+  }
+}

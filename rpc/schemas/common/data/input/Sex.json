@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "__type": { "const": "dk.cachet.carp.input.sex" },
+    "value": { "enum": [ "Male", "Female", "Intersex" ] }
+  },
+  "required": [ "__type", "value" ],
+  "additionalProperties": false
+}

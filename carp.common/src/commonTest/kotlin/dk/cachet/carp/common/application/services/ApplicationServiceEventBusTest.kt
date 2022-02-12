@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application.services
 
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.test.runSuspendTest
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlin.test.*
 
@@ -12,19 +13,31 @@ import kotlin.test.*
 class ApplicationServiceEventBusTest
 {
     interface TestService : ApplicationService<TestService, Event>
+    {
+        companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+    }
 
     @Serializable
-    sealed class Event : IntegrationEvent<TestService>()
+    sealed class Event( override val aggregateId: String? = null ) : IntegrationEvent<TestService>
     {
+        @Required
+        override val apiVersion: ApiVersion = TestService.API_VERSION
+
         @Serializable
         object SomeEvent : Event()
     }
 
     interface OtherService : ApplicationService<OtherService, OtherEvent>
+    {
+        companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+    }
 
     @Serializable
-    sealed class OtherEvent : IntegrationEvent<OtherService>()
+    sealed class OtherEvent( override val aggregateId: String? = null ) : IntegrationEvent<OtherService>
     {
+        @Required
+        override val apiVersion: ApiVersion = OtherService.API_VERSION
+
         @Serializable
         object SomeOtherEvent : OtherEvent()
     }

@@ -3,7 +3,7 @@ package dk.cachet.carp.common.infrastructure.reflect
 
 internal actual object AccessInternals
 {
-    actual fun setField( onObject: Any, fieldName: String, value: Any )
+    actual fun setField( onObject: Any, fieldName: String, value: Any? )
     {
         // Find the corresponding field name for the JavaScript runtime, which often attaches mangled suffixes.
         val fields = js( "Object.keys( onObject )" ) as Array<String>

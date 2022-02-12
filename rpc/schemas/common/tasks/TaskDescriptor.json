@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "allOf": [
+    { "$ref": "#/$defs/TaskDescriptor" },
+    {
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.tasks.BackgroundTask" } } },
+      "then": { "$ref": "BackgroundTask.json" }
+    },
+    {
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.tasks.CustomProtocolTask" } } },
+      "then": { "$ref": "CustomProtocolTask.json" }
+    },
+    {
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.tasks.WebTask" } } },
+      "then": { "$ref": "WebTask.json" }
+    }
+  ],
+  "$defs": {
+    "TaskDescriptor": {
+      "type": "object",
+      "properties": {
+        "__type": true,
+        "name": { "type": "string" },
+        "measures": {
+          "type": "array",
+          "items": { "$ref": "Measure.json" }
+        },
+        "description": { "type": [ "string", "null" ] }
+      },
+      "required": [ "__type", "name" ]
+    }
+  }
+}

@@ -2,7 +2,6 @@ package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployments.application.users.StudyInvitation
-import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -18,10 +17,10 @@ interface StudyRepositoryTest
     @Test
     fun cant_add_study_with_id_that_already_exists() = runSuspendTest {
         val repo = createRepository()
-        val study = Study( StudyOwner(), "Test" )
+        val study = Study( UUID.randomUUID(), "Test" )
         repo.add( study )
 
-        val studyWithSameId = Study( StudyOwner(), "Study 2", "Description", StudyInvitation( "Some study" ), study.id )
+        val studyWithSameId = Study( UUID.randomUUID(), "Study 2", "Description", StudyInvitation( "Some study" ), study.id )
         assertFailsWith<IllegalArgumentException>
         {
             repo.add( studyWithSameId )
@@ -31,7 +30,7 @@ interface StudyRepositoryTest
     @Test
     fun getById_succeeds() = runSuspendTest {
         val repo = createRepository()
-        val study = Study( StudyOwner(), "Test" )
+        val study = Study( UUID.randomUUID(), "Test" )
         repo.add( study )
 
         val foundStudy = repo.getById( study.id )
@@ -50,20 +49,20 @@ interface StudyRepositoryTest
     @Test
     fun getForOwner_returns_owner_studies_only() = runSuspendTest {
         val repo = createRepository()
-        val owner = StudyOwner()
-        val ownerStudy = Study( owner, "Test" )
-        val wrongStudy = Study( StudyOwner(), "Test" )
+        val ownerId = UUID.randomUUID()
+        val ownerStudy = Study( ownerId, "Test" )
+        val wrongStudy = Study( UUID.randomUUID(), "Test" )
         repo.add( ownerStudy )
         repo.add( wrongStudy )
 
-        val ownerStudies = repo.getForOwner( owner )
+        val ownerStudies = repo.getForOwner( ownerId )
         assertEquals( ownerStudy.id, ownerStudies.single().id )
     }
 
     @Test
     fun update_succeeds() = runSuspendTest {
         val repo = createRepository()
-        val study = Study( StudyOwner(), "Test" )
+        val study = Study( UUID.randomUUID(), "Test" )
         repo.add( study )
 
         study.name = "Changed name"
@@ -82,14 +81,14 @@ interface StudyRepositoryTest
     fun update_fails_for_unknown_study() = runSuspendTest {
         val repo = createRepository()
 
-        val study = Study( StudyOwner(), "Test" )
+        val study = Study( UUID.randomUUID(), "Test" )
         assertFailsWith<IllegalArgumentException> { repo.update( study ) }
     }
 
     @Test
     fun remove_succeeds() = runSuspendTest {
         val repo = createRepository()
-        val study = Study( StudyOwner(), "Test" )
+        val study = Study( UUID.randomUUID(), "Test" )
         repo.add( study )
 
         val isRemoved = repo.remove( study.id )
@@ -100,7 +99,7 @@ interface StudyRepositoryTest
     @Test
     fun remove_returns_false_when_study_not_present() = runSuspendTest {
         val repo = createRepository()
-        val study = Study( StudyOwner(), "Test")
+        val study = Study( UUID.randomUUID(), "Test")
         repo.add( study )
         repo.remove( study.id )
 

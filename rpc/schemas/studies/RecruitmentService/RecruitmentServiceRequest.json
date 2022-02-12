@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    { "$ref": "#/$defs/AddParticipant" },
+    { "$ref": "#/$defs/GetParticipant" },
+    { "$ref": "#/$defs/GetParticipants" },
+    { "$ref": "#/$defs/InviteNewParticipantGroup" },
+    { "$ref": "#/$defs/GetParticipantGroupStatusList" },
+    { "$ref": "#/$defs/StopParticipantGroup" }
+  ],
+  "$defs": {
+    "ApiVersion": { "const": "1.0" },
+    "AddParticipant": {
+      "$anchor": "AddParticipant",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.AddParticipant" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyId": { "type": "string", "format": "uuid" },
+        "email": { "type": "string", "format": "email" }
+      },
+      "required": [ "__type", "apiVersion", "studyId", "email" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "AddParticipant-Response",
+        "$ref": "../users/Participant.json"
+      }
+    },
+    "GetParticipant": {
+      "$anchor": "GetParticipant",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.GetParticipant" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyId": { "type": "string", "format": "uuid" },
+        "participantId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "__type", "apiVersion", "studyId", "participantId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetParticipant-Response",
+        "$ref": "../users/Participant.json"
+      }
+    },
+    "GetParticipants": {
+      "$anchor": "GetParticipants",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.GetParticipants" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "__type", "apiVersion", "studyId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetParticipants-Response",
+        "type": "array",
+        "items": { "$ref": "../users/Participant.json" }
+      }
+    },
+    "InviteNewParticipantGroup": {
+      "$anchor": "InviteNewParticipantGroup",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.InviteNewParticipantGroup" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyId": { "type": "string", "format": "uuid" },
+        "group": {
+          "type": "array",
+          "items": { "$ref": "../users/AssignParticipantDevices.json" }
+        }
+      },
+      "required": [ "__type", "apiVersion", "studyId", "group" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "InviteNewParticipantGroup-Response",
+        "$ref": "../users/ParticipantGroupStatus.json"
+      }
+    },
+    "GetParticipantGroupStatusList": {
+      "$anchor": "GetParticipantGroupStatusList",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.GetParticipantGroupStatusList" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "__type", "apiVersion", "studyId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetParticipantGroupStatusList-Response",
+        "type": "array",
+        "items": { "$ref": "../users/ParticipantGroupStatus.json" }
+      }
+    },
+    "StopParticipantGroup": {
+      "$anchor": "StopParticipantGroup",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.StopParticipantGroup" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyId": { "type": "string", "format": "uuid" },
+        "groupId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "__type", "apiVersion", "studyId", "groupId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "StopParticipantGroup-Response",
+        "$ref": "../users/ParticipantGroupStatus.json"
+      }
+    }
+  }
+}

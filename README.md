@@ -89,6 +89,12 @@ which subsequently get passed to the deployments and clients subsystem.
      
    - **carp.detekt**: Includes static code analysis extensions for [detekt](https://github.com/arturbosch/detekt), used when building this project to ensure conventions are followed.
 
+Each of the subsystems expose [**application service interfaces with corresponding integration events**](carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/services).
+Synchronous communication between subsystems happens via dependency injected application service interfaces,
+which implementing infrastructures are expected to implement as remote procedure calls (RPCs).
+Asynchronous communication between subsystems happens via an event bus,
+which implementing infrastructures are expected to implement using a message queue which guarantees order for all `IntegrationEvent`'s sharing the same `aggregateId`.
+
 Not all subsystems are implemented yet.
 Currently, this project contains an unstable (not backwards compatible) alpha version of the protocols, studies, deployments, clients, and data subsystems.
 Many changes will happen as the rest of the infrastructure is implemented.
@@ -122,7 +128,7 @@ For example, the deployments subsystem has a sealed class [`DeploymentServiceReq
 Using these objects, all requests to a single application service can be handled by one endpoint using type checking.
 We recommend [using a when expression](https://kotlinlang.org/docs/reference/sealed-classes.html) so that the compiler can verify whether you have handled all requests.
 
-In addition, each request object implements [`ServiceInvoker`](carp.common/src/commonMain/kotlin/dk/cachet/carp/common/infrastructure/services/ServiceInvoker.kt) which allows calling the matching application service by passing it as an argument to `invokeOn`.
+In addition, each request object can be executed by passing a matching application service to `invokeOn`.
 This allows a centralized implementation for any incoming request object to an application service.
 However, in practice you might want to perform additional actions depending on specific requests, e.g., [authorization which is currently not part of core](#authorization).
 
@@ -163,8 +169,8 @@ The following shows how the subystems interact to create a study protocol, insta
 
 ```kotlin
 // Create a new study protocol.
-val owner = ProtocolOwner()
-val protocol = StudyProtocol( owner, "Track patient movement" )
+val ownerId = UUID.randomUUID()
+val protocol = StudyProtocol( ownerId, "Track patient movement" )
 
 // Define which devices are used for data collection.
 val phone = Smartphone( "Patient's phone" )
@@ -174,7 +180,7 @@ val phone = Smartphone( "Patient's phone" )
         geolocation { batteryNormal { granularity = Granularity.Balanced } }
     }
 }
-protocol.addMasterDevice( phone )
+protocol.addPrimaryDevice( phone )
 
 // Define what needs to be measured, on which device, when.
 val sensors = Smartphone.Sensors
@@ -185,7 +191,7 @@ val trackMovement = Smartphone.Tasks.BACKGROUND.create( "Track movement" ) {
 protocol.addTaskControl( phone.atStartOfStudy().start( trackMovement, phone ) )
 
 // JSON output of the study protocol, compatible with the rest of the CARP infrastructure.
-val json: String = protocol.getSnapshot().toJson()
+val json: String = JSON.encodeToString( protocol.getSnapshot() )
 ```
 
 <a name="example-studies"></a>
@@ -195,13 +201,13 @@ val json: String = protocol.getSnapshot().toJson()
 val (studyService, recruitmentService) = createEndpoints()
 
 // Create a new study.
-val studyOwner = StudyOwner()
-var studyStatus: StudyStatus = studyService.createStudy( studyOwner, "Example study" )
+val ownerId = UUID.randomUUID()
+var studyStatus: StudyStatus = studyService.createStudy( ownerId, "Example study" )
 val studyId: UUID = studyStatus.studyId
 
 // Let the study use the protocol from the 'carp.protocols' example above.
 val trackPatientStudy: StudyProtocol = createExampleProtocol()
-val patientPhone: AnyMasterDeviceDescriptor = trackPatientStudy.masterDevices.first() // "Patient's phone"
+val patientPhone: AnyPrimaryDeviceConfiguration = trackPatientStudy.primaryDevices.first() // "Patient's phone"
 val protocolSnapshot: StudyProtocolSnapshot = trackPatientStudy.getSnapshot()
 studyStatus = studyService.setProtocol( studyId, protocolSnapshot )
 
@@ -233,12 +239,12 @@ if ( studyStatus.canDeployToParticipants )
 ```kotlin
 val deploymentService: DeploymentService = createDeploymentEndpoint()
 val trackPatientStudy: StudyProtocol = createExampleProtocol()
-val patientPhone: Smartphone = trackPatientStudy.masterDevices.first() as Smartphone // "Patient's phone"
+val patientPhone: Smartphone = trackPatientStudy.primaryDevices.first() as Smartphone // "Patient's phone"
 
 // This is called by `StudyService` when deploying a participant group.
 val invitation = ParticipantInvitation(
     participantId = UUID.randomUUID(),
-    assignedMasterDeviceRoleNames = setOf( patientPhone.roleName ),
+    assignedPrimaryDeviceRoleNames = setOf( patientPhone.roleName ),
     identity = AccountIdentity.fromEmailAddress( "test@test.com" ),
     invitation = StudyInvitation( "Movement study", "This study tracks your movements." )
 )
@@ -258,10 +264,10 @@ var status = deploymentService.registerDevice( studyDeploymentId, patientPhone.r
 val patientPhoneStatus: DeviceDeploymentStatus = status.getDeviceStatus( patientPhone )
 if ( patientPhoneStatus.canObtainDeviceDeployment ) // True since there are no dependent devices.
 {
-    val deploymentInformation: MasterDeviceDeployment =
+    val deploymentInformation: PrimaryDeviceDeployment =
         deploymentService.getDeviceDeploymentFor( studyDeploymentId, patientPhone.roleName )
     val deployedOn: Instant = deploymentInformation.lastUpdatedOn // To verify correct deployment.
-    deploymentService.deploymentSuccessful( studyDeploymentId, patientPhone.roleName, deployedOn )
+    deploymentService.deviceDeployed( studyDeploymentId, patientPhone.roleName, deployedOn )
 }
 
 // Now that all devices have been registered and deployed, the deployment is running.
@@ -291,6 +297,7 @@ client.configure {
     // Depending on the device type, different options are available.
     // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
     deviceId = "xxxxxxxxx"
+    deviceDisplayName = "Pixel 6 Pro (Android 12)"
 }
 var status: StudyStatus = client.addStudy( studyDeploymentId, deviceToUse )
 

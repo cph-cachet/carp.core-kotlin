@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "allOf": [ { "$ref": "SamplingConfiguration.json#/$defs/SamplingConfiguration" } ],
+  "properties": {
+    "__type": { "const": "dk.cachet.carp.common.application.sampling.GranularitySamplingConfiguration" },
+    "granularity": {
+      "enum": [ "Detailed", "Balanced", "Coarse" ]
+    }
+  },
+  "required": [ "granularity" ],
+  "unevaluatedProperties": false
+}

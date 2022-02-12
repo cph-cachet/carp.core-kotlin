@@ -26,14 +26,14 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | [triggeredtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/TriggeredTask.kt) | A task which was started or stopped by a trigger, referring to identifiers in the study protocol. |
 | [completedtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/CompletedTask.kt) | An interactive task which was completed over the course of a specified time interval. |
 
-## Device descriptors
+## Device configurations
 
-| Class | Master | Description |
+| Class | Primary | Description |
 | --- | :---: | --- |
 | [Smartphone](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/Smartphone.kt) | Yes | An internet-connected phone with built-in sensors. |
 | [AltBeacon](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt) | | A beacon meeting the open AltBeacon standard. |
 | [BLEHeartRateDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/BLEHeartRateDevice.kt) | | A Bluetooth device which implements a Heart Rate service. |
-| [CustomProtocolDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/CustomProtocolDevice.kt) | Yes | A master device which uses a single `CustomProtocolTask` to determine how to run a study on the device. |
+| [CustomProtocolDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/CustomProtocolDevice.kt) | Yes | A primary device which uses a single `CustomProtocolTask` to determine how to run a study on the device. |
 
 ## Sampling schemes and configurations
 
@@ -45,9 +45,9 @@ The sampling configuration to be used is determined on clients in order of prior
 
 1. The sampling configuration, if specified in the study protocol, of the `Measure.DataStream` in the last triggered _active_ `TaskDescriptor`. 
    Once a task stops, it is no longer "active".
-2. The default sampling configuration, if specified in the study protocol, for the `DeviceDescriptor`.
-   This can be retrieved through `MasterDeviceDeployment` on the client.
-3. The default sampling configuration hardcoded in the `Sensors` sampling schemes of the concrete `DeviceDescriptor`, if none of the previous configurations are present.
+2. The default sampling configuration, if specified in the study protocol, for the `DeviceConfiguration`.
+   This can be retrieved through `PrimaryDeviceDeployment` on the client.
+3. The default sampling configuration hardcoded in the `Sensors` sampling schemes of the concrete `DeviceConfiguration`, if none of the previous configurations are present.
 
 Some sampling schemes support specifying a different sampling configuration depending on how much battery is left,
 indicated by the "Battery-aware" column.

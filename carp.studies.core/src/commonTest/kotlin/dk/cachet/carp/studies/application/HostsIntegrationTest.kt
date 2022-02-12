@@ -14,9 +14,8 @@ import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
 import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
-import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
-import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
 import dk.cachet.carp.test.runSuspendTest
@@ -71,7 +70,7 @@ class HostsIntegrationTest
         eventBus.registerHandler( StudyService::class, StudyService.Event.StudyCreated::class, this ) { studyCreated = it }
         eventBus.activateHandlers( this )
 
-        val study = studyService.createStudy( StudyOwner(), "Test" )
+        val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val participants = recruitmentService.getParticipants( study.studyId )
 
         assertEquals( study.studyId, studyCreated?.study?.studyId )
@@ -80,9 +79,9 @@ class HostsIntegrationTest
 
     @Test
     fun when_study_goes_live_recruitment_is_ready_for_deployment() = runSuspendTest {
-        val study = studyService.createStudy( StudyOwner(), "Test" )
+        val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
-        val protocol = createSingleMasterDeviceProtocol( "Device" )
+        val protocol = createSinglePrimaryDeviceProtocol( "Device" )
         studyService.setProtocol( studyId, protocol.getSnapshot() )
 
         var studyGoneLive: StudyService.Event.StudyGoneLive? = null
@@ -110,13 +109,13 @@ class HostsIntegrationTest
 
         var studyRemovedEvent: StudyService.Event.StudyRemoved? = null
         eventBus.registerHandler( StudyService::class, StudyService.Event.StudyRemoved::class, this ) { studyRemovedEvent = it }
-        var deploymentsRemovedEvent: DeploymentService.Event.StudyDeploymentsRemoved? = null
-        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentsRemoved::class, this ) { deploymentsRemovedEvent = it }
+        var deploymentRemovedEvent: DeploymentService.Event.StudyDeploymentRemoved? = null
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentRemoved::class, this ) { deploymentRemovedEvent = it }
         eventBus.activateHandlers( this )
         studyService.remove( studyId )
 
         assertEquals( studyId, studyRemovedEvent?.studyId )
-        assertEquals( setOf( deploymentId ), deploymentsRemovedEvent?.deploymentIds )
+        assertEquals( deploymentId, deploymentRemovedEvent?.studyDeploymentId )
 
          // Data related to study no longer exists.
         assertFailsWith<IllegalArgumentException> { recruitmentService.getParticipantGroupStatusList( studyId ) }
@@ -141,10 +140,10 @@ class HostsIntegrationTest
      */
     private suspend fun createLiveStudy(): Pair<UUID, String>
     {
-        val study = studyService.createStudy( StudyOwner(), "Test" )
+        val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
         val deviceRole = "Phone"
-        val protocol = createSingleMasterDeviceProtocol( deviceRole )
+        val protocol = createSinglePrimaryDeviceProtocol( deviceRole )
         studyService.setProtocol( studyId, protocol.getSnapshot() )
         studyService.goLive( studyId )
 

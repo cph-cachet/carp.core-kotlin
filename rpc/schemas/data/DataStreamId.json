@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "studyDeploymentId": { "type": "string", "format": "uuid" },
+    "deviceRoleName": { "type" : "string" },
+    "dataType": { "$ref": "../common/NamespacedId.json" }
+  },
+  "required": [ "studyDeploymentId", "deviceRoleName", "dataType" ],
+  "additionalProperties": false
+}

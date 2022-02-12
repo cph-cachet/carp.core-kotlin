@@ -8,31 +8,34 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.StudyDetails
 import dk.cachet.carp.studies.application.StudyStatus
-import dk.cachet.carp.studies.application.users.StudyOwner
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 
 /**
- * Represents a study which can be pilot tested and eventually 'go live', for which a recruitment goal can be set, and participants can be recruited.
+ * Represents a study which can be pilot tested and eventually 'go live',
+ * for which a recruitment goal can be set, and participants can be recruited.
  */
 class Study(
     /**
-     * The person or group that created this [Study].
+     * The ID of the entity (e.g., person or group) that created this [Study].
      */
-    val owner: StudyOwner,
+    val ownerId: UUID,
     /**
-     * A descriptive name for the study, assigned by, and only visible to, the [StudyOwner].
+     * A descriptive name for the study, assigned by, and only visible to, the entity with [ownerId].
      */
     name: String,
     /**
-     * A description for the study, assigned by, and only visible to, the [StudyOwner].
+     * A description for the study, assigned by, and only visible to, the entity with [ownerId].
      */
     description: String? = null,
     /**
      * A description of the study, shared with participants once they are invited to the study.
      */
     invitation: StudyInvitation = StudyInvitation( name ),
-    val id: UUID = UUID.randomUUID()
-) : AggregateRoot<Study, StudySnapshot, Study.Event>()
+    id: UUID = UUID.randomUUID(),
+    createdOn: Instant = Clock.System.now()
+) : AggregateRoot<Study, StudySnapshot, Study.Event>( id, createdOn )
 {
     sealed class Event : DomainEvent()
     {
@@ -47,8 +50,14 @@ class Study(
     {
         fun fromSnapshot( snapshot: StudySnapshot ): Study
         {
-            val study = Study( StudyOwner( snapshot.ownerId ), snapshot.name, snapshot.description, snapshot.invitation, snapshot.studyId )
-            study.createdOn = snapshot.createdOn
+            val study = Study(
+                snapshot.ownerId,
+                snapshot.name,
+                snapshot.description,
+                snapshot.invitation,
+                snapshot.id,
+                snapshot.createdOn
+            )
             study.protocolSnapshot = snapshot.protocolSnapshot
             study.isLive = snapshot.isLive
 
@@ -61,7 +70,7 @@ class Study(
 
 
     /**
-     * A descriptive name for the study, assigned by, and only visible to, the [StudyOwner].
+     * A descriptive name for the study, assigned by, and only visible to, the entity with [ownerId].
      */
     var name: String = name
         set( value )
@@ -71,7 +80,7 @@ class Study(
         }
 
     /**
-     * A description for the study, assigned by, and only visible to, the [StudyOwner].
+     * A description for the study, assigned by, and only visible to, the entity with [ownerId].
      */
     var description: String? = description
         set( value )
@@ -110,7 +119,7 @@ class Study(
      * Get [StudyDetails] for this [Study].
      */
     fun getStudyDetails(): StudyDetails =
-        StudyDetails( id, owner, name, createdOn, description, invitation, protocolSnapshot )
+        StudyDetails( id, ownerId, name, createdOn, description, invitation, protocolSnapshot )
 
     val canSetStudyProtocol: Boolean get() = !isLive
 

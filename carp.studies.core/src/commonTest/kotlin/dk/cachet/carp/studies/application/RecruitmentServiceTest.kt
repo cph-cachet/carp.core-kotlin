@@ -4,13 +4,12 @@ import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.devices.Smartphone
+import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
-import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -23,16 +22,22 @@ private val unknownId: UUID = UUID.randomUUID()
  */
 interface RecruitmentServiceTest
 {
+    data class DependentServices(
+        val recruitmentService: RecruitmentService,
+        val studyService: StudyService,
+        val eventBus: EventBus
+    )
+
     /**
      * Create a recruitment service and study service it depends on to be used in the tests.
      */
-    fun createService(): Pair<RecruitmentService, StudyService>
+    fun createService(): DependentServices
 
 
     @Test
     fun adding_and_retrieving_participant_succeeds() = runSuspendTest {
         val (recruitmentService, studyService) = createService()
-        val study = studyService.createStudy( StudyOwner(), "Test" )
+        val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
 
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
@@ -58,7 +63,7 @@ interface RecruitmentServiceTest
     @Test
     fun addParticipant_twice_returns_same_participant() = runSuspendTest {
         val (recruitmentService, studyService) = createService()
-        val study = studyService.createStudy( StudyOwner(), "Test" )
+        val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
 
         val email = EmailAddress( "test@test.com" )
@@ -70,7 +75,7 @@ interface RecruitmentServiceTest
     @Test
     fun getParticipant_fails_for_unknown_id() = runSuspendTest {
         val (recruitmentService, studyService) = createService()
-        val study = studyService.createStudy( StudyOwner(), "Test" )
+        val study = studyService.createStudy( UUID.randomUUID(), "Test" )
 
         // Unknown study Id.
         assertFailsWith<IllegalArgumentException> { recruitmentService.getParticipant( unknownId, unknownId ) }
@@ -92,7 +97,7 @@ interface RecruitmentServiceTest
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
-        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val deviceRoles = protocolSnapshot.primaryDevices.map { it.roleName }.toSet()
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
         val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
         assertEquals( participant, groupStatus.participants.single() )
@@ -125,7 +130,7 @@ interface RecruitmentServiceTest
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
 
-        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val deviceRoles = protocolSnapshot.primaryDevices.map { it.roleName }.toSet()
         val assignParticipant = AssignParticipantDevices( unknownId, deviceRoles )
         assertFailsWith<IllegalArgumentException>
         {
@@ -164,7 +169,7 @@ interface RecruitmentServiceTest
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
-        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val deviceRoles = protocolSnapshot.primaryDevices.map { it.roleName }.toSet()
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
         val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
 
@@ -178,7 +183,7 @@ interface RecruitmentServiceTest
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
-        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val deviceRoles = protocolSnapshot.primaryDevices.map { it.roleName }.toSet()
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
         val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
 
@@ -192,7 +197,7 @@ interface RecruitmentServiceTest
     fun getParticipantGroupStatusList_returns_multiple_deployments() = runSuspendTest {
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
-        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val deviceRoles = protocolSnapshot.primaryDevices.map { it.roleName }.toSet()
 
         val p1 = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
         val assignedP1 = AssignParticipantDevices( p1.id, deviceRoles )
@@ -220,7 +225,7 @@ interface RecruitmentServiceTest
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
-        val deviceRoles = protocolSnapshot.masterDevices.map { it.roleName }.toSet()
+        val deviceRoles = protocolSnapshot.primaryDevices.map { it.roleName }.toSet()
         val assignParticipant = AssignParticipantDevices( participant.id, deviceRoles )
         val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
 
@@ -250,13 +255,13 @@ interface RecruitmentServiceTest
     private suspend fun createLiveStudy( service: StudyService ): Pair<UUID, StudyProtocolSnapshot>
     {
         // Create deployable protocol.
-        val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
-        protocol.addMasterDevice( Smartphone( "User's phone" ) )
+        val protocol = StudyProtocol( UUID.randomUUID(), "Test protocol" )
+        protocol.addPrimaryDevice( Smartphone( "User's phone" ) )
         protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
         val validSnapshot = protocol.getSnapshot()
 
         // Create live study from protocol.
-        val status = service.createStudy( StudyOwner(), "Test" )
+        val status = service.createStudy( UUID.randomUUID(), "Test" )
         val studyId = status.studyId
         service.setProtocol( studyId, validSnapshot )
         service.goLive( studyId )

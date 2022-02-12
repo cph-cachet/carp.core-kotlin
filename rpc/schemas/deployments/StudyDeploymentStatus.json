@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    { "$ref": "#/$defs/Invited" },
+    { "$ref": "#/$defs/DeployingDevices" },
+    { "$ref": "#/$defs/Running" },
+    { "$ref": "#/$defs/Stopped" }
+  ],
+  "$defs": {
+    "StudyDeploymentStatus": {
+      "type": "object",
+      "properties": {
+        "__type": true,
+        "createdOn": { "type": "string", "format": "date-time" },
+        "studyDeploymentId": { "type": "string", "format": "uuid" },
+        "devicesStatus": {
+          "type": "array",
+          "items": { "$ref": "DeviceDeploymentStatus.json" }
+        },
+        "participantsStatus": {
+          "type": "array",
+          "items": { "$ref": "users/ParticipantStatus.json" }
+        },
+        "startedOn": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "format": "date-time" }
+          ]
+        }
+      },
+      "required": [ "__type", "createdOn", "studyDeploymentId", "devicesStatus", "participantsStatus", "startedOn" ]
+    },
+    "Invited": {
+      "$anchor": "Invited",
+      "allOf": [ { "$ref": "#/$defs/StudyDeploymentStatus" } ],
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.application.StudyDeploymentStatus.Invited" }
+      },
+      "unevaluatedProperties": false
+    },
+    "DeployingDevices": {
+      "$anchor": "DeployingDevices",
+      "allOf": [ { "$ref": "#/$defs/StudyDeploymentStatus" } ],
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.application.StudyDeploymentStatus.DeployingDevices" }
+      },
+      "unevaluatedProperties": false
+    },
+    "Running": {
+      "$anchor": "Running",
+      "allOf": [ { "$ref": "#/$defs/StudyDeploymentStatus" } ],
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.application.StudyDeploymentStatus.Running" },
+        "startedOn": { "type": "string", "format": "date-time" }
+      },
+      "unevaluatedProperties": false
+    },
+    "Stopped": {
+      "$anchor": "Stopped",
+      "allOf": [ { "$ref": "#/$defs/StudyDeploymentStatus" } ],
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.application.StudyDeploymentStatus.Stopped" },
+        "stoppedOn": { "type": "string", "format": "date-time" }
+      },
+      "required": [ "stoppedOn" ],
+      "unevaluatedProperties": false
+    }
+  }
+}

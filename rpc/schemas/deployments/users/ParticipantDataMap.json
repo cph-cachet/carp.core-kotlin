@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "propertyNames": { "$ref": "../../common/NamespacedId.json" },
+  "additionalProperties": {
+    "oneOf": [
+      { "type": "null" },
+      { "$ref": "../../common/data/Data.json" }
+    ]
+  }
+}

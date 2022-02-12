@@ -1,10 +1,12 @@
 package dk.cachet.carp.common.infrastructure.services
 
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.services.publish
 import dk.cachet.carp.common.application.services.registerHandler
 import dk.cachet.carp.test.runSuspendTest
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlin.test.*
 
@@ -15,10 +17,16 @@ import kotlin.test.*
 class SingleThreadedEventBusTest
 {
     interface TestService : ApplicationService<TestService, BaseIntegrationEvent>
+    {
+        companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+    }
 
     @Serializable
-    sealed class BaseIntegrationEvent : IntegrationEvent<TestService>()
+    sealed class BaseIntegrationEvent( override val aggregateId: String? = null ) : IntegrationEvent<TestService>
     {
+        @Required
+        override val apiVersion: ApiVersion = TestService.API_VERSION
+
         @Serializable
         data class SomeIntegrationEvent( val data: String ) : BaseIntegrationEvent()
 

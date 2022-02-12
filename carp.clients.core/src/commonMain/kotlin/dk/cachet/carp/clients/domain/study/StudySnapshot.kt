@@ -3,7 +3,7 @@ package dk.cachet.carp.clients.domain.study
 import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.domain.Snapshot
-import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
@@ -11,11 +11,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StudySnapshot(
+    override val id: UUID,
+    override val createdOn: Instant,
     val studyDeploymentId: UUID,
     val deviceRoleName: String,
-    override val createdOn: Instant,
     val deploymentStatus: StudyDeploymentStatus?,
-    val deploymentInformation: MasterDeviceDeployment?,
+    val deploymentInformation: PrimaryDeviceDeployment?
 ) : Snapshot<Study>
 {
     companion object
@@ -23,7 +24,7 @@ data class StudySnapshot(
         fun fromStudy( study: Study ): StudySnapshot
         {
             val status = study.getStatus()
-            val deploymentInformation: MasterDeviceDeployment? =
+            val deploymentInformation: PrimaryDeviceDeployment? =
                 when ( status )
                 {
                     is StudyStatus.DeviceDeploymentReceived -> status.deploymentInformation
@@ -32,9 +33,10 @@ data class StudySnapshot(
                 }
 
             return StudySnapshot(
+                study.id,
+                study.createdOn,
                 study.studyDeploymentId,
                 study.deviceRoleName,
-                study.createdOn,
                 (status as? StudyStatus.DeploymentStatusAvailable)?.deploymentStatus,
                 deploymentInformation
             )

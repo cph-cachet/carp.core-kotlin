@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "participantId": { "type": "string", "format": "uuid" },
+    "assignedPrimaryDeviceRoleNames": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "identity": { "$ref": "../../common/users/AccountIdentity.json" },
+    "invitation": { "$ref": "../users/StudyInvitation.json" }
+  },
+  "required": [ "participantId", "assignedPrimaryDeviceRoleNames", "identity", "invitation" ],
+  "additionalProperties": false
+}

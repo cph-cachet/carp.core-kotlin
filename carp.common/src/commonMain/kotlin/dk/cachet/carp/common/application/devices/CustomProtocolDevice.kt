@@ -11,11 +11,11 @@ import kotlin.reflect.KClass
 
 
 /**
- * A master device which uses a single [CustomProtocolTask] to determine how to run a study on the device.
+ * A primary device which uses a single [CustomProtocolTask] to determine how to run a study on the device.
  */
 @Serializable
 data class CustomProtocolDevice( override val roleName: String, override val isOptional: Boolean = false ) :
-    MasterDeviceDescriptor<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
+    PrimaryDeviceConfiguration<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {
     object Sensors : DataTypeSamplingSchemeMap()
     object Tasks : TaskDescriptorList()

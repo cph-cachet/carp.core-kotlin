@@ -2,6 +2,7 @@ package dk.cachet.carp.common.domain
 
 import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
+import dk.cachet.carp.common.application.UUID
 import kotlinx.datetime.Instant
 
 
@@ -12,6 +13,7 @@ import kotlinx.datetime.Instant
 @ImplementAsDataClass
 interface Snapshot<TAggregateRoot>
 {
+    val id: UUID
     val createdOn: Instant
 
 

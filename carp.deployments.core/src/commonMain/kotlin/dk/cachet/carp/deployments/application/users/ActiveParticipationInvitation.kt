@@ -12,5 +12,5 @@ import kotlinx.serialization.Serializable
 data class ActiveParticipationInvitation(
     val participation: Participation,
     val invitation: StudyInvitation,
-    val assignedDevices: Set<AssignedMasterDevice>
+    val assignedDevices: Set<AssignedPrimaryDevice>
 )

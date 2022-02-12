@@ -2,9 +2,11 @@ package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.CustomProtocolDevice
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 
 
@@ -13,8 +15,14 @@ import kotlinx.serialization.Serializable
  */
 interface ProtocolFactoryService : ApplicationService<ProtocolFactoryService, ProtocolFactoryService.Event>
 {
+    companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+
     @Serializable
-    sealed class Event : IntegrationEvent<ProtocolFactoryService>()
+    sealed class Event : IntegrationEvent<ProtocolFactoryService>
+    {
+        @Required
+        override val apiVersion: ApiVersion = API_VERSION
+    }
 
 
     /**

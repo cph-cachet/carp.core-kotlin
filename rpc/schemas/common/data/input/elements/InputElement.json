@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/SelectOne" },
+    { "$ref": "#/$defs/Text" }
+  ],
+  "$defs": {
+    "SelectOne": {
+      "$anchor": "SelectOne",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.common.application.data.input.elements.SelectOne" },
+        "prompt": { "type": "string" },
+        "options": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": [ "__type", "prompt", "options" ],
+      "additionalProperties": false
+    },
+    "Text": {
+      "$anchor": "Text",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.common.application.data.input.elements.Text" },
+        "prompt": { "type": "string" }
+      },
+      "required": [ "__type", "prompt" ],
+      "additionalProperties": false
+    }
+  }
+}

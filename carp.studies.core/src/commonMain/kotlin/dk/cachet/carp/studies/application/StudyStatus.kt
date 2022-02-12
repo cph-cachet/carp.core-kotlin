@@ -13,7 +13,7 @@ sealed class StudyStatus
 {
     abstract val studyId: UUID
     /**
-     * A descriptive name for the study, as assigned by the [StudyOwner].
+     * A descriptive name for the study, as assigned by the study owner.
      */
     abstract val name: String
     /**

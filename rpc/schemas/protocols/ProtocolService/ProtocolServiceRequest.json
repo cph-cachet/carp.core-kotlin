@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    { "$ref": "#/$defs/Add" },
+    { "$ref": "#/$defs/AddVersion" },
+    { "$ref": "#/$defs/UpdateParticipantDataConfiguration" },
+    { "$ref": "#/$defs/GetBy" },
+    { "$ref": "#/$defs/GetAllForOwner" },
+    { "$ref": "#/$defs/GetVersionHistoryFor" }
+  ],
+  "$defs": {
+    "ApiVersion": { "const": "1.0" },
+    "Add": {
+      "$anchor": "Add",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.Add" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "protocol": { "$ref": "../StudyProtocolSnapshot.json" },
+        "versionTag": { "type": "string" }
+      },
+      "required": [ "__type", "apiVersion", "protocol" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "Add-Response",
+        "$ref": "../../common/Unit.json"
+      }
+    },
+    "AddVersion": {
+      "$anchor": "AddVersion",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.AddVersion" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "protocol": { "$ref": "../StudyProtocolSnapshot.json" },
+        "versionTag": { "type": "string" }
+      },
+      "required": [ "__type", "apiVersion", "protocol" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "AddVersion-Response",
+        "$ref": "../../common/Unit.json"
+      }
+    },
+    "UpdateParticipantDataConfiguration": {
+      "$anchor": "UpdateParticipantDataConfiguration",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.UpdateParticipantDataConfiguration" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "protocolId": { "type": "string", "format": "uuid" },
+        "versionTag": { "type": "string" },
+        "expectedParticipantData": {
+          "type": "array",
+          "items": { "$ref": "../../common/users/ParticipantAttribute.json" }
+        }
+      },
+      "required": [ "__type", "apiVersion", "protocolId", "versionTag", "expectedParticipantData" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "UpdateParticipantDataConfiguration-Response",
+        "$ref": "../StudyProtocolSnapshot.json"
+      }
+    },
+    "GetBy": {
+      "$anchor": "GetBy",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.GetBy" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "protocolId": { "type": "string", "format": "uuid" },
+        "versionTag": { "type": [ "string", "null" ] }
+      },
+      "required": [ "__type", "apiVersion", "protocolId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetBy-Response",
+        "$ref": "../StudyProtocolSnapshot.json"
+      }
+    },
+    "GetAllForOwner": {
+      "$anchor": "GetAllForOwner",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.GetAllForOwner" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "ownerId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "__type", "apiVersion", "ownerId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetAllForOwner-Response",
+        "type": "array",
+        "items": { "$ref": "../StudyProtocolSnapshot.json" }
+      }
+    },
+    "GetVersionHistoryFor": {
+      "$anchor": "GetVersionHistoryFor",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.GetVersionHistoryFor" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "protocolId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "__type", "apiVersion", "protocolId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetVersionHistoryFor-Response",
+        "type": "array",
+        "items": { "$ref": "../ProtocolVersion.json" }
+      }
+    }
+  }
+}

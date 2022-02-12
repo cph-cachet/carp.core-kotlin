@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    { "$ref": "#/$defs/CreateCustomProtocol" }
+  ],
+  "$defs": {
+    "ApiVersion": { "const": "1.0" },
+    "CreateCustomProtocol": {
+      "$anchor": "CreateCustomProtocol",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceRequest.CreateCustomProtocol" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "ownerId": { "type": "string", "format": "uuid" },
+        "name": { "type": "string" },
+        "customProtocol": { "type": "string" },
+        "description": { "type": [ "string", "null" ] }
+      },
+      "required": [ "__type", "apiVersion", "ownerId", "name", "customProtocol", "description" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "CreateCustomProtocol-Response",
+        "$ref": "../StudyProtocolSnapshot.json"
+      }
+    }
+  }
+}

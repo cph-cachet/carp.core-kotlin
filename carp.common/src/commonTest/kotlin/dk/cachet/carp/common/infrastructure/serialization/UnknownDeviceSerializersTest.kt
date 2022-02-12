@@ -1,17 +1,17 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
-import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.test.*
 
 
 /**
- * Tests for [CustomDeviceDescriptor].
+ * Tests for [CustomDeviceConfiguration].
  */
-class CustomDeviceDescriptorTest
+class CustomDeviceConfigurationTest
 {
     companion object
     {
@@ -20,12 +20,12 @@ class CustomDeviceDescriptorTest
 
 
     @Test
-    fun initialization_from_json_extracts_base_DeviceDescriptor_properties()
+    fun initialization_from_json_extracts_base_DeviceConfiguration_properties()
     {
-        val device = StubDeviceDescriptor( "Unknown" )
-        val serialized: String = JSON.encodeToString( StubDeviceDescriptor.serializer(), device )
+        val device = StubDeviceConfiguration( "Unknown" )
+        val serialized: String = JSON.encodeToString( StubDeviceConfiguration.serializer(), device )
 
-        val custom = CustomDeviceDescriptor( "Irrelevant", serialized, JSON )
+        val custom = CustomDeviceConfiguration( "Irrelevant", serialized, JSON )
         assertEquals( device.roleName, custom.roleName )
     }
 
@@ -40,17 +40,17 @@ class CustomDeviceDescriptorTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomDeviceDescriptor( "Irrelevant", serialized, JSON )
+            CustomDeviceConfiguration( "Irrelevant", serialized, JSON )
         }
     }
 
     @Test
     fun createRegistration_is_not_supported()
     {
-        val device = StubDeviceDescriptor( "Unknown" )
-        val serialized: String = JSON.encodeToString( StubDeviceDescriptor.serializer(), device )
+        val device = StubDeviceConfiguration( "Unknown" )
+        val serialized: String = JSON.encodeToString( StubDeviceConfiguration.serializer(), device )
 
-        val custom = CustomDeviceDescriptor( "Irrelevant", serialized, JSON )
+        val custom = CustomDeviceConfiguration( "Irrelevant", serialized, JSON )
 
         assertFailsWith<UnsupportedOperationException>
         {
@@ -61,9 +61,9 @@ class CustomDeviceDescriptorTest
 
 
 /**
- * Tests for [CustomMasterDeviceDescriptor].
+ * Tests for [CustomPrimaryDeviceConfiguration].
  */
-class CustomMasterDeviceDescriptorTest
+class CustomPrimaryDeviceConfigurationTest
 {
     companion object
     {
@@ -72,37 +72,37 @@ class CustomMasterDeviceDescriptorTest
 
 
     @Test
-    fun initialization_from_json_extracts_base_MasterDeviceDescriptor_properties()
+    fun initialization_from_json_extracts_base_PrimaryDeviceConfiguration_properties()
     {
-        val device = StubMasterDeviceDescriptor( "Unknown" )
-        val serialized: String = JSON.encodeToString( StubMasterDeviceDescriptor.serializer(), device )
+        val device = StubPrimaryDeviceConfiguration( "Unknown" )
+        val serialized: String = JSON.encodeToString( StubPrimaryDeviceConfiguration.serializer(), device )
 
-        val custom = CustomMasterDeviceDescriptor( "Irrelevant", serialized, JSON )
+        val custom = CustomPrimaryDeviceConfiguration( "Irrelevant", serialized, JSON )
         assertEquals( device.roleName, custom.roleName )
     }
 
     @Serializable
-    internal data class IncorrectMasterDevice( val incorrect: String = "Not a master device." )
+    internal data class IncorrectPrimaryDevice( val incorrect: String = "Not a primary device." )
 
     @Test
     fun initialization_from_invalid_json_fails()
     {
-        val incorrect = IncorrectMasterDevice()
-        val serialized: String = JSON.encodeToString( IncorrectMasterDevice.serializer(), incorrect )
+        val incorrect = IncorrectPrimaryDevice()
+        val serialized: String = JSON.encodeToString( IncorrectPrimaryDevice.serializer(), incorrect )
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomMasterDeviceDescriptor( "Irrelevant", serialized, JSON )
+            CustomPrimaryDeviceConfiguration( "Irrelevant", serialized, JSON )
         }
     }
 
     @Test
     fun createRegistration_is_not_supported()
     {
-        val device = StubMasterDeviceDescriptor( "Unknown" )
-        val serialized: String = JSON.encodeToString( StubMasterDeviceDescriptor.serializer(), device )
+        val device = StubPrimaryDeviceConfiguration( "Unknown" )
+        val serialized: String = JSON.encodeToString( StubPrimaryDeviceConfiguration.serializer(), device )
 
-        val custom = CustomMasterDeviceDescriptor( "Irrelevant", serialized, JSON )
+        val custom = CustomPrimaryDeviceConfiguration( "Irrelevant", serialized, JSON )
 
         assertFailsWith<UnsupportedOperationException>
         {
@@ -126,11 +126,12 @@ class CustomDeviceRegistrationTest
     @Test
     fun initialization_from_json_extracts_base_DeviceRegistration_properties()
     {
-        val registration = DefaultDeviceRegistration( "Unknown" )
+        val registration = DefaultDeviceRegistration()
         val serialized: String = JSON.encodeToString( DefaultDeviceRegistration.serializer(), registration )
 
         val custom = CustomDeviceRegistration( "Irrelevant", serialized, JSON )
         assertEquals( registration.deviceId, custom.deviceId )
+        assertEquals( registration.deviceDisplayName, custom.deviceDisplayName )
     }
 
     @Serializable

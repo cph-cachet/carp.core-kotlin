@@ -9,12 +9,12 @@ import kotlinx.serialization.Serializable
 
 /**
  * A participant, uniquely identified by [participation], linked to an account identified by [accountId],
- * which was invited to a study deployment (using [invitation]) using the devices with [assignedMasterDeviceRoleNames].
+ * which was invited to a study deployment (using [invitation]) using the devices with [assignedPrimaryDeviceRoleNames].
  */
 @Serializable
 data class AccountParticipation(
     val participation: Participation,
-    val assignedMasterDeviceRoleNames: Set<String>,
+    val assignedPrimaryDeviceRoleNames: Set<String>,
     val accountId: UUID,
     val invitation: StudyInvitation
 )
@@ -43,7 +43,7 @@ internal fun filterActiveParticipationInvitations(
             ActiveParticipationInvitation(
                 invitation.participation,
                 invitation.invitation,
-                invitation.assignedMasterDeviceRoleNames.map { group.getAssignedMasterDevice( it ) }.toSet()
+                invitation.assignedPrimaryDeviceRoleNames.map { group.getAssignedPrimaryDevice( it ) }.toSet()
             )
         }.toSet()
 }

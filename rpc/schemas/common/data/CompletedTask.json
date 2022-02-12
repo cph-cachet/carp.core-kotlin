@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "__type": { "const": "dk.cachet.carp.completedtask" },
+    "taskName": { "type": "string" },
+    "taskData": {
+      "oneOf": [
+        { "$ref": "Data.json" },
+        { "type": "null" }
+      ]
+    }
+  },
+  "required": [ "__type", "taskName" ],
+  "additionalProperties": false
+}

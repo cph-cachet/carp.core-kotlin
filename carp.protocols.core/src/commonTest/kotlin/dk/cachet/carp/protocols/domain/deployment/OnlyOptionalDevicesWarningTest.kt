@@ -1,6 +1,6 @@
 package dk.cachet.carp.protocols.domain.deployment
 
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlin.test.*
 
@@ -11,11 +11,11 @@ import kotlin.test.*
 class OnlyOptionalDevicesWarningTest
 {
     @Test
-    fun isIssuePresent_true_with_only_optional_master_devices()
+    fun isIssuePresent_true_with_only_optional_primary_devices()
     {
         val protocol = createEmptyProtocol().apply {
-            addMasterDevice( StubMasterDeviceDescriptor( "Optional 1", isOptional = true ) )
-            addMasterDevice( StubMasterDeviceDescriptor( "Optional 2", isOptional = true ) )
+            addPrimaryDevice( StubPrimaryDeviceConfiguration( "Optional 1", isOptional = true ) )
+            addPrimaryDevice( StubPrimaryDeviceConfiguration( "Optional 2", isOptional = true ) )
         }
 
         val warning = OnlyOptionalDevicesWarning()
@@ -23,11 +23,11 @@ class OnlyOptionalDevicesWarningTest
     }
 
     @Test
-    fun isIssuePresent_false_with_at_least_one_required_master_devices()
+    fun isIssuePresent_false_with_at_least_one_required_primary_devices()
     {
         val protocol = createEmptyProtocol().apply {
-            addMasterDevice( StubMasterDeviceDescriptor( "Required", isOptional = false ) )
-            addMasterDevice( StubMasterDeviceDescriptor( "Optional", isOptional = true ) )
+            addPrimaryDevice( StubPrimaryDeviceConfiguration( "Required", isOptional = false ) )
+            addPrimaryDevice( StubPrimaryDeviceConfiguration( "Optional", isOptional = true ) )
         }
 
         val warning = OnlyOptionalDevicesWarning()

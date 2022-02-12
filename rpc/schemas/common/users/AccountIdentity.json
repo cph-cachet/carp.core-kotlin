@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/EmailAccountIdentity" },
+    { "$ref": "#/$defs/UsernameAccountIdentity" }
+  ],
+  "$defs": {
+    "EmailAccountIdentity": {
+      "$anchor": "EmailAccountIdentity",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.common.application.users.EmailAccountIdentity" },
+        "emailAddress": { "type": "string", "format": "email" }
+      },
+      "required": [ "__type", "emailAddress" ],
+      "additionalProperties": false
+    },
+    "UsernameAccountIdentity": {
+      "$anchor": "UsernameAccountIdentity",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.common.application.users.UsernameAccountIdentity" },
+        "username": { "$ref": "../../common/users/Username.json" }
+      },
+      "required": [ "__type" ],
+      "additionalProperties": false
+    }
+  }
+}

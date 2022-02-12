@@ -5,8 +5,8 @@ import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.createParticipantInvitation
-import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
-import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryWithConnectedDeviceProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -17,20 +17,20 @@ private val unknownId: UUID = UUID.randomUUID()
 /**
  * Tests for implementations of [DeploymentService].
  */
-abstract class DeploymentServiceTest
+interface DeploymentServiceTest
 {
     /**
      * Create a deployment service to be used in the tests.
      */
-    abstract fun createService(): DeploymentService
+    fun createService(): DeploymentService
 
 
     @Test
     fun createStudyDeployment_registers_preregistered_devices() = runSuspendTest {
         val deploymentService = createService()
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
-        val masterDevice = protocol.masterDevices.single()
-        val connectedDevice = protocol.getConnectedDevices( masterDevice ).single()
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val primaryDevice = protocol.primaryDevices.single()
+        val connectedDevice = protocol.getConnectedDevices( primaryDevice ).single()
 
         val deploymentId = UUID.randomUUID()
         val preregistration = connectedDevice.createRegistration()
@@ -40,19 +40,19 @@ abstract class DeploymentServiceTest
             listOf( createParticipantInvitation( protocol ) ),
             mapOf( connectedDevice.roleName to preregistration )
         )
-        deploymentService.registerDevice( deploymentId, masterDevice.roleName, masterDevice.createRegistration() )
+        deploymentService.registerDevice( deploymentId, primaryDevice.roleName, primaryDevice.createRegistration() )
 
-        val deployment = deploymentService.getDeviceDeploymentFor( deploymentId, masterDevice.roleName )
+        val deployment = deploymentService.getDeviceDeploymentFor( deploymentId, primaryDevice.roleName )
         assertEquals( preregistration, deployment.connectedDeviceRegistrations[ connectedDevice.roleName ] )
     }
 
     @Test
     fun createStudyDeployment_fails_for_existing_id() = runSuspendTest {
         val deploymentService = createService()
-        val studyDeploymentId = addTestDeployment( deploymentService, "Master" )
+        val studyDeploymentId = addTestDeployment( deploymentService, "Primary" )
 
         val deviceRole = "Test device"
-        val protocol = createSingleMasterDeviceProtocol( deviceRole )
+        val protocol = createSinglePrimaryDeviceProtocol( deviceRole )
         val invitation = ParticipantInvitation(
             UUID.randomUUID(),
             setOf( deviceRole ),
@@ -107,8 +107,8 @@ abstract class DeploymentServiceTest
     @Test
     fun getStudyDeploymentStatusList_succeeds() = runSuspendTest {
         val deploymentService = createService()
-        val deviceRoleName = "Master"
-        val protocol = createSingleMasterWithConnectedDeviceProtocol( deviceRoleName )
+        val deviceRoleName = "Primary"
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( deviceRoleName )
         val protocolSnapshot = protocol.getSnapshot()
 
         val invitation1 = createParticipantInvitation( protocol, AccountIdentity.fromUsername( "User 1" ) )
@@ -134,29 +134,29 @@ abstract class DeploymentServiceTest
     @Test
     fun registerDevice_can_be_called_multiple_times() = runSuspendTest {
         val deploymentService = createService()
-        val studyDeploymentId = addTestDeployment( deploymentService, "Master" )
+        val studyDeploymentId = addTestDeployment( deploymentService, "Primary" )
         val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
-        val master = status.getRemainingDevicesToRegister().first { it.roleName == "Master" }
+        val primary = status.getRemainingDevicesToRegister().first { it.roleName == "Primary" }
 
-        val registration = master.createRegistration()
-        val firstRegisterStatus = deploymentService.registerDevice( studyDeploymentId, master.roleName, registration )
-        val secondRegisterStatus = deploymentService.registerDevice( studyDeploymentId, master.roleName, registration )
+        val registration = primary.createRegistration()
+        val firstRegisterStatus = deploymentService.registerDevice( studyDeploymentId, primary.roleName, registration )
+        val secondRegisterStatus = deploymentService.registerDevice( studyDeploymentId, primary.roleName, registration )
         assertEquals( firstRegisterStatus, secondRegisterStatus )
     }
 
     @Test
     fun registerDevice_cannot_be_called_with_same_registration_when_stopped() = runSuspendTest {
         val deploymentService = createService()
-        val studyDeploymentId = addTestDeployment( deploymentService, "Master" )
+        val studyDeploymentId = addTestDeployment( deploymentService, "Primary" )
         val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
-        val master = status.getRemainingDevicesToRegister().first { it.roleName == "Master" }
-        val registration = master.createRegistration()
-        deploymentService.registerDevice( studyDeploymentId, master.roleName, registration )
+        val primary = status.getRemainingDevicesToRegister().first { it.roleName == "Primary" }
+        val registration = primary.createRegistration()
+        deploymentService.registerDevice( studyDeploymentId, primary.roleName, registration )
         deploymentService.stop( studyDeploymentId )
 
         assertFailsWith<IllegalStateException>
         {
-            deploymentService.registerDevice( studyDeploymentId, master.roleName, registration )
+            deploymentService.registerDevice( studyDeploymentId, primary.roleName, registration )
         }
     }
 
@@ -192,36 +192,36 @@ abstract class DeploymentServiceTest
     @Test
     fun modifications_after_stop_not_allowed() = runSuspendTest {
         val deploymentService = createService()
-        val studyDeploymentId = addTestDeployment( deploymentService, "Master", "Connected" )
+        val studyDeploymentId = addTestDeployment( deploymentService, "Primary", "Connected" )
         val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
-        val master = status.getRemainingDevicesToRegister().first { it.roleName == "Master" }
+        val primary = status.getRemainingDevicesToRegister().first { it.roleName == "Primary" }
         val connected = status.getRemainingDevicesToRegister().first { it.roleName == "Connected" }
-        deploymentService.registerDevice( studyDeploymentId, master.roleName, master.createRegistration() )
+        deploymentService.registerDevice( studyDeploymentId, primary.roleName, primary.createRegistration() )
         deploymentService.registerDevice( studyDeploymentId, connected.roleName, connected.createRegistration() )
         deploymentService.stop( studyDeploymentId )
 
         assertFailsWith<IllegalStateException>
             { deploymentService.registerDevice( studyDeploymentId, connected.roleName, connected.createRegistration() ) }
         assertFailsWith<IllegalStateException>
-            { deploymentService.unregisterDevice( studyDeploymentId, master.roleName ) }
-        val deviceDeployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, master.roleName )
+            { deploymentService.unregisterDevice( studyDeploymentId, primary.roleName ) }
+        val deviceDeployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, primary.roleName )
         assertFailsWith<IllegalStateException>
-            { deploymentService.deviceDeployed( studyDeploymentId, master.roleName, deviceDeployment.lastUpdatedOn ) }
+            { deploymentService.deviceDeployed( studyDeploymentId, primary.roleName, deviceDeployment.lastUpdatedOn ) }
     }
 
 
     /**
      * Create a deployment to be used in tests in the given [deploymentService] with a protocol
-     * containing a single master device with the specified [masterDeviceRoleName]
+     * containing a single primary device with the specified [primaryDeviceRoleName]
      * and a connected device, of which the [connectedDeviceRoleName] can optionally be defined.
      */
     private suspend fun addTestDeployment(
         deploymentService: DeploymentService,
-        masterDeviceRoleName: String,
+        primaryDeviceRoleName: String,
         connectedDeviceRoleName: String = "Connected"
     ): UUID
     {
-        val protocol = createSingleMasterWithConnectedDeviceProtocol( masterDeviceRoleName, connectedDeviceRoleName )
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( primaryDeviceRoleName, connectedDeviceRoleName )
         val invitation = createParticipantInvitation( protocol )
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )

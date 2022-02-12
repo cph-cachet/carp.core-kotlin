@@ -1,40 +1,51 @@
 package dk.cachet.carp.deployments.application
 
-import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
+import dk.cachet.carp.common.test.infrastructure.TestUUIDFactory
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
-import dk.cachet.carp.deployments.domain.users.AccountService
 import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
 import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
+import dk.cachet.carp.test.TestClock
 
 
 /**
  * Tests for [ParticipationServiceHost].
  */
-class ParticipationServiceHostTest : ParticipationServiceTest()
+class ParticipationServiceHostTest : ParticipationServiceTest
 {
-    override fun createService(
-        participantDataInputTypes: InputDataTypeList
-    ): Triple<ParticipationService, DeploymentService, AccountService>
+    companion object
     {
-        val eventBus: EventBus = SingleThreadedEventBus()
+        fun createService(): ParticipationServiceTest.DependentServices
+        {
+            val eventBus: EventBus = SingleThreadedEventBus()
 
-        val deploymentService = DeploymentServiceHost(
-            InMemoryDeploymentRepository(),
-            InMemoryDataStreamService(),
-            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
+            val deploymentService = DeploymentServiceHost(
+                InMemoryDeploymentRepository(),
+                InMemoryDataStreamService(),
+                eventBus.createApplicationServiceAdapter( DeploymentService::class ),
+                TestClock
+            )
 
-        val accountService = InMemoryAccountService()
+            val accountService = InMemoryAccountService( TestUUIDFactory() )
 
-        val participationService = ParticipationServiceHost(
-            InMemoryParticipationRepository(),
-            ParticipantGroupService( accountService ),
-            eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
+            val participationService = ParticipationServiceHost(
+                InMemoryParticipationRepository(),
+                ParticipantGroupService( accountService ),
+                eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
 
-        return Triple( participationService, deploymentService, accountService )
+            return ParticipationServiceTest.DependentServices(
+                participationService,
+                deploymentService,
+                accountService,
+                eventBus
+            )
+        }
     }
+
+    override fun createService(): ParticipationServiceTest.DependentServices =
+        ParticipationServiceHostTest.createService()
 }

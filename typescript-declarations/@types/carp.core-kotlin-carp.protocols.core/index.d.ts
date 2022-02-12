@@ -9,11 +9,13 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import UUID = cdk.cachet.carp.common.application.UUID
-    import DeviceDescriptor = cdk.cachet.carp.common.application.devices.DeviceDescriptor
+    import DeviceConfiguration = cdk.cachet.carp.common.application.devices.DeviceConfiguration
     import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
     import TaskDescriptor = cdk.cachet.carp.common.application.tasks.TaskDescriptor
     import TaskControl = cdk.cachet.carp.common.application.triggers.TaskControl
     import Trigger = cdk.cachet.carp.common.application.triggers.Trigger
+    import ApplicationServiceRequest = cdk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
+    import ApiVersion = cdk.cachet.carp.common.application.services.ApiVersion
 
 
     namespace dk.cachet.carp.protocols.application
@@ -30,18 +32,6 @@ declare module 'carp.core-kotlin-carp.protocols.core'
         interface ProtocolVersion$Companion { serializer(): any }
 
 
-        class StudyProtocolId
-        {
-            constructor( ownerId: UUID, name: string )
-
-            static get Companion(): StudyProtocolId$Companion
-
-            readonly ownerId: UUID
-            readonly name: string
-        }
-        interface StudyProtocolId$Companion { serializer(): any }
-
-
         class StudyProtocolSnapshot
         {
             // No manual initialization needed in TypeScript. Serialization should be used.
@@ -49,10 +39,12 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
             static get Companion(): StudyProtocolSnapshot$Companion
 
-            readonly id: StudyProtocolId
-            readonly description: string
+            readonly id: UUID
             readonly createdOn: Instant
-            readonly masterDevices: HashSet<DeviceDescriptor>
+            readonly ownerId: UUID
+            readonly name: string
+            readonly description: string
+            readonly primaryDevices: HashSet<DeviceConfiguration>
             readonly tasks: HashSet<TaskDescriptor>
             readonly triggers: HashMap<Number, Trigger>
             readonly taskControls: Set<TaskControl>
@@ -62,33 +54,17 @@ declare module 'carp.core-kotlin-carp.protocols.core'
     }
 
 
-    namespace dk.cachet.carp.protocols.domain
-    {
-        import UUID = cdk.cachet.carp.common.application.UUID
-
-        class ProtocolOwner
-        {
-            constructor( id?: UUID )
-
-            static get Companion(): ProtocolOwner$Companion
-
-            readonly id: UUID
-        }
-        interface ProtocolOwner$Companion { serializer(): any }
-    }
-
-
     namespace dk.cachet.carp.protocols.infrastructure
     {
-        import StudyProtocolId = dk.cachet.carp.protocols.application.StudyProtocolId
         import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
         
-        abstract class ProtocolServiceRequest
+        abstract class ProtocolServiceRequest implements ApplicationServiceRequest
         {
-            static get Companion(): ProtocolServiceRequest$Companion
+            readonly apiVersion: ApiVersion
+
+            static get Serializer(): any
         }
-        interface ProtocolServiceRequest$Companion { serializer(): any }
 
         namespace ProtocolServiceRequest
         {
@@ -102,28 +78,29 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             }
             class UpdateParticipantDataConfiguration extends ProtocolServiceRequest
             {
-                constructor( protocolId: StudyProtocolId, versionTag: string, expectedParticipantData: HashSet<ParticipantAttribute> )
+                constructor( protocolId: UUID, versionTag: string, expectedParticipantData: HashSet<ParticipantAttribute> )
             }
             class GetBy extends ProtocolServiceRequest
             {
-                constructor( protocolId: StudyProtocolId, versionTag?: string )
+                constructor( protocolId: UUID, versionTag?: string )
             }
-            class GetAllFor extends ProtocolServiceRequest
+            class GetAllForOwner extends ProtocolServiceRequest
             {
                 constructor( ownerId: UUID )
             }
             class GetVersionHistoryFor extends ProtocolServiceRequest
             {
-                constructor( protocolId: StudyProtocolId )
+                constructor( protocolId: UUID )
             }
         }
 
 
-        abstract class ProtocolFactoryServiceRequest
+        abstract class ProtocolFactoryServiceRequest implements ApplicationServiceRequest
         {
-            static get Companion(): ProtocolFactoryServiceRequest$Companion
+            readonly apiVersion: ApiVersion
+
+            static get Serializer(): any
         }
-        interface ProtocolFactoryServiceRequest$Companion { serializer(): any }
 
         namespace ProtocolFactoryServiceRequest
         {

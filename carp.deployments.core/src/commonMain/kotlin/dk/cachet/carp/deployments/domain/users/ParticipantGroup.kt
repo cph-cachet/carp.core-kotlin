@@ -4,37 +4,41 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.common.domain.users.Account
-import dk.cachet.carp.deployments.application.users.AssignedMasterDevice
+import dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.configuration.isValidParticipantData
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 
 /**
- * A group of participants participating in a study deployment using the [assignedMasterDevices].
+ * A group of participants participating in a study deployment using the [assignedPrimaryDevices].
  * Consent and participant data is managed here.
  *
  * TODO: Implement consent.
  */
 class ParticipantGroup private constructor(
     val studyDeploymentId: UUID,
-    assignedMasterDevices: Set<AssignedMasterDevice>,
-    val expectedData: Set<ParticipantAttribute>
-) : AggregateRoot<ParticipantGroup, ParticipantGroupSnapshot, ParticipantGroup.Event>()
+    assignedPrimaryDevices: Set<AssignedPrimaryDevice>,
+    val expectedData: Set<ParticipantAttribute>,
+    id: UUID = UUID.randomUUID(),
+    createdOn: Instant = Clock.System.now()
+) : AggregateRoot<ParticipantGroup, ParticipantGroupSnapshot, ParticipantGroup.Event>( id, createdOn )
 {
     sealed class Event : DomainEvent()
     {
         data class DataSet( val inputDataType: InputDataType, val data: Data? ) : Event()
         data class ParticipationAdded( val accountParticipation: AccountParticipation ) : Event()
-        data class DeviceRegistrationChanged( val assignedMasterDevice: AssignedMasterDevice ) : Event()
+        data class DeviceRegistrationChanged( val assignedPrimaryDevice: AssignedPrimaryDevice ) : Event()
         object StudyDeploymentStopped : Event()
     }
 
@@ -47,7 +51,7 @@ class ParticipantGroup private constructor(
         fun fromNewDeployment( studyDeploymentId: UUID, protocol: StudyProtocol ): ParticipantGroup =
             ParticipantGroup(
                 studyDeploymentId,
-                protocol.masterDevices.map { AssignedMasterDevice( it ) }.toSet(),
+                protocol.primaryDevices.map { AssignedPrimaryDevice( it ) }.toSet(),
                 protocol.expectedParticipantData )
 
         /**
@@ -58,9 +62,14 @@ class ParticipantGroup private constructor(
 
         fun fromSnapshot( snapshot: ParticipantGroupSnapshot ): ParticipantGroup
         {
-            val group = ParticipantGroup( snapshot.studyDeploymentId, snapshot.assignedMasterDevices, snapshot.expectedData )
+            val group = ParticipantGroup(
+                snapshot.studyDeploymentId,
+                snapshot.assignedPrimaryDevices,
+                snapshot.expectedData,
+                snapshot.id,
+                snapshot.createdOn
+            )
             group.isStudyDeploymentStopped = snapshot.isStudyDeploymentStopped
-            group.createdOn = snapshot.createdOn
 
             // Add participations.
             snapshot.participations.forEach { p -> group._participations.add( p.copy() ) }
@@ -85,7 +94,7 @@ class ParticipantGroup private constructor(
 
     /**
      * Specify that an [account] (invited using [invitation]) participates in this group, identified by [participation],
-     * and was requested to use the [assignedMasterDevices].
+     * and was requested to use the [assignedPrimaryDevices].
      *
      * @throws IllegalArgumentException if [participation] is already added to this participant group,
      * or if the [participation] details do not match the study deployment of this participant group.
@@ -95,7 +104,7 @@ class ParticipantGroup private constructor(
         account: Account,
         invitation: StudyInvitation,
         participation: Participation,
-        assignedMasterDevices: Set<AnyMasterDeviceDescriptor>
+        assignedPrimaryDevices: Set<AnyPrimaryDeviceConfiguration>
     )
     {
         require( studyDeploymentId == participation.studyDeploymentId )
@@ -104,10 +113,10 @@ class ParticipantGroup private constructor(
             { "The specified participant ID is already added to this study deployment." }
         check( !isStudyDeploymentStopped )
 
-        val assignedMasterDeviceRoleNames = assignedMasterDevices.map { it.roleName }.toSet()
+        val assignedPrimaryDeviceRoleNames = assignedPrimaryDevices.map { it.roleName }.toSet()
         val accountParticipation = AccountParticipation(
             Participation( studyDeploymentId, participation.participantId ),
-            assignedMasterDeviceRoleNames,
+            assignedPrimaryDeviceRoleNames,
             account.id,
             invitation
         )
@@ -116,37 +125,37 @@ class ParticipantGroup private constructor(
     }
 
     /**
-     * The assigned master devices to participants in this group and their device registrations, if any.
+     * The assigned primary devices to participants in this group and their device registrations, if any.
      */
-    val assignedMasterDevices: Set<AssignedMasterDevice>
-        get() = _assignedMasterDevices
+    val assignedPrimaryDevices: Set<AssignedPrimaryDevice>
+        get() = _assignedPrimaryDevices
 
-    private val _assignedMasterDevices: MutableSet<AssignedMasterDevice> = assignedMasterDevices.toMutableSet()
+    private val _assignedPrimaryDevices: MutableSet<AssignedPrimaryDevice> = assignedPrimaryDevices.toMutableSet()
 
     /**
-     * Return the [AssignedMasterDevice] with the specified [roleName].
+     * Return the [AssignedPrimaryDevice] with the specified [roleName].
      *
      * @throws IllegalArgumentException when no assigned device with [roleName] exists for this participant group.
      */
-    fun getAssignedMasterDevice( roleName: String ) =
-        assignedMasterDevices.firstOrNull { it.device.roleName == roleName }
+    fun getAssignedPrimaryDevice( roleName: String ) =
+        assignedPrimaryDevices.firstOrNull { it.device.roleName == roleName }
             ?: throw IllegalArgumentException( "There is no assigned device with role name \"$roleName\" for this participant group." )
 
     /**
-     * Update the device [registration] for the given assigned [masterDevice].
+     * Update the device [registration] for the given assigned [primaryDevice].
      *
-     * @throws IllegalArgumentException when [masterDevice] is not part of this participant group.
+     * @throws IllegalArgumentException when [primaryDevice] is not part of this participant group.
      */
-    fun updateDeviceRegistration( masterDevice: AnyMasterDeviceDescriptor, registration: DeviceRegistration? )
+    fun updateDeviceRegistration( primaryDevice: AnyPrimaryDeviceConfiguration, registration: DeviceRegistration? )
     {
-        val assignedDevice = _assignedMasterDevices.firstOrNull { it.device == masterDevice }
-        requireNotNull( assignedDevice ) { "The passed master device is not part of this participant group." }
+        val assignedDevice = _assignedPrimaryDevices.firstOrNull { it.device == primaryDevice }
+        requireNotNull( assignedDevice ) { "The passed primary device is not part of this participant group." }
 
         if ( assignedDevice.registration != registration )
         {
-            _assignedMasterDevices.remove( assignedDevice )
+            _assignedPrimaryDevices.remove( assignedDevice )
             val updatedRegistrationDevice = assignedDevice.copy( registration = registration )
-            _assignedMasterDevices.add( updatedRegistrationDevice )
+            _assignedPrimaryDevices.add( updatedRegistrationDevice )
             event( Event.DeviceRegistrationChanged( updatedRegistrationDevice ) )
         }
     }

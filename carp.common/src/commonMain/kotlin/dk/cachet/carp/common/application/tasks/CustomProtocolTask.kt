@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 data class CustomProtocolTask(
     override val name: String,
     /**
-     * A definition on how to run a study on a master device, serialized as a string.
+     * A definition on how to run a study on a primary device, serialized as a string.
      */
     val studyProtocol: String
 ) : TaskDescriptor<NoData>

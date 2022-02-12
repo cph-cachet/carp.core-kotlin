@@ -36,7 +36,10 @@ sealed class ParticipantAttribute
     @Serializable
     data class CustomParticipantAttribute<T : Any>( val input: InputElement<T> ) : ParticipantAttribute()
     {
-        override val inputDataType: InputDataType = InputDataType( CUSTOM_INPUT_TYPE_NAME, UUID.randomUUID().toString() )
+        override val inputDataType: InputDataType = InputDataType(
+            CUSTOM_INPUT_TYPE_NAME,
+            UUID.randomUUID().toString().replace( "-", "" )
+        )
     }
 
 

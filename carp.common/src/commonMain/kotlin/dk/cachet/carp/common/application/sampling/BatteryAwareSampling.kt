@@ -1,7 +1,7 @@
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.data.DataTypeMetaData
-import dk.cachet.carp.common.application.devices.DeviceDescriptor
+import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -90,7 +90,7 @@ data class BatteryAwareSamplingConfiguration<TConfig : SamplingConfiguration>(
 
 /**
  * A helper class to configure and construct immutable [BatteryAwareSamplingConfiguration] classes
- * as part of setting up a [DeviceDescriptor].
+ * as part of setting up a [DeviceConfiguration].
  */
 class BatteryAwareSamplingConfigurationBuilder<
     TConfig : SamplingConfiguration,

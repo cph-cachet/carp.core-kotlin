@@ -1,26 +1,21 @@
-def commonModule = subprojects.find { it.name == 'carp.common' }
-def coreModules = subprojects.findAll { it.name.endsWith( '.core' ) }
-def detektModule = subprojects.find { it.name == 'carp.detekt' }
-
-
-// Load plugin dependencies.
+// Load plugin dependencies and initialize build variables.
 buildscript {
     ext {
         // Version used for all submodule artifacts.
         // Snapshot publishing changes (or adds) the suffix after '-' with 'SNAPSHOT' prior to publishing.
-        globalVersion = '1.0.0-alpha.38'
+        globalVersion = '1.0.0-alpha.39'
 
         versions = [
             // Kotlin multiplatform versions.
-            kotlin:'1.5.31',
-            serialization:'1.2.2',
+            kotlin:'1.6.10',
+            serialization:'1.3.1',
             coroutines:'1.5.2',
-            datetime:'0.2.1',
+            datetime:'0.3.1',
 
             // JVM versions.
             jvmTarget:'1.8',
             dokkaPlugin:'1.5.30',
-            reflections:'0.9.12',
+            reflections:'0.10.2',
 
             // JS versions.
             nodePlugin:'3.1.1',
@@ -29,8 +24,13 @@ buildscript {
             // DevOps versions.
             detektPlugin:'1.18.1',
             detektVerifyImplementation:'1.2.2',
-            nexusPublishPlugin:'1.1.0'
+            nexusPublishPlugin:'1.1.0',
+            apacheCommons:'2.11.0'
         ]
+
+        commonModule = subprojects.find { it.name == 'carp.common' }
+        coreModules = subprojects.findAll { it.name.endsWith( '.core' ) }
+        devOpsModules = subprojects.findAll { it.name == 'carp.detekt' || it.name == 'rpc' }
     }
 
     dependencies {
@@ -65,7 +65,7 @@ if (publishPropertiesFile.exists())
 
 // Configure all subprojects as testable, publishable, Kotlin multiplatform projects.
 // A `kotlinx.serialization` dependency is added to serialize domain models.
-configure( subprojects - detektModule ) {
+configure( subprojects - devOpsModules ) {
     version = globalVersion
 
     repositories {
@@ -101,11 +101,6 @@ configure( subprojects - detektModule ) {
                 }
             }
         }
-    }
-
-    // JVM test configuration.
-    jvmTest {
-        useJUnitPlatform()
     }
 
     // Publish configuration.
@@ -200,7 +195,7 @@ task setSnapshotVersion {
         def snapshotVersion = "${versionSplit[0]}-SNAPSHOT"
         version = snapshotVersion
 
-        (rootProject.subprojects - detektModule).each { project ->
+        (rootProject.subprojects - devOpsModules).each { project ->
             project.version = snapshotVersion
         }
     }

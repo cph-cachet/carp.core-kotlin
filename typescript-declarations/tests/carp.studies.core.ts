@@ -33,7 +33,6 @@ import StudyStatus = dk.cachet.carp.studies.application.StudyStatus
 import AssignParticipantDevices = dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import Participant = dk.cachet.carp.studies.application.users.Participant
 import ParticipantGroupStatus = dk.cachet.carp.studies.application.users.ParticipantGroupStatus
-import StudyOwner = dk.cachet.carp.studies.application.users.StudyOwner
 import getAssignedParticipantIds = dk.cachet.carp.studies.application.users.participantIds_ttprz$
 import getAssignedDeviceRoles = dk.cachet.carp.studies.application.users.deviceRoles_ttprz$
 import RecruitmentServiceRequest = dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest
@@ -47,7 +46,7 @@ describe( "carp.studies.core", () => {
         const invitedDeploymentStatus = new StudyDeploymentStatus.Invited( now, deploymentId, new ArrayList<DeviceDeploymentStatus>( [] ), new ArrayList<ParticipantStatus>( [] ), null )
 
         const instances = [
-            new StudyDetails( UUID.Companion.randomUUID(), new StudyOwner(), "Name", Clock.System.now(), "Description", new StudyInvitation( "Some study" ), null ),
+            new StudyDetails( UUID.Companion.randomUUID(), UUID.Companion.randomUUID(), "Name", Clock.System.now(), "Description", new StudyInvitation( "Some study" ), null ),
             StudyDetails.Companion,
             [ "StudyStatus", new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true ) ],
             new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true ),
@@ -64,10 +63,8 @@ describe( "carp.studies.core", () => {
             new ParticipantGroupStatus.Running( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus, now ),
             new ParticipantGroupStatus.Stopped( deploymentId, new HashSet<Participant>(), now, invitedDeploymentStatus, null, now ),
             ParticipantGroupStatus.Companion,
-            new StudyOwner(),
-            StudyOwner.Companion,
-            RecruitmentServiceRequest.Companion,
-            StudyServiceRequest.Companion,
+            [ "StudyServiceRequest", new StudyServiceRequest.Remove( UUID.Companion.randomUUID() ) ],
+            [ "RecruitmentServiceRequest", new RecruitmentServiceRequest.GetParticipants( UUID.Companion.randomUUID() ) ]
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.studies.core', instances )
@@ -78,9 +75,9 @@ describe( "carp.studies.core", () => {
     describe( "AssignParticipantDevices", () => {
         it( "initializes deviceRoleNames as set", () => {
             const uuid = UUID.Companion.randomUUID()
-            const masterDeviceRoleNames = toSet( [ "Test" ] )
-            const assigned = new AssignParticipantDevices( uuid, masterDeviceRoleNames )
-            expect( assigned.masterDeviceRoleNames ).equals( masterDeviceRoleNames )
+            const primaryDeviceRoleNames = toSet( [ "Test" ] )
+            const assigned = new AssignParticipantDevices( uuid, primaryDeviceRoleNames )
+            expect( assigned.primaryDeviceRoleNames ).equals( primaryDeviceRoleNames )
         } )
 
         it( "getAssigned participantIds and devices works", () => {
@@ -91,14 +88,6 @@ describe( "carp.studies.core", () => {
             const assignedGroup = new ArrayList( [ assigned1, assigned2 ] )
             expect( getAssignedParticipantIds( assignedGroup ) ).instanceof( HashSet )
             expect( getAssignedDeviceRoles( assignedGroup ) ).instanceof( HashSet )
-        } )
-    } )
-
-
-    describe( "StudyOwner", () => {
-        it( "initializes with default id", () => {
-            const owner = new StudyOwner()
-            expect( owner.id ).instanceOf( UUID )
         } )
     } )
 
@@ -121,14 +110,14 @@ describe( "carp.studies.core", () => {
     describe( "StudyServiceRequest", () => {
         it( "can serialize requests with polymorphic serializer", () => {
             const createStudy = new StudyServiceRequest.CreateStudy(
-                new StudyOwner(),
+                UUID.Companion.randomUUID(),
                 "Test study",
                 "This is a study description",
                 new StudyInvitation( "Some study" )
             )
 
             const json: Json = createDefaultJSON()
-            const serializer = StudyServiceRequest.Companion.serializer()
+            const serializer = StudyServiceRequest.Serializer
             const serialized = json.encodeToString_tf03ej$( serializer, createStudy )
             expect( serialized ).has.string( "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.CreateStudy" )
         } )
@@ -156,7 +145,7 @@ describe( "carp.studies.core", () => {
             )
 
             const json: Json = createDefaultJSON()
-            const serializer = RecruitmentServiceRequest.Companion.serializer()
+            const serializer = RecruitmentServiceRequest.Serializer
             const serialized = json.encodeToString_tf03ej$( serializer, deployGroup )
             expect( serialized ).is.not.undefined
         } )

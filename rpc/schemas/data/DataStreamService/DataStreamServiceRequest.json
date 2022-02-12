@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    { "$ref": "#/$defs/OpenDataStreams" },
+    { "$ref": "#/$defs/AppendToDataStreams" },
+    { "$ref": "#/$defs/GetDataStream" },
+    { "$ref": "#/$defs/CloseDataStreams" },
+    { "$ref": "#/$defs/RemoveDataStreams" }
+  ],
+  "$defs": {
+    "ApiVersion": { "const": "1.0" },
+    "OpenDataStreams": {
+      "$anchor": "OpenDataStreams",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.OpenDataStreams" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "configuration": { "$ref": "../DataStreamsConfiguration.json" }
+      },
+      "required": [ "__type", "apiVersion", "configuration" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "OpenDataStreams-Response",
+        "$ref": "../../common/Unit.json"
+      }
+    },
+    "AppendToDataStreams": {
+      "$anchor": "AppendToDataStreams",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.AppendToDataStreams" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyDeploymentId": { "type": "string", "format": "uuid" },
+        "batch": { "$ref": "../DataStreamBatch.json" }
+      },
+      "required": [ "__type", "apiVersion", "studyDeploymentId", "batch" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "AppendToDataStreams-Response",
+        "$ref": "../../common/Unit.json"
+      }
+    },
+    "GetDataStream": {
+      "$anchor": "GetDataStream",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.GetDataStream" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "dataStream": { "$ref": "../DataStreamId.json" },
+        "fromSequenceId": { "type": "integer" },
+        "toSequenceIdInclusive": { "type": ["integer", "null"] }
+      },
+      "required": [ "__type", "apiVersion", "dataStream", "fromSequenceId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetDataStream-Response",
+        "$ref": "../DataStreamBatch.json"
+      }
+    },
+    "CloseDataStreams": {
+      "$anchor": "CloseDataStreams",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.CloseDataStreams" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyDeploymentIds": {
+          "type": "array",
+          "items": { "type": "string", "format": "uuid" }
+        }
+      },
+      "required": [ "__type", "apiVersion", "studyDeploymentIds" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "CloseDataStreams-Response",
+        "$ref": "../../common/Unit.json"
+      }
+    },
+    "RemoveDataStreams": {
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.RemoveDataStreams" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyDeploymentIds": {
+          "type": "array",
+          "items": { "type": "string", "format": "uuid" }
+        }
+      },
+      "required": [ "__type", "apiVersion", "studyDeploymentIds" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "RemoveDataStreams-Response",
+        "type": "boolean"
+      }
+    }
+  }
+}

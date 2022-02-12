@@ -1,6 +1,7 @@
 package dk.cachet.carp.data.application
 
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -10,6 +11,7 @@ import kotlinx.serialization.encoding.Encoder
 /**
  * A collection of non-overlapping, ordered, data stream [sequences].
  */
+@Serializable( DataStreamBatchSerializer::class )
 interface DataStreamBatch : Sequence<DataStreamPoint<*>>
 {
     val sequences: Sequence<DataStreamSequence>

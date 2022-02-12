@@ -1,10 +1,10 @@
 package dk.cachet.carp.common.application.tasks
 
-import dk.cachet.carp.common.application.devices.DeviceDescriptor
+import dk.cachet.carp.common.application.devices.DeviceConfiguration
 
 
 /**
- * A helper class to construct iterable objects which list all available tasks for a [DeviceDescriptor].
+ * A helper class to construct iterable objects which list all available tasks for a [DeviceConfiguration].
  * All devices support [BackgroundTask], which is added by default as [BACKGROUND].
  *
  * Extend from this class as an object and assign members as follows: `val SOME_TASK = add { SomeTaskBuilder() }`.
@@ -29,7 +29,7 @@ open class TaskDescriptorList private constructor( private val list: MutableList
 
 
 /**
- * A [TaskDescriptor] which is listed as a supported task on a [DeviceDescriptor].
+ * A [TaskDescriptor] which is listed as a supported task on a [DeviceConfiguration].
  */
 class SupportedTaskDescriptor<TTaskDescriptor : TaskDescriptor<*>, TBuilder : TaskDescriptorBuilder<TTaskDescriptor>>(
     private val createBuilder: () -> TBuilder

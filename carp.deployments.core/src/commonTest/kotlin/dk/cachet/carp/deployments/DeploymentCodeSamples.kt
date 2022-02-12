@@ -10,12 +10,11 @@ import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHost
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
-import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.test.runSuspendTest
@@ -30,12 +29,12 @@ class DeploymentCodeSamples
     fun readme() = runSuspendTest {
         val deploymentService: DeploymentService = createDeploymentEndpoint()
         val trackPatientStudy: StudyProtocol = createExampleProtocol()
-        val patientPhone: Smartphone = trackPatientStudy.masterDevices.first() as Smartphone // "Patient's phone"
+        val patientPhone: Smartphone = trackPatientStudy.primaryDevices.first() as Smartphone // "Patient's phone"
 
         // This is called by `StudyService` when deploying a participant group.
         val invitation = ParticipantInvitation(
             participantId = UUID.randomUUID(),
-            assignedMasterDeviceRoleNames = setOf( patientPhone.roleName ),
+            assignedPrimaryDeviceRoleNames = setOf( patientPhone.roleName ),
             identity = AccountIdentity.fromEmailAddress( "test@test.com" ),
             invitation = StudyInvitation( "Movement study", "This study tracks your movements." )
         )
@@ -55,7 +54,7 @@ class DeploymentCodeSamples
         val patientPhoneStatus: DeviceDeploymentStatus = status.getDeviceStatus( patientPhone )
         if ( patientPhoneStatus.canObtainDeviceDeployment ) // True since there are no dependent devices.
         {
-            val deploymentInformation: MasterDeviceDeployment =
+            val deploymentInformation: PrimaryDeviceDeployment =
                 deploymentService.getDeviceDeploymentFor( studyDeploymentId, patientPhone.roleName )
             val deployedOn: Instant = deploymentInformation.lastUpdatedOn // To verify correct deployment.
             deploymentService.deviceDeployed( studyDeploymentId, patientPhone.roleName, deployedOn )
@@ -72,11 +71,11 @@ class DeploymentCodeSamples
      */
     private fun createExampleProtocol(): StudyProtocol
     {
-        val owner = ProtocolOwner()
-        val protocol = StudyProtocol( owner, "Track patient movement" )
+        val ownerId = UUID.randomUUID()
+        val protocol = StudyProtocol( ownerId, "Track patient movement" )
 
         val phone = Smartphone( "Patient's phone" )
-        protocol.addMasterDevice( phone )
+        protocol.addPrimaryDevice( phone )
 
         val sensors = Smartphone.Sensors
         val trackMovement = Smartphone.Tasks.BACKGROUND.create( "Track movement" ) {

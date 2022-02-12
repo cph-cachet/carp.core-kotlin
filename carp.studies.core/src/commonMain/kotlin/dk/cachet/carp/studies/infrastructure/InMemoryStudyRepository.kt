@@ -4,7 +4,6 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.StudyRepository
 import dk.cachet.carp.studies.domain.StudySnapshot
-import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.studies.domain.users.ParticipantRepository
 
 
@@ -34,11 +33,11 @@ class InMemoryStudyRepository : StudyRepository, ParticipantRepository by InMemo
     override suspend fun getById( studyId: UUID ): Study? = studies[ studyId ]?.let { Study.fromSnapshot( it ) }
 
     /**
-     * Returns the studies created by the specified [owner].
+     * Returns the studies created by the owner with [ownerId].
      */
-    override suspend fun getForOwner( owner: StudyOwner ): List<Study> =
+    override suspend fun getForOwner( ownerId: UUID ): List<Study> =
         studies.values
-            .filter { it.ownerId == owner.id }
+            .filter { it.ownerId == ownerId }
             .map { Study.fromSnapshot( it ) }
 
     /**

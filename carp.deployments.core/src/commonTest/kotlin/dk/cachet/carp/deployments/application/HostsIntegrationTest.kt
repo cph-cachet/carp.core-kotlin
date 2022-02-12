@@ -9,7 +9,7 @@ import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubData
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
 import dk.cachet.carp.data.application.DataStreamService
 import dk.cachet.carp.data.application.MutableDataStreamBatch
@@ -29,7 +29,7 @@ import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
-import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
 import dk.cachet.carp.test.runSuspendTest
 import kotlinx.datetime.Clock
 import kotlin.test.*
@@ -91,7 +91,7 @@ class HostsIntegrationTest
     @Test
     fun create_deployment_adds_participations() = runSuspendTest {
         val deviceRole = "Phone"
-        val protocol = createSingleMasterDeviceProtocol( deviceRole )
+        val protocol = createSinglePrimaryDeviceProtocol( deviceRole )
 
         // Create deployment with one invitation.
         val toInvite = EmailAccountIdentity( "test@test.com" )
@@ -115,30 +115,30 @@ class HostsIntegrationTest
 
     @Test
     fun removing_deployment_removes_participant_group_and_data_streams() = runSuspendTest {
-        var deploymentsRemoved: DeploymentService.Event.StudyDeploymentsRemoved? = null
-        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentsRemoved::class, this )
+        var deploymentRemoved: DeploymentService.Event.StudyDeploymentRemoved? = null
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentRemoved::class, this )
         {
-            deploymentsRemoved = it
+            deploymentRemoved = it
         }
         eventBus.activateHandlers( this )
 
         // Create a protocol which when deployed has one `STUB_DATA_TYPE` data stream.
-        val masterDevice = StubMasterDeviceDescriptor()
+        val primaryDevice = StubPrimaryDeviceConfiguration()
         val protocol = createEmptyProtocol()
-        protocol.addMasterDevice( masterDevice )
+        protocol.addPrimaryDevice( primaryDevice )
         val task = StubTaskDescriptor( "Task", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
-        val atStartOfStudy = protocol.addTrigger( masterDevice.atStartOfStudy() )
-        protocol.addTaskControl( atStartOfStudy.start( task, masterDevice ) )
+        val atStartOfStudy = protocol.addTrigger( primaryDevice.atStartOfStudy() )
+        protocol.addTaskControl( atStartOfStudy.start( task, primaryDevice ) )
 
         // Deploy protocol.
         val invitation = createParticipantInvitation( protocol )
         val deploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
-        val dataStreamId = dataStreamId<StubData>( deploymentId, masterDevice.roleName )
+        val dataStreamId = dataStreamId<StubData>( deploymentId, primaryDevice.roleName )
 
         deploymentService.removeStudyDeployments( setOf( deploymentId ) )
 
-        assertEquals( setOf( deploymentId ), deploymentsRemoved?.deploymentIds )
+        assertEquals( deploymentId, deploymentRemoved?.studyDeploymentId )
         assertFailsWith<IllegalArgumentException> { participationService.getParticipantData( deploymentId ) }
         assertFailsWith<IllegalArgumentException> { dataStreamService.getDataStream( dataStreamId, 0 ) }
     }
@@ -164,7 +164,7 @@ class HostsIntegrationTest
     @Test
     fun registration_changes_in_deployment_are_passed_to_participant_group() = runSuspendTest {
         // Create a deployment.
-        val protocol = createSingleMasterDeviceProtocol()
+        val protocol = createSinglePrimaryDeviceProtocol()
         val identity = AccountIdentity.fromUsername( "Test" )
         val invitation = createParticipantInvitation( protocol, identity )
         val deploymentId = UUID.randomUUID()
@@ -179,7 +179,7 @@ class HostsIntegrationTest
         eventBus.activateHandlers( this )
 
         // Change registration for the assigned device.
-        val assignedDevice = protocol.masterDevices.single()
+        val assignedDevice = protocol.primaryDevices.single()
         val account = accountService.findAccount( identity )!!
         val registration = assignedDevice.createRegistration()
         deploymentService.registerDevice( deploymentId, assignedDevice.roleName, registration )
@@ -199,12 +199,12 @@ class HostsIntegrationTest
     @Test
     fun appendToDataStreams_succeeds_as_long_as_deployment_is_ready() = runSuspendTest {
         // Create a protocol which when deployed has one `STUB_DATA_TYPE` data stream.
-        val masterDevice = StubMasterDeviceDescriptor()
+        val primaryDevice = StubPrimaryDeviceConfiguration()
         val protocol = createEmptyProtocol()
-        protocol.addMasterDevice( masterDevice )
+        protocol.addPrimaryDevice( primaryDevice )
         val task = StubTaskDescriptor( "Task", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
-        val atStartOfStudy = protocol.addTrigger( masterDevice.atStartOfStudy() )
-        protocol.addTaskControl( atStartOfStudy.start( task, masterDevice ) )
+        val atStartOfStudy = protocol.addTrigger( primaryDevice.atStartOfStudy() )
+        protocol.addTaskControl( atStartOfStudy.start( task, primaryDevice ) )
 
         // Deploy protocol.
         val deploymentId = UUID.randomUUID()
@@ -215,7 +215,7 @@ class HostsIntegrationTest
         )
 
         // Prepare data to append to data stream.
-        val stubStreamId = dataStreamId<StubData>( deploymentId, masterDevice.roleName )
+        val stubStreamId = dataStreamId<StubData>( deploymentId, primaryDevice.roleName )
         val syncPoint = SyncPoint( Clock.System.now() )
         val toAppend = MutableDataStreamBatch()
         toAppend.appendSequence(
@@ -227,9 +227,9 @@ class HostsIntegrationTest
         assertFailsWith<IllegalArgumentException> { dataStreamService.appendToDataStreams( deploymentId, toAppend ) }
 
         // Data can now be appended to data streams once the deployment is "ready".
-        deploymentService.registerDevice( deploymentId, masterDevice.roleName, masterDevice.createRegistration() )
-        val deviceDeployment = deploymentService.getDeviceDeploymentFor( deploymentId, masterDevice.roleName )
-        deploymentService.deviceDeployed( deploymentId, masterDevice.roleName, deviceDeployment.lastUpdatedOn )
+        deploymentService.registerDevice( deploymentId, primaryDevice.roleName, primaryDevice.createRegistration() )
+        val deviceDeployment = deploymentService.getDeviceDeploymentFor( deploymentId, primaryDevice.roleName )
+        deploymentService.deviceDeployed( deploymentId, primaryDevice.roleName, deviceDeployment.lastUpdatedOn )
         dataStreamService.appendToDataStreams( deploymentId, toAppend )
 
         // Data can no longer be appended after a deployment is stopped.

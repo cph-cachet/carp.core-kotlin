@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.application.services
 
-import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
+import kotlinx.serialization.PolymorphicSerializer
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -16,8 +17,11 @@ class IntegrationEventTest
     interface Service : ApplicationService<Service, Service.Event>
     {
         @Serializable
-        sealed class Event : IntegrationEvent<Service>()
+        sealed class Event( override val aggregateId: String? = null ) : IntegrationEvent<Service>
         {
+            @Required
+            override val apiVersion: ApiVersion = ApiVersion( 1, 0 )
+
             @Serializable
             object SomeEvent : Event()
         }
@@ -29,10 +33,9 @@ class IntegrationEventTest
     {
         val event = Service.Event.SomeEvent
 
-        val json = Json { }
         val serializer = Service.Event.serializer()
-        val serialized = json.encodeToString( serializer, event )
-        val parsed = json.decodeFromString( serializer, serialized )
+        val serialized = Json.encodeToString( serializer, event )
+        val parsed = Json.decodeFromString( serializer, serialized )
 
         assertEquals( event, parsed )
     }
@@ -49,7 +52,7 @@ class IntegrationEventTest
             }
         }
         val json = Json { serializersModule = module }
-        val serializer = IntegrationEvent.serializer( NotSerializable )
+        val serializer = PolymorphicSerializer( IntegrationEvent::class )
         val serialized = json.encodeToString( serializer, event )
         val parsed = json.decodeFromString( serializer, serialized )
 

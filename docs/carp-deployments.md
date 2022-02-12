@@ -10,7 +10,7 @@ The events between `DeploymentService` and `ParticipationService` are opaque to 
 The application and domain services in `carp.studies` and `carp.client` abstract away this entire sequence.
 Matching code for these calls can be found in the main README as part of the [carp.deployments](../README.md#example-deployments) and [carp.client](../README.md#example-client) examples.
 
-![Study deployment sequence diagram](https://i.imgur.com/EVRQ5wb.png)
+![Study deployment sequence diagram](https://i.imgur.com/5vhCqwu.png)
 
 ## Study and device deployment state
 
@@ -32,7 +32,7 @@ Respectively, the required claims and claims to grant upon a successful request.
 
 ### [`DeploymentService`](../carp.deployments.core/src/commonMain/kotlin/dk/cachet/carp/deployments/application/DeploymentService.kt)
 
-Allows deploying study protocols to participants and retrieving master device deployments for participating master devices as defined in the protocol.
+Allows deploying study protocols to participants and retrieving primary device deployments for participating primary devices as defined in the protocol.
 
 | Endpoint | Description | Require | Grant |
 | --- | --- | --- | --- |
@@ -42,8 +42,8 @@ Allows deploying study protocols to participants and retrieving master device de
 | `getStudyDeploymentStatusList` | Get the statuses for a set of deployments. | in deployment: (all) `studyDeploymentIds` | |
 | `registerDevice` | Register a device for a study deployment. | in deployment: `studyDeploymentId` | |
 | `unregisterDevice` | Unregister a device for a study deployment. | in deployment: `studyDeploymentId` | |
-| `getDeviceDeploymentFor` | Get the deployment configuration for a master device in a study deployment. | in deployment: `studyDeploymentId` | |
-| `deviceDeployed` | Indicate to stakeholders in a study deployment that a master device was deployed successfully, i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it. | in deployment: `studyDeploymentId` | |
+| `getDeviceDeploymentFor` | Get the deployment configuration for a primary device in a study deployment. | in deployment: `studyDeploymentId` | |
+| `deviceDeployed` | Indicate to stakeholders in a study deployment that a primary device was deployed successfully, i.e., that the study deployment was loaded on the device and that the necessary runtime is available to run it. | in deployment: `studyDeploymentId` | |
 | `stop` | Stop a study deployment. No further changes to this deployment will be allowed and no more data will be collected. | in deployment: `studyDeploymentId` | |
 
 ### [`ParticipationService`](../carp.deployments.core/src/commonMain/kotlin/dk/cachet/carp/deployments/application/ParticipationService.kt)

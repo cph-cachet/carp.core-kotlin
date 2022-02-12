@@ -21,7 +21,7 @@ import kotlin.reflect.KClass
 data class AltBeacon(
     override val roleName: String,
     override val isOptional: Boolean = false,
-) : DeviceDescriptor<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
+) : DeviceConfiguration<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
 {
     object Sensors : DataTypeSamplingSchemeMap()
     {
@@ -71,7 +71,9 @@ data class AltBeaconDeviceRegistration(
      * The average received signal strength at 1 meter from the beacon in decibel-milliwatts (dBm).
      * This value is constrained from -127 to 0.
      */
-    val referenceRssi: Short
+    val referenceRssi: Short,
+    @Required
+    override val deviceDisplayName: String? = null // TODO: We could map known manufacturerId's to display names.
 ) : DeviceRegistration()
 {
     companion object
@@ -93,7 +95,7 @@ data class AltBeaconDeviceRegistration(
 
 
 @Serializable( with = NotSerializable::class )
-class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>
+class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>()
 {
     /**
      * The beacon's device manufacturer's company identifier code as maintained by the Bluetooth SIG assigned numbers database.
@@ -123,6 +125,12 @@ class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDe
      */
     var referenceRssi: Short = 0
 
-    override fun build(): AltBeaconDeviceRegistration =
-        AltBeaconDeviceRegistration( manufacturerId, organizationId, majorId, minorId, referenceRssi )
+    override fun build(): AltBeaconDeviceRegistration = AltBeaconDeviceRegistration(
+        manufacturerId,
+        organizationId,
+        majorId,
+        minorId,
+        referenceRssi,
+        deviceDisplayName
+    )
 }

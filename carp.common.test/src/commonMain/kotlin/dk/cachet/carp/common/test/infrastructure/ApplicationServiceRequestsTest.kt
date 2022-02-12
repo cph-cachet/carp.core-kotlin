@@ -1,56 +1,58 @@
 package dk.cachet.carp.common.test.infrastructure
 
 import dk.cachet.carp.common.application.services.ApplicationService
-import dk.cachet.carp.common.infrastructure.reflect.reflectIfAvailable
-import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
-import dk.cachet.carp.test.JsIgnore
-import dk.cachet.carp.test.Mock
 import dk.cachet.carp.test.runSuspendTest
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
-import kotlin.reflect.KClass
+import kotlinx.serialization.descriptors.elementDescriptors
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlin.test.*
 
 
 /**
- * Base class to test whether a request object exists per method defined in an application service,
- * whether it can be serialized, and whether the service invoker works.
+ * Base class to test whether application service request objects can be serialized,
+ * and whether they correctly call the application service on invoke.
  */
-@Suppress( "FunctionName", "UnnecessaryAbstractClass" )
-abstract class ApplicationServiceRequestsTest<TService : ApplicationService<*, *>, TRequest>(
-    private val serviceKlass: KClass<TService>,
-    protected val serviceMock: Mock<TService>,
+@Suppress( "FunctionName" )
+abstract class ApplicationServiceRequestsTest<
+    TService : ApplicationService<TService, *>,
+    TRequest : ApplicationServiceRequest<TService, *>
+>(
     private val requestSerializer: KSerializer<TRequest>,
     private val requests: List<TRequest>
 )
 {
-    @Suppress( "UNCHECKED_CAST" )
+    abstract fun createServiceLoggingProxy(): ApplicationServiceLoggingProxy<TService, *>
+
+
+    @ExperimentalSerializationApi
     @Test
-    @JsIgnore // Reflection is not available on JS runtime.
-    fun request_object_for_each_request_available()
+    fun all_request_objects_tested()
     {
-        val reflect = reflectIfAvailable()
-        assertNotNull( reflect )
+        val testedRequestObjects = requests.mapNotNull { it::class.simpleName }.toSet()
 
-        val serviceFunctions = reflect.members( serviceKlass )
-            .filterNot { it.name == "equals" || it.name == "hashCode" || it.name == "toString" }
-        val testedRequests = requests.map {
-            val serviceInvoker = it as ServiceInvoker<TService, *>
-            serviceInvoker.function
-        }
+        val sealedClassSerializer = requestSerializer.descriptor
+        val subclassSerializers = sealedClassSerializer.getElementDescriptor( 1 ).elementDescriptors.toList()
+        val allRequestObjects = subclassSerializers.map { it.serialName.split( '.' ).last() }.toSet()
 
-        assertTrue( testedRequests.containsAll( serviceFunctions ) )
+        assertEquals( allRequestObjects, testedRequestObjects )
     }
 
     @Suppress( "UNCHECKED_CAST" )
     @Test
     fun invokeOn_requests_call_service() = runSuspendTest {
+        val serviceLog = createServiceLoggingProxy()
+
         requests.forEach { request ->
-            val serviceInvoker = request as ServiceInvoker<TService, *>
-            val function = serviceInvoker.function
-            serviceInvoker.invokeOn( serviceMock as TService )
-            assertTrue( serviceMock.wasCalled( function, serviceInvoker.overloadIdentifier ) )
-            serviceMock.reset()
+            try { request.invokeOn( serviceLog as TService ) }
+            catch ( ignore: Exception ) { } // Requests do not have to succeed to verify request arrived.
+            assertTrue( serviceLog.wasCalled( request ) )
+
+            serviceLog.clear()
         }
     }
 
@@ -63,6 +65,18 @@ abstract class ApplicationServiceRequestsTest<TService : ApplicationService<*, *
             val serialized = json.encodeToString( requestSerializer, request )
             val parsed = json.decodeFromString( requestSerializer, serialized )
             assertEquals( request, parsed )
+        }
+    }
+
+    @Test
+    fun serialized_request_contains_api_version()
+    {
+        val json = createTestJSON()
+
+        requests.forEach {
+            val serialized = json.encodeToJsonElement( requestSerializer, it ) as JsonObject
+            val versionKey = ApplicationServiceRequest<*, *>::apiVersion.name
+            assertTrue( serialized[ versionKey ] is JsonElement )
         }
     }
 }

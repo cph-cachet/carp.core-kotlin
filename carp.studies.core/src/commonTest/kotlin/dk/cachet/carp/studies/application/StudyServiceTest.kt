@@ -5,9 +5,7 @@ import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.test.runSuspendTest
 import kotlin.test.*
 
@@ -30,9 +28,9 @@ interface StudyServiceTest
     fun createStudy_succeeds() = runSuspendTest {
         val service = createService()
 
-        val owner = StudyOwner()
+        val ownerId = UUID.randomUUID()
         val name = "Test"
-        val status = service.createStudy( owner, name )
+        val status = service.createStudy( ownerId, name )
 
         // Verify whether study was added.
         val foundStudy = service.getStudyStatus( status.studyId )
@@ -51,11 +49,11 @@ interface StudyServiceTest
     fun createStudy_with_invitation_succeeds() = runSuspendTest {
         val service = createService()
 
-        val owner = StudyOwner()
+        val ownerId = UUID.randomUUID()
         val name = "Test"
         val description = "Description"
         val invitation = StudyInvitation( "Lorem ipsum", "Some description" )
-        val status = service.createStudy( owner, name, description, invitation )
+        val status = service.createStudy( ownerId, name, description, invitation )
 
         val foundStudy = service.getStudyStatus( status.studyId )
         assertEquals( status.studyId, foundStudy.studyId )
@@ -69,7 +67,7 @@ interface StudyServiceTest
     @Test
     fun setInternalDescription_succeeds() = runSuspendTest {
         val service = createService()
-        val status = service.createStudy( StudyOwner(), "Test" )
+        val status = service.createStudy( UUID.randomUUID(), "Test" )
 
         val newName = "New name"
         val newDescription = "New description"
@@ -100,7 +98,7 @@ interface StudyServiceTest
     @Test
     fun getStudyStatus_succeeds() = runSuspendTest {
         val service = createService()
-        val status = service.createStudy( StudyOwner(), "Test" )
+        val status = service.createStudy( UUID.randomUUID(), "Test" )
 
         val foundStatus = service.getStudyStatus( status.studyId )
         assertEquals( status, foundStatus )
@@ -117,12 +115,12 @@ interface StudyServiceTest
     fun getStudiesOverview_returns_owner_studies() = runSuspendTest {
         val service = createService()
 
-        val owner = StudyOwner()
-        val studyOne = service.createStudy( owner, "One" )
-        val studyTwo = service.createStudy( owner, "Two" )
-        service.createStudy( StudyOwner(), "Three" )
+        val ownerId = UUID.randomUUID()
+        val studyOne = service.createStudy( ownerId, "One" )
+        val studyTwo = service.createStudy( ownerId, "Two" )
+        service.createStudy( UUID.randomUUID(), "Three" )
 
-        val studiesOverview = service.getStudiesOverview( owner )
+        val studiesOverview = service.getStudiesOverview( ownerId )
         val expectedStudies = listOf( studyOne, studyTwo )
         assertEquals( 2, studiesOverview.intersect( expectedStudies ).count() )
     }
@@ -130,7 +128,7 @@ interface StudyServiceTest
     @Test
     fun setInvitation_succeeds() = runSuspendTest {
         val service = createService()
-        val status = service.createStudy( StudyOwner(), "Test" )
+        val status = service.createStudy( UUID.randomUUID(), "Test" )
 
         assertTrue( status.canSetInvitation )
         val invitation = StudyInvitation( "Study name", "Description" )
@@ -152,7 +150,7 @@ interface StudyServiceTest
     @Test
     fun setProtocol_succeeds() = runSuspendTest {
         val service = createService()
-        var status = service.createStudy( StudyOwner(), "Test" )
+        var status = service.createStudy( UUID.randomUUID(), "Test" )
 
         assertTrue( status.canSetStudyProtocol )
         val protocol = createDeployableProtocol()
@@ -174,7 +172,7 @@ interface StudyServiceTest
     @Test
     fun setProtocol_fails_for_invalid_protocol_snapshot() = runSuspendTest {
         val service = createService()
-        val status = service.createStudy( StudyOwner(), "Test" )
+        val status = service.createStudy( UUID.randomUUID(), "Test" )
 
         val validSnapshot = createDeployableProtocol()
         val invalidSnapshot = validSnapshot.copy(
@@ -188,16 +186,16 @@ interface StudyServiceTest
     @Test
     fun setProtocol_fails_for_protocol_which_cant_be_deployed() = runSuspendTest {
         val service = createService()
-        val status = service.createStudy( StudyOwner(), "Test" )
+        val status = service.createStudy( UUID.randomUUID(), "Test" )
 
-        val protocol = StudyProtocol( ProtocolOwner(), "Not deployable" )
+        val protocol = StudyProtocol( UUID.randomUUID(), "Not deployable" )
         assertFailsWith<IllegalArgumentException> { service.setProtocol( status.studyId, protocol.getSnapshot() ) }
     }
 
     @Test
     fun setInvitation_and_setProtocol_fails_after_study_gone_live() = runSuspendTest {
         val service = createService()
-        var status = service.createStudy( StudyOwner(), "Test" )
+        var status = service.createStudy( UUID.randomUUID(), "Test" )
 
         val protocol = createDeployableProtocol()
         service.setProtocol( status.studyId, protocol )
@@ -216,7 +214,7 @@ interface StudyServiceTest
     fun goLive_succeeds() = runSuspendTest {
         val service = createService()
 
-        var status = service.createStudy( StudyOwner(), "Test" )
+        var status = service.createStudy( UUID.randomUUID(), "Test" )
         assertTrue( status is StudyStatus.Configuring )
 
         // Set protocol and go live.
@@ -236,7 +234,7 @@ interface StudyServiceTest
     @Test
     fun goLive_fails_when_no_protocol_set_yet() = runSuspendTest {
         val service = createService()
-        val status = service.createStudy( StudyOwner(), "Test" )
+        val status = service.createStudy( UUID.randomUUID(), "Test" )
 
         assertFailsWith<IllegalStateException> { service.goLive( status.studyId ) }
     }
@@ -244,21 +242,21 @@ interface StudyServiceTest
     @Test
     fun remove_succeeds() = runSuspendTest {
         val service = createService()
-        val owner = StudyOwner()
-        val status = service.createStudy( owner, "Test" )
+        val ownerId = UUID.randomUUID()
+        val status = service.createStudy( ownerId, "Test" )
 
         val isRemoved = service.remove( status.studyId )
 
         assertTrue( isRemoved )
-        val studies = service.getStudiesOverview( owner )
+        val studies = service.getStudiesOverview( ownerId )
         assertTrue( studies.isEmpty() )
     }
 
     @Test
     fun remove_returns_false_when_already_removed() = runSuspendTest {
         val service = createService()
-        val owner = StudyOwner()
-        val status = service.createStudy( owner, "Test" )
+        val ownerId = UUID.randomUUID()
+        val status = service.createStudy( ownerId, "Test" )
         service.remove( status.studyId )
 
         val isRemoved = service.remove( status.studyId )
@@ -269,10 +267,10 @@ interface StudyServiceTest
 
     private fun createDeployableProtocol(): StudyProtocolSnapshot
     {
-        val protocol = StudyProtocol( ProtocolOwner(), "Test protocol" )
+        val protocol = StudyProtocol( UUID.randomUUID(), "Test protocol" )
 
-        // Add master device, needed for it to be deployable.
-        protocol.addMasterDevice( Smartphone( "User's phone" ) )
+        // Add primary device, needed for it to be deployable.
+        protocol.addPrimaryDevice( Smartphone( "User's phone" ) )
 
         return protocol.getSnapshot()
     }

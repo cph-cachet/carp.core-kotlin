@@ -35,7 +35,8 @@ class StudyDeploymentProxy(
      */
     suspend fun tryDeployment( study: Study, deviceRegistration: DeviceRegistration )
     {
-        val (studyDeploymentId: UUID, deviceRoleName: String) = study.id
+        val studyDeploymentId: UUID = study.studyDeploymentId
+        val deviceRoleName: String = study.deviceRoleName
 
         // Register the client device in the study deployment.
         val studyStatus: StudyDeploymentStatus =
@@ -51,7 +52,7 @@ class StudyDeploymentProxy(
         // TODO: Handle race condition in case other devices were unregistered in between.
         val device = deviceStatus.device
         val deployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, device.roleName )
-        check( deployment.deviceDescriptor == device )
+        check( deployment.deviceConfiguration == device )
         val remainingDevicesToRegister = studyStatus.devicesStatus
             .map { it.device }
             .filter { it.roleName in deviceStatus.remainingDevicesToRegisterBeforeDeployment }
