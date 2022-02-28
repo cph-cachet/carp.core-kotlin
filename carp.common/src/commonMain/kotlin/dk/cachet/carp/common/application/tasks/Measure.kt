@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Defines data that needs to be measured/collected passively as part of a task defined by [TaskDescriptor].
+ * Defines data that needs to be measured/collected passively as part of a task defined by [TaskConfiguration].
  */
 @Serializable
 sealed class Measure

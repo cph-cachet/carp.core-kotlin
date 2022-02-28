@@ -5,16 +5,16 @@ package dk.cachet.carp.common.infrastructure.serialization
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.test.*
 
 
 /**
- * Tests for [CustomTaskDescriptor].
+ * Tests for [CustomTaskConfiguration].
  */
-class CustomTaskDescriptorTest
+class CustomTaskConfigurationTest
 {
     companion object
     {
@@ -23,13 +23,13 @@ class CustomTaskDescriptorTest
 
 
     @Test
-    fun initialization_from_json_extracts_base_TaskDescriptor_properties()
+    fun initialization_from_json_extracts_base_TaskConfiguration_properties()
     {
         val measures: List<Measure> = listOf( Measure.DataStream( STUB_DATA_TYPE ) )
-        val task = StubTaskDescriptor( "Unknown", measures )
-        val serialized: String = JSON.encodeToString( StubTaskDescriptor.serializer(), task )
+        val task = StubTaskConfiguration( "Unknown", measures )
+        val serialized: String = JSON.encodeToString( StubTaskConfiguration.serializer(), task )
 
-        val custom = CustomTaskDescriptor( "Irrelevant", serialized, JSON )
+        val custom = CustomTaskConfiguration( "Irrelevant", serialized, JSON )
         assertEquals( task.name, custom.name )
         assertEquals( task.measures.count(), task.measures.intersect( custom.measures ).count() )
     }
@@ -45,7 +45,7 @@ class CustomTaskDescriptorTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomTaskDescriptor( "Irrelevant", serialized, JSON )
+            CustomTaskConfiguration( "Irrelevant", serialized, JSON )
         }
     }
 }

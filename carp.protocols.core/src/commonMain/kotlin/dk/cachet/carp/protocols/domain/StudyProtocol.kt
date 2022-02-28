@@ -5,7 +5,7 @@ package dk.cachet.carp.protocols.domain
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.Trigger
 import dk.cachet.carp.common.application.triggers.TaskControl.Control as Control
 import dk.cachet.carp.common.application.users.ParticipantAttribute
@@ -13,7 +13,7 @@ import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantDataConfiguration
-import dk.cachet.carp.protocols.domain.configuration.EmptyTaskConfiguration
+import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolTaskConfiguration
 import dk.cachet.carp.protocols.domain.configuration.StudyProtocolComposition
 import dk.cachet.carp.protocols.domain.deployment.*
 import kotlinx.datetime.Clock
@@ -42,7 +42,7 @@ class StudyProtocol(
     createdOn: Instant = Clock.System.now()
 ) : StudyProtocolComposition(
         EmptyProtocolDeviceConfiguration(),
-        EmptyTaskConfiguration(),
+        EmptyProtocolTaskConfiguration(),
         EmptyParticipantDataConfiguration(),
         id,
         createdOn
@@ -58,8 +58,8 @@ class StudyProtocol(
             val primary: AnyPrimaryDeviceConfiguration
         ) : Event()
         data class TriggerAdded( val trigger: Trigger<*> ) : Event()
-        data class TaskAdded( val task: TaskDescriptor<*> ) : Event()
-        data class TaskRemoved( val task: TaskDescriptor<*> ) : Event()
+        data class TaskAdded( val task: TaskConfiguration<*> ) : Event()
+        data class TaskRemoved( val task: TaskConfiguration<*> ) : Event()
         data class TaskControlAdded( val control: TaskControl ) : Event()
         data class TaskControlRemoved( val control: TaskControl ) : Event()
         data class ExpectedParticipantDataAdded( val attribute: ParticipantAttribute ) : Event()
@@ -109,7 +109,7 @@ class StudyProtocol(
             snapshot.taskControls.forEach { control ->
                 val triggerMatch = snapshot.triggers.entries.singleOrNull { it.key == control.triggerId }
                     ?: throw IllegalArgumentException( "Can't find trigger with id '${control.triggerId}' in snapshot." )
-                val task: TaskDescriptor<*> = protocol.tasks.singleOrNull { it.name == control.taskName }
+                val task: TaskConfiguration<*> = protocol.tasks.singleOrNull { it.name == control.taskName }
                     ?: throw IllegalArgumentException( "Can't find task with name '${control.taskName}' in snapshot." )
                 val device: AnyDeviceConfiguration = protocol.devices.singleOrNull { it.roleName == control.destinationDeviceRoleName }
                     ?: throw IllegalArgumentException( "Can't find device with role name '${control.destinationDeviceRoleName}' in snapshot." )
@@ -242,7 +242,7 @@ class StudyProtocol(
      */
     fun addTaskControl(
         trigger: Trigger<*>,
-        task: TaskDescriptor<*>,
+        task: TaskConfiguration<*>,
         destinationDevice: AnyDeviceConfiguration,
         control: Control
     ): Boolean
@@ -304,7 +304,7 @@ class StudyProtocol(
     /**
      * Gets all the tasks triggered for the specified [device].
      */
-    fun getTasksForDevice( device: AnyDeviceConfiguration ): Set<TaskDescriptor<*>>
+    fun getTasksForDevice( device: AnyDeviceConfiguration ): Set<TaskConfiguration<*>>
     {
         return triggerControls
             .flatMap { it.value }
@@ -319,7 +319,7 @@ class StudyProtocol(
      * @throws IllegalArgumentException in case a task with the specified name already exists.
      * @return True if the [task] has been added; false if it is already included in this configuration.
      */
-    override fun addTask( task: TaskDescriptor<*> ): Boolean =
+    override fun addTask( task: TaskConfiguration<*> ): Boolean =
         super.addTask( task )
         .eventIf( true ) { Event.TaskAdded( task ) }
 
@@ -329,7 +329,7 @@ class StudyProtocol(
      *
      * @return True if the [task] has been removed; false if it is not included in this configuration.
      */
-    override fun removeTask( task: TaskDescriptor<*> ): Boolean
+    override fun removeTask( task: TaskConfiguration<*> ): Boolean
     {
         // Remove all controls which control this task.
         triggerControls.values.forEach { controls ->

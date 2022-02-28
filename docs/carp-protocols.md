@@ -16,7 +16,7 @@ Describes any type of electronic device, such as a sensor, video camera, desktop
 - [`PrimaryDeviceConfiguration`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/PrimaryDeviceConfiguration.kt):
 A device which aggregates, synchronizes, and optionally uploads incoming data received from one or more connected devices (potentially just itself).
 Typically, a desktop computer, smartphone, or web server.
-- [`TaskDescriptor`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/TaskDescriptor.kt):
+- [`TaskConfiguration`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/TaskConfiguration.kt):
 Describes requested `Measure`s and/or output to be presented on a device.
 - [`Measure`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/Measure.kt):
 Defines data that needs to be measured/collected passively for a supported `DataType`.
@@ -41,7 +41,7 @@ In case the [currently supported built-in types](carp-common.md) do not provide 
 
 - Extend `DeviceConfiguration` or `PrimaryDeviceConfiguration` to add support for a new type of device, and extend `DeviceRegistration` to specify how a single instance of this device should be uniquely identified, the capabilities it has, and device-specific configuration options needed for the device to operate.
 Example: [`AltBeacon`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt).  
-- Extend `TaskDescriptor` to provide custom logic on how to schedule the containing `Measure`s, or if you need to trigger custom tasks unrelated to the study protocol in your client application.
+- Extend `TaskConfiguration` to provide custom logic on how to schedule the containing `Measure`s, or if you need to trigger custom tasks unrelated to the study protocol in your client application.
 - Specify new `DataType`s by extending from `Data`, and optionally extend from `DataTypeSamplingScheme` and `SamplingConfiguration` to specify a custom configuration on _how_ your new data type can be measured on a specific device.
 Example: [`Geolocation`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Geolocation.kt) and [`IntervalSampling`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/IntervalSampling.kt).
 - Extend `Trigger` to describe custom conditions which you want to use to trigger tasks.

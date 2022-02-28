@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
@@ -29,7 +29,7 @@ class PrimaryDeviceDeploymentTest
     {
         val device = StubPrimaryDeviceConfiguration()
         val connected = StubDeviceConfiguration( "Connected" )
-        val task = StubTaskDescriptor( "Task" )
+        val task = StubTaskConfiguration( "Task" )
         val trigger = StubTrigger( connected.roleName )
 
         val deployment = PrimaryDeviceDeployment(

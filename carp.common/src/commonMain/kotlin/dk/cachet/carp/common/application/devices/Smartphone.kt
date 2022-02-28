@@ -87,7 +87,7 @@ data class Smartphone(
     /**
      * ALl tasks commonly available on smartphones.
      */
-    object Tasks : TaskDescriptorList()
+    object Tasks : TaskConfigurationList()
     {
         /**
          * Redirect to a web page which contains the task which needs to be performed.

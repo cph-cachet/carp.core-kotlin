@@ -6,7 +6,7 @@ import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.Trigger
 import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
@@ -39,7 +39,7 @@ data class PrimaryDeviceDeployment(
     /**
      * All tasks which should be able to be executed on this or connected devices.
      */
-    val tasks: Set<TaskDescriptor<*>> = emptySet(),
+    val tasks: Set<TaskConfiguration<*>> = emptySet(),
     /**
      * All triggers originating from this device and connected devices, stored per assigned id unique within the study protocol.
      */
@@ -77,7 +77,7 @@ data class PrimaryDeviceDeployment(
          * The set of tasks which may be sent to this device over the course of the deployment,
          * or an empty set in case there are none.
          */
-        val tasks: Set<TaskDescriptor<*>>
+        val tasks: Set<TaskConfiguration<*>>
     )
 
 
@@ -130,7 +130,7 @@ data class PrimaryDeviceDeployment(
         }
     }
 
-    private fun getDeviceTasks( device: AnyDeviceConfiguration ): Set<TaskDescriptor<*>> = taskControls
+    private fun getDeviceTasks( device: AnyDeviceConfiguration ): Set<TaskConfiguration<*>> = taskControls
         .filter { it.destinationDeviceRoleName == device.roleName }
         .map { triggered -> tasks.first { it.name == triggered.taskName } }
         .toSet()

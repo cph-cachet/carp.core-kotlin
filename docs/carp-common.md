@@ -43,7 +43,7 @@ From sampling _schemes_, matching sampling _configurations_ can be created.
 Per data type, only one `SamplingConfiguration` is ever active on a device.
 The sampling configuration to be used is determined on clients in order of priority:
 
-1. The sampling configuration, if specified in the study protocol, of the `Measure.DataStream` in the last triggered _active_ `TaskDescriptor`. 
+1. The sampling configuration, if specified in the study protocol, of the `Measure.DataStream` in the last triggered _active_ `TaskConfiguration`. 
    Once a task stops, it is no longer "active".
 2. The default sampling configuration, if specified in the study protocol, for the `DeviceConfiguration`.
    This can be retrieved through `PrimaryDeviceDeployment` on the client.

@@ -8,15 +8,15 @@ import dk.cachet.carp.common.application.triggers.TaskControl.Control as Control
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.configuration.ProtocolDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.ProtocolDeviceConfigurationTest
 import dk.cachet.carp.protocols.domain.configuration.ParticipantDataConfiguration
 import dk.cachet.carp.protocols.domain.configuration.ParticipantDataConfigurationTest
-import dk.cachet.carp.protocols.domain.configuration.TaskConfiguration
-import dk.cachet.carp.protocols.domain.configuration.TaskConfigurationTest
+import dk.cachet.carp.protocols.domain.configuration.ProtocolTaskConfiguration
+import dk.cachet.carp.protocols.domain.configuration.ProtocolTaskConfigurationTest
 import dk.cachet.carp.protocols.domain.deployment.NoPrimaryDeviceError
 import dk.cachet.carp.protocols.domain.deployment.UnstartedTasksWarning
 import dk.cachet.carp.protocols.domain.deployment.UnusedDevicesWarning
@@ -39,9 +39,9 @@ class StudyProtocolTest
     }
 
     @Nested
-    inner class Tasks : TaskConfigurationTest
+    inner class Tasks : ProtocolTaskConfigurationTest
     {
-        override fun createTaskConfiguration(): TaskConfiguration = createEmptyProtocol()
+        override fun createTaskConfiguration(): ProtocolTaskConfiguration = createEmptyProtocol()
     }
 
     @Nested
@@ -218,7 +218,7 @@ class StudyProtocolTest
         val protocol = createEmptyProtocol()
         val device = StubPrimaryDeviceConfiguration()
         val trigger = StubTrigger( device )
-        val task = StubTaskDescriptor()
+        val task = StubTaskConfiguration()
         protocol.addPrimaryDevice( device )
         protocol.addTrigger( trigger )
 
@@ -235,7 +235,7 @@ class StudyProtocolTest
         val protocol = createEmptyProtocol()
         val device = StubPrimaryDeviceConfiguration()
         val trigger = StubTrigger( device )
-        val task = StubTaskDescriptor()
+        val task = StubTaskConfiguration()
         protocol.addPrimaryDevice( device )
         protocol.addTaskControl( trigger.start( task, device ) )
 
@@ -251,7 +251,7 @@ class StudyProtocolTest
     {
         val protocol = createEmptyProtocol()
         val device = StubPrimaryDeviceConfiguration()
-        val task = StubTaskDescriptor()
+        val task = StubTaskConfiguration()
         protocol.addPrimaryDevice( device )
         protocol.addTask( task )
 
@@ -271,7 +271,7 @@ class StudyProtocolTest
         protocol.addPrimaryDevice( device )
         protocol.addTrigger( trigger )
 
-        val task = StubTaskDescriptor()
+        val task = StubTaskConfiguration()
         protocol.addTaskControl( trigger, task, device, Control.Start )
         assertTrue( protocol.tasks.contains( task ) )
         val taskEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TaskAdded>()
@@ -284,7 +284,7 @@ class StudyProtocolTest
         val protocol = createEmptyProtocol()
         val device = StubPrimaryDeviceConfiguration()
         val trigger = StubTrigger( device )
-        val task = StubTaskDescriptor()
+        val task = StubTaskConfiguration()
         with ( protocol )
         {
             addPrimaryDevice( device )
@@ -306,12 +306,12 @@ class StudyProtocolTest
         val device = StubPrimaryDeviceConfiguration()
         val trigger = StubTrigger( device )
         val otherTrigger = StubTrigger( device, "Different" )
-        val task = StubTaskDescriptor( "Task one" )
+        val task = StubTaskConfiguration( "Task one" )
         with ( protocol )
         {
             addPrimaryDevice( device )
             addTaskControl( trigger.start( task, device ) )
-            addTaskControl( otherTrigger.start( StubTaskDescriptor( "Task two" ), device ) )
+            addTaskControl( otherTrigger.start( StubTaskConfiguration( "Task two" ), device ) )
         }
 
         val taskControls: List<TaskControl> = protocol.getTaskControls( trigger ).toList()
@@ -338,8 +338,8 @@ class StudyProtocolTest
         val connected = StubDeviceConfiguration()
         protocol.addPrimaryDevice( primary )
         protocol.addConnectedDevice( connected, primary )
-        val priaryTask = StubTaskDescriptor( "Primary task" )
-        val connectedTask = StubTaskDescriptor( "Connected task" )
+        val priaryTask = StubTaskConfiguration( "Primary task" )
+        val connectedTask = StubTaskConfiguration( "Connected task" )
         protocol.addTaskControl( StubTrigger( primary ).start( priaryTask, primary ) )
         protocol.addTaskControl( StubTrigger( primary ).start( connectedTask, connected ) )
 
@@ -356,8 +356,8 @@ class StudyProtocolTest
         val trigger = StubTrigger( device )
         with ( protocol ) {
             addPrimaryDevice( device )
-            addTaskControl( trigger, StubTaskDescriptor( "Task 1" ), device, Control.Start )
-            addTaskControl( trigger, StubTaskDescriptor( "Task 2" ), device, Control.Start )
+            addTaskControl( trigger, StubTaskConfiguration( "Task 1" ), device, Control.Start )
+            addTaskControl( trigger, StubTaskConfiguration( "Task 2" ), device, Control.Start )
         }
 
         // Therefore, a warning is issued.
@@ -375,7 +375,7 @@ class StudyProtocolTest
         {
             addPrimaryDevice( device )
             addConnectedDevice( unusedDevice, device )
-            addTaskControl( StubTrigger( device ), StubTaskDescriptor(), device, Control.Start )
+            addTaskControl( StubTrigger( device ), StubTaskConfiguration(), device, Control.Start )
         }
 
         // Therefore, a warning is issued.
@@ -388,7 +388,7 @@ class StudyProtocolTest
         // Create a study protocol with a task which is initiated by a trigger.
         val protocol = createEmptyProtocol()
         val device = StubPrimaryDeviceConfiguration()
-        val task = StubTaskDescriptor()
+        val task = StubTaskConfiguration()
         val trigger1 = StubTrigger( device, "Trigger one" )
         val trigger2 = StubTrigger( device, "Trigger two" )
         with ( protocol )
@@ -409,7 +409,7 @@ class StudyProtocolTest
     {
         // Create a study protocol with a task which is never triggered.
         val protocol = createEmptyProtocol()
-        protocol.addTask( StubTaskDescriptor() )
+        protocol.addTask( StubTaskConfiguration() )
 
         // Therefore, a warning is issued.
         assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<UnstartedTasksWarning>().count() )

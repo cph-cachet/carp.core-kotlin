@@ -3,7 +3,7 @@ package dk.cachet.carp.protocols.application
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.Trigger
 import dk.cachet.carp.common.application.users.ParticipantAttribute
@@ -27,7 +27,7 @@ data class StudyProtocolSnapshot(
     val primaryDevices: Set<AnyPrimaryDeviceConfiguration> = emptySet(),
     val connectedDevices: Set<AnyDeviceConfiguration> = emptySet(),
     val connections: Set<DeviceConnection> = emptySet(),
-    val tasks: Set<TaskDescriptor<*>> = emptySet(),
+    val tasks: Set<TaskConfiguration<*>> = emptySet(),
     val triggers: Map<Int, Trigger<*>> = emptyMap(),
     val taskControls: Set<TaskControl> = emptySet(),
     val expectedParticipantData: Set<ParticipantAttribute> = emptySet(),

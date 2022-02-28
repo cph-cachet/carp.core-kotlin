@@ -23,7 +23,7 @@ import dk.cachet.carp.common.application.devices.DeviceType
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.start
@@ -218,10 +218,10 @@ class StudyDeploymentProxyTest
     fun tryDeployment_succeeds_when_data_types_of_protocol_measures_are_supported() = runSuspendTest {
         // Create protocol that measures on smartphone and one connected device.
         val protocol = createSmartphoneWithConnectedDeviceStudy()
-        val primaryTask = StubTaskDescriptor( "Primary measure", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
+        val primaryTask = StubTaskConfiguration( "Primary measure", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
         protocol.addTaskControl( smartphone.atStartOfStudy().start( primaryTask, smartphone ) )
         val connectedDataType = DataType( "custom", "type" )
-        val connectedTask = StubTaskDescriptor( "Connected measure", listOf( Measure.DataStream( connectedDataType ) ) )
+        val connectedTask = StubTaskConfiguration( "Connected measure", listOf( Measure.DataStream( connectedDataType ) ) )
         protocol.addTaskControl( smartphone.atStartOfStudy().start( connectedTask, connectedDevice ) )
 
         // Create a data listener which supports the requested devices and types in the protocol
@@ -249,7 +249,7 @@ class StudyDeploymentProxyTest
     fun tryDeployment_fails_when_requested_data_cannot_be_collected() = runSuspendTest {
         // Create a protocol that has one measure.
         val protocol = createSmartphoneStudy()
-        val task = StubTaskDescriptor( "One measure", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
+        val task = StubTaskConfiguration( "One measure", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
         protocol.addTaskControl( smartphone.atStartOfStudy().start( task, smartphone ) )
 
         // Initializing study for the smartphone deployment should fail since StubMeasure can't be collected.

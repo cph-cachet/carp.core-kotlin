@@ -18,7 +18,7 @@ import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
@@ -106,14 +106,14 @@ class StudyDeploymentTest
 
             val trigger = addTrigger( primaryDevice.atStartOfStudy() )
             val stubMeasure = Measure.DataStream( STUB_DATA_TYPE )
-            val task = StubTaskDescriptor(
+            val task = StubTaskConfiguration(
                 "Task",
                 listOf( stubMeasure, trigger.measure() ),
                 "Description"
 
             )
             addTaskControl( trigger.start( task, primaryDevice ) )
-            val connectedDeviceTask = StubTaskDescriptor( "Connected task", listOf( stubMeasure ) )
+            val connectedDeviceTask = StubTaskConfiguration( "Connected task", listOf( stubMeasure ) )
             addTaskControl( trigger.start( connectedDeviceTask, connectedDevice ) )
         }
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
@@ -543,8 +543,8 @@ class StudyDeploymentTest
         protocol.applicationData = "some data"
         val primary = protocol.primaryDevices.first { it.roleName == "Primary" }
         val connected = protocol.devices.first { it.roleName == "Connected" }
-        val primaryTask = StubTaskDescriptor( "Primary task" )
-        val connectedTask = StubTaskDescriptor( "Connected task" )
+        val primaryTask = StubTaskConfiguration( "Primary task" )
+        val connectedTask = StubTaskConfiguration( "Connected task" )
         protocol.addTaskControl( primary.atStartOfStudy().start( primaryTask, primary ) )
         protocol.addTaskControl( primary.atStartOfStudy().start( connectedTask, connected ) )
         val deployment = studyDeploymentFor( protocol )
@@ -614,7 +614,7 @@ class StudyDeploymentTest
             addPrimaryDevice( targetPrimary )
         }
         val measure = Measure.DataStream( DataType( "namespace", "type" ) )
-        val task = StubTaskDescriptor( "Stub task", listOf( measure ) )
+        val task = StubTaskConfiguration( "Stub task", listOf( measure ) )
         protocol.addTaskControl( StubTrigger( sourcePrimary ).start( task, targetPrimary ) )
         val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( sourcePrimary, DefaultDeviceRegistration() )

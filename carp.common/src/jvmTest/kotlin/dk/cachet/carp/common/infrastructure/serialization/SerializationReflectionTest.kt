@@ -6,7 +6,7 @@ import dk.cachet.carp.common.application.concreteDeviceConfigurationTypes
 import dk.cachet.carp.common.application.concreteDeviceRegistrationTypes
 import dk.cachet.carp.common.application.concreteInputElementTypes
 import dk.cachet.carp.common.application.concreteSamplingConfigurationTypes
-import dk.cachet.carp.common.application.concreteTaskDescriptorTypes
+import dk.cachet.carp.common.application.concreteTaskConfigurationTypes
 import dk.cachet.carp.common.application.concreteTriggerTypes
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.CUSTOM_INPUT_TYPE_NAME
@@ -45,8 +45,8 @@ class SerializationReflectionTest
         verifyTypesAreRegistered( concreteSamplingConfigurationTypes )
 
     @Test
-    fun all_TaskDescriptor_types_registered_for_serialization() =
-        verifyTypesAreRegistered( concreteTaskDescriptorTypes )
+    fun all_TaskConfiguration_types_registered_for_serialization() =
+        verifyTypesAreRegistered( concreteTaskConfigurationTypes )
 
     @Test
     fun all_Trigger_types_registered_for_serialization() =

@@ -20,7 +20,7 @@ data class WebTask(
      * The URL may contain [UrlVariable] patterns which will be replaced with the corresponding values by the client runtime.
      */
     val url: String
-) : TaskDescriptor<NoData> // The execution of the task is delegated to a web page, so this task uploads no data.
+) : TaskConfiguration<NoData> // The execution of the task is delegated to a web page, so this task uploads no data.
 {
     companion object
     {
@@ -61,7 +61,7 @@ data class WebTask(
 /**
  * A helper class to configure and construct immutable [WebTask] instances.
  */
-class WebTaskBuilder : TaskDescriptorBuilder<WebTask>()
+class WebTaskBuilder : TaskConfigurationBuilder<WebTask>()
 {
     /**
      * The URL of the web page which contains the task to be performed.

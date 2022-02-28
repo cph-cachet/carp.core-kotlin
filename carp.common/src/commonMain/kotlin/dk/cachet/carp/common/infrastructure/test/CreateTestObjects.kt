@@ -7,7 +7,7 @@ import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.devices.PrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.Trigger
 import dk.cachet.carp.common.infrastructure.serialization.COMMON_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
@@ -50,9 +50,9 @@ val STUBS_SERIAL_MODULE = SerializersModule {
     {
         subclass( StubSamplingConfiguration::class )
     }
-    polymorphic( TaskDescriptor::class )
+    polymorphic( TaskConfiguration::class )
     {
-        subclass( StubTaskDescriptor::class )
+        subclass( StubTaskConfiguration::class )
     }
     polymorphic( Trigger::class )
     {
@@ -106,14 +106,14 @@ fun String.makeUnknown(
     this.makeUnknown( registration, DeviceRegistration::class, "deviceId", registration.deviceId, unknownTypeName )
 
 /**
- * Replace the type name of [taskDescriptor] in this JSON string with [unknownTypeName].
+ * Replace the type name of [taskConfiguration] in this JSON string with [unknownTypeName].
  */
 @ExperimentalSerializationApi
 fun String.makeUnknown(
-    taskDescriptor: TaskDescriptor<*>,
-    unknownTypeName: String = "com.unknown.UnknownTaskDescriptor"
+    taskConfiguration: TaskConfiguration<*>,
+    unknownTypeName: String = "com.unknown.UnknownTaskConfiguration"
 ): String =
-    this.makeUnknown( taskDescriptor, TaskDescriptor::class, "name", taskDescriptor.name, unknownTypeName )
+    this.makeUnknown( taskConfiguration, TaskConfiguration::class, "name", taskConfiguration.name, unknownTypeName )
 
 /**
  * Replace the type name of the [samplingConfiguration] with the specified [key] set to [value] in this JSON string with [unknownTypeName].

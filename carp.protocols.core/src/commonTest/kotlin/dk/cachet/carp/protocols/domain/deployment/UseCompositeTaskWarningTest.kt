@@ -3,7 +3,7 @@ package dk.cachet.carp.protocols.domain.deployment
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
@@ -24,8 +24,8 @@ class UseCompositeTaskWarningTest
         with ( protocol )
         {
             addPrimaryDevice( device )
-            addTaskControl( trigger, StubTaskDescriptor( "Task 1" ), device, TaskControl.Control.Start )
-            addTaskControl( trigger, StubTaskDescriptor( "Task 2" ), device, TaskControl.Control.Start )
+            addTaskControl( trigger, StubTaskConfiguration( "Task 1" ), device, TaskControl.Control.Start )
+            addTaskControl( trigger, StubTaskConfiguration( "Task 2" ), device, TaskControl.Control.Start )
         }
 
         val warning = UseCompositeTaskWarning()
@@ -38,7 +38,7 @@ class UseCompositeTaskWarningTest
         val protocol = createEmptyProtocol()
         val device1 = StubPrimaryDeviceConfiguration()
         val device2 = StubDeviceConfiguration()
-        val task = StubTaskDescriptor()
+        val task = StubTaskConfiguration()
         with ( protocol )
         {
             addPrimaryDevice( device1 )
@@ -59,8 +59,8 @@ class UseCompositeTaskWarningTest
         val protocol = createEmptyProtocol()
         val device = StubPrimaryDeviceConfiguration()
         val trigger = StubTrigger( device )
-        val task1 = StubTaskDescriptor( "Task 1" )
-        val task2 = StubTaskDescriptor( "Task 2" )
+        val task1 = StubTaskConfiguration( "Task 1" )
+        val task2 = StubTaskConfiguration( "Task 2" )
         with ( protocol )
         {
             addPrimaryDevice( device )

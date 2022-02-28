@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.deployment
 
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTrigger
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.domain.stop
@@ -28,7 +28,7 @@ class UnstartedTasksWarningTest
         val protocol = createEmptyProtocol()
         val device = StubPrimaryDeviceConfiguration()
         protocol.addPrimaryDevice( device )
-        protocol.addTask( StubTaskDescriptor() )
+        protocol.addTask( StubTaskConfiguration() )
 
         val warning = UnstartedTasksWarning()
         assertTrue( warning.isIssuePresent( protocol ) )
@@ -39,7 +39,7 @@ class UnstartedTasksWarningTest
     {
         val protocol = createEmptyProtocol()
         val device = StubPrimaryDeviceConfiguration()
-        val task = StubTaskDescriptor()
+        val task = StubTaskConfiguration()
         protocol.addPrimaryDevice( device )
         protocol.addTask( task )
         protocol.addTaskControl( device.atStartOfStudy().stop( task, device ) )
@@ -53,8 +53,8 @@ class UnstartedTasksWarningTest
     {
         val protocol = createEmptyProtocol()
         val device = StubPrimaryDeviceConfiguration()
-        val triggeredTask = StubTaskDescriptor( "Triggered" )
-        val unstartedTask = StubTaskDescriptor( "Untriggered" )
+        val triggeredTask = StubTaskConfiguration( "Triggered" )
+        val unstartedTask = StubTaskConfiguration( "Untriggered" )
         with ( protocol )
         {
             addPrimaryDevice( device )

@@ -6,7 +6,7 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptorList
+import dk.cachet.carp.common.application.tasks.TaskConfigurationList
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -38,7 +38,7 @@ data class BLEHeartRateDevice(
         val SENSOR_SKIN_CONTACT = add( NoOptionsSamplingScheme( CarpDataTypes.SENSOR_SKIN_CONTACT ) )
     }
 
-    object Tasks : TaskDescriptorList()
+    object Tasks : TaskConfigurationList()
 
 
     override fun getSupportedDataTypes(): Set<DataType> = Sensors.keys

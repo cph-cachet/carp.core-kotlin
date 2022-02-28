@@ -15,7 +15,7 @@ import kotlinx.serialization.Polymorphic
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
-interface TaskDescriptor<TData : Data>
+interface TaskConfiguration<TData : Data>
 {
     /**
      * A name which uniquely identifies the task.
@@ -38,7 +38,7 @@ interface TaskDescriptor<TData : Data>
  * Get data types of all data which may be collected, either passively as part of task measures,
  * or as the result of user interactions, for this task.
  */
-fun TaskDescriptor<*>.getAllExpectedDataTypes(): Set<DataType> =
+fun TaskConfiguration<*>.getAllExpectedDataTypes(): Set<DataType> =
     measures.map { measure ->
         when ( measure )
         {
@@ -51,10 +51,10 @@ fun TaskDescriptor<*>.getAllExpectedDataTypes(): Set<DataType> =
 
 
 /**
- * A helper class to configure and construct immutable [TaskDescriptor] classes.
+ * A helper class to configure and construct immutable [TaskConfiguration] classes.
  */
-@TaskDescriptorBuilderDsl
-abstract class TaskDescriptorBuilder<TTaskDescriptor : TaskDescriptor<*>>
+@TaskConfigurationBuilderDsl
+abstract class TaskConfigurationBuilder<TConfiguration : TaskConfiguration<*>>
 {
     /**
      * The data which needs to be collected/measures as part of this task.
@@ -66,12 +66,12 @@ abstract class TaskDescriptorBuilder<TTaskDescriptor : TaskDescriptor<*>>
      */
     var description: String? = null
 
-    abstract fun build( name: String ): TTaskDescriptor
+    abstract fun build( name: String ): TConfiguration
 }
 
 /**
- * Should be applied to all builders participating in building [TaskDescriptor]s to prevent misuse of internal DSL.
+ * Should be applied to all builders participating in building [TaskConfiguration]s to prevent misuse of internal DSL.
  * For more information: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-dsl-marker/index.html
  */
 @DslMarker
-annotation class TaskDescriptorBuilderDsl
+annotation class TaskConfigurationBuilderDsl

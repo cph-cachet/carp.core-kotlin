@@ -10,7 +10,7 @@ import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubData
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.data.application.DataStreamService
 import dk.cachet.carp.data.application.MutableDataStreamBatch
 import dk.cachet.carp.data.application.MutableDataStreamSequence
@@ -126,7 +126,7 @@ class HostsIntegrationTest
         val primaryDevice = StubPrimaryDeviceConfiguration()
         val protocol = createEmptyProtocol()
         protocol.addPrimaryDevice( primaryDevice )
-        val task = StubTaskDescriptor( "Task", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
+        val task = StubTaskConfiguration( "Task", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
         val atStartOfStudy = protocol.addTrigger( primaryDevice.atStartOfStudy() )
         protocol.addTaskControl( atStartOfStudy.start( task, primaryDevice ) )
 
@@ -202,7 +202,7 @@ class HostsIntegrationTest
         val primaryDevice = StubPrimaryDeviceConfiguration()
         val protocol = createEmptyProtocol()
         protocol.addPrimaryDevice( primaryDevice )
-        val task = StubTaskDescriptor( "Task", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
+        val task = StubTaskConfiguration( "Task", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
         val atStartOfStudy = protocol.addTrigger( primaryDevice.atStartOfStudy() )
         protocol.addTaskControl( atStartOfStudy.start( task, primaryDevice ) )
 

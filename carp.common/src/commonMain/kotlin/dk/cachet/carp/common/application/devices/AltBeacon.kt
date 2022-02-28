@@ -7,7 +7,7 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptorList
+import dk.cachet.carp.common.application.tasks.TaskConfigurationList
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
@@ -31,7 +31,7 @@ data class AltBeacon(
         val SIGNAL_STRENGTH = add( NoOptionsSamplingScheme( CarpDataTypes.SIGNAL_STRENGTH ) )
     }
 
-    object Tasks : TaskDescriptorList()
+    object Tasks : TaskConfigurationList()
 
     override fun getSupportedDataTypes(): Set<DataType> = Sensors.keys
     override fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap = Sensors

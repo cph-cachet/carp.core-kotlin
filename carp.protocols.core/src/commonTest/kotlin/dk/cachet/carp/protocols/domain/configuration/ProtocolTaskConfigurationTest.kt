@@ -1,18 +1,18 @@
 package dk.cachet.carp.protocols.domain.configuration
 
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import kotlin.test.*
 
 
 /**
- * Base class with tests for [TaskConfiguration] which can be used to test extending types.
+ * Base class with tests for [ProtocolTaskConfiguration] which can be used to test extending types.
  */
-interface TaskConfigurationTest
+interface ProtocolTaskConfigurationTest
 {
     /**
      * Called for each test to create a task configuration to run tests on.
      */
-    fun createTaskConfiguration(): TaskConfiguration
+    fun createTaskConfiguration(): ProtocolTaskConfiguration
 
 
     @Test
@@ -20,7 +20,7 @@ interface TaskConfigurationTest
     {
         val configuration = createTaskConfiguration()
 
-        val task = StubTaskDescriptor()
+        val task = StubTaskConfiguration()
         val isAdded: Boolean = configuration.addTask( task )
         assertTrue( isAdded )
         assertTrue( configuration.tasks.contains( task ) )
@@ -30,7 +30,7 @@ interface TaskConfigurationTest
     fun removeTask_succeeds()
     {
         val configuration = createTaskConfiguration()
-        val task = StubTaskDescriptor()
+        val task = StubTaskConfiguration()
         configuration.addTask( task )
 
         val isRemoved: Boolean = configuration.removeTask( task )
@@ -42,7 +42,7 @@ interface TaskConfigurationTest
     fun removeTask_returns_false_when_task_not_present()
     {
         val configuration = createTaskConfiguration()
-        val task = StubTaskDescriptor()
+        val task = StubTaskConfiguration()
 
         val isRemoved: Boolean = configuration.removeTask( task )
         assertFalse( isRemoved )
@@ -52,7 +52,7 @@ interface TaskConfigurationTest
     fun addTask_multiple_times_only_adds_first_time()
     {
         val configuration = createTaskConfiguration()
-        val task = StubTaskDescriptor()
+        val task = StubTaskConfiguration()
         configuration.addTask( task )
 
         val isAdded: Boolean = configuration.addTask( task )
@@ -64,13 +64,13 @@ interface TaskConfigurationTest
     fun do_not_allow_duplicate_names_for_tasks()
     {
         val configuration = createTaskConfiguration()
-        configuration.addTask( StubTaskDescriptor( "Unique name" ) )
-        configuration.addTask( StubTaskDescriptor( "Duplicate name" ) )
+        configuration.addTask( StubTaskConfiguration( "Unique name" ) )
+        configuration.addTask( StubTaskConfiguration( "Duplicate name" ) )
 
         // Adding an additional task with duplicate name should fail.
         assertFailsWith<IllegalArgumentException>
         {
-            configuration.addTask( StubTaskDescriptor( "Duplicate name" ) )
+            configuration.addTask( StubTaskConfiguration( "Duplicate name" ) )
         }
     }
 }

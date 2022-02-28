@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlin.test.*
@@ -20,7 +20,7 @@ class UnexpectedMeasuresWarningTest
         protocol.addPrimaryDevice( primary )
         val expectedMeasure = Measure.DataStream( STUB_DATA_TYPE )
         val unexpectedMeasure = Measure.DataStream( DataType( "namespace", "unexpected" ) )
-        val task = StubTaskDescriptor( "Task", listOf( expectedMeasure, unexpectedMeasure ) )
+        val task = StubTaskConfiguration( "Task", listOf( expectedMeasure, unexpectedMeasure ) )
         protocol.addTaskControl( primary.atStartOfStudy().start( task, primary ) )
 
         val warning = UnexpectedMeasuresWarning()
@@ -40,7 +40,7 @@ class UnexpectedMeasuresWarningTest
         val primary = StubPrimaryDeviceConfiguration() // Supports STUB_DATA_TYPE.
         protocol.addPrimaryDevice( primary )
         val measure = Measure.DataStream( STUB_DATA_TYPE )
-        val task = StubTaskDescriptor( "Task", listOf( measure ) )
+        val task = StubTaskConfiguration( "Task", listOf( measure ) )
         protocol.addTaskControl( primary.atStartOfStudy().start( task, primary ) )
 
         val warning = UnexpectedMeasuresWarning()

@@ -3,7 +3,7 @@ package dk.cachet.carp.common.application.devices
 import dk.cachet.carp.common.application.commonInstances
 import dk.cachet.carp.common.application.concreteDeviceConfigurationTypes
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
-import dk.cachet.carp.common.application.tasks.TaskDescriptorList
+import dk.cachet.carp.common.application.tasks.TaskConfigurationList
 import kotlin.reflect.full.primaryConstructor
 import kotlin.test.*
 
@@ -32,7 +32,7 @@ class DeviceConfigurationsReflectionTest
 
             // Does the DeviceConfiguration list available tasks?
             val tasksClass = subclasses.singleOrNull { it.name.endsWith( "\$Tasks" ) }
-            val superTasksClass = TaskDescriptorList::class
+            val superTasksClass = TaskConfigurationList::class
             assertNotNull( tasksClass, "No `Tasks` subclass defined in \"${name}\"." )
             assertEquals(
                 tasksClass.superclass, superTasksClass.java,

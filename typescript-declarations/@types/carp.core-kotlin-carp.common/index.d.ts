@@ -111,13 +111,13 @@ declare module 'carp.core-kotlin-carp.common'
 
     namespace dk.cachet.carp.common.application.tasks
     {
-        abstract class TaskDescriptor
+        abstract class TaskConfiguration
         {
             readonly name: string
             readonly description: string | null;
         }
 
-        class WebTask extends TaskDescriptor
+        class WebTask extends TaskConfiguration
         {
             constructor( name: string, measures: any, description: string, url: string )
 

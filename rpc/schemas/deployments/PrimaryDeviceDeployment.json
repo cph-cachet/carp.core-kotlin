@@ -14,7 +14,7 @@
     },
     "tasks": {
       "type": "array",
-      "items": { "$ref": "../common/tasks/TaskDescriptor.json" }
+      "items": { "$ref": "../common/tasks/TaskConfiguration.json" }
     },
     "triggers": {
       "type": "object",

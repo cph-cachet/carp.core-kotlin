@@ -2,7 +2,7 @@ package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.tasks.Measure
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.Trigger
 
 
@@ -30,11 +30,11 @@ fun Trigger<*>.within( protocol: StudyProtocol ): TriggerWithId =
 /**
  * Specify that a [task] should start on the specified [destinationDevice] once this [Trigger] initiates.
  */
-fun TriggerWithId.start( task: TaskDescriptor<*>, destinationDevice: AnyDeviceConfiguration ) =
+fun TriggerWithId.start( task: TaskConfiguration<*>, destinationDevice: AnyDeviceConfiguration ) =
     this.trigger.start( task, destinationDevice )
 
 /**
  * Specify that a [task] should stop on the specified [destinationDevice] once this [Trigger] initiates.
  */
-fun TriggerWithId.stop( task: TaskDescriptor<*>, destinationDevice: AnyDeviceConfiguration ) =
+fun TriggerWithId.stop( task: TaskConfiguration<*>, destinationDevice: AnyDeviceConfiguration ) =
     this.trigger.stop( task, destinationDevice )

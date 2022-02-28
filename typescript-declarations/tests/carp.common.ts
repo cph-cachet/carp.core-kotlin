@@ -58,7 +58,7 @@ describe( "carp.common", () => {
             [ "DeviceConfiguration", new Smartphone( "Role", toSet( [] ) ) ],
             [ "DeviceRegistration", new DefaultDeviceRegistration() ],
             DeviceRegistration.Companion,
-            [ "TaskDescriptor", new WebTask( "name", undefined, "", "url.com" ) ],
+            [ "TaskConfiguration", new WebTask( "name", undefined, "", "url.com" ) ],
             new WebTask( "name", undefined, "", "url.com" ),
             WebTask.Companion,
             [ "Trigger", new ElapsedTimeTrigger( "device", Duration.Companion.INFINITE ) ],

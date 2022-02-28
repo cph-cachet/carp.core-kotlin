@@ -112,14 +112,14 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 
 
     // `tasks` namespace.
-    polymorphic( TaskDescriptor::class )
+    polymorphic( TaskConfiguration::class )
     {
         subclass( BackgroundTask::class )
         subclass( CustomProtocolTask::class )
         subclass( WebTask::class )
 
-        subclass( CustomTaskDescriptor::class )
-        default { TaskDescriptorSerializer }
+        subclass( CustomTaskConfiguration::class )
+        default { TaskConfigurationSerializer }
     }
 
 

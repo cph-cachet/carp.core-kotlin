@@ -5,7 +5,7 @@ import dk.cachet.carp.common.application.data.input.elements.InputElement
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.Trigger
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.test.findConcreteTypes
@@ -17,6 +17,6 @@ val concreteInputElementTypes: List<KClass<out InputElement<*>>> = findConcreteT
 val concreteDeviceConfigurationTypes: List<KClass<out AnyDeviceConfiguration>> = findConcreteTypes()
 val concreteDeviceRegistrationTypes: List<KClass<out DeviceRegistration>> = findConcreteTypes()
 val concreteSamplingConfigurationTypes: List<KClass<out SamplingConfiguration>> = findConcreteTypes()
-val concreteTaskDescriptorTypes: List<KClass<out TaskDescriptor<*>>> = findConcreteTypes()
+val concreteTaskConfigurationTypes: List<KClass<out TaskConfiguration<*>>> = findConcreteTypes()
 val concreteTriggerTypes: List<KClass<out Trigger<*>>> = findConcreteTypes()
 val concreteAccountIdentityTypes: List<KClass<out AccountIdentity>> = findConcreteTypes()

@@ -9,8 +9,8 @@ import dk.cachet.carp.common.application.devices.DeviceConfiguration
  *
  * Extend from this class as an object and assign members as follows: `val SOME_TASK = add { SomeTaskBuilder() }`.
  */
-open class TaskDescriptorList private constructor( private val list: MutableList<SupportedTaskDescriptor<*, *>> ) :
-    List<SupportedTaskDescriptor<*, *>> by list
+open class TaskConfigurationList private constructor( private val list: MutableList<SupportedTaskConfiguration<*, *>> ) :
+    List<SupportedTaskConfiguration<*, *>> by list
 {
     constructor() : this( mutableListOf() )
 
@@ -22,24 +22,23 @@ open class TaskDescriptorList private constructor( private val list: MutableList
     val BACKGROUND = add { BackgroundTaskBuilder() }
 
 
-    protected fun <TTaskDescriptor : TaskDescriptor<*>, TBuilder : TaskDescriptorBuilder<TTaskDescriptor>> add(
+    protected fun <TConfiguration : TaskConfiguration<*>, TBuilder : TaskConfigurationBuilder<TConfiguration>> add(
         builder: () -> TBuilder
-    ): SupportedTaskDescriptor<TTaskDescriptor, TBuilder> = SupportedTaskDescriptor( builder ).also { list.add( it ) }
+    ): SupportedTaskConfiguration<TConfiguration, TBuilder> = SupportedTaskConfiguration( builder ).also { list.add( it ) }
 }
 
 
 /**
- * A [TaskDescriptor] which is listed as a supported task on a [DeviceConfiguration].
+ * A [TaskConfiguration] which is listed as a supported task on a [DeviceConfiguration].
  */
-class SupportedTaskDescriptor<TTaskDescriptor : TaskDescriptor<*>, TBuilder : TaskDescriptorBuilder<TTaskDescriptor>>(
+class SupportedTaskConfiguration<TConfiguration : TaskConfiguration<*>, TBuilder : TaskConfigurationBuilder<TConfiguration>>(
     private val createBuilder: () -> TBuilder
 )
 {
     /**
-     * Create a [TaskDescriptor] supported on this device with [name] which uniquely defines the task
-     * and [description] which explains why the data is collected.
+     * Create a [TaskConfiguration] supported on this device with [name] which uniquely defines the task.
      */
-    fun create( name: String, builder: TBuilder.() -> Unit ): TTaskDescriptor =
+    fun create( name: String, builder: TBuilder.() -> Unit ): TConfiguration =
         createBuilder()
             .apply( builder )
             .build( name )
