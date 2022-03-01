@@ -6,7 +6,7 @@ import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
-import dk.cachet.carp.common.application.triggers.Trigger
+import dk.cachet.carp.common.application.triggers.TriggerConfiguration
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.test.findConcreteTypes
 import kotlin.reflect.KClass
@@ -18,5 +18,5 @@ val concreteDeviceConfigurationTypes: List<KClass<out AnyDeviceConfiguration>> =
 val concreteDeviceRegistrationTypes: List<KClass<out DeviceRegistration>> = findConcreteTypes()
 val concreteSamplingConfigurationTypes: List<KClass<out SamplingConfiguration>> = findConcreteTypes()
 val concreteTaskConfigurationTypes: List<KClass<out TaskConfiguration<*>>> = findConcreteTypes()
-val concreteTriggerTypes: List<KClass<out Trigger<*>>> = findConcreteTypes()
+val concreteTriggerConfigurationTypes: List<KClass<out TriggerConfiguration<*>>> = findConcreteTypes()
 val concreteAccountIdentityTypes: List<KClass<out AccountIdentity>> = findConcreteTypes()

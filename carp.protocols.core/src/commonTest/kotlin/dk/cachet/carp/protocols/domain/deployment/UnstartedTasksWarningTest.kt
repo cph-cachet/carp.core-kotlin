@@ -2,7 +2,7 @@ package dk.cachet.carp.protocols.domain.deployment
 
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.domain.stop
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
@@ -58,7 +58,7 @@ class UnstartedTasksWarningTest
         with ( protocol )
         {
             addPrimaryDevice( device )
-            addTaskControl( StubTrigger( device ).start( triggeredTask, device ) )
+            addTaskControl( StubTriggerConfiguration( device ).start( triggeredTask, device ) )
             addTask( unstartedTask )
         }
 

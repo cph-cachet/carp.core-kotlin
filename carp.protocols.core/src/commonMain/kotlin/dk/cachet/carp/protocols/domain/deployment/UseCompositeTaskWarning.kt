@@ -2,7 +2,7 @@ package dk.cachet.carp.protocols.domain.deployment
 
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
-import dk.cachet.carp.common.application.triggers.Trigger
+import dk.cachet.carp.common.application.triggers.TriggerConfiguration
 import dk.cachet.carp.protocols.domain.StudyProtocol
 
 
@@ -18,7 +18,7 @@ class UseCompositeTaskWarning internal constructor() : DeploymentWarning
      * When the [trigger] is initiated, the tasks would thus be sent out simultaneously to the [targetDevice].
      */
     data class OverlappingTasks(
-        val trigger: Trigger<*>,
+        val trigger: TriggerConfiguration<*>,
         val targetDevice: AnyDeviceConfiguration,
         val tasks: List<TaskConfiguration<*>>
     )

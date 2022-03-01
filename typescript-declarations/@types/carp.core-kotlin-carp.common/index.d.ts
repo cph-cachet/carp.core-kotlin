@@ -131,13 +131,13 @@ declare module 'carp.core-kotlin-carp.common'
 
     namespace dk.cachet.carp.common.application.triggers
     {
-        abstract class Trigger
+        abstract class TriggerConfiguration
         {
             readonly requiresPrimaryDevice: Boolean
             readonly sourceDeviceRoleName: string
         }
 
-        class ElapsedTimeTrigger extends Trigger
+        class ElapsedTimeTrigger extends TriggerConfiguration
         {
             constructor( sourceDeviceRoleName: string, elapsedTime: Duration )
 
@@ -145,7 +145,7 @@ declare module 'carp.core-kotlin-carp.common'
 
         }
 
-        class ManualTrigger extends Trigger
+        class ManualTrigger extends TriggerConfiguration
         {
             constructor( sourceDeviceRoleName: string, label: string, description?: string | null )
 
@@ -153,7 +153,7 @@ declare module 'carp.core-kotlin-carp.common'
             readonly description: string | null;
         }
 
-        class ScheduledTrigger extends Trigger
+        class ScheduledTrigger extends TriggerConfiguration
         {
             constructor( sourceDeviceRoleName: string, time: TimeOfDay, recurrenceRule: RecurrenceRule )
 

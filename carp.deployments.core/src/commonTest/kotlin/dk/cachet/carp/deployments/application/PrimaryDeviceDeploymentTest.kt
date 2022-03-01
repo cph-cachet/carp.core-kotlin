@@ -10,7 +10,7 @@ import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import kotlin.test.*
 
 
@@ -94,8 +94,8 @@ class PrimaryDeviceDeploymentTest
         val connected = StubDeviceConfiguration( "Connected" )
         val connectedRegistration = connected.createRegistration()
         val task = StubTaskConfiguration()
-        val primaryTrigger = StubTrigger( device.roleName )
-        val connectedTrigger = StubTrigger( connected.roleName )
+        val primaryTrigger = StubTriggerConfiguration( device.roleName )
+        val connectedTrigger = StubTriggerConfiguration( connected.roleName )
 
         val deployment = PrimaryDeviceDeployment(
             deviceConfiguration = device,
@@ -137,7 +137,7 @@ class PrimaryDeviceDeploymentTest
         val task = StubTaskConfiguration()
         val primary2 = StubPrimaryDeviceConfiguration( "Primary 2" )
         val primary1Registration = primary1.createRegistration()
-        val primary1Trigger = StubTrigger( primary1.roleName )
+        val primary1Trigger = StubTriggerConfiguration( primary1.roleName )
 
         val deployment = PrimaryDeviceDeployment(
             deviceConfiguration = primary1,

@@ -19,7 +19,7 @@ data class ElapsedTimeTrigger private constructor(
     override val sourceDeviceRoleName: String,
     @Serializable( DurationSerializer::class )
     val elapsedTime: Duration
-) : Trigger<NoData>()
+) : TriggerConfiguration<NoData>()
 {
     @Transient
     override val requiresPrimaryDevice: Boolean = true

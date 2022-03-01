@@ -6,14 +6,14 @@ import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.CustomPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.CustomTaskConfiguration
-import dk.cachet.carp.common.infrastructure.serialization.CustomTrigger
+import dk.cachet.carp.common.infrastructure.serialization.CustomTriggerConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubSamplingConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -60,7 +60,7 @@ class StudyProtocolSnapshotTest
         assertEquals( 1, parsed.tasks.filterIsInstance<CustomTaskConfiguration>().count() )
         val allMeasures = parsed.tasks.flatMap{ t -> t.measures }
         assertEquals( 2, allMeasures.count() )
-        assertEquals( 1, parsed.triggers.filter { t -> t.value is CustomTrigger }.count() )
+        assertEquals( 1, parsed.triggers.filter { t -> t.value is CustomTriggerConfiguration }.count() )
     }
 
     @ExperimentalSerializationApi
@@ -130,7 +130,7 @@ class StudyProtocolSnapshotTest
         // (2) Add unknown task.
         val measures: List<Measure> = listOf( Measure.DataStream( STUB_DATA_TYPE ) )
         val task = StubTaskConfiguration( "Unknown task", measures )
-        val trigger = StubTrigger( primary.roleName, "Unknown" )
+        val trigger = StubTriggerConfiguration( primary.roleName, "Unknown" )
         protocol.addTaskControl( trigger.start( task, primary ) )
 
         val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()

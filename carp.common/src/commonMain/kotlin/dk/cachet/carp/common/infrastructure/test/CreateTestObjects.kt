@@ -8,7 +8,7 @@ import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.devices.PrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
-import dk.cachet.carp.common.application.triggers.Trigger
+import dk.cachet.carp.common.application.triggers.TriggerConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.COMMON_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -54,9 +54,9 @@ val STUBS_SERIAL_MODULE = SerializersModule {
     {
         subclass( StubTaskConfiguration::class )
     }
-    polymorphic( Trigger::class )
+    polymorphic( TriggerConfiguration::class )
     {
-        subclass( StubTrigger::class )
+        subclass( StubTriggerConfiguration::class )
     }
 }
 
@@ -132,12 +132,12 @@ fun String.makeUnknown(
  */
 @ExperimentalSerializationApi
 fun String.makeUnknown(
-    trigger: Trigger<*>,
+    trigger: TriggerConfiguration<*>,
     key: String,
     value: String,
-    unknownTypeName: String = "com.unknown.UnknownTrigger"
+    unknownTypeName: String = "com.unknown.UnknownTriggerConfiguration"
 ): String =
-    this.makeUnknown( trigger, Trigger::class, key, value, unknownTypeName )
+    this.makeUnknown( trigger, TriggerConfiguration::class, key, value, unknownTypeName )
 
 @ExperimentalSerializationApi
 private fun <T : Any> String.makeUnknown(

@@ -18,7 +18,7 @@ import kotlinx.serialization.Transient
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
-abstract class Trigger<TData : Data>
+abstract class TriggerConfiguration<TData : Data>
 {
     /**
      * Determines whether the trigger needs to be evaluated on a primary device ([PrimaryDeviceConfiguration]).
