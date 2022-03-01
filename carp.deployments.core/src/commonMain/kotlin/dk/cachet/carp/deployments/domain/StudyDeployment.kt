@@ -225,7 +225,7 @@ class StudyDeployment private constructor(
     {
         val devices: Map<RegistrableDevice, DeviceDeploymentStatus> =
             _registrableDevices.associateWith { getDeviceStatus( it.device ) }
-        val participantsStatus = participants.toList()
+        val participantList = participants.toList()
         val allRequiredDevicesDeployed: Boolean = devices
             .filter { it.key.requiresDeployment }
             .all { it.value is DeviceDeploymentStatus.Deployed } &&
@@ -233,12 +233,12 @@ class StudyDeployment private constructor(
                 devices.any { it.value is DeviceDeploymentStatus.Deployed }
         val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
-        val devicesStatus = devices.values.toList()
+        val deviceList = devices.values.toList()
         return when {
-            isStopped -> StudyDeploymentStatus.Stopped( createdOn, id, devicesStatus, participantsStatus, startedOn, stoppedOn!! )
-            allRequiredDevicesDeployed -> StudyDeploymentStatus.Running( createdOn, id, devicesStatus, participantsStatus, startedOn!! )
-            anyRegistration -> StudyDeploymentStatus.DeployingDevices( createdOn, id, devicesStatus, participantsStatus, startedOn )
-            else -> StudyDeploymentStatus.Invited( createdOn, id, devicesStatus, participantsStatus, startedOn )
+            isStopped -> StudyDeploymentStatus.Stopped( createdOn, id, deviceList, participantList, startedOn, stoppedOn!! )
+            allRequiredDevicesDeployed -> StudyDeploymentStatus.Running( createdOn, id, deviceList, participantList, startedOn!! )
+            anyRegistration -> StudyDeploymentStatus.DeployingDevices( createdOn, id, deviceList, participantList, startedOn )
+            else -> StudyDeploymentStatus.Invited( createdOn, id, deviceList, participantList, startedOn )
         }
     }
 

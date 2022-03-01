@@ -104,8 +104,8 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         {
             readonly createdOn: Instant
             readonly studyDeploymentId: UUID
-            readonly devicesStatus: ArrayList<DeviceDeploymentStatus>
-            readonly participantsStatus: ArrayList<ParticipantStatus>
+            readonly deviceStatusList: ArrayList<DeviceDeploymentStatus>
+            readonly participantStatusList: ArrayList<ParticipantStatus>
             readonly startedOn: Instant | null
 
             static get Companion(): StudyDeploymentStatus$Companion
@@ -116,19 +116,19 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         {
             class Invited extends StudyDeploymentStatus
             {
-                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, participantsStatus: ArrayList<ParticipantStatus>, startedOn: Instant | null )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, deviceStatusList: ArrayList<DeviceDeploymentStatus>, participantStatusList: ArrayList<ParticipantStatus>, startedOn: Instant | null )
             }
             class DeployingDevices extends StudyDeploymentStatus
             {
-                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, participantsStatus: ArrayList<ParticipantStatus>, startedOn: Instant | null  )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, deviceStatusList: ArrayList<DeviceDeploymentStatus>, participantStatusList: ArrayList<ParticipantStatus>, startedOn: Instant | null  )
             }
             class Running extends StudyDeploymentStatus
             {
-                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, participantsStatus: ArrayList<ParticipantStatus>, startedOn: Instant )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, deviceStatusList: ArrayList<DeviceDeploymentStatus>, participantStatusList: ArrayList<ParticipantStatus>, startedOn: Instant )
             }
             class Stopped extends StudyDeploymentStatus
             {
-                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, participantsStatus: ArrayList<ParticipantStatus>, startedOn: Instant | null, stoppedOn: Instant  )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, deviceStatusList: ArrayList<DeviceDeploymentStatus>, participantStatusList: ArrayList<ParticipantStatus>, startedOn: Instant | null, stoppedOn: Instant  )
 
                 readonly stoppedOn: Instant
             }

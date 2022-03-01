@@ -146,13 +146,13 @@ class RecruitmentServiceHost(
     {
         val recruitment: Recruitment = getRecruitmentOrThrow( studyId )
 
-        // Get study deployment statuses.
+        // Get study deployment status list.
         val studyDeploymentIds = recruitment.participantGroups.keys
-        val studyDeploymentStatuses: List<StudyDeploymentStatus> =
+        val studyDeploymentStatusList: List<StudyDeploymentStatus> =
             if ( studyDeploymentIds.isEmpty() ) emptyList()
             else deploymentService.getStudyDeploymentStatusList( studyDeploymentIds )
 
-        return studyDeploymentStatuses.map { recruitment.getParticipantGroupStatus( it ) }
+        return studyDeploymentStatusList.map { recruitment.getParticipantGroupStatus( it ) }
     }
 
     /**

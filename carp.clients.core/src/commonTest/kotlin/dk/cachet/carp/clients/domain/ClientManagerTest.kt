@@ -42,7 +42,7 @@ class ClientManagerTest
         val client = initializeSmartphoneClient( deploymentService )
 
         val status = client.addStudy( deploymentStatus.studyDeploymentId, smartphone.roleName )
-        assertEquals( status, client.getStudiesStatus().singleOrNull() )
+        assertEquals( status, client.getStudyStatusList().singleOrNull() )
     }
 
     @Test
@@ -165,7 +165,7 @@ class ClientManagerTest
     }
 
     @Test
-    fun getStudiesStatus_returns_latest_status() = runSuspendTest {
+    fun getStudyStatusList_returns_latest_status() = runSuspendTest {
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val client = initializeSmartphoneClient( deploymentService )
         val deploymentId = deploymentStatus.studyDeploymentId
@@ -176,11 +176,11 @@ class ClientManagerTest
         deploymentService.registerDevice( deploymentId, deviceSmartphoneDependsOn.roleName, dependentRegistration )
         status = client.tryDeployment( status.id )
         check( status is StudyStatus.AwaitingOtherDeviceDeployments )
-        assertEquals( status, client.getStudiesStatus().first() )
+        assertEquals( status, client.getStudyStatusList().first() )
 
         // Stop client.
         status = client.stopStudy( status.id )
-        assertEquals( status, client.getStudiesStatus().first() )
+        assertEquals( status, client.getStudyStatusList().first() )
     }
 
     @Test

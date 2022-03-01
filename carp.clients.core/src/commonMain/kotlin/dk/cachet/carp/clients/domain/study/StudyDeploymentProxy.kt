@@ -53,7 +53,7 @@ class StudyDeploymentProxy(
         val device = deviceStatus.device
         val deployment = deploymentService.getDeviceDeploymentFor( studyDeploymentId, device.roleName )
         check( deployment.deviceConfiguration == device )
-        val remainingDevicesToRegister = studyStatus.devicesStatus
+        val remainingDevicesToRegister = studyStatus.deviceStatusList
             .map { it.device }
             .filter { it.roleName in deviceStatus.remainingDevicesToRegisterBeforeDeployment }
             .toSet()

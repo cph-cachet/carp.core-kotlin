@@ -418,7 +418,7 @@ class StudyDeploymentTest
         val status = deployment.getStatus()
         assertEquals(
             listOf( ParticipantStatus( invitation.participantId, invitation.assignedPrimaryDeviceRoleNames ) ),
-            status.participantsStatus
+            status.participantStatusList
         )
     }
 
@@ -433,9 +433,9 @@ class StudyDeploymentTest
         // Start of deployment, no devices registered.
         val status: StudyDeploymentStatus = deployment.getStatus()
         assertEquals( deployment.id, status.studyDeploymentId )
-        assertEquals( 2, status.devicesStatus.count() )
-        assertTrue { status.devicesStatus.any { it.device == primary } }
-        assertTrue { status.devicesStatus.any { it.device == connected } }
+        assertEquals( 2, status.deviceStatusList.count() )
+        assertTrue { status.deviceStatusList.any { it.device == primary } }
+        assertTrue { status.deviceStatusList.any { it.device == connected } }
         assertTrue( status is StudyDeploymentStatus.Invited )
         val toRegister = status.getRemainingDevicesToRegister()
         val expectedToRegister = setOf<AnyDeviceConfiguration>( primary, connected )
