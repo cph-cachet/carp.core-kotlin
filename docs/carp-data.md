@@ -10,7 +10,7 @@ When combined with the original study protocol, the full provenance of the data 
 
 Data streams are made up out of [`DataStreamPoint`](../carp.data.core/src/commonMain/kotlin/dk/cachet/carp/data/application/DataStreamPoint.kt)'s.
 Multiple _subsequent_ `DataStreamPoint`'s can be stored as [`DataStreamSequence`](../carp.data.core/src/commonMain/kotlin/dk/cachet/carp/data/application/DataStreamSequence.kt),
-which all share the same [`SyncPoint`](../carp.data.core/src/commonMain/kotlin/dk/cachet/carp/data/application/SyncPoint.kt) and reference to `Trigger`s which requested the data to be collected.
+which all share the same [`SyncPoint`](../carp.data.core/src/commonMain/kotlin/dk/cachet/carp/data/application/SyncPoint.kt) and reference to `TriggerConfiguration`s which requested the data to be collected.
 To aggregate multiple `DataStreamSequence`'s of one or more data streams, e.g., to prepare for data upload, [`DataStreamBatch`](../carp.data.core/src/commonMain/kotlin/dk/cachet/carp/data/application/DataStreamBatch.kt) can be used.
 
 ![Data stream object model](https://i.imgur.com/6dnuynT.png)

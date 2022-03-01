@@ -44,7 +44,7 @@ Example: [`AltBeacon`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/commo
 - Extend `TaskConfiguration` to provide custom logic on how to schedule the containing `Measure`s, or if you need to trigger custom tasks unrelated to the study protocol in your client application.
 - Specify new `DataType`s by extending from `Data`, and optionally extend from `DataTypeSamplingScheme` and `SamplingConfiguration` to specify a custom configuration on _how_ your new data type can be measured on a specific device.
 Example: [`Geolocation`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Geolocation.kt) and [`IntervalSampling`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/IntervalSampling.kt).
-- Extend `Trigger` to describe custom conditions which you want to use to trigger tasks.
+- Extend `TriggerConfiguration` to describe custom conditions which you want to use to trigger tasks.
 
 All extending classes (except `DataTypeSamplingScheme`) should be **immutable data classes**.
 The domain objects using them expect them to remain unchanged (they are [DDD value objects](https://deviq.com/value-object/)).
