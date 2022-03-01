@@ -19,7 +19,7 @@
     "triggers": {
       "type": "object",
       "propertyNames": { "pattern": "^\\d$" },
-      "additionalProperties": { "$ref": "../common/triggers/Trigger.json" }
+      "additionalProperties": { "$ref": "../common/triggers/TriggerConfiguration.json" }
     },
     "taskControls": {
       "type": "array",

@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlin.test.*
@@ -20,7 +20,7 @@ class UseCompositeTaskWarningTest
     {
         val protocol = createEmptyProtocol()
         val device = StubPrimaryDeviceConfiguration()
-        val trigger = StubTrigger( device )
+        val trigger = StubTriggerConfiguration( device )
         with ( protocol )
         {
             addPrimaryDevice( device )
@@ -43,10 +43,10 @@ class UseCompositeTaskWarningTest
         {
             addPrimaryDevice( device1 )
             addConnectedDevice( device2, device1 )
-            val trigger1 = StubTrigger( device1 )
+            val trigger1 = StubTriggerConfiguration( device1 )
             addTaskControl( trigger1.start( task, device1 ) )
             addTaskControl( trigger1.start( task, device2 ) )
-            addTaskControl( StubTrigger( device2 ).start( task, device1 ) )
+            addTaskControl( StubTriggerConfiguration( device2 ).start( task, device1 ) )
         }
 
         val warning = UseCompositeTaskWarning()
@@ -58,7 +58,7 @@ class UseCompositeTaskWarningTest
     {
         val protocol = createEmptyProtocol()
         val device = StubPrimaryDeviceConfiguration()
-        val trigger = StubTrigger( device )
+        val trigger = StubTriggerConfiguration( device )
         val task1 = StubTaskConfiguration( "Task 1" )
         val task2 = StubTaskConfiguration( "Task 2" )
         with ( protocol )

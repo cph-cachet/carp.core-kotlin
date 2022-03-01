@@ -61,7 +61,7 @@ describe( "carp.common", () => {
             [ "TaskConfiguration", new WebTask( "name", undefined, "", "url.com" ) ],
             new WebTask( "name", undefined, "", "url.com" ),
             WebTask.Companion,
-            [ "Trigger", new ElapsedTimeTrigger( "device", Duration.Companion.INFINITE ) ],
+            [ "TriggerConfiguration", new ElapsedTimeTrigger( "device", Duration.Companion.INFINITE ) ],
             new ElapsedTimeTrigger( "device", Duration.Companion.INFINITE ),
             new ManualTrigger( "device", "manual", "" ),
             new ScheduledTrigger(

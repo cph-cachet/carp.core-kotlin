@@ -19,7 +19,7 @@ import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
@@ -615,7 +615,7 @@ class StudyDeploymentTest
         }
         val measure = Measure.DataStream( DataType( "namespace", "type" ) )
         val task = StubTaskConfiguration( "Stub task", listOf( measure ) )
-        protocol.addTaskControl( StubTrigger( sourcePrimary ).start( task, targetPrimary ) )
+        protocol.addTaskControl( StubTriggerConfiguration( sourcePrimary ).start( task, targetPrimary ) )
         val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( sourcePrimary, DefaultDeviceRegistration() )
         deployment.registerDevice( targetPrimary, DefaultDeviceRegistration() )

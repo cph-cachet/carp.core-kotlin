@@ -60,7 +60,7 @@ These extend from [BatteryAwareSampling](../carp.common/src/commonMain/kotlin/dk
 | [IntervalSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/IntervalSampling.kt) | | Specify a time interval in between subsequent measurements. |
 | [NoOptionsSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/NoOptionsSampling.kt) | | Does not allow any sampling configuration. |
 
-## Tasks
+## Task configurations
 
 | Class | Description |
 | --- | --- |
@@ -68,7 +68,7 @@ These extend from [BatteryAwareSampling](../carp.common/src/commonMain/kotlin/dk
 | [CustomProtocolTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/CustomProtocolTask.kt) | Contains a definition on how to run tasks, measures, and triggers which differs from the CARP domain model. |
 | [WebTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/WebTask.kt) | Redirects to a web page which contains the task which needs to be performed. |
 
-## Triggers
+## Trigger configurations
 
 | Class | Description |
 | --- | --- |

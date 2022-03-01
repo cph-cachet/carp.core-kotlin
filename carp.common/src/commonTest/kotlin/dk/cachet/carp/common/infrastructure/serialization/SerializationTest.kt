@@ -33,7 +33,7 @@ val unknownInstances = listOf(
     unknown( DefaultDeviceRegistration() ) { CustomDeviceRegistration( it.first, it.second, it.third ) },
     unknown( StubSamplingConfiguration( "" ) ) { CustomSamplingConfiguration( it.first, it.second, it.third ) },
     unknown( StubTaskConfiguration() ) { CustomTaskConfiguration( it.first, it.second, it.third ) },
-    unknown( StubTrigger( "source" ) ) { CustomTrigger( it.first, it.second, it.third ) },
+    unknown( StubTriggerConfiguration( "source" ) ) { CustomTriggerConfiguration( it.first, it.second, it.third ) },
 )
 
 /**

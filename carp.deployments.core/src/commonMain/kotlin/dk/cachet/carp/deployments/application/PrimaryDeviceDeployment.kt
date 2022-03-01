@@ -8,7 +8,7 @@ import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl
-import dk.cachet.carp.common.application.triggers.Trigger
+import dk.cachet.carp.common.application.triggers.TriggerConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -43,7 +43,7 @@ data class PrimaryDeviceDeployment(
     /**
      * All triggers originating from this device and connected devices, stored per assigned id unique within the study protocol.
      */
-    val triggers: Map<Int, Trigger<*>> = emptyMap(),
+    val triggers: Map<Int, TriggerConfiguration<*>> = emptyMap(),
     /**
      * Determines which tasks need to be started or stopped when the conditions defined by [triggers] are met.
      */

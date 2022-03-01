@@ -7,7 +7,7 @@ Essentially, this subsystem has no technical dependencies on any particular sens
 
 To configure a `StudyProtocol`, the following domain objects and [common CARP types](carp-common.md) are involved:
 
-![Protocols Domain Objects](https://i.imgur.com/ZXvzWru.png)
+![Protocols Domain Objects](https://i.imgur.com/KWIDXf7.png)
 
 - [`StudyProtocol`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/StudyProtocol.kt):
 A description of how a study is to be executed, defining the 'primary' devices responsible for aggregating data, the optional devices connected to them, and the `Trigger`s which lead to data collection on said devices.
@@ -22,10 +22,10 @@ Describes requested `Measure`s and/or output to be presented on a device.
 Defines data that needs to be measured/collected passively for a supported `DataType`.
 - [`DataType`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/DataType.kt):
 Defines a type of data which can be processed by the platform (e.g., measured/collected/uploaded).
-- [`Trigger`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/triggers/Trigger.kt):
+- [`TriggerConfiguration`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/triggers/TriggerConfiguration.kt):
 Any condition on a device which starts or stops tasks at certain points in time when the condition applies.
 The condition can either be time-bound, based on incoming data, initiated by a user of the platform, or a combination of these.
-- [`TriggeredTask`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/TriggeredTask.kt):
+- [`TaskControl`](../carp.protocols.core/src/commonMain/kotlin/dk/cachet/carp/protocols/domain/TaskControl.kt):
 Specifies a task which at some point during a `StudyProtocol` gets sent to a specific device.
 This allows modeling triggers which trigger multiple tasks targeting multiple devices.
 - [`SamplingConfiguration`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/SamplingConfiguration.kt):
@@ -44,7 +44,7 @@ Example: [`AltBeacon`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/commo
 - Extend `TaskConfiguration` to provide custom logic on how to schedule the containing `Measure`s, or if you need to trigger custom tasks unrelated to the study protocol in your client application.
 - Specify new `DataType`s by extending from `Data`, and optionally extend from `DataTypeSamplingScheme` and `SamplingConfiguration` to specify a custom configuration on _how_ your new data type can be measured on a specific device.
 Example: [`Geolocation`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Geolocation.kt) and [`IntervalSampling`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/IntervalSampling.kt).
-- Extend `Trigger` to describe custom conditions which you want to use to trigger tasks.
+- Extend `TriggerConfiguration` to describe custom conditions which you want to use to trigger tasks.
 
 All extending classes (except `DataTypeSamplingScheme`) should be **immutable data classes**.
 The domain objects using them expect them to remain unchanged (they are [DDD value objects](https://deviq.com/value-object/)).

@@ -6,7 +6,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
-import dk.cachet.carp.common.application.triggers.Trigger
+import dk.cachet.carp.common.application.triggers.TriggerConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl.Control as Control
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.DomainEvent
@@ -22,7 +22,7 @@ import kotlinx.datetime.Instant
 
 /**
  * A description of how a study is to be executed, defining the type(s) of primary device(s) ([AnyPrimaryDeviceConfiguration]) responsible for aggregating data,
- * the optional devices ([AnyDeviceConfiguration]) connected to them, and the [Trigger]'s which lead to data collection on said devices.
+ * the optional devices ([AnyDeviceConfiguration]) connected to them, and the [TriggerConfiguration]'s which lead to data collection on said devices.
  */
 @Suppress( "TooManyFunctions" ) // TODO: some of the device and task configuration methods are overridden solely to add events. Can this be refactored?
 class StudyProtocol(
@@ -57,7 +57,7 @@ class StudyProtocol(
             val connected: AnyDeviceConfiguration,
             val primary: AnyPrimaryDeviceConfiguration
         ) : Event()
-        data class TriggerAdded( val trigger: Trigger<*> ) : Event()
+        data class TriggerAdded( val trigger: TriggerConfiguration<*> ) : Event()
         data class TaskAdded( val task: TaskConfiguration<*> ) : Event()
         data class TaskRemoved( val task: TaskConfiguration<*> ) : Event()
         data class TaskControlAdded( val control: TaskControl ) : Event()
@@ -189,7 +189,7 @@ class StudyProtocol(
      * Set of triggers in the exact sequence by which they were added to the protocol.
      * A `LinkedHashSet` is used to guarantee this order is maintained, allowing to use the index as ID.
      */
-    private val _triggers: LinkedHashSet<Trigger<*>> = LinkedHashSet()
+    private val _triggers: LinkedHashSet<TriggerConfiguration<*>> = LinkedHashSet()
 
     /**
      * The list of triggers with assigned IDs which can start or stop tasks in this study protocol.
@@ -200,7 +200,7 @@ class StudyProtocol(
     /**
      * Stores which tasks need to be started or stopped when the conditions defined by [triggers] are met.
      */
-    private val triggerControls: MutableMap<Trigger<*>, MutableSet<TaskControl>> = mutableMapOf()
+    private val triggerControls: MutableMap<TriggerConfiguration<*>, MutableSet<TaskControl>> = mutableMapOf()
 
     /**
      * Add a [trigger] to this protocol.
@@ -210,7 +210,7 @@ class StudyProtocol(
      *   - [trigger] requires a primary device and the specified source device is not a primary device
      * @return The [trigger] and its newly assigned ID, or previously assigned ID in case the trigger is already included in this protocol.
      */
-    fun addTrigger( trigger: Trigger<*> ): TriggerWithId
+    fun addTrigger( trigger: TriggerConfiguration<*> ): TriggerWithId
     {
         val device: AnyDeviceConfiguration = deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
             ?: throw IllegalArgumentException( "The passed trigger does not belong to any device specified in this study protocol." )
@@ -241,7 +241,7 @@ class StudyProtocol(
      * @return True if the task control has been added; false if the same control is already present.
      */
     fun addTaskControl(
-        trigger: Trigger<*>,
+        trigger: TriggerConfiguration<*>,
         task: TaskConfiguration<*>,
         destinationDevice: AnyDeviceConfiguration,
         control: Control
@@ -280,7 +280,7 @@ class StudyProtocol(
      *
      * @throws IllegalArgumentException when [trigger] is not part of this study protocol.
      */
-    fun getTaskControls( trigger: Trigger<*> ): Iterable<TaskControl>
+    fun getTaskControls( trigger: TriggerConfiguration<*> ): Iterable<TaskControl>
     {
         require( trigger in _triggers ) { "The passed trigger is not part of this study protocol." }
 
@@ -325,7 +325,7 @@ class StudyProtocol(
 
     /**
      * Remove a [task] currently present in this configuration
-     * including removing it from any [Trigger]'s which initiate it.
+     * including removing it from any [TriggerConfiguration]'s which initiate it.
      *
      * @return True if the [task] has been removed; false if it is not included in this configuration.
      */

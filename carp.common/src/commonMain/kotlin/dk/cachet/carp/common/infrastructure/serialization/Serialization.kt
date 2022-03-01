@@ -124,14 +124,14 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 
 
     // `triggers` namespace.
-    polymorphic( Trigger::class )
+    polymorphic( TriggerConfiguration::class )
     {
         subclass( ElapsedTimeTrigger::class )
         subclass( ManualTrigger::class )
         subclass( ScheduledTrigger::class )
 
-        subclass( CustomTrigger::class )
-        default { TriggerSerializer }
+        subclass( CustomTriggerConfiguration::class )
+        default { TriggerConfigurationSerializer }
     }
 
 

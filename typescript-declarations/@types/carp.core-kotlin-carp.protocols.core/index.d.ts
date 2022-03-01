@@ -13,7 +13,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
     import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
     import TaskConfiguration = cdk.cachet.carp.common.application.tasks.TaskConfiguration
     import TaskControl = cdk.cachet.carp.common.application.triggers.TaskControl
-    import Trigger = cdk.cachet.carp.common.application.triggers.Trigger
+    import TriggerConfiguration = cdk.cachet.carp.common.application.triggers.TriggerConfiguration
     import ApplicationServiceRequest = cdk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
     import ApiVersion = cdk.cachet.carp.common.application.services.ApiVersion
 
@@ -46,7 +46,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             readonly description: string
             readonly primaryDevices: HashSet<DeviceConfiguration>
             readonly tasks: HashSet<TaskConfiguration>
-            readonly triggers: HashMap<Number, Trigger>
+            readonly triggers: HashMap<Number, TriggerConfiguration>
             readonly taskControls: Set<TaskControl>
             readonly expectedParticipantData: HashSet<ParticipantAttribute>
         }
