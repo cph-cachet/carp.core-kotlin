@@ -13,11 +13,11 @@
         "__type": true,
         "createdOn": { "type": "string", "format": "date-time" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
-        "devicesStatus": {
+        "deviceStatusList": {
           "type": "array",
           "items": { "$ref": "DeviceDeploymentStatus.json" }
         },
-        "participantsStatus": {
+        "participantStatusList": {
           "type": "array",
           "items": { "$ref": "users/ParticipantStatus.json" }
         },
@@ -28,7 +28,7 @@
           ]
         }
       },
-      "required": [ "__type", "createdOn", "studyDeploymentId", "devicesStatus", "participantsStatus", "startedOn" ]
+      "required": [ "__type", "createdOn", "studyDeploymentId", "deviceStatusList", "participantStatusList", "startedOn" ]
     },
     "Invited": {
       "$anchor": "Invited",

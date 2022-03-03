@@ -91,7 +91,7 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
     suspend fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus
 
     /**
-     * Get the statuses for a set of deployments with the specified [studyDeploymentIds].
+     * Get the status for a set of deployments with the specified [studyDeploymentIds].
      *
      * @throws IllegalArgumentException when [studyDeploymentIds] contains an ID for which no deployment exists.
      */

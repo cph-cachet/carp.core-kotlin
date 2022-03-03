@@ -175,7 +175,7 @@ private val phoneRegistration = phone.createRegistration {
     deviceId = UUID( "fc7b41b0-e9e2-4b5d-8c3d-5119b556a3f0" ).toString()
 }.setRegistrationCreatedOn( Instant.fromEpochSeconds( 1642514110 ) )
 private val bikeBeaconStatus = DeviceDeploymentStatus.Registered( bikeBeacon, false, emptySet(), emptySet() )
-private val participantsStatus = listOf( ParticipantStatus( participantId, setOf( phone.roleName ) ) )
+private val participantStatusList = listOf( ParticipantStatus( participantId, setOf( phone.roleName ) ) )
 private val invitedDeploymentStatus = StudyDeploymentStatus.Invited(
     deploymentCreatedOn,
     deploymentId,
@@ -183,7 +183,7 @@ private val invitedDeploymentStatus = StudyDeploymentStatus.Invited(
         DeviceDeploymentStatus.Unregistered( phone, true, setOf( phone.roleName ), emptySet() ),
         bikeBeaconStatus
     ),
-    participantsStatus,
+    participantStatusList,
     null
 )
 private val runningDeploymentStatus = StudyDeploymentStatus.Running(
@@ -193,7 +193,7 @@ private val runningDeploymentStatus = StudyDeploymentStatus.Running(
         DeviceDeploymentStatus.Deployed( phone ),
         bikeBeaconStatus
     ),
-    participantsStatus,
+    participantStatusList,
     Instant.fromEpochSeconds( 1642504500 )
 )
 private val stoppedDeploymentStatus = StudyDeploymentStatus.Stopped(
@@ -203,7 +203,7 @@ private val stoppedDeploymentStatus = StudyDeploymentStatus.Stopped(
         DeviceDeploymentStatus.Deployed( phone ),
         bikeBeaconStatus
     ),
-    participantsStatus,
+    participantStatusList,
     runningDeploymentStatus.startedOn,
     Instant.fromEpochSeconds( 1642506000 )
 )
@@ -392,7 +392,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
                 DeviceDeploymentStatus.Registered( phone, true, emptySet(), emptySet() ),
                 bikeBeaconStatus
             ),
-            participantsStatus,
+            participantStatusList,
             null
         )
     ),

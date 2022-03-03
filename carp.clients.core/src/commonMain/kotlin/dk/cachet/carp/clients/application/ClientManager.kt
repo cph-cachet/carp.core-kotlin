@@ -66,7 +66,7 @@ abstract class ClientManager<
     /**
      * Get the status for the studies which run on this client device.
      */
-    suspend fun getStudiesStatus(): List<StudyStatus> = repository.getStudyList().map { it.getStatus() }
+    suspend fun getStudyStatusList(): List<StudyStatus> = repository.getStudyList().map { it.getStatus() }
 
     /**
      * Add a study which needs to be executed on this client. No deployment is attempted yet.
