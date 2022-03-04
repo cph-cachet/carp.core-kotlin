@@ -86,6 +86,13 @@ sealed class StudyServiceRequest<out TReturn> : ApplicationServiceRequest<StudyS
     }
 
     @Serializable
+    data class RemoveProtocol( val studyId: UUID ) : StudyServiceRequest<StudyStatus>()
+    {
+        override fun getResponseSerializer() = serializer<StudyStatus>()
+        override suspend fun invokeOn( service: StudyService ) = service.removeProtocol( studyId )
+    }
+
+    @Serializable
     data class GoLive( val studyId: UUID ) : StudyServiceRequest<StudyStatus>()
     {
         override fun getResponseSerializer() = serializer<StudyStatus>()

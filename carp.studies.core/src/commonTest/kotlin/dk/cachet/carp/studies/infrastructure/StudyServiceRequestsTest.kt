@@ -29,6 +29,7 @@ class StudyServiceRequestsTest : ApplicationServiceRequestsTest<StudyService, St
             StudyServiceRequest.GetStudiesOverview( UUID.randomUUID() ),
             StudyServiceRequest.SetInvitation( studyId, StudyInvitation( "Some study" ) ),
             StudyServiceRequest.SetProtocol( studyId, StudyProtocol( UUID.randomUUID(), "Test" ).getSnapshot() ),
+            StudyServiceRequest.RemoveProtocol( studyId ),
             StudyServiceRequest.GoLive( studyId ),
             StudyServiceRequest.Remove( studyId )
         )

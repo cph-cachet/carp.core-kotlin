@@ -193,7 +193,27 @@ interface StudyServiceTest
     }
 
     @Test
-    fun setInvitation_and_setProtocol_fails_after_study_gone_live() = runSuspendTest {
+    fun removeProtocol_succeeds() = runSuspendTest {
+        val service = createService()
+        val status = service.createStudy( UUID.randomUUID(), "Test" )
+        val studyId = status.studyId
+        service.setProtocol( studyId, createDeployableProtocol() )
+
+        val removedStatus = service.removeProtocol( studyId )
+        assertTrue( removedStatus is StudyStatus.Configuring )
+        val details = service.getStudyDetails( studyId )
+        assertNull( details.protocolSnapshot )
+    }
+
+    @Test
+    fun removeProtocol_fails_for_unknown_studyId() = runSuspendTest {
+        val service = createService()
+
+        assertFailsWith<IllegalArgumentException> { service.removeProtocol( unknownId ) }
+    }
+
+    @Test
+    fun setInvitation_and_changes_to_protocol_fail_after_study_gone_live() = runSuspendTest {
         val service = createService()
         var status = service.createStudy( UUID.randomUUID(), "Test" )
 
@@ -208,6 +228,7 @@ interface StudyServiceTest
             service.setInvitation( status.studyId, StudyInvitation( "Some study" ) )
         }
         assertFailsWith<IllegalStateException> { service.setProtocol( status.studyId, protocol ) }
+        assertFailsWith<IllegalStateException> { service.removeProtocol( status.studyId ) }
     }
 
     @Test

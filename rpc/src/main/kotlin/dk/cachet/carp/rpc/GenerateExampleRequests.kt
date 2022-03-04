@@ -323,6 +323,10 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
         request = StudyServiceRequest.SetProtocol( studyId, phoneProtocol ),
         response = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, true, true, false, true )
     ),
+    StudyService::removeProtocol to example(
+        request = StudyServiceRequest.RemoveProtocol( studyId ),
+        response = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, true, true, false, false )
+    ),
     StudyService::goLive to example(
         request = StudyServiceRequest.GoLive( studyId ),
         response = studyLiveStatus

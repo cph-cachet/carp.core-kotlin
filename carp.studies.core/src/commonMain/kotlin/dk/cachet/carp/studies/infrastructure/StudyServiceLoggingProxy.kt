@@ -57,6 +57,9 @@ class StudyServiceLoggingProxy(
     override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus =
         log( StudyServiceRequest.SetProtocol( studyId, protocol ) )
 
+    override suspend fun removeProtocol( studyId: UUID ): StudyStatus =
+        log( StudyServiceRequest.RemoveProtocol( studyId ) )
+
     override suspend fun goLive( studyId: UUID ): StudyStatus =
         log( StudyServiceRequest.GoLive( studyId ) )
 
