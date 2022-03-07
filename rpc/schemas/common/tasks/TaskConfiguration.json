@@ -17,6 +17,7 @@
   ],
   "$defs": {
     "TaskConfiguration": {
+      "$anchor": "TaskConfiguration",
       "type": "object",
       "properties": {
         "__type": true,

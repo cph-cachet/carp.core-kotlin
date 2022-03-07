@@ -17,6 +17,7 @@
   ],
   "$defs": {
     "TriggerConfiguration": {
+      "$anchor": "TriggerConfiguration",
       "type": "object",
       "properties": {
         "__type": true,
