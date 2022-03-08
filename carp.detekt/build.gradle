@@ -1,9 +1,5 @@
 group = 'dk.cachet.carp.detekt'
 
-repositories {
-    mavenCentral()
-}
-
 apply {
     plugin("kotlin")
 }

@@ -1,9 +1,5 @@
 group 'rpc'
 
-repositories {
-    mavenCentral()
-}
-
 apply {
     plugin("kotlin")
 }
