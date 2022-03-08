@@ -27,6 +27,7 @@ data class BLESerialNumberDeviceRegistration(
 }
 
 
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( with = NotSerializable::class )
 class BLESerialNumberDeviceRegistrationBuilder : DeviceRegistrationBuilder<BLESerialNumberDeviceRegistration>()
 {

@@ -24,6 +24,7 @@ data class DefaultDeviceRegistration(
  * A default device registration builder which solely involves assigning a display name and unique ID to the device.
  * By default, a unique ID (UUID) is generated.
  */
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( with = NotSerializable::class )
 class DefaultDeviceRegistrationBuilder : DeviceRegistrationBuilder<DefaultDeviceRegistration>()
 {

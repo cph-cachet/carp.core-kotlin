@@ -9,6 +9,7 @@ import kotlinx.serialization.json.Json
 /**
  * A wrapper used to load extending types from [SamplingConfiguration] serialized as JSON which are unknown at runtime.
  */
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( SamplingConfigurationSerializer::class )
 data class CustomSamplingConfiguration(
     override val className: String,

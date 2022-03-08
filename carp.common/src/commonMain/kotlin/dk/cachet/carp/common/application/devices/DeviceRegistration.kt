@@ -49,6 +49,7 @@ abstract class DeviceRegistration
  * TODO: This and extending classes are never expected to be serialized,
  *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceConfiguration].
  */
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( NotSerializable::class )
 @DeviceRegistrationBuilderDsl
 abstract class DeviceRegistrationBuilder<T : DeviceRegistration>
