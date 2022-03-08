@@ -94,7 +94,8 @@ data class AltBeaconDeviceRegistration(
 }
 
 
-@Serializable( with = NotSerializable::class )
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
+@Serializable( NotSerializable::class )
 class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>()
 {
     /**
