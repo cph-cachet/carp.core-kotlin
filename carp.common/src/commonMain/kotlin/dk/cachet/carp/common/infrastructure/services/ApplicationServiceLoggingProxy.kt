@@ -117,7 +117,7 @@ sealed interface LoggedRequest<TService : ApplicationService<TService, TEvent>, 
 /**
  * Serializer for [LoggedRequest]s of [TService].
  */
-@OptIn( InternalSerializationApi::class )
+@OptIn( ExperimentalSerializationApi::class, InternalSerializationApi::class )
 class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
     /**
      * The request serializer for [TService] which can polymorphically serialize any of its requests.
@@ -238,7 +238,6 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
         }
 
 
-    @OptIn( ExperimentalSerializationApi::class )
     private val sealedSerializer = SealedClassSerializer(
         LoggedRequest::class.simpleName!!,
         LoggedRequest::class,

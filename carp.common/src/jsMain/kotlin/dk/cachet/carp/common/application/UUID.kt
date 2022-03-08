@@ -14,7 +14,6 @@ actual class UUID actual constructor( actual val stringRepresentation: String )
 
     actual companion object : UUIDFactory
     {
-        @OptIn( ExperimentalStdlibApi::class )
         actual fun parse( uuid: String ): UUID = UUID( uuid.lowercase() )
 
         private const val base = 16

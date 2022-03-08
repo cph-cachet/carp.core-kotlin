@@ -39,7 +39,6 @@ data class MACAddress(
          *
          * TODO: It might be useful to allow even more flexible [address] entry (e.g., no/any separators, three groups with dot separator, ...).
          */
-        @OptIn( ExperimentalStdlibApi::class )
         fun parse( address: String ): MACAddress
         {
             require( address.split( ':' ).size == GROUPS || address.split( '-' ).size == GROUPS )

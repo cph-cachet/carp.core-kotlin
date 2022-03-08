@@ -280,8 +280,8 @@ configure( coreModules + commonModule ) {
             all {
                 languageSettings {
                     // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
-                    useExperimentalAnnotation("kotlin.RequiresOptIn")
-                    useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+                    optIn('kotlin.RequiresOptIn')
+                    optIn('kotlin.time.ExperimentalTime')
                 }
             }
         }
