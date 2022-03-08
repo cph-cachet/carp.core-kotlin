@@ -68,10 +68,6 @@ if (publishPropertiesFile.exists())
 configure( subprojects - devOpsModules ) {
     version = globalVersion
 
-    repositories {
-        mavenCentral()
-    }
-
     // Specify platforms and test frameworks to use.
     apply plugin: 'kotlin-multiplatform'
     apply plugin: 'kotlinx-serialization'
@@ -315,10 +311,6 @@ configure( coreModules ) {
 // Add code analysis.
 configure( rootProject )
 {
-    repositories {
-        mavenCentral()
-    }
-
     apply plugin: 'io.gitlab.arturbosch.detekt'
     detekt {
         dependencies {
