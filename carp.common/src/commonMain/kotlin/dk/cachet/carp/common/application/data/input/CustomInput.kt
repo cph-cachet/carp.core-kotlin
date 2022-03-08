@@ -34,20 +34,18 @@ data class CustomInput( val input: Any ) : Data
  * @param supportedDataTypes The input data types this serializer can serialize.
  *   A serializer should be registered for these classes.
  */
+@OptIn( ExperimentalSerializationApi::class, InternalSerializationApi::class )
 class CustomInputSerializer( vararg supportedDataTypes: KClass<*> ) : KSerializer<CustomInput>
 {
-    @InternalSerializationApi
     // TODO: Can we use the fully qualified type name to register serializers here, like kotlinx.serialization does? How?
-    val dataTypeMap: Map<String, KSerializer<out Any>> = supportedDataTypes.map { it.simpleName!! to it.serializer() }.toMap()
+    val dataTypeMap: Map<String, KSerializer<out Any>> = supportedDataTypes.associate { it.simpleName!! to it.serializer() }
 
-    @OptIn( ExperimentalSerializationApi::class, InternalSerializationApi::class )
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor( CUSTOM_INPUT_TYPE_NAME )
     {
         element<String>( "dataType" )
         element( "input", buildSerialDescriptor("$CUSTOM_INPUT_TYPE_NAME.value", SerialKind.CONTEXTUAL ) )
     }
 
-    @OptIn( ExperimentalSerializationApi::class, InternalSerializationApi::class )
     override fun deserialize( decoder: Decoder ): CustomInput =
         decoder.decodeStructure( descriptor )
         {
@@ -64,7 +62,6 @@ class CustomInputSerializer( vararg supportedDataTypes: KClass<*> ) : KSerialize
             return CustomInput( input )
         }
 
-    @OptIn( ExperimentalSerializationApi::class, InternalSerializationApi::class )
     override fun serialize( encoder: Encoder, value: CustomInput ) =
         encoder.encodeStructure( descriptor )
         {
@@ -78,7 +75,6 @@ class CustomInputSerializer( vararg supportedDataTypes: KClass<*> ) : KSerialize
             encodeSerializableElement( descriptor, 1, serializer, input )
         }
 
-    @InternalSerializationApi
     fun getRegisteredSerializer( dataType: String ): KSerializer<out Any> = dataTypeMap[ dataType ]
         ?: throw UnsupportedOperationException( "No serializer registered for custom input type: $dataType" )
 }

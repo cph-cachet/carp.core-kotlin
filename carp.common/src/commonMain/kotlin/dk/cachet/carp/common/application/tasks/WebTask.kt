@@ -24,7 +24,6 @@ data class WebTask(
 {
     companion object
     {
-        @OptIn( ExperimentalStdlibApi::class )
         private fun markup( name: String ) = name.uppercase().replace( ' ', '-' ).let { "{{$it}}" }
     }
 

@@ -78,7 +78,6 @@ fun String.makeUnknown(
 /**
  * Replace the type name of [deviceConfiguration] in this JSON string with [unknownTypeName].
  */
-@ExperimentalSerializationApi
 fun String.makeUnknown(
     deviceConfiguration: AnyDeviceConfiguration,
     unknownTypeName: String = "com.unknown.UnknownDeviceConfiguration"
@@ -88,7 +87,6 @@ fun String.makeUnknown(
 /**
  * Replace the type name of [primaryDeviceConfiguration] in this JSON string with [unknownTypeName].
  */
-@ExperimentalSerializationApi
 fun String.makeUnknown(
     primaryDeviceConfiguration: AnyPrimaryDeviceConfiguration,
     unknownTypeName: String = "com.unknown.UnknownPrimaryDeviceConfiguration"
@@ -98,7 +96,6 @@ fun String.makeUnknown(
 /**
  * Replace the type name of [registration] in this JSON string with [unknownTypeName].
  */
-@ExperimentalSerializationApi
 fun String.makeUnknown(
     registration: DeviceRegistration,
     unknownTypeName: String = "com.unknown.UnknownDeviceRegistration"
@@ -108,7 +105,6 @@ fun String.makeUnknown(
 /**
  * Replace the type name of [taskConfiguration] in this JSON string with [unknownTypeName].
  */
-@ExperimentalSerializationApi
 fun String.makeUnknown(
     taskConfiguration: TaskConfiguration<*>,
     unknownTypeName: String = "com.unknown.UnknownTaskConfiguration"
@@ -118,7 +114,6 @@ fun String.makeUnknown(
 /**
  * Replace the type name of the [samplingConfiguration] with the specified [key] set to [value] in this JSON string with [unknownTypeName].
  */
-@ExperimentalSerializationApi
 fun String.makeUnknown(
     samplingConfiguration: SamplingConfiguration,
     key: String,
@@ -130,7 +125,6 @@ fun String.makeUnknown(
 /**
  * Replace the type name of the [trigger] with the specified [key] set to [value] in this JSON string with [unknownTypeName].
  */
-@ExperimentalSerializationApi
 fun String.makeUnknown(
     trigger: TriggerConfiguration<*>,
     key: String,
@@ -139,7 +133,7 @@ fun String.makeUnknown(
 ): String =
     this.makeUnknown( trigger, TriggerConfiguration::class, key, value, unknownTypeName )
 
-@ExperimentalSerializationApi
+@OptIn( ExperimentalSerializationApi::class )
 private fun <T : Any> String.makeUnknown(
     instance: T,
     klass: KClass<T>,
