@@ -9,7 +9,7 @@ import dk.cachet.carp.common.application.sampling.*
 import dk.cachet.carp.common.application.tasks.*
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 
 typealias SmartphoneDeviceRegistration = DefaultDeviceRegistration
@@ -66,7 +66,7 @@ data class Smartphone(
          * - Only available starting from Android 3.0 (API Level 11): earlier versions don't support setting the interval as an absolute value.
          */
         val NON_GRAVITATIONAL_ACCELERATION = add(
-            IntervalSamplingScheme( CarpDataTypes.NON_GRAVITATIONAL_ACCELERATION, Duration.milliseconds( 200 ) )
+            IntervalSamplingScheme( CarpDataTypes.NON_GRAVITATIONAL_ACCELERATION, 200.milliseconds )
         )
 
         /**
@@ -80,7 +80,7 @@ data class Smartphone(
          * - Only available starting from Android 3.0 (API Level 11): earlier versions don't support setting the interval as an absolute value.
          */
         val ANGULAR_VELOCITY = add(
-            IntervalSamplingScheme( CarpDataTypes.ANGULAR_VELOCITY, Duration.milliseconds( 200 ) )
+            IntervalSamplingScheme( CarpDataTypes.ANGULAR_VELOCITY, 200.milliseconds )
         )
     }
 

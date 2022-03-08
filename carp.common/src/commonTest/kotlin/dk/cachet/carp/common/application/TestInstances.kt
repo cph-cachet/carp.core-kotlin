@@ -11,6 +11,7 @@ import dk.cachet.carp.common.application.tasks.*
 import dk.cachet.carp.common.application.triggers.*
 import dk.cachet.carp.common.application.users.*
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 
 /**
@@ -58,7 +59,7 @@ val commonInstances = listOf(
         GranularitySamplingConfiguration( Granularity.Coarse ),
     ),
     GranularitySamplingConfiguration( Granularity.Balanced ),
-    IntervalSamplingConfiguration( Duration.milliseconds( 1000 ) ),
+    IntervalSamplingConfiguration( 1000.milliseconds ),
     NoOptionsSamplingConfiguration,
 
     // `tasks` namespace.

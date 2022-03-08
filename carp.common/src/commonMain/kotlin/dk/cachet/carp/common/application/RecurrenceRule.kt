@@ -5,6 +5,7 @@ import dk.cachet.carp.common.infrastructure.serialization.createCarpStringPrimit
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.microseconds
 
 
 /**
@@ -82,7 +83,7 @@ data class RecurrenceRule(
                 when ( par.key )
                 {
                     "INTERVAL" -> interval = par.value.toInt()
-                    "UNTIL" -> until = Duration.microseconds( par.value.toLong() )
+                    "UNTIL" -> until = par.value.toLong().microseconds
                     "COUNT" -> count = par.value.toInt()
                 }
             }
