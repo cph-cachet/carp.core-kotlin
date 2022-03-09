@@ -28,8 +28,7 @@ class MapAsArraySerializer<K, V>(
 
     override fun deserialize( decoder: Decoder ): Map<K, V> = decoder
         .decodeSerializableValue( arraySerializer )
-        .map { it.key to it.value }
-        .toMap()
+        .associate { it.key to it.value }
 
     override fun serialize( encoder: Encoder, value: Map<K, V> ) = encoder
         .encodeSerializableValue(

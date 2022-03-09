@@ -36,7 +36,7 @@ class SpacingInParentheses( config: Config = Config.empty ) : Rule( config )
         super.visitPropertyAccessor( accessor )
 
         // Get accessors do not have a parameter list, so need to be validated here.
-        // They are always empty, so should not contains spaces.
+        // They are always empty, so should not contain spaces.
         if ( accessor.isGetter )
         {
             val noSpaces = accessor.text.startsWith( "get()" )

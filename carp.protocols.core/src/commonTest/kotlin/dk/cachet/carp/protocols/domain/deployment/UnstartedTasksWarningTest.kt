@@ -64,7 +64,7 @@ class UnstartedTasksWarningTest
 
         val warning = UnstartedTasksWarning()
         val unstarted = warning.getUnstartedTasks( protocol ).toList()
-        val expectedUnstarted = listOf( unstartedTask )
+        val expectedUnstarted = setOf( unstartedTask )
         assertEquals( expectedUnstarted.count(), unstarted.intersect( expectedUnstarted ).count() )
     }
 }

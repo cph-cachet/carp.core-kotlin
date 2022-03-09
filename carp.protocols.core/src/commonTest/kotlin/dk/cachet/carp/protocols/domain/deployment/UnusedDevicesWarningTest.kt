@@ -20,7 +20,7 @@ class UnusedDevicesWarningTest
 
         val warning = UnusedDevicesWarning()
         assertTrue( warning.isIssuePresent( protocol ) )
-        val expectedUnused = listOf( unusedDevice )
+        val expectedUnused = setOf( unusedDevice )
         val unused = warning.getUnusedDevices( protocol )
         assertEquals( expectedUnused.count(), unused.intersect( expectedUnused ).count() )
     }
@@ -40,7 +40,7 @@ class UnusedDevicesWarningTest
 
         val warning = UnusedDevicesWarning()
         assertTrue( warning.isIssuePresent( protocol ) )
-        val expectedUnused = listOf( unusedConnected )
+        val expectedUnused = setOf( unusedConnected )
         val unused = warning.getUnusedDevices( protocol )
         assertEquals( expectedUnused.count(), unused.intersect( expectedUnused ).count() )
     }

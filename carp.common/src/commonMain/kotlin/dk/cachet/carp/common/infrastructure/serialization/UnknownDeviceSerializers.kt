@@ -53,7 +53,7 @@ data class CustomDeviceConfiguration(
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
 
     /**
-     * For unknown types, it cannot be determined whether or not a given registration is valid.
+     * For unknown types, it cannot be determined whether a given registration is valid.
      */
     override fun isValidRegistration( registration: DeviceRegistration ) = Trilean.UNKNOWN
 }
@@ -95,7 +95,7 @@ data class CustomPrimaryDeviceConfiguration(
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
 
     /**
-     * For unknown types, it cannot be determined whether or not a given registration is valid.
+     * For unknown types, it cannot be determined whether a given registration is valid.
      */
     override fun isValidRegistration( registration: DeviceRegistration ) = Trilean.UNKNOWN
 }

@@ -16,7 +16,7 @@ val applicationServices = Reflections( "dk.cachet.carp" )
     .map { ApplicationServiceInfo( it ) }
 
 
-fun main( args: Array<String> )
+fun main()
 {
     // Create example requests for all request objects and responses of application service methods.
     val exampleRequests = applicationServices

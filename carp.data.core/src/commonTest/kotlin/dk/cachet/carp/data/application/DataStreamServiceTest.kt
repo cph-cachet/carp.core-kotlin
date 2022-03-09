@@ -135,6 +135,7 @@ interface DataStreamServiceTest
         val batch = MutableDataStreamBatch().apply {
             appendSequence( createStubSequence( 0, StubData(), StubData() ) )
         }
+        service.appendToDataStreams( stubDeploymentId, batch )
 
         service.removeDataStreams( setOf( stubDeploymentId ) )
 

@@ -7,7 +7,7 @@ import kotlin.test.*
 
 
 /**
- * Tests for serializing [Data] types in [dk.cachet.carp.common.data].
+ * Tests for serializing [Data] types in [dk.cachet.carp.common.application.data].
  */
 class DataSerializationTest
 {

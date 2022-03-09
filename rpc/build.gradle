@@ -5,8 +5,8 @@ apply {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlin}"
     implementation "org.reflections:reflections:${versions.reflections}"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serialization}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
@@ -14,7 +14,7 @@ dependencies {
     implementation "commons-io:commons-io:${versions.apacheCommons}"
 
     def generateForProjects = coreModules + commonModule
-    generateForProjects.each {implementation project(":${it.name}") }
+    generateForProjects.each { implementation project(":${it.name}") }
 
-    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation "org.jetbrains.kotlin:kotlin-test:${versions.kotlin}"
 }
