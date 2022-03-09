@@ -14,7 +14,7 @@ interface DeploymentIssue
     val description: String
 
     /**
-     * Determines whether or not this deployment issue is present in the specified [StudyProtocol].
+     * Determines whether this deployment issue is present in the specified [StudyProtocol].
      *
      * @param protocol The [StudyProtocol] to evaluate.
      */

@@ -121,7 +121,7 @@ interface StudyServiceTest
         service.createStudy( UUID.randomUUID(), "Three" )
 
         val studiesOverview = service.getStudiesOverview( ownerId )
-        val expectedStudies = listOf( studyOne, studyTwo )
+        val expectedStudies = setOf( studyOne, studyTwo )
         assertEquals( 2, studiesOverview.intersect( expectedStudies ).count() )
     }
 

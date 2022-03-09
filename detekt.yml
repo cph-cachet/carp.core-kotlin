@@ -60,7 +60,7 @@ style:
   WildcardImport:
     # TODO: Consider deactivating this. The advantages of forcing individual types to be imported are limited.
     #       Namespaces are supposed to be cohesive sets of objects, thus importing them as a group makes sense.
-    excludes: ''
+    excludes: []
     excludeImports: ['kotlin.reflect.*', 'kotlin.test.*']
 
 verify-implementation:

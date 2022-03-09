@@ -108,7 +108,7 @@ class ClientCodeSamples
         val phone = Smartphone( "Patient's phone" )
         protocol.addPrimaryDevice( phone )
 
-        // This is not in the protocols readme, but is needed for the connected device example.
+        // This is not in the "protocols" readme, but is needed for the connected device example.
         val connected = StubDeviceConfiguration( "External sensor" )
         protocol.addConnectedDevice( connected, phone )
 

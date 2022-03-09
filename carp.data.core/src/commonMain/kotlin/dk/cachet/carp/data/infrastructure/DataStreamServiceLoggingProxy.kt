@@ -13,7 +13,7 @@ import dk.cachet.carp.data.application.DataStreamsConfiguration
 
 /**
  * A proxy for a data stream [service] which notifies of incoming requests, responses, and events through [log]
- * and keeps a history of requests in [loggedRequests] and published events in [loggedEvents].
+ * and keeps a history of requests and published events in [loggedRequests].
  */
 class DataStreamServiceLoggingProxy(
     service: DataStreamService,

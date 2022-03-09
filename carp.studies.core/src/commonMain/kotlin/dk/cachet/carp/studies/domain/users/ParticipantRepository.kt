@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.UUID
 
 
 /**
- * Store [Participant] instances, linked to study IDs.
+ * Store participants, linked to study IDs.
  */
 interface ParticipantRepository
 {

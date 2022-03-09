@@ -98,7 +98,7 @@ abstract class DeviceConfiguration<
 
     /**
      * Verify whether the passed registration is known to be invalid for the given device.
-     * In case this is unknown since the the device type is not known at runtime, false is returned.
+     * In case this is unknown since the device type is not known at runtime, false is returned.
      */
     fun isDefinitelyInvalidRegistration( registration: DeviceRegistration ): Boolean
     {

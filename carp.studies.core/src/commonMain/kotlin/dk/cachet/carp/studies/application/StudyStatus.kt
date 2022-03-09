@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Describes the status of a [Study]: the number of participants, progress towards study goal, etc.
+ * Describes the status of a study: the number of participants, progress towards study goal, etc.
  */
 @Serializable
 sealed class StudyStatus

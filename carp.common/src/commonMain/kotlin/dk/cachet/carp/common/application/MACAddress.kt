@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Represents a IEEE 802 48-bit media access control address (MAC address):
+ * Represents an IEEE 802 48-bit media access control address (MAC address):
  * a unique identifier assigned to a network interface controller (NIC) for use as a network address in communications within a network segment.
  *
  * This is equivalent to the EUI-48 identifier.

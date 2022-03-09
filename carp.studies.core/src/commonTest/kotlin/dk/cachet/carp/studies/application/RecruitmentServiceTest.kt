@@ -77,10 +77,10 @@ interface RecruitmentServiceTest
         val (recruitmentService, studyService) = createService()
         val study = studyService.createStudy( UUID.randomUUID(), "Test" )
 
-        // Unknown study Id.
+        // Unknown study id.
         assertFailsWith<IllegalArgumentException> { recruitmentService.getParticipant( unknownId, unknownId ) }
 
-        // Unknown participant Id.
+        // Unknown participant id.
         assertFailsWith<IllegalArgumentException> { recruitmentService.getParticipant( study.studyId, unknownId ) }
     }
 

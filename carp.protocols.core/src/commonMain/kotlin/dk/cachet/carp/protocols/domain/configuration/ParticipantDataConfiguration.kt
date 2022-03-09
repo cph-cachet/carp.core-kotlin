@@ -8,18 +8,18 @@ import dk.cachet.carp.common.application.users.ParticipantAttribute
 
 
 /**
- * Configures data expected to be input by users, related to the expected participants in a [StudyProtocol].
+ * Configures data expected to be input by users, related to the expected participants in a study protocol.
  */
 interface ParticipantDataConfiguration
 {
     /**
-     * Data about participants in a [StudyProtocol], expected to be input by users.
+     * Data about participants in a study protocol, expected to be input by users.
      */
     val expectedParticipantData: Set<ParticipantAttribute>
 
 
     /**
-     * Add expected participant data [attribute] to be be input by users.
+     * Add expected participant data [attribute] to be input by users.
      *
      * @throws IllegalArgumentException in case a differing [attribute] with a matching input type is already added.
      * @return True if the [attribute] has been added; false in case the same [attribute] has already been added before.

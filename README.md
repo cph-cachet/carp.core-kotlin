@@ -102,7 +102,7 @@ Many changes will happen as the rest of the infrastructure is implemented.
 ## Infrastructure helpers
 
 Even though this library does not contain dependencies on concrete infrastructure, it does provide building blocks which greatly facilitate hosting the application services defined in this library as a distributed service and consuming them.
-You are not required to use these, but they remove some of the boilerplate code you would otherwise have to write.   
+You are not required to use these, but they remove boilerplate code you would otherwise have to write.   
 
 ### Serialization
 
@@ -123,8 +123,8 @@ More detailed information on how this works can be found in [the documentation o
 
 ### Request objects
 
-To help implementing remote procedure calls (RPCs), each application service has matching polymorphic serializable 'request objects'.
-For example, the deployments subsystem has a sealed class [`DeploymentServiceRequest`](carp.deployments.core/src/commonMain/kotlin/dk/cachet/carp/deployments/infrastructure/DeploymentServiceRequest.kt) and each subclass represents a request to `DeploymentService`.
+To help implement remote procedure calls (RPCs), each application service has matching polymorphic serializable 'request objects'.
+For example, the "deployments" subsystem has a sealed class [`DeploymentServiceRequest`](carp.deployments.core/src/commonMain/kotlin/dk/cachet/carp/deployments/infrastructure/DeploymentServiceRequest.kt) and each subclass represents a request to `DeploymentService`.
 Using these objects, all requests to a single application service can be handled by one endpoint using type checking.
 We recommend [using a when expression](https://kotlinlang.org/docs/reference/sealed-classes.html) so that the compiler can verify whether you have handled all requests.
 

@@ -14,7 +14,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocol
 class UseCompositeTaskWarning internal constructor() : DeploymentWarning
 {
     /**
-     * Holds [tasks] which are send by a single [trigger] to a single [targetDevice] when initiated.
+     * Holds [tasks] which are sent by a single [trigger] to a single [targetDevice] when initiated.
      * When the [trigger] is initiated, the tasks would thus be sent out simultaneously to the [targetDevice].
      */
     data class OverlappingTasks(
