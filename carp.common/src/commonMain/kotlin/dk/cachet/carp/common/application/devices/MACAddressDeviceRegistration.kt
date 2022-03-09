@@ -23,6 +23,7 @@ data class MACAddressDeviceRegistration(
 }
 
 
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( with = NotSerializable::class )
 class MACAddressDeviceRegistrationBuilder : DeviceRegistrationBuilder<MACAddressDeviceRegistration>()
 {

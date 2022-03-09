@@ -9,7 +9,7 @@ which subsequently get passed to the deployments and clients subsystem.
 `DataType`s are identified by a given _name_ within a _namespace_ and prescribe the data contained within each data point when measured.
 When a data type describes data over the course of a time interval, the time interval is stored within the header (shared by all data types) and not in data-type specific data.
 
-All of the built-in data types belong to the namespace: **dk.cachet.carp**.
+All the built-in data types belong to the namespace: **dk.cachet.carp**.
 
 | Name | Description |
 | --- | --- |

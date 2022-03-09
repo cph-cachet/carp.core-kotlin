@@ -13,7 +13,7 @@ import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.domain.within
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
@@ -22,7 +22,7 @@ class ProtocolsCodeSamples
 {
     @Test
     @Suppress( "UnusedPrivateMember", "UNUSED_VARIABLE" )
-    fun readme() = runSuspendTest {
+    fun readme() = runTest {
         // Create a new study protocol.
         val ownerId = UUID.randomUUID()
         val protocol = StudyProtocol( ownerId, "Track patient movement" )
@@ -50,7 +50,7 @@ class ProtocolsCodeSamples
     }
 
     @Test
-    fun custom_protocol() = runSuspendTest {
+    fun custom_protocol() = runTest {
         val ownerId = UUID.randomUUID()
         val protocol = StudyProtocol( ownerId, "Study for CAMS runtime" )
 
@@ -66,7 +66,7 @@ class ProtocolsCodeSamples
     }
 
     @Test
-    fun measure_trigger_data() = runSuspendTest {
+    fun measure_trigger_data() = runTest {
         val ownerId = UUID.randomUUID()
         val protocol = StudyProtocol( ownerId, "Ping every noon" )
         val phone = Smartphone( "Ping source" )

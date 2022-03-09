@@ -2,7 +2,7 @@ package dk.cachet.carp.common.application
 
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import kotlin.test.*
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 
 /**
@@ -28,7 +28,7 @@ class RecurrenceRuleTest
         val everyTwoDays = RecurrenceRule.daily( 2 )
         assertEquals( "RRULE:FREQ=DAILY;INTERVAL=2", everyTwoDays.toString() )
 
-        val endInTwoHours = RecurrenceRule.hourly( 1, RecurrenceRule.End.Until( Duration.minutes( 120 ) ) )
+        val endInTwoHours = RecurrenceRule.hourly( 1, RecurrenceRule.End.Until( 120.minutes ) )
         assertEquals( "RRULE:FREQ=HOURLY;UNTIL=7200000000", endInTwoHours.toString() )
 
         val twiceEverySecondWeek = RecurrenceRule.weekly( 2, RecurrenceRule.End.Count( 2 ) )

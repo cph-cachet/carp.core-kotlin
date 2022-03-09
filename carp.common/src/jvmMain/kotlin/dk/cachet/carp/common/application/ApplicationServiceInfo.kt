@@ -130,6 +130,7 @@ class ApplicationServiceInfo( val serviceKlass: ServiceClass )
         val (subsystem, application, service) =
             try { splitNamespace.takeLast( 3 ) }
             catch ( _: IndexOutOfBoundsException ) { throw unexpectedNamespace }
+        assert( serviceName == service )
         if ( application != "application" ) throw unexpectedNamespace
         subsystemName = subsystem
         subsystemNamespace = splitNamespace.dropLast( 2 ).joinToString( "." )

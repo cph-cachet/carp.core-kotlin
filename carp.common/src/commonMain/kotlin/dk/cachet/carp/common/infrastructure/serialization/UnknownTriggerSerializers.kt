@@ -10,6 +10,7 @@ import kotlinx.serialization.json.Json
 /**
  * A wrapper used to load extending types from [TriggerConfiguration] serialized as JSON which are unknown at runtime.
  */
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( TriggerConfigurationSerializer::class )
 data class CustomTriggerConfiguration(
     override val className: String,

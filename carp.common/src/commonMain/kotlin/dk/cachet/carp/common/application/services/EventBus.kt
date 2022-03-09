@@ -18,7 +18,7 @@ abstract class EventBus
     )
 
     /**
-     * Holds the [eventHandlers] of a subscriber and whether or not the subscriber [isActivated].
+     * Holds the [eventHandlers] of a subscriber and whether the subscriber [isActivated].
      */
     protected class SubscriberState
     {
@@ -30,7 +30,7 @@ abstract class EventBus
     private val _subscribers: MutableMap<Any, SubscriberState> = mutableMapOf()
 
     /**
-     * All currently registered subscribers, their event handlers, and whether or not they are activated.
+     * All currently registered subscribers, their event handlers, and whether they are activated.
      */
     protected val subscribers: Map<Any, SubscriberState>
         get() = _subscribers.toMap()

@@ -18,7 +18,7 @@ import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDevicePro
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -65,7 +65,7 @@ class HostsIntegrationTest
 
 
     @Test
-    fun create_study_creates_recruitment() = runSuspendTest {
+    fun create_study_creates_recruitment() = runTest {
         var studyCreated: StudyService.Event.StudyCreated? = null
         eventBus.registerHandler( StudyService::class, StudyService.Event.StudyCreated::class, this ) { studyCreated = it }
         eventBus.activateHandlers( this )
@@ -78,7 +78,7 @@ class HostsIntegrationTest
     }
 
     @Test
-    fun when_study_goes_live_recruitment_is_ready_for_deployment() = runSuspendTest {
+    fun when_study_goes_live_recruitment_is_ready_for_deployment() = runTest {
         val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
         val protocol = createSinglePrimaryDeviceProtocol( "Device" )
@@ -98,7 +98,7 @@ class HostsIntegrationTest
     }
 
     @Test
-    fun remove_study_removes_recruitment_and_deployment() = runSuspendTest {
+    fun remove_study_removes_recruitment_and_deployment() = runTest {
         val (studyId, deviceRole) = createLiveStudy()
 
         // Add participant and deploy participant group.
@@ -125,7 +125,7 @@ class HostsIntegrationTest
     }
 
     @Test
-    fun remove_study_does_not_trigger_event_when_study_does_not_exist() = runSuspendTest {
+    fun remove_study_does_not_trigger_event_when_study_does_not_exist() = runTest {
         var removedEvent: StudyService.Event.StudyRemoved? = null
         eventBus.registerHandler( StudyService::class, StudyService.Event.StudyRemoved::class, this ) { removedEvent = it }
         eventBus.activateHandlers( this )

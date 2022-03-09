@@ -42,7 +42,7 @@ class RecruitmentServiceHost(
 
             // Propagate removal of all data related to a study.
             event { removed: StudyService.Event.StudyRemoved ->
-                // Remove deployments in the deployments subsystem.
+                // Remove deployments in the "deployments" subsystem.
                 val recruitment = participantRepository.getRecruitment( removed.studyId )
                 checkNotNull( recruitment )
                 val idsToRemove = recruitment.participantGroups.keys

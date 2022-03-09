@@ -15,7 +15,7 @@ import dk.cachet.carp.deployments.application.users.ParticipantData
 
 /**
  * A proxy for a participation [service] which notifies of incoming requests and responses through [log]
- * and keeps a history of requests in [loggedRequests] and published events in [loggedEvents].
+ * and keeps a history of requests and published events in [loggedRequests].
  */
 class ParticipationServiceLoggingProxy(
     service: ParticipationService,

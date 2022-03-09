@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
@@ -74,7 +74,7 @@ class ApplicationServiceRequestTest
     }
 
     @Test
-    fun invokeOn_requests_calls_service() = runSuspendTest {
+    fun invokeOn_requests_calls_service() = runTest {
         var requestResponse: Int? = null
         val service =
             object : TestService
@@ -89,7 +89,7 @@ class ApplicationServiceRequestTest
     }
 
     @Test
-    fun invokeOn_deserialized_request_succeeds() = runSuspendTest {
+    fun invokeOn_deserialized_request_succeeds() = runTest {
         var requestResponse: Int? = null
         val service =
             object : TestService

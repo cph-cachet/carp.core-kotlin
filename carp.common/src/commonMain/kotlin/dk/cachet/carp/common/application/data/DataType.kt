@@ -12,7 +12,7 @@ typealias DataType = NamespacedId
 
 
 /**
- * Contains metadata about [type].
+ * Contains meta data about [type].
  */
 data class DataTypeMetaData(
     /**

@@ -345,7 +345,7 @@ class StudyProtocol(
     }
 
     /**
-     * Add expected participant data [attribute] to be be input by users.
+     * Add expected participant data [attribute] to be input by users.
      *
      * @throws IllegalArgumentException in case a differing [attribute] with a matching input type is already added.
      * @return True if the [attribute] has been added; false in case the same [attribute] has already been added before.

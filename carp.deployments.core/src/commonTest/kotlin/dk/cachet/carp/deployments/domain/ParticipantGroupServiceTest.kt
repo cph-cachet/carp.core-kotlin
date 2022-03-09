@@ -12,7 +12,7 @@ import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -36,7 +36,7 @@ class ParticipantGroupServiceTest
 
 
     @Test
-    fun createAndInviteParticipantGroup_has_matching_studyDeploymentId() = runSuspendTest {
+    fun createAndInviteParticipantGroup_has_matching_studyDeploymentId() = runTest {
         val createdEvent = DeploymentService.Event.StudyDeploymentCreated(
             studyDeploymentId,
             protocol.getSnapshot(),
@@ -49,7 +49,7 @@ class ParticipantGroupServiceTest
     }
 
     @Test
-    fun createAndInviteParticipantGroup_creates_new_account_for_new_identity() = runSuspendTest {
+    fun createAndInviteParticipantGroup_creates_new_account_for_new_identity() = runTest {
         val emailIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
 
         val createdEvent = DeploymentService.Event.StudyDeploymentCreated(
@@ -66,7 +66,7 @@ class ParticipantGroupServiceTest
     }
 
     @Test
-    fun createAndInviteParticipantGroup_with_multiple_participations_per_account_succeeds() = runSuspendTest {
+    fun createAndInviteParticipantGroup_with_multiple_participations_per_account_succeeds() = runTest {
         val device1Role = "Primary 1"
         val device2Role = "Primary 2"
         val protocol = createEmptyProtocol().apply {
@@ -89,7 +89,7 @@ class ParticipantGroupServiceTest
     }
 
     @Test
-    fun createAndInviteParticipantGroup_fails_for_unknown_deviceRoleNames() = runSuspendTest {
+    fun createAndInviteParticipantGroup_fails_for_unknown_deviceRoleNames() = runTest {
         val errorneousInvitation = ParticipantInvitation(
             UUID.randomUUID(),
             setOf( "Wrong device" ),

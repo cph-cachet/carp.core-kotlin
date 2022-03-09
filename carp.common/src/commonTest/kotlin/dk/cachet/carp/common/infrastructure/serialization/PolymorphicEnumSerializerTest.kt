@@ -22,7 +22,7 @@ class PolymorphicEnumSerializerTest
     /**
      * A [SerializersModule] with the [PolyEnum] registered the default way, with no custom serializer.
      */
-    val DEFAULT_REGISTRATION_MODULE = SerializersModule {
+    private val defaultRegistrationModule = SerializersModule {
         polymorphic( Base::class )
         {
             subclass( PolyEnum::class )
@@ -36,7 +36,7 @@ class PolymorphicEnumSerializerTest
         {
             Json {
                 useArrayPolymorphism = false
-                serializersModule = DEFAULT_REGISTRATION_MODULE
+                serializersModule = defaultRegistrationModule
             }
         }
     }
@@ -46,7 +46,7 @@ class PolymorphicEnumSerializerTest
     {
         Json {
             useArrayPolymorphism = true
-            serializersModule = DEFAULT_REGISTRATION_MODULE
+            serializersModule = defaultRegistrationModule
         }
     }
 

@@ -30,7 +30,7 @@ import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
 import kotlin.test.*
 
@@ -70,7 +70,7 @@ class HostsIntegrationTest
     }
 
     @Test
-    fun create_deployment_creates_participant_group() = runSuspendTest {
+    fun create_deployment_creates_participant_group() = runTest {
         var deploymentCreated: DeploymentService.Event.StudyDeploymentCreated? = null
         eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentCreated::class, this )
         {
@@ -89,7 +89,7 @@ class HostsIntegrationTest
     }
 
     @Test
-    fun create_deployment_adds_participations() = runSuspendTest {
+    fun create_deployment_adds_participations() = runTest {
         val deviceRole = "Phone"
         val protocol = createSinglePrimaryDeviceProtocol( deviceRole )
 
@@ -114,7 +114,7 @@ class HostsIntegrationTest
     }
 
     @Test
-    fun removing_deployment_removes_participant_group_and_data_streams() = runSuspendTest {
+    fun removing_deployment_removes_participant_group_and_data_streams() = runTest {
         var deploymentRemoved: DeploymentService.Event.StudyDeploymentRemoved? = null
         eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentRemoved::class, this )
         {
@@ -144,7 +144,7 @@ class HostsIntegrationTest
     }
 
     @Test
-    fun stopping_deployment_stops_participant_group() = runSuspendTest {
+    fun stopping_deployment_stops_participant_group() = runTest {
         var studyDeploymentStopped: DeploymentService.Event.StudyDeploymentStopped? = null
         eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentStopped::class, this )
         {
@@ -162,7 +162,7 @@ class HostsIntegrationTest
     }
 
     @Test
-    fun registration_changes_in_deployment_are_passed_to_participant_group() = runSuspendTest {
+    fun registration_changes_in_deployment_are_passed_to_participant_group() = runTest {
         // Create a deployment.
         val protocol = createSinglePrimaryDeviceProtocol()
         val identity = AccountIdentity.fromUsername( "Test" )
@@ -197,7 +197,7 @@ class HostsIntegrationTest
     }
 
     @Test
-    fun appendToDataStreams_succeeds_as_long_as_deployment_is_ready() = runSuspendTest {
+    fun appendToDataStreams_succeeds_as_long_as_deployment_is_ready() = runTest {
         // Create a protocol which when deployed has one `STUB_DATA_TYPE` data stream.
         val primaryDevice = StubPrimaryDeviceConfiguration()
         val protocol = createEmptyProtocol()

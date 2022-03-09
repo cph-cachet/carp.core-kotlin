@@ -2,7 +2,7 @@ package dk.cachet.carp.deployments.domain
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryWithConnectedDeviceProtocol
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -21,7 +21,7 @@ interface DeploymentRepositoryTest
 
 
     @Test
-    fun adding_study_deployment_and_retrieving_it_succeeds() = runSuspendTest {
+    fun adding_study_deployment_and_retrieving_it_succeeds() = runTest {
         val repo = createRepository()
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
@@ -34,7 +34,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun adding_study_deployment_with_existing_id_fails() = runSuspendTest {
+    fun adding_study_deployment_with_existing_id_fails() = runTest {
         val repo = createRepository()
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
@@ -47,7 +47,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getStudyDeploymentBy_succeeds() = runSuspendTest {
+    fun getStudyDeploymentBy_succeeds() = runTest {
         val repo = createRepository()
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
@@ -59,7 +59,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getStudyDeploymentBy_returns_null_for_unknown_id() = runSuspendTest {
+    fun getStudyDeploymentBy_returns_null_for_unknown_id() = runTest {
         val repo = createRepository()
 
         val deployment = repo.getStudyDeploymentBy( unknownId )
@@ -67,7 +67,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getStudyDeploymentsBy_succeeds() = runSuspendTest {
+    fun getStudyDeploymentsBy_succeeds() = runTest {
         val repo = createRepository()
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment1 = studyDeploymentFor( protocol )
@@ -82,7 +82,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getStudyDeploymentsBy_ignores_unknown_ids() = runSuspendTest {
+    fun getStudyDeploymentsBy_ignores_unknown_ids() = runTest {
         val repo = createRepository()
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
@@ -94,7 +94,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun update_study_deployment_succeeds() = runSuspendTest {
+    fun update_study_deployment_succeeds() = runTest {
         val repo = createRepository()
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
@@ -122,7 +122,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun update_study_deployment_fails_for_unknown_deployment() = runSuspendTest {
+    fun update_study_deployment_fails_for_unknown_deployment() = runTest {
         val repo = createRepository()
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
@@ -134,7 +134,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun remove_succeeds() = runSuspendTest {
+    fun remove_succeeds() = runTest {
         val repo = createRepository()
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment1 = studyDeploymentFor( protocol )
@@ -152,7 +152,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun remove_igores_unknown_ids() = runSuspendTest {
+    fun remove_igores_unknown_ids() = runTest {
         val repo = createRepository()
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )

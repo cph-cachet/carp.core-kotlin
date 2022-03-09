@@ -109,7 +109,7 @@ interface ProtocolDeviceConfigurationTest
         configuration.addPrimaryDevice( primaryDevice )
         configuration.addConnectedDevice( StubDeviceConfiguration( "Duplicate name" ), primaryDevice )
 
-        // Adding an additional priary device with duplicate name should fail.
+        // Adding an additional primary device with duplicate name should fail.
         assertFailsWith<IllegalArgumentException>
         {
             configuration.addPrimaryDevice( StubPrimaryDeviceConfiguration( "Duplicate name" ) )
@@ -153,7 +153,7 @@ interface ProtocolDeviceConfigurationTest
         }
 
         val underlyingDevices: Iterable<AnyDeviceConfiguration> = configuration.getConnectedDevices( primary1, true )
-        val expectedDevices = listOf( primary2, connected )
+        val expectedDevices = setOf( primary2, connected )
         assertEquals( expectedDevices.count(), underlyingDevices.intersect( expectedDevices ).count() )
     }
 }

@@ -33,7 +33,7 @@ data class BLEHeartRateDevice(
         val RR_INTERVAL = add( NoOptionsSamplingScheme( CarpDataTypes.RR_INTERVAL ) )
 
         /**
-         * Whether or not the device is making proper contact.
+         * Whether the device is making proper skin contact.
          */
         val SENSOR_SKIN_CONTACT = add( NoOptionsSamplingScheme( CarpDataTypes.SENSOR_SKIN_CONTACT ) )
     }

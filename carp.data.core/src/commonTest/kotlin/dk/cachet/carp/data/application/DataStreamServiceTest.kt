@@ -5,7 +5,7 @@ import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubData
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.data.infrastructure.dataStreamId
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -21,7 +21,7 @@ interface DataStreamServiceTest
 
 
     @Test
-    fun openDataStreams_succeeds() = runSuspendTest {
+    fun openDataStreams_succeeds() = runTest {
         val service = createService()
 
         val dataStreamId = dataStreamId<StubData>( stubDeploymentId, "Some device" )
@@ -34,7 +34,7 @@ interface DataStreamServiceTest
     }
 
     @Test
-    fun openDataStreams_fails_when_data_streams_already_opened() = runSuspendTest {
+    fun openDataStreams_fails_when_data_streams_already_opened() = runTest {
         val service = createServiceWithOpenStubDataStream()
 
         val expectedStream = DataStreamsConfiguration.ExpectedDataStream( "Some device", STUB_DATA_TYPE )
@@ -43,7 +43,7 @@ interface DataStreamServiceTest
     }
 
     @Test
-    fun appendToDataStreams_succeeds() = runSuspendTest {
+    fun appendToDataStreams_succeeds() = runTest {
         val service = createServiceWithOpenStubDataStream()
 
         val batch = MutableDataStreamBatch()
@@ -56,7 +56,7 @@ interface DataStreamServiceTest
     }
 
     @Test
-    fun appendToDataStreams_fails_for_preceding_sequence() = runSuspendTest {
+    fun appendToDataStreams_fails_for_preceding_sequence() = runTest {
         val service = createServiceWithOpenStubDataStream()
         val batch = MutableDataStreamBatch().apply {
             appendSequence( createStubSequence( 0, StubData(), StubData() ) )
@@ -70,7 +70,7 @@ interface DataStreamServiceTest
     }
 
     @Test
-    fun appendToDataStreams_fails_for_nonmatching_studyDeploymentId() = runSuspendTest {
+    fun appendToDataStreams_fails_for_nonmatching_studyDeploymentId() = runTest {
         val service = createServiceWithOpenStubDataStream()
 
         val batch = MutableDataStreamBatch().apply {
@@ -81,7 +81,7 @@ interface DataStreamServiceTest
     }
 
     @Test
-    fun appendToDataStreams_fails_for_unexpected_data_stream() = runSuspendTest {
+    fun appendToDataStreams_fails_for_unexpected_data_stream() = runTest {
         val service = createServiceWithOpenStubDataStream()
 
         val unexpectedBatch = MutableDataStreamBatch().apply {
@@ -91,7 +91,7 @@ interface DataStreamServiceTest
     }
 
     @Test
-    fun appendToDataStreams_fails_for_closed_data_streams() = runSuspendTest {
+    fun appendToDataStreams_fails_for_closed_data_streams() = runTest {
         val service = createServiceWithOpenStubDataStream()
         service.closeDataStreams( setOf( stubDeploymentId ) )
 
@@ -102,7 +102,7 @@ interface DataStreamServiceTest
     }
 
     @Test
-    fun getDataStream_fails_for_unopened_streams() = runSuspendTest {
+    fun getDataStream_fails_for_unopened_streams() = runTest {
         val service = createService()
 
         val unopenedStreamId = dataStreamId<StubData>( stubDeploymentId, stubSequenceDeviceRoleName )
@@ -112,14 +112,14 @@ interface DataStreamServiceTest
     }
 
     @Test
-    fun closeDataStreams_succeeds() = runSuspendTest {
+    fun closeDataStreams_succeeds() = runTest {
         val service = createServiceWithOpenStubDataStream()
 
         service.closeDataStreams( setOf( stubDeploymentId ) )
     }
 
     @Test
-    fun closeDataStreams_fails_for_unopened_data_streams() = runSuspendTest {
+    fun closeDataStreams_fails_for_unopened_data_streams() = runTest {
         val service = createService()
 
         val unknownDeploymentId = UUID.randomUUID()
@@ -130,11 +130,12 @@ interface DataStreamServiceTest
     }
 
     @Test
-    fun removeDataStreams_succeeds() = runSuspendTest {
+    fun removeDataStreams_succeeds() = runTest {
         val service = createServiceWithOpenStubDataStream()
         val batch = MutableDataStreamBatch().apply {
             appendSequence( createStubSequence( 0, StubData(), StubData() ) )
         }
+        service.appendToDataStreams( stubDeploymentId, batch )
 
         service.removeDataStreams( setOf( stubDeploymentId ) )
 
@@ -143,7 +144,7 @@ interface DataStreamServiceTest
     }
 
     @Test
-    fun removeDataStreams_returns_false_when_nothing_removed() = runSuspendTest {
+    fun removeDataStreams_returns_false_when_nothing_removed() = runTest {
         val service = createService()
 
         val unknownDeploymentId = UUID.randomUUID()

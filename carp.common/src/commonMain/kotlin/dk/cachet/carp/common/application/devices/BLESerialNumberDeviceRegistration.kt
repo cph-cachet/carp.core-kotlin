@@ -27,11 +27,12 @@ data class BLESerialNumberDeviceRegistration(
 }
 
 
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( with = NotSerializable::class )
 class BLESerialNumberDeviceRegistrationBuilder : DeviceRegistrationBuilder<BLESerialNumberDeviceRegistration>()
 {
     /**
-     * The serial number as broadcast by the Device Information GATT service.
+     * The serial number, as broadcast by the Device Information GATT service.
      *
      * This should not be blank.
      */

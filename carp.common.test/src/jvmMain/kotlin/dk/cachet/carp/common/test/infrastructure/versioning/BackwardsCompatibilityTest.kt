@@ -8,7 +8,8 @@ import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.common.infrastructure.versioning.ApplicationServiceApiMigrator
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JsonElement
@@ -25,6 +26,7 @@ import kotlin.test.*
  * Tests whether old API requests are handled correctly by migrating them to the current API version,
  * and transforming the response to be compatible with the old request.
  */
+@ExperimentalCoroutinesApi
 @ExperimentalSerializationApi
 @Suppress( "FunctionName" )
 abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService, *>>(
@@ -106,7 +108,7 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
 
     @Test
     @Ignore
-    fun can_replay_backwards_compatible_test_requests() = runSuspendTest {
+    fun can_replay_backwards_compatible_test_requests() = runTest {
         val compatibleTests = availableTestVersions.filter { it.major == currentVersion.major }
 
         val testFiles = compatibleTests.flatMap { version ->

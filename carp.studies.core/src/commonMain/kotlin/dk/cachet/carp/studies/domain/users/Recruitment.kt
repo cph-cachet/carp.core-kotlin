@@ -158,7 +158,7 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
      */
     fun addParticipantGroup( participantIds: Set<UUID>, id: UUID = UUID.randomUUID() ): StagedParticipantGroup
     {
-        require( participantIds.all { id -> id in participants.map { it.id } } )
+        require( participants.map { it.id }.containsAll( participantIds ) )
             { "One of the participants for which to create a participant group isn't part of this recruitment." }
         check( getStatus() is RecruitmentStatus.ReadyForDeployment ) { "The study is not yet ready for deployment." }
 

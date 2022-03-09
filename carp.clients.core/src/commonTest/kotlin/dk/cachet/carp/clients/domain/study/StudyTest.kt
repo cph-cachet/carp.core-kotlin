@@ -14,7 +14,7 @@ import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
 import kotlin.test.*
 
@@ -291,7 +291,7 @@ class StudyTest
     }
 
     @Test
-    fun creating_study_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runSuspendTest {
+    fun creating_study_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runTest {
         // Create a study snapshot for the 'smartphone' with an unregistered connected device.
         val deploymentId = UUID.randomUUID()
         val study = Study( deploymentId, smartphone.roleName )

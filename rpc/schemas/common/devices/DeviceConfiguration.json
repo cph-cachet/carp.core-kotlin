@@ -17,6 +17,7 @@
   ],
   "$defs": {
     "DeviceConfiguration": {
+      "$anchor": "DeviceConfiguration",
       "type": "object",
       "properties": {
         "__type": true,

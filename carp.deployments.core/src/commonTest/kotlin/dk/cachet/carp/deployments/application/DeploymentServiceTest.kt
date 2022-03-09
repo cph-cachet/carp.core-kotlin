@@ -7,7 +7,7 @@ import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.createParticipantInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryWithConnectedDeviceProtocol
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -26,7 +26,7 @@ interface DeploymentServiceTest
 
 
     @Test
-    fun createStudyDeployment_registers_preregistered_devices() = runSuspendTest {
+    fun createStudyDeployment_registers_preregistered_devices() = runTest {
         val deploymentService = createService()
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val primaryDevice = protocol.primaryDevices.single()
@@ -47,7 +47,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun createStudyDeployment_fails_for_existing_id() = runSuspendTest {
+    fun createStudyDeployment_fails_for_existing_id() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Primary" )
 
@@ -65,7 +65,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun removeStudyDeployments_succeeds() = runSuspendTest {
+    fun removeStudyDeployments_succeeds() = runTest {
         val deploymentService = createService()
         val deploymentId1 = addTestDeployment( deploymentService, "Test device" )
         val deploymentId2 = addTestDeployment( deploymentService, "Test device" )
@@ -78,7 +78,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun removeStudyDeployments_ignores_unknown_ids() = runSuspendTest {
+    fun removeStudyDeployments_ignores_unknown_ids() = runTest {
         val deploymentService = createService()
         val deploymentId = addTestDeployment( deploymentService, "Test device" )
         val unknownId = UUID.randomUUID()
@@ -89,7 +89,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun getStudyDeploymentStatus_succeeds() = runSuspendTest {
+    fun getStudyDeploymentStatus_succeeds() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
 
@@ -98,14 +98,14 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun getStudyDeploymentStatus_fails_for_unknown_studyDeploymentId() = runSuspendTest {
+    fun getStudyDeploymentStatus_fails_for_unknown_studyDeploymentId() = runTest {
         val deploymentService = createService()
 
         assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatus( unknownId ) }
     }
 
     @Test
-    fun getStudyDeploymentStatusList_succeeds() = runSuspendTest {
+    fun getStudyDeploymentStatusList_succeeds() = runTest {
         val deploymentService = createService()
         val deviceRoleName = "Primary"
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol( deviceRoleName )
@@ -123,7 +123,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun getStudyDeploymentStatusList_fails_when_containing_an_unknown_studyDeploymentId() = runSuspendTest {
+    fun getStudyDeploymentStatusList_fails_when_containing_an_unknown_studyDeploymentId() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
 
@@ -132,7 +132,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun registerDevice_can_be_called_multiple_times() = runSuspendTest {
+    fun registerDevice_can_be_called_multiple_times() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Primary" )
         val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
@@ -145,7 +145,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun registerDevice_cannot_be_called_with_same_registration_when_stopped() = runSuspendTest {
+    fun registerDevice_cannot_be_called_with_same_registration_when_stopped() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Primary" )
         val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
@@ -161,7 +161,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun unregisterDevice_succeeds() = runSuspendTest {
+    fun unregisterDevice_succeeds() = runTest {
         val deploymentService = createService()
         val deviceRolename = "Test device"
         val studyDeploymentId = addTestDeployment( deploymentService, deviceRolename )
@@ -174,7 +174,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun stop_succeeds() = runSuspendTest {
+    fun stop_succeeds() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
 
@@ -183,14 +183,14 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun stop_fails_for_unknown_studyDeploymentId() = runSuspendTest {
+    fun stop_fails_for_unknown_studyDeploymentId() = runTest {
         val deploymentService = createService()
 
         assertFailsWith<IllegalArgumentException> { deploymentService.stop( unknownId ) }
     }
 
     @Test
-    fun modifications_after_stop_not_allowed() = runSuspendTest {
+    fun modifications_after_stop_not_allowed() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Primary", "Connected" )
         val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
