@@ -10,7 +10,7 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -35,7 +35,7 @@ interface RecruitmentServiceTest
 
 
     @Test
-    fun adding_and_retrieving_participant_succeeds() = runSuspendTest {
+    fun adding_and_retrieving_participant_succeeds() = runTest {
         val (recruitmentService, studyService) = createService()
         val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
@@ -52,7 +52,7 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun addParticipant_fails_for_unknown_studyId() = runSuspendTest {
+    fun addParticipant_fails_for_unknown_studyId() = runTest {
         val (recruitmentService, _) = createService()
 
         val email = EmailAddress( "test@test.com" )
@@ -61,7 +61,7 @@ interface RecruitmentServiceTest
 
     @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
     @Test
-    fun addParticipant_twice_returns_same_participant() = runSuspendTest {
+    fun addParticipant_twice_returns_same_participant() = runTest {
         val (recruitmentService, studyService) = createService()
         val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
@@ -73,7 +73,7 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun getParticipant_fails_for_unknown_id() = runSuspendTest {
+    fun getParticipant_fails_for_unknown_id() = runTest {
         val (recruitmentService, studyService) = createService()
         val study = studyService.createStudy( UUID.randomUUID(), "Test" )
 
@@ -85,14 +85,14 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun getParticipants_fails_for_unknown_studyId() = runSuspendTest {
+    fun getParticipants_fails_for_unknown_studyId() = runTest {
         val (recruitmentService, _) = createService()
 
         assertFailsWith<IllegalArgumentException> { recruitmentService.getParticipants( unknownId ) }
     }
 
     @Test
-    fun inviteNewParticipantGroup_succeeds() = runSuspendTest {
+    fun inviteNewParticipantGroup_succeeds() = runTest {
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
@@ -107,7 +107,7 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun inviteNewParticipantGroup_fails_for_unknown_studyId() = runSuspendTest {
+    fun inviteNewParticipantGroup_fails_for_unknown_studyId() = runTest {
         val (recruitmentService, _) = createService()
         val assignParticipant = AssignParticipantDevices( UUID.randomUUID(), setOf( "Test device" ) )
 
@@ -118,7 +118,7 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun inviteNewParticipantGroup_fails_for_empty_group() = runSuspendTest {
+    fun inviteNewParticipantGroup_fails_for_empty_group() = runTest {
         val (recruitmentService, studyService) = createService()
         val (studyId, _) = createLiveStudy( studyService )
 
@@ -126,7 +126,7 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun inviteNewParticipantGroup_fails_for_unknown_participants() = runSuspendTest {
+    fun inviteNewParticipantGroup_fails_for_unknown_participants() = runTest {
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
 
@@ -139,7 +139,7 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun inviteNewParticipantGroup_fails_for_unknown_device_roles() = runSuspendTest {
+    fun inviteNewParticipantGroup_fails_for_unknown_device_roles() = runTest {
         val (recruitmentService, studyService) = createService()
         val (studyId, _) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
@@ -152,7 +152,7 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun inviteNewParticipantGroup_fails_when_not_all_devices_assigned() = runSuspendTest {
+    fun inviteNewParticipantGroup_fails_when_not_all_devices_assigned() = runTest {
         val (recruitmentService, studyService) = createService()
         val (studyId, _) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
@@ -165,7 +165,7 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun inviteNewParticipantGroup_multiple_times_returns_same_group() = runSuspendTest {
+    fun inviteNewParticipantGroup_multiple_times_returns_same_group() = runTest {
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
@@ -179,7 +179,7 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun inviteNewParticipantGroup_for_previously_stopped_group_returns_new_group() = runSuspendTest {
+    fun inviteNewParticipantGroup_for_previously_stopped_group_returns_new_group() = runTest {
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
@@ -194,7 +194,7 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun getParticipantGroupStatusList_returns_multiple_deployments() = runSuspendTest {
+    fun getParticipantGroupStatusList_returns_multiple_deployments() = runTest {
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
         val deviceRoles = protocolSnapshot.primaryDevices.map { it.roleName }.toSet()
@@ -214,14 +214,14 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun getParticipantGroupStatusLists_fails_for_unknown_studyId() = runSuspendTest {
+    fun getParticipantGroupStatusLists_fails_for_unknown_studyId() = runTest {
         val (recruitmentService, _) = createService()
 
         assertFailsWith<IllegalArgumentException> { recruitmentService.getParticipantGroupStatusList( unknownId ) }
     }
 
     @Test
-    fun stopParticipantGroup_succeeds() = runSuspendTest {
+    fun stopParticipantGroup_succeeds() = runTest {
         val (recruitmentService, studyService) = createService()
         val (studyId, protocolSnapshot) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
@@ -234,7 +234,7 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun stopParticipantGroup_fails_with_unknown_studyId() = runSuspendTest {
+    fun stopParticipantGroup_fails_with_unknown_studyId() = runTest {
         val (recruitmentService, _) = createService()
 
         assertFailsWith<IllegalArgumentException>
@@ -244,7 +244,7 @@ interface RecruitmentServiceTest
     }
 
     @Test
-    fun stopParticipantGroup_fails_with_unknown_groupId() = runSuspendTest {
+    fun stopParticipantGroup_fails_with_unknown_groupId() = runTest {
         val (recruitmentService, studyService) = createService()
         val (studyId, _) = createLiveStudy( studyService )
 

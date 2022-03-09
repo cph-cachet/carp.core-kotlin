@@ -23,7 +23,7 @@ import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -31,7 +31,7 @@ class StudiesCodeSamples
 {
     @Test
     @Suppress( "UnusedPrivateMember", "UNUSED_VARIABLE" )
-    fun readme() = runSuspendTest {
+    fun readme() = runTest {
         val (studyService, recruitmentService) = createEndpoints()
 
         // Create a new study.

@@ -27,7 +27,7 @@ import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.protocols.domain.start
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -37,7 +37,7 @@ import kotlin.test.*
 class StudyDeploymentProxyTest
 {
     @Test
-    fun tryDeployment_deploys_when_possible() = runSuspendTest {
+    fun tryDeployment_deploys_when_possible() = runTest {
         // Create a deployment service which contains a 'smartphone study'.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val studyDeployment = StudyDeploymentProxy( deploymentService, createDataListener() )
@@ -61,7 +61,7 @@ class StudyDeploymentProxyTest
     }
 
     @Test
-    fun tryDeployment_does_not_deploy_when_depending_on_other_devices() = runSuspendTest {
+    fun tryDeployment_does_not_deploy_when_depending_on_other_devices() = runTest {
         // Create a deployment service which contains a study where 'smartphone' depends on another primary device.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val studyDeployment = StudyDeploymentProxy( deploymentService, createDataListener() )
@@ -81,7 +81,7 @@ class StudyDeploymentProxyTest
     }
 
     @Test
-    fun tryDeployment_does_not_deploy_when_registering_devices() = runSuspendTest {
+    fun tryDeployment_does_not_deploy_when_registering_devices() = runTest {
         // Create a deployment service which contains a study where 'smartphone' depends on a connected device.
         val (deploymentService, deploymentStatus) =
             createStudyDeployment( createSmartphoneWithConnectedDeviceStudy() )
@@ -106,7 +106,7 @@ class StudyDeploymentProxyTest
     }
 
     @Test
-    fun tryDeployment_fails_for_unknown_studyDeploymentId() = runSuspendTest {
+    fun tryDeployment_fails_for_unknown_studyDeploymentId() = runTest {
         // Create a deployment service which contains a 'smartphone study'.
         val (deploymentService, _) = createStudyDeployment( createSmartphoneStudy() )
         val studyDeployment = StudyDeploymentProxy( deploymentService, createDataListener() )
@@ -120,7 +120,7 @@ class StudyDeploymentProxyTest
     }
 
     @Test
-    fun tryDeployment_fails_for_unknown_deviceRoleName() = runSuspendTest {
+    fun tryDeployment_fails_for_unknown_deviceRoleName() = runTest {
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val studyDeployment = StudyDeploymentProxy( deploymentService, createDataListener() )
 
@@ -132,7 +132,7 @@ class StudyDeploymentProxyTest
     }
 
     @Test
-    fun tryDeployment_fails_for_incorrect_deviceRegistration() = runSuspendTest {
+    fun tryDeployment_fails_for_incorrect_deviceRegistration() = runTest {
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val studyDeployment = StudyDeploymentProxy( deploymentService, createDataListener() )
 
@@ -144,7 +144,7 @@ class StudyDeploymentProxyTest
     }
 
     @Test
-    fun tryDeployment_only_succeeds_after_ready_for_deployment() = runSuspendTest {
+    fun tryDeployment_only_succeeds_after_ready_for_deployment() = runTest {
         // Create a study where 'smartphone' depends on another primary device ('deviceSmartphoneDependsOn').
         val (deploymentService, deploymentStatus) = createStudyDeployment( createDependentSmartphoneStudy() )
         val studyDeployment = StudyDeploymentProxy( deploymentService, createDataListener() )
@@ -171,7 +171,7 @@ class StudyDeploymentProxyTest
     }
 
     @Test
-    fun tryDeployment_only_succeeds_after_devices_are_registered() = runSuspendTest {
+    fun tryDeployment_only_succeeds_after_devices_are_registered() = runTest {
         // Create a study for a study where 'smartphone' depends on a connected device.
         val (deploymentService, deploymentStatus) =
             createStudyDeployment( createSmartphoneWithConnectedDeviceStudy() )
@@ -200,7 +200,7 @@ class StudyDeploymentProxyTest
     }
 
     @Test
-    fun tryDeployment_changes_nothing_when_already_deployed() = runSuspendTest {
+    fun tryDeployment_changes_nothing_when_already_deployed() = runTest {
         // Create a study which instantly deploys because the protocol only contains one primary device.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val studyDeployment = StudyDeploymentProxy( deploymentService, createDataListener() )
@@ -215,7 +215,7 @@ class StudyDeploymentProxyTest
     }
 
     @Test
-    fun tryDeployment_succeeds_when_data_types_of_protocol_measures_are_supported() = runSuspendTest {
+    fun tryDeployment_succeeds_when_data_types_of_protocol_measures_are_supported() = runTest {
         // Create protocol that measures on smartphone and one connected device.
         val protocol = createSmartphoneWithConnectedDeviceStudy()
         val primaryTask = StubTaskConfiguration( "Primary measure", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
@@ -246,7 +246,7 @@ class StudyDeploymentProxyTest
     }
 
     @Test
-    fun tryDeployment_fails_when_requested_data_cannot_be_collected() = runSuspendTest {
+    fun tryDeployment_fails_when_requested_data_cannot_be_collected() = runTest {
         // Create a protocol that has one measure.
         val protocol = createSmartphoneStudy()
         val task = StubTaskConfiguration( "One measure", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
@@ -265,7 +265,7 @@ class StudyDeploymentProxyTest
     }
 
     @Test
-    fun tryDeployment_fails_when_connected_device_is_not_supported() = runSuspendTest {
+    fun tryDeployment_fails_when_connected_device_is_not_supported() = runTest {
         // Create a deployment for a protocol with a preregistered connected device but no measures.
         val (deploymentService, deploymentStatus) =
             createStudyDeployment( createSmartphoneWithConnectedDeviceStudy() )
@@ -297,7 +297,7 @@ class StudyDeploymentProxyTest
     }
 
     @Test
-    fun stop_succeeds() = runSuspendTest {
+    fun stop_succeeds() = runTest {
         // Initialize a study for a typical 'smartphone study'.
         val (deploymentService, deploymentStatus) = createStudyDeployment( createSmartphoneStudy() )
         val study = Study( deploymentStatus.studyDeploymentId, smartphone.roleName )

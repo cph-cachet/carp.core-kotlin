@@ -14,7 +14,7 @@ import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.createParticipantInvitation
 import dk.cachet.carp.deployments.domain.users.AccountService
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -46,7 +46,7 @@ interface ParticipationServiceTest
 
 
     @Test
-    fun getActiveParticipationInvitations_succeeds() = runSuspendTest {
+    fun getActiveParticipationInvitations_succeeds() = runTest {
         val (participationService, deploymentService, accountService) = createService()
         val protocol = createSinglePrimaryDeviceProtocol()
         val identity = AccountIdentity.fromEmailAddress( "test@test.com" )
@@ -71,7 +71,7 @@ interface ParticipationServiceTest
     }
 
     @Test
-    fun getParticipantData_initially_returns_null_for_all_expected_data() = runSuspendTest {
+    fun getParticipantData_initially_returns_null_for_all_expected_data() = runTest {
         val (participationService, deploymentService, _) = createService()
 
         // Create protocol with expected 'sex' participant data.
@@ -90,14 +90,14 @@ interface ParticipationServiceTest
     }
 
     @Test
-    fun getParticipantData_fails_for_unknown_deploymentId() = runSuspendTest {
+    fun getParticipantData_fails_for_unknown_deploymentId() = runTest {
         val (participationService, _, _) = createService()
 
         assertFailsWith<IllegalArgumentException> { participationService.getParticipantData( unknownId ) }
     }
 
     @Test
-    fun getParticipantDataList_succeeds() = runSuspendTest {
+    fun getParticipantDataList_succeeds() = runTest {
         val (participationService, deploymentService, _) = createService()
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
         val protocolSnapshot = protocol.getSnapshot()
@@ -114,7 +114,7 @@ interface ParticipationServiceTest
     }
 
     @Test
-    fun getParticipantDataList_fails_for_unknown_deploymentId() = runSuspendTest {
+    fun getParticipantDataList_fails_for_unknown_deploymentId() = runTest {
         val (participationService, _, _) = createService()
 
         val deploymentIds = setOf( unknownId )
@@ -122,7 +122,7 @@ interface ParticipationServiceTest
     }
 
     @Test
-    fun setParticipantData_succeeds() = runSuspendTest {
+    fun setParticipantData_succeeds() = runTest {
         val (participationService, deploymentService, _) = createService()
 
         // Create protocol with expected 'sex' participant data.
@@ -141,7 +141,7 @@ interface ParticipationServiceTest
     }
 
     @Test
-    fun setParticipantData_fails_for_unknown_deploymentId() = runSuspendTest {
+    fun setParticipantData_fails_for_unknown_deploymentId() = runTest {
         val (participationService, _, _) = createService()
 
         val toSet = mapOf( CarpInputDataTypes.SEX to Sex.Male )
@@ -152,7 +152,7 @@ interface ParticipationServiceTest
     }
 
     @Test
-    fun setParticipantData_fails_for_unexpected_input_for_protocol() = runSuspendTest {
+    fun setParticipantData_fails_for_unexpected_input_for_protocol() = runTest {
         val (participationService, deploymentService, _) = createService()
         val studyDeploymentId = addTestDeployment( deploymentService )
 
@@ -164,7 +164,7 @@ interface ParticipationServiceTest
     }
 
     @Test
-    fun setParticipantData_fails_for_invalid_data() = runSuspendTest {
+    fun setParticipantData_fails_for_invalid_data() = runTest {
         val (participationService, deploymentService, _) = createService()
 
         // Create protocol with expected 'sex' participant data.

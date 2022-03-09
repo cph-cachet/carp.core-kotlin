@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -14,7 +14,7 @@ interface ParticipantRepositoryTest
 
 
     @Test
-    fun adding_recruitment_and_retrieving_it_succeeds() = runSuspendTest {
+    fun adding_recruitment_and_retrieving_it_succeeds() = runTest {
         val repo = createRepository()
 
         val studyId = UUID.randomUUID()
@@ -26,7 +26,7 @@ interface ParticipantRepositoryTest
     }
 
     @Test
-    fun addRecruitment_for_existing_studyId_fails() = runSuspendTest {
+    fun addRecruitment_for_existing_studyId_fails() = runTest {
         val repo = createRepository()
         val recruitment = Recruitment( UUID.randomUUID() )
         repo.addRecruitment( recruitment )
@@ -35,7 +35,7 @@ interface ParticipantRepositoryTest
     }
 
     @Test
-    fun getRecruitment_returns_null_when_not_found() = runSuspendTest {
+    fun getRecruitment_returns_null_when_not_found() = runTest {
         val repo = createRepository()
 
         val unknownId = UUID.randomUUID()
@@ -43,7 +43,7 @@ interface ParticipantRepositoryTest
     }
 
     @Test
-    fun updateRecruitment_succeeds() = runSuspendTest {
+    fun updateRecruitment_succeeds() = runTest {
         val repo = createRepository()
         val recruitment = Recruitment( UUID.randomUUID() )
         repo.addRecruitment( recruitment )
@@ -55,7 +55,7 @@ interface ParticipantRepositoryTest
     }
 
     @Test
-    fun updateRecruitment_for_nonexisting_studyId_fails() = runSuspendTest {
+    fun updateRecruitment_for_nonexisting_studyId_fails() = runTest {
         val repo = createRepository()
 
         val unknownRecruitment = Recruitment( UUID.randomUUID() )
@@ -63,7 +63,7 @@ interface ParticipantRepositoryTest
     }
 
     @Test
-    fun removeStudy_succeeds() = runSuspendTest {
+    fun removeStudy_succeeds() = runTest {
         val repo = createRepository()
         val studyId = UUID.randomUUID()
         val recruitment = Recruitment( studyId )
@@ -76,7 +76,7 @@ interface ParticipantRepositoryTest
     }
 
     @Test
-    fun removeStudy_returns_false_when_study_not_present() = runSuspendTest {
+    fun removeStudy_returns_false_when_study_not_present() = runTest {
         val repo = createRepository()
 
         val isRemoved = repo.removeStudy( UUID.randomUUID() )

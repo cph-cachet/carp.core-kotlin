@@ -3,7 +3,7 @@ package dk.cachet.carp.protocols.application
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -19,7 +19,7 @@ interface ProtocolFactoryServiceTest
 
 
     @Test
-    fun createCustomProtocol_succeeds() = runSuspendTest {
+    fun createCustomProtocol_succeeds() = runTest {
         val factory = createService()
 
         val ownerId: UUID = UUID.randomUUID()
@@ -40,7 +40,7 @@ interface ProtocolFactoryServiceTest
     }
 
     @Test
-    fun createCustomProtocol_contains_no_deployment_issues() = runSuspendTest {
+    fun createCustomProtocol_contains_no_deployment_issues() = runTest {
         val factory = createService()
 
         val protocolSnapshot = factory.createCustomProtocol( UUID.randomUUID(), "Name", "{...}" )

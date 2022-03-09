@@ -7,7 +7,7 @@ import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -23,7 +23,7 @@ interface ProtocolServiceTest
 
 
     @Test
-    fun add_protocol_and_retrieving_it_succeeds() = runSuspendTest {
+    fun add_protocol_and_retrieving_it_succeeds() = runTest {
         val service = createService()
         val protocol = createEmptyProtocol()
         val snapshot = protocol.getSnapshot()
@@ -34,7 +34,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun add_fails_when_protocol_already_exists() = runSuspendTest {
+    fun add_fails_when_protocol_already_exists() = runTest {
         val service = createService()
         val protocol = createEmptyProtocol().getSnapshot()
         service.add( protocol )
@@ -43,7 +43,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun addVersion_succeeds() = runSuspendTest {
+    fun addVersion_succeeds() = runTest {
         val service = createService()
         val protocol = createEmptyProtocol()
         service.add( protocol.getSnapshot() )
@@ -57,7 +57,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun addVersion_fails_when_protocol_does_not_exist() = runSuspendTest {
+    fun addVersion_fails_when_protocol_does_not_exist() = runTest {
         val service = createService()
         val protocol = createEmptyProtocol()
 
@@ -65,7 +65,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun addVersion_fails_when_version_tag_in_use() = runSuspendTest {
+    fun addVersion_fails_when_version_tag_in_use() = runTest {
         val service = createService()
         val protocol = createEmptyProtocol()
         service.add( protocol.getSnapshot(), "In use" )
@@ -76,7 +76,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun add_and_addVersion_fail_when_protocol_is_invalid() = runSuspendTest {
+    fun add_and_addVersion_fail_when_protocol_is_invalid() = runTest {
         val service = createService()
         val protocol = createEmptyProtocol()
         service.add( protocol.getSnapshot() )
@@ -92,7 +92,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun updateParticipantDataConfiguration_replaces_existing_attributes() = runSuspendTest {
+    fun updateParticipantDataConfiguration_replaces_existing_attributes() = runTest {
         val service = createService()
         val protocol = createEmptyProtocol()
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
@@ -111,7 +111,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun updateParticipantDataConfiguration_fails_for_unknown_protocol() = runSuspendTest {
+    fun updateParticipantDataConfiguration_fails_for_unknown_protocol() = runTest {
         val service = createService()
 
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
@@ -123,7 +123,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun getBy_returns_latest_version_when_no_version_specified() = runSuspendTest {
+    fun getBy_returns_latest_version_when_no_version_specified() = runTest {
         val service = createService()
         val protocol = createEmptyProtocol()
         service.add( protocol.getSnapshot(), "In use" )
@@ -136,7 +136,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun getBy_fails_for_nonexisting_protocol() = runSuspendTest {
+    fun getBy_fails_for_nonexisting_protocol() = runTest {
         val service = createService()
 
         val unknownId = UUID.randomUUID()
@@ -144,7 +144,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun getAllForOwner_returns_last_version_of_each_protocol() = runSuspendTest {
+    fun getAllForOwner_returns_last_version_of_each_protocol() = runTest {
         val service = createService()
         val protocol1 = createEmptyProtocol( "Protocol 1" )
         service.add( protocol1.getSnapshot() )
@@ -159,7 +159,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun getAllForOwner_returns_empty_list_when_none_found() = runSuspendTest {
+    fun getAllForOwner_returns_empty_list_when_none_found() = runTest {
         val service = createService()
 
         val unknownId = UUID.randomUUID()
@@ -167,7 +167,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun getVersionHistoryFor_succeeds() = runSuspendTest {
+    fun getVersionHistoryFor_succeeds() = runTest {
         val service = createService()
         val protocol = createEmptyProtocol()
         service.add( protocol.getSnapshot(), "1" )
@@ -179,7 +179,7 @@ interface ProtocolServiceTest
     }
 
     @Test
-    fun getVersionHistoryFor_fails_when_protocol_not_found() = runSuspendTest {
+    fun getVersionHistoryFor_fails_when_protocol_not_found() = runTest {
         val service = createService()
 
         val unknownId = UUID.randomUUID()

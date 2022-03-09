@@ -4,7 +4,7 @@ import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.services.publish
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
@@ -84,7 +84,7 @@ class ChannelConventionEventBusTest
     }
 
     @Test
-    fun published_events_are_received_by_handlers() = runSuspendTest {
+    fun published_events_are_received_by_handlers() = runTest {
         val eventBus = StubChannelConventionEventBus()
 
         var eventReceived: String? = null
