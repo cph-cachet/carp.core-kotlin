@@ -2,7 +2,7 @@ package dk.cachet.carp.studies.domain
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployments.application.users.StudyInvitation
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -15,7 +15,7 @@ interface StudyRepositoryTest
 
 
     @Test
-    fun cant_add_study_with_id_that_already_exists() = runSuspendTest {
+    fun cant_add_study_with_id_that_already_exists() = runTest {
         val repo = createRepository()
         val study = Study( UUID.randomUUID(), "Test" )
         repo.add( study )
@@ -28,7 +28,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun getById_succeeds() = runSuspendTest {
+    fun getById_succeeds() = runTest {
         val repo = createRepository()
         val study = Study( UUID.randomUUID(), "Test" )
         repo.add( study )
@@ -39,7 +39,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun getById_null_when_not_found() = runSuspendTest {
+    fun getById_null_when_not_found() = runTest {
         val repo = createRepository()
 
         val foundStudy = repo.getById( UUID.randomUUID() )
@@ -47,7 +47,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun getForOwner_returns_owner_studies_only() = runSuspendTest {
+    fun getForOwner_returns_owner_studies_only() = runTest {
         val repo = createRepository()
         val ownerId = UUID.randomUUID()
         val ownerStudy = Study( ownerId, "Test" )
@@ -60,7 +60,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun update_succeeds() = runSuspendTest {
+    fun update_succeeds() = runTest {
         val repo = createRepository()
         val study = Study( UUID.randomUUID(), "Test" )
         repo.add( study )
@@ -78,7 +78,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun update_fails_for_unknown_study() = runSuspendTest {
+    fun update_fails_for_unknown_study() = runTest {
         val repo = createRepository()
 
         val study = Study( UUID.randomUUID(), "Test" )
@@ -86,7 +86,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun remove_succeeds() = runSuspendTest {
+    fun remove_succeeds() = runTest {
         val repo = createRepository()
         val study = Study( UUID.randomUUID(), "Test" )
         repo.add( study )
@@ -97,7 +97,7 @@ interface StudyRepositoryTest
     }
 
     @Test
-    fun remove_returns_false_when_study_not_present() = runSuspendTest {
+    fun remove_returns_false_when_study_not_present() = runTest {
         val repo = createRepository()
         val study = Study( UUID.randomUUID(), "Test")
         repo.add( study )

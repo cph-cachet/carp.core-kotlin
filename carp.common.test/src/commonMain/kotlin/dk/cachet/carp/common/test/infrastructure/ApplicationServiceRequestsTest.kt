@@ -4,7 +4,8 @@ import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.elementDescriptors
@@ -17,6 +18,7 @@ import kotlin.test.*
  * Base class to test whether application service request objects can be serialized,
  * and whether they correctly call the application service on invoke.
  */
+@ExperimentalCoroutinesApi
 @Suppress( "FunctionName" )
 abstract class ApplicationServiceRequestsTest<
     TService : ApplicationService<TService, *>,
@@ -44,7 +46,7 @@ abstract class ApplicationServiceRequestsTest<
 
     @Suppress( "UNCHECKED_CAST" )
     @Test
-    fun invokeOn_requests_call_service() = runSuspendTest {
+    fun invokeOn_requests_call_service() = runTest {
         val serviceLog = createServiceLoggingProxy()
 
         requests.forEach { request ->

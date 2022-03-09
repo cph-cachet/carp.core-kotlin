@@ -14,7 +14,7 @@ import dk.cachet.carp.data.application.Measurement
 import dk.cachet.carp.data.application.MutableDataStreamBatch
 import dk.cachet.carp.data.application.MutableDataStreamSequence
 import dk.cachet.carp.data.application.SyncPoint
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -30,7 +30,7 @@ class InMemoryDataStreamServiceTest : DataStreamServiceTest
 
 
     @Test
-    fun appendToDataStreams_for_unknown_datatype_succeeds() = runSuspendTest {
+    fun appendToDataStreams_for_unknown_datatype_succeeds() = runTest {
         val service = createService()
 
         val deploymentId = UUID.randomUUID()
