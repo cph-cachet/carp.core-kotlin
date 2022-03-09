@@ -98,12 +98,21 @@ interface StudyService : ApplicationService<StudyService, StudyService.Event>
     /**
      * Specify the study [protocol] to use for the study with the specified [studyId].
      *
-     * @throws IllegalArgumentException when a study with [studyId] does not exist,
-     * when the provided [protocol] snapshot is invalid,
-     * or when the protocol contains errors preventing it from being used in deployments.
+     * @throws IllegalArgumentException when:
+     *  - a study with [studyId] does not exist
+     *  - the provided [protocol] snapshot is invalid
+     *  - the [protocol] contains errors preventing it from being used in deployments
      * @throws IllegalStateException when the study protocol can no longer be set since the study went 'live'.
      */
     suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
+
+    /**
+     * Remove the currently set study protocol for the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     * @throws IllegalStateException when the study protocol can no longer be set since the study went 'live'.
+     */
+    suspend fun removeProtocol( studyId: UUID ): StudyStatus
 
     /**
      * Lock in the current study protocol so that the study may be deployed to participants.

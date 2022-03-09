@@ -209,6 +209,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
             {
                 constructor( studyId: UUID, protocol: StudyProtocolSnapshot )
             }
+            class RemoveProtocol extends StudyServiceRequest
+            {
+                constructor( studyId: UUID )
+            }
             class GoLive extends StudyServiceRequest
             {
                 constructor( studyId: UUID )
