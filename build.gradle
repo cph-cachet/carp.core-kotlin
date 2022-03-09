@@ -122,6 +122,11 @@ configure( subprojects - devOpsModules ) {
         }
     }
 
+    // Treat compilation warning as errors for all compilation targets.
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions { allWarningsAsErrors = true }
+    }
+
     // Publish configuration.
     // For signing and publishing to work, a 'publish.properties' file needs to be added to the root containing:
     // The OpenPGP credentials to sign all artifacts:
