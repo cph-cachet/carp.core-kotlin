@@ -18,7 +18,10 @@ class StudyStatusTest
     fun can_serialize_and_deserialize_study_status_using_JSON()
     {
         val status = StudyStatus.Configuring(
-            UUID.randomUUID(), "Test", Clock.System.now(),
+            UUID.randomUUID(),
+            name = "Test",
+            createdOn = Clock.System.now(),
+            studyProtocolId = null,
             canSetInvitation = false,
             canSetStudyProtocol = true,
             canDeployToParticipants = false,
