@@ -1,12 +1,12 @@
 package dk.cachet.carp.deployments.application
 
-import dk.cachet.carp.common.application.services.ApplicationService
-import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.services.ApiVersion
+import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.DependentServices
+import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployments.application.users.ParticipantData
 import kotlinx.serialization.Required

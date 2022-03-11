@@ -35,7 +35,7 @@ class StudyDeployment private constructor(
     createdOn: Instant = Clock.System.now()
 ) : AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>( id, createdOn )
 {
-    sealed class Event : DomainEvent()
+    sealed class Event : DomainEvent
     {
         data class DeviceRegistered( val device: AnyDeviceConfiguration, val registration: DeviceRegistration ) : Event()
         data class DeviceUnregistered( val device: AnyDeviceConfiguration ) : Event()

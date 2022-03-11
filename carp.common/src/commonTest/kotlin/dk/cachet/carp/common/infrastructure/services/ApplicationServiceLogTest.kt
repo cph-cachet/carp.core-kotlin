@@ -1,8 +1,8 @@
 package dk.cachet.carp.common.infrastructure.services
 
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequestTest.TestService as TestService
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequestTest.TestServiceRequest as TestServiceRequest
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequestTest.TestService
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequestTest.TestServiceRequest
 import kotlin.test.*
 
 

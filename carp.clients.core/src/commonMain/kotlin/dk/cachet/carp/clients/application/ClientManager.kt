@@ -1,5 +1,6 @@
 package dk.cachet.carp.clients.application
 
+import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.clients.domain.ClientRepository
 import dk.cachet.carp.clients.domain.DeviceRegistrationStatus
 import dk.cachet.carp.clients.domain.data.ConnectedDeviceDataCollector
@@ -8,7 +9,6 @@ import dk.cachet.carp.clients.domain.data.DeviceDataCollector
 import dk.cachet.carp.clients.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.clients.domain.study.Study
 import dk.cachet.carp.clients.domain.study.StudyDeploymentProxy
-import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistrationBuilder

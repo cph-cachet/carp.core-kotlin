@@ -1,11 +1,11 @@
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.EmailAddress
-import dk.cachet.carp.common.application.services.ApplicationService
-import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.ApiVersion
+import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.DependentServices
+import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant

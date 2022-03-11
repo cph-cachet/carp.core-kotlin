@@ -34,7 +34,7 @@ class ParticipantGroup private constructor(
     createdOn: Instant = Clock.System.now()
 ) : AggregateRoot<ParticipantGroup, ParticipantGroupSnapshot, ParticipantGroup.Event>( id, createdOn )
 {
-    sealed class Event : DomainEvent()
+    sealed class Event : DomainEvent
     {
         data class DataSet( val inputDataType: InputDataType, val data: Data? ) : Event()
         data class ParticipationAdded( val accountParticipation: AccountParticipation ) : Event()

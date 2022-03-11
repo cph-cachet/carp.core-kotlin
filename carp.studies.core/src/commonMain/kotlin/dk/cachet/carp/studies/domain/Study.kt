@@ -37,7 +37,7 @@ class Study(
     createdOn: Instant = Clock.System.now()
 ) : AggregateRoot<Study, StudySnapshot, Study.Event>( id, createdOn )
 {
-    sealed class Event : DomainEvent()
+    sealed class Event : DomainEvent
     {
         data class InternalDescriptionChanged( val name: String, val description: String? ) : Event()
         data class InvitationChanged( val invitation: StudyInvitation ) : Event()

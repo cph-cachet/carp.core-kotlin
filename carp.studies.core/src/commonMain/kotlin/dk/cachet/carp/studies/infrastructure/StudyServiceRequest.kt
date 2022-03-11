@@ -6,8 +6,8 @@ import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyDetails
+import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyStatus
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Required

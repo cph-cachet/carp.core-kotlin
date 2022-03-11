@@ -2,6 +2,7 @@
 
 package dk.cachet.carp.common.infrastructure.serialization
 
+import dk.cachet.carp.common.application.commonInstances
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.elements.InputElement
@@ -11,7 +12,6 @@ import dk.cachet.carp.common.application.sampling.BatteryAwareSamplingConfigurat
 import dk.cachet.carp.common.application.sampling.Granularity
 import dk.cachet.carp.common.application.sampling.GranularitySamplingConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.commonInstances
 import dk.cachet.carp.common.infrastructure.test.*
 import dk.cachet.carp.test.serialization.ConcreteTypesSerializationTest
 import kotlinx.serialization.PolymorphicSerializer

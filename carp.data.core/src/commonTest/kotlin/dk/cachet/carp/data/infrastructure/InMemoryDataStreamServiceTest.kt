@@ -7,9 +7,9 @@ import dk.cachet.carp.common.infrastructure.test.StubData
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import dk.cachet.carp.data.application.DataStreamId
-import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.data.application.DataStreamService
 import dk.cachet.carp.data.application.DataStreamServiceTest
+import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.data.application.Measurement
 import dk.cachet.carp.data.application.MutableDataStreamBatch
 import dk.cachet.carp.data.application.MutableDataStreamSequence

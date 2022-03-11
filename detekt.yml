@@ -7,11 +7,15 @@ complexity:
 formatting:
   Filename:
     active: false
+  Indentation:
+    active: false
   MaximumLineLength:
     active: false
   NoConsecutiveBlankLines:
     active: false
   NoLineBreakAfterElse:
+    active: false
+  NoUnusedImports:
     active: false
   NoWildcardImports:
     active: false
@@ -24,6 +28,8 @@ formatting:
 
 naming:
   MemberNameEqualsClassName:
+    active: false
+  TopLevelPropertyNaming:
     active: false
 
 performance:

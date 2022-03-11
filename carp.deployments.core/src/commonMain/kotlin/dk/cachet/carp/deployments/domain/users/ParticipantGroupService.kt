@@ -1,9 +1,9 @@
 package dk.cachet.carp.deployments.domain.users
 
 import dk.cachet.carp.deployments.application.DeploymentService
-import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.throwIfInvalidInvitations
 import dk.cachet.carp.deployments.application.throwIfInvalidPreregistrations
+import dk.cachet.carp.deployments.application.users.Participation
 
 
 class ParticipantGroupService( val accountService: AccountService )

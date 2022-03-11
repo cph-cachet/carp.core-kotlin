@@ -1,20 +1,20 @@
 package dk.cachet.carp.clients.domain.study
 
 import dk.cachet.carp.clients.application.study.StudyStatus
+import dk.cachet.carp.clients.domain.DeviceRegistrationStatus
 import dk.cachet.carp.clients.domain.connectedDevice
 import dk.cachet.carp.clients.domain.createDataListener
 import dk.cachet.carp.clients.domain.createDependentSmartphoneStudy
 import dk.cachet.carp.clients.domain.createSmartphoneStudy
 import dk.cachet.carp.clients.domain.createSmartphoneWithConnectedDeviceStudy
 import dk.cachet.carp.clients.domain.createStudyDeployment
-import dk.cachet.carp.clients.domain.deviceSmartphoneDependsOn
-import dk.cachet.carp.clients.domain.smartphone
-import dk.cachet.carp.clients.domain.DeviceRegistrationStatus
 import dk.cachet.carp.clients.domain.data.AnyConnectedDeviceDataCollector
 import dk.cachet.carp.clients.domain.data.DataListener
 import dk.cachet.carp.clients.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.clients.domain.data.StubConnectedDeviceDataCollectorFactory
 import dk.cachet.carp.clients.domain.data.StubDeviceDataCollector
+import dk.cachet.carp.clients.domain.deviceSmartphoneDependsOn
+import dk.cachet.carp.clients.domain.smartphone
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.AltBeaconDeviceRegistration

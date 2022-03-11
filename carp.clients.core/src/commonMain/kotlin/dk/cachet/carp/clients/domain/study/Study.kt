@@ -29,7 +29,7 @@ class Study(
     createdOn: Instant = Clock.System.now()
 ) : AggregateRoot<Study, StudySnapshot, Study.Event>( id, createdOn )
 {
-    sealed class Event : DomainEvent()
+    sealed class Event : DomainEvent
     {
         data class DeploymentStatusReceived( val deploymentStatus: StudyDeploymentStatus ) : Event()
         data class DeviceDeploymentReceived( val deploymentInformation: PrimaryDeviceDeployment ) : Event()

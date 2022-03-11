@@ -24,7 +24,7 @@ import kotlinx.datetime.Instant
 class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: Instant = Clock.System.now() ) :
     AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>( id, createdOn )
 {
-    sealed class Event : DomainEvent()
+    sealed class Event : DomainEvent
     {
         data class ParticipantAdded( val participant: Participant ) : Event()
         data class ParticipantGroupAdded( val participantIds: Set<UUID> ) : Event()

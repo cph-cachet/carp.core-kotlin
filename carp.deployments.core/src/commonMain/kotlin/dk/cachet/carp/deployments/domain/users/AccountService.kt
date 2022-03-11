@@ -1,8 +1,8 @@
 package dk.cachet.carp.deployments.domain.users
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
+import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation

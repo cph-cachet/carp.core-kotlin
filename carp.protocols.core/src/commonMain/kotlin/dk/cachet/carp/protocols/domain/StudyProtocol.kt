@@ -6,13 +6,13 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
+import dk.cachet.carp.common.application.triggers.TaskControl.Control
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
-import dk.cachet.carp.common.application.triggers.TaskControl.Control as Control
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantDataConfiguration
+import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolTaskConfiguration
 import dk.cachet.carp.protocols.domain.configuration.StudyProtocolComposition
 import dk.cachet.carp.protocols.domain.deployment.*
@@ -48,7 +48,7 @@ class StudyProtocol(
         createdOn
     )
 {
-    sealed class Event : DomainEvent()
+    sealed class Event : DomainEvent
     {
         data class NameChanged( val name: String ) : Event()
         data class DescriptionChanged( val description: String? ) : Event()
