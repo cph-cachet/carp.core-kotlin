@@ -89,7 +89,8 @@
       "additionalProperties": false,
       "Response": {
         "$anchor": "RemoveDataStreams-Response",
-        "type": "boolean"
+        "type": "array",
+        "items": { "type": "string", "format": "uuid" }
       }
     }
   }

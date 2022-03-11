@@ -457,6 +457,6 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
     ),
     DataStreamService::removeDataStreams to example(
         request = DataStreamServiceRequest.RemoveDataStreams( deploymentIds ),
-        response = true
+        response = deploymentIds
     )
 )

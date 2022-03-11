@@ -46,6 +46,6 @@ class DataStreamServiceLoggingProxy(
     override suspend fun closeDataStreams( studyDeploymentIds: Set<UUID> ) =
         log( DataStreamServiceRequest.CloseDataStreams( studyDeploymentIds ) )
 
-    override suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Boolean =
+    override suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ) =
         log( DataStreamServiceRequest.RemoveDataStreams( studyDeploymentIds ) )
 }
