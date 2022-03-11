@@ -68,9 +68,9 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
 
     @Serializable
     data class RemoveDataStreams( val studyDeploymentIds: Set<UUID> ) :
-        DataStreamServiceRequest<Boolean>()
+        DataStreamServiceRequest<Set<UUID>>()
     {
-        override fun getResponseSerializer() = serializer<Boolean>()
+        override fun getResponseSerializer() = serializer<Set<UUID>>()
         override suspend fun invokeOn( service: DataStreamService ) = service.removeDataStreams( studyDeploymentIds )
     }
 }

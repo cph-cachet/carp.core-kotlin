@@ -137,18 +137,21 @@ interface DataStreamServiceTest
         }
         service.appendToDataStreams( stubDeploymentId, batch )
 
-        service.removeDataStreams( setOf( stubDeploymentId ) )
+        val removed = service.removeDataStreams( setOf( stubDeploymentId ) )
+        assertEquals( setOf( stubDeploymentId ), removed )
 
         val dataStreamId = dataStreamId<StubData>( stubDeploymentId, stubSequenceDeviceRoleName )
         assertFailsWith<IllegalArgumentException> { service.getDataStream( dataStreamId, 0 ) }
     }
 
     @Test
-    fun removeDataStreams_returns_false_when_nothing_removed() = runTest {
-        val service = createService()
+    fun removeDataStream_ignores_unknown_ids() = runTest {
+        val service = createServiceWithOpenStubDataStream()
 
-        val unknownDeploymentId = UUID.randomUUID()
-        assertFalse( service.removeDataStreams( setOf( unknownDeploymentId ) ) )
+        val unknownDeploymentid = UUID.randomUUID()
+        val removed = service.removeDataStreams( setOf( stubDeploymentId, unknownDeploymentid ) )
+
+        assertEquals( setOf( stubDeploymentId ), removed )
     }
 
 
