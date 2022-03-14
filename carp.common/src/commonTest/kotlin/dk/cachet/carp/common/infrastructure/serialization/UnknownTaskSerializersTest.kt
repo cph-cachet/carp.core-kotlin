@@ -4,7 +4,7 @@ package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -25,7 +25,7 @@ class CustomTaskConfigurationTest
     @Test
     fun initialization_from_json_extracts_base_TaskConfiguration_properties()
     {
-        val measures: List<Measure> = listOf( Measure.DataStream( STUB_DATA_TYPE ) )
+        val measures: List<Measure> = listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) )
         val task = StubTaskConfiguration( "Unknown", measures )
         val serialized: String = JSON.encodeToString( StubTaskConfiguration.serializer(), task )
 

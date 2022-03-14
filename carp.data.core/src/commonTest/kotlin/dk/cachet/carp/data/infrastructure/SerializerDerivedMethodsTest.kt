@@ -3,8 +3,7 @@ package dk.cachet.carp.data.infrastructure
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.DataTypeMetaDataMap
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
-import dk.cachet.carp.common.infrastructure.test.StubData
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.common.infrastructure.test.StubDataTimeSpan
 import dk.cachet.carp.common.infrastructure.test.StubDataTypes
@@ -20,36 +19,33 @@ class SerializerDerivedMethodsTest
     @Test
     fun getDataType_succeeds()
     {
-        val stubDataType = getDataType( StubData::class )
-        assertEquals( STUB_DATA_TYPE, stubDataType )
+        val stubDataType = getDataType( StubDataPoint::class )
+        assertEquals( STUB_DATA_POINT_TYPE, stubDataType )
     }
 
     @Test
     fun dataStreamId_succeeds()
     {
-        val stream = dataStreamId<StubData>( UUID.randomUUID(), "Device" )
+        val stream = dataStreamId<StubDataPoint>( UUID.randomUUID(), "Device" )
 
-        assertEquals( STUB_DATA_TYPE, stream.dataType )
+        assertEquals( STUB_DATA_POINT_TYPE, stream.dataType )
     }
 
     @Test
     fun measurement_succeeds()
     {
-        val stub = measurement( StubData(), 0 )
-        assertEquals( STUB_DATA_TYPE, stub.dataType )
+        val stub = measurement( StubDataPoint(), 0 )
+        assertEquals( STUB_DATA_POINT_TYPE, stub.dataType )
     }
 
     @Test
     fun isValidMeasurement_returns_true_when_DataTimeType_corresponds()
     {
-        val either = measurement( StubData(), 0, 0 )
         val point = measurement( StubDataPoint(), 0 )
-        val timeSpan = measurement( StubDataTimeSpan(), 0, 1 )
+        assertEquals( Trilean.TRUE, StubDataTypes.isValidMeasurement( point ) )
 
-        for ( data in listOf( either, point, timeSpan ) )
-        {
-            assertEquals( Trilean.TRUE, StubDataTypes.isValidMeasurement( data ) )
-        }
+        val timeSpan = measurement( StubDataTimeSpan(), 0, 1 )
+        assertEquals( Trilean.TRUE, StubDataTypes.isValidMeasurement( timeSpan ) )
     }
 
     @Test
@@ -65,7 +61,7 @@ class SerializerDerivedMethodsTest
     @Test
     fun isValidMeasurement_returns_false_when_DataType_does_not_correspond()
     {
-        val incorrectDataType = Measurement( 0, null, STUB_DATA_TYPE, StubDataPoint() )
+        val incorrectDataType = Measurement( 0, null, STUB_DATA_POINT_TYPE, StubDataTimeSpan() )
         assertEquals( Trilean.FALSE, StubDataTypes.isValidMeasurement( incorrectDataType ) )
     }
 
@@ -74,7 +70,7 @@ class SerializerDerivedMethodsTest
     {
         val noRegistrations = object : DataTypeMetaDataMap() { }
 
-        val unregisteredType = measurement( StubData(), 0 )
+        val unregisteredType = measurement( StubDataPoint(), 0 )
         assertEquals( Trilean.UNKNOWN, noRegistrations.isValidMeasurement( unregisteredType ) )
     }
 }

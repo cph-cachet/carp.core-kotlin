@@ -7,8 +7,8 @@ import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
-import dk.cachet.carp.common.infrastructure.test.StubData
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
+import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.data.application.DataStreamService
@@ -126,7 +126,7 @@ class HostsIntegrationTest
         val primaryDevice = StubPrimaryDeviceConfiguration()
         val protocol = createEmptyProtocol()
         protocol.addPrimaryDevice( primaryDevice )
-        val task = StubTaskConfiguration( "Task", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
+        val task = StubTaskConfiguration( "Task", listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) ) )
         val atStartOfStudy = protocol.addTrigger( primaryDevice.atStartOfStudy() )
         protocol.addTaskControl( atStartOfStudy.start( task, primaryDevice ) )
 
@@ -134,7 +134,7 @@ class HostsIntegrationTest
         val invitation = createParticipantInvitation( protocol )
         val deploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
-        val dataStreamId = dataStreamId<StubData>( deploymentId, primaryDevice.roleName )
+        val dataStreamId = dataStreamId<StubDataPoint>( deploymentId, primaryDevice.roleName )
 
         deploymentService.removeStudyDeployments( setOf( deploymentId ) )
 
@@ -202,7 +202,7 @@ class HostsIntegrationTest
         val primaryDevice = StubPrimaryDeviceConfiguration()
         val protocol = createEmptyProtocol()
         protocol.addPrimaryDevice( primaryDevice )
-        val task = StubTaskConfiguration( "Task", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
+        val task = StubTaskConfiguration( "Task", listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) ) )
         val atStartOfStudy = protocol.addTrigger( primaryDevice.atStartOfStudy() )
         protocol.addTaskControl( atStartOfStudy.start( task, primaryDevice ) )
 
@@ -215,12 +215,12 @@ class HostsIntegrationTest
         )
 
         // Prepare data to append to data stream.
-        val stubStreamId = dataStreamId<StubData>( deploymentId, primaryDevice.roleName )
+        val stubStreamId = dataStreamId<StubDataPoint>( deploymentId, primaryDevice.roleName )
         val syncPoint = SyncPoint( Clock.System.now() )
         val toAppend = MutableDataStreamBatch()
         toAppend.appendSequence(
             MutableDataStreamSequence( stubStreamId, 0, listOf( atStartOfStudy.id ), syncPoint )
-                .apply { appendMeasurements( measurement( StubData(), 0 ) ) }
+                .apply { appendMeasurements( measurement( StubDataPoint(), 0 ) ) }
         )
 
         // Data streams aren't open yet since deployment is not ready.
@@ -237,7 +237,7 @@ class HostsIntegrationTest
         val appendMore = MutableDataStreamBatch()
         appendMore.appendSequence(
             MutableDataStreamSequence( stubStreamId, 1, listOf( atStartOfStudy.id ), syncPoint )
-                .apply { appendMeasurements( measurement( StubData(), 1000 ) ) }
+                .apply { appendMeasurements( measurement( StubDataPoint(), 1000 ) ) }
         )
         assertFailsWith<IllegalStateException> { dataStreamService.appendToDataStreams( deploymentId, appendMore ) }
     }

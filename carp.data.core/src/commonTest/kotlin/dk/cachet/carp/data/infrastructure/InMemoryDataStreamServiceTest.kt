@@ -3,7 +3,7 @@ package dk.cachet.carp.data.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.infrastructure.test.StubData
+import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import dk.cachet.carp.data.application.DataStreamId
@@ -44,7 +44,7 @@ class InMemoryDataStreamServiceTest : DataStreamServiceTest
 
         // Create unknown data point.
         val json = createTestJSON()
-        val dataPoint = StubData()
+        val dataPoint = StubDataPoint()
         val dataPointJson = json.encodeToString<Data>( dataPoint )
         val unknownDataPointJson = dataPointJson.makeUnknown( dataPoint )
         val unknownDataPoint: Data = json.decodeFromString( unknownDataPointJson )

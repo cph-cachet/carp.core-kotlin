@@ -1,8 +1,8 @@
 package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.test.StubData
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
+import dk.cachet.carp.common.infrastructure.test.StubDataTimeSpan
 import dk.cachet.carp.data.infrastructure.dataStreamId
 import dk.cachet.carp.data.infrastructure.measurement
 import kotlinx.datetime.Clock
@@ -14,14 +14,14 @@ import kotlin.test.*
  */
 class MutableDataStreamBatchTest
 {
-    private val stubData = StubData()
     private val stubDataPoint = StubDataPoint()
+    private val stubDataTimeSpan = StubDataTimeSpan()
 
     @Test
     fun appendSequence_succeeds_with_no_prior_sequences()
     {
         val batch = MutableDataStreamBatch()
-        val sequence = createStubSequence( 0, stubData )
+        val sequence = createStubSequence( 0, stubDataPoint )
 
         batch.appendSequence( sequence )
 
@@ -32,10 +32,10 @@ class MutableDataStreamBatchTest
     fun appendSequence_succeeds_with_prior_sequence_with_gap()
     {
         val batch = MutableDataStreamBatch()
-        val stubSequence = createStubSequence( 0, stubData )
+        val stubSequence = createStubSequence( 0, stubDataPoint )
         batch.appendSequence( stubSequence )
 
-        val gapSequence = createStubSequence( 2, stubData )
+        val gapSequence = createStubSequence( 2, stubDataPoint )
         batch.appendSequence( gapSequence )
 
         assertEquals( 2, batch.sequences.count() )
@@ -47,8 +47,8 @@ class MutableDataStreamBatchTest
     {
         val batch = MutableDataStreamBatch()
 
-        val dataStream = dataStreamId<StubData>( UUID.randomUUID(), "Device" )
-        val measurement = measurement( StubData(), 0 )
+        val dataStream = dataStreamId<StubDataPoint>( UUID.randomUUID(), "Device" )
+        val measurement = measurement( StubDataPoint(), 0 )
         val triggerId1Sequence = MutableDataStreamSequence(
             dataStream,
             0,
@@ -74,14 +74,14 @@ class MutableDataStreamBatchTest
     fun appendSequence_succeeds_with_new_syncpoint()
     {
         val batch = MutableDataStreamBatch()
-        val dataStream = dataStreamId<StubData>( UUID.randomUUID(), "Device" )
+        val dataStream = dataStreamId<StubDataPoint>( UUID.randomUUID(), "Device" )
         val firstSequence = MutableDataStreamSequence(
             dataStream,
             0,
             stubTriggerIds,
             SyncPoint.UnixEpoch
         )
-        firstSequence.appendMeasurements( measurement( StubData(), 0 ) )
+        firstSequence.appendMeasurements( measurement( StubDataPoint(), 0 ) )
         batch.appendSequence( firstSequence )
 
         val newSequence = MutableDataStreamSequence(
@@ -90,7 +90,7 @@ class MutableDataStreamBatchTest
             stubTriggerIds,
             stubSyncPoint
         )
-        newSequence.appendMeasurements( measurement( StubData(), 0 ) )
+        newSequence.appendMeasurements( measurement( StubDataPoint(), 0 ) )
         batch.appendSequence( newSequence )
 
         assertEquals( 2, batch.sequences.count() ) // Due to the different sync point, the sequence is not merged.
@@ -101,9 +101,9 @@ class MutableDataStreamBatchTest
     fun appendSequence_merges_sequence_when_there_is_no_sequence_gap()
     {
         val batch = MutableDataStreamBatch()
-        batch.appendSequence( createStubSequence( 0, stubData ) )
+        batch.appendSequence( createStubSequence( 0, stubDataPoint ) )
 
-        val noGapSequence = createStubSequence( 1, stubData )
+        val noGapSequence = createStubSequence( 1, stubDataPoint )
         batch.appendSequence( noGapSequence )
 
         val singleSequence = batch.sequences.singleOrNull()
@@ -116,8 +116,8 @@ class MutableDataStreamBatchTest
     {
         val batch = MutableDataStreamBatch()
 
-        batch.appendSequence( createStubSequence( 0, stubData ) )
-        batch.appendSequence( createStubSequence( 0, StubDataPoint() ) )
+        batch.appendSequence( createStubSequence( 0, stubDataPoint ) )
+        batch.appendSequence( createStubSequence( 0, stubDataTimeSpan ) )
 
         assertEquals( 2, batch.sequences.count() )
     }
@@ -126,9 +126,9 @@ class MutableDataStreamBatchTest
     fun appendSequence_fails_for_overlapping_sequence_range()
     {
         val batch = MutableDataStreamBatch()
-        batch.appendSequence( createStubSequence( 0, stubData, stubData ) )
+        batch.appendSequence( createStubSequence( 0, stubDataPoint, stubDataPoint ) )
 
-        val overlappingSequence = createStubSequence( 1, stubData )
+        val overlappingSequence = createStubSequence( 1, stubDataPoint )
         assertFailsWith<IllegalArgumentException>
         {
             batch.appendSequence( overlappingSequence )
@@ -139,14 +139,14 @@ class MutableDataStreamBatchTest
     fun appendSequence_fails_for_older_sync_point()
     {
         val batch = MutableDataStreamBatch()
-        val dataStream = dataStreamId<StubData>( UUID.randomUUID(), "Device" )
+        val dataStream = dataStreamId<StubDataPoint>( UUID.randomUUID(), "Device" )
         val firstSequence = MutableDataStreamSequence(
             dataStream,
             0,
             stubTriggerIds,
             SyncPoint( Clock.System.now() )
         )
-        firstSequence.appendMeasurements( measurement( StubData(), 0 ) )
+        firstSequence.appendMeasurements( measurement( StubDataPoint(), 0 ) )
         batch.appendSequence( firstSequence )
 
         val newSequence = MutableDataStreamSequence(
@@ -155,27 +155,27 @@ class MutableDataStreamBatchTest
             stubTriggerIds,
             SyncPoint.UnixEpoch
         )
-        newSequence.appendMeasurements( measurement( StubData(), 0 ) )
+        newSequence.appendMeasurements( measurement( StubDataPoint(), 0 ) )
         assertFailsWith<IllegalArgumentException> { batch.appendSequence( newSequence ) }
     }
 
     @Test
     fun appendBatch_succeeds()
     {
-        val stubDataSequence = createStubSequence( 0, stubData )
+        val stubDataTimeSpanSequence = createStubSequence( 0, stubDataTimeSpan )
         val stubDataPointSequence = createStubSequence( 0, stubDataPoint )
         val batch = MutableDataStreamBatch().apply {
-            appendSequence( stubDataSequence )
+            appendSequence( stubDataTimeSpanSequence )
             appendSequence( stubDataPointSequence )
         }
 
         val appendBatch = MutableDataStreamBatch().apply {
-            appendSequence( createStubSequence( 1, stubData ) )
+            appendSequence( createStubSequence( 1, stubDataTimeSpan ) )
             appendSequence( createStubSequence( 1, stubDataPoint ) )
         }
         batch.appendBatch( appendBatch )
 
-        assertEquals( 2, batch.getDataStreamPoints( stubDataSequence.dataStream ).count() )
+        assertEquals( 2, batch.getDataStreamPoints( stubDataTimeSpanSequence.dataStream ).count() )
         assertEquals( 2, batch.getDataStreamPoints( stubDataPointSequence.dataStream ).count() )
     }
 
@@ -183,12 +183,12 @@ class MutableDataStreamBatchTest
     fun appendBatch_fails_for_overlapping_sequence_range()
     {
         val batch = MutableDataStreamBatch().apply {
-            appendSequence( createStubSequence( 0, stubData ) )
+            appendSequence( createStubSequence( 0, stubDataPoint ) )
         }
 
         val appendBatch = MutableDataStreamBatch().apply {
-            appendSequence( createStubSequence( 0, stubDataPoint ) )
-            appendSequence( createStubSequence( 0, stubData ) ) // Overlaps.
+            appendSequence( createStubSequence( 0, stubDataTimeSpan ) )
+            appendSequence( createStubSequence( 0, stubDataPoint ) ) // Overlaps.
         }
 
         assertFailsWith<IllegalArgumentException> { batch.appendBatch( appendBatch ) }

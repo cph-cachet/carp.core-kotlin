@@ -1,7 +1,7 @@
 package dk.cachet.carp.common.application.tasks
 
 import dk.cachet.carp.common.application.data.CarpDataTypes
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import kotlin.test.*
 
@@ -16,13 +16,13 @@ class TaskConfigurationTest
     {
         val task = StubTaskConfiguration(
             "Task",
-            listOf( Measure.DataStream( STUB_DATA_TYPE ), Measure.TriggerData( 0 ) ),
+            listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ), Measure.TriggerData( 0 ) ),
             "Description"
         )
 
         val dataTypes = task.getAllExpectedDataTypes()
         val expectedDataTypes = setOf(
-            STUB_DATA_TYPE,
+            STUB_DATA_POINT_TYPE,
             CarpDataTypes.TRIGGERED_TASK.type,
             CarpDataTypes.COMPLETED_TASK.type
         )

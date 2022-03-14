@@ -15,7 +15,7 @@ import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.CustomPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
@@ -105,7 +105,7 @@ class StudyDeploymentTest
             addConnectedDevice( connectedDevice, primaryDevice )
 
             val trigger = addTrigger( primaryDevice.atStartOfStudy() )
-            val stubMeasure = Measure.DataStream( STUB_DATA_TYPE )
+            val stubMeasure = Measure.DataStream( STUB_DATA_POINT_TYPE )
             val task = StubTaskConfiguration(
                 "Task",
                 listOf( stubMeasure, trigger.measure() ),
@@ -121,10 +121,10 @@ class StudyDeploymentTest
         val dataStreams = deployment.requiredDataStreams
         assertEquals( deployment.id, dataStreams.studyDeploymentId )
         val expectedPrimaryDeviceTypes =
-            listOf( STUB_DATA_TYPE, CarpDataTypes.TRIGGERED_TASK.type, CarpDataTypes.COMPLETED_TASK.type )
+            listOf( STUB_DATA_POINT_TYPE, CarpDataTypes.TRIGGERED_TASK.type, CarpDataTypes.COMPLETED_TASK.type )
                 .map { DataStreamsConfiguration.ExpectedDataStream( primaryDevice.roleName, it ) }
         val expectedConnectedDeviceType =
-            listOf( STUB_DATA_TYPE, CarpDataTypes.COMPLETED_TASK.type )
+            listOf( STUB_DATA_POINT_TYPE, CarpDataTypes.COMPLETED_TASK.type )
                 .map { DataStreamsConfiguration.ExpectedDataStream( connectedDevice.roleName, it ) }
         assertEquals(
             ( expectedPrimaryDeviceTypes + expectedConnectedDeviceType ).toSet(),

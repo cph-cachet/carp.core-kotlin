@@ -8,7 +8,7 @@ import dk.cachet.carp.common.infrastructure.serialization.CustomPrimaryDeviceCon
 import dk.cachet.carp.common.infrastructure.serialization.CustomTaskConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.CustomTriggerConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.JSON
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubSamplingConfiguration
@@ -128,7 +128,7 @@ class StudyProtocolSnapshotTest
         protocol.addConnectedDevice( connected, primary )
 
         // (2) Add unknown task.
-        val measures: List<Measure> = listOf( Measure.DataStream( STUB_DATA_TYPE ) )
+        val measures: List<Measure> = listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) )
         val task = StubTaskConfiguration( "Unknown task", measures )
         val trigger = StubTriggerConfiguration( primary.roleName, "Unknown" )
         protocol.addTaskControl( trigger.start( task, primary ) )

@@ -15,12 +15,6 @@ object CarpDataTypes : DataTypeMetaDataMap()
     const val CARP_NAMESPACE: String = "dk.cachet.carp"
 
 
-    internal const val FREE_FORM_TEXT_TYPE_NAME = "$CARP_NAMESPACE.freeformtext"
-    /**
-     * Text of which the interpretation is left up to the specific application.
-     */
-    val FREE_FORM_TEXT = add( FREE_FORM_TEXT_TYPE_NAME, "Application-specific data", DataTimeType.EITHER )
-
     internal const val GEOLOCATION_TYPE_NAME = "$CARP_NAMESPACE.geolocation"
     /**
      * Geographic location data, representing latitude and longitude within the World Geodetic System 1984.
