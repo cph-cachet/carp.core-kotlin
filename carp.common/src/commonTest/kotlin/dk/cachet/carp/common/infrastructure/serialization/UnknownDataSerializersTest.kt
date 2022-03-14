@@ -3,7 +3,7 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.data.CompletedTask
-import dk.cachet.carp.common.infrastructure.test.StubData
+import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import kotlinx.serialization.decodeFromString
@@ -26,7 +26,7 @@ class CustomDataTest
     @Test
     fun can_deserialize_CompletedTask_with_unknown_data()
     {
-        val stubData = StubData( "Some data" )
+        val stubData = StubDataPoint( "Some data" )
         val completed = CompletedTask( "Task", stubData )
         val encoded = JSON.encodeToString( completed )
         val unknownInnerData = encoded.makeUnknown( stubData )

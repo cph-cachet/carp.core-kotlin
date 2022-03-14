@@ -13,7 +13,6 @@ All the built-in data types belong to the namespace: **dk.cachet.carp**.
 
 | Name | Description |
 | --- | --- |
-| [freeformtext](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/FreeFormText.kt) | Text of which the interpretation is left up to the specific application. |
 | [geolocation](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Geolocation.kt) | Geographic location data, representing longitude and latitude. |
 | [stepcount](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/StepCount.kt) | The number of steps a participant has taken in a specified time interval. |
 | [ecg](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/ECG.kt) | Electrocardiogram data of a single lead. |

@@ -62,7 +62,7 @@ fun DataTypeMetaDataMap.isValidMeasurement( measurement: Measurement<*> ): Trile
     val expectedTimeType = registeredType.timeType
     val isValid =
         expectedDataType == measurement.dataType &&
-        measurement.getDataTimeType().matches( expectedTimeType )
+        expectedTimeType == measurement.getDataTimeType()
 
     return isValid.toTrilean()
 }

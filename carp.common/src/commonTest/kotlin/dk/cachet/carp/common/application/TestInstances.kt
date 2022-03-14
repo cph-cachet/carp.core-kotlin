@@ -22,7 +22,6 @@ val commonInstances = listOf(
     AngularVelocity( 42.0, 42.0, 42.0 ),
     CompletedTask( "Task", null ),
     ECG( 42.0 ),
-    FreeFormText( "Some text" ),
     Geolocation( 42.0, 42.0 ),
     HeartRate( 60 ),
     NoData,

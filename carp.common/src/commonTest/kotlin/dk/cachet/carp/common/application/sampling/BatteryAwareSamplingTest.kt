@@ -16,7 +16,7 @@ class BatteryAwareSamplingSchemeTest
 {
     class TestBatteryAwareSamplingScheme :
         BatteryAwareSamplingScheme<StubSamplingConfiguration, StubSamplingConfigurationBuilder>(
-            StubDataTypes.STUB,
+            StubDataTypes.STUB_POINT,
             { StubSamplingConfigurationBuilder( "Test" ) },
             StubSamplingConfiguration( "Normal" ),
             StubSamplingConfiguration( "Low" )

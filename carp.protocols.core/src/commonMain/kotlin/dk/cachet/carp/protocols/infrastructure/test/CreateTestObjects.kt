@@ -8,7 +8,7 @@ import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
@@ -65,7 +65,7 @@ fun createComplexProtocol(): StudyProtocol
     val chainedPrimaryDevice = StubPrimaryDeviceConfiguration( "Chained primary" )
     val chainedConnectedDevice = StubDeviceConfiguration( "Chained connected" )
     val trigger = StubTriggerConfiguration( connectedDevice )
-    val measures = listOf( Measure.DataStream( STUB_DATA_TYPE ) )
+    val measures = listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) )
     val task = StubTaskConfiguration( "Task", measures )
     val expectedParticipantData = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
     with ( protocol )
