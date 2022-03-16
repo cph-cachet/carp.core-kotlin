@@ -26,6 +26,23 @@ interface DataStreamSequenceTest
 
 
     @Test
+    fun range_for_empty_sequence()
+    {
+        val empty = createStubDataStreamSequence( 0, emptyList() )
+
+        assertEquals( LongRange.EMPTY, empty.range )
+    }
+
+    @Test
+    fun range_for_sequence_with_one_item()
+    {
+        val measurement = measurement( StubDataPoint(), 0 )
+        val oneItem = createStubDataStreamSequence( 10, listOf( measurement ) )
+
+        assertEquals( 10L until 11L, oneItem.range )
+    }
+
+    @Test
     fun isImmediatelyFollowedBy_is_false_for_non_matching_data_stream()
     {
         val measurement = measurement( StubDataPoint(), 0 )
