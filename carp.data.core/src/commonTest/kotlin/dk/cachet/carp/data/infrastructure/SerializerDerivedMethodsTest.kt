@@ -2,11 +2,13 @@ package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.DataTypeMetaDataMap
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.common.infrastructure.test.StubDataTimeSpan
 import dk.cachet.carp.common.infrastructure.test.StubDataTypes
+import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.Measurement
 import dk.cachet.carp.data.application.MutableDataStreamSequence
 import dk.cachet.carp.data.application.createStubSequence
@@ -14,6 +16,7 @@ import dk.cachet.carp.data.application.stubDeploymentId
 import dk.cachet.carp.data.application.stubSequenceDeviceRoleName
 import dk.cachet.carp.data.application.stubSyncPoint
 import dk.cachet.carp.data.application.stubTriggerIds
+import kotlinx.serialization.Serializable
 import kotlin.test.*
 
 
@@ -48,37 +51,35 @@ class SerializerDerivedMethodsTest
     }
 
     @Test
-    fun isValidMeasurement_returns_true_when_DataTimeType_corresponds()
+    fun isValidMeasurement_when_DataTimeType_corresponds_to_Data()
     {
         val point = measurement( StubDataPoint(), 0 )
         assertEquals( Trilean.TRUE, StubDataTypes.isValidMeasurement( point ) )
+        assertEquals( Trilean.UNKNOWN, noRegistrations.isValidMeasurement( point ) )
 
         val timeSpan = measurement( StubDataTimeSpan(), 0, 1 )
         assertEquals( Trilean.TRUE, StubDataTypes.isValidMeasurement( timeSpan ) )
+        assertEquals( Trilean.UNKNOWN, noRegistrations.isValidMeasurement( timeSpan ) )
     }
 
     @Test
-    fun isValidMeasurement_returns_false_when_DataTimeType_does_not_correspond()
+    fun isValidMeasurement_when_DataTimeType_does_not_correspond()
     {
         val missingEndTime = measurement( StubDataTimeSpan(), 0 )
         assertEquals( Trilean.FALSE, StubDataTypes.isValidMeasurement( missingEndTime ) )
+        assertEquals( Trilean.UNKNOWN, noRegistrations.isValidMeasurement( missingEndTime ) )
 
         val noEndTimeAllowed = measurement( StubDataPoint(), 0, 1 )
         assertEquals( Trilean.FALSE, StubDataTypes.isValidMeasurement( noEndTimeAllowed ) )
+        assertEquals( Trilean.UNKNOWN, noRegistrations.isValidMeasurement( noEndTimeAllowed ) )
     }
 
     @Test
-    fun isValidMeasurement_returns_false_when_DataType_does_not_correspond()
+    fun isValidMeasurement_when_DataType_does_not_correspond_to_Data()
     {
         val incorrectDataType = Measurement( 0, null, STUB_DATA_POINT_TYPE, StubDataTimeSpan() )
         assertEquals( Trilean.FALSE, StubDataTypes.isValidMeasurement( incorrectDataType ) )
-    }
-
-    @Test
-    fun isValidMeasurement_returns_unknown_when_DataType_is_not_registered()
-    {
-        val unregisteredType = measurement( StubDataPoint(), 0 )
-        assertEquals( Trilean.UNKNOWN, noRegistrations.isValidMeasurement( unregisteredType ) )
+        assertEquals( Trilean.UNKNOWN, noRegistrations.isValidMeasurement( incorrectDataType ) )
     }
 
     @Test
@@ -118,14 +119,48 @@ class SerializerDerivedMethodsTest
     }
 
     @Test
-    fun isValidDataStreamSequence_when_there_are_invalid_measurements()
+    fun isValidDataStreamSequence_when_measurement_time_types_are_inconsistent()
     {
-        val incorrectMeasurement = measurement( StubDataPoint(), 0 )
-        val correctMeasurement = measurement( StubDataPoint(), 10, 15 )
-        val sequence = createStubSequence( 0, incorrectMeasurement, correctMeasurement )
+        val measurement1 = measurement( StubDataPoint(), 0 )
+        val measurement2 = measurement( StubDataPoint(), 10, 15 )
+        val sequence = createStubSequence( 0, measurement1, measurement2 )
 
         assertEquals( Trilean.FALSE, StubDataTypes.isValidDataStreamSequence( sequence ) )
         assertEquals( Trilean.FALSE, noRegistrations.isValidDataStreamSequence( sequence ) )
+    }
+
+    @Test
+    fun isValidDataStreamSequence_when_measurements_time_types_are_consistent_and_ordered_but_wrong()
+    {
+        val measurement1 = measurement( StubDataTimeSpan(), 0 )
+        val measurement2 = measurement( StubDataTimeSpan(), 10 )
+        val sequence = createStubSequence( 0, measurement1, measurement2 )
+
+        assertEquals( Trilean.FALSE, StubDataTypes.isValidDataStreamSequence( sequence ) )
+        assertEquals( Trilean.UNKNOWN, noRegistrations.isValidDataStreamSequence( sequence ) )
+    }
+
+    @Test
+    fun isValidDataStreamSequence_when_data_does_not_match_datatype()
+    {
+        @Serializable
+        class WrongData : Data
+
+        // Wrong measurement is first in sequence.
+        val dataType = STUB_DATA_POINT_TYPE
+        val dataStreamId = DataStreamId( stubDeploymentId, "Test", dataType )
+        val wrongMeasurement = Measurement<Data>( 10, null, dataType, WrongData() )
+        val sequence = MutableDataStreamSequence<Data>( dataStreamId, 0, listOf( 1 ) )
+        sequence.appendMeasurements( wrongMeasurement )
+        assertEquals( Trilean.FALSE, StubDataTypes.isValidDataStreamSequence( sequence ) )
+        assertEquals( Trilean.UNKNOWN, noRegistrations.isValidDataStreamSequence( sequence ) )
+
+        // Wrong measurement appears later in sequence.
+        val biggerSequence = MutableDataStreamSequence<Data>( dataStreamId, 0, listOf( 1 ) )
+        biggerSequence.appendMeasurements( measurement( StubDataPoint(), 0 ) )
+        biggerSequence.appendMeasurements( wrongMeasurement )
+        assertEquals( Trilean.FALSE, StubDataTypes.isValidDataStreamSequence( biggerSequence ) )
+        assertEquals( Trilean.UNKNOWN, noRegistrations.isValidDataStreamSequence( biggerSequence ) )
     }
 
     @Test

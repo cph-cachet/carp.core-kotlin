@@ -53,17 +53,17 @@ inline fun <reified TData : Data> measurement(
 ): Measurement<TData> = Measurement( sensorStartTime, sensorEndTime, getDataType( TData::class ), data )
 
 /**
- * Determines whether the [DataType] and [DataTimeType] of [measurement] corresponds to the expected values for [Data]
- * as determined by [DataTypeMetaDataMap], or [Trilean.UNKNOWN] in case the type of [Data] is not registered.
+ * Determines whether [Data] and [DataTimeType] of [measurement] corresponds to the expected values for [DataType]
+ * as determined by [DataTypeMetaDataMap], or [Trilean.UNKNOWN] in case the type of [DataType] is not registered.
  */
 fun DataTypeMetaDataMap.isValidMeasurement( measurement: Measurement<*> ): Trilean
 {
-    val expectedDataType = getDataType( measurement.data::class )
+    val expectedDataType = measurement.dataType
     val registeredType = this[ expectedDataType ] ?: return Trilean.UNKNOWN
 
     val expectedTimeType = registeredType.timeType
     val isValid =
-        expectedDataType == measurement.dataType &&
+        expectedDataType == getDataType( measurement.data::class ) &&
         expectedTimeType == measurement.getDataTimeType()
 
     return isValid.toTrilean()
@@ -83,14 +83,18 @@ fun DataTypeMetaDataMap.isValidDataStreamSequence( sequence: DataStreamSequence<
     // Early out for empty collections.
     if ( sequence.measurements.isEmpty() ) return if ( registeredType == null ) Trilean.UNKNOWN else Trilean.TRUE
 
-    // Return false if the first measurement has a different time type than expected.
+    // Return false if the first measurement has unexpected time type or data.
     val first = sequence.measurements.first()
     val expectedTimeType = registeredType?.timeType ?: first.getDataTimeType()
-    if ( registeredType != null && first.getDataTimeType() != expectedTimeType ) return Trilean.FALSE
+    fun correspondsToExpected( measurement: Measurement<*> ) =
+        measurement.getDataTimeType() == expectedTimeType &&
+        ( registeredType == null || getDataType( measurement.data::class ) == expectedDataType )
+    if ( !correspondsToExpected( first ) ) return Trilean.FALSE
 
-    // Return false if any of the remaining measurements has an invalid time type or are ordered incorrectly.
+    // Return false if any of the remaining measurements has unexpected time type or data, or are ordered incorrectly.
     sequence.measurements.reduce { cur, next ->
-        val isValid = next.getDataTimeType() == expectedTimeType &&
+        val isValid =
+            correspondsToExpected( next ) &&
             when( expectedTimeType )
             {
                 DataTimeType.POINT -> next.sensorStartTime > cur.sensorStartTime
