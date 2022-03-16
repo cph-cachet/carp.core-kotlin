@@ -106,7 +106,7 @@ class SerializerDerivedMethodsTest
     @Test
     fun isValidDataStreamSequence_when_there_are_no_measurements()
     {
-        val emptySequence = MutableDataStreamSequence(
+        val emptySequence = MutableDataStreamSequence<StubDataPoint>(
             dataStreamId<StubDataPoint>( stubDeploymentId, stubSequenceDeviceRoleName ),
             0,
             stubTriggerIds,

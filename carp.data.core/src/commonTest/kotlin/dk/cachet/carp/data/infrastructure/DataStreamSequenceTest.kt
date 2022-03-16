@@ -20,7 +20,7 @@ class DataStreamSequenceTest
     private val json = createDefaultJSON( STUBS_SERIAL_MODULE )
     private val testDataStreamSequence =
         with(
-            MutableDataStreamSequence(
+            MutableDataStreamSequence<StubDataPoint>(
                 dataStreamId<StubDataPoint>( UUID.randomUUID(), "Device" ),
                 0,
                 listOf( 1 ),
@@ -39,7 +39,7 @@ class DataStreamSequenceTest
     fun can_serialize_and_deserialize_DataStreamSequence()
     {
         val serialized = json.encodeToString( DataStreamSequenceSerializer, testDataStreamSequence )
-        val parsed: DataStreamSequence = json.decodeFromString( DataStreamSequenceSerializer, serialized )
+        val parsed: DataStreamSequence<*> = json.decodeFromString( DataStreamSequenceSerializer, serialized )
 
         assertEquals( testDataStreamSequence, parsed )
     }

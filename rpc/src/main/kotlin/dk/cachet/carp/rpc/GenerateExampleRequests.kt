@@ -231,12 +231,12 @@ private val expectedDataStreams = setOf(
     DataStreamsConfiguration.ExpectedDataStream.fromDataStreamId( phoneStepsDataStream )
 )
 private val geoDataSequence =
-    MutableDataStreamSequence( phoneGeoDataStream, 0, listOf( startOfStudyTriggerId ) ).apply {
+    MutableDataStreamSequence<Geolocation>( phoneGeoDataStream, 0, listOf( startOfStudyTriggerId ) ).apply {
         appendMeasurements( measurement( Geolocation( 55.68061908805645, 12.582050313435703 ), 1642505045000000L ) )
         appendMeasurements( measurement( Geolocation( 55.680802203873114, 12.581802212861367 ), 1642505144000000L ) )
     }
 private val stepsDataSequence =
-    MutableDataStreamSequence( phoneStepsDataStream, 0, listOf( startOfStudyTriggerId ) ).apply {
+    MutableDataStreamSequence<StepCount>( phoneStepsDataStream, 0, listOf( startOfStudyTriggerId ) ).apply {
         appendMeasurements( measurement( StepCount( 0 ), 1642505045000000L ) )
         appendMeasurements( measurement( StepCount( 30 ), 1642505144000000L ) )
     }

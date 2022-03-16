@@ -50,7 +50,7 @@ class InMemoryDataStreamServiceTest : DataStreamServiceTest
         val unknownDataPoint: Data = json.decodeFromString( unknownDataPointJson )
 
         // Append data point.
-        val sequence = MutableDataStreamSequence( dataStreamId, 0, listOf( 0 ), SyncPoint( Clock.System.now() ) )
+        val sequence = MutableDataStreamSequence<Data>( dataStreamId, 0, listOf( 0 ), SyncPoint( Clock.System.now() ) )
         sequence.appendMeasurements( Measurement( 0, null, unknownType, unknownDataPoint ) )
         val batch = MutableDataStreamBatch()
         batch.appendSequence( sequence )

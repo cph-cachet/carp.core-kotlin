@@ -75,7 +75,7 @@ fun DataTypeMetaDataMap.isValidMeasurement( measurement: Measurement<*> ): Trile
  * If data type isn't registered in [DataTypeMetaDataMap], [Trilean.UNKNOWN] is returned if measurements
  * all share the same [DataTimeType] and are ordered correspondingly; [Trilean.FALSE] otherwise.
  */
-fun DataTypeMetaDataMap.isValidDataStreamSequence( sequence: DataStreamSequence ): Trilean
+fun DataTypeMetaDataMap.isValidDataStreamSequence( sequence: DataStreamSequence<*> ): Trilean
 {
     val expectedDataType = sequence.dataStream.dataType
     val registeredType: DataTypeMetaData? = this[ expectedDataType ]

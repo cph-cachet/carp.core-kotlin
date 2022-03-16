@@ -1,6 +1,7 @@
 package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.common.infrastructure.test.StubDataTimeSpan
 import dk.cachet.carp.data.infrastructure.dataStreamId
@@ -16,19 +17,19 @@ private val stubDataPointStream = dataStreamId<StubDataPoint>( UUID.randomUUID()
  */
 interface DataStreamSequenceTest
 {
-    fun createStubDataStreamSequence(
+    fun <T : Data> createStubDataStreamSequence(
         firstSequenceId: Long = 0,
-        measurements: List<Measurement<*>>,
+        measurements: List<Measurement<T>>,
         triggerIds: List<Int> = listOf( 1 ),
         syncPoint: SyncPoint = stubSyncPoint,
         dataStream: DataStreamId = stubDataPointStream
-    ): DataStreamSequence
+    ): DataStreamSequence<T>
 
 
     @Test
     fun range_for_empty_sequence()
     {
-        val empty = createStubDataStreamSequence( 0, emptyList() )
+        val empty = createStubDataStreamSequence<StubDataPoint>( 0, emptyList() )
 
         assertEquals( LongRange.EMPTY, empty.range )
     }
@@ -66,7 +67,7 @@ interface DataStreamSequenceTest
     fun isImmediatelyFollowedBy_is_true_for_empty_sequence()
     {
         val measurement = measurement( StubDataPoint(), 0 )
-        val emptySequence = createStubDataStreamSequence( 0, emptyList() )
+        val emptySequence = createStubDataStreamSequence<StubDataPoint>( 0, emptyList() )
         val firstItem = createStubDataStreamSequence( 0, listOf( measurement ) )
 
         assertTrue( emptySequence.isImmediatelyFollowedBy( firstItem ) )
@@ -103,15 +104,15 @@ interface DataStreamSequenceTest
  */
 class MutableDataStreamSequenceTest : DataStreamSequenceTest
 {
-    override fun createStubDataStreamSequence(
+    override fun <T : Data> createStubDataStreamSequence(
         firstSequenceId: Long,
-        measurements: List<Measurement<*>>,
+        measurements: List<Measurement<T>>,
         triggerIds: List<Int>,
         syncPoint: SyncPoint,
         dataStream: DataStreamId
-    ): DataStreamSequence
+    ): DataStreamSequence<T>
     {
-        val sequence = MutableDataStreamSequence( dataStream, firstSequenceId, triggerIds, syncPoint )
+        val sequence = MutableDataStreamSequence<T>( dataStream, firstSequenceId, triggerIds, syncPoint )
         sequence.appendMeasurements( measurements )
 
         return sequence
@@ -123,7 +124,7 @@ class MutableDataStreamSequenceTest : DataStreamSequenceTest
     {
         assertFailsWith<IllegalArgumentException>
         {
-            MutableDataStreamSequence( stubDataPointStream, -1, listOf( 1 ), stubSyncPoint )
+            MutableDataStreamSequence<StubDataPoint>( stubDataPointStream, -1, listOf( 1 ), stubSyncPoint )
         }
     }
 
@@ -132,14 +133,14 @@ class MutableDataStreamSequenceTest : DataStreamSequenceTest
     {
         assertFailsWith<IllegalArgumentException>
         {
-            MutableDataStreamSequence( stubDataPointStream, 0, emptyList(), stubSyncPoint )
+            MutableDataStreamSequence<StubDataPoint>( stubDataPointStream, 0, emptyList(), stubSyncPoint )
         }
     }
 
     @Test
     fun appendMeasurements_succeeds()
     {
-        val sequence = MutableDataStreamSequence( stubDataPointStream, 0, listOf( 1 ), stubSyncPoint )
+        val sequence = MutableDataStreamSequence<StubDataPoint>( stubDataPointStream, 0, listOf( 1 ), stubSyncPoint )
         sequence.appendMeasurements(
             measurement( StubDataPoint(), 0 ),
             measurement( StubDataPoint(), 10 )
@@ -151,7 +152,7 @@ class MutableDataStreamSequenceTest : DataStreamSequenceTest
     @Test
     fun appendMeasurements_fails_for_incorrect_data_type()
     {
-        val sequence = MutableDataStreamSequence( stubDataPointStream, 0, listOf( 1 ), stubSyncPoint )
+        val sequence = MutableDataStreamSequence<Data>( stubDataPointStream, 0, listOf( 1 ), stubSyncPoint )
 
         assertFailsWith<IllegalArgumentException> { sequence.appendMeasurements( measurement( StubDataTimeSpan(), 0 ) ) }
     }
@@ -159,7 +160,7 @@ class MutableDataStreamSequenceTest : DataStreamSequenceTest
     @Test
     fun appendMeasurement_fails_when_list_contains_incorrect_data_type()
     {
-        val sequence = MutableDataStreamSequence( stubDataPointStream, 0, listOf( 1 ), stubSyncPoint )
+        val sequence = MutableDataStreamSequence<Data>( stubDataPointStream, 0, listOf( 1 ), stubSyncPoint )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -175,10 +176,10 @@ class MutableDataStreamSequenceTest : DataStreamSequenceTest
     {
         val measurement = measurement( StubDataPoint(), 0 )
 
-        val sequence = MutableDataStreamSequence( stubDataPointStream, 0, listOf( 1 ), stubSyncPoint )
+        val sequence = MutableDataStreamSequence<StubDataPoint>( stubDataPointStream, 0, listOf( 1 ), stubSyncPoint )
         sequence.appendMeasurements( measurement )
 
-        val toAppend = MutableDataStreamSequence( stubDataPointStream, 1, listOf( 1 ), stubSyncPoint )
+        val toAppend = MutableDataStreamSequence<StubDataPoint>( stubDataPointStream, 1, listOf( 1 ), stubSyncPoint )
         toAppend.appendMeasurements( measurement )
 
         sequence.appendSequence( toAppend )
