@@ -219,7 +219,7 @@ class HostsIntegrationTest
         val syncPoint = SyncPoint( Clock.System.now() )
         val toAppend = MutableDataStreamBatch()
         toAppend.appendSequence(
-            MutableDataStreamSequence( stubStreamId, 0, listOf( atStartOfStudy.id ), syncPoint )
+            MutableDataStreamSequence<StubDataPoint>( stubStreamId, 0, listOf( atStartOfStudy.id ), syncPoint )
                 .apply { appendMeasurements( measurement( StubDataPoint(), 0 ) ) }
         )
 
@@ -236,7 +236,7 @@ class HostsIntegrationTest
         deploymentService.stop( deploymentId )
         val appendMore = MutableDataStreamBatch()
         appendMore.appendSequence(
-            MutableDataStreamSequence( stubStreamId, 1, listOf( atStartOfStudy.id ), syncPoint )
+            MutableDataStreamSequence<StubDataPoint>( stubStreamId, 1, listOf( atStartOfStudy.id ), syncPoint )
                 .apply { appendMeasurements( measurement( StubDataPoint(), 1000 ) ) }
         )
         assertFailsWith<IllegalStateException> { dataStreamService.appendToDataStreams( deploymentId, appendMore ) }

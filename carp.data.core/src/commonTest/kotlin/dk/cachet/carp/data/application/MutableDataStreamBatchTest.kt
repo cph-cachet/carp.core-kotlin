@@ -49,14 +49,14 @@ class MutableDataStreamBatchTest
 
         val dataStream = dataStreamId<StubDataPoint>( UUID.randomUUID(), "Device" )
         val measurement = measurement( StubDataPoint(), 0 )
-        val triggerId1Sequence = MutableDataStreamSequence(
+        val triggerId1Sequence = MutableDataStreamSequence<StubDataPoint>(
             dataStream,
             0,
             listOf( 1 ),
             stubSyncPoint
         )
         triggerId1Sequence.appendMeasurements( measurement )
-        val triggerId2Sequence = MutableDataStreamSequence(
+        val triggerId2Sequence = MutableDataStreamSequence<StubDataPoint>(
             dataStream,
             1,
             listOf( 2 ),
@@ -75,7 +75,7 @@ class MutableDataStreamBatchTest
     {
         val batch = MutableDataStreamBatch()
         val dataStream = dataStreamId<StubDataPoint>( UUID.randomUUID(), "Device" )
-        val firstSequence = MutableDataStreamSequence(
+        val firstSequence = MutableDataStreamSequence<StubDataPoint>(
             dataStream,
             0,
             stubTriggerIds,
@@ -84,7 +84,7 @@ class MutableDataStreamBatchTest
         firstSequence.appendMeasurements( measurement( StubDataPoint(), 0 ) )
         batch.appendSequence( firstSequence )
 
-        val newSequence = MutableDataStreamSequence(
+        val newSequence = MutableDataStreamSequence<StubDataPoint>(
             dataStream,
             1,
             stubTriggerIds,
@@ -140,7 +140,7 @@ class MutableDataStreamBatchTest
     {
         val batch = MutableDataStreamBatch()
         val dataStream = dataStreamId<StubDataPoint>( UUID.randomUUID(), "Device" )
-        val firstSequence = MutableDataStreamSequence(
+        val firstSequence = MutableDataStreamSequence<StubDataPoint>(
             dataStream,
             0,
             stubTriggerIds,
@@ -149,7 +149,7 @@ class MutableDataStreamBatchTest
         firstSequence.appendMeasurements( measurement( StubDataPoint(), 0 ) )
         batch.appendSequence( firstSequence )
 
-        val newSequence = MutableDataStreamSequence(
+        val newSequence = MutableDataStreamSequence<StubDataPoint>(
             dataStream,
             1,
             stubTriggerIds,

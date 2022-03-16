@@ -1,6 +1,7 @@
 package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.intersect
 import dk.cachet.carp.common.domain.ExtractUniqueKeyMap
 import dk.cachet.carp.data.application.DataStreamBatch
@@ -90,7 +91,7 @@ class InMemoryDataStreamService : DataStreamService
                 val subRange = it.range.intersect( queryRange )
 
                 if ( subRange.isEmpty() ) null
-                else MutableDataStreamSequence( dataStream, subRange.first, it.triggerIds, it.syncPoint )
+                else MutableDataStreamSequence<Data>( dataStream, subRange.first, it.triggerIds, it.syncPoint )
                     .apply {
                         val startOffset = subRange.first - it.range.first
                         val exclusiveEnd = startOffset + subRange.last - subRange.first + 1

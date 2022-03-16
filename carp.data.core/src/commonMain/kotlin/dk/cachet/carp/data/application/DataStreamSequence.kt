@@ -1,5 +1,6 @@
 package dk.cachet.carp.data.application
 
+import dk.cachet.carp.common.application.data.Data
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -11,11 +12,11 @@ import kotlinx.serialization.encoding.Encoder
  * A sequence of consecutive [measurements] for a [dataStream] starting from [firstSequenceId]
  * which all share the same [triggerIds] and [syncPoint].
  */
-sealed interface DataStreamSequence : Sequence<DataStreamPoint<*>>
+sealed interface DataStreamSequence<TData : Data> : Sequence<DataStreamPoint<TData>>
 {
     val dataStream: DataStreamId
     val firstSequenceId: Long
-    val measurements: List<Measurement<*>>
+    val measurements: List<Measurement<TData>>
     val triggerIds: List<Int>
     val syncPoint: SyncPoint
 
@@ -42,7 +43,7 @@ sealed interface DataStreamSequence : Sequence<DataStreamPoint<*>>
     /**
      * Get an iterator to iterate over [DataStreamPoint]s contained in this sequence.
      */
-    override fun iterator(): Iterator<DataStreamPoint<*>> =
+    override fun iterator(): Iterator<DataStreamPoint<TData>> =
         measurements.asSequence().mapIndexed { index, measurement ->
             DataStreamPoint(
                 firstSequenceId + index,
@@ -58,7 +59,7 @@ sealed interface DataStreamSequence : Sequence<DataStreamPoint<*>>
      * Determines whether [sequence] is a sequence for the same data stream with matching [triggerIds] and [syncPoint]
      * and immediately follows the last data point in this sequence.
      */
-    fun isImmediatelyFollowedBy( sequence: DataStreamSequence ): Boolean =
+    fun isImmediatelyFollowedBy( sequence: DataStreamSequence<*> ): Boolean =
         dataStream == sequence.dataStream &&
         triggerIds == sequence.triggerIds &&
         syncPoint == sequence.syncPoint &&
@@ -69,9 +70,9 @@ sealed interface DataStreamSequence : Sequence<DataStreamPoint<*>>
     /**
      * Returns a new [MutableDataStreamSequence], containing all the measurements of this sequence.
      */
-    fun toMutableDataStreamSequence(): MutableDataStreamSequence
+    fun toMutableDataStreamSequence(): MutableDataStreamSequence<TData>
     {
-        val sequence = MutableDataStreamSequence(
+        val sequence = MutableDataStreamSequence<TData>(
             dataStream,
             firstSequenceId,
             triggerIds,
@@ -88,17 +89,17 @@ sealed interface DataStreamSequence : Sequence<DataStreamPoint<*>>
  * A mutable sequence of consecutive [measurements] for a [dataStream] starting from [firstSequenceId]
  * which all share the same [triggerIds] and [syncPoint].
  */
-class MutableDataStreamSequence(
+class MutableDataStreamSequence<TData : Data>(
     override val dataStream: DataStreamId,
     override val firstSequenceId: Long,
     triggerIds: List<Int>,
     override val syncPoint: SyncPoint = SyncPoint.UnixEpoch
-) : DataStreamSequence
+) : DataStreamSequence<TData>
 {
     override val triggerIds: List<Int> = triggerIds.toList()
 
-    private val _measurements: MutableList<Measurement<*>> = mutableListOf()
-    override val measurements: List<Measurement<*>>
+    private val _measurements: MutableList<Measurement<TData>> = mutableListOf()
+    override val measurements: List<Measurement<TData>>
         get() = _measurements
 
     init { throwIfIllegalInitialization() }
@@ -109,7 +110,7 @@ class MutableDataStreamSequence(
      *
      * @throws IllegalArgumentException when any of the [measurements] is of a different data type than [dataStream].
      */
-    fun appendMeasurements( measurements: List<Measurement<*>> )
+    fun appendMeasurements( measurements: List<Measurement<TData>> )
     {
         require( measurements.all { it.dataType == dataStream.dataType } )
             { "Measurements all need to correspond to the data type of the data stream." }
@@ -122,7 +123,7 @@ class MutableDataStreamSequence(
      *
      * @throws IllegalArgumentException when any of the [measurements] is of a different data type than [dataStream].
      */
-    fun appendMeasurements( vararg measurements: Measurement<*> ) = appendMeasurements( measurements.toList() )
+    fun appendMeasurements( vararg measurements: Measurement<TData> ) = appendMeasurements( measurements.toList() )
 
     /**
      * Append all measurements of [sequence] to this sequence.
@@ -130,7 +131,7 @@ class MutableDataStreamSequence(
      * @throws IllegalArgumentException when [sequence] doesn't match this sequence or doesn't immediately follow
      *   the last data point in this sequence.
      */
-    fun appendSequence( sequence: DataStreamSequence )
+    fun appendSequence( sequence: DataStreamSequence<TData> )
     {
         require( isImmediatelyFollowedBy( sequence ) )
             { "Sequence doesn't match or doesn't immediately follow the last data point." }
@@ -146,16 +147,16 @@ class MutableDataStreamSequence(
 /**
  * Serializer for any [DataStreamSequence], which doesn't guarantee the concrete type is retained.
  */
-object DataStreamSequenceSerializer : KSerializer<DataStreamSequence>
+object DataStreamSequenceSerializer : KSerializer<DataStreamSequence<*>>
 {
     @Serializable
     class DataStreamSequenceSnapshot internal constructor(
         override val dataStream: DataStreamId,
         override val firstSequenceId: Long,
-        override val measurements: List<Measurement<*>>,
+        override val measurements: List<Measurement<Data>>,
         override val triggerIds: List<Int>,
         override val syncPoint: SyncPoint = SyncPoint.UnixEpoch
-    ) : DataStreamSequence
+    ) : DataStreamSequence<Data>
     {
         init { throwIfIllegalInitialization() }
 
@@ -166,7 +167,7 @@ object DataStreamSequenceSerializer : KSerializer<DataStreamSequence>
     private val serializer = DataStreamSequenceSnapshot.serializer()
     override val descriptor: SerialDescriptor = serializer.descriptor
 
-    override fun serialize( encoder: Encoder, value: DataStreamSequence ) =
+    override fun serialize( encoder: Encoder, value: DataStreamSequence<*> ) =
         encoder.encodeSerializableValue(
             serializer,
             DataStreamSequenceSnapshot(
@@ -178,17 +179,17 @@ object DataStreamSequenceSerializer : KSerializer<DataStreamSequence>
             )
         )
 
-    override fun deserialize( decoder: Decoder ): DataStreamSequence = decoder.decodeSerializableValue( serializer )
+    override fun deserialize( decoder: Decoder ): DataStreamSequence<*> = decoder.decodeSerializableValue( serializer )
 }
 
-private fun DataStreamSequence.throwIfIllegalInitialization() =
+private fun DataStreamSequence<*>.throwIfIllegalInitialization() =
     try { throwIfIllegalState() }
     catch ( ex: IllegalStateException ) { throw IllegalArgumentException( ex ) }
 
-private fun DataStreamSequence.equalsOther( other: Any? ): Boolean
+private fun DataStreamSequence<*>.equalsOther( other: Any? ): Boolean
 {
     if ( this === other ) return true
-    if ( other !is DataStreamSequence ) return false
+    if ( other !is DataStreamSequence<*> ) return false
 
     return toList() == other.toList()
 }

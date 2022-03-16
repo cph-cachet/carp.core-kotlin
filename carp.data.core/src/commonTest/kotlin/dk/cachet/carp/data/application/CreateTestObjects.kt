@@ -16,7 +16,7 @@ const val stubSequenceDeviceRoleName = "Device"
 /**
  * Create a [DataStreamSequence], always using the same data stream identifiers, except for the data type defined by [T].
  */
-inline fun <reified T : Data> createStubSequence( firstSequenceId: Long, vararg data: T ): DataStreamSequence =
+inline fun <reified T : Data> createStubSequence( firstSequenceId: Long, vararg data: T ): DataStreamSequence<T> =
     createStubSequence(
         firstSequenceId,
         *data.map { measurement( it, 0 ) }.toTypedArray()
@@ -28,8 +28,8 @@ inline fun <reified T : Data> createStubSequence( firstSequenceId: Long, vararg 
 inline fun <reified T : Data> createStubSequence(
     firstSequenceId: Long,
     vararg measurements: Measurement<T>
-): DataStreamSequence =
-    MutableDataStreamSequence(
+): DataStreamSequence<T> =
+    MutableDataStreamSequence<T>(
         dataStreamId<T>( stubDeploymentId, stubSequenceDeviceRoleName ),
         firstSequenceId,
         stubTriggerIds,
