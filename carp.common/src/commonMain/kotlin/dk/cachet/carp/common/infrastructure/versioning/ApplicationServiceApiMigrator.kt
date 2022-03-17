@@ -55,16 +55,19 @@ class ApplicationServiceApiMigrator<TService : ApplicationService<TService, *>>(
         val toApply = migrations.dropWhile { requestVersion.minor >= it.targetMinorVersion }
         val updatedRequest = toApply.fold( request ) { r, migration -> migration.migrateRequest( r ) }
 
-        // TODO: apply response migrations.
-        val downgradeResponse =
-            {
-                response: JsonElement?, ex: Exception? ->
-                    if ( ex != null ) throw ex
-                    else response!!
+        // Defer applying response migrations.
+        fun downgradeResponse( response: JsonElement?, ex: Exception? ): JsonElement
+        {
+            val updatedResponse = toApply.fold( ApiResponse( response, ex ) ) { curResponse, migration ->
+                migration.migrateResponse( request, curResponse, requestVersion )
             }
 
+            return if ( updatedResponse.ex != null ) throw updatedResponse.ex
+                else updatedResponse.response!!
+        }
+
         val decodedRequest = json.decodeFromJsonElement( requestObjectSerializer, updatedRequest )
-        return MigratedRequest( json, decodedRequest, downgradeResponse )
+        return MigratedRequest( json, decodedRequest, ::downgradeResponse )
     }
 
     /**
