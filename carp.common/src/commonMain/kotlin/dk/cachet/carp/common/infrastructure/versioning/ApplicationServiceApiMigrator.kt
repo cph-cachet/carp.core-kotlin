@@ -96,7 +96,7 @@ class ApplicationServiceApiMigrator<TService : ApplicationService<TService, *>>(
         val requestVersion = ApiVersion.fromString( requestVersionString )
         require( !requestVersion.isMoreRecent( runtimeVersion ) )
             { "Object version ($requestVersion) is more recent than the runtime version ($runtimeVersion)." }
-        require( runtimeVersion.major > requestVersion.major )
+        require( runtimeVersion.major == requestVersion.major )
             { "Can't migrate to new major versions." }
 
         return requestVersion

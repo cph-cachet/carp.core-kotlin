@@ -41,6 +41,7 @@ Two key **design goals** differentiate this project from similar projects:
 - [Infrastructure helpers](#infrastructure-helpers)
   - [Serialization](#serialization)
   - [Request objects](#request-objects)
+  - [Application service versioning](#application-service-versioning)
   - [Authorization](#authorization)
   - [Stub classes](#stub-classes)
 - [Usage](#usage)
@@ -131,6 +132,15 @@ We recommend [using a when expression](https://kotlinlang.org/docs/reference/sea
 In addition, each request object can be executed by passing a matching application service to `invokeOn`.
 This allows a centralized implementation for any incoming request object to an application service.
 However, in practice you might want to perform additional actions depending on specific requests, e.g., [authorization which is currently not part of core](#authorization).
+
+### Application service versioning
+
+When using the default serializers for the provided request objects and integration events, you can get backwards compatible application services for free.
+Each new CARP version will come with the necessary application service migration functionality for new minor API versions.
+Clients that are on the same _major_ version as the backend will be able to use new hosted _minor_ versions of the API.
+
+Each application service has a corresponding `ApplicationServiceApiMigrator`.
+To get support for backwards compatible application services, you need to wire `migrateRequest`, its invocation on the application service (`invokeOn`), and `migrateEvent` into your infrastructure request and eventing pipeline.
 
 ### Authorization
 
