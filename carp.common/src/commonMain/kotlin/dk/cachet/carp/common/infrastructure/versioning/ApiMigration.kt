@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.infrastructure.versioning
 
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -10,7 +11,7 @@ internal val API_VERSION_FIELD = ApplicationServiceRequest<*, *>::apiVersion.nam
 
 
 /**
- * Provides a conversion for request objects and integration events of API versions starting from
+ * Provides a conversion for request objects, responses, and integration events of API versions starting from
  * [minimumMinorVersion] to be migrated to [targetMinorVersion].
  */
 abstract class ApiMigration( val minimumMinorVersion: Int, val targetMinorVersion: Int )
@@ -24,11 +25,25 @@ abstract class ApiMigration( val minimumMinorVersion: Int, val targetMinorVersio
 
     abstract fun migrateRequest( request: JsonObject ): JsonObject
     abstract fun migrateEvent( event: JsonObject ): JsonObject
+    abstract fun migrateResponse( request: JsonObject, response: ApiResponse, targetVersion: ApiVersion ): ApiResponse
 
     protected fun JsonElement.replaceString( oldValue: String, newValue: String ): JsonPrimitive
     {
         require( this is JsonPrimitive && this.isString )
         return JsonPrimitive( content.replace( oldValue, newValue ) )
+    }
+}
+
+
+/**
+ * The [response] to an API request, if successful, [ex] otherwise.
+ */
+class ApiResponse( val response: JsonElement?, val ex: Exception? )
+{
+    init
+    {
+        require( (response != null && ex == null) || (ex != null && response == null) )
+            { "Response or exception needs to be set, but not both." }
     }
 }
 
@@ -41,6 +56,8 @@ class UnchangedMigration( minimumMinorVersion: Int, targetMinorVersion: Int ) :
 {
     override fun migrateRequest( request: JsonObject ): JsonObject = updateVersion( request )
     override fun migrateEvent( event: JsonObject ): JsonObject = updateVersion( event )
+    override fun migrateResponse( request: JsonObject, response: ApiResponse, targetVersion: ApiVersion ): ApiResponse =
+        response
 
     private fun updateVersion( toUpdate: JsonObject ) = toUpdate
         .map {
