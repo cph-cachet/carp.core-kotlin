@@ -17,27 +17,10 @@ import kotlinx.serialization.json.jsonPrimitive
 class ApplicationServiceApiMigrator<TService : ApplicationService<TService, *>>(
     val runtimeVersion: ApiVersion,
     val requestObjectSerializer: KSerializer<out ApplicationServiceRequest<TService, *>>,
+    val eventSerializer: KSerializer<out IntegrationEvent<TService>>,
     migrations: List<ApiMigration> = emptyList()
 )
 {
-    companion object
-    {
-        /**
-         * Retrieve the [ApiVersion] for the given [jsonObject].
-         *
-         * @throws IllegalArgumentException when [jsonObject] does not contain an [ApiVersion].
-         */
-        private fun getApiVersion( jsonObject: JsonObject ): ApiVersion
-        {
-            val requestVersionString = jsonObject[ API_VERSION_FIELD ]?.jsonPrimitive?.content
-            requireNotNull( requestVersionString )
-                { "Request object needs to contain `apiVersion` for migration to succeed." }
-
-            return ApiVersion.fromString( requestVersionString )
-        }
-    }
-
-
     // Sort migrations and throw exception if there are missing or conflicting migrations.
     private val migrations = migrations.sortedBy { it.minimumMinorVersion }.also {
         val targetVersion = runtimeVersion.minor
@@ -60,16 +43,13 @@ class ApplicationServiceApiMigrator<TService : ApplicationService<TService, *>>(
      * Migrate the [request] so that it matches [runtimeVersion] and deserialize using [json].
      *
      * @throws IllegalArgumentException if:
+     *  - [request] does not contain an [ApiVersion]
      *  - the [request] version is more recent than the runtime version
      *  - the runtime version is a later major version than the [request] version
      */
     fun migrateRequest( json: Json, request: JsonObject ): MigratedRequest<TService>
     {
-        val requestVersion = getApiVersion( request )
-        require( !requestVersion.isMoreRecent( runtimeVersion ) )
-            { "Request version ($requestVersion) is more recent than the runtime version ($runtimeVersion)." }
-        require( runtimeVersion.major > requestVersion.major )
-            { "Can't migrate to new major versions." }
+        val requestVersion = getAndValidateApiVersion( request )
 
         // Apply request migrations.
         val toApply = migrations.dropWhile { requestVersion.minor >= it.targetMinorVersion }
@@ -85,6 +65,38 @@ class ApplicationServiceApiMigrator<TService : ApplicationService<TService, *>>(
 
         val decodedRequest = json.decodeFromJsonElement( requestObjectSerializer, updatedRequest )
         return MigratedRequest( json, decodedRequest, downgradeResponse )
+    }
+
+    /**
+     * Migrate the [event] so that it matches [runtimeVersion] and deserialize using [json].
+     *
+     * @throws IllegalArgumentException if:
+     *  - [event] does not contain an [ApiVersion]
+     *  - the [event] version is more recent than the runtime version
+     *  - the runtime version is a later major version than the [event] version
+     */
+    fun migrateEvent( json: Json, event: JsonObject ): IntegrationEvent<TService>
+    {
+        val eventVersion = getAndValidateApiVersion( event )
+        val toApply = migrations.dropWhile { eventVersion.minor >= it.targetMinorVersion }
+        val updatedEvent = toApply.fold( event ) { e, migration -> migration.migrateEvent( e ) }
+
+        return json.decodeFromJsonElement( eventSerializer, updatedEvent )
+    }
+
+    private fun getAndValidateApiVersion( jsonObject: JsonObject ): ApiVersion
+    {
+        val requestVersionString = jsonObject[ API_VERSION_FIELD ]?.jsonPrimitive?.content
+        requireNotNull( requestVersionString )
+            { "Object needs to contain `apiVersion` for migration to succeed." }
+
+        val requestVersion = ApiVersion.fromString( requestVersionString )
+        require( !requestVersion.isMoreRecent( runtimeVersion ) )
+            { "Object version ($requestVersion) is more recent than the runtime version ($runtimeVersion)." }
+        require( runtimeVersion.major > requestVersion.major )
+            { "Can't migrate to new major versions." }
+
+        return requestVersion
     }
 }
 

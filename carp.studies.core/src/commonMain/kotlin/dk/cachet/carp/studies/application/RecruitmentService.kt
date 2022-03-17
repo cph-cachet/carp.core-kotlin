@@ -11,6 +11,7 @@ import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import kotlinx.serialization.Required
+import kotlinx.serialization.Serializable
 
 
 /**
@@ -22,6 +23,7 @@ interface RecruitmentService : ApplicationService<RecruitmentService, Recruitmen
 {
     companion object { val API_VERSION = ApiVersion( 1, 0 ) }
 
+    @Serializable
     sealed class Event : IntegrationEvent<RecruitmentService>
     {
         @Required

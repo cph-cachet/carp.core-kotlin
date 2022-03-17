@@ -131,13 +131,9 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
         loggedRequests.forEachIndexed { index, logged ->
             val replayErrorBase = "Couldn't replay requests in: $fileName. Request #${index + 1}"
 
-            // Migrate request to latest version.
-            val request = apiMigrator.migrateRequest( json, logged.request )
-
             // Publish preceding events.
-            // TODO: migrate events to new version.
             logged.precedingEvents.forEach {
-                val event = json.decodeFromJsonElement( serviceInfo.eventSerializer, it )
+                val event = apiMigrator.migrateEvent( json, it as JsonObject )
                 val eventSource = checkNotNull( serviceInfo.getEventPublisher( event )?.kotlin )
                     { "The event \"${event::class}\" isn't an expected event processed by \"${serviceInfo.serviceKlass}\"." }
 
@@ -146,6 +142,7 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
             }
 
             // Validate whether request outcome corresponds to log.
+            val request = apiMigrator.migrateRequest( json, logged.request )
             val response: JsonElement? =
                 try { request.invokeOn( service ) }
                 catch ( ex: Exception )

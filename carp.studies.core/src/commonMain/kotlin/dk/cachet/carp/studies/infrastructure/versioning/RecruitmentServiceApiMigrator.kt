@@ -7,5 +7,6 @@ import dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest
 
 val RecruitmentServiceApiMigrator = ApplicationServiceApiMigrator(
     RecruitmentService.API_VERSION,
-    RecruitmentServiceRequest.Serializer
+    RecruitmentServiceRequest.Serializer,
+    RecruitmentService.Event.serializer()
 )

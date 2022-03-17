@@ -38,11 +38,19 @@ class ApplicationServiceApiMigratorTest
     }
 
 
+    private fun createTestApiMigrator( runtimeVersion: ApiVersion, migrations: List<ApiMigration> ) =
+        ApplicationServiceApiMigrator(
+            runtimeVersion,
+            TestServiceRequest.Serializer,
+            TestService.ServiceEvent.serializer(),
+            migrations
+        )
+
     @Test
     fun initialization_succeeds_when_no_migrations_are_needed()
     {
         val runtimeVersion = ApiVersion( 1, 0 )
-        ApplicationServiceApiMigrator( runtimeVersion, TestServiceRequest.Serializer, migrations = emptyList() )
+        createTestApiMigrator( runtimeVersion, migrations = emptyList() )
     }
 
     @Test
@@ -54,10 +62,10 @@ class ApplicationServiceApiMigratorTest
             UnchangedMigration( 0, 1 ),
             UnchangedMigration( 1, 2 )
         )
-        ApplicationServiceApiMigrator( runtimeVersion, TestServiceRequest.Serializer, intermediateMigrations )
+        createTestApiMigrator( runtimeVersion, intermediateMigrations )
 
         val rangeMigration = listOf( UnchangedMigration( 0, 2 ) )
-        ApplicationServiceApiMigrator( runtimeVersion, TestServiceRequest.Serializer, rangeMigration )
+        createTestApiMigrator( runtimeVersion, rangeMigration )
     }
 
     @Test
@@ -65,19 +73,13 @@ class ApplicationServiceApiMigratorTest
     {
         val runtimeVersion = ApiVersion( 1, 3 )
 
-        assertFailsWith<IllegalArgumentException>
-        {
-            ApplicationServiceApiMigrator( runtimeVersion, TestServiceRequest.Serializer, migrations = emptyList() )
-        }
+        assertFailsWith<IllegalArgumentException> { createTestApiMigrator( runtimeVersion, migrations = emptyList() ) }
 
         val migrations = listOf(
             UnchangedMigration( 0, 1 ),
             UnchangedMigration( 2, 3 )
         )
-        assertFailsWith<IllegalArgumentException>
-        {
-            ApplicationServiceApiMigrator( runtimeVersion, TestServiceRequest.Serializer, migrations )
-        }
+        assertFailsWith<IllegalArgumentException> { createTestApiMigrator( runtimeVersion, migrations ) }
     }
 
     @Test
@@ -88,9 +90,6 @@ class ApplicationServiceApiMigratorTest
             UnchangedMigration( 0, 1 ),
             UnchangedMigration( 0, 2 )
         )
-        assertFailsWith<IllegalArgumentException>
-        {
-            ApplicationServiceApiMigrator( runtimeVersion, TestServiceRequest.Serializer, migrations )
-        }
+        assertFailsWith<IllegalArgumentException> { createTestApiMigrator( runtimeVersion, migrations ) }
     }
 }
