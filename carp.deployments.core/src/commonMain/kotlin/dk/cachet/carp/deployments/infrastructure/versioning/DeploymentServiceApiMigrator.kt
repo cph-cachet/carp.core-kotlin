@@ -7,5 +7,6 @@ import dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest
 
 val DeploymentServiceApiMigrator = ApplicationServiceApiMigrator(
     DeploymentService.API_VERSION,
-    DeploymentServiceRequest.Serializer
+    DeploymentServiceRequest.Serializer,
+    DeploymentService.Event.serializer()
 )
