@@ -5,18 +5,43 @@ import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ParticipantRole
 
 
 /**
- * Configures data expected to be input by users, related to the expected participants in a study protocol.
+ * Configures expected participants and data to be input by users.
  */
-interface ParticipantDataConfiguration
+interface ParticipantConfiguration
 {
+    /**
+     * Roles which can be assigned to participants in the study and [ParticipantAttribute]s can be linked to.
+     * If a [ParticipantAttribute] is not linked to any participant role,
+     * the participant data can be filled out by anyone in the study deployment.
+     */
+    val participantRoles: Set<ParticipantRole>
+
     /**
      * Data about participants in a study protocol, expected to be input by users.
      */
     val expectedParticipantData: Set<ParticipantAttribute>
 
+
+    /**
+     * Add a participant role which can be assigned to participants in the study.
+     *
+     * @throws IllegalArgumentException in case a differing [role] with a matching role name is already added.
+     * @return True if the [role] has been added; false in case the same [role] has already been added before.
+     */
+    fun addParticipantRole( role: ParticipantRole ): Boolean
+
+    /**
+     * Remove a participant role which can be assigned to participants in the study,
+     * as well as all [ParticipantAttribute]s linked to it.
+     *
+     * @return True if the [role] and linked attributes have been removed;
+     *   false if the role is not included in this configuration.
+     */
+    fun removeParticipantRole( role: ParticipantRole ): Boolean
 
     /**
      * Add expected participant data [attribute] to be input by users.

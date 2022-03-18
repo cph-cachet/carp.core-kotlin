@@ -11,8 +11,8 @@ import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.configuration.ParticipantDataConfiguration
-import dk.cachet.carp.protocols.domain.configuration.ParticipantDataConfigurationTest
+import dk.cachet.carp.protocols.domain.configuration.ParticipantConfiguration
+import dk.cachet.carp.protocols.domain.configuration.ParticipantConfigurationTest
 import dk.cachet.carp.protocols.domain.configuration.ProtocolDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.ProtocolDeviceConfigurationTest
 import dk.cachet.carp.protocols.domain.configuration.ProtocolTaskConfiguration
@@ -45,9 +45,9 @@ class StudyProtocolTest
     }
 
     @Nested
-    inner class ParticipantData : ParticipantDataConfigurationTest
+    inner class Participants : ParticipantConfigurationTest
     {
-        override fun createParticipantDataConfiguration(): ParticipantDataConfiguration = createEmptyProtocol()
+        override fun createParticipantConfiguration(): ParticipantConfiguration = createEmptyProtocol()
 
 
         @Test
