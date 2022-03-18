@@ -6,24 +6,76 @@ import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ParticipantRole
 import kotlin.test.*
 
 
 /**
- * Base class with tests for [ParticipantDataConfiguration] which can be used to test extending types.
+ * Base class with tests for [ParticipantConfiguration] which can be used to test extending types.
  */
-interface ParticipantDataConfigurationTest
+interface ParticipantConfigurationTest
 {
     /**
-     * Called for each test to create a participant data configuration to run tests on.
+     * Called for each test to create a participant configuration to run tests on.
      */
-    fun createParticipantDataConfiguration(): ParticipantDataConfiguration
+    fun createParticipantConfiguration(): ParticipantConfiguration
 
+
+    @Test
+    fun addParticipantRole_succeeds()
+    {
+        val configuration = createParticipantConfiguration()
+
+        val role = ParticipantRole( "Participant", false )
+        val isAdded = configuration.addParticipantRole( role )
+
+        assertTrue( isAdded )
+        assertEquals( 1, configuration.participantRoles.size )
+        assertEquals( role, configuration.participantRoles.single() )
+    }
+
+    @Test
+    fun addParticipantRole_ignores_duplicates()
+    {
+        val configuration = createParticipantConfiguration()
+        val role = ParticipantRole( "Participant", false )
+        configuration.addParticipantRole( role )
+
+        val isAdded = configuration.addParticipantRole( role )
+
+        assertFalse( isAdded )
+        assertEquals( 1, configuration.participantRoles.size )
+    }
+
+    @Test
+    fun removeParticipantRole_succeeds()
+    {
+        val configuration = createParticipantConfiguration()
+        val role = ParticipantRole( "Participant", false )
+        configuration.addParticipantRole( role )
+
+        val isRemoved = configuration.removeParticipantRole( role )
+
+        assertTrue( isRemoved )
+        assertEquals( 0, configuration.participantRoles.size )
+    }
+
+    @Test
+    fun removeParticipantRole_returns_false_for_nonexisting_roles()
+    {
+        val configuration = createParticipantConfiguration()
+        configuration.addParticipantRole( ParticipantRole( "Participant", false ))
+
+        val nonExistingRole = ParticipantRole( "Other participant", false )
+        val isRemoved = configuration.removeParticipantRole( nonExistingRole )
+
+        assertFalse( isRemoved )
+    }
 
     @Test
     fun addExpectedParticipantData_succeeds()
     {
-        val configuration = createParticipantDataConfiguration()
+        val configuration = createParticipantConfiguration()
 
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
         val isAdded = configuration.addExpectedParticipantData( attribute )
@@ -36,7 +88,7 @@ interface ParticipantDataConfigurationTest
     @Test
     fun addExpectedParticipantData_ignores_duplicates()
     {
-        val configuration = createParticipantDataConfiguration()
+        val configuration = createParticipantConfiguration()
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
         configuration.addExpectedParticipantData( attribute )
 
@@ -49,7 +101,7 @@ interface ParticipantDataConfigurationTest
     @Test
     fun removeExpectedParticipantData_succeeds()
     {
-        val configuration = createParticipantDataConfiguration()
+        val configuration = createParticipantConfiguration()
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
         configuration.addExpectedParticipantData( attribute )
 

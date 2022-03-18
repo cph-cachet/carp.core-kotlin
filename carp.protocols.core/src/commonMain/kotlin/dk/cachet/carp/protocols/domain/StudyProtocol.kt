@@ -11,7 +11,7 @@ import dk.cachet.carp.common.application.triggers.TriggerConfiguration
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantDataConfiguration
+import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolTaskConfiguration
 import dk.cachet.carp.protocols.domain.configuration.StudyProtocolComposition
@@ -43,7 +43,7 @@ class StudyProtocol(
 ) : StudyProtocolComposition(
         EmptyProtocolDeviceConfiguration(),
         EmptyProtocolTaskConfiguration(),
-        EmptyParticipantDataConfiguration(),
+        EmptyParticipantConfiguration(),
         id,
         createdOn
     )
