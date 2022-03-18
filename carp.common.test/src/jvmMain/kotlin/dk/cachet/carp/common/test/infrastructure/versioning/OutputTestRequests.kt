@@ -27,7 +27,7 @@ open class OutputTestRequests<TService : ApplicationService<TService, *>>( appli
 {
     @Suppress( "UNCHECKED_CAST" )
     protected var loggedService: ApplicationServiceLoggingProxy<TService, *>? = null
-    private val applicationServiceInfo = ApplicationServiceInfo( applicationServiceKlass.java )
+    private val applicationServiceInfo = ApplicationServiceInfo.of( applicationServiceKlass.java )
 
     companion object
     {
