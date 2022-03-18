@@ -143,13 +143,10 @@ class SerializerDerivedMethodsTest
     @Test
     fun isValidDataStreamSequence_when_data_does_not_match_datatype()
     {
-        @Serializable
-        class WrongData : Data
-
         // Wrong measurement is first in sequence.
         val dataType = STUB_DATA_POINT_TYPE
         val dataStreamId = DataStreamId( stubDeploymentId, "Test", dataType )
-        val wrongMeasurement = Measurement<Data>( 10, null, dataType, WrongData() )
+        val wrongMeasurement = Measurement<Data>( 10, null, dataType, StubDataTimeSpan() )
         val sequence = MutableDataStreamSequence<Data>( dataStreamId, 0, listOf( 1 ) )
         sequence.appendMeasurements( wrongMeasurement )
         assertEquals( Trilean.FALSE, StubDataTypes.isValidDataStreamSequence( sequence ) )
