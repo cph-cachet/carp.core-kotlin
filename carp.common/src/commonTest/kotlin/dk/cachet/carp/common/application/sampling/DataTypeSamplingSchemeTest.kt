@@ -12,7 +12,7 @@ import kotlin.time.Duration.Companion.seconds
 class DataTypeSamplingSchemeTest
 {
     class TestSamplingScheme : DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>(
-        StubDataTypes.STUB,
+        StubDataTypes.STUB_POINT,
         IntervalSamplingConfiguration( 1.seconds )
     )
     {

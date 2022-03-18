@@ -9,10 +9,6 @@
       "required": [ "__type" ]
     },
     {
-      "if": { "properties": { "__type": { "const": "dk.cachet.carp.freeformtext" } } },
-      "then": { "$ref": "FreeFormText.json" }
-    },
-    {
       "if": { "properties": { "__type": { "const": "dk.cachet.carp.geolocation" } } },
       "then": { "$ref": "Geolocation.json" }
     },

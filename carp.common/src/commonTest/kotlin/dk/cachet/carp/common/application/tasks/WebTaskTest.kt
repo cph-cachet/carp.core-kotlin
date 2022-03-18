@@ -1,7 +1,7 @@
 package dk.cachet.carp.common.application.tasks
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import kotlin.test.*
 
 
@@ -45,7 +45,7 @@ class WebTaskTest
     {
         val surveyUrl = "http://surveymonkey.com/asd7f87sadfjalksjf"
         val surveyDescription = "A very important survey"
-        val backgroundMeasures = listOf( Measure.DataStream( STUB_DATA_TYPE ) )
+        val backgroundMeasures = listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) )
         val webTask = WebTaskBuilder().apply {
             url = surveyUrl
             description = surveyDescription

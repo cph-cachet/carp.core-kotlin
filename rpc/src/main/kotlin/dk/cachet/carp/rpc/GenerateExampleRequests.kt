@@ -145,8 +145,8 @@ private val studyId = UUID( "791fd191-4279-482f-9ef5-5b4508efd959" )
 private const val studyName = "Copenhagen transportation study"
 private const val studyDescription = "Track how people walk/bike in Copenhagen."
 private val studyCreatedOn = Instant.fromEpochSeconds( 1642503800 )
-private val studyConfiguringStatus = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, true, true, false, false )
-private val studyLiveStatus = StudyStatus.Live( studyId, studyName, studyCreatedOn, false, false, true )
+private val studyConfiguringStatus = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, null, true, true, false, false )
+private val studyLiveStatus = StudyStatus.Live( studyId, studyName, studyCreatedOn, phoneProtocol.id, false, false, true )
 
 // Deployment data matching the example protocol.
 private val deploymentId = UUID( "c9cc5317-48da-45f2-958e-58bc07f34681" )
@@ -231,12 +231,12 @@ private val expectedDataStreams = setOf(
     DataStreamsConfiguration.ExpectedDataStream.fromDataStreamId( phoneStepsDataStream )
 )
 private val geoDataSequence =
-    MutableDataStreamSequence( phoneGeoDataStream, 0, listOf( startOfStudyTriggerId ) ).apply {
+    MutableDataStreamSequence<Geolocation>( phoneGeoDataStream, 0, listOf( startOfStudyTriggerId ) ).apply {
         appendMeasurements( measurement( Geolocation( 55.68061908805645, 12.582050313435703 ), 1642505045000000L ) )
         appendMeasurements( measurement( Geolocation( 55.680802203873114, 12.581802212861367 ), 1642505144000000L ) )
     }
 private val stepsDataSequence =
-    MutableDataStreamSequence( phoneStepsDataStream, 0, listOf( startOfStudyTriggerId ) ).apply {
+    MutableDataStreamSequence<StepCount>( phoneStepsDataStream, 0, listOf( startOfStudyTriggerId ) ).apply {
         appendMeasurements( measurement( StepCount( 0 ), 1642505045000000L ) )
         appendMeasurements( measurement( StepCount( 30 ), 1642505144000000L ) )
     }
@@ -312,7 +312,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
         request = StudyServiceRequest.GetStudiesOverview( ownerId ),
         response = listOf(
             studyConfiguringStatus,
-            StudyStatus.Live( UUID( "3566eb9c-1d2f-4ed9-bf8a-8ea43638773d" ), "Heartrate study", Instant.fromEpochSeconds( 1642514000 ), false, false, true )
+            StudyStatus.Live( UUID( "3566eb9c-1d2f-4ed9-bf8a-8ea43638773d" ), "Heartrate study", studyCreatedOn, phoneProtocol.id, false, false, true )
         )
     ),
     StudyService::setInvitation to example(
@@ -321,11 +321,11 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
     ),
     StudyService::setProtocol to example(
         request = StudyServiceRequest.SetProtocol( studyId, phoneProtocol ),
-        response = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, true, true, false, true )
+        response = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, phoneProtocol.id, true, true, false, true )
     ),
     StudyService::removeProtocol to example(
         request = StudyServiceRequest.RemoveProtocol( studyId ),
-        response = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, true, true, false, false )
+        response = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, null, true, true, false, false )
     ),
     StudyService::goLive to example(
         request = StudyServiceRequest.GoLive( studyId ),

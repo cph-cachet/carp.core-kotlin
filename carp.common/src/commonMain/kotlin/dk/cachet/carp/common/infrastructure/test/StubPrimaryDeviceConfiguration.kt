@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
 
 
 /**
- * A stub [PrimaryDeviceConfiguration] which can measure [STUB_DATA_TYPE].
+ * A stub [PrimaryDeviceConfiguration] which can measure [STUB_DATA_POINT_TYPE].
  */
 @Serializable
 data class StubPrimaryDeviceConfiguration(
@@ -24,7 +24,7 @@ data class StubPrimaryDeviceConfiguration(
 {
     object Sensors : DataTypeSamplingSchemeMap()
     {
-        val STUB_DATA = add( StubDataTypeSamplingScheme() )
+        val STUB_DATA_POINT = add( StubDataTypeSamplingScheme() )
     }
 
     override fun getSupportedDataTypes(): Set<DataType> = Sensors.keys

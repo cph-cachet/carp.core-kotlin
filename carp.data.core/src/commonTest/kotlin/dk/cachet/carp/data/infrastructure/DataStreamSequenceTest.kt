@@ -3,7 +3,7 @@ package dk.cachet.carp.data.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
-import dk.cachet.carp.common.infrastructure.test.StubData
+import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.data.application.DataStreamSequence
 import dk.cachet.carp.data.application.DataStreamSequenceSerializer
 import dk.cachet.carp.data.application.MutableDataStreamSequence
@@ -20,8 +20,8 @@ class DataStreamSequenceTest
     private val json = createDefaultJSON( STUBS_SERIAL_MODULE )
     private val testDataStreamSequence =
         with(
-            MutableDataStreamSequence(
-                dataStreamId<StubData>( UUID.randomUUID(), "Device" ),
+            MutableDataStreamSequence<StubDataPoint>(
+                dataStreamId<StubDataPoint>( UUID.randomUUID(), "Device" ),
                 0,
                 listOf( 1 ),
                 SyncPoint( Clock.System.now() )
@@ -29,8 +29,8 @@ class DataStreamSequenceTest
         )
         {
             appendMeasurements(
-                measurement( StubData(), 0 ),
-                measurement( StubData(), 1 )
+                measurement( StubDataPoint(), 0 ),
+                measurement( StubDataPoint(), 1 )
             )
             this
         }
@@ -39,7 +39,7 @@ class DataStreamSequenceTest
     fun can_serialize_and_deserialize_DataStreamSequence()
     {
         val serialized = json.encodeToString( DataStreamSequenceSerializer, testDataStreamSequence )
-        val parsed: DataStreamSequence = json.decodeFromString( DataStreamSequenceSerializer, serialized )
+        val parsed: DataStreamSequence<*> = json.decodeFromString( DataStreamSequenceSerializer, serialized )
 
         assertEquals( testDataStreamSequence, parsed )
     }
