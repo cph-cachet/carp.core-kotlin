@@ -120,14 +120,16 @@ class InMemoryDataStreamService : DataStreamService
     /**
      * Close data streams and remove all data for each of the [studyDeploymentIds].
      *
-     * @return True when any data streams have been removed, or false when there were no data streams to remove.
+     * @return The IDs of the study deployments for which data streams were configured.
+     * IDs for which no study deployment exists are ignored.
      */
-    override suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Boolean
+    override suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Set<UUID>
     {
         stoppedStudyDeploymentIds.removeAll( studyDeploymentIds )
 
-        return studyDeploymentIds.fold( false ) {
-            removedAny, toRemove -> configuredDataStreams.removeKey( toRemove ) || removedAny
-        }
+        return studyDeploymentIds.mapNotNull { toRemove ->
+            if ( configuredDataStreams.removeKey( toRemove ) ) toRemove
+            else null
+        }.toSet()
     }
 }

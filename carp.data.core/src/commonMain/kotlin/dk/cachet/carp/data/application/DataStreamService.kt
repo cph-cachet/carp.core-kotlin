@@ -69,7 +69,8 @@ interface DataStreamService : ApplicationService<DataStreamService, DataStreamSe
     /**
      * Close data streams and remove all data for each of the [studyDeploymentIds].
      *
-     * @return True when any data streams have been removed, or false when there were no data streams to remove.
+     * @return The IDs of the study deployments for which data streams were configured.
+     * IDs for which no study deployment exists are ignored.
      */
-    suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Boolean
+    suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Set<UUID>
 }
