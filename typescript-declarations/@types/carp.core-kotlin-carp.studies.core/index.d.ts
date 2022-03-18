@@ -50,6 +50,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             readonly studyId: UUID
             readonly name: string
             readonly createdOn: Instant
+            readonly studyProtocolId: UUID | null
             readonly canSetInvitation: boolean
             readonly canSetStudyProtocol: boolean
             readonly canDeployToParticipants: boolean
@@ -63,7 +64,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
             class Configuring extends StudyStatus
             {
                 constructor(
-                    studyId: UUID, name: string, createdOn: Instant,
+                    studyId: UUID,
+                    name: string,
+                    createdOn: Instant,
+                    studyProtocolId: UUID | null,
                     canSetInvitation: boolean,
                     canSetStudyProtocol: boolean,
                     canDeployToParticipants: boolean,
@@ -74,7 +78,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
             class Live extends StudyStatus
             {
                 constructor(
-                    studyId: UUID, name: string, createdOn: Instant,
+                    studyId: UUID,
+                    name: string,
+                    createdOn: Instant,
+                    studyProtocolId: UUID | null,
                     canSetInvitation: boolean,
                     canSetStudyProtocol: boolean,
                     canDeployToParticipants: boolean )
