@@ -21,6 +21,10 @@ sealed class StudyStatus
      */
     abstract val createdOn: Instant
     /**
+     * In case a study protocol for this study is set, its id; null otherwise.
+     */
+    abstract val studyProtocolId: UUID?
+    /**
      * Determines whether the invitation which is shared with participants can be changed for the study.
      */
     abstract val canSetInvitation: Boolean
@@ -42,6 +46,7 @@ sealed class StudyStatus
         override val studyId: UUID,
         override val name: String,
         override val createdOn: Instant,
+        override val studyProtocolId: UUID?,
         override val canSetInvitation: Boolean,
         override val canSetStudyProtocol: Boolean,
         override val canDeployToParticipants: Boolean,
@@ -60,6 +65,7 @@ sealed class StudyStatus
         override val studyId: UUID,
         override val name: String,
         override val createdOn: Instant,
+        override val studyProtocolId: UUID?,
         override val canSetInvitation: Boolean,
         override val canSetStudyProtocol: Boolean,
         override val canDeployToParticipants: Boolean

@@ -63,6 +63,7 @@ class StudyTest
 
         setDeployableProtocol( study )
         assertEquals( Study.Event.ProtocolSnapshotChanged( study.protocolSnapshot ), study.consumeEvents().single() )
+        assertEquals( study.protocolSnapshot?.id, study.getStatus().studyProtocolId )
     }
 
     @Test
@@ -71,6 +72,7 @@ class StudyTest
         val study = createStudy()
         study.protocolSnapshot = null
         assertEquals( Study.Event.ProtocolSnapshotChanged( null ), study.consumeEvents().single() )
+        assertNull( study.getStatus().studyProtocolId )
     }
 
     @Test
@@ -91,6 +93,7 @@ class StudyTest
         assertFalse( study.isLive )
 
         val status = study.getStatus()
+        assertNull( status.studyProtocolId )
         assertEquals( study.canSetInvitation, status.canSetInvitation )
         assertEquals( study.canSetStudyProtocol, status.canSetStudyProtocol )
         assertEquals( study.canDeployToParticipants, status.canDeployToParticipants )

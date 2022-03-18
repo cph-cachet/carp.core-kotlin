@@ -48,9 +48,9 @@ describe( "carp.studies.core", () => {
         const instances = [
             new StudyDetails( UUID.Companion.randomUUID(), UUID.Companion.randomUUID(), "Name", Clock.System.now(), "Description", new StudyInvitation( "Some study" ), null ),
             StudyDetails.Companion,
-            [ "StudyStatus", new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true ) ],
-            new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true ),
-            new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), false, false, true ),
+            [ "StudyStatus", new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), null, true, true, false, true ) ],
+            new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), null, true, true, false, true ),
+            new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), UUID.Companion.randomUUID(), false, false, true ),
             StudyStatus.Companion,
             new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Test" ] ) ),
             AssignParticipantDevices.Companion,
@@ -94,12 +94,12 @@ describe( "carp.studies.core", () => {
 
     describe( "StudyStatus", () => {
         it ( "can typecheck StudyStatus", () => {
-            const configuring = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true )
+            const configuring = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), null, true, true, false, true )
             const configuringStatus: StudyStatus = configuring
             expect( configuringStatus instanceof StudyStatus.Configuring ).is.true
             expect( configuringStatus instanceof StudyStatus.Live ).is.false
 
-            const live = new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), false, false, true )
+            const live = new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), UUID.Companion.randomUUID(), false, false, true )
             const liveStatus: StudyStatus = live
             expect( liveStatus instanceof StudyStatus.Live ).is.true
             expect( liveStatus instanceof StudyStatus.Configuring ).is.false
@@ -123,7 +123,7 @@ describe( "carp.studies.core", () => {
         } )
 
         it( "can serialize getStudiesOverview response", () => {
-            const status = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true )
+            const status = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), null, true, true, false, true )
             const statusList = new ArrayList( [ status ] )
 
             const json: Json = createDefaultJSON()
