@@ -140,7 +140,8 @@ Each new CARP version will come with the necessary application service migration
 Clients that are on the same _major_ version as the backend will be able to use new hosted _minor_ versions of the API.
 
 Each application service has a corresponding `ApplicationServiceApiMigrator`.
-To get support for backwards compatible application services, you need to wire `migrateRequest`, its invocation on the application service (`invokeOn`), and `migrateEvent` into your infrastructure request and eventing pipeline.
+To get support for backwards compatible application services, you need to wire a call to `migrateRequest` into your infrastructure endpoints.
+`MigratedRequest.invokeOn` can be used to execute the migrated request on the application service.
 
 ### Authorization
 

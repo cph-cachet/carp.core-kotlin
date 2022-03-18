@@ -33,7 +33,7 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
     applicationServiceKlass: KClass<TService>
 )
 {
-    private val serviceInfo = ApplicationServiceInfo( applicationServiceKlass.java )
+    private val serviceInfo = ApplicationServiceInfo.of( applicationServiceKlass.java )
     private val currentVersion = serviceInfo.apiVersion
 
     private val testRequestsFolder: File =
@@ -90,10 +90,7 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
             val requests = json.decodeFromString( loggedRequestsSerializer, file.readText() )
             val requestVersionField = ApplicationServiceRequest<*, *>::apiVersion.name
             assertTrue(
-                requests.all {
-                    val bleh = it.request[ requestVersionField ]?.jsonPrimitive?.isString == true
-                    bleh
-                     },
+                requests.all { it.request[ requestVersionField ]?.jsonPrimitive?.isString == true },
                 "Not all request objects in \"${file.absolutePath}\" are versioned with \"$requestVersionField\"."
             )
             val eventVersionField = IntegrationEvent<*>::apiVersion.name
@@ -132,13 +129,15 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
             val replayErrorBase = "Couldn't replay requests in: $fileName. Request #${index + 1}"
 
             // Publish preceding events.
-            logged.precedingEvents.forEach {
-                val event = apiMigrator.migrateEvent( json, it as JsonObject )
-                val eventSource = checkNotNull( serviceInfo.getEventPublisher( event )?.kotlin )
-                    { "The event \"${event::class}\" isn't an expected event processed by \"${serviceInfo.serviceKlass}\"." }
+            logged.precedingEvents.map { it as JsonObject }.forEach {
+                // Migrate event using API migrator of dependent service.
+                val eventType = it[ json.configuration.classDiscriminator ]!!.jsonPrimitive.content
+                val publisher: ApplicationServiceInfo = checkNotNull( serviceInfo.getEventPublisher( eventType ) )
+                    { "The event \"$eventType\" isn't an expected event processed by \"${serviceInfo.serviceKlass}\"." }
+                val event = publisher.apiMigrator.migrateEvent( json, it )
 
                 // Cast to bypass generic constraint checking. We know the types line up.
-                eventBus.publish( eventSource as KClass<Nothing>, event as IntegrationEvent<Nothing> )
+                eventBus.publish( publisher.serviceKlass.kotlin as KClass<Nothing>, event as IntegrationEvent<Nothing> )
             }
 
             // Validate whether request outcome corresponds to log.
