@@ -53,13 +53,13 @@ object CarpDataTypes : DataTypeMetaDataMap()
 
     internal const val NON_GRAVITATIONAL_ACCELERATION_TYPE_NAME = "$CARP_NAMESPACE.nongravitationalacceleration"
     /**
-     * Change in velocity along perpendicular x, y, and z axes in the device's coordinate system, excluding gravity.
+     * Rate of change in velocity, excluding gravity, along perpendicular x, y, and z axes in the device's coordinate system.
      */
     val NON_GRAVITATIONAL_ACCELERATION = add( NON_GRAVITATIONAL_ACCELERATION_TYPE_NAME, "Acceleration without gravity", DataTimeType.POINT )
 
     internal const val ACCELERATION_TYPE_NAME = "$CARP_NAMESPACE.acceleration"
     /**
-     * Change in velocity along perpendicular x, y, and z axes in the device's coordinate system, including gravity.
+     * Rate of change in velocity, including gravity, along perpendicular x, y, and z axes in the device's coordinate system.
      */
     val ACCELERATION = add( ACCELERATION_TYPE_NAME, "Acceleration including gravity", DataTimeType.POINT )
 
