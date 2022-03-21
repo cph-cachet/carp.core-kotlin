@@ -19,6 +19,7 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 val commonInstances = listOf(
     // `data` namespace.
+    Acceleration( 42.0, 42.0, 42.0 ),
     AngularVelocity( 42.0, 42.0, 42.0 ),
     CompletedTask( "Task", null ),
     ECG( 42.0 ),

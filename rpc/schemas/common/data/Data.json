@@ -37,6 +37,10 @@
       "then": { "$ref": "NonGravitationalAcceleration.json" }
     },
     {
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.acceleration" } } },
+      "then": { "$ref": "Acceleration.json" }
+    },
+    {
       "if": { "properties": { "__type": { "const": "dk.cachet.carp.angularvelocity" } } },
       "then": { "$ref": "AngularVelocity.json" }
     },

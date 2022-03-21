@@ -24,6 +24,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     polymorphic( Data::class )
     {
         // DataType classes.
+        subclass( Acceleration::class )
         subclass( AngularVelocity::class )
         subclass( CompletedTask::class )
         subclass( ECG::class )

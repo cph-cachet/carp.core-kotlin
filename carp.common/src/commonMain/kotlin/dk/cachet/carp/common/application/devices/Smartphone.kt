@@ -55,7 +55,7 @@ data class Smartphone(
         val STEP_COUNT = add( NoOptionsSamplingScheme( CarpDataTypes.STEP_COUNT ) ) // No configuration options available.
 
         /**
-         * Acceleration along perpendicular x, y, and z axes,
+         * Change in velocity along perpendicular x, y, and z axes in the device's coordinate system,
          * as measured by the phone's accelerometer and calibrated to exclude gravity and sensor bias.
          * This uses the same coordinate system as the other sensors referring to x, y, and z axes.
          *
