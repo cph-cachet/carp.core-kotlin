@@ -19,6 +19,7 @@ import dk.cachet.carp.deployments.application.*
 import dk.cachet.carp.deployments.application.users.*
 import dk.cachet.carp.deployments.infrastructure.*
 import dk.cachet.carp.protocols.application.*
+import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.*
@@ -126,8 +127,10 @@ private val phoneProtocol = StudyProtocol(
     applicationData = "{\"uiTheme\": \"black\"}"
 }.getSnapshot()
 private val startOfStudyTriggerId = phoneProtocol.triggers.entries.first { it.value == startOfStudyTrigger }.key
-private val expectedParticipantData = setOf<ParticipantAttribute>(
-    ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
+private val expectedParticipantData = setOf(
+    ExpectedParticipantData(
+        ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
+    )
 )
 
 // Example protocol factory protocols.

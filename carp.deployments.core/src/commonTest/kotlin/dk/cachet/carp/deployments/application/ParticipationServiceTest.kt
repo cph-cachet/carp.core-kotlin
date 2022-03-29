@@ -13,6 +13,7 @@ import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.createParticipantInvitation
 import dk.cachet.carp.deployments.domain.users.AccountService
+import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
 import kotlinx.coroutines.test.runTest
 import kotlin.test.*
@@ -76,16 +77,21 @@ interface ParticipationServiceTest
 
         // Create protocol with expected 'sex' participant data.
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
-        protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
-        val customAttribute = ParticipantAttribute.CustomParticipantAttribute( Text( "Custom" ) )
-        protocol.addExpectedParticipantData( customAttribute )
+        val defaultExpectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
+        )
+        protocol.addExpectedParticipantData( defaultExpectedData )
+        val customExpectedData = ExpectedParticipantData(
+            ParticipantAttribute.CustomParticipantAttribute( Text( "Custom" ) )
+        )
+        protocol.addExpectedParticipantData( customExpectedData )
         val invitation = createParticipantInvitation( protocol )
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
         val participantData = participationService.getParticipantData( studyDeploymentId )
         assertEquals( studyDeploymentId, participantData.studyDeploymentId )
-        assertEquals( setOf( CarpInputDataTypes.SEX, customAttribute.inputDataType ), participantData.data.keys )
+        assertEquals( setOf( CarpInputDataTypes.SEX, customExpectedData.inputDataType ), participantData.data.keys )
         assertTrue( participantData.data.values.all { it == null } )
     }
 
@@ -127,7 +133,10 @@ interface ParticipationServiceTest
 
         // Create protocol with expected 'sex' participant data.
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
-        protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
+        val expectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
+        )
+        protocol.addExpectedParticipantData( expectedData )
         val invitation = createParticipantInvitation( protocol )
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
@@ -169,7 +178,10 @@ interface ParticipationServiceTest
 
         // Create protocol with expected 'sex' participant data.
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
-        protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
+        val expectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
+        )
+        protocol.addExpectedParticipantData( expectedData )
         val invitation = createParticipantInvitation( protocol )
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )

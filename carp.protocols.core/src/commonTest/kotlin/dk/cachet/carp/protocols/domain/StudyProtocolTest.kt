@@ -11,6 +11,7 @@ import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import dk.cachet.carp.protocols.domain.configuration.ParticipantConfiguration
 import dk.cachet.carp.protocols.domain.configuration.ParticipantConfigurationTest
 import dk.cachet.carp.protocols.domain.configuration.ProtocolDeviceConfiguration
@@ -54,52 +55,64 @@ class StudyProtocolTest
         fun replaceExpectedParticipantData_succeeds()
         {
             val protocol: StudyProtocol = createEmptyProtocol()
-            val attribute1 = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type1" ) )
-            val attribute2 = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type2" ) )
-            protocol.addExpectedParticipantData( attribute1 )
+            val expectedData1 = ExpectedParticipantData(
+                ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type1" ) )
+            )
+            val expectedData2 = ExpectedParticipantData(
+                ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type2" ) )
+            )
+            protocol.addExpectedParticipantData( expectedData1 )
 
-            val isReplaced = protocol.replaceExpectedParticipantData( setOf( attribute2 ) )
+            val isReplaced = protocol.replaceExpectedParticipantData( setOf( expectedData2 ) )
 
             assertTrue( isReplaced )
-            assertEquals( setOf( attribute2 ), protocol.expectedParticipantData )
+            assertEquals( setOf( expectedData2 ), protocol.expectedParticipantData )
         }
 
         @Test
         fun replaceExpectedParticipantData_returns_false_when_nothing_replaced()
         {
             val protocol: StudyProtocol = createEmptyProtocol()
-            val attribute1 = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type1" ) )
+            val expectedData1 = ExpectedParticipantData(
+                ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type1" ) )
+            )
 
-            protocol.addExpectedParticipantData( attribute1 )
-            val isReplaced = protocol.replaceExpectedParticipantData( setOf( attribute1 ) )
+            protocol.addExpectedParticipantData( expectedData1 )
+            val isReplaced = protocol.replaceExpectedParticipantData( setOf( expectedData1 ) )
 
             assertFalse( isReplaced )
-            assertEquals( setOf( attribute1 ), protocol.expectedParticipantData )
+            assertEquals( setOf( expectedData1 ), protocol.expectedParticipantData )
         }
 
         @Test
         fun replaceExpectedParticipantData_only_triggers_events_for_changes()
         {
             val protocol: StudyProtocol = createEmptyProtocol()
-            val attribute1 = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type1" ) )
-            val attribute2 = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type2" ) )
-            protocol.addExpectedParticipantData( attribute1 )
-            protocol.addExpectedParticipantData( attribute2 )
+            val expectedData1 = ExpectedParticipantData(
+                ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type1" ) )
+            )
+            val expectedData2 = ExpectedParticipantData(
+                ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type2" ) )
+            )
+            protocol.addExpectedParticipantData( expectedData1 )
+            protocol.addExpectedParticipantData( expectedData2 )
             protocol.consumeEvents()
 
-            val attribute3 = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type3" ) )
-            val isReplaced = protocol.replaceExpectedParticipantData( setOf( attribute2, attribute3 ) )
+            val expectedData3 = ExpectedParticipantData(
+                ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type3" ) )
+            )
+            val isReplaced = protocol.replaceExpectedParticipantData( setOf( expectedData2, expectedData3 ) )
 
             // Attribute 1 was removed, attribute 3 added, and attribute 2 remained.
             assertTrue( isReplaced )
             val events = protocol.consumeEvents()
             assertEquals( 2, events.size )
             assertEquals(
-                StudyProtocol.Event.ExpectedParticipantDataRemoved( attribute1 ),
+                StudyProtocol.Event.ExpectedParticipantDataRemoved( expectedData1 ),
                 events.filterIsInstance<StudyProtocol.Event.ExpectedParticipantDataRemoved>().singleOrNull()
             )
             assertEquals(
-                StudyProtocol.Event.ExpectedParticipantDataAdded( attribute3 ),
+                StudyProtocol.Event.ExpectedParticipantDataAdded( expectedData3 ),
                 events.filterIsInstance<StudyProtocol.Event.ExpectedParticipantDataAdded>().singleOrNull()
             )
         }
@@ -420,29 +433,33 @@ class StudyProtocolTest
     {
         val protocol = createEmptyProtocol()
 
-        val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
-        val isAdded = protocol.addExpectedParticipantData( attribute )
+        val expectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
+        )
+        val isAdded = protocol.addExpectedParticipantData( expectedData )
 
         assertTrue( isAdded )
         val addedEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.ExpectedParticipantDataAdded>()
         assertEquals( 1, addedEvents.count() )
-        assertEquals( attribute, addedEvents.single().attribute )
+        assertEquals( expectedData, addedEvents.single().expectedData )
     }
 
     @Test
     fun removeExpectedParticipantData_succeeds()
     {
         val protocol = createEmptyProtocol()
-        val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
-        protocol.addExpectedParticipantData( attribute )
+        val expectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
+        )
+        protocol.addExpectedParticipantData( expectedData )
         protocol.consumeEvents()
 
-        val isRemoved = protocol.removeExpectedParticipantData( attribute )
+        val isRemoved = protocol.removeExpectedParticipantData( expectedData )
 
         assertTrue( isRemoved )
         val removedEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.ExpectedParticipantDataRemoved>()
         assertEquals( 1, removedEvents.count() )
-        assertEquals( attribute, removedEvents.single().attribute )
+        assertEquals( expectedData, removedEvents.single().expectedData )
     }
 
     @Test

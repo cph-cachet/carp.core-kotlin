@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
+import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlinx.coroutines.test.runTest
@@ -95,30 +96,36 @@ interface ProtocolServiceTest
     fun updateParticipantDataConfiguration_replaces_existing_attributes() = runTest {
         val service = createService()
         val protocol = createEmptyProtocol()
-        val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
-        protocol.addExpectedParticipantData( attribute )
+        val expectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
+        )
+        protocol.addExpectedParticipantData( expectedData )
         val version = "Version"
         service.add( protocol.getSnapshot(), version )
 
-        val newAttribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "other_type" ) )
-        val updated = service.updateParticipantDataConfiguration( protocol.id, version, setOf( newAttribute ) )
+        val newExpectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "other_type" ) )
+        )
+        val updated = service.updateParticipantDataConfiguration( protocol.id, version, setOf( newExpectedData ) )
         val retrieved = service.getBy( protocol.id, version )
 
         val updateIsStored = updated == retrieved
         assertTrue( updateIsStored )
         val updatedProtocol = StudyProtocol.fromSnapshot( retrieved )
-        assertEquals( setOf( newAttribute ), updatedProtocol.expectedParticipantData )
+        assertEquals( setOf( newExpectedData ), updatedProtocol.expectedParticipantData )
     }
 
     @Test
     fun updateParticipantDataConfiguration_fails_for_unknown_protocol() = runTest {
         val service = createService()
 
-        val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
+        val expectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
+        )
         val unknownId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException>
         {
-            service.updateParticipantDataConfiguration( unknownId, "Unknown version", setOf( attribute ) )
+            service.updateParticipantDataConfiguration( unknownId, "Unknown version", setOf( expectedData ) )
         }
     }
 

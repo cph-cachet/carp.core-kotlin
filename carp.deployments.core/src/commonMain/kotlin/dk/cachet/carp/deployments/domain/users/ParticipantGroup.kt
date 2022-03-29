@@ -6,7 +6,6 @@ import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
-import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.common.domain.users.Account
@@ -14,6 +13,7 @@ import dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
+import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.configuration.isValidParticipantData
 import kotlinx.datetime.Clock
@@ -29,7 +29,7 @@ import kotlinx.datetime.Instant
 class ParticipantGroup private constructor(
     val studyDeploymentId: UUID,
     assignedPrimaryDevices: Set<AssignedPrimaryDevice>,
-    val expectedData: Set<ParticipantAttribute>,
+    val expectedData: Set<ExpectedParticipantData>,
     id: UUID = UUID.randomUUID(),
     createdOn: Instant = Clock.System.now()
 ) : AggregateRoot<ParticipantGroup, ParticipantGroupSnapshot, ParticipantGroup.Event>( id, createdOn )
@@ -52,7 +52,8 @@ class ParticipantGroup private constructor(
             ParticipantGroup(
                 studyDeploymentId,
                 protocol.primaryDevices.map { AssignedPrimaryDevice( it ) }.toSet(),
-                protocol.expectedParticipantData )
+                protocol.expectedParticipantData
+            )
 
         /**
          * Initialize a [ParticipantGroup] with default values for a newly created [deployment].
@@ -115,7 +116,7 @@ class ParticipantGroup private constructor(
 
         val assignedPrimaryDeviceRoleNames = assignedPrimaryDevices.map { it.roleName }.toSet()
         val accountParticipation = AccountParticipation(
-            Participation( studyDeploymentId, participation.participantId ),
+            participation,
             assignedPrimaryDeviceRoleNames,
             account.id,
             invitation

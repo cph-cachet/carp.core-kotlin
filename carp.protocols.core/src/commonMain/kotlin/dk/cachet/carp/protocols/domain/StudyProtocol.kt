@@ -11,6 +11,7 @@ import dk.cachet.carp.common.application.triggers.TriggerConfiguration
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolTaskConfiguration
@@ -62,8 +63,8 @@ class StudyProtocol(
         data class TaskRemoved( val task: TaskConfiguration<*> ) : Event()
         data class TaskControlAdded( val control: TaskControl ) : Event()
         data class TaskControlRemoved( val control: TaskControl ) : Event()
-        data class ExpectedParticipantDataAdded( val attribute: ParticipantAttribute ) : Event()
-        data class ExpectedParticipantDataRemoved( val attribute: ParticipantAttribute ) : Event()
+        data class ExpectedParticipantDataAdded( val expectedData: ExpectedParticipantData ) : Event()
+        data class ExpectedParticipantDataRemoved( val expectedData: ExpectedParticipantData ) : Event()
     }
 
 
@@ -345,40 +346,48 @@ class StudyProtocol(
     }
 
     /**
-     * Add expected participant data [attribute] to be input by users.
+     * Add expected participant data to be input by users.
      *
-     * @throws IllegalArgumentException in case a differing [attribute] with a matching input type is already added.
-     * @return True if the [attribute] has been added; false in case the same [attribute] has already been added before.
+     * @throws IllegalArgumentException if a differing [ParticipantAttribute] with a matching input type is already added.
+     * @return True if the [expectedData] has been added; false in case the same [expectedData] has already been added before.
      */
-    override fun addExpectedParticipantData( attribute: ParticipantAttribute ): Boolean =
-        super.addExpectedParticipantData( attribute )
-        .eventIf( true ) { Event.ExpectedParticipantDataAdded( attribute ) }
+    override fun addExpectedParticipantData( expectedData: ExpectedParticipantData ): Boolean =
+        super.addExpectedParticipantData( expectedData )
+        .eventIf( true ) { Event.ExpectedParticipantDataAdded( expectedData ) }
 
     /**
-     * Remove expected participant data [attribute] to be input by users.
+     * Remove expected participant data to be input by users.
      *
-     * @return True if the [attribute] has been removed; false if it is not included in this configuration.
+     * @return True if the [expectedData] has been removed; false if it is not included in this configuration.
      */
-    override fun removeExpectedParticipantData( attribute: ParticipantAttribute ): Boolean =
-        super.removeExpectedParticipantData( attribute )
-        .eventIf( true ) { Event.ExpectedParticipantDataRemoved( attribute ) }
+    override fun removeExpectedParticipantData( expectedData: ExpectedParticipantData ): Boolean =
+        super.removeExpectedParticipantData( expectedData )
+        .eventIf( true ) { Event.ExpectedParticipantDataRemoved( expectedData ) }
 
     /**
-     * Replace the expected participant data to be input by users with the specified [attributes].
+     * Replace the expected participant data to be input by users with the specified [expectedData].
      *
      * TODO: This is currently defined in `StudyProtocol` rather than `ParticipantDataConfiguration` due to the need to track events.
      *   Once eventing is implemented on `ParticipantDataConfiguration`, this can be moved where it logically belongs.
      *
-     * @throws IllegalArgumentException in case the specified [attributes] contain two or more attributes with the same input type.
-     * @return True if any attributes have been replaced; false if the specified [attributes] were the same as those already set.
+     * @throws IllegalArgumentException if the specified [expectedData] contains differing [ParticipantAttribute]s with the same input type.
+     * @return True if any expected data has been replaced; false if the specified [expectedData] was the same as those already set.
      */
-    fun replaceExpectedParticipantData( attributes: Set<ParticipantAttribute> ): Boolean
+    fun replaceExpectedParticipantData( expectedData: Set<ExpectedParticipantData> ): Boolean
     {
-        require( attributes.map { it.inputDataType }.toSet().size == attributes.size )
-            { "The specified attributes contain two or more attributes with the same input type." }
+        // Check for conflicting `ParticipantAttribute`s so that operation can't succeed partially.
+        val noConflicts = expectedData
+            .map { it.attribute }
+            .groupBy { it.inputDataType }
+            .all {
+                val first: ParticipantAttribute? = it.value.firstOrNull()
+                it.value.all { attribute -> attribute == first }
+            }
+        require( noConflicts )
+            { "The specified expected data contains differing participant attributes with the same input type." }
 
-        val toRemove = expectedParticipantData.minus( attributes )
-        val toAdd = attributes.minus( expectedParticipantData )
+        val toRemove = expectedParticipantData.minus( expectedData )
+        val toAdd = expectedData.minus( expectedParticipantData )
 
         if ( toRemove.isEmpty() && toAdd.isEmpty() ) return false
 

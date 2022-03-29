@@ -1,27 +1,20 @@
 package dk.cachet.carp.protocols.domain.configuration
 
-import dk.cachet.carp.common.application.data.input.InputDataType
-import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.domain.ExtractUniqueKeyMap
+import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 
 
 /**
- * An initially empty configuration to start defining expected participant and data to be input by users.
- *
- * Input types of added [ParticipantAttribute]s should be unique.
+ * An initially empty configuration to start defining expected participants and data to be input by users.
  */
 @Suppress( "Immutable", "DataClass" )
 class EmptyParticipantConfiguration : ParticipantConfiguration
 {
-    private val _expectedParticipantData: ExtractUniqueKeyMap<InputDataType, ParticipantAttribute> =
-        ExtractUniqueKeyMap( { attribute -> attribute.inputDataType } )
-        {
-            key -> IllegalArgumentException( "Input type \"$key\" is not unique within participant configuration." )
-        }
+    private val _expectedParticipantData: MutableSet<ExpectedParticipantData> = mutableSetOf()
 
-    override val expectedParticipantData: Set<ParticipantAttribute>
-        get() = _expectedParticipantData.values.toSet()
+    override val expectedParticipantData: Set<ExpectedParticipantData>
+        get() = _expectedParticipantData.toSet()
 
     private val _participantRoles: ExtractUniqueKeyMap<String, ParticipantRole> =
         ExtractUniqueKeyMap( { role -> role.role } )
@@ -33,11 +26,22 @@ class EmptyParticipantConfiguration : ParticipantConfiguration
         get() = _participantRoles.values.toSet()
 
 
-    override fun addExpectedParticipantData( attribute: ParticipantAttribute ) =
-        _expectedParticipantData.tryAddIfKeyIsNew( attribute )
+    override fun addExpectedParticipantData( expectedData: ExpectedParticipantData ): Boolean
+    {
+        val conflictingAttribute = _expectedParticipantData
+            .map { it.attribute }
+            .any { it.inputDataType == expectedData.inputDataType && it != expectedData.attribute }
+        require( !conflictingAttribute )
+        {
+            "The input data type of the expected data to add matches that of previously-added expected data, " +
+            "but the participant attributes are different."
+        }
 
-    override fun removeExpectedParticipantData( attribute: ParticipantAttribute ): Boolean =
-        _expectedParticipantData.remove( attribute )
+        return _expectedParticipantData.add( expectedData )
+    }
+
+    override fun removeExpectedParticipantData( expectedData: ExpectedParticipantData ): Boolean =
+        _expectedParticipantData.remove( expectedData )
 
     override fun addParticipantRole( role: ParticipantRole ): Boolean =
         _participantRoles.tryAddIfKeyIsNew( role )

@@ -20,6 +20,9 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
     namespace dk.cachet.carp.protocols.application
     {
+        import ExpectedParticipantData = dk.cachet.carp.protocols.application.users.ExpectedParticipantData
+
+
         class ProtocolVersion
         {
             constructor( tag: string, date?: Instant )
@@ -48,14 +51,29 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             readonly tasks: HashSet<TaskConfiguration>
             readonly triggers: HashMap<Number, TriggerConfiguration>
             readonly taskControls: Set<TaskControl>
-            readonly expectedParticipantData: HashSet<ParticipantAttribute>
+            readonly expectedParticipantData: HashSet<ExpectedParticipantData>
         }
         interface StudyProtocolSnapshot$Companion { serializer(): any }
     }
 
 
+    namespace dk.cachet.carp.protocols.application.users
+    {
+        class ExpectedParticipantData
+        {
+            constructor( attribute: ParticipantAttribute )
+
+            static get Companion(): ExpectedParticipantData$Companion
+
+            readonly attribute: ParticipantAttribute
+        }
+        interface ExpectedParticipantData$Companion { serializer(): any }
+    }
+
+
     namespace dk.cachet.carp.protocols.infrastructure
     {
+        import ExpectedParticipantData = dk.cachet.carp.protocols.application.users.ExpectedParticipantData
         import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
         
@@ -78,7 +96,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             }
             class UpdateParticipantDataConfiguration extends ProtocolServiceRequest
             {
-                constructor( protocolId: UUID, versionTag: string, expectedParticipantData: HashSet<ParticipantAttribute> )
+                constructor( protocolId: UUID, versionTag: string, expectedParticipantData: HashSet<ExpectedParticipantData> )
             }
             class GetBy extends ProtocolServiceRequest
             {
