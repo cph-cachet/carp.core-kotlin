@@ -14,8 +14,8 @@ import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
+import dk.cachet.carp.protocols.application.users.isValidParticipantData
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.domain.configuration.isValidParticipantData
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 

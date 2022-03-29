@@ -2,9 +2,39 @@
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
   "properties": {
-    "attribute": { "$ref": "../../common/users/ParticipantAttribute.json" }
+    "attribute": { "$ref": "../../common/users/ParticipantAttribute.json" },
+    "inputBy": { "$ref": "#/$defs/InputBy" }
   },
   "required": [ "attribute" ],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "InputBy": {
+      "$anchor": "InputBy",
+      "type": "object",
+        "oneOf": [
+          { "$ref": "#/$defs/InputByAnyone" },
+          { "$ref": "#/$defs/InputByRoles" }
+        ]
+    },
+    "InputByAnyone": {
+      "$anchor": "InputByAnyone",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.protocols.application.users.ExpectedParticipantData.InputBy.Anyone" }
+      },
+      "required": [ "__type" ]
+    },
+    "InputByRoles": {
+      "$anchor": "InputByRoles",
+      "type": "object",
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.protocols.application.users.ExpectedParticipantData.InputBy.Roles" },
+        "roleNames": {
+          "type": "array",
+          "items": "string"
+        }
+      },
+      "required": [ "__type", "roleNames" ]
+    }
   }
 }

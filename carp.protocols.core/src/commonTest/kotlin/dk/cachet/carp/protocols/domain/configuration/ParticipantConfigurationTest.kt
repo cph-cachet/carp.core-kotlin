@@ -1,9 +1,6 @@
 package dk.cachet.carp.protocols.domain.configuration
 
-import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
-import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.InputDataType
-import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.ParticipantRole
@@ -95,7 +92,8 @@ interface ParticipantConfigurationTest
     {
         val configuration = createParticipantConfiguration()
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
-        val expectedData = ExpectedParticipantData( attribute )
+        val inputBy = ExpectedParticipantData.InputBy.Roles( setOf( "Patient" ) )
+        val expectedData = ExpectedParticipantData( attribute, inputBy )
         configuration.addExpectedParticipantData( expectedData )
 
         val isAdded = configuration.addExpectedParticipantData( expectedData )
@@ -137,45 +135,5 @@ interface ParticipantConfigurationTest
 
         assertTrue( isRemoved )
         assertEquals( 0, configuration.expectedParticipantData.size )
-    }
-
-    @Test
-    fun isValidParticipantData_matches_isValidData_for_expected_data()
-    {
-        val defaultExpectedData = ExpectedParticipantData(
-            ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
-        )
-        val customExpectedData = ExpectedParticipantData(
-            ParticipantAttribute.CustomParticipantAttribute( Text( "Test " ) )
-        )
-        val expectedData = setOf( defaultExpectedData, customExpectedData )
-
-        // Default (registered) types.
-        assertEquals(
-            defaultExpectedData.attribute.isValidData( CarpInputDataTypes, Sex.Male ),
-            expectedData.isValidParticipantData( CarpInputDataTypes, defaultExpectedData.inputDataType, Sex.Male )
-        )
-        assertEquals(
-            defaultExpectedData.attribute.isValidData( CarpInputDataTypes, CustomInput( "Zorg" ) ),
-            expectedData.isValidParticipantData( CarpInputDataTypes, defaultExpectedData.inputDataType, CustomInput( "Zorg" ) )
-        )
-
-        // Custom types.
-        assertEquals(
-            customExpectedData.attribute.isValidData( CarpInputDataTypes, CustomInput( "Valid" ) ),
-            expectedData.isValidParticipantData( CarpInputDataTypes, customExpectedData.inputDataType, CustomInput( "Valid" ) )
-        )
-        assertEquals(
-            customExpectedData.attribute.isValidData( CarpInputDataTypes, CustomInput( -1 ) ),
-            expectedData.isValidParticipantData( CarpInputDataTypes, customExpectedData.inputDataType, CustomInput( -1 ) )
-        )
-    }
-
-    @Test
-    fun isValidParticipantData_returns_false_for_unexpected_data()
-    {
-        val unexpectedType = CarpInputDataTypes.SEX
-        val isValid = emptySet<ExpectedParticipantData>().isValidParticipantData( CarpInputDataTypes, unexpectedType, Sex.Male )
-        assertFalse( isValid )
     }
 }

@@ -59,15 +59,37 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
     namespace dk.cachet.carp.protocols.application.users
     {
+        import InputBy = dk.cachet.carp.protocols.application.users.ExpectedParticipantData.InputBy
+
         class ExpectedParticipantData
         {
-            constructor( attribute: ParticipantAttribute )
+            constructor( attribute: ParticipantAttribute, inputBy?: InputBy )
 
             static get Companion(): ExpectedParticipantData$Companion
 
             readonly attribute: ParticipantAttribute
         }
         interface ExpectedParticipantData$Companion { serializer(): any }
+
+        namespace ExpectedParticipantData
+        {
+            import Anyone = dk.cachet.carp.protocols.application.users.ExpectedParticipantData.InputBy.Anyone
+
+            abstract class InputBy
+            {
+                static get Companion(): ExpectedParticipantData$InputBy$Companion
+                static get Anyone(): any
+            }
+            interface ExpectedParticipantData$InputBy$Companion { serializer(): any }
+
+            namespace InputBy
+            {
+                class Roles extends InputBy
+                {
+                    constructor( roleNames: HashSet<string> )
+                }
+            }
+        }
     }
 
 

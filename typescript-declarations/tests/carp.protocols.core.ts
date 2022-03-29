@@ -1,6 +1,9 @@
 import { expect } from 'chai'
 import VerifyModule from './VerifyModule'
 
+import { kotlin } from 'kotlin'
+import toSet = kotlin.collections.toSet_us0mfu$
+
 import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-js-legacy'
 import Json = kotlinx.serialization.json.Json
 
@@ -14,6 +17,8 @@ import { dk } from 'carp.core-kotlin-carp.protocols.core'
 import ProtocolVersion = dk.cachet.carp.protocols.application.ProtocolVersion
 import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import ExpectedParticipantData = dk.cachet.carp.protocols.application.users.ExpectedParticipantData
+import InputBy = dk.cachet.carp.protocols.application.users.ExpectedParticipantData.InputBy
+import Roles = dk.cachet.carp.protocols.application.users.ExpectedParticipantData.InputBy.Roles
 import ProtocolFactoryServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceRequest
 import ProtocolServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest
 
@@ -34,6 +39,8 @@ describe( "carp.protocols.core", () => {
             StudyProtocolSnapshot.Companion,
             new ExpectedParticipantData( new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ) ),
             ExpectedParticipantData.Companion,
+            InputBy.Companion,
+            InputBy.Anyone,
             [ "ProtocolServiceRequest", new ProtocolServiceRequest.GetAllForOwner( UUID.Companion.randomUUID() ) ],
             [ "ProtocolFactoryServiceRequest", new ProtocolFactoryServiceRequest.CreateCustomProtocol( UUID.Companion.randomUUID(), "", "" ) ]
         ]
@@ -48,6 +55,20 @@ describe( "carp.protocols.core", () => {
             const serializer = StudyProtocolSnapshot.Companion.serializer()
             const parsed = json.decodeFromString_awif5v$( serializer, serializedSnapshot )
             expect( parsed ).is.instanceOf( StudyProtocolSnapshot )
+        } )
+    } )
+
+    describe( "ExpectedParticipantData", () => {
+        it( "can serialize polymorphic InputBy", () => {
+            const expectedData = new ExpectedParticipantData(
+                new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ),
+                new Roles( toSet( [ "Roles are added" ] ) )
+            )
+
+            const json: Json = createDefaultJSON()
+            const serializer = ExpectedParticipantData.Companion.serializer()
+            const serialized = json.encodeToString_tf03ej$( serializer, expectedData )
+            expect( serialized ).has.string( "Roles are added" )
         } )
     } )
 
