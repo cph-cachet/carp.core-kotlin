@@ -14,6 +14,7 @@ import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.users.ParticipantGroup
+import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryWithConnectedDeviceProtocol
@@ -96,10 +97,14 @@ fun createParticipantInvitation( protocol: StudyProtocol, identity: AccountIdent
 fun createComplexParticipantGroup(): ParticipantGroup
 {
     val protocol: StudyProtocol = createSinglePrimaryDeviceProtocol()
-    val defaultAttribute = ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
-    protocol.addExpectedParticipantData( defaultAttribute )
-    val customAttribute = ParticipantAttribute.CustomParticipantAttribute( Text( "Name" ) )
-    protocol.addExpectedParticipantData( customAttribute )
+    val defaultExpectedData = ExpectedParticipantData(
+        ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
+    )
+    protocol.addExpectedParticipantData( defaultExpectedData )
+    val customExpectedData = ExpectedParticipantData(
+        ParticipantAttribute.CustomParticipantAttribute( Text( "Name" ) )
+    )
+    protocol.addExpectedParticipantData( customExpectedData )
     val deployment = studyDeploymentFor( protocol )
 
     return ParticipantGroup.fromNewDeployment( deployment ).apply {
@@ -110,7 +115,7 @@ fun createComplexParticipantGroup(): ParticipantGroup
             setOf( protocol.primaryDevices.first() )
         )
         setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
-        setData( CarpInputDataTypes, customAttribute.inputDataType, CustomInput( "Steven" ) )
+        setData( CarpInputDataTypes, customExpectedData.inputDataType, CustomInput( "Steven" ) )
         studyDeploymentStopped()
     }
 }

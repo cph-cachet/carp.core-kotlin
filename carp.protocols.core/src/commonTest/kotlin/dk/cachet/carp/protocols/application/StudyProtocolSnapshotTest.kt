@@ -12,6 +12,7 @@ import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
+import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
@@ -94,8 +95,12 @@ class StudyProtocolSnapshotTest
             TaskControl( 1, "T2", "C2", TaskControl.Control.Start )
         )
         val expectedParticipantData = listOf(
-            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) ),
-            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "othertype" ) ),
+            ExpectedParticipantData(
+                ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
+            ),
+            ExpectedParticipantData(
+                ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "othertype" ) )
+            )
         )
 
         val protocolId = UUID.randomUUID()

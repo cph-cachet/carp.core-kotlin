@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.users.AssignParticipantDevices
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
@@ -257,7 +258,10 @@ interface RecruitmentServiceTest
         // Create deployable protocol.
         val protocol = StudyProtocol( UUID.randomUUID(), "Test protocol" )
         protocol.addPrimaryDevice( Smartphone( "User's phone" ) )
-        protocol.addExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ) )
+        val expectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
+        )
+        protocol.addExpectedParticipantData( expectedData )
         val validSnapshot = protocol.getSnapshot()
 
         // Create live study from protocol.

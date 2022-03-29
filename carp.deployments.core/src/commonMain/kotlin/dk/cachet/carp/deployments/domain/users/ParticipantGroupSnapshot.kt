@@ -3,10 +3,10 @@ package dk.cachet.carp.deployments.domain.users
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
-import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.common.infrastructure.serialization.MapAsArraySerializer
 import dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
+import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -21,7 +21,7 @@ data class ParticipantGroupSnapshot(
     val studyDeploymentId: UUID,
     val assignedPrimaryDevices: Set<AssignedPrimaryDevice>,
     val isStudyDeploymentStopped: Boolean,
-    val expectedData: Set<ParticipantAttribute> = emptySet(),
+    val expectedData: Set<ExpectedParticipantData> = emptySet(),
     val participations: Set<AccountParticipation> = emptySet(),
     @Serializable( MapAsArraySerializer::class )
     val data: Map<InputDataType, Data?> = emptyMap()

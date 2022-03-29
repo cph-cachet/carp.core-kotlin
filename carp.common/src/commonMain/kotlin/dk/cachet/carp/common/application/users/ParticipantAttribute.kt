@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Describes expected data related to one or multiple participants in a study.
+ * Describes expected data to be input by users related to one or multiple participants in a study.
  */
 @Serializable
 sealed class ParticipantAttribute

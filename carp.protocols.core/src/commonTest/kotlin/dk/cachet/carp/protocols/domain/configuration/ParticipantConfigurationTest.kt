@@ -7,6 +7,10 @@ import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.ParticipantRole
+import dk.cachet.carp.common.infrastructure.test.createTestJSON
+import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -78,11 +82,12 @@ interface ParticipantConfigurationTest
         val configuration = createParticipantConfiguration()
 
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
-        val isAdded = configuration.addExpectedParticipantData( attribute )
+        val expectedData = ExpectedParticipantData( attribute )
+        val isAdded = configuration.addExpectedParticipantData( expectedData )
 
         assertTrue( isAdded )
         assertEquals( 1, configuration.expectedParticipantData.size )
-        assertEquals( attribute, configuration.expectedParticipantData.single() )
+        assertEquals( expectedData, configuration.expectedParticipantData.single() )
     }
 
     @Test
@@ -90,12 +95,34 @@ interface ParticipantConfigurationTest
     {
         val configuration = createParticipantConfiguration()
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
-        configuration.addExpectedParticipantData( attribute )
+        val expectedData = ExpectedParticipantData( attribute )
+        configuration.addExpectedParticipantData( expectedData )
 
-        val isAdded = configuration.addExpectedParticipantData( attribute )
+        val isAdded = configuration.addExpectedParticipantData( expectedData )
 
         assertFalse( isAdded )
         assertEquals( 1, configuration.expectedParticipantData.size )
+    }
+
+    @Test
+    fun addExpectedParticipantData_fails_for_conflicting_participant_attribute()
+    {
+        val configuration = createParticipantConfiguration()
+        val prompt = "Test"
+        val attribute = ParticipantAttribute.CustomParticipantAttribute( Text( prompt ) )
+        val expectedData = ExpectedParticipantData( attribute )
+        configuration.addExpectedParticipantData( expectedData )
+
+        // The API prevents users from creating conflicting attributes, but they can be created through JSON.
+        // Modify "prompt" in previously added attribute, but reuse same `InputDataType`.
+        val json = createTestJSON()
+        val conflictingJson = json.encodeToString( expectedData ).replace( prompt, "Changed!" )
+        val conflictingExpectedData: ExpectedParticipantData = json.decodeFromString( conflictingJson )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            configuration.addExpectedParticipantData( conflictingExpectedData )
+        }
     }
 
     @Test
@@ -103,9 +130,10 @@ interface ParticipantConfigurationTest
     {
         val configuration = createParticipantConfiguration()
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
-        configuration.addExpectedParticipantData( attribute )
+        val expectedData = ExpectedParticipantData( attribute )
+        configuration.addExpectedParticipantData( expectedData )
 
-        val isRemoved = configuration.removeExpectedParticipantData( attribute )
+        val isRemoved = configuration.removeExpectedParticipantData( expectedData )
 
         assertTrue( isRemoved )
         assertEquals( 0, configuration.expectedParticipantData.size )
@@ -114,28 +142,32 @@ interface ParticipantConfigurationTest
     @Test
     fun isValidParticipantData_matches_isValidData_for_expected_data()
     {
-        val defaultAttribute = ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
-        val customAttribute = ParticipantAttribute.CustomParticipantAttribute( Text( "Test " ) )
-        val attributes = setOf( defaultAttribute, customAttribute )
+        val defaultExpectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
+        )
+        val customExpectedData = ExpectedParticipantData(
+            ParticipantAttribute.CustomParticipantAttribute( Text( "Test " ) )
+        )
+        val expectedData = setOf( defaultExpectedData, customExpectedData )
 
         // Default (registered) types.
         assertEquals(
-            defaultAttribute.isValidData( CarpInputDataTypes, Sex.Male ),
-            attributes.isValidParticipantData( CarpInputDataTypes, defaultAttribute.inputDataType, Sex.Male )
+            defaultExpectedData.attribute.isValidData( CarpInputDataTypes, Sex.Male ),
+            expectedData.isValidParticipantData( CarpInputDataTypes, defaultExpectedData.inputDataType, Sex.Male )
         )
         assertEquals(
-            defaultAttribute.isValidData( CarpInputDataTypes, CustomInput( "Zorg" ) ),
-            attributes.isValidParticipantData( CarpInputDataTypes, defaultAttribute.inputDataType, CustomInput( "Zorg" ) )
+            defaultExpectedData.attribute.isValidData( CarpInputDataTypes, CustomInput( "Zorg" ) ),
+            expectedData.isValidParticipantData( CarpInputDataTypes, defaultExpectedData.inputDataType, CustomInput( "Zorg" ) )
         )
 
         // Custom types.
         assertEquals(
-            customAttribute.isValidData( CarpInputDataTypes, CustomInput( "Valid" ) ),
-            attributes.isValidParticipantData( CarpInputDataTypes, customAttribute.inputDataType, CustomInput( "Valid" ) )
+            customExpectedData.attribute.isValidData( CarpInputDataTypes, CustomInput( "Valid" ) ),
+            expectedData.isValidParticipantData( CarpInputDataTypes, customExpectedData.inputDataType, CustomInput( "Valid" ) )
         )
         assertEquals(
-            customAttribute.isValidData( CarpInputDataTypes, CustomInput( -1 ) ),
-            attributes.isValidParticipantData( CarpInputDataTypes, customAttribute.inputDataType, CustomInput( -1 ) )
+            customExpectedData.attribute.isValidData( CarpInputDataTypes, CustomInput( -1 ) ),
+            expectedData.isValidParticipantData( CarpInputDataTypes, customExpectedData.inputDataType, CustomInput( -1 ) )
         )
     }
 
@@ -143,7 +175,7 @@ interface ParticipantConfigurationTest
     fun isValidParticipantData_returns_false_for_unexpected_data()
     {
         val unexpectedType = CarpInputDataTypes.SEX
-        val isValid = emptySet<ParticipantAttribute>().isValidParticipantData( CarpInputDataTypes, unexpectedType, Sex.Male )
+        val isValid = emptySet<ExpectedParticipantData>().isValidParticipantData( CarpInputDataTypes, unexpectedType, Sex.Male )
         assertFalse( isValid )
     }
 }

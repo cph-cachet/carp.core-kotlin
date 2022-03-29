@@ -34,7 +34,7 @@
     },
     "expectedParticipantData": {
       "type": "array",
-      "items": { "$ref": "../common/users/ParticipantAttribute.json" }
+      "items": { "$ref": "./users/ExpectedParticipantData.json" }
     },
     "applicationData": { "$ref":  "../common/ApplicationData.json" }
   },

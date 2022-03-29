@@ -13,6 +13,7 @@ import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
+import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import dk.cachet.carp.protocols.domain.StudyProtocol
 
 
@@ -67,7 +68,10 @@ fun createComplexProtocol(): StudyProtocol
     val trigger = StubTriggerConfiguration( connectedDevice )
     val measures = listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) )
     val task = StubTaskConfiguration( "Task", measures )
-    val expectedParticipantData = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
+    val expectedParticipantData =
+        ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
+        )
     with ( protocol )
     {
         addPrimaryDevice( primaryDevice )
