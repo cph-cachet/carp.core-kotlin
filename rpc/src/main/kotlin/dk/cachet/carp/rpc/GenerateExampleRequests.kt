@@ -99,6 +99,7 @@ private val phone = Smartphone( "Participant's phone", false ) {
         geolocation { batteryNormal { granularity = Granularity.Detailed } }
     }
 }
+private val participantRole = ParticipantRole( "Participant", false )
 private val bikeBeacon = AltBeacon( "Participant's bike", true )
 private val measurePhoneMovement = BackgroundTask(
     "Monitor movement",
@@ -121,6 +122,7 @@ private val phoneProtocol = StudyProtocol(
     protocolCreatedOn
 ).apply {
     addPrimaryDevice( phone )
+    addParticipantRole( participantRole )
     addConnectedDevice( bikeBeacon, phone )
     addTaskControl( startOfStudyTrigger.start( measurePhoneMovement, phone ) )
     addTaskControl( startOfStudyTrigger.start( measureBikeProximity, bikeBeacon ) )
@@ -129,7 +131,8 @@ private val phoneProtocol = StudyProtocol(
 private val startOfStudyTriggerId = phoneProtocol.triggers.entries.first { it.value == startOfStudyTrigger }.key
 private val expectedParticipantData = setOf(
     ExpectedParticipantData(
-        ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
+        ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ),
+        ExpectedParticipantData.InputBy.Roles( setOf( participantRole.role ) )
     )
 )
 

@@ -1,9 +1,5 @@
 package dk.cachet.carp.protocols.domain.configuration
 
-import dk.cachet.carp.common.application.data.Data
-import dk.cachet.carp.common.application.data.input.CustomInput
-import dk.cachet.carp.common.application.data.input.InputDataType
-import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
@@ -58,22 +54,4 @@ interface ParticipantConfiguration
      * @return True if the [expectedData] has been removed; false if it is not included in this configuration.
      */
     fun removeExpectedParticipantData( expectedData: ExpectedParticipantData ): Boolean
-}
-
-
-/**
- * Determines whether input [data] for a given [inputDataType],
- * as registered in [registeredInputDataTypes] or of type [CustomInput],
- * is expected to be input by users and is valid.
- */
-fun <TData : Data?> Set<ExpectedParticipantData>.isValidParticipantData(
-    registeredInputDataTypes: InputDataTypeList,
-    inputDataType: InputDataType,
-    data: TData
-): Boolean
-{
-    val expectedData = this.firstOrNull { it.inputDataType == inputDataType } ?: return false
-    val attribute = expectedData.attribute
-
-    return attribute.isValidData( registeredInputDataTypes, data )
 }
