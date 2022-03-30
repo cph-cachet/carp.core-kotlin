@@ -14,6 +14,7 @@ import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
+import dk.cachet.carp.protocols.application.users.hasNoConflicts
 import dk.cachet.carp.protocols.application.users.isValidParticipantData
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.datetime.Clock
@@ -41,6 +42,9 @@ class ParticipantGroup private constructor(
         data class DeviceRegistrationChanged( val assignedPrimaryDevice: AssignedPrimaryDevice ) : Event()
         object StudyDeploymentStopped : Event()
     }
+
+
+    init { expectedData.hasNoConflicts( exceptionOnConflict = true ) }
 
     companion object
     {
