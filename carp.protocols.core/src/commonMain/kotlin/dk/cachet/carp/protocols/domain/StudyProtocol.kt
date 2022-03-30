@@ -12,6 +12,7 @@ import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
+import dk.cachet.carp.protocols.application.users.hasNoConflicts
 import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolTaskConfiguration
@@ -348,7 +349,9 @@ class StudyProtocol(
     /**
      * Add expected participant data to be input by users.
      *
-     * @throws IllegalArgumentException if a differing [ParticipantAttribute] with a matching input type is already added.
+     * @throws IllegalArgumentException if:
+     *  - a differing [ParticipantAttribute] with a matching input type is already added
+     *  - [expectedParticipantData] already contains an input type which can be input by the same role
      * @return True if the [expectedData] has been added; false in case the same [expectedData] has already been added before.
      */
     override fun addExpectedParticipantData( expectedData: ExpectedParticipantData ): Boolean =
@@ -370,21 +373,15 @@ class StudyProtocol(
      * TODO: This is currently defined in `StudyProtocol` rather than `ParticipantDataConfiguration` due to the need to track events.
      *   Once eventing is implemented on `ParticipantDataConfiguration`, this can be moved where it logically belongs.
      *
-     * @throws IllegalArgumentException if the specified [expectedData] contains differing [ParticipantAttribute]s with the same input type.
+     * @throws IllegalArgumentException if:
+     *   - [expectedData] contains differing [ParticipantAttribute]s with the same input type
+     *   - [expectedData] contains multiple attributes of the same input type which can be input by the same role
      * @return True if any expected data has been replaced; false if the specified [expectedData] was the same as those already set.
      */
     fun replaceExpectedParticipantData( expectedData: Set<ExpectedParticipantData> ): Boolean
     {
-        // Check for conflicting `ParticipantAttribute`s so that operation can't succeed partially.
-        val noConflicts = expectedData
-            .map { it.attribute }
-            .groupBy { it.inputDataType }
-            .all {
-                val first: ParticipantAttribute? = it.value.firstOrNull()
-                it.value.all { attribute -> attribute == first }
-            }
-        require( noConflicts )
-            { "The specified expected data contains differing participant attributes with the same input type." }
+        // Throw when expected data is invalid so that the set isn't added partially.
+        expectedData.hasNoConflicts( exceptionOnConflict = true )
 
         val toRemove = expectedParticipantData.minus( expectedData )
         val toAdd = expectedData.minus( expectedParticipantData )

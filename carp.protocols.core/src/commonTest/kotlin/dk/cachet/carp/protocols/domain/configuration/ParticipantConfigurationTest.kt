@@ -124,6 +124,25 @@ interface ParticipantConfigurationTest
     }
 
     @Test
+    fun addExpectedParticipantData_fails_when_one_role_can_input_the_same_input_data_type_multiple_times()
+    {
+        val configuration = createParticipantConfiguration()
+        val participantRole = "Test"
+        configuration.addParticipantRole( ParticipantRole( participantRole, false ) )
+        val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
+        configuration.addExpectedParticipantData(
+            ExpectedParticipantData( attribute, ExpectedParticipantData.InputBy.Anyone )
+        )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            configuration.addExpectedParticipantData(
+                ExpectedParticipantData( attribute, ExpectedParticipantData.InputBy.Roles( setOf( participantRole ) ) )
+            )
+        }
+    }
+
+    @Test
     fun removeExpectedParticipantData_succeeds()
     {
         val configuration = createParticipantConfiguration()

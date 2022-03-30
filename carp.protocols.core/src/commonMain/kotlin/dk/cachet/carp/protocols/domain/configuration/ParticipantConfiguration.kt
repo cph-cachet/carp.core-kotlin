@@ -43,7 +43,9 @@ interface ParticipantConfiguration
     /**
      * Add expected participant data to be input by users.
      *
-     * @throws IllegalArgumentException if a differing [ParticipantAttribute] with a matching input type is already added.
+     * @throws IllegalArgumentException if:
+     *  - a differing [ParticipantAttribute] with a matching input type is already added
+     *  - [expectedParticipantData] already contains an input type which can be input by the same role
      * @return True if the [expectedData] has been added; false in case the same [expectedData] has already been added before.
      */
     fun addExpectedParticipantData( expectedData: ExpectedParticipantData ): Boolean

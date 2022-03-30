@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.domain.configuration
 import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.domain.ExtractUniqueKeyMap
 import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
+import dk.cachet.carp.protocols.application.users.hasNoConflicts
 
 
 /**
@@ -28,13 +29,10 @@ class EmptyParticipantConfiguration : ParticipantConfiguration
 
     override fun addExpectedParticipantData( expectedData: ExpectedParticipantData ): Boolean
     {
-        val conflictingAttribute = _expectedParticipantData
-            .map { it.attribute }
-            .any { it.inputDataType == expectedData.inputDataType && it != expectedData.attribute }
-        require( !conflictingAttribute )
+        try { expectedParticipantData.plus( expectedData ).hasNoConflicts( exceptionOnConflict = true ) }
+        catch ( ex: IllegalArgumentException )
         {
-            "The input data type of the expected data to add matches that of previously-added expected data, " +
-            "but the participant attributes are different."
+            throw IllegalArgumentException( "The expected data conflicts with existing specified existing data.", ex )
         }
 
         return _expectedParticipantData.add( expectedData )
