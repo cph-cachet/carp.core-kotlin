@@ -8,6 +8,7 @@ import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
@@ -46,7 +47,7 @@ class ParticipantGroupTest
             .map { AssignedPrimaryDevice( it ) }
             .toSet()
         assertEquals( expectedAssignedPrimaryDevices, group.assignedPrimaryDevices )
-        assertEquals( mapOf( expectedDataInputType to null ), group.data )
+        assertEquals( mapOf( expectedData to null ), group.data )
         assertEquals( 0, group.participations.size )
         assertEquals( 0, group.consumeEvents().size )
     }
@@ -225,11 +226,30 @@ class ParticipantGroupTest
 
         val isSet = group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
         assertTrue( isSet )
-        assertEquals( Sex.Male, group.data[ CarpInputDataTypes.SEX ] )
+        assertEquals( Sex.Male, group.data[ expectedData ] )
         assertEquals(
             ParticipantGroup.Event.DataSet( CarpInputDataTypes.SEX, Sex.Male ),
             group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DataSet>().singleOrNull()
         )
+    }
+
+    @Test
+    fun setData_succees_with_specified_participant_role_that_can_be_input_by_anyone()
+    {
+        val protocol: StudyProtocol = createSinglePrimaryDeviceProtocol()
+        val participantRole = "Magician"
+        protocol.addParticipantRole( ParticipantRole( participantRole, false ) )
+        val expectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ),
+            ExpectedParticipantData.InputBy.Anyone
+        )
+        protocol.addExpectedParticipantData( expectedData )
+
+        val group = createParticipantGroup( protocol )
+
+        val isSet = group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male, participantRole )
+        assertTrue( isSet )
+        assertEquals( Sex.Male, group.data[ expectedData ] )
     }
 
     @Test
@@ -279,6 +299,32 @@ class ParticipantGroupTest
         {
             group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, wrongData )
         }
+        assertNull( group.data[ expectedData ] )
+    }
+
+    @Test
+    fun setData_fails_when_set_by_unexpected_participant_roles()
+    {
+        val protocol: StudyProtocol = createSinglePrimaryDeviceProtocol().apply {
+            addParticipantRole( ParticipantRole( "Patient", false ) )
+            addParticipantRole( ParticipantRole( "Caretaker", false ) )
+        }
+        val expectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ),
+            ExpectedParticipantData.InputBy.Roles( protocol.participantRoles.map { it.role }.toSet() )
+        )
+        protocol.addExpectedParticipantData( expectedData )
+        val inputDataType = expectedData.inputDataType
+
+        val group = createParticipantGroup( protocol )
+
+        assertTrue( group.setData( CarpInputDataTypes, inputDataType, Sex.Male, "Patient" ) )
+        assertFalse( group.setData( CarpInputDataTypes, inputDataType, Sex.Male, "Caretaker" ) )
+        assertFailsWith<IllegalArgumentException>
+        {
+            group.setData( CarpInputDataTypes, inputDataType, Sex.Female, "Doctor" )
+        }
+        assertEquals( Sex.Male, group.data[ expectedData ] )
     }
 
     @Test
@@ -289,25 +335,25 @@ class ParticipantGroupTest
             ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
         )
         protocol.addExpectedParticipantData( defaultExpectedData )
-        val customExpecteData = ExpectedParticipantData(
+        val customExpectedData = ExpectedParticipantData(
             ParticipantAttribute.CustomParticipantAttribute( Text( "Test" ) )
         )
-        protocol.addExpectedParticipantData( customExpecteData )
+        protocol.addExpectedParticipantData( customExpectedData )
 
         val group = createParticipantGroup( protocol )
 
         val toSet = mapOf(
             CarpInputDataTypes.SEX to Sex.Male,
-            customExpecteData.inputDataType to CustomInput( "Test" )
+            customExpectedData.inputDataType to CustomInput( "Test" )
         )
         val isSet = group.setData( CarpInputDataTypes, toSet )
         assertTrue( isSet )
-        assertEquals( Sex.Male, group.data[ CarpInputDataTypes.SEX ] )
-        assertEquals( CustomInput( "Test" ), group.data[ customExpecteData.inputDataType ] )
+        assertEquals( Sex.Male, group.data[ defaultExpectedData ] )
+        assertEquals( CustomInput( "Test" ), group.data[ customExpectedData ] )
         assertEquals(
             setOf(
                 ParticipantGroup.Event.DataSet( CarpInputDataTypes.SEX, Sex.Male ),
-                ParticipantGroup.Event.DataSet( customExpecteData.inputDataType, CustomInput( "Test" ) )
+                ParticipantGroup.Event.DataSet( customExpectedData.inputDataType, CustomInput( "Test" ) )
             ),
             group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DataSet>().toSet()
         )
@@ -356,7 +402,7 @@ class ParticipantGroupTest
             CarpInputDataTypes.SEX to Sex.Male // Not expected, thus should fail.
         )
         assertFailsWith<IllegalArgumentException> { group.setData( CarpInputDataTypes, toSet ) }
-        assertEquals( null, group.data[ customExpectedData.inputDataType ] )
+        assertEquals( null, group.data[ customExpectedData ] )
         assertEquals(
             0,
             group.consumeEvents().filterIsInstance<ParticipantGroup.Event.DataSet>().count()

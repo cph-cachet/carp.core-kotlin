@@ -15,7 +15,6 @@ import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import dk.cachet.carp.protocols.application.users.hasNoConflicts
-import dk.cachet.carp.protocols.application.users.isValidParticipantData
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -70,7 +69,7 @@ class ParticipantGroup private constructor(
             val group = ParticipantGroup(
                 snapshot.studyDeploymentId,
                 snapshot.assignedPrimaryDevices,
-                snapshot.expectedData,
+                snapshot.data.keys,
                 snapshot.id,
                 snapshot.createdOn
             )
@@ -80,8 +79,8 @@ class ParticipantGroup private constructor(
             snapshot.participations.forEach { p -> group._participations.add( p.copy() ) }
 
             // Add participant data.
-            snapshot.data.forEach { (inputType, data) ->
-                group._data[ inputType ] = data
+            snapshot.data.forEach { (expectedData, data) ->
+                group._data[ expectedData ] = data
             }
 
             return group
@@ -184,28 +183,35 @@ class ParticipantGroup private constructor(
     /**
      * Data pertaining to participants in this group which is input by users.
      */
-    val data: Map<InputDataType, Data?>
+    val data: Map<ExpectedParticipantData, Data?>
         get() = _data
 
-    private val _data: MutableMap<InputDataType, Data?> =
+    private val _data: MutableMap<ExpectedParticipantData, Data?> =
         // All expected participant data is null by default.
-        expectedData.associate { it.inputDataType to null }.toMutableMap()
+        expectedData.associateWith { null }.toMutableMap()
 
     /**
-     * Set [data] for the participants in this group for the given [inputDataType], or unset it by passing `null`,
+     * Declare that [data] has been [inputByParticipantRole] for the given [inputDataType], or unset if [data] is `null`,
      * using [registeredInputDataTypes] to verify whether the data is valid for default input data types.
      *
      * @throws IllegalArgumentException when:
-     *   - [inputDataType] is not configured as expected participant data
+     *   - [inputDataType] is not configured as expected participant data to be filled out by [inputByParticipantRole]
      *   - [data] is invalid data for [inputDataType]
      * @return True when data changed; false when data was already set.
      */
-    fun setData( registeredInputDataTypes: InputDataTypeList, inputDataType: InputDataType, data: Data? ): Boolean
+    fun setData(
+        registeredInputDataTypes: InputDataTypeList,
+        inputDataType: InputDataType,
+        data: Data?,
+        /**
+         * The participant role who filled out [data]; null if anyone can set the specified [inputDataType].
+         */
+        inputByParticipantRole: String? = null
+    ): Boolean
     {
-        require( expectedData.isValidParticipantData( registeredInputDataTypes, inputDataType, data ) )
-            { "The input data type is not expected or invalid data is passed." }
+        val dataToSet = getExpectedDataOrThrow( registeredInputDataTypes, inputDataType, data, inputByParticipantRole )
 
-        val prevData = _data.put( inputDataType, data )
+        val prevData = _data.put( dataToSet, data )
 
         return ( prevData != data )
             .eventIf( true ) { Event.DataSet( inputDataType, data ) }
@@ -220,14 +226,45 @@ class ParticipantGroup private constructor(
      *   - one or more of the set [data] isn't valid for the corresponding input data type
      * @return True when any data has changed; false when all [data] was already set.
      */
-    fun setData( registeredInputDataTypes: InputDataTypeList, data: Map<InputDataType, Data?> ): Boolean
+    fun setData(
+        registeredInputDataTypes: InputDataTypeList,
+        data: Map<InputDataType, Data?>,
+        /**
+         * The participant role who filled out [data]; null if anyone
+         */
+        inputByParticipantRole: String? = null
+    ): Boolean
     {
-        require( data.all { expectedData.isValidParticipantData( registeredInputDataTypes, it.key, it.value ) } )
-            { "One of the input data types is not expected or invalid data is passed." }
+        data.forEach { getExpectedDataOrThrow( registeredInputDataTypes, it.key, it.value, inputByParticipantRole ) }
 
         return data.entries.fold( false ) { anyDataChanged, element ->
             setData( registeredInputDataTypes, element.key, element.value ) || anyDataChanged
         }
+    }
+
+    /**
+     * Returns the matching [ExpectedParticipantData], but only if the data input is valid; throws otherwise.
+     */
+    private fun getExpectedDataOrThrow(
+        registeredInputDataTypes: InputDataTypeList,
+        inputDataType: InputDataType,
+        data: Data?,
+        inputByParticipantRole: String?
+    ): ExpectedParticipantData
+    {
+        val dataToSet = expectedData
+            .filter {
+                when ( val inputBy = it.inputBy )
+                {
+                    is ExpectedParticipantData.InputBy.Anyone -> true
+                    is ExpectedParticipantData.InputBy.Roles -> inputByParticipantRole in inputBy.roleNames
+                }
+            }
+            .firstOrNull { it.inputDataType == inputDataType }
+        requireNotNull( dataToSet ) { "The input data type is not expected to be input by this participant role." }
+        require( dataToSet.attribute.isValidData( registeredInputDataTypes, data ) ) { "Invalid data is passed" }
+
+        return dataToSet
     }
 
     /**
