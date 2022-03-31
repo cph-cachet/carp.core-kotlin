@@ -1,7 +1,6 @@
-package dk.cachet.carp.protocols.application.users
+package dk.cachet.carp.common.application.users
 
 import dk.cachet.carp.common.application.data.input.InputDataType
-import dk.cachet.carp.common.application.users.ParticipantAttribute
 import kotlinx.serialization.Serializable
 
 

@@ -11,6 +11,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
     import UUID = cdk.cachet.carp.common.application.UUID
     import DeviceConfiguration = cdk.cachet.carp.common.application.devices.DeviceConfiguration
     import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
+    import ExpectedParticipantData = cdk.cachet.carp.common.application.users.ExpectedParticipantData
     import TaskConfiguration = cdk.cachet.carp.common.application.tasks.TaskConfiguration
     import TaskControl = cdk.cachet.carp.common.application.triggers.TaskControl
     import TriggerConfiguration = cdk.cachet.carp.common.application.triggers.TriggerConfiguration
@@ -20,9 +21,6 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
     namespace dk.cachet.carp.protocols.application
     {
-        import ExpectedParticipantData = dk.cachet.carp.protocols.application.users.ExpectedParticipantData
-
-
         class ProtocolVersion
         {
             constructor( tag: string, date?: Instant )
@@ -57,45 +55,8 @@ declare module 'carp.core-kotlin-carp.protocols.core'
     }
 
 
-    namespace dk.cachet.carp.protocols.application.users
-    {
-        import InputBy = dk.cachet.carp.protocols.application.users.ExpectedParticipantData.InputBy
-
-        class ExpectedParticipantData
-        {
-            constructor( attribute: ParticipantAttribute, inputBy?: InputBy )
-
-            static get Companion(): ExpectedParticipantData$Companion
-
-            readonly attribute: ParticipantAttribute
-        }
-        interface ExpectedParticipantData$Companion { serializer(): any }
-
-        namespace ExpectedParticipantData
-        {
-            import Anyone = dk.cachet.carp.protocols.application.users.ExpectedParticipantData.InputBy.Anyone
-
-            abstract class InputBy
-            {
-                static get Companion(): ExpectedParticipantData$InputBy$Companion
-                static get Anyone(): any
-            }
-            interface ExpectedParticipantData$InputBy$Companion { serializer(): any }
-
-            namespace InputBy
-            {
-                class Roles extends InputBy
-                {
-                    constructor( roleNames: HashSet<string> )
-                }
-            }
-        }
-    }
-
-
     namespace dk.cachet.carp.protocols.infrastructure
     {
-        import ExpectedParticipantData = dk.cachet.carp.protocols.application.users.ExpectedParticipantData
         import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
         

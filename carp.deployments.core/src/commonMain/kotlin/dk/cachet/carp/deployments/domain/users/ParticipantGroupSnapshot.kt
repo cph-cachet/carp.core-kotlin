@@ -2,10 +2,10 @@ package dk.cachet.carp.deployments.domain.users
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.common.infrastructure.serialization.MapAsArraySerializer
 import dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
-import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 

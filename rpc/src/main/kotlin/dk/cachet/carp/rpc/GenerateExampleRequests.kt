@@ -19,7 +19,6 @@ import dk.cachet.carp.deployments.application.*
 import dk.cachet.carp.deployments.application.users.*
 import dk.cachet.carp.deployments.infrastructure.*
 import dk.cachet.carp.protocols.application.*
-import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.*

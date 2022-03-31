@@ -177,6 +177,7 @@ declare module 'carp.core-kotlin-carp.common'
     {
         import InputElement = dk.cachet.carp.common.application.data.input.elements.InputElement
         import InputDataTypeList = dk.cachet.carp.common.application.data.input.InputDataTypeList
+        import InputBy = dk.cachet.carp.common.application.users.ExpectedParticipantData.InputBy
 
 
         class Username
@@ -246,6 +247,37 @@ declare module 'carp.core-kotlin-carp.common'
             class CustomParticipantAttribute extends ParticipantAttribute
             {
                 constructor( input: InputElement )
+            }
+        }
+
+
+        class ExpectedParticipantData
+        {
+            constructor( attribute: ParticipantAttribute, inputBy?: InputBy )
+
+            static get Companion(): ExpectedParticipantData$Companion
+
+            readonly attribute: ParticipantAttribute
+        }
+        interface ExpectedParticipantData$Companion { serializer(): any }
+
+        namespace ExpectedParticipantData
+        {
+            import Anyone = dk.cachet.carp.common.application.users.ExpectedParticipantData.InputBy.Anyone
+
+            abstract class InputBy
+            {
+                static get Companion(): ExpectedParticipantData$InputBy$Companion
+                static get Anyone(): any
+            }
+            interface ExpectedParticipantData$InputBy$Companion { serializer(): any }
+
+            namespace InputBy
+            {
+                class Roles extends InputBy
+                {
+                    constructor( roleNames: HashSet<string> )
+                }
             }
         }
     }
