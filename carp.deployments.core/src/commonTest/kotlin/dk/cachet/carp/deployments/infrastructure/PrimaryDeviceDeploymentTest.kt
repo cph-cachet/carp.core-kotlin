@@ -1,6 +1,9 @@
 package dk.cachet.carp.deployments.infrastructure
 
+import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.triggers.TaskControl
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
+import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
@@ -31,6 +34,9 @@ class PrimaryDeviceDeploymentTest
         val connected = StubDeviceConfiguration( "Connected" )
         val task = StubTaskConfiguration( "Task" )
         val trigger = StubTriggerConfiguration( connected.roleName )
+        val expectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "test" ) )
+        )
 
         val deployment = PrimaryDeviceDeployment(
             device,
@@ -40,6 +46,7 @@ class PrimaryDeviceDeploymentTest
             setOf( task ),
             mapOf( 0 to trigger ),
             setOf( TaskControl( 0, task.name, connected.roleName, TaskControl.Control.Start ) ),
+            setOf( expectedData ),
             "some data"
         )
 

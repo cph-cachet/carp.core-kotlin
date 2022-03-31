@@ -225,6 +225,7 @@ private val phoneDeviceDeployment = PrimaryDeviceDeployment(
         TaskControl( startOfStudyTriggerId, measurePhoneMovement.name, phone.roleName, TaskControl.Control.Start ),
         TaskControl( startOfStudyTriggerId, measureBikeProximity.name, bikeBeacon.roleName, TaskControl.Control.Start )
     ),
+    expectedParticipantData,
     phoneProtocol.applicationData
 )
 

@@ -5,12 +5,15 @@ package dk.cachet.carp.deployments.domain
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.devices.AltBeaconDeviceRegistration
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.application.triggers.TaskControl
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
+import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.CustomPrimaryDeviceConfiguration
@@ -547,6 +550,10 @@ class StudyDeploymentTest
         val connectedTask = StubTaskConfiguration( "Connected task" )
         protocol.addTaskControl( primary.atStartOfStudy().start( primaryTask, primary ) )
         protocol.addTaskControl( primary.atStartOfStudy().start( connectedTask, connected ) )
+        val expectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
+        )
+        protocol.addExpectedParticipantData( expectedData )
         val deployment = studyDeploymentFor( protocol )
         val registration = DefaultDeviceRegistration()
         deployment.registerDevice( primary, registration )
@@ -560,6 +567,7 @@ class StudyDeploymentTest
         assertEquals( registration, deviceDeployment.registration )
         assertEquals( protocol.getConnectedDevices( primary ).toSet(), deviceDeployment.connectedDevices )
         assertEquals( 1, deviceDeployment.connectedDeviceRegistrations.count() )
+        assertEquals( setOf( expectedData ), deviceDeployment.expectedParticipantData )
         assertEquals( protocol.applicationData, deviceDeployment.applicationData )
 
         // Device deployment lists both tasks, even if one is destined for the connected device.

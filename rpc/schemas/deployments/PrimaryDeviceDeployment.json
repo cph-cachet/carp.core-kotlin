@@ -25,6 +25,10 @@
       "type": "array",
       "items": { "$ref": "../common/triggers/TaskControl.json" }
     },
+    "expectedParticipantData": {
+      "type": "array",
+      "items":{ "$ref":  "../common/users/ExpectedParticipantData.json" }
+    },
     "applicationData": { "$ref": "../common/ApplicationData.json" }
   },
   "required": [ "deviceConfiguration", "registration" ],
