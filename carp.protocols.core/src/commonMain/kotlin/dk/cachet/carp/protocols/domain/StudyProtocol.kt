@@ -8,11 +8,11 @@ import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl.Control
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.hasNoConflicts
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
-import dk.cachet.carp.protocols.application.users.hasNoConflicts
 import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolTaskConfiguration

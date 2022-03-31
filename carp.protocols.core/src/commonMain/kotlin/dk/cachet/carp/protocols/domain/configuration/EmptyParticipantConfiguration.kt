@@ -1,9 +1,9 @@
 package dk.cachet.carp.protocols.domain.configuration
 
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantRole
+import dk.cachet.carp.common.application.users.hasNoConflicts
 import dk.cachet.carp.common.domain.ExtractUniqueKeyMap
-import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
-import dk.cachet.carp.protocols.application.users.hasNoConflicts
 
 
 /**

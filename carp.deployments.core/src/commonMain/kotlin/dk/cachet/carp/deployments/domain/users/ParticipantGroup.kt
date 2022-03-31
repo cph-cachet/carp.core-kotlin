@@ -6,6 +6,8 @@ import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
+import dk.cachet.carp.common.application.users.hasNoConflicts
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.common.domain.users.Account
@@ -13,8 +15,6 @@ import dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
-import dk.cachet.carp.protocols.application.users.ExpectedParticipantData
-import dk.cachet.carp.protocols.application.users.hasNoConflicts
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
