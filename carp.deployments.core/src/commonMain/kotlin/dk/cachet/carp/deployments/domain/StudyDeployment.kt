@@ -421,6 +421,7 @@ class StudyDeployment private constructor(
             tasks,
             usedTriggers,
             taskControls,
+            protocolSnapshot.expectedParticipantData.toSet(),
             protocol.applicationData
         )
     }

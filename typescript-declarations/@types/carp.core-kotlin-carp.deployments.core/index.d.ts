@@ -13,6 +13,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
     import UUID = cdk.cachet.carp.common.application.UUID
     import DeviceRegistration = cdk.cachet.carp.common.application.devices.DeviceRegistration
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
+    import ExpectedParticipantData = cdk.cachet.carp.common.application.users.ExpectedParticipantData
     import ApplicationServiceRequest = cdk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
     import ApiVersion = cdk.cachet.carp.common.application.services.ApiVersion
 
@@ -84,6 +85,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
                 tasks?: HashSet<any>,
                 triggers?: HashMap<number, any>,
                 taskControls?: HashSet<any>,
+                expectedParticipantData?: HashSet<ExpectedParticipantData>,
                 applicationData?: string | null )
 
                 static get Companion(): PrimaryDeviceDeployment$Companion
@@ -95,6 +97,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
                 readonly tasks: HashSet<any>
                 readonly triggers: HashMap<number, any>
                 readonly taskControls: HashSet<any>
+                readonly expectedParticipantData: HashSet<ExpectedParticipantData>
                 readonly applicationData: string | null
         }
         interface PrimaryDeviceDeployment$Companion { serializer(): any }
