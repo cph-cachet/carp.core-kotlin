@@ -31,8 +31,8 @@ import AccountIdentity = dk.cachet.carp.common.application.users.AccountIdentity
 import EmailAccountIdentity = dk.cachet.carp.common.application.users.EmailAccountIdentity;
 import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute;
 import ExpectedParticipantData = dk.cachet.carp.common.application.users.ExpectedParticipantData
-import InputBy = dk.cachet.carp.common.application.users.ExpectedParticipantData.InputBy
-import Roles = dk.cachet.carp.common.application.users.ExpectedParticipantData.InputBy.Roles
+import AssignedTo = dk.cachet.carp.common.application.users.AssignedTo
+import Roles = dk.cachet.carp.common.application.users.AssignedTo.Roles
 import Username = dk.cachet.carp.common.application.users.Username;
 import UsernameAccountIdentity = dk.cachet.carp.common.application.users.UsernameAccountIdentity;
 import emailAccountIdentityFromString = dk.cachet.carp.common.application.users.EmailAccountIdentity_init_61zpoe$;
@@ -88,8 +88,8 @@ describe( "carp.common", () => {
             ParticipantAttribute.Companion,
             new ExpectedParticipantData( new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ) ),
             ExpectedParticipantData.Companion,
-            InputBy.Companion,
-            InputBy.Anyone,
+            AssignedTo.Companion,
+            AssignedTo.Anyone,
             new ApiVersion( 1, 0 ),
             [ "ApplicationServiceRequest", new DeploymentServiceRequest.GetStudyDeploymentStatus( UUID.Companion.randomUUID() ) ]
         ]

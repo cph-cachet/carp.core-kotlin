@@ -131,7 +131,7 @@ private val startOfStudyTriggerId = phoneProtocol.triggers.entries.first { it.va
 private val expectedParticipantData = setOf(
     ExpectedParticipantData(
         ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ),
-        ExpectedParticipantData.InputBy.Roles( setOf( participantRole.role ) )
+        AssignedTo.Roles( setOf( participantRole.role ) )
     )
 )
 

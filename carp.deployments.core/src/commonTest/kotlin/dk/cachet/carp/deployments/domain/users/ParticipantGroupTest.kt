@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.ParticipantRole
@@ -234,14 +235,14 @@ class ParticipantGroupTest
     }
 
     @Test
-    fun setData_succees_with_specified_participant_role_that_can_be_input_by_anyone()
+    fun setData_succeeds_with_specified_participant_role_for_data_assigned_to_anyone()
     {
         val protocol: StudyProtocol = createSinglePrimaryDeviceProtocol()
         val participantRole = "Magician"
         protocol.addParticipantRole( ParticipantRole( participantRole, false ) )
         val expectedData = ExpectedParticipantData(
             ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ),
-            ExpectedParticipantData.InputBy.Anyone
+            AssignedTo.Anyone
         )
         protocol.addExpectedParticipantData( expectedData )
 
@@ -303,7 +304,7 @@ class ParticipantGroupTest
     }
 
     @Test
-    fun setData_fails_when_set_by_unexpected_participant_roles()
+    fun setData_fails_when_not_assigned_to_participant_role()
     {
         val protocol: StudyProtocol = createSinglePrimaryDeviceProtocol().apply {
             addParticipantRole( ParticipantRole( "Patient", false ) )
@@ -311,7 +312,7 @@ class ParticipantGroupTest
         }
         val expectedData = ExpectedParticipantData(
             ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ),
-            ExpectedParticipantData.InputBy.Roles( protocol.participantRoles.map { it.role }.toSet() )
+            AssignedTo.Roles( protocol.participantRoles.map { it.role }.toSet() )
         )
         protocol.addExpectedParticipantData( expectedData )
         val inputDataType = expectedData.inputDataType

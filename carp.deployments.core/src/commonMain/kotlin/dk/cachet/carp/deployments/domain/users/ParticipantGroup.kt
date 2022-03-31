@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.hasNoConflicts
 import dk.cachet.carp.common.domain.AggregateRoot
@@ -191,11 +192,11 @@ class ParticipantGroup private constructor(
         expectedData.associateWith { null }.toMutableMap()
 
     /**
-     * Declare that [data] has been [inputByParticipantRole] for the given [inputDataType], or unset if [data] is `null`,
+     * Set [data] [assignedToParticipantRole] for the given [inputDataType], or unset if [data] is `null`,
      * using [registeredInputDataTypes] to verify whether the data is valid for default input data types.
      *
      * @throws IllegalArgumentException when:
-     *   - [inputDataType] is not configured as expected participant data to be filled out by [inputByParticipantRole]
+     *   - [inputDataType] is not configured as expected participant data [assignedToParticipantRole]
      *   - [data] is invalid data for [inputDataType]
      * @return True when data changed; false when data was already set.
      */
@@ -204,12 +205,12 @@ class ParticipantGroup private constructor(
         inputDataType: InputDataType,
         data: Data?,
         /**
-         * The participant role who filled out [data]; null if anyone can set the specified [inputDataType].
+         * The participant role [data] was assigned to; null if anyone can set the specified [inputDataType].
          */
-        inputByParticipantRole: String? = null
+        assignedToParticipantRole: String? = null
     ): Boolean
     {
-        val dataToSet = getExpectedDataOrThrow( registeredInputDataTypes, inputDataType, data, inputByParticipantRole )
+        val dataToSet = getExpectedDataOrThrow( registeredInputDataTypes, inputDataType, data, assignedToParticipantRole )
 
         val prevData = _data.put( dataToSet, data )
 
@@ -249,19 +250,19 @@ class ParticipantGroup private constructor(
         registeredInputDataTypes: InputDataTypeList,
         inputDataType: InputDataType,
         data: Data?,
-        inputByParticipantRole: String?
+        assignedToParticipantRole: String?
     ): ExpectedParticipantData
     {
         val dataToSet = expectedData
             .filter {
-                when ( val inputBy = it.inputBy )
+                when ( val assignedTo = it.assignedTo )
                 {
-                    is ExpectedParticipantData.InputBy.Anyone -> true
-                    is ExpectedParticipantData.InputBy.Roles -> inputByParticipantRole in inputBy.roleNames
+                    is AssignedTo.Anyone -> true
+                    is AssignedTo.Roles -> assignedToParticipantRole in assignedTo.roleNames
                 }
             }
             .firstOrNull { it.inputDataType == inputDataType }
-        requireNotNull( dataToSet ) { "The input data type is not expected to be input by this participant role." }
+        requireNotNull( dataToSet ) { "The input data type is not assigned to this participant role." }
         require( dataToSet.attribute.isValidData( registeredInputDataTypes, data ) ) { "Invalid data is passed" }
 
         return dataToSet
