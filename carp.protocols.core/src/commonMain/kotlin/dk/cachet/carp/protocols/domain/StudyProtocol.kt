@@ -375,7 +375,7 @@ class StudyProtocol(
      *
      * @throws IllegalArgumentException if:
      *   - [expectedData] contains differing [ParticipantAttribute]s with the same input type
-     *   - [expectedData] contains multiple attributes of the same input type which can be input by the same role
+     *   - [expectedData] contains multiple attributes of the same input type which are assigned to the same role
      * @return True if any expected data has been replaced; false if the specified [expectedData] was the same as those already set.
      */
     fun replaceExpectedParticipantData( expectedData: Set<ExpectedParticipantData> ): Boolean

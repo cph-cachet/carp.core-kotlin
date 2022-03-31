@@ -2,6 +2,7 @@ package dk.cachet.carp.protocols.domain.configuration
 
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.elements.Text
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.ParticipantRole
@@ -92,7 +93,7 @@ interface ParticipantConfigurationTest
     {
         val configuration = createParticipantConfiguration()
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
-        val inputBy = ExpectedParticipantData.InputBy.Roles( setOf( "Patient" ) )
+        val inputBy = AssignedTo.Roles( setOf( "Patient" ) )
         val expectedData = ExpectedParticipantData( attribute, inputBy )
         configuration.addExpectedParticipantData( expectedData )
 
@@ -124,20 +125,18 @@ interface ParticipantConfigurationTest
     }
 
     @Test
-    fun addExpectedParticipantData_fails_when_one_role_can_input_the_same_input_data_type_multiple_times()
+    fun addExpectedParticipantData_fails_when_one_role_has_the_same_input_type_assigned_multiple_times()
     {
         val configuration = createParticipantConfiguration()
         val participantRole = "Test"
         configuration.addParticipantRole( ParticipantRole( participantRole, false ) )
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
-        configuration.addExpectedParticipantData(
-            ExpectedParticipantData( attribute, ExpectedParticipantData.InputBy.Anyone )
-        )
+        configuration.addExpectedParticipantData( ExpectedParticipantData( attribute, AssignedTo.Anyone ) )
 
         assertFailsWith<IllegalArgumentException>
         {
             configuration.addExpectedParticipantData(
-                ExpectedParticipantData( attribute, ExpectedParticipantData.InputBy.Roles( setOf( participantRole ) ) )
+                ExpectedParticipantData( attribute, AssignedTo.Roles( setOf( participantRole ) ) )
             )
         }
     }

@@ -5,21 +5,14 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Describes a participant [attribute] to be [inputBy] specified users in a study.
+ * Describes a participant [attribute] [assignedTo] to be input by specified users in a study.
  */
 @Serializable
-data class ExpectedParticipantData( val attribute: ParticipantAttribute, val inputBy: InputBy = InputBy.Anyone )
+data class ExpectedParticipantData(
+    val attribute: ParticipantAttribute,
+    val assignedTo: AssignedTo = AssignedTo.Anyone
+)
 {
-    @Serializable
-    sealed class InputBy
-    {
-        @Serializable
-        object Anyone : InputBy()
-
-        @Serializable
-        class Roles( val roleNames: Set<String> ) : InputBy()
-    }
-
     val inputDataType: InputDataType
         get() = attribute.inputDataType
 }
@@ -28,7 +21,7 @@ data class ExpectedParticipantData( val attribute: ParticipantAttribute, val inp
 /**
  * Determines whether the set contains any of the following conflicts:
  * - contains differing participant attributes with the same input type
- * - contains multiple attributes of the same input type which can be input by the same role
+ * - contains multiple attributes of the same input type which are assigned to the same role
  *
  * @throws IllegalArgumentException if [exceptionOnConflict] is set to true and the set contains a conflict.
  */
@@ -48,10 +41,10 @@ fun Set<ExpectedParticipantData>.hasNoConflicts( exceptionOnConflict: Boolean = 
             { "Expected data contains differing participant attributes with the same input type." }
     }
 
-    // Check for multiple attributes of the same input type which can be input by the same role.
+    // Check for multiple attributes of the same input type which are assigned to the same role.
     val noMultipleInputType = expectedDataByInputType
         .all { (_, expectedData) ->
-            if ( ExpectedParticipantData.InputBy.Anyone in expectedData.map { it.inputBy } )
+            if ( AssignedTo.Anyone in expectedData.map { it.assignedTo } )
             {
                 // Any additional expected data would specify roles and thus conflict with the `Anyone` configuration.
                 expectedData.size == 1
@@ -59,16 +52,14 @@ fun Set<ExpectedParticipantData>.hasNoConflicts( exceptionOnConflict: Boolean = 
             else
             {
                 // Duplicates indicate the same role is configured to input the same input type multiple times.
-                val canBeInputBy = expectedData.flatMap {
-                    (it.inputBy as ExpectedParticipantData.InputBy.Roles).roleNames
-                }
+                val canBeInputBy = expectedData.flatMap { (it.assignedTo as AssignedTo.Roles).roleNames }
                 canBeInputBy.size == canBeInputBy.distinct().size
             }
         }
     if ( exceptionOnConflict )
     {
         require( noMultipleInputType )
-            { "Expected data contains attributes of the same input type which can be input by the same role." }
+            { "Expected data contains attributes of the same input type which are assigned to the same role." }
     }
 
     return noConflictingAttributes && noMultipleInputType
