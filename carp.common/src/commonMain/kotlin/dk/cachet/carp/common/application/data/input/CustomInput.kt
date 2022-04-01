@@ -76,7 +76,7 @@ class CustomInputSerializer( vararg supportedDataTypes: KClass<*> ) : KSerialize
         }
 
     fun getRegisteredSerializer( dataType: String ): KSerializer<out Any> = dataTypeMap[ dataType ]
-        ?: throw UnsupportedOperationException( "No serializer registered for custom input type: $dataType" )
+        ?: throw UnsupportedOperationException( "No serializer registered for custom input data type: $dataType" )
 }
 
 

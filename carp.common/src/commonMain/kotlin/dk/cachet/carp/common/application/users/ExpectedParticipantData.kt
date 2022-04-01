@@ -24,8 +24,8 @@ data class ExpectedParticipantData(
 
 /**
  * Determines whether the set contains any of the following conflicts:
- * - contains differing participant attributes with the same input type
- * - contains multiple attributes of the same input type which are assigned to the same role
+ * - contains differing participant attributes with the same input data type
+ * - contains multiple attributes of the same input data type which are assigned to the same role
  *
  * @throws IllegalArgumentException if [exceptionOnConflict] is set to true and the set contains a conflict.
  */
@@ -33,7 +33,7 @@ fun Set<ExpectedParticipantData>.hasNoConflicts( exceptionOnConflict: Boolean = 
 {
     val expectedDataByInputType = this.groupBy { it.inputDataType }
 
-    // Check for differing `ParticipantAttribute`s with the same input type.
+    // Check for differing `ParticipantAttribute`s with the same input data type.
     val noConflictingAttributes = expectedDataByInputType
         .all {
             val firstAttribute: ParticipantAttribute? = it.value.firstOrNull()?.attribute
@@ -42,10 +42,10 @@ fun Set<ExpectedParticipantData>.hasNoConflicts( exceptionOnConflict: Boolean = 
     if ( exceptionOnConflict )
     {
         require( noConflictingAttributes )
-            { "Expected data contains differing participant attributes with the same input type." }
+            { "Expected data contains differing participant attributes with the same input data type." }
     }
 
-    // Check for multiple attributes of the same input type which are assigned to the same role.
+    // Check for multiple attributes of the same input data type which are assigned to the same role.
     val noMultipleInputType = expectedDataByInputType
         .all { (_, expectedData) ->
             if ( AssignedTo.Anyone in expectedData.map { it.assignedTo } )
@@ -55,7 +55,7 @@ fun Set<ExpectedParticipantData>.hasNoConflicts( exceptionOnConflict: Boolean = 
             }
             else
             {
-                // Duplicates indicate the same role is configured to input the same input type multiple times.
+                // Duplicates indicate the same role is configured to input the same input data type multiple times.
                 val canBeInputBy = expectedData.flatMap { (it.assignedTo as AssignedTo.Roles).roleNames }
                 canBeInputBy.size == canBeInputBy.distinct().size
             }
@@ -63,7 +63,7 @@ fun Set<ExpectedParticipantData>.hasNoConflicts( exceptionOnConflict: Boolean = 
     if ( exceptionOnConflict )
     {
         require( noMultipleInputType )
-            { "Expected data contains attributes of the same input type which are assigned to the same role." }
+            { "Expected data contains attributes of the same input data type which are assigned to the same role." }
     }
 
     return noConflictingAttributes && noMultipleInputType

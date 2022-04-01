@@ -55,7 +55,7 @@ class ProtocolServiceHost(
      *
      * @throws IllegalArgumentException when:
      *   - no protocol with [protocolId] is found
-     *   - [expectedParticipantData] contains differing [ParticipantAttribute]s with the same input type
+     *   - [expectedParticipantData] contains differing [ParticipantAttribute]s with the same input data type
      * @return The updated [StudyProtocolSnapshot].
      */
     override suspend fun updateParticipantDataConfiguration(

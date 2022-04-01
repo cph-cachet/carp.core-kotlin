@@ -82,12 +82,12 @@ sealed class ParticipantAttribute
      * or [CustomInput] in case this is a [CustomParticipantAttribute].
      *
      * @throws IllegalArgumentException when the [input] does not match the constraints determined by the [InputElement] associated to this attribute.
-     * @throws UnsupportedOperationException when no input element or data converter is registered for the input type of this attribute.
+     * @throws UnsupportedOperationException when no input element or data converter is registered for the input data type of this attribute.
      */
     fun <TInput> inputToData( registeredInputDataTypes: InputDataTypeList, input: TInput ): Data?
     {
         require( isValidInput( registeredInputDataTypes, input ) )
-            { "Input value does not match constraints for the specified input type." }
+            { "Input value does not match constraints for the specified input data type." }
 
         // TODO: Add 'isRequired' to `InputElement` and validate whether 'null' input (not set) is a valid option.
         if ( input == null ) return null
@@ -139,7 +139,7 @@ sealed class ParticipantAttribute
         // TODO: For now, consider null always a valid option.
         if ( data == null ) return null
 
-        // Custom input should be wrapped by `CustomInput` and contain an object of the expected input type.
+        // Custom input should be wrapped by `CustomInput` and contain an object of the expected input data type.
         if ( this is CustomParticipantAttribute<*> )
         {
             require( data is CustomInput && isValidCustomData( inputElement, data ) )
