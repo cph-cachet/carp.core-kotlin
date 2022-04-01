@@ -20,20 +20,20 @@ class ParticipantAttributeTest
     @Test
     fun getInputElement_succeeds_for_registered_type()
     {
-        // Create input type list for testing.
+        // Create input data type list for testing.
         val type = InputDataType( "test", "test" )
         val inputElement = Text( "Test" )
         val toData = { _: String -> Sex.Male }
         val toInput = { _: Sex -> "Male" }
-        val inputTypeList =
+        val inputDataTypeList =
             object : InputDataTypeList()
             {
                 val SEX = add( type, inputElement, Sex::class, toData, toInput )
             }
 
-        val attribute = ParticipantAttribute.DefaultParticipantAttribute( inputTypeList.SEX )
+        val attribute = ParticipantAttribute.DefaultParticipantAttribute( inputDataTypeList.SEX )
 
-        val retrievedInputElement = attribute.getInputElement( inputTypeList )
+        val retrievedInputElement = attribute.getInputElement( inputDataTypeList )
         assertEquals( inputElement, retrievedInputElement )
     }
 

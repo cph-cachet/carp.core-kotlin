@@ -350,8 +350,8 @@ class StudyProtocol(
      * Add expected participant data to be input by users.
      *
      * @throws IllegalArgumentException if:
-     *  - a differing [ParticipantAttribute] with a matching input type is already added
-     *  - [expectedParticipantData] already contains an input type which can be input by the same role
+     *  - a differing [ParticipantAttribute] with a matching input data type is already added
+     *  - [expectedParticipantData] already contains an input data type which can be input by the same role
      * @return True if the [expectedData] has been added; false in case the same [expectedData] has already been added before.
      */
     override fun addExpectedParticipantData( expectedData: ExpectedParticipantData ): Boolean =
@@ -374,8 +374,8 @@ class StudyProtocol(
      *   Once eventing is implemented on `ParticipantDataConfiguration`, this can be moved where it logically belongs.
      *
      * @throws IllegalArgumentException if:
-     *   - [expectedData] contains differing [ParticipantAttribute]s with the same input type
-     *   - [expectedData] contains multiple attributes of the same input type which are assigned to the same role
+     *   - [expectedData] contains differing [ParticipantAttribute]s with the same input data type
+     *   - [expectedData] contains multiple attributes of the same input data type which are assigned to the same role
      * @return True if any expected data has been replaced; false if the specified [expectedData] was the same as those already set.
      */
     fun replaceExpectedParticipantData( expectedData: Set<ExpectedParticipantData> ): Boolean

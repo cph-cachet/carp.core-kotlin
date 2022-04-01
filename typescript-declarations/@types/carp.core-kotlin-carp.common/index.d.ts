@@ -240,7 +240,7 @@ declare module 'carp.core-kotlin-carp.common'
         {
             class DefaultParticipantAttribute extends ParticipantAttribute
             {
-                constructor( inputType: NamespacedId )
+                constructor( inputDataType: NamespacedId )
             }
 
             class CustomParticipantAttribute extends ParticipantAttribute
