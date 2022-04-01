@@ -5,8 +5,10 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl.Control
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
@@ -115,6 +117,21 @@ class StudyProtocolTest
                 StudyProtocol.Event.ExpectedParticipantDataAdded( expectedData3 ),
                 events.filterIsInstance<StudyProtocol.Event.ExpectedParticipantDataAdded>().singleOrNull()
             )
+        }
+
+        @Test
+        fun replaceExpectedParticipantData_fails_for_unknown_roles()
+        {
+            val protocol: StudyProtocol = createEmptyProtocol()
+            val expectedData = ExpectedParticipantData(
+                ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) ),
+                AssignedTo.Roles( setOf( "Unknown role" ) )
+            )
+
+            assertFailsWith<IllegalArgumentException>
+            {
+                protocol.replaceExpectedParticipantData( setOf( expectedData ) )
+            }
         }
     }
 
@@ -396,28 +413,6 @@ class StudyProtocolTest
     }
 
     @Test
-    fun removeTask_also_removes_it_from_triggers()
-    {
-        // Create a study protocol with a task which is initiated by a trigger.
-        val protocol = createEmptyProtocol()
-        val device = StubPrimaryDeviceConfiguration()
-        val task = StubTaskConfiguration()
-        val trigger1 = StubTriggerConfiguration( device, "Trigger one" )
-        val trigger2 = StubTriggerConfiguration( device, "Trigger two" )
-        with ( protocol )
-        {
-            addPrimaryDevice( device )
-            addTaskControl( trigger1.start( task, device ) )
-            addTaskControl( trigger2.stop( task, device ) )
-        }
-
-        protocol.removeTask( task )
-        assertEquals( 0, protocol.getTaskControls( trigger1 ).count() )
-        assertEquals( 0, protocol.getTaskControls( trigger2 ).count() )
-        assertEquals( 2, protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.TaskControlRemoved>().count() )
-    }
-
-    @Test
     fun deployment_warning_when_some_tasks_are_never_triggered()
     {
         // Create a study protocol with a task which is never triggered.
@@ -426,6 +421,20 @@ class StudyProtocolTest
 
         // Therefore, a warning is issued.
         assertEquals( 1, protocol.getDeploymentIssues().filterIsInstance<UnstartedTasksWarning>().count() )
+    }
+
+    @Test
+    fun addParticipantRole_succeeds()
+    {
+        val protocol = createEmptyProtocol()
+
+        val role = ParticipantRole( "Participant", false )
+        val isAdded = protocol.addParticipantRole( role )
+
+        assertTrue( isAdded )
+        val addedEvents = protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.ParticipantRoleAdded>()
+        assertEquals( 1, addedEvents.count() )
+        assertEquals( role, addedEvents.single().role )
     }
 
     @Test

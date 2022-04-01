@@ -30,6 +30,7 @@ import Text = dk.cachet.carp.common.application.data.input.elements.Text;
 import AccountIdentity = dk.cachet.carp.common.application.users.AccountIdentity;
 import EmailAccountIdentity = dk.cachet.carp.common.application.users.EmailAccountIdentity;
 import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute;
+import ParticipantRole = dk.cachet.carp.common.application.users.ParticipantRole
 import ExpectedParticipantData = dk.cachet.carp.common.application.users.ExpectedParticipantData
 import AssignedTo = dk.cachet.carp.common.application.users.AssignedTo
 import Roles = dk.cachet.carp.common.application.users.AssignedTo.Roles
@@ -88,6 +89,8 @@ describe( "carp.common", () => {
             UsernameAccountIdentity.Companion,
             [ "ParticipantAttribute", new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ) ],
             ParticipantAttribute.Companion,
+            new ParticipantRole( "Role", false ),
+            ParticipantRole.Companion,
             new ExpectedParticipantData( new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ) ),
             ExpectedParticipantData.Companion,
             AssignedTo.Companion,

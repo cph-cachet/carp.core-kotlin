@@ -255,6 +255,18 @@ declare module 'carp.core-kotlin-carp.common'
         }
 
 
+        class ParticipantRole
+        {
+            constructor( role: string, isOptional: boolean )
+
+            static get Companion(): ParticipantRole$Companion
+
+            readonly role: string
+            readonly isOptional: boolean
+        }
+        interface ParticipantRole$Companion { serializer(): any }
+
+
         class ExpectedParticipantData
         {
             constructor( attribute: ParticipantAttribute, assignedTo?: AssignedTo )

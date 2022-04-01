@@ -50,31 +50,6 @@ interface ParticipantConfigurationTest
     }
 
     @Test
-    fun removeParticipantRole_succeeds()
-    {
-        val configuration = createParticipantConfiguration()
-        val role = ParticipantRole( "Participant", false )
-        configuration.addParticipantRole( role )
-
-        val isRemoved = configuration.removeParticipantRole( role )
-
-        assertTrue( isRemoved )
-        assertEquals( 0, configuration.participantRoles.size )
-    }
-
-    @Test
-    fun removeParticipantRole_returns_false_for_nonexisting_roles()
-    {
-        val configuration = createParticipantConfiguration()
-        configuration.addParticipantRole( ParticipantRole( "Participant", false ))
-
-        val nonExistingRole = ParticipantRole( "Other participant", false )
-        val isRemoved = configuration.removeParticipantRole( nonExistingRole )
-
-        assertFalse( isRemoved )
-    }
-
-    @Test
     fun addExpectedParticipantData_succeeds()
     {
         val configuration = createParticipantConfiguration()
@@ -92,8 +67,10 @@ interface ParticipantConfigurationTest
     fun addExpectedParticipantData_ignores_duplicates()
     {
         val configuration = createParticipantConfiguration()
+        val participantRole = "Patient"
+        configuration.addParticipantRole( ParticipantRole( participantRole, false ) )
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
-        val inputBy = AssignedTo.Roles( setOf( "Patient" ) )
+        val inputBy = AssignedTo.Roles( setOf( participantRole ) )
         val expectedData = ExpectedParticipantData( attribute, inputBy )
         configuration.addExpectedParticipantData( expectedData )
 
@@ -101,6 +78,17 @@ interface ParticipantConfigurationTest
 
         assertFalse( isAdded )
         assertEquals( 1, configuration.expectedParticipantData.size )
+    }
+
+    @Test
+    fun addExpectedParticipantData_fails_for_unknown_participant_roles()
+    {
+        val configuration = createParticipantConfiguration()
+        val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type"))
+        val inputBy = AssignedTo.Roles( setOf( "Unknown" ) )
+        val expectedData = ExpectedParticipantData( attribute, inputBy )
+
+        assertFailsWith<IllegalArgumentException> { configuration.addExpectedParticipantData( expectedData ) }
     }
 
     @Test
