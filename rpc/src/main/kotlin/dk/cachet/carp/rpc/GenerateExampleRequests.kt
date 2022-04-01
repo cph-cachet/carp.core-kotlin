@@ -449,7 +449,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
         response = listOf( participantData )
     ),
     ParticipationService::setParticipantData to example(
-        request = ParticipationServiceRequest.SetParticipantData( deploymentId, participantData.roles.first().data ),
+        request = ParticipationServiceRequest.SetParticipantData( deploymentId, participantData.roles.first().data, participantRole.role ),
         response = participantData
     ),
 

@@ -225,7 +225,8 @@ class ParticipantGroupTest
 
         val group = createParticipantGroup( protocol )
 
-        val isSet = group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male )
+        val assignToAnyoneRole = null
+        val isSet = group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male, assignToAnyoneRole )
         assertTrue( isSet )
         assertEquals( Sex.Male, group.commonData[ CarpInputDataTypes.SEX ] )
         assertEquals(
@@ -370,7 +371,7 @@ class ParticipantGroupTest
             CarpInputDataTypes.SEX to Sex.Male,
             customExpectedData.inputDataType to CustomInput( "Test" )
         )
-        val isSet = group.setData( CarpInputDataTypes, toSet )
+        val isSet = group.setData( CarpInputDataTypes, toSet, null )
         assertTrue( isSet )
         assertEquals( Sex.Male, group.commonData[ defaultExpectedData.inputDataType ] )
         assertEquals( CustomInput( "Test" ), group.commonData[ customExpectedData.inputDataType ] )

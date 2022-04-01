@@ -317,7 +317,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             }
             class SetParticipantData extends ParticipationServiceRequest
             {
-                constructor( studyDeploymentId: UUID, data: HashMap<NamespacedId, any | null> )
+                constructor( studyDeploymentId: UUID, data: HashMap<NamespacedId, any | null>, inputByParticipantRole?: string | null )
             }
         }
     }

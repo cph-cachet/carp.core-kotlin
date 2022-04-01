@@ -262,11 +262,11 @@ class ParticipantGroup private constructor(
     }
 
     /**
-     * Set [data] for the participants in this group, or unset it by passing `null`,
+     * Set [data] that was [inputByParticipantRole] for the participants in this group, or unset it by passing `null`,
      * using [registeredInputDataTypes] to verify whether the data is valid for default input data types.
      *
      * @throws IllegalArgumentException when:
-     *   - one or more of the keys in [data] isn't configured as expected participant data
+     *   - one or more of the keys in [data] isn't configured as expected participant data to be [inputByParticipantRole]
      *   - one or more of the set [data] isn't valid for the corresponding input data type
      * @return True when any data has changed; false when all [data] was already set.
      */

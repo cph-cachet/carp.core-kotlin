@@ -6,8 +6,10 @@ import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
@@ -75,24 +77,32 @@ interface ParticipationServiceTest
     fun getParticipantData_initially_returns_null_for_all_expected_data() = runTest {
         val (participationService, deploymentService, _) = createService()
 
-        // Create protocol with expected 'sex' participant data.
+        // Create protocol with one common custom attribute and 'sex' assigned to two participant roles.
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
-        val defaultExpectedData = ExpectedParticipantData(
-            ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
-        )
-        protocol.addExpectedParticipantData( defaultExpectedData )
-        val customExpectedData = ExpectedParticipantData(
+        protocol.addParticipantRole( ParticipantRole( "Role 1", false ) )
+        protocol.addParticipantRole( ParticipantRole( "Role 2", false ) )
+        val participantRoleNames = protocol.participantRoles.map { it.role }.toSet()
+        val commonExpectedData = ExpectedParticipantData(
             ParticipantAttribute.CustomParticipantAttribute( Text( "Custom" ) )
         )
-        protocol.addExpectedParticipantData( customExpectedData )
+        protocol.addExpectedParticipantData( commonExpectedData )
+        val roleExpectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ),
+            AssignedTo.Roles( participantRoleNames )
+        )
+        protocol.addExpectedParticipantData( roleExpectedData )
         val invitation = createParticipantInvitation( protocol )
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
         val participantData = participationService.getParticipantData( studyDeploymentId )
         assertEquals( studyDeploymentId, participantData.studyDeploymentId )
-        assertEquals( setOf( CarpInputDataTypes.SEX, customExpectedData.inputDataType ), participantData.common.keys )
+        assertEquals( setOf( commonExpectedData.inputDataType ), participantData.common.keys )
         assertTrue( participantData.common.values.all { it == null } )
+        assertEquals( participantRoleNames, participantData.roles.map { it.roleName }.toSet() )
+        assertTrue( participantData.roles.all {
+            it.data.keys.firstOrNull() == CarpInputDataTypes.SEX && it.data.values.firstOrNull() == null
+        } )
     }
 
     @Test
@@ -128,10 +138,10 @@ interface ParticipationServiceTest
     }
 
     @Test
-    fun setParticipantData_succeeds() = runTest {
+    fun setParticipantData_assigned_to_anyone_succeeds() = runTest {
         val (participationService, deploymentService, _) = createService()
 
-        // Create protocol with expected 'sex' participant data.
+        // Create protocol without roles with expected 'sex' participant data.
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
         val expectedData = ExpectedParticipantData(
             ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
@@ -144,6 +154,34 @@ interface ParticipationServiceTest
         val toSet = mapOf( CarpInputDataTypes.SEX to Sex.Male )
         val afterSet = participationService.setParticipantData( studyDeploymentId, toSet )
         assertEquals( Sex.Male, afterSet.common[ CarpInputDataTypes.SEX ] )
+
+        val retrievedData = participationService.getParticipantData( studyDeploymentId )
+        assertEquals( afterSet, retrievedData )
+    }
+
+    @Test
+    fun setParticipantData_assigned_to_role_succeeds() = runTest {
+        val (participationService, deploymentService, _) = createService()
+
+        // Create protocol with expected 'sex' participant data for a single participant role.
+        val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
+        protocol.addParticipantRole( ParticipantRole( "Role", false ) )
+        val participantRoleName = protocol.participantRoles.map { it.role }.first()
+        val expectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ),
+            AssignedTo.Roles( setOf( participantRoleName ) )
+        )
+        protocol.addExpectedParticipantData( expectedData )
+        val invitation = createParticipantInvitation( protocol )
+        val studyDeploymentId = UUID.randomUUID()
+        deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
+
+        val toSet = mapOf( CarpInputDataTypes.SEX to Sex.Male )
+        val afterSet = participationService.setParticipantData( studyDeploymentId, toSet, participantRoleName )
+        assertEquals(
+            Sex.Male,
+            afterSet.roles.firstOrNull { it.roleName == participantRoleName }?.data?.get( CarpInputDataTypes.SEX )
+        )
 
         val retrievedData = participationService.getParticipantData( studyDeploymentId )
         assertEquals( afterSet, retrievedData )
