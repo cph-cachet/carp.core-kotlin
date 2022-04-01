@@ -19,5 +19,5 @@ sealed class AssignedTo
      * The assigned object is relevant to the specified [roleNames] in the study protocol.
      */
     @Serializable
-    class Roles( val roleNames: Set<String> ) : AssignedTo()
+    data class Roles( val roleNames: Set<String> ) : AssignedTo()
 }

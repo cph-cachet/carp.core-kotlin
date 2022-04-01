@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
+import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -30,6 +31,7 @@ data class StudyProtocolSnapshot(
     val tasks: Set<TaskConfiguration<*>> = emptySet(),
     val triggers: Map<Int, TriggerConfiguration<*>> = emptyMap(),
     val taskControls: Set<TaskControl> = emptySet(),
+    val participantRoles: Set<ParticipantRole> = emptySet(),
     val expectedParticipantData: Set<ExpectedParticipantData> = emptySet(),
     @Serializable( ApplicationDataSerializer::class )
     val applicationData: String? = null
@@ -65,6 +67,7 @@ data class StudyProtocolSnapshot(
                     .map { (trigger, control) ->
                         TaskControl( trigger.key, control.task.name, control.destinationDevice.roleName, control.control ) }
                     .toSet(),
+                participantRoles = protocol.participantRoles.toSet(),
                 expectedParticipantData = protocol.expectedParticipantData.toSet(),
                 applicationData = protocol.applicationData
             )

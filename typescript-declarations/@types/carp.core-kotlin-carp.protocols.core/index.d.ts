@@ -11,6 +11,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
     import UUID = cdk.cachet.carp.common.application.UUID
     import DeviceConfiguration = cdk.cachet.carp.common.application.devices.DeviceConfiguration
     import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
+    import ParticipantRole = cdk.cachet.carp.common.application.users.ParticipantRole
     import ExpectedParticipantData = cdk.cachet.carp.common.application.users.ExpectedParticipantData
     import TaskConfiguration = cdk.cachet.carp.common.application.tasks.TaskConfiguration
     import TaskControl = cdk.cachet.carp.common.application.triggers.TaskControl
@@ -49,6 +50,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             readonly tasks: HashSet<TaskConfiguration>
             readonly triggers: HashMap<Number, TriggerConfiguration>
             readonly taskControls: Set<TaskControl>
+            readonly participantRoles: Set<ParticipantRole>
             readonly expectedParticipantData: HashSet<ExpectedParticipantData>
         }
         interface StudyProtocolSnapshot$Companion { serializer(): any }

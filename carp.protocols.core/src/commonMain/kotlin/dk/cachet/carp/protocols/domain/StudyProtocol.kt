@@ -8,14 +8,17 @@ import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl.Control
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.application.users.hasNoConflicts
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolTaskConfiguration
+import dk.cachet.carp.protocols.domain.configuration.ProtocolParticipantConfiguration
 import dk.cachet.carp.protocols.domain.configuration.StudyProtocolComposition
 import dk.cachet.carp.protocols.domain.deployment.*
 import kotlinx.datetime.Clock
@@ -64,6 +67,7 @@ class StudyProtocol(
         data class TaskRemoved( val task: TaskConfiguration<*> ) : Event()
         data class TaskControlAdded( val control: TaskControl ) : Event()
         data class TaskControlRemoved( val control: TaskControl ) : Event()
+        data class ParticipantRoleAdded( val role: ParticipantRole ) : Event()
         data class ExpectedParticipantDataAdded( val expectedData: ExpectedParticipantData ) : Event()
         data class ExpectedParticipantDataRemoved( val expectedData: ExpectedParticipantData ) : Event()
     }
@@ -118,7 +122,8 @@ class StudyProtocol(
                 protocol.addTaskControl( triggerMatch.value, task, device, control.control )
             }
 
-            // Add expected participant data.
+            // Add expected participant roles and data.
+            snapshot.participantRoles.forEach { protocol.addParticipantRole( it ) }
             snapshot.expectedParticipantData.forEach { protocol.addExpectedParticipantData( it ) }
 
             // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
@@ -327,7 +332,7 @@ class StudyProtocol(
 
     /**
      * Remove a [task] currently present in this configuration
-     * including removing it from any [TriggerConfiguration]'s which initiate it.
+     * including removing it from any [TaskControl]'s which initiate it.
      *
      * @return True if the [task] has been removed; false if it is not included in this configuration.
      */
@@ -347,9 +352,20 @@ class StudyProtocol(
     }
 
     /**
+     * Add a participant role which can be assigned to participants in the study.
+     *
+     * @throws IllegalArgumentException in case a differing [role] with a matching role name is already added.
+     * @return True if the [role] has been added; false in case the same [role] has already been added before.
+     */
+    override fun addParticipantRole( role: ParticipantRole ): Boolean =
+        super.addParticipantRole( role )
+        .eventIf( true ) { Event.ParticipantRoleAdded( role ) }
+
+    /**
      * Add expected participant data to be input by users.
      *
      * @throws IllegalArgumentException if:
+     *  - [expectedData] is assigned to a participant role which is not part of this [ProtocolParticipantConfiguration]
      *  - a differing [ParticipantAttribute] with a matching input data type is already added
      *  - [expectedParticipantData] already contains an input data type which can be input by the same role
      * @return True if the [expectedData] has been added; false in case the same [expectedData] has already been added before.
@@ -374,14 +390,21 @@ class StudyProtocol(
      *   Once eventing is implemented on `ParticipantDataConfiguration`, this can be moved where it logically belongs.
      *
      * @throws IllegalArgumentException if:
-     *   - [expectedData] contains differing [ParticipantAttribute]s with the same input data type
-     *   - [expectedData] contains multiple attributes of the same input data type which are assigned to the same role
+     *  - [expectedData] is assigned to a participant role which is not part of this [ProtocolParticipantConfiguration]
+     *  - [expectedData] contains differing [ParticipantAttribute]s with the same input data type
+     *  - [expectedData] contains multiple attributes of the same input data type which are assigned to the same role
      * @return True if any expected data has been replaced; false if the specified [expectedData] was the same as those already set.
      */
     fun replaceExpectedParticipantData( expectedData: Set<ExpectedParticipantData> ): Boolean
     {
         // Throw when expected data is invalid so that the set isn't added partially.
         expectedData.hasNoConflicts( exceptionOnConflict = true )
+        val roleNames = expectedData
+            .map { it.assignedTo }
+            .filterIsInstance<AssignedTo.Roles>()
+            .flatMap { it.roleNames }.toSet()
+        require( roleNames.all { includesParticipantRole( it ) } ) // TODO: Make this part of `hasNoConflicts`?
+            { "Expected data contains participant role names which aren't part of the participant configuration." }
 
         val toRemove = expectedParticipantData.minus( expectedData )
         val toAdd = expectedData.minus( expectedParticipantData )

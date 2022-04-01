@@ -32,18 +32,15 @@ interface ParticipantConfiguration
     fun addParticipantRole( role: ParticipantRole ): Boolean
 
     /**
-     * Remove a participant role which can be assigned to participants in the study,
-     * as well as all [ParticipantAttribute]s linked to it.
-     *
-     * @return True if the [role] and linked attributes have been removed;
-     *   false if the role is not included in this configuration.
+     * Determines whether a role with [roleName] is included in this [ProtocolParticipantConfiguration].
      */
-    fun removeParticipantRole( role: ParticipantRole ): Boolean
+    fun includesParticipantRole( roleName: String ): Boolean = roleName in participantRoles.map { it.role }
 
     /**
      * Add expected participant data to be input by users.
      *
      * @throws IllegalArgumentException if:
+     *  - [expectedData] is assigned to a participant role which is not part of this [ProtocolParticipantConfiguration]
      *  - a differing [ParticipantAttribute] with a matching input data type is already added
      *  - [expectedParticipantData] already contains an input data type which can be input by the same role
      * @return True if the [expectedData] has been added; false in case the same [expectedData] has already been added before.

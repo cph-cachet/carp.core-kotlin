@@ -32,6 +32,10 @@
       "type": "array",
       "items": { "$ref": "../common/triggers/TaskControl.json" }
     },
+    "participantRoles": {
+      "type": "array",
+      "items": { "$ref": "../common/users/ParticipantRole.json" }
+    },
     "expectedParticipantData": {
       "type": "array",
       "items": { "$ref": "../common/users/ExpectedParticipantData.json"}

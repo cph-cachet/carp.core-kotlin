@@ -9,6 +9,7 @@ import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
@@ -94,6 +95,10 @@ class StudyProtocolSnapshotTest
             TaskControl( 0, "T1", "C1", TaskControl.Control.Start ),
             TaskControl( 1, "T2", "C2", TaskControl.Control.Start )
         )
+        val participantRoles = listOf(
+            ParticipantRole( "Role 1", true ),
+            ParticipantRole( "Role 2", false )
+        )
         val expectedParticipantData = listOf(
             ExpectedParticipantData(
                 ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
@@ -115,7 +120,8 @@ class StudyProtocolSnapshotTest
             name,
             description,
             primaryDevices.toSet(), connectedDevices.toSet(), connections.toSet(),
-            tasks.toSet(), triggers, triggeredTasks.toSet(), expectedParticipantData.toSet(), "" )
+            tasks.toSet(), triggers, triggeredTasks.toSet(),
+            participantRoles.toSet(), expectedParticipantData.toSet(), "" )
         val reorganizedSnapshot = StudyProtocolSnapshot(
             protocolId,
             createdOn,
@@ -123,7 +129,8 @@ class StudyProtocolSnapshotTest
             name,
             description,
             primaryDevices.reversed().toSet(), connectedDevices.reversed().toSet(), connections.reversed().toSet(),
-            tasks.reversed().toSet(), triggers, triggeredTasks.reversed().toSet(), expectedParticipantData.reversed().toSet(), "" )
+            tasks.reversed().toSet(), triggers, triggeredTasks.reversed().toSet(),
+            participantRoles.reversed().toSet(), expectedParticipantData.reversed().toSet(), "" )
 
         assertEquals( snapshot, reorganizedSnapshot )
         assertEquals( snapshot.hashCode(), reorganizedSnapshot.hashCode() )

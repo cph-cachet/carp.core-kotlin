@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain.configuration
 
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.application.users.hasNoConflicts
@@ -29,6 +30,15 @@ class EmptyParticipantConfiguration : ParticipantConfiguration
 
     override fun addExpectedParticipantData( expectedData: ExpectedParticipantData ): Boolean
     {
+        // Verify whether assigned role names are part of the participant configuration.
+        // TODO: can this be made part of `hasNoConflicts`?
+        val roleAssignment = expectedData.assignedTo as? AssignedTo.Roles
+        if ( roleAssignment != null )
+        {
+            require( roleAssignment.roleNames.all { includesParticipantRole( it ) } )
+                { "The expected data contains participant role names which aren't part of this participant configuration." }
+        }
+
         try { expectedParticipantData.plus( expectedData ).hasNoConflicts( exceptionOnConflict = true ) }
         catch ( ex: IllegalArgumentException )
         {
@@ -43,7 +53,4 @@ class EmptyParticipantConfiguration : ParticipantConfiguration
 
     override fun addParticipantRole( role: ParticipantRole ): Boolean =
         _participantRoles.tryAddIfKeyIsNew( role )
-
-    override fun removeParticipantRole( role: ParticipantRole ): Boolean =
-        _participantRoles.remove( role )
 }
