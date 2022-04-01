@@ -14,10 +14,10 @@ import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.configuration.ParticipantConfiguration
-import dk.cachet.carp.protocols.domain.configuration.ParticipantConfigurationTest
 import dk.cachet.carp.protocols.domain.configuration.ProtocolDeviceConfiguration
 import dk.cachet.carp.protocols.domain.configuration.ProtocolDeviceConfigurationTest
+import dk.cachet.carp.protocols.domain.configuration.ProtocolParticipantConfiguration
+import dk.cachet.carp.protocols.domain.configuration.ProtocolParticipantConfigurationTest
 import dk.cachet.carp.protocols.domain.configuration.ProtocolTaskConfiguration
 import dk.cachet.carp.protocols.domain.configuration.ProtocolTaskConfigurationTest
 import dk.cachet.carp.protocols.domain.deployment.NoPrimaryDeviceError
@@ -48,9 +48,9 @@ class StudyProtocolTest
     }
 
     @Nested
-    inner class Participants : ParticipantConfigurationTest
+    inner class Participants : ProtocolParticipantConfigurationTest
     {
-        override fun createParticipantConfiguration(): ParticipantConfiguration = createEmptyProtocol()
+        override fun createParticipantConfiguration(): ProtocolParticipantConfiguration = createEmptyProtocol()
 
 
         @Test

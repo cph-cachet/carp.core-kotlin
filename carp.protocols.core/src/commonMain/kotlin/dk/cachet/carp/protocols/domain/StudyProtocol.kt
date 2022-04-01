@@ -15,8 +15,8 @@ import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.application.users.hasNoConflicts
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolDeviceConfiguration
+import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolParticipantConfiguration
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolTaskConfiguration
 import dk.cachet.carp.protocols.domain.configuration.ProtocolParticipantConfiguration
 import dk.cachet.carp.protocols.domain.configuration.StudyProtocolComposition
@@ -48,7 +48,7 @@ class StudyProtocol(
 ) : StudyProtocolComposition(
         EmptyProtocolDeviceConfiguration(),
         EmptyProtocolTaskConfiguration(),
-        EmptyParticipantConfiguration(),
+        EmptyProtocolParticipantConfiguration(),
         id,
         createdOn
     )

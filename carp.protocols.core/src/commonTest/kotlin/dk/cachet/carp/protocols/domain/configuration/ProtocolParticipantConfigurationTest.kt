@@ -13,14 +13,14 @@ import kotlin.test.*
 
 
 /**
- * Base class with tests for [ParticipantConfiguration] which can be used to test extending types.
+ * Base class with tests for [ProtocolParticipantConfiguration] which can be used to test extending types.
  */
-interface ParticipantConfigurationTest
+interface ProtocolParticipantConfigurationTest
 {
     /**
      * Called for each test to create a participant configuration to run tests on.
      */
-    fun createParticipantConfiguration(): ParticipantConfiguration
+    fun createParticipantConfiguration(): ProtocolParticipantConfiguration
 
 
     @Test

@@ -14,10 +14,10 @@ import kotlinx.datetime.Instant
 abstract class StudyProtocolComposition internal constructor(
     protected val deviceConfiguration: ProtocolDeviceConfiguration,
     protected val taskConfiguration: ProtocolTaskConfiguration,
-    protected val participantConfiguration: ParticipantConfiguration,
+    protected val participantConfiguration: ProtocolParticipantConfiguration,
     id: UUID,
     createdOn: Instant
 ) : ProtocolDeviceConfiguration by deviceConfiguration,
     ProtocolTaskConfiguration by taskConfiguration,
-    ParticipantConfiguration by participantConfiguration,
+    ProtocolParticipantConfiguration by participantConfiguration,
     AggregateRoot<StudyProtocol, StudyProtocolSnapshot, StudyProtocol.Event>( id, createdOn )

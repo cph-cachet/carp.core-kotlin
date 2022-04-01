@@ -8,7 +8,7 @@ import dk.cachet.carp.common.application.users.ParticipantRole
 /**
  * Configures expected participants and data to be input by users.
  */
-interface ParticipantConfiguration
+interface ProtocolParticipantConfiguration
 {
     /**
      * Roles which can be assigned to participants in the study and [ParticipantAttribute]s can be linked to.
