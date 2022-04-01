@@ -4,14 +4,20 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Determines who to assign to something that is specified in a study protocol.
+ * Determines which participant in a protocol to assign something to.
  */
 @Serializable
 sealed class AssignedTo
 {
+    /**
+     * The assigned object is relevant to anyone in the study protocol.
+     */
     @Serializable
     object Anyone : AssignedTo()
 
+    /**
+     * The assigned object is relevant to the specified [roleNames] in the study protocol.
+     */
     @Serializable
     class Roles( val roleNames: Set<String> ) : AssignedTo()
 }

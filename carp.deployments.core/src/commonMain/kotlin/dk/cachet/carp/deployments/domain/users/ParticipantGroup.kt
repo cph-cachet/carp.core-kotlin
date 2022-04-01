@@ -13,6 +13,7 @@ import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
+import dk.cachet.carp.deployments.application.users.ParticipantData
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
@@ -37,7 +38,14 @@ class ParticipantGroup private constructor(
 {
     sealed class Event : DomainEvent
     {
-        data class DataSet( val inputDataType: InputDataType, val data: Data? ) : Event()
+        data class DataSet(
+            /**
+             * The role name of the participant role for which data was set, or null when common data.
+             */
+            val participantRoleName: String?,
+            val inputDataType: InputDataType,
+            val data: Data?
+        ) : Event()
         data class ParticipationAdded( val accountParticipation: AccountParticipation ) : Event()
         data class DeviceRegistrationChanged( val assignedPrimaryDevice: AssignedPrimaryDevice ) : Event()
         object StudyDeploymentStopped : Event()
@@ -70,7 +78,7 @@ class ParticipantGroup private constructor(
             val group = ParticipantGroup(
                 snapshot.studyDeploymentId,
                 snapshot.assignedPrimaryDevices,
-                snapshot.data.keys,
+                snapshot.expectedData,
                 snapshot.id,
                 snapshot.createdOn
             )
@@ -80,8 +88,15 @@ class ParticipantGroup private constructor(
             snapshot.participations.forEach { p -> group._participations.add( p.copy() ) }
 
             // Add participant data.
-            snapshot.data.forEach { (expectedData, data) ->
-                group._data[ expectedData ] = data
+            snapshot.commonData.forEach { (inputDataType, data) ->
+                group._commonData[ inputDataType ] = data
+            }
+            snapshot.roleData.forEach { (role, data) ->
+                data.forEach { (inputDataType, data) ->
+                    val roleData = requireNotNull( group._roleData[ role ] )
+                        { "Invalid participant group snapshot." }
+                    roleData[ inputDataType ] = data
+                }
             }
 
             return group
@@ -182,21 +197,43 @@ class ParticipantGroup private constructor(
     }
 
     /**
-     * Data pertaining to participants in this group which is input by users.
+     * Data related to anyone in the group.
      */
-    val data: Map<ExpectedParticipantData, Data?>
-        get() = _data
+    val commonData: Map<InputDataType, Data?>
+        get() = _commonData
 
-    private val _data: MutableMap<ExpectedParticipantData, Data?> =
-        // All expected participant data is null by default.
-        expectedData.associateWith { null }.toMutableMap()
+    private val _commonData: MutableMap<InputDataType, Data?> = expectedData
+        .filter { it.assignedTo is AssignedTo.Anyone }
+        .associate { it.inputDataType to null } // All participant data is null by default.
+        .toMutableMap()
 
     /**
-     * Set [data] [assignedToParticipantRole] for the given [inputDataType], or unset if [data] is `null`,
+     * Data related to a participant role in the group.
+     */
+    val roleData: List<ParticipantData.RoleData>
+        get() = _roleData.map { (role, data) -> ParticipantData.RoleData( role, data.toMap() ) }
+
+    private val _roleData: Map<String, MutableMap<InputDataType, Data?>> = expectedData
+        .filter { it.assignedTo is AssignedTo.Roles }
+        .flatMap {
+            val roles = (it.assignedTo as AssignedTo.Roles).roleNames
+            roles.map { role -> role to it.inputDataType }
+        }
+        .groupBy { it.first } // Group by role.
+        .map { (role, roleInput) ->
+            // All participant data is null by default
+            val data: MutableMap<InputDataType, Data?> =
+                roleInput.map { it.second }.associateWith { null }.toMutableMap()
+            role to data
+        }
+        .toMap()
+
+    /**
+     * Set [data] that was [inputByParticipantRole] for the given [inputDataType], or unset if [data] is `null`,
      * using [registeredInputDataTypes] to verify whether the data is valid for default input data types.
      *
      * @throws IllegalArgumentException when:
-     *   - [inputDataType] is not configured as expected participant data [assignedToParticipantRole]
+     *   - [inputDataType] is not configured as expected participant data to be [inputByParticipantRole]
      *   - [data] is invalid data for [inputDataType]
      * @return True when data changed; false when data was already set.
      */
@@ -205,17 +242,23 @@ class ParticipantGroup private constructor(
         inputDataType: InputDataType,
         data: Data?,
         /**
-         * The participant role [data] was assigned to; null if anyone can set the specified [inputDataType].
+         * The participant role who filled out [data]; null if anyone can set the specified [inputDataType].
          */
-        assignedToParticipantRole: String? = null
+        inputByParticipantRole: String? = null
     ): Boolean
     {
-        val dataToSet = getExpectedDataOrThrow( registeredInputDataTypes, inputDataType, data, assignedToParticipantRole )
+        val dataToSet = getExpectedDataOrThrow( registeredInputDataTypes, inputDataType, data, inputByParticipantRole )
 
-        val prevData = _data.put( dataToSet, data )
+        val prevData =
+            if ( dataToSet.assignedTo == AssignedTo.Anyone ) _commonData.put( inputDataType, data )
+            else
+            {
+                val roleData = checkNotNull( _roleData[ inputByParticipantRole ] )
+                roleData.put( inputDataType, data )
+            }
 
         return ( prevData != data )
-            .eventIf( true ) { Event.DataSet( inputDataType, data ) }
+            .eventIf( true ) { Event.DataSet( inputByParticipantRole, inputDataType, data ) }
     }
 
     /**
@@ -231,15 +274,17 @@ class ParticipantGroup private constructor(
         registeredInputDataTypes: InputDataTypeList,
         data: Map<InputDataType, Data?>,
         /**
-         * The participant role who filled out [data]; null if anyone
+         * The participant role who filled out [data]; null if anyone can set it.
          */
         inputByParticipantRole: String? = null
     ): Boolean
     {
+        // Fail early if any of the data to be set is invalid.
+        // TODO: This is checked again in the `setData` call for each individual set data. Can be optimized if needed.
         data.forEach { getExpectedDataOrThrow( registeredInputDataTypes, it.key, it.value, inputByParticipantRole ) }
 
         return data.entries.fold( false ) { anyDataChanged, element ->
-            setData( registeredInputDataTypes, element.key, element.value ) || anyDataChanged
+            setData( registeredInputDataTypes, element.key, element.value, inputByParticipantRole ) || anyDataChanged
         }
     }
 

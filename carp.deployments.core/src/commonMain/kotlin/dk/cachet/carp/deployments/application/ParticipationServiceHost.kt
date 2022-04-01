@@ -84,7 +84,7 @@ class ParticipationServiceHost(
     {
         val group = participationRepository.getParticipantGroupOrThrowBy( studyDeploymentId )
 
-        return ParticipantData( group.studyDeploymentId, group.data.mapKeys { it.key.inputDataType } )
+        return ParticipantData( group.studyDeploymentId, group.commonData.toMap(), group.roleData.toList() )
     }
 
     /**
@@ -97,7 +97,7 @@ class ParticipationServiceHost(
     {
         val groups = participationRepository.getParticipantGroupListOrThrow( studyDeploymentIds )
 
-        return groups.map { ParticipantData( it.studyDeploymentId, it.data.mapKeys { it.key.inputDataType } ) }
+        return groups.map { ParticipantData( it.studyDeploymentId, it.commonData.toMap(), it.roleData.toList() ) }
     }
 
     /**
@@ -115,6 +115,6 @@ class ParticipationServiceHost(
         group.setData( participantDataInputTypes, data )
         participationRepository.putParticipantGroup( group )
 
-        return ParticipantData( group.studyDeploymentId, group.data.mapKeys { it.key.inputDataType } )
+        return ParticipantData( group.studyDeploymentId, group.commonData.toMap(), group.roleData.toList() )
     }
 }

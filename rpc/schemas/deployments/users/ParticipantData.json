@@ -3,8 +3,23 @@
   "type": "object",
   "properties": {
     "studyDeploymentId": { "type": "string", "format": "uuid" },
-    "data": { "$ref": "../users/ParticipantDataMap.json" }
+    "common": { "$ref": "../users/ParticipantDataMap.json" },
+    "roles": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/RoleData" }
+    }
   },
-  "required": [ "studyDeploymentId", "data" ],
-  "additionalProperties": false
+  "required": [ "studyDeploymentId", "common", "roles" ],
+  "additionalProperties": false,
+  "$defs": {
+    "RoleData": {
+      "type": "object",
+      "properties":{
+        "roleName": { "type": "string" },
+        "data": { "$ref": "../users/ParticipantDataMap.json" }
+      },
+      "required": [ "roleName", "data" ],
+      "additionalProperties": false
+    }
+  }
 }

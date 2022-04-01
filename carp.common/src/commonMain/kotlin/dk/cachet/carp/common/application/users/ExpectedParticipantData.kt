@@ -5,11 +5,15 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * Describes a participant [attribute] [assignedTo] to be input by specified users in a study.
+ * Describes a participant [attribute] that pertains to all or specified participants in a study.
  */
 @Serializable
 data class ExpectedParticipantData(
     val attribute: ParticipantAttribute,
+    /**
+     * Determines whether the attribute can be set by [AssignedTo.Anyone] in the study (one field for all participants),
+     * or an individual attribute can be set by each of the specified [AssignedTo.Roles] (one field per role).
+     */
     val assignedTo: AssignedTo = AssignedTo.Anyone
 )
 {
