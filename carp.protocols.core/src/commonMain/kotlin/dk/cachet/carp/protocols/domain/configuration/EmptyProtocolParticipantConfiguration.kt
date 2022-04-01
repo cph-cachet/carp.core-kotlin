@@ -11,7 +11,7 @@ import dk.cachet.carp.common.domain.ExtractUniqueKeyMap
  * An initially empty configuration to start defining expected participants and data to be input by users.
  */
 @Suppress( "Immutable", "DataClass" )
-class EmptyParticipantConfiguration : ParticipantConfiguration
+class EmptyProtocolParticipantConfiguration : ProtocolParticipantConfiguration
 {
     private val _expectedParticipantData: MutableSet<ExpectedParticipantData> = mutableSetOf()
 
