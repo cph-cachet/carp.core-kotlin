@@ -44,7 +44,8 @@ class ParticipationServiceLoggingProxy(
 
     override suspend fun setParticipantData(
         studyDeploymentId: UUID,
-        data: Map<InputDataType, Data?>
+        data: Map<InputDataType, Data?>,
+        inputByParticipantRole: String?
     ): ParticipantData =
-        log( ParticipationServiceRequest.SetParticipantData( studyDeploymentId, data ) )
+        log( ParticipationServiceRequest.SetParticipantData( studyDeploymentId, data, inputByParticipantRole ) )
 }
