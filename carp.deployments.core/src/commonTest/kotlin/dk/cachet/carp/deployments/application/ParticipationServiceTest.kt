@@ -91,8 +91,8 @@ interface ParticipationServiceTest
 
         val participantData = participationService.getParticipantData( studyDeploymentId )
         assertEquals( studyDeploymentId, participantData.studyDeploymentId )
-        assertEquals( setOf( CarpInputDataTypes.SEX, customExpectedData.inputDataType ), participantData.data.keys )
-        assertTrue( participantData.data.values.all { it == null } )
+        assertEquals( setOf( CarpInputDataTypes.SEX, customExpectedData.inputDataType ), participantData.common.keys )
+        assertTrue( participantData.common.values.all { it == null } )
     }
 
     @Test
@@ -143,7 +143,7 @@ interface ParticipationServiceTest
 
         val toSet = mapOf( CarpInputDataTypes.SEX to Sex.Male )
         val afterSet = participationService.setParticipantData( studyDeploymentId, toSet )
-        assertEquals( Sex.Male, afterSet.data[ CarpInputDataTypes.SEX ] )
+        assertEquals( Sex.Male, afterSet.common[ CarpInputDataTypes.SEX ] )
 
         val retrievedData = participationService.getParticipantData( studyDeploymentId )
         assertEquals( afterSet, retrievedData )

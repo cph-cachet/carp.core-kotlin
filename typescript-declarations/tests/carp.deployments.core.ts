@@ -4,6 +4,7 @@ import { kotlin } from 'kotlin'
 import ArrayList = kotlin.collections.ArrayList
 import toMap = kotlin.collections.toMap_v2dak7$
 import toSet = kotlin.collections.toSet_us0mfu$
+import toList = kotlin.collections.toList_us0mfu$
 
 import { kotlinx as kxd } from 'Kotlin-DateTime-library-kotlinx-datetime-js-legacy'
 import Clock = kxd.datetime.Clock
@@ -22,6 +23,7 @@ import StudyDeploymentStatus = dk.cachet.carp.deployments.application.StudyDeplo
 import ActiveParticipationInvitation = dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
 import AssignedPrimaryDevice = dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
 import ParticipantData = dk.cachet.carp.deployments.application.users.ParticipantData
+import RoleData = dk.cachet.carp.deployments.application.users.ParticipantData.RoleData
 import Participation = dk.cachet.carp.deployments.application.users.Participation
 import ParticipantInvitation = dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import ParticipantStatus = dk.cachet.carp.deployments.application.users.ParticipantStatus
@@ -59,8 +61,10 @@ describe( "carp.deployments.core", () => {
             ActiveParticipationInvitation.Companion,
             new AssignedPrimaryDevice( exampleDevice, null ),
             AssignedPrimaryDevice.Companion,
-            new ParticipantData( UUID.Companion.randomUUID(), toMap( [] ) ),
+            new ParticipantData( UUID.Companion.randomUUID(), toMap( [] ), toList( [] ) ),
             ParticipantData.Companion,
+            new RoleData( "some role", toMap( [] ) ),
+            RoleData.Companion,
             new ParticipantInvitation( UUID.Companion.randomUUID(), toSet( [] ), new UsernameAccountIdentity( new Username( "Test" ) ), studyInvitation ),
             ParticipantInvitation.Companion,
             new ParticipantStatus( UUID.Companion.randomUUID(), toSet( [] ) ),

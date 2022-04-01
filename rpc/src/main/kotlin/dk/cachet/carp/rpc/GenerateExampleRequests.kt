@@ -168,7 +168,13 @@ private val studyInvitation = StudyInvitation(
 private val participantInvitation = ParticipantInvitation( participantId, setOf( phone.roleName ), participantAccount, studyInvitation )
 private val participantData = ParticipantData(
     deploymentId,
-    mapOf( CarpInputDataTypes.SEX to Sex.Male )
+    emptyMap(),
+    listOf(
+        ParticipantData.RoleData(
+            participantRole.role,
+            mapOf( CarpInputDataTypes.SEX to Sex.Male )
+        )
+    )
 )
 private val bikeBeaconPreregistration = bikeBeacon.createRegistration {
     manufacturerId = 0x118
@@ -443,7 +449,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
         response = listOf( participantData )
     ),
     ParticipationService::setParticipantData to example(
-        request = ParticipationServiceRequest.SetParticipantData( deploymentId, participantData.data ),
+        request = ParticipationServiceRequest.SetParticipantData( deploymentId, participantData.roles.first().data ),
         response = participantData
     ),
 

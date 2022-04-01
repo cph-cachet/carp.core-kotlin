@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
@@ -85,7 +86,8 @@ class HostsIntegrationTest
         val participantGroupData = participationService.getParticipantData( deploymentId )
 
         assertEquals( deploymentId, deploymentCreated?.studyDeploymentId )
-        assertEquals( protocol.expectedParticipantData.size, participantGroupData.data.size )
+        val commonExpectedData = protocol.expectedParticipantData.filter { it.assignedTo == AssignedTo.Anyone }
+        assertEquals( commonExpectedData.size, participantGroupData.common.size )
     }
 
     @Test

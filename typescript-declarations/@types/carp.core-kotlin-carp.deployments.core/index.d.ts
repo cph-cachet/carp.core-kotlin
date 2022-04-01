@@ -141,6 +141,9 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
     namespace dk.cachet.carp.deployments.application.users
     {
+        import RoleData = dk.cachet.carp.deployments.application.users.ParticipantData.RoleData
+
+
         class ActiveParticipationInvitation
         {
             constructor( participation: Participation, invitation: StudyInvitation, assignedDevices: HashSet<AssignedPrimaryDevice> )
@@ -177,14 +180,29 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
         class ParticipantData
         {
-            constructor( studyDeploymentId: UUID, data: HashMap<NamespacedId, any> )
+            constructor( studyDeploymentId: UUID, common: HashMap<NamespacedId, any>, roles: ArrayList<RoleData> )
 
             static get Companion(): ParticipantData$Companion
 
             readonly studyDeploymentId: UUID
-            readonly data: HashMap<NamespacedId, any>
+            readonly common: HashMap<NamespacedId, any>
+            readonly roles: ArrayList<RoleData>
         }
         interface ParticipantData$Companion { serializer(): any }
+
+        namespace ParticipantData
+        {
+            class RoleData
+            {
+                constructor( roleName: string, data: HashMap<NamespacedId, any> )
+
+                static get Companion(): ParticipantData$RoleData$Companion
+
+                readonly roleName: string
+                readonly data: HashMap<NamespacedId, any>
+            }
+            interface ParticipantData$RoleData$Companion { serializer(): any }
+        }
 
         class ParticipantInvitation
         {
