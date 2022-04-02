@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.domain.Snapshot
@@ -32,6 +33,11 @@ data class StudyProtocolSnapshot(
     val triggers: Map<Int, TriggerConfiguration<*>> = emptyMap(),
     val taskControls: Set<TaskControl> = emptySet(),
     val participantRoles: Set<ParticipantRole> = emptySet(),
+    /**
+     * Per device role, the participant roles to which the device is assigned.
+     * Unassigned device are assigned to "anyone".
+     */
+    val assignedDevices: Map<String, Set<String>> = emptyMap(),
     val expectedParticipantData: Set<ExpectedParticipantData> = emptySet(),
     @Serializable( ApplicationDataSerializer::class )
     val applicationData: String? = null
@@ -68,6 +74,10 @@ data class StudyProtocolSnapshot(
                         TaskControl( trigger.key, control.task.name, control.destinationDevice.roleName, control.control ) }
                     .toSet(),
                 participantRoles = protocol.participantRoles.toSet(),
+                assignedDevices = protocol.deviceAssignments
+                    .filter { it.value is AssignedTo.Roles }
+                    .map { it.key.roleName to (it.value as AssignedTo.Roles).roleNames }
+                    .toMap(),
                 expectedParticipantData = protocol.expectedParticipantData.toSet(),
                 applicationData = protocol.applicationData
             )

@@ -107,6 +107,10 @@ class StudyProtocolSnapshotTest
                 ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "othertype" ) )
             )
         )
+        val assignedDevices = mapOf(
+            "M1" to setOf( "Role 1" ),
+            "M2" to setOf( "Role 2" )
+        )
 
         val protocolId = UUID.randomUUID()
         val createdOn = Clock.System.now()
@@ -121,7 +125,7 @@ class StudyProtocolSnapshotTest
             description,
             primaryDevices.toSet(), connectedDevices.toSet(), connections.toSet(),
             tasks.toSet(), triggers, triggeredTasks.toSet(),
-            participantRoles.toSet(), expectedParticipantData.toSet(), "" )
+            participantRoles.toSet(), assignedDevices, expectedParticipantData.toSet(), "" )
         val reorganizedSnapshot = StudyProtocolSnapshot(
             protocolId,
             createdOn,
@@ -130,7 +134,7 @@ class StudyProtocolSnapshotTest
             description,
             primaryDevices.reversed().toSet(), connectedDevices.reversed().toSet(), connections.reversed().toSet(),
             tasks.reversed().toSet(), triggers, triggeredTasks.reversed().toSet(),
-            participantRoles.reversed().toSet(), expectedParticipantData.reversed().toSet(), "" )
+            participantRoles.reversed().toSet(), assignedDevices, expectedParticipantData.reversed().toSet(), "" )
 
         assertEquals( snapshot, reorganizedSnapshot )
         assertEquals( snapshot.hashCode(), reorganizedSnapshot.hashCode() )

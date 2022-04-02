@@ -92,6 +92,7 @@ fun createComplexProtocol(): StudyProtocol
         addTaskControl( trigger, task, primaryDevice, TaskControl.Control.Start )
         addParticipantRole( mainRole )
         addParticipantRole( optionalRole )
+        changeDeviceAssignment( primaryDevice, AssignedTo.Roles( setOf( mainRole.role ) ) )
         addExpectedParticipantData( commonExpectedData )
         addExpectedParticipantData( mainRoleData )
     }

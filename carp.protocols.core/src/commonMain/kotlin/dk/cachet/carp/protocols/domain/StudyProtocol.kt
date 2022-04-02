@@ -68,6 +68,10 @@ class StudyProtocol(
         data class TaskControlAdded( val control: TaskControl ) : Event()
         data class TaskControlRemoved( val control: TaskControl ) : Event()
         data class ParticipantRoleAdded( val role: ParticipantRole ) : Event()
+        data class DeviceAssignmentChanged(
+            val device: AnyPrimaryDeviceConfiguration,
+            val assignedTo: AssignedTo
+        ) : Event()
         data class ExpectedParticipantDataAdded( val expectedData: ExpectedParticipantData ) : Event()
         data class ExpectedParticipantDataRemoved( val expectedData: ExpectedParticipantData ) : Event()
     }
@@ -75,6 +79,7 @@ class StudyProtocol(
 
     companion object Factory
     {
+        @Suppress( "ComplexMethod" )
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
             val protocol = StudyProtocol(
@@ -126,6 +131,13 @@ class StudyProtocol(
             snapshot.participantRoles.forEach { protocol.addParticipantRole( it ) }
             snapshot.expectedParticipantData.forEach { protocol.addExpectedParticipantData( it ) }
 
+            // Assign devices.
+            snapshot.assignedDevices.forEach { (deviceRoleName, assignedParticipantRoles) ->
+                val device = requireNotNull( protocol.primaryDevices.singleOrNull { it.roleName == deviceRoleName } )
+                    { "Can't find device with role name '$deviceRoleName' in snapshot." }
+                protocol.changeDeviceAssignment( device, AssignedTo.Roles( assignedParticipantRoles ) )
+            }
+
             // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
             protocol.consumeEvents()
 
@@ -174,9 +186,17 @@ class StudyProtocol(
      *  - [primaryDevice] contains invalid default sampling configurations
      * @return True if the [primaryDevice] has been added; false if it is already set as a primary device.
      */
-    override fun addPrimaryDevice( primaryDevice: AnyPrimaryDeviceConfiguration ): Boolean =
-        super.addPrimaryDevice( primaryDevice )
-        .eventIf( true ) { Event.PrimaryDeviceAdded( primaryDevice ) }
+    override fun addPrimaryDevice( primaryDevice: AnyPrimaryDeviceConfiguration ): Boolean
+    {
+        val isAdded = super.addPrimaryDevice( primaryDevice )
+        if ( isAdded )
+        {
+            _deviceAssignments[ primaryDevice ] = AssignedTo.Anyone
+            event( Event.PrimaryDeviceAdded( primaryDevice ) )
+        }
+
+        return isAdded
+    }
 
     /**
      * Add a [device] which is connected to a [primaryDevice] within this configuration.
@@ -390,7 +410,7 @@ class StudyProtocol(
      *   Once eventing is implemented on `ParticipantDataConfiguration`, this can be moved where it logically belongs.
      *
      * @throws IllegalArgumentException if:
-     *  - [expectedData] is assigned to a participant role which is not part of this [ProtocolParticipantConfiguration]
+     *  - [expectedData] is assigned to a participant role which is not part of this protocol
      *  - [expectedData] contains differing [ParticipantAttribute]s with the same input data type
      *  - [expectedData] contains multiple attributes of the same input data type which are assigned to the same role
      * @return True if any expected data has been replaced; false if the specified [expectedData] was the same as those already set.
@@ -399,11 +419,7 @@ class StudyProtocol(
     {
         // Throw when expected data is invalid so that the set isn't added partially.
         expectedData.hasNoConflicts( exceptionOnConflict = true )
-        val roleNames = expectedData
-            .map { it.assignedTo }
-            .filterIsInstance<AssignedTo.Roles>()
-            .flatMap { it.roleNames }.toSet()
-        require( roleNames.all { includesParticipantRole( it ) } ) // TODO: Make this part of `hasNoConflicts`?
+        require( expectedData.all { isValidAssignment( it.assignedTo ) } ) // TODO: Make this part of `hasNoConflicts`?
             { "Expected data contains participant role names which aren't part of the participant configuration." }
 
         val toRemove = expectedParticipantData.minus( expectedData )
@@ -414,6 +430,33 @@ class StudyProtocol(
         toRemove.forEach { removeExpectedParticipantData( it ) }
         toAdd.forEach { addExpectedParticipantData( it ) }
         return true
+    }
+
+    /**
+     * For each of the primary device configurations in this protocol, the participant roles it has been [AssignedTo].
+     * By default, devices are [AssignedTo.Anyone].
+     */
+    val deviceAssignments: Map<AnyPrimaryDeviceConfiguration, AssignedTo>
+        get() = _deviceAssignments.toMap()
+
+    private val _deviceAssignments: MutableMap<AnyPrimaryDeviceConfiguration, AssignedTo> = mutableMapOf()
+
+    /**
+     * Change who the primary [device] is [assignedTo].
+     * By default, primary devices are [AssignedTo.Anyone].
+     *
+     * @throws IllegalArgumentException if:
+     *  - [device] is not part of this protocol
+     *  - [assignedTo] contains participant roles which are not part of this protocol
+     */
+    fun changeDeviceAssignment( device: AnyPrimaryDeviceConfiguration, assignedTo: AssignedTo ): Boolean
+    {
+        require( _deviceAssignments.containsKey( device ) ) { "The device configuration is not part of this protocol." }
+        require( isValidAssignment( assignedTo ) ) { "One of the assigned participant roles is not part of this protocol." }
+
+        val isChanged = _deviceAssignments.put( device, assignedTo ) != assignedTo
+        if ( isChanged ) event( Event.DeviceAssignmentChanged( device, assignedTo ) )
+        return isChanged
     }
 
     /**
