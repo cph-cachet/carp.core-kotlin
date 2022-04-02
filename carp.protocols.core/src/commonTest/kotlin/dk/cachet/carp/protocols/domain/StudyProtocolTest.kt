@@ -472,6 +472,50 @@ class StudyProtocolTest
     }
 
     @Test
+    fun changeDeviceAssignment_succeeds()
+    {
+        val device = StubPrimaryDeviceConfiguration()
+        val role = ParticipantRole( "Test", false )
+        val protocol = createEmptyProtocol().apply {
+            addPrimaryDevice( device )
+            addParticipantRole( role )
+        }
+
+        protocol.consumeEvents() // Not interested in previous events.
+        assertEquals( AssignedTo.Anyone, protocol.deviceAssignments[ device ] )
+        val assignRole = AssignedTo.Roles( setOf( role.role ) )
+        protocol.changeDeviceAssignment( device, assignRole )
+        assertEquals( assignRole, protocol.deviceAssignments[ device ] )
+        assertEquals(
+            StudyProtocol.Event.DeviceAssignmentChanged( device, assignRole),
+            protocol.consumeEvents().filterIsInstance<StudyProtocol.Event.DeviceAssignmentChanged>().singleOrNull()
+        )
+    }
+
+    @Test
+    fun changeDeviceAssignment_fails_for_unknown_device()
+    {
+        val protocol = createEmptyProtocol()
+        val role = ParticipantRole( "Test", false )
+
+        val unknownDevice = StubPrimaryDeviceConfiguration()
+        assertFailsWith<IllegalArgumentException> {
+            protocol.changeDeviceAssignment( unknownDevice, AssignedTo.Roles( setOf( role.role ) ) )
+        }
+    }
+
+    @Test
+    fun changeDeviceAssignment_fails_for_unknown_participant_role()
+    {
+        val protocol = createEmptyProtocol()
+        val device = StubPrimaryDeviceConfiguration()
+
+        assertFailsWith<IllegalArgumentException> {
+            protocol.changeDeviceAssignment( device, AssignedTo.Roles( setOf( "Unknown" ) ) )
+        }
+    }
+
+    @Test
     fun creating_protocol_fromSnapshot_obtained_by_getSnapshot_is_the_same()
     {
         val protocol = createComplexProtocol()
@@ -493,6 +537,8 @@ class StudyProtocolTest
             val fromSnapshotTriggeredTasks = fromSnapshot.getTaskControls( it.id ).toSet()
             assertEquals( triggeredTasks, fromSnapshotTriggeredTasks )
         }
+        assertEquals( protocol.participantRoles, fromSnapshot.participantRoles )
+        assertEquals( protocol.deviceAssignments, fromSnapshot.deviceAssignments )
         assertEquals( protocol.expectedParticipantData, fromSnapshot.expectedParticipantData )
         assertEquals( protocol.applicationData, fromSnapshot.applicationData )
         assertEquals( 0, fromSnapshot.consumeEvents().size )

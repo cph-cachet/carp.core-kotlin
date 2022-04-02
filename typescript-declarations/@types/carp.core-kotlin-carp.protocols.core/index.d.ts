@@ -51,6 +51,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             readonly triggers: HashMap<number, TriggerConfiguration>
             readonly taskControls: Set<TaskControl>
             readonly participantRoles: Set<ParticipantRole>
+            readonly assignedDevices: HashMap<string, Set<string>>
             readonly expectedParticipantData: HashSet<ExpectedParticipantData>
         }
         interface StudyProtocolSnapshot$Companion { serializer(): any }

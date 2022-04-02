@@ -36,9 +36,16 @@
       "type": "array",
       "items": { "$ref": "../common/users/ParticipantRole.json" }
     },
+    "assignedDevices": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
     "expectedParticipantData": {
       "type": "array",
-      "items": { "$ref": "../common/users/ExpectedParticipantData.json"}
+      "items": { "$ref": "../common/users/ExpectedParticipantData.json" }
     },
     "applicationData": { "$ref":  "../common/ApplicationData.json" }
   },

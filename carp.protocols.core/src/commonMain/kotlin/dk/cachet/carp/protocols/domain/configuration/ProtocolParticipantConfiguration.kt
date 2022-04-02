@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain.configuration
 
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.ParticipantRole
@@ -32,9 +33,18 @@ interface ProtocolParticipantConfiguration
     fun addParticipantRole( role: ParticipantRole ): Boolean
 
     /**
-     * Determines whether a role with [roleName] is included in this [ProtocolParticipantConfiguration].
+     * Determines whether all participant roles in [assignment] are part of this configuration.
      */
-    fun includesParticipantRole( roleName: String ): Boolean = roleName in participantRoles.map { it.role }
+    fun isValidAssignment( assignment: AssignedTo ): Boolean =
+        when ( assignment )
+        {
+            is AssignedTo.Anyone -> true
+            is AssignedTo.Roles ->
+            {
+                val roles = participantRoles.map { it.role }
+                assignment.roleNames.all { it in roles }
+            }
+        }
 
     /**
      * Add expected participant data to be input by users.

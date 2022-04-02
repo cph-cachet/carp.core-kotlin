@@ -32,12 +32,8 @@ class EmptyProtocolParticipantConfiguration : ProtocolParticipantConfiguration
     {
         // Verify whether assigned role names are part of the participant configuration.
         // TODO: can this be made part of `hasNoConflicts`?
-        val roleAssignment = expectedData.assignedTo as? AssignedTo.Roles
-        if ( roleAssignment != null )
-        {
-            require( roleAssignment.roleNames.all { includesParticipantRole( it ) } )
-                { "The expected data contains participant role names which aren't part of this participant configuration." }
-        }
+        require( isValidAssignment( expectedData.assignedTo ) )
+            { "The expected data contains participant role names which aren't part of this participant configuration." }
 
         try { expectedParticipantData.plus( expectedData ).hasNoConflicts( exceptionOnConflict = true ) }
         catch ( ex: IllegalArgumentException )
