@@ -11,6 +11,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
     import EmailAddress = cdk.cachet.carp.common.application.EmailAddress
     import UUID = cdk.cachet.carp.common.application.UUID
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
+    import AssignedTo = cdk.cachet.carp.common.application.users.AssignedTo
     import ApplicationServiceRequest = cdk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
     import ApiVersion = cdk.cachet.carp.common.application.services.ApiVersion
 
@@ -92,18 +93,18 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
     namespace dk.cachet.carp.studies.application.users
     {
-        class AssignParticipantDevices
+        class AssignParticipantRoles
         {
-            constructor( participantId: UUID, primaryDeviceRoleNames: HashSet<string> )
+            constructor( participantId: UUID, assignedRoles: AssignedTo )
 
-            static get Companion(): AssignParticipantDevices$Companion
+            static get Companion(): AssignParticipantRoles$Companion
 
             readonly participantId: UUID
-            readonly primaryDeviceRoleNames: HashSet<string>
+            readonly assignedRoles: AssignedTo
         }
-        function participantIds_ttprz$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<UUID>
-        function deviceRoles_ttprz$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<string>
-        interface AssignParticipantDevices$Companion { serializer(): any }
+        function participantIds_yyd5wh$( assignedGroup: ArrayList<AssignParticipantRoles> ): HashSet<UUID>
+        function participantRoles_yyd5wh$( assignedGroup: ArrayList<AssignParticipantRoles> ): HashSet<string>
+        interface AssignParticipantRoles$Companion { serializer(): any }
 
 
         class Participant
@@ -176,7 +177,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
     namespace dk.cachet.carp.studies.infrastructure
     {
-        import AssignParticipantDevices = dk.cachet.carp.studies.application.users.AssignParticipantDevices
+        import AssignParticipantRoles = dk.cachet.carp.studies.application.users.AssignParticipantRoles
 
 
         abstract class StudyServiceRequest implements ApplicationServiceRequest
@@ -254,7 +255,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             }
             class InviteNewParticipantGroup extends RecruitmentServiceRequest
             {
-                constructor( studyId: UUID, group: HashSet<AssignParticipantDevices> )
+                constructor( studyId: UUID, group: HashSet<AssignParticipantRoles> )
             }
             class GetParticipantGroupStatusList extends RecruitmentServiceRequest
             {

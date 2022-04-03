@@ -3,11 +3,8 @@
   "type": "object",
   "properties": {
     "participantId": { "type": "string", "format": "uuid" },
-    "primaryDeviceRoleNames": {
-      "type": "array",
-      "items": { "type": "string" }
-    }
+    "assignedRoles": { "$ref": "../../common/users/AssignedTo.json" }
   },
-  "required": [ "participantId", "primaryDeviceRoleNames" ],
+  "required": [ "participantId", "assignedRoles" ],
   "additionalProperties": false
 }

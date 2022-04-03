@@ -80,7 +80,7 @@ class HostsIntegrationTest
         eventBus.activateHandlers( this )
 
         val protocol = createComplexProtocol()
-        val invitation = createParticipantInvitation( protocol )
+        val invitation = createParticipantInvitation()
         val deploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
         val participantGroupData = participationService.getParticipantData( deploymentId )
@@ -97,10 +97,9 @@ class HostsIntegrationTest
 
         // Create deployment with one invitation.
         val toInvite = EmailAccountIdentity( "test@test.com" )
-        val assignedDevices = setOf( deviceRole )
         val studyInvitation = StudyInvitation( "Some study" )
         val invitations = listOf(
-            ParticipantInvitation( UUID.randomUUID(), assignedDevices, toInvite, studyInvitation )
+            ParticipantInvitation( UUID.randomUUID(), AssignedTo.Anyone, toInvite, studyInvitation )
         )
         val deploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), invitations )
@@ -111,7 +110,7 @@ class HostsIntegrationTest
         val invitation = participationService.getActiveParticipationInvitations( invitedAccount.id ).singleOrNull()
         assertNotNull( invitation )
         assertEquals( deploymentId, invitation.participation.studyDeploymentId )
-        assertEquals( assignedDevices, invitation.assignedDevices.map { it.device.roleName }.toSet() )
+        assertEquals( setOf( deviceRole ), invitation.assignedDevices.map { it.device.roleName }.toSet() )
         assertEquals( studyInvitation, invitation.invitation )
     }
 
@@ -133,7 +132,7 @@ class HostsIntegrationTest
         protocol.addTaskControl( atStartOfStudy.start( task, primaryDevice ) )
 
         // Deploy protocol.
-        val invitation = createParticipantInvitation( protocol )
+        val invitation = createParticipantInvitation()
         val deploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
         val dataStreamId = dataStreamId<StubDataPoint>( deploymentId, primaryDevice.roleName )
@@ -155,7 +154,7 @@ class HostsIntegrationTest
         eventBus.activateHandlers( this )
 
         val protocol = createComplexProtocol()
-        val invitation = createParticipantInvitation( protocol )
+        val invitation = createParticipantInvitation()
         val deploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
         deploymentService.stop( deploymentId )
@@ -168,7 +167,7 @@ class HostsIntegrationTest
         // Create a deployment.
         val protocol = createSinglePrimaryDeviceProtocol()
         val identity = AccountIdentity.fromUsername( "Test" )
-        val invitation = createParticipantInvitation( protocol, identity )
+        val invitation = createParticipantInvitation( identity )
         val deploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
@@ -213,7 +212,7 @@ class HostsIntegrationTest
         deploymentService.createStudyDeployment(
             deploymentId,
             protocol.getSnapshot(),
-            listOf( createParticipantInvitation( protocol, AccountIdentity.fromUsername( "Test" ) ) )
+            listOf( createParticipantInvitation( AccountIdentity.fromUsername( "Test" ) ) )
         )
 
         // Prepare data to append to data stream.

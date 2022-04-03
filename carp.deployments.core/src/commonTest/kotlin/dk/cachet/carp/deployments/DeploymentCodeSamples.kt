@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService
@@ -34,7 +35,7 @@ class DeploymentCodeSamples
         // This is called by `StudyService` when deploying a participant group.
         val invitation = ParticipantInvitation(
             participantId = UUID.randomUUID(),
-            assignedPrimaryDeviceRoleNames = setOf( patientPhone.roleName ),
+            assignedRoles = AssignedTo.Anyone,
             identity = AccountIdentity.fromEmailAddress( "test@test.com" ),
             invitation = StudyInvitation( "Movement study", "This study tracks your movements." )
         )

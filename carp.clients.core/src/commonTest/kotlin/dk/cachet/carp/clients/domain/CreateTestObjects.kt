@@ -11,6 +11,7 @@ import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
@@ -75,19 +76,19 @@ suspend fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentSer
         InMemoryDeploymentRepository(),
         InMemoryDataStreamService(),
         eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
-    val invitation = createParticipantInvitation( protocol )
+    val invitation = createParticipantInvitation()
     val status = deploymentService.createStudyDeployment( UUID.randomUUID(), protocol.getSnapshot(), listOf( invitation ) )
     return Pair( deploymentService, status )
 }
 
 /**
  * Create a participant invitation for a specific [identity], or newly created identity when null,
- * which is assigned all devices in [protocol].
+ * which is assigned to all participant roles.
  */
-fun createParticipantInvitation( protocol: StudyProtocol, identity: AccountIdentity? = null ): ParticipantInvitation =
+fun createParticipantInvitation( identity: AccountIdentity? = null ): ParticipantInvitation =
     ParticipantInvitation(
         UUID.randomUUID(),
-        protocol.primaryDevices.map { it.roleName }.toSet(),
+        AssignedTo.Anyone,
         identity ?: AccountIdentity.fromUsername( "Test" ),
         StudyInvitation( "Some study" )
     )

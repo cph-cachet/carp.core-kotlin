@@ -16,6 +16,7 @@ import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.throwIfInvalidInvitations
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.ParticipantStatus
+import dk.cachet.carp.deployments.domain.users.getAssignedDeviceRoleNames
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.datetime.Clock
@@ -61,8 +62,11 @@ class StudyDeployment private constructor(
         ): StudyDeployment
         {
             protocolSnapshot.throwIfInvalidInvitations( invitations )
-            val participants = invitations.map {
-                ParticipantStatus( it.participantId, it.assignedPrimaryDeviceRoleNames )
+            val participants = invitations.map { invitation ->
+                ParticipantStatus(
+                    invitation.participantId,
+                    invitation.assignedRoles,
+                    protocolSnapshot.getAssignedDeviceRoleNames( invitation.assignedRoles ) )
             }
 
             return StudyDeployment( protocolSnapshot, participants, id, now )

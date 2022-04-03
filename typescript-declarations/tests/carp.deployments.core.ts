@@ -15,6 +15,7 @@ import DefaultDeviceRegistration = dkc.cachet.carp.common.application.devices.De
 import Smartphone = dkc.cachet.carp.common.application.devices.Smartphone
 import Username = dkc.cachet.carp.common.application.users.Username
 import UsernameAccountIdentity = dkc.cachet.carp.common.application.users.UsernameAccountIdentity
+import AssignedTo = dkc.cachet.carp.common.application.users.AssignedTo
 
 import { dk } from 'carp.core-kotlin-carp.deployments.core'
 import DeviceDeploymentStatus = dk.cachet.carp.deployments.application.DeviceDeploymentStatus
@@ -67,7 +68,7 @@ describe( "carp.deployments.core", () => {
             RoleData.Companion,
             new ParticipantInvitation( UUID.Companion.randomUUID(), toSet( [] ), new UsernameAccountIdentity( new Username( "Test" ) ), studyInvitation ),
             ParticipantInvitation.Companion,
-            new ParticipantStatus( UUID.Companion.randomUUID(), toSet( [] ) ),
+            new ParticipantStatus( UUID.Companion.randomUUID(), AssignedTo.Anyone, toSet( [] ) ),
             ParticipantStatus.Companion,
             new Participation( UUID.Companion.randomUUID() ),
             Participation.Companion,

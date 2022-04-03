@@ -2,6 +2,7 @@ package dk.cachet.carp.deployments.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
@@ -51,7 +52,7 @@ class StudyDeploymentTest
         val invitations = listOf(
             ParticipantInvitation(
                 UUID.randomUUID(),
-                setOf( primary.roleName ),
+                AssignedTo.Anyone,
                 UsernameAccountIdentity( "Test" ),
                 StudyInvitation( "Test" )
             )

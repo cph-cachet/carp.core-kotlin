@@ -2,6 +2,7 @@ package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.createParticipantInvitation
@@ -37,7 +38,7 @@ interface DeploymentServiceTest
         deploymentService.createStudyDeployment(
             deploymentId,
             protocol.getSnapshot(),
-            listOf( createParticipantInvitation( protocol ) ),
+            listOf( createParticipantInvitation() ),
             mapOf( connectedDevice.roleName to preregistration )
         )
         deploymentService.registerDevice( deploymentId, primaryDevice.roleName, primaryDevice.createRegistration() )
@@ -55,7 +56,7 @@ interface DeploymentServiceTest
         val protocol = createSinglePrimaryDeviceProtocol( deviceRole )
         val invitation = ParticipantInvitation(
             UUID.randomUUID(),
-            setOf( deviceRole ),
+            AssignedTo.Anyone,
             AccountIdentity.fromUsername( "User" ),
             StudyInvitation( "Some study" )
         )
@@ -111,10 +112,10 @@ interface DeploymentServiceTest
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol( deviceRoleName )
         val protocolSnapshot = protocol.getSnapshot()
 
-        val invitation1 = createParticipantInvitation( protocol, AccountIdentity.fromUsername( "User 1" ) )
+        val invitation1 = createParticipantInvitation( AccountIdentity.fromUsername( "User 1" ) )
         val deploymentId1 = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId1, protocolSnapshot, listOf( invitation1 ) )
-        val invitation2 = createParticipantInvitation( protocol, AccountIdentity.fromUsername( "User 2" ) )
+        val invitation2 = createParticipantInvitation( AccountIdentity.fromUsername( "User 2" ) )
         val deploymentId2 = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId2, protocolSnapshot, listOf( invitation2 ) )
 
@@ -222,7 +223,7 @@ interface DeploymentServiceTest
     ): UUID
     {
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol( primaryDeviceRoleName, connectedDeviceRoleName )
-        val invitation = createParticipantInvitation( protocol )
+        val invitation = createParticipantInvitation()
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 

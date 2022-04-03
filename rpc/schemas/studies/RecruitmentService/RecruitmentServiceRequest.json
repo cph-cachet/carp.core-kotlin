@@ -67,7 +67,7 @@
         "studyId": { "type": "string", "format": "uuid" },
         "group": {
           "type": "array",
-          "items": { "$ref": "../users/AssignParticipantDevices.json" }
+          "items": { "$ref": "../users/AssignParticipantRoles.json" }
         }
       },
       "required": [ "__type", "apiVersion", "studyId", "group" ],

@@ -1,6 +1,7 @@
 package dk.cachet.carp.deployments.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.infrastructure.serialization.CLASS_DISCRIMINATOR
 import dk.cachet.carp.common.infrastructure.serialization.JSON
@@ -71,7 +72,7 @@ class StudyDeploymentStatusTest
             listOf(
                 ParticipantInvitation(
                     UUID.randomUUID(),
-                    setOf( primary.roleName ),
+                    AssignedTo.Anyone,
                     UsernameAccountIdentity( "Test" ),
                     StudyInvitation( "Test" )
                 )

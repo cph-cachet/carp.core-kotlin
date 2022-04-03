@@ -8,7 +8,7 @@ import dk.cachet.carp.common.infrastructure.services.EventBusLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.studies.application.RecruitmentService
 import dk.cachet.carp.studies.application.StudyService
-import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.AssignParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 
@@ -44,7 +44,7 @@ class RecruitmentServiceLoggingProxy(
 
     override suspend fun inviteNewParticipantGroup(
         studyId: UUID,
-        group: Set<AssignParticipantDevices>
+        group: Set<AssignParticipantRoles>
     ): ParticipantGroupStatus =
         log( RecruitmentServiceRequest.InviteNewParticipantGroup( studyId, group ) )
 

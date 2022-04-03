@@ -18,6 +18,7 @@ import { dk as cdk } from 'carp.core-kotlin-carp.common'
 import UUID = cdk.cachet.carp.common.application.UUID
 import CarpInputDataTypes = cdk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import Username = cdk.cachet.carp.common.application.users.Username
+import AssignedTo = cdk.cachet.carp.common.application.users.AssignedTo
 import UsernameAccountIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
 import createDefaultJSON = cdk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
 
@@ -30,11 +31,11 @@ import StudyInvitation = ddk.cachet.carp.deployments.application.users.StudyInvi
 import { dk } from 'carp.core-kotlin-carp.studies.core'
 import StudyDetails = dk.cachet.carp.studies.application.StudyDetails
 import StudyStatus = dk.cachet.carp.studies.application.StudyStatus
-import AssignParticipantDevices = dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import AssignParticipantRoles = dk.cachet.carp.studies.application.users.AssignParticipantRoles
 import Participant = dk.cachet.carp.studies.application.users.Participant
 import ParticipantGroupStatus = dk.cachet.carp.studies.application.users.ParticipantGroupStatus
-import getAssignedParticipantIds = dk.cachet.carp.studies.application.users.participantIds_ttprz$
-import getAssignedDeviceRoles = dk.cachet.carp.studies.application.users.deviceRoles_ttprz$
+import getAssignedParticipantIds = dk.cachet.carp.studies.application.users.participantIds_yyd5wh$
+import getAssignedParticipantRoles = dk.cachet.carp.studies.application.users.participantRoles_yyd5wh$
 import RecruitmentServiceRequest = dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest
 import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
 
@@ -52,8 +53,8 @@ describe( "carp.studies.core", () => {
             new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), null, true, true, false, true ),
             new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), UUID.Companion.randomUUID(), false, false, true ),
             StudyStatus.Companion,
-            new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Test" ] ) ),
-            AssignParticipantDevices.Companion,
+            new AssignParticipantRoles( UUID.Companion.randomUUID(), AssignedTo.Anyone ),
+            AssignParticipantRoles.Companion,
             new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ),
             Participant.Companion,
             [ "ParticipantGroupStatus", new ParticipantGroupStatus.Staged( deploymentId, new HashSet<Participant>() ) ],
@@ -72,22 +73,15 @@ describe( "carp.studies.core", () => {
     } )
 
 
-    describe( "AssignParticipantDevices", () => {
-        it( "initializes deviceRoleNames as set", () => {
-            const uuid = UUID.Companion.randomUUID()
-            const primaryDeviceRoleNames = toSet( [ "Test" ] )
-            const assigned = new AssignParticipantDevices( uuid, primaryDeviceRoleNames )
-            expect( assigned.primaryDeviceRoleNames ).equals( primaryDeviceRoleNames )
-        } )
-
-        it( "getAssigned participantIds and devices works", () => {
+    describe( "AssignParticipantRoles", () => {
+        it( "getAssigned participantIds and participantRoles works", () => {
             const participant1 = UUID.Companion.randomUUID()
             const participant2 = UUID.Companion.randomUUID()
-            const assigned1 = new AssignParticipantDevices( participant1, toSet( [ "Test" ] ) )
-            const assigned2 = new AssignParticipantDevices( participant2, toSet( [ "Test" ] ) )
+            const assigned1 = new AssignParticipantRoles( participant1, new AssignedTo.Roles( toSet( [ "Test" ] ) ) )
+            const assigned2 = new AssignParticipantRoles( participant2, AssignedTo.Anyone )
             const assignedGroup = new ArrayList( [ assigned1, assigned2 ] )
             expect( getAssignedParticipantIds( assignedGroup ) ).instanceof( HashSet )
-            expect( getAssignedDeviceRoles( assignedGroup ) ).instanceof( HashSet )
+            expect( getAssignedParticipantRoles( assignedGroup ) ).instanceof( HashSet )
         } )
     } )
 
@@ -140,7 +134,7 @@ describe( "carp.studies.core", () => {
             const deployGroup = new RecruitmentServiceRequest.InviteNewParticipantGroup(
                 UUID.Companion.randomUUID(),
                 toSet( [
-                    new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Smartphone" ] ) )
+                    new AssignParticipantRoles( UUID.Companion.randomUUID(), AssignedTo.Anyone )
                 ] )
             )
 
