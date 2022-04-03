@@ -47,6 +47,7 @@ import DeploymentServiceRequest = ddk.cachet.carp.deployments.infrastructure.Dep
 describe( "carp.common", () => {
     it( "verify module declarations", async () => {
         const username = new Username( "Test" )
+        const smartphone = new Smartphone( "Role", toSet( [] ) )
 
         const instances = [
             new EmailAddress( "test@test.com" ),
@@ -63,7 +64,8 @@ describe( "carp.common", () => {
             SelectOne.Companion,
             new Text( "How are you feeling?" ),
             Text.Companion,
-            [ "DeviceConfiguration", new Smartphone( "Role", toSet( [] ) ) ],
+            [ "DeviceConfiguration", smartphone ],
+            [ "PrimaryDeviceConfiguration", smartphone ],
             [ "DeviceRegistration", new DefaultDeviceRegistration() ],
             DeviceRegistration.Companion,
             [ "TaskConfiguration", new WebTask( "name", undefined, "", "url.com" ) ],

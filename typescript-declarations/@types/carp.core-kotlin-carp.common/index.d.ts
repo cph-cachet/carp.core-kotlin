@@ -49,7 +49,7 @@ declare module 'carp.core-kotlin-carp.common'
 
         class TimeOfDay
         {
-            constructor( hour: Number, minutes: Number, seconds: Number )
+            constructor( hour: number, minutes: number, seconds: number )
 
             static get Companion(): TimeOfDay$Companion
         }
@@ -87,6 +87,11 @@ declare module 'carp.core-kotlin-carp.common'
             readonly roleName: string
         }
 
+        abstract class PrimaryDeviceConfiguration extends DeviceConfiguration
+        {
+            readonly isPrimaryDevice_8be2vx$: boolean
+        }
+
         abstract class DeviceRegistration
         {
             static get Companion(): DeviceRegistration$Companion  
@@ -102,7 +107,7 @@ declare module 'carp.core-kotlin-carp.common'
             constructor( deviceId?: string )
         }
 
-        class Smartphone extends DeviceConfiguration
+        class Smartphone extends PrimaryDeviceConfiguration
         {
             constructor( roleName: string, defaultSamplingConfiguration: HashMap<NamespacedId, any> )
         }
@@ -133,7 +138,7 @@ declare module 'carp.core-kotlin-carp.common'
     {
         abstract class TriggerConfiguration
         {
-            readonly requiresPrimaryDevice: Boolean
+            readonly requiresPrimaryDevice: boolean
             readonly sourceDeviceRoleName: string
         }
 
@@ -163,12 +168,12 @@ declare module 'carp.core-kotlin-carp.common'
 
         class TaskControl
         {
-            constructor( triggerId: Number, taskName: string, destinationDeviceRoleName: string, control: Number )
+            constructor( triggerId: number, taskName: string, destinationDeviceRoleName: string, control: number )
 
-            readonly triggerId: Number
+            readonly triggerId: number
             readonly taskName: string
             readonly destinationDeviceRoleName: string
-            readonly control: Number
+            readonly control: number
         }
     }
 
@@ -341,10 +346,10 @@ declare module 'carp.core-kotlin-carp.common'
     {
         class ApiVersion
         {
-            constructor( major: Number, minor: Number )
+            constructor( major: number, minor: number )
 
-            readonly major: Number
-            readonly minor: Number
+            readonly major: number
+            readonly minor: number
         }
     }
 

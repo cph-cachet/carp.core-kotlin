@@ -7,5 +7,6 @@ import dk.cachet.carp.studies.infrastructure.StudyServiceRequest
 
 val StudyServiceApiMigrator = ApplicationServiceApiMigrator(
     StudyService.API_VERSION,
-    StudyServiceRequest.Serializer
+    StudyServiceRequest.Serializer,
+    StudyService.Event.serializer()
 )

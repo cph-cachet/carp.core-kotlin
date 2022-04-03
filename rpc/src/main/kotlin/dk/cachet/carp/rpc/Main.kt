@@ -13,7 +13,7 @@ import java.io.File
 val applicationServices = Reflections( "dk.cachet.carp" )
     .getSubTypesOf( ApplicationService::class.java )
     .filter { it.isInterface }
-    .map { ApplicationServiceInfo( it ) }
+    .map { ApplicationServiceInfo.of( it ) }
 
 
 fun main()

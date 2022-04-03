@@ -7,5 +7,6 @@ import dk.cachet.carp.data.infrastructure.DataStreamServiceRequest
 
 val DataStreamServiceApiMigrator = ApplicationServiceApiMigrator(
     DataStreamService.API_VERSION,
-    DataStreamServiceRequest.Serializer
+    DataStreamServiceRequest.Serializer,
+    DataStreamService.Event.serializer()
 )

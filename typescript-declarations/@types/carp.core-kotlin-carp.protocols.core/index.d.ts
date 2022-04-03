@@ -48,7 +48,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             readonly description: string
             readonly primaryDevices: HashSet<DeviceConfiguration>
             readonly tasks: HashSet<TaskConfiguration>
-            readonly triggers: HashMap<Number, TriggerConfiguration>
+            readonly triggers: HashMap<number, TriggerConfiguration>
             readonly taskControls: Set<TaskControl>
             readonly participantRoles: Set<ParticipantRole>
             readonly assignedDevices: HashMap<string, Set<string>>

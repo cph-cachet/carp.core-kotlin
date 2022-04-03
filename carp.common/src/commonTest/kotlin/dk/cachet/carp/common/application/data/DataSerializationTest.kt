@@ -1,7 +1,6 @@
 package dk.cachet.carp.common.application.data
 
 import dk.cachet.carp.common.infrastructure.serialization.CLASS_DISCRIMINATOR
-import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.common.infrastructure.test.StubDataTypes
 import dk.cachet.carp.common.infrastructure.test.createTestJSON

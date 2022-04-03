@@ -7,5 +7,6 @@ import dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest
 
 val ParticipationServiceApiMigrator = ApplicationServiceApiMigrator(
     ParticipationService.API_VERSION,
-    ParticipationServiceRequest.Serializer
+    ParticipationServiceRequest.Serializer,
+    ParticipationService.Event.serializer()
 )
