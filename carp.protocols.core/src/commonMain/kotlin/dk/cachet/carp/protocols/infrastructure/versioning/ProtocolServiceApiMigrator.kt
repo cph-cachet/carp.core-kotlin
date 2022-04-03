@@ -7,5 +7,6 @@ import dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest
 
 val ProtocolServiceApiMigrator = ApplicationServiceApiMigrator(
     ProtocolService.API_VERSION,
-    ProtocolServiceRequest.Serializer
+    ProtocolServiceRequest.Serializer,
+    ProtocolService.Event.serializer()
 )

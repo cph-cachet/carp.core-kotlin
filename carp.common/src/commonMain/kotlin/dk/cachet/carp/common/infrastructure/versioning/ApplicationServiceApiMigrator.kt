@@ -16,48 +16,90 @@ import kotlinx.serialization.json.jsonPrimitive
  */
 class ApplicationServiceApiMigrator<TService : ApplicationService<TService, *>>(
     val runtimeVersion: ApiVersion,
-    val requestObjectSerializer: KSerializer<out ApplicationServiceRequest<TService, *>>
+    val requestObjectSerializer: KSerializer<out ApplicationServiceRequest<TService, *>>,
+    val eventSerializer: KSerializer<out IntegrationEvent<TService>>,
+    migrations: List<ApiMigration> = emptyList()
 )
 {
-    companion object
-    {
-        /**
-         * Retrieve the [ApiVersion] for the given [jsonObject].
-         *
-         * @throws IllegalArgumentException when [jsonObject] does not contain an [ApiVersion].
-         */
-        private fun getApiVersion( jsonObject: JsonObject ): ApiVersion
-        {
-            val requestVersionString = jsonObject[ "apiVersion" ]?.jsonPrimitive?.content
-            requireNotNull( requestVersionString )
-                { "Request object needs to contain `apiVersion` for migration to succeed." }
+    // Sort migrations and throw exception if there are missing or conflicting migrations.
+    private val migrations = migrations.sortedBy { it.minimumMinorVersion }.also {
+        val targetVersion = runtimeVersion.minor
 
-            return ApiVersion.fromString( requestVersionString )
+        val isRangeCovered =
+            if ( it.isEmpty() ) targetVersion == 0
+            else it.first().minimumMinorVersion == 0 && it.last().targetMinorVersion == targetVersion
+
+        var curVersion = 0
+        val noGapsOrConflicts = it.fold( true ) { isValid, migration ->
+            val curValid = isValid && migration.minimumMinorVersion == curVersion
+            curVersion = migration.targetMinorVersion
+            curValid
         }
-    }
 
+        require( isRangeCovered && noGapsOrConflicts ) { "There are missing or conflicting migrations." }
+    }
 
     /**
      * Migrate the [request] so that it matches [runtimeVersion] and deserialize using [json].
+     *
+     * @throws IllegalArgumentException if:
+     *  - [request] does not contain an [ApiVersion]
+     *  - the [request] version is more recent than the runtime version
+     *  - the runtime version is a later major version than the [request] version
      */
     fun migrateRequest( json: Json, request: JsonObject ): MigratedRequest<TService>
     {
-        val requestVersion = getApiVersion( request )
-        require( !requestVersion.isMoreRecent( runtimeVersion ) )
-            { "Request version ($requestVersion) is more recent than the runtime version ($runtimeVersion)." }
+        val requestVersion = getAndValidateApiVersion( request )
 
-        // Add migrations once needed.
-        require( requestVersion == runtimeVersion )
-            { "No migration for requests from $requestVersion to $runtimeVersion supported."}
-        val downgradeResponse =
-            {
-                response: JsonElement?, ex: Exception? ->
-                    if ( ex != null ) throw ex
-                    else response!!
+        // Apply request migrations.
+        val toApply = migrations.dropWhile { requestVersion.minor >= it.targetMinorVersion }
+        val updatedRequest = toApply.fold( request ) { r, migration -> migration.migrateRequest( r ) }
+
+        // Defer applying response migrations.
+        fun downgradeResponse( response: JsonElement?, ex: Exception? ): JsonElement
+        {
+            val updatedResponse = toApply.fold( ApiResponse( response, ex ) ) { curResponse, migration ->
+                migration.migrateResponse( request, curResponse, requestVersion )
             }
 
-        val updatedRequest = json.decodeFromJsonElement( requestObjectSerializer, request )
-        return MigratedRequest( json, updatedRequest, downgradeResponse )
+            return if ( updatedResponse.ex != null ) throw updatedResponse.ex
+                else updatedResponse.response!!
+        }
+
+        val decodedRequest = json.decodeFromJsonElement( requestObjectSerializer, updatedRequest )
+        return MigratedRequest( json, decodedRequest, ::downgradeResponse )
+    }
+
+    /**
+     * Migrate the [event] so that it matches [runtimeVersion] and deserialize using [json].
+     *
+     * @throws IllegalArgumentException if:
+     *  - [event] does not contain an [ApiVersion]
+     *  - the [event] version is more recent than the runtime version
+     *  - the runtime version is a later major version than the [event] version
+     */
+    fun migrateEvent( json: Json, event: JsonObject ): IntegrationEvent<TService>
+    {
+        val eventVersion = getAndValidateApiVersion( event )
+        val toApply = migrations.dropWhile { eventVersion.minor >= it.targetMinorVersion }
+        val updatedEvent = toApply.fold( event ) { e, migration -> migration.migrateEvent( e ) }
+
+        return json.decodeFromJsonElement( eventSerializer, updatedEvent )
+    }
+
+    private fun getAndValidateApiVersion( jsonObject: JsonObject ): ApiVersion
+    {
+        val requestVersionString = jsonObject[ API_VERSION_FIELD ]?.jsonPrimitive?.content
+        requireNotNull( requestVersionString )
+            { "Object needs to contain `apiVersion` for migration to succeed." }
+
+        val requestVersion = ApiVersion.fromString( requestVersionString )
+        require( !requestVersion.isMoreRecent( runtimeVersion ) )
+            { "Object version ($requestVersion) is more recent than the runtime version ($runtimeVersion)." }
+        require( runtimeVersion.major == requestVersion.major )
+            { "Can't migrate to new major versions." }
+
+        return requestVersion
     }
 }
 
