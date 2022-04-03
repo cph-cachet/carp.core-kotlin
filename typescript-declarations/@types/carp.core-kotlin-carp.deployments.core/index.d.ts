@@ -13,6 +13,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
     import UUID = cdk.cachet.carp.common.application.UUID
     import DeviceRegistration = cdk.cachet.carp.common.application.devices.DeviceRegistration
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
+    import AssignedTo = cdk.cachet.carp.common.application.users.AssignedTo
     import ExpectedParticipantData = cdk.cachet.carp.common.application.users.ExpectedParticipantData
     import ApplicationServiceRequest = cdk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
     import ApiVersion = cdk.cachet.carp.common.application.services.ApiVersion
@@ -169,11 +170,12 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
         class Participation
         {
-            constructor( studyDeploymentId: UUID, participantId?: UUID )
+            constructor( studyDeploymentId: UUID, assignedRoles?: AssignedTo, participantId?: UUID )
 
             static get Companion(): Participation$Companion
 
             readonly studyDeploymentId: UUID
+            readonly assignedRoles: AssignedTo
             readonly participantId: UUID
         }
         interface Participation$Companion { serializer(): any }
@@ -206,10 +208,10 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
         class ParticipantInvitation
         {
-            constructor( participantId: UUID, assignedPrimaryDeviceRoleNames: HashSet<string>, identity: AccountIdentity, invitation: StudyInvitation )
+            constructor( participantId: UUID, assignedRoles: AssignedTo, identity: AccountIdentity, invitation: StudyInvitation )
 
             readonly participantId: UUID
-            readonly assignedPrimaryDeviceRoleNames: HashSet<string>
+            readonly assignedRoles: AssignedTo
             readonly identity: AccountIdentity
             readonly invitation: StudyInvitation
 
@@ -219,9 +221,10 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
         class ParticipantStatus
         {
-            constructor( participantId: UUID, assignedPrimaryDeviceRoleNames: HashSet<string> )
+            constructor( participantId: UUID, assignedParticipantRoles: AssignedTo, assignedPrimaryDeviceRoleNames: HashSet<string> )
 
             readonly participantId: UUID
+            readonly assignedParticipantRoles: AssignedTo
             readonly assignedPrimaryDeviceRoleNames: HashSet<string>
 
             static get Companion(): ParticipantStatus$Companion

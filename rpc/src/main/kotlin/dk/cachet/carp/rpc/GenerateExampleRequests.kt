@@ -165,7 +165,13 @@ private val studyInvitation = StudyInvitation(
     "Participate in this study, which keeps track of how much you walk and bike!",
     "{\"trialGroup\", \"A\"}"
 )
-private val participantInvitation = ParticipantInvitation( participantId, setOf( phone.roleName ), participantAccount, studyInvitation )
+private val participantAssignedRoles = AssignedTo.Roles( setOf( participantRole.role ) )
+private val participantInvitation = ParticipantInvitation(
+    participantId,
+    participantAssignedRoles,
+    participantAccount,
+    studyInvitation
+)
 private val participantData = ParticipantData(
     deploymentId,
     emptyMap(),
@@ -186,7 +192,9 @@ private val phoneRegistration = phone.createRegistration {
     deviceId = UUID( "fc7b41b0-e9e2-4b5d-8c3d-5119b556a3f0" ).toString()
 }.setRegistrationCreatedOn( Instant.fromEpochSeconds( 1642514110 ) )
 private val bikeBeaconStatus = DeviceDeploymentStatus.Registered( bikeBeacon, false, emptySet(), emptySet() )
-private val participantStatusList = listOf( ParticipantStatus( participantId, setOf( phone.roleName ) ) )
+private val participantStatusList = listOf(
+    ParticipantStatus( participantId, participantAssignedRoles, setOf( phone.roleName ) )
+)
 private val invitedDeploymentStatus = StudyDeploymentStatus.Invited(
     deploymentCreatedOn,
     deploymentId,
@@ -365,7 +373,10 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
         )
     ),
     RecruitmentService::inviteNewParticipantGroup to example(
-        request = RecruitmentServiceRequest.InviteNewParticipantGroup( studyId, setOf( AssignParticipantDevices( participantId, setOf( phone.roleName ) )) ),
+        request = RecruitmentServiceRequest.InviteNewParticipantGroup(
+            studyId,
+            setOf( AssignParticipantRoles( participantId, participantAssignedRoles ) )
+        ),
         response = ParticipantGroupStatus.Invited( deploymentId, participants, participantGroupInvitedOn, invitedDeploymentStatus )
     ),
     RecruitmentService::getParticipantGroupStatusList to example(
@@ -434,7 +445,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
         request = ParticipationServiceRequest.GetActiveParticipationInvitations( participantAccountId ),
         response = setOf(
             ActiveParticipationInvitation(
-                Participation( deploymentId, participantId ),
+                Participation( deploymentId, participantAssignedRoles, participantId ),
                 studyInvitation,
                 setOf( AssignedPrimaryDevice( phone ) )
             )

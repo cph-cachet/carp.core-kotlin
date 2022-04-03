@@ -6,7 +6,7 @@ import dk.cachet.carp.common.application.UUIDFactory
 import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
-import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.AssignParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.ParticipantRepository
@@ -103,12 +103,11 @@ class RecruitmentServiceHost(
      * @throws IllegalArgumentException when:
      *  - a study with [studyId] does not exist
      *  - [group] is empty
-     *  - any of the participants specified in [group] does not exist
-     *  - any of the primary device roles specified in [group] are not part of the configured study protocol
-     *  - not all necessary primary devices part of the study have been assigned a participant
+     *  - any of the participant roles specified in [group] does not exist
+     *  - not all necessary participant roles part of the study have been assigned a participant
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    override suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus
+    override suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignParticipantRoles> ): ParticipantGroupStatus
     {
         val recruitment = getRecruitmentOrThrow( studyId )
         val (protocol, invitations) = recruitment.createInvitations( group )

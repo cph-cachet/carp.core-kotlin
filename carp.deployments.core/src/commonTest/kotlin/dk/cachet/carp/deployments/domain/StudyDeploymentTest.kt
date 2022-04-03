@@ -12,6 +12,7 @@ import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.application.triggers.TaskControl
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
@@ -72,7 +73,7 @@ class StudyDeploymentTest
 
         val incorrectInvitation = ParticipantInvitation(
             UUID.randomUUID(),
-            setOf( "Invalid" ),
+            AssignedTo.Roles( setOf( "Invalid" ) ),
             UsernameAccountIdentity( "Test" ),
             StudyInvitation( "Test" )
         )
@@ -412,17 +413,19 @@ class StudyDeploymentTest
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
         val invitation = ParticipantInvitation(
             UUID.randomUUID(),
-            setOf( deviceRoleName ),
+            AssignedTo.Anyone,
             UsernameAccountIdentity( "Test" ),
             StudyInvitation( "Test " )
         )
         val deployment = StudyDeployment.fromInvitations( protocol.getSnapshot(), listOf( invitation ) )
 
-        val status = deployment.getStatus()
-        assertEquals(
-            listOf( ParticipantStatus( invitation.participantId, invitation.assignedPrimaryDeviceRoleNames ) ),
-            status.participantStatusList
+        val expectedParticipantStatus = ParticipantStatus(
+            invitation.participantId,
+            AssignedTo.Anyone,
+            setOf( deviceRoleName )
         )
+        val status = deployment.getStatus()
+        assertEquals( listOf( expectedParticipantStatus ), status.participantStatusList )
     }
 
     @Test

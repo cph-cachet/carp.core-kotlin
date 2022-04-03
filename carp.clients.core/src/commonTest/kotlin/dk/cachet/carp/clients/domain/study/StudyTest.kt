@@ -5,6 +5,7 @@ import dk.cachet.carp.clients.domain.connectedDevice
 import dk.cachet.carp.clients.domain.smartphone
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
@@ -35,7 +36,7 @@ class StudyTest
         dependentDevice: AnyPrimaryDeviceConfiguration? = null
     ) = Pair(
         Study( deploymentId, device.roleName ),
-        if (dependentDevice != null ) twoDeviceDeployment( device, dependentDevice )
+        if ( dependentDevice != null ) twoDeviceDeployment( device, dependentDevice )
         else singleDeviceDeployment( device )
     )
 
@@ -107,7 +108,7 @@ class StudyTest
             listOf(
                 ParticipantInvitation(
                     UUID.randomUUID(),
-                    setOf( device.roleName ),
+                    AssignedTo.Anyone,
                     UsernameAccountIdentity( "Test" ),
                     StudyInvitation( "Test" )
                 )
@@ -126,7 +127,7 @@ class StudyTest
         listOf(
             ParticipantInvitation(
                 UUID.randomUUID(),
-                setOf( device.roleName, dependentDevice.roleName ),
+                AssignedTo.Anyone,
                 UsernameAccountIdentity( "Test" ),
                 StudyInvitation( "Test" )
             )

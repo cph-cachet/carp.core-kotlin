@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService
@@ -18,7 +19,7 @@ import dk.cachet.carp.studies.application.RecruitmentServiceHost
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceHost
 import dk.cachet.carp.studies.application.StudyStatus
-import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.AssignParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
@@ -41,7 +42,6 @@ class StudiesCodeSamples
 
         // Let the study use the protocol from the 'carp.protocols' example above.
         val trackPatientStudy: StudyProtocol = createExampleProtocol()
-        val patientPhone: AnyPrimaryDeviceConfiguration = trackPatientStudy.primaryDevices.first() // "Patient's phone"
         val protocolSnapshot: StudyProtocolSnapshot = trackPatientStudy.getSnapshot()
         studyStatus = studyService.setProtocol( studyId, protocolSnapshot )
 
@@ -58,8 +58,8 @@ class StudiesCodeSamples
         // Once the study is live, you can 'deploy' it to participant's devices. They will be invited.
         if ( studyStatus.canDeployToParticipants )
         {
-            // Create a 'participant group' with a single participant, using the "Patient's phone".
-            val participation = AssignParticipantDevices( participant.id, setOf( patientPhone.roleName ) )
+            // Create a 'participant group' with a single participant, with no specific participant role assignment.
+            val participation = AssignParticipantRoles( participant.id, AssignedTo.Anyone )
             val participantGroup = setOf( participation )
 
             val groupStatus: ParticipantGroupStatus = recruitmentService.inviteNewParticipantGroup( studyId, participantGroup )

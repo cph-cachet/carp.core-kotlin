@@ -3,8 +3,9 @@
   "type": "object",
   "properties": {
     "studyDeploymentId": { "type": "string", "format": "uuid" },
+    "assignedRoles": { "$ref": "../../common/users/AssignedTo.json" },
     "participantId": { "type": "string", "format": "uuid" }
   },
-  "required": [ "studyDeploymentId", "participantId" ],
+  "required": [ "studyDeploymentId", "assignedRoles", "participantId" ],
   "additionalProperties": false
 }

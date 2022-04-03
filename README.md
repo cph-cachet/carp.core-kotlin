@@ -207,7 +207,6 @@ val studyId: UUID = studyStatus.studyId
 
 // Let the study use the protocol from the 'carp.protocols' example above.
 val trackPatientStudy: StudyProtocol = createExampleProtocol()
-val patientPhone: AnyPrimaryDeviceConfiguration = trackPatientStudy.primaryDevices.first() // "Patient's phone"
 val protocolSnapshot: StudyProtocolSnapshot = trackPatientStudy.getSnapshot()
 studyStatus = studyService.setProtocol( studyId, protocolSnapshot )
 
@@ -224,8 +223,8 @@ if ( studyStatus is StudyStatus.Configuring && studyStatus.canGoLive )
 // Once the study is live, you can 'deploy' it to participant's devices. They will be invited.
 if ( studyStatus.canDeployToParticipants )
 {
-    // Create a 'participant group' with a single participant, using the "Patient's phone".
-    val participation = AssignParticipantDevices( participant.id, setOf( patientPhone.roleName ) )
+    // Create a 'participant group' with a single participant, with no specific participant role assignment.
+    val participation = AssignParticipantRoles( participant.id, AssignedTo.Anyone )
     val participantGroup = setOf( participation )
 
     val groupStatus: ParticipantGroupStatus = recruitmentService.inviteNewParticipantGroup( studyId, participantGroup )
@@ -244,7 +243,7 @@ val patientPhone: Smartphone = trackPatientStudy.primaryDevices.first() as Smart
 // This is called by `StudyService` when deploying a participant group.
 val invitation = ParticipantInvitation(
     participantId = UUID.randomUUID(),
-    assignedPrimaryDeviceRoleNames = setOf( patientPhone.roleName ),
+    assignedRoles = AssignedTo.Anyone,
     identity = AccountIdentity.fromEmailAddress( "test@test.com" ),
     invitation = StudyInvitation( "Movement study", "This study tracks your movements." )
 )

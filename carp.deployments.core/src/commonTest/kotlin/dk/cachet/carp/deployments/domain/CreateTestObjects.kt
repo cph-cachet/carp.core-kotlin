@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
@@ -21,7 +22,7 @@ import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryWithConne
 
 
 /**
- * Create a study deployment with a test user assigned to each primary device in the [protocol].
+ * Create a study deployment with a test user assigned to all participant roles in the [protocol].
  */
 fun studyDeploymentFor( protocol: StudyProtocol ): StudyDeployment
 {
@@ -31,7 +32,7 @@ fun studyDeploymentFor( protocol: StudyProtocol ): StudyDeployment
     val identity = UsernameAccountIdentity( "Test user" )
     val invitation = StudyInvitation( "Test" )
     val invitations = protocol.primaryDevices.map {
-        ParticipantInvitation( UUID.randomUUID(), setOf( it.roleName ), identity, invitation )
+        ParticipantInvitation( UUID.randomUUID(), AssignedTo.Anyone, identity, invitation )
     }
 
     return StudyDeployment.fromInvitations( snapshot, invitations )
@@ -81,12 +82,12 @@ fun createStoppedDeployment( primaryDeviceRoleName: String ): StudyDeployment =
 
 /**
  * Create a participant invitation for a specific [identity], or newly created identity when null,
- * which is assigned all devices in [protocol].
+ * which is assigned to all participant roles.
  */
-fun createParticipantInvitation( protocol: StudyProtocol, identity: AccountIdentity? = null ): ParticipantInvitation =
+fun createParticipantInvitation( identity: AccountIdentity? = null ): ParticipantInvitation =
     ParticipantInvitation(
         UUID.randomUUID(),
-        protocol.primaryDevices.map { it.roleName }.toSet(),
+        AssignedTo.Anyone,
         identity ?: AccountIdentity.fromUsername( "Test" ),
         StudyInvitation( "Some study" )
     )

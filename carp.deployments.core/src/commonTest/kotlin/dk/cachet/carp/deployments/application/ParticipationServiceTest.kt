@@ -56,7 +56,7 @@ interface ParticipationServiceTest
         val invitation = StudyInvitation( "Test study", "description", "Custom data" )
         val participantInvitation = ParticipantInvitation(
             participantId = UUID.randomUUID(),
-            setOf( deviceRoleName ),
+            AssignedTo.Anyone,
             identity,
             invitation
         )
@@ -91,7 +91,7 @@ interface ParticipationServiceTest
             AssignedTo.Roles( participantRoleNames )
         )
         protocol.addExpectedParticipantData( roleExpectedData )
-        val invitation = createParticipantInvitation( protocol )
+        val invitation = createParticipantInvitation()
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
@@ -117,10 +117,10 @@ interface ParticipationServiceTest
         val (participationService, deploymentService, _) = createService()
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
         val protocolSnapshot = protocol.getSnapshot()
-        val invitation1 = createParticipantInvitation( protocol )
+        val invitation1 = createParticipantInvitation()
         val deploymentId1 = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId1, protocolSnapshot, listOf( invitation1 ) )
-        val invitation2 = createParticipantInvitation( protocol )
+        val invitation2 = createParticipantInvitation()
         val deploymentId2 = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId2, protocolSnapshot, listOf( invitation2 ) )
 
@@ -147,7 +147,7 @@ interface ParticipationServiceTest
             ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
         )
         protocol.addExpectedParticipantData( expectedData )
-        val invitation = createParticipantInvitation( protocol )
+        val invitation = createParticipantInvitation()
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
@@ -172,7 +172,7 @@ interface ParticipationServiceTest
             AssignedTo.Roles( setOf( participantRoleName ) )
         )
         protocol.addExpectedParticipantData( expectedData )
-        val invitation = createParticipantInvitation( protocol )
+        val invitation = createParticipantInvitation()
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
@@ -220,7 +220,7 @@ interface ParticipationServiceTest
             ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
         )
         protocol.addExpectedParticipantData( expectedData )
-        val invitation = createParticipantInvitation( protocol )
+        val invitation = createParticipantInvitation()
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 
@@ -237,7 +237,7 @@ interface ParticipationServiceTest
     private suspend fun addTestDeployment( deploymentService: DeploymentService ): UUID
     {
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
-        val invitation = createParticipantInvitation( protocol )
+        val invitation = createParticipantInvitation()
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 

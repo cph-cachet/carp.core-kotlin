@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService
@@ -15,7 +16,7 @@ import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
-import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.AssignParticipantRoles
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
 import kotlinx.coroutines.test.runTest
@@ -91,20 +92,20 @@ class HostsIntegrationTest
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
         // Call succeeding means recruitment is ready for deployment.
-        val assignDevices = setOf( AssignParticipantDevices( participant.id, setOf( "Device" ) ) )
-        recruitmentService.inviteNewParticipantGroup( study.studyId, assignDevices )
+        val assignRoles = setOf( AssignParticipantRoles( participant.id, AssignedTo.Anyone ) )
+        recruitmentService.inviteNewParticipantGroup( study.studyId, assignRoles )
 
         assertEquals( study.studyId, studyGoneLive?.study?.studyId )
     }
 
     @Test
     fun remove_study_removes_recruitment_and_deployment() = runTest {
-        val (studyId, deviceRole) = createLiveStudy()
+        val (studyId, _) = createLiveStudy()
 
         // Add participant and deploy participant group.
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
-        val assignDevices = AssignParticipantDevices( participant.id, setOf( deviceRole ) )
-        val group = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignDevices ) )
+        val assignRoles = AssignParticipantRoles( participant.id, AssignedTo.Anyone )
+        val group = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignRoles ) )
         val deploymentId = group.id
 
         var studyRemovedEvent: StudyService.Event.StudyRemoved? = null
