@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "role": { "type": "string" },
+    "isOptional": { "type": "boolean" }
+  },
+  "required": [ "role", "isOptional" ],
+  "additionalProperties": false
+}

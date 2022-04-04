@@ -1,0 +1,16 @@
+[
+    {
+        "outcome": "Failed",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.AddParticipant",
+            "apiVersion": "1.0",
+            "studyId": "d8765bd5-0b80-437d-9646-5edd04e30451",
+            "email": "test@test.com"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "exceptionType": "IllegalArgumentException"
+    }
+]

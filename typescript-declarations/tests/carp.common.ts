@@ -5,6 +5,9 @@ import { kotlin } from 'kotlin'
 import toSet = kotlin.collections.toSet_us0mfu$;
 import Duration = kotlin.time.Duration;
 
+import { kotlinx } from 'kotlinx-serialization-kotlinx-serialization-json-js-legacy'
+import Json = kotlinx.serialization.json.Json
+
 import { dk } from 'carp.core-kotlin-carp.common'
 import EmailAddress = dk.cachet.carp.common.application.EmailAddress;
 import NamespacedId = dk.cachet.carp.common.application.NamespacedId;
@@ -27,10 +30,15 @@ import Text = dk.cachet.carp.common.application.data.input.elements.Text;
 import AccountIdentity = dk.cachet.carp.common.application.users.AccountIdentity;
 import EmailAccountIdentity = dk.cachet.carp.common.application.users.EmailAccountIdentity;
 import ParticipantAttribute = dk.cachet.carp.common.application.users.ParticipantAttribute;
+import ParticipantRole = dk.cachet.carp.common.application.users.ParticipantRole
+import ExpectedParticipantData = dk.cachet.carp.common.application.users.ExpectedParticipantData
+import AssignedTo = dk.cachet.carp.common.application.users.AssignedTo
+import Roles = dk.cachet.carp.common.application.users.AssignedTo.Roles
 import Username = dk.cachet.carp.common.application.users.Username;
 import UsernameAccountIdentity = dk.cachet.carp.common.application.users.UsernameAccountIdentity;
 import emailAccountIdentityFromString = dk.cachet.carp.common.application.users.EmailAccountIdentity_init_61zpoe$;
 import ApiVersion = dk.cachet.carp.common.application.services.ApiVersion
+import createDefaultJSON = dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
 
 import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
 import DeploymentServiceRequest = ddk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest
@@ -39,6 +47,7 @@ import DeploymentServiceRequest = ddk.cachet.carp.deployments.infrastructure.Dep
 describe( "carp.common", () => {
     it( "verify module declarations", async () => {
         const username = new Username( "Test" )
+        const smartphone = new Smartphone( "Role", toSet( [] ) )
 
         const instances = [
             new EmailAddress( "test@test.com" ),
@@ -55,13 +64,14 @@ describe( "carp.common", () => {
             SelectOne.Companion,
             new Text( "How are you feeling?" ),
             Text.Companion,
-            [ "DeviceConfiguration", new Smartphone( "Role", toSet( [] ) ) ],
+            [ "DeviceConfiguration", smartphone ],
+            [ "PrimaryDeviceConfiguration", smartphone ],
             [ "DeviceRegistration", new DefaultDeviceRegistration() ],
             DeviceRegistration.Companion,
-            [ "TaskDescriptor", new WebTask( "name", undefined, "", "url.com" ) ],
+            [ "TaskConfiguration", new WebTask( "name", undefined, "", "url.com" ) ],
             new WebTask( "name", undefined, "", "url.com" ),
             WebTask.Companion,
-            [ "Trigger", new ElapsedTimeTrigger( "device", Duration.Companion.INFINITE ) ],
+            [ "TriggerConfiguration", new ElapsedTimeTrigger( "device", Duration.Companion.INFINITE ) ],
             new ElapsedTimeTrigger( "device", Duration.Companion.INFINITE ),
             new ManualTrigger( "device", "manual", "" ),
             new ScheduledTrigger(
@@ -79,6 +89,12 @@ describe( "carp.common", () => {
             UsernameAccountIdentity.Companion,
             [ "ParticipantAttribute", new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ) ],
             ParticipantAttribute.Companion,
+            new ParticipantRole( "Role", false ),
+            ParticipantRole.Companion,
+            new ExpectedParticipantData( new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ) ),
+            ExpectedParticipantData.Companion,
+            AssignedTo.Companion,
+            AssignedTo.All,
             new ApiVersion( 1, 0 ),
             [ "ApplicationServiceRequest", new DeploymentServiceRequest.GetStudyDeploymentStatus( UUID.Companion.randomUUID() ) ]
         ]
@@ -127,6 +143,20 @@ describe( "carp.common", () => {
         it( "inputToData works", () => {
             const data = attribute.inputToData_etkzhw$( CarpInputDataTypes, "Steven" )
             expect( data ).is.not.undefined
+        } )
+    } )
+
+    describe( "ExpectedParticipantData", () => {
+        it( "can serialize polymorphic InputBy", () => {
+            const expectedData = new ExpectedParticipantData(
+                new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ),
+                new Roles( toSet( [ "Roles are added" ] ) )
+            )
+
+            const json: Json = createDefaultJSON()
+            const serializer = ExpectedParticipantData.Companion.serializer()
+            const serialized = json.encodeToString_tf03ej$( serializer, expectedData )
+            expect( serialized ).has.string( "Roles are added" )
         } )
     } )
 } )

@@ -8,6 +8,7 @@
     { "$ref": "#/$defs/GetStudiesOverview" },
     { "$ref": "#/$defs/SetInvitation" },
     { "$ref": "#/$defs/SetProtocol" },
+    { "$ref": "#/$defs/RemoveProtocol" },
     { "$ref": "#/$defs/GoLive" },
     { "$ref": "#/$defs/Remove" }
   ],
@@ -44,7 +45,7 @@
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyId": { "type": "string", "format": "uuid" },
         "name": { "type": "string" },
-        "description": { "type": "string" }
+        "description": { "type": [ "string", "null" ] }
       },
       "required": [ "__type", "apiVersion", "studyId", "name", "description" ],
       "additionalProperties": false,
@@ -128,6 +129,21 @@
       "additionalProperties": false,
       "Response": {
         "$anchor": "SetProtocol-Response",
+        "$ref": "../StudyStatus.json"
+      }
+    },
+    "RemoveProtocol": {
+      "$anchor": "RemoveProtocol",
+      "type": "object",
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.RemoveProtocol" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "__type", "apiVersion", "studyId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "RemoveProtocol-Response",
         "$ref": "../StudyStatus.json"
       }
     },

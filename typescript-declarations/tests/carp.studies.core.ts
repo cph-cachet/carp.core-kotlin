@@ -18,6 +18,7 @@ import { dk as cdk } from 'carp.core-kotlin-carp.common'
 import UUID = cdk.cachet.carp.common.application.UUID
 import CarpInputDataTypes = cdk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import Username = cdk.cachet.carp.common.application.users.Username
+import AssignedTo = cdk.cachet.carp.common.application.users.AssignedTo
 import UsernameAccountIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
 import createDefaultJSON = cdk.cachet.carp.common.infrastructure.serialization.createDefaultJSON_18xi4u$
 
@@ -30,11 +31,11 @@ import StudyInvitation = ddk.cachet.carp.deployments.application.users.StudyInvi
 import { dk } from 'carp.core-kotlin-carp.studies.core'
 import StudyDetails = dk.cachet.carp.studies.application.StudyDetails
 import StudyStatus = dk.cachet.carp.studies.application.StudyStatus
-import AssignParticipantDevices = dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import AssignedParticipantRoles = dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import Participant = dk.cachet.carp.studies.application.users.Participant
 import ParticipantGroupStatus = dk.cachet.carp.studies.application.users.ParticipantGroupStatus
-import getAssignedParticipantIds = dk.cachet.carp.studies.application.users.participantIds_ttprz$
-import getAssignedDeviceRoles = dk.cachet.carp.studies.application.users.deviceRoles_ttprz$
+import getAssignedParticipantIds = dk.cachet.carp.studies.application.users.participantIds_skpkn2$
+import getAssignedParticipantRoles = dk.cachet.carp.studies.application.users.participantRoles_skpkn2$
 import RecruitmentServiceRequest = dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest
 import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
 
@@ -48,12 +49,12 @@ describe( "carp.studies.core", () => {
         const instances = [
             new StudyDetails( UUID.Companion.randomUUID(), UUID.Companion.randomUUID(), "Name", Clock.System.now(), "Description", new StudyInvitation( "Some study" ), null ),
             StudyDetails.Companion,
-            [ "StudyStatus", new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true ) ],
-            new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true ),
-            new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), false, false, true ),
+            [ "StudyStatus", new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), null, true, true, false, true ) ],
+            new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), null, true, true, false, true ),
+            new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), UUID.Companion.randomUUID(), false, false, true ),
             StudyStatus.Companion,
-            new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Test" ] ) ),
-            AssignParticipantDevices.Companion,
+            new AssignedParticipantRoles( UUID.Companion.randomUUID(), AssignedTo.All ),
+            AssignedParticipantRoles.Companion,
             new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ),
             Participant.Companion,
             [ "ParticipantGroupStatus", new ParticipantGroupStatus.Staged( deploymentId, new HashSet<Participant>() ) ],
@@ -72,34 +73,27 @@ describe( "carp.studies.core", () => {
     } )
 
 
-    describe( "AssignParticipantDevices", () => {
-        it( "initializes deviceRoleNames as set", () => {
-            const uuid = UUID.Companion.randomUUID()
-            const primaryDeviceRoleNames = toSet( [ "Test" ] )
-            const assigned = new AssignParticipantDevices( uuid, primaryDeviceRoleNames )
-            expect( assigned.primaryDeviceRoleNames ).equals( primaryDeviceRoleNames )
-        } )
-
-        it( "getAssigned participantIds and devices works", () => {
+    describe( "AssignedParticipantRoles", () => {
+        it( "getAssigned participantIds and participantRoles works", () => {
             const participant1 = UUID.Companion.randomUUID()
             const participant2 = UUID.Companion.randomUUID()
-            const assigned1 = new AssignParticipantDevices( participant1, toSet( [ "Test" ] ) )
-            const assigned2 = new AssignParticipantDevices( participant2, toSet( [ "Test" ] ) )
+            const assigned1 = new AssignedParticipantRoles( participant1, new AssignedTo.Roles( toSet( [ "Test" ] ) ) )
+            const assigned2 = new AssignedParticipantRoles( participant2, AssignedTo.All )
             const assignedGroup = new ArrayList( [ assigned1, assigned2 ] )
             expect( getAssignedParticipantIds( assignedGroup ) ).instanceof( HashSet )
-            expect( getAssignedDeviceRoles( assignedGroup ) ).instanceof( HashSet )
+            expect( getAssignedParticipantRoles( assignedGroup ) ).instanceof( HashSet )
         } )
     } )
 
 
     describe( "StudyStatus", () => {
         it ( "can typecheck StudyStatus", () => {
-            const configuring = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true )
+            const configuring = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), null, true, true, false, true )
             const configuringStatus: StudyStatus = configuring
             expect( configuringStatus instanceof StudyStatus.Configuring ).is.true
             expect( configuringStatus instanceof StudyStatus.Live ).is.false
 
-            const live = new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), false, false, true )
+            const live = new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), UUID.Companion.randomUUID(), false, false, true )
             const liveStatus: StudyStatus = live
             expect( liveStatus instanceof StudyStatus.Live ).is.true
             expect( liveStatus instanceof StudyStatus.Configuring ).is.false
@@ -123,7 +117,7 @@ describe( "carp.studies.core", () => {
         } )
 
         it( "can serialize getStudiesOverview response", () => {
-            const status = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), true, true, false, true )
+            const status = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), null, true, true, false, true )
             const statusList = new ArrayList( [ status ] )
 
             const json: Json = createDefaultJSON()
@@ -140,7 +134,7 @@ describe( "carp.studies.core", () => {
             const deployGroup = new RecruitmentServiceRequest.InviteNewParticipantGroup(
                 UUID.Companion.randomUUID(),
                 toSet( [
-                    new AssignParticipantDevices( UUID.Companion.randomUUID(), toSet( [ "Smartphone" ] ) )
+                    new AssignedParticipantRoles( UUID.Companion.randomUUID(), AssignedTo.All )
                 ] )
             )
 

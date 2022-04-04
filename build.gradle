@@ -1,28 +1,29 @@
 // Load plugin dependencies and initialize build variables.
 buildscript {
     ext {
-        // Version used for all submodule artifacts.
+        // Version used for submodule artifacts.
         // Snapshot publishing changes (or adds) the suffix after '-' with 'SNAPSHOT' prior to publishing.
-        globalVersion = '1.0.0-alpha.39'
+        globalVersion = '1.0.0'
+        clientsVersion = '1.0.0-alpha.40' // The clients subsystem is still expected to change drastically.
 
         versions = [
             // Kotlin multiplatform versions.
             kotlin:'1.6.10',
-            serialization:'1.3.1',
-            coroutines:'1.5.2',
-            datetime:'0.3.1',
+            serialization:'1.3.2',
+            coroutines:'1.6.0',
+            datetime:'0.3.2',
 
             // JVM versions.
             jvmTarget:'1.8',
-            dokkaPlugin:'1.5.30',
+            dokkaPlugin:'1.6.10',
             reflections:'0.10.2',
 
             // JS versions.
-            nodePlugin:'3.1.1',
+            nodePlugin:'3.2.1',
             bigJs:'6.1.1',
 
             // DevOps versions.
-            detektPlugin:'1.18.1',
+            detektPlugin:'1.20.0-RC2',
             detektVerifyImplementation:'1.2.2',
             nexusPublishPlugin:'1.1.0',
             apacheCommons:'2.11.0'
@@ -65,12 +66,9 @@ if (publishPropertiesFile.exists())
 
 // Configure all subprojects as testable, publishable, Kotlin multiplatform projects.
 // A `kotlinx.serialization` dependency is added to serialize domain models.
+// A `kotlinx-datetime` dependency is added to be able to store dates in domain models.
 configure( subprojects - devOpsModules ) {
     version = globalVersion
-
-    repositories {
-        mavenCentral()
-    }
 
     // Specify platforms and test frameworks to use.
     apply plugin: 'kotlin-multiplatform'
@@ -93,14 +91,41 @@ configure( subprojects - devOpsModules ) {
             commonMain {
                 dependencies {
                     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serialization}"
+                    api "org.jetbrains.kotlinx:kotlinx-datetime:${versions.datetime}"
                 }
             }
             commonTest {
                 dependencies {
                     implementation kotlin('test')
+                    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.coroutines}"
+                }
+            }
+            jvmTest {
+                dependencies {
+                    implementation kotlin('reflect')
+                    implementation "org.reflections:reflections:${versions.reflections}"
+                }
+            }
+
+            all {
+                def isTestSourceSet = it.name.endsWith('Test')
+
+                languageSettings {
+                    // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
+                    optIn('kotlin.RequiresOptIn')
+                    optIn('kotlin.time.ExperimentalTime')
+                    if (isTestSourceSet)
+                    {
+                        optIn('kotlinx.coroutines.ExperimentalCoroutinesApi')
+                    }
                 }
             }
         }
+    }
+
+    // Treat compilation warning as errors for all compilation targets.
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions { allWarningsAsErrors = true }
     }
 
     // Publish configuration.
@@ -213,9 +238,16 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
     def importedPackages = file("$rootDir/build/js/packages_imported")
     if (importedPackages.exists()) importedPackages.eachFile { it.delete() }
 
-    // Compile all subprojects for which TypeScript declarations are defined.
-    def projects = coreModules + commonModule
-    projects.each { dependsOn("${it.name}:jsBrowserDistribution") }
+    // Compile all subprojects which compile to JS.
+    // TODO: Can the compiled sources be copied from the tasks of which we want to test the output directly?
+    //  We only need main sources of coreModules and commonModules since these are the only ones tested.
+    //  But, only adding dependencies on those triggers warnings since other outputs exist in `/build//js/packages`.
+    def projects = subprojects - devOpsModules
+    projects.each {
+        def project = it.name
+        dependsOn("$project:jsBrowserDistribution")
+        dependsOn("$project:compileTestKotlinJs")
+    }
 
     // Copy compiled sources and dependencies to test project node_modules.
     from "$rootDir/build/js/packages"
@@ -247,45 +279,13 @@ task verifyTsDeclarations(type: NodeTask, dependsOn: compileTs) {
     ]
 }
 
-// Add common dependencies and configuration:
-// - `carp.test` for testing
-// - reflection for testing on JVM
-// TODO: unknown polymorphic serializers are only expected to be used on the server-side. Can this feature be made optional or refactored?
+// Add `carp.test` helpers.
 configure( coreModules + commonModule ) {
-    buildscript {
-        repositories {
-            mavenCentral()
-        }
-
-        dependencies {
-            classpath "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
-        }
-    }
-
     kotlin {
         sourceSets {
-            commonMain {
-                dependencies {
-                    api "org.jetbrains.kotlinx:kotlinx-datetime:${versions.datetime}"
-                }
-            }
             commonTest {
                 dependencies {
                     implementation project(':carp.test')
-                }
-            }
-            jvmTest {
-                dependencies {
-                    implementation kotlin('reflect')
-                    implementation "org.reflections:reflections:${versions.reflections}"
-                }
-            }
-
-            all {
-                languageSettings {
-                    // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
-                    useExperimentalAnnotation("kotlin.RequiresOptIn")
-                    useExperimentalAnnotation("kotlin.time.ExperimentalTime")
                 }
             }
         }
@@ -315,10 +315,6 @@ configure( coreModules ) {
 // Add code analysis.
 configure( rootProject )
 {
-    repositories {
-        mavenCentral()
-    }
-
     apply plugin: 'io.gitlab.arturbosch.detekt'
     detekt {
         dependencies {

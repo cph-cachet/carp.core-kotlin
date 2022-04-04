@@ -1,5 +1,6 @@
 package dk.cachet.carp.clients.application
 
+import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.clients.domain.ClientRepository
 import dk.cachet.carp.clients.domain.DeviceRegistrationStatus
 import dk.cachet.carp.clients.domain.data.ConnectedDeviceDataCollector
@@ -8,7 +9,6 @@ import dk.cachet.carp.clients.domain.data.DeviceDataCollector
 import dk.cachet.carp.clients.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.clients.domain.study.Study
 import dk.cachet.carp.clients.domain.study.StudyDeploymentProxy
-import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistrationBuilder
@@ -66,7 +66,7 @@ abstract class ClientManager<
     /**
      * Get the status for the studies which run on this client device.
      */
-    suspend fun getStudiesStatus(): List<StudyStatus> = repository.getStudyList().map { it.getStatus() }
+    suspend fun getStudyStatusList(): List<StudyStatus> = repository.getStudyList().map { it.getStatus() }
 
     /**
      * Add a study which needs to be executed on this client. No deployment is attempted yet.
@@ -151,7 +151,8 @@ abstract class ClientManager<
     {
         val dataCollector = dataListener.tryGetConnectedDataCollector(
             registeredDevice.device::class,
-            registeredDevice.registration )
+            registeredDevice.registration
+        )
 
         // `tryDeployment`, through which registeredDevice is obtained, would have failed if data collector could not be created.
         checkNotNull( dataCollector )

@@ -16,6 +16,7 @@ import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.throwIfInvalidInvitations
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.ParticipantStatus
+import dk.cachet.carp.deployments.domain.users.getAssignedDeviceRoleNames
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.datetime.Clock
@@ -35,7 +36,7 @@ class StudyDeployment private constructor(
     createdOn: Instant = Clock.System.now()
 ) : AggregateRoot<StudyDeployment, StudyDeploymentSnapshot, StudyDeployment.Event>( id, createdOn )
 {
-    sealed class Event : DomainEvent()
+    sealed class Event : DomainEvent
     {
         data class DeviceRegistered( val device: AnyDeviceConfiguration, val registration: DeviceRegistration ) : Event()
         data class DeviceUnregistered( val device: AnyDeviceConfiguration ) : Event()
@@ -61,8 +62,12 @@ class StudyDeployment private constructor(
         ): StudyDeployment
         {
             protocolSnapshot.throwIfInvalidInvitations( invitations )
-            val participants = invitations.map {
-                ParticipantStatus( it.participantId, it.assignedPrimaryDeviceRoleNames )
+            val participants = invitations.map { invitation ->
+                ParticipantStatus(
+                    invitation.participantId,
+                    invitation.assignedRoles,
+                    protocolSnapshot.getAssignedDeviceRoleNames( invitation.assignedRoles )
+                )
             }
 
             return StudyDeployment( protocolSnapshot, participants, id, now )
@@ -225,7 +230,7 @@ class StudyDeployment private constructor(
     {
         val devices: Map<RegistrableDevice, DeviceDeploymentStatus> =
             _registrableDevices.associateWith { getDeviceStatus( it.device ) }
-        val participantsStatus = participants.toList()
+        val participantList = participants.toList()
         val allRequiredDevicesDeployed: Boolean = devices
             .filter { it.key.requiresDeployment }
             .all { it.value is DeviceDeploymentStatus.Deployed } &&
@@ -233,12 +238,12 @@ class StudyDeployment private constructor(
                 devices.any { it.value is DeviceDeploymentStatus.Deployed }
         val anyRegistration: Boolean = deviceRegistrationHistory.any()
 
-        val devicesStatus = devices.values.toList()
+        val deviceList = devices.values.toList()
         return when {
-            isStopped -> StudyDeploymentStatus.Stopped( createdOn, id, devicesStatus, participantsStatus, startedOn, stoppedOn!! )
-            allRequiredDevicesDeployed -> StudyDeploymentStatus.Running( createdOn, id, devicesStatus, participantsStatus, startedOn!! )
-            anyRegistration -> StudyDeploymentStatus.DeployingDevices( createdOn, id, devicesStatus, participantsStatus, startedOn )
-            else -> StudyDeploymentStatus.Invited( createdOn, id, devicesStatus, participantsStatus, startedOn )
+            isStopped -> StudyDeploymentStatus.Stopped( createdOn, id, deviceList, participantList, startedOn, stoppedOn!! )
+            allRequiredDevicesDeployed -> StudyDeploymentStatus.Running( createdOn, id, deviceList, participantList, startedOn!! )
+            anyRegistration -> StudyDeploymentStatus.DeployingDevices( createdOn, id, deviceList, participantList, startedOn )
+            else -> StudyDeploymentStatus.Invited( createdOn, id, deviceList, participantList, startedOn )
         }
     }
 
@@ -319,10 +324,13 @@ class StudyDeployment private constructor(
             val otherDevice = it.key
             val areUnknownDevices = device is UnknownPolymorphicWrapper && otherDevice is UnknownPolymorphicWrapper
             val matchingUnknownDevices: Boolean by lazy { (device as UnknownPolymorphicWrapper).className == (otherDevice as UnknownPolymorphicWrapper).className }
-            isSameId && ( (!areUnknownDevices && otherDevice::class == device::class) || (areUnknownDevices && matchingUnknownDevices) ) }
-        require( isUnique ) {
+            isSameId && ( (!areUnknownDevices && otherDevice::class == device::class) || (areUnknownDevices && matchingUnknownDevices) )
+        }
+        require( isUnique )
+        {
             "The deviceId specified in the passed registration is already in use by a device of the same type. " +
-            "Cannot register the same device for different device roles within a deployment." }
+            "Cannot register the same device for different device roles within a deployment."
+        }
 
         // Add device to currently registered devices, but also store it in registration history.
         _registeredDevices[ device ] = registration
@@ -409,8 +417,11 @@ class StudyDeployment private constructor(
             .filter { it.value.sourceDeviceRoleName in relevantDeviceRoles }
         val taskControls = usedTriggers
             .map { it to protocol.getTaskControls( it.value ) }
-            .flatMap { pair -> pair.second.map {
-                TaskControl( pair.first.key, it.task.name, it.destinationDevice.roleName, it.control ) } }
+            .flatMap { pair ->
+                pair.second.map {
+                    TaskControl( pair.first.key, it.task.name, it.destinationDevice.roleName, it.control )
+                }
+            }
             .toSet()
 
         return PrimaryDeviceDeployment(
@@ -421,6 +432,7 @@ class StudyDeployment private constructor(
             tasks,
             usedTriggers,
             taskControls,
+            protocol.expectedParticipantData.toSet(),
             protocol.applicationData
         )
     }
@@ -448,7 +460,8 @@ class StudyDeployment private constructor(
         // Verify whether the specified device is ready to be deployed.
         val canDeploy = getDeviceStatus( device ).let {
             it is DeviceDeploymentStatus.Deployed ||
-            it is DeviceDeploymentStatus.NotDeployed && it.isReadyForDeployment }
+            it is DeviceDeploymentStatus.NotDeployed && it.isReadyForDeployment
+        }
         check( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
         _deployedDevices

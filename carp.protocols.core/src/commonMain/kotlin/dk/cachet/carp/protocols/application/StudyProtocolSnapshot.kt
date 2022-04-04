@@ -3,10 +3,12 @@ package dk.cachet.carp.protocols.application
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl
-import dk.cachet.carp.common.application.triggers.Trigger
-import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.triggers.TriggerConfiguration
+import dk.cachet.carp.common.application.users.AssignedTo
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
+import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -27,10 +29,16 @@ data class StudyProtocolSnapshot(
     val primaryDevices: Set<AnyPrimaryDeviceConfiguration> = emptySet(),
     val connectedDevices: Set<AnyDeviceConfiguration> = emptySet(),
     val connections: Set<DeviceConnection> = emptySet(),
-    val tasks: Set<TaskDescriptor<*>> = emptySet(),
-    val triggers: Map<Int, Trigger<*>> = emptyMap(),
+    val tasks: Set<TaskConfiguration<*>> = emptySet(),
+    val triggers: Map<Int, TriggerConfiguration<*>> = emptyMap(),
     val taskControls: Set<TaskControl> = emptySet(),
-    val expectedParticipantData: Set<ParticipantAttribute> = emptySet(),
+    val participantRoles: Set<ParticipantRole> = emptySet(),
+    /**
+     * Per device role, the participant roles to which the device is assigned.
+     * Unassigned device are assigned to "anyone".
+     */
+    val assignedDevices: Map<String, Set<String>> = emptyMap(),
+    val expectedParticipantData: Set<ExpectedParticipantData> = emptySet(),
     @Serializable( ApplicationDataSerializer::class )
     val applicationData: String? = null
 ) : Snapshot<StudyProtocol>
@@ -63,8 +71,14 @@ data class StudyProtocolSnapshot(
                 taskControls = triggers
                     .flatMap { trigger -> protocol.getTaskControls( trigger.value ).map { trigger to it } }
                     .map { (trigger, control) ->
-                        TaskControl( trigger.key, control.task.name, control.destinationDevice.roleName, control.control ) }
+                        TaskControl( trigger.key, control.task.name, control.destinationDevice.roleName, control.control )
+                    }
                     .toSet(),
+                participantRoles = protocol.participantRoles.toSet(),
+                assignedDevices = protocol.deviceAssignments
+                    .filter { it.value is AssignedTo.Roles }
+                    .map { it.key.roleName to (it.value as AssignedTo.Roles).roleNames }
+                    .toMap(),
                 expectedParticipantData = protocol.expectedParticipantData.toSet(),
                 applicationData = protocol.applicationData
             )

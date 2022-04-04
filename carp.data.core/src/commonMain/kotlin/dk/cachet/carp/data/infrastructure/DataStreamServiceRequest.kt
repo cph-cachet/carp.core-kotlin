@@ -6,9 +6,9 @@ import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.data.application.DataStreamBatch
 import dk.cachet.carp.data.application.DataStreamBatchSerializer
-import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
+import dk.cachet.carp.data.application.DataStreamsConfiguration
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
@@ -68,9 +68,9 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
 
     @Serializable
     data class RemoveDataStreams( val studyDeploymentIds: Set<UUID> ) :
-        DataStreamServiceRequest<Boolean>()
+        DataStreamServiceRequest<Set<UUID>>()
     {
-        override fun getResponseSerializer() = serializer<Boolean>()
+        override fun getResponseSerializer() = serializer<Set<UUID>>()
         override suspend fun invokeOn( service: DataStreamService ) = service.removeDataStreams( studyDeploymentIds )
     }
 }

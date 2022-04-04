@@ -11,9 +11,11 @@ declare module 'carp.core-kotlin-carp.protocols.core'
     import UUID = cdk.cachet.carp.common.application.UUID
     import DeviceConfiguration = cdk.cachet.carp.common.application.devices.DeviceConfiguration
     import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
-    import TaskDescriptor = cdk.cachet.carp.common.application.tasks.TaskDescriptor
+    import ParticipantRole = cdk.cachet.carp.common.application.users.ParticipantRole
+    import ExpectedParticipantData = cdk.cachet.carp.common.application.users.ExpectedParticipantData
+    import TaskConfiguration = cdk.cachet.carp.common.application.tasks.TaskConfiguration
     import TaskControl = cdk.cachet.carp.common.application.triggers.TaskControl
-    import Trigger = cdk.cachet.carp.common.application.triggers.Trigger
+    import TriggerConfiguration = cdk.cachet.carp.common.application.triggers.TriggerConfiguration
     import ApplicationServiceRequest = cdk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
     import ApiVersion = cdk.cachet.carp.common.application.services.ApiVersion
 
@@ -45,10 +47,12 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             readonly name: string
             readonly description: string
             readonly primaryDevices: HashSet<DeviceConfiguration>
-            readonly tasks: HashSet<TaskDescriptor>
-            readonly triggers: HashMap<Number, Trigger>
+            readonly tasks: HashSet<TaskConfiguration>
+            readonly triggers: HashMap<number, TriggerConfiguration>
             readonly taskControls: Set<TaskControl>
-            readonly expectedParticipantData: HashSet<ParticipantAttribute>
+            readonly participantRoles: Set<ParticipantRole>
+            readonly assignedDevices: HashMap<string, Set<string>>
+            readonly expectedParticipantData: HashSet<ExpectedParticipantData>
         }
         interface StudyProtocolSnapshot$Companion { serializer(): any }
     }
@@ -78,7 +82,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             }
             class UpdateParticipantDataConfiguration extends ProtocolServiceRequest
             {
-                constructor( protocolId: UUID, versionTag: string, expectedParticipantData: HashSet<ParticipantAttribute> )
+                constructor( protocolId: UUID, versionTag: string, expectedParticipantData: HashSet<ExpectedParticipantData> )
             }
             class GetBy extends ProtocolServiceRequest
             {

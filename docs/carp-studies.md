@@ -42,6 +42,7 @@ Allows creating and managing studies.
 | `getStudiesOverview` | Get status for all studies created by the specified owner. | study owner: `owner.id` | |
 | `setInvitation` | Specify an invitation, shared with participants once they are invited to a study. | manage study: `studyId` | |
 | `setProtocol` | Specify the study protocol to use for a study. | manage study: `studyId` | |
+| `removeProtocol` | Remove the currently set study protocol. | manage study: `studyId` | |
 | `goLive` | Lock in the current study protocol so that a study may be deployed to participants. | manage study: `studyId` | |
 | `remove` | Remove a study and all related data. | manage study: `studyId` | |
 

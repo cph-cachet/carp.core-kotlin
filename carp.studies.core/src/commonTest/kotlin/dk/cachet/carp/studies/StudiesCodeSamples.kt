@@ -2,9 +2,9 @@ package dk.cachet.carp.studies
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService
@@ -18,12 +18,12 @@ import dk.cachet.carp.studies.application.RecruitmentServiceHost
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceHost
 import dk.cachet.carp.studies.application.StudyStatus
-import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
 import dk.cachet.carp.studies.infrastructure.InMemoryStudyRepository
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -31,7 +31,7 @@ class StudiesCodeSamples
 {
     @Test
     @Suppress( "UnusedPrivateMember", "UNUSED_VARIABLE" )
-    fun readme() = runSuspendTest {
+    fun readme() = runTest {
         val (studyService, recruitmentService) = createEndpoints()
 
         // Create a new study.
@@ -41,7 +41,6 @@ class StudiesCodeSamples
 
         // Let the study use the protocol from the 'carp.protocols' example above.
         val trackPatientStudy: StudyProtocol = createExampleProtocol()
-        val patientPhone: AnyPrimaryDeviceConfiguration = trackPatientStudy.primaryDevices.first() // "Patient's phone"
         val protocolSnapshot: StudyProtocolSnapshot = trackPatientStudy.getSnapshot()
         studyStatus = studyService.setProtocol( studyId, protocolSnapshot )
 
@@ -58,8 +57,8 @@ class StudiesCodeSamples
         // Once the study is live, you can 'deploy' it to participant's devices. They will be invited.
         if ( studyStatus.canDeployToParticipants )
         {
-            // Create a 'participant group' with a single participant, using the "Patient's phone".
-            val participation = AssignParticipantDevices( participant.id, setOf( patientPhone.roleName ) )
+            // Create a 'participant group' with a single participant; `AssignedTo.All` assigns the "Patient's phone".
+            val participation = AssignedParticipantRoles( participant.id, AssignedTo.All )
             val participantGroup = setOf( participation )
 
             val groupStatus: ParticipantGroupStatus = recruitmentService.inviteNewParticipantGroup( studyId, participantGroup )
@@ -75,17 +74,20 @@ class StudiesCodeSamples
         val studyRepo = InMemoryStudyRepository()
         val studyService = StudyServiceHost(
             studyRepo,
-            eventBus.createApplicationServiceAdapter( StudyService::class ) )
+            eventBus.createApplicationServiceAdapter( StudyService::class )
+        )
 
         val deploymentService = DeploymentServiceHost(
             InMemoryDeploymentRepository(),
             InMemoryDataStreamService(),
-            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
+            eventBus.createApplicationServiceAdapter( DeploymentService::class )
+        )
 
         val recruitmentService = RecruitmentServiceHost(
             InMemoryParticipantRepository(),
             deploymentService,
-            eventBus.createApplicationServiceAdapter( RecruitmentService::class ) )
+            eventBus.createApplicationServiceAdapter( RecruitmentService::class )
+        )
 
         return Pair( studyService, recruitmentService )
     }

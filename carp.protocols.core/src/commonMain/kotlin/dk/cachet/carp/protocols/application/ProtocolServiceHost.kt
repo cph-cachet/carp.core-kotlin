@@ -1,6 +1,7 @@
 package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolRepository
@@ -54,13 +55,13 @@ class ProtocolServiceHost(
      *
      * @throws IllegalArgumentException when:
      *   - no protocol with [protocolId] is found
-     *   - [expectedParticipantData] contains two or more attributes with the same input type.
+     *   - [expectedParticipantData] contains differing [ParticipantAttribute]s with the same input data type
      * @return The updated [StudyProtocolSnapshot].
      */
     override suspend fun updateParticipantDataConfiguration(
         protocolId: UUID,
         versionTag: String,
-        expectedParticipantData: Set<ParticipantAttribute>
+        expectedParticipantData: Set<ExpectedParticipantData>
     ): StudyProtocolSnapshot
     {
         val protocol = repository.getByOrThrow( protocolId, versionTag )

@@ -3,7 +3,6 @@ package dk.cachet.carp.common.domain
 import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
 import kotlinx.serialization.Polymorphic
-import kotlinx.serialization.Serializable
 
 
 /**
@@ -11,8 +10,7 @@ import kotlinx.serialization.Serializable
  *
  * Domain events need to be immutable.
  */
-@Serializable
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
-abstract class DomainEvent
+interface DomainEvent

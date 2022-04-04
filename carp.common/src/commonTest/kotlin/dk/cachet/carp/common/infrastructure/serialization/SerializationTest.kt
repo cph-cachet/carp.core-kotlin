@@ -2,6 +2,7 @@
 
 package dk.cachet.carp.common.infrastructure.serialization
 
+import dk.cachet.carp.common.application.commonInstances
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.elements.InputElement
@@ -11,10 +12,8 @@ import dk.cachet.carp.common.application.sampling.BatteryAwareSamplingConfigurat
 import dk.cachet.carp.common.application.sampling.Granularity
 import dk.cachet.carp.common.application.sampling.GranularitySamplingConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.commonInstances
 import dk.cachet.carp.common.infrastructure.test.*
 import dk.cachet.carp.test.serialization.ConcreteTypesSerializationTest
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -27,19 +26,18 @@ val testJson = createDefaultJSON( STUBS_SERIAL_MODULE )
 
 val unknownInstances = listOf(
     // `infrastructure` namespace.
-    unknown( StubData() ) { CustomData( it.first, it.second, it.third ) },
+    unknown( StubDataPoint() ) { CustomData( it.first, it.second, it.third ) },
     unknown( StubDeviceConfiguration() ) { CustomDeviceConfiguration( it.first, it.second, it.third ) },
     unknown( StubPrimaryDeviceConfiguration() ) { CustomPrimaryDeviceConfiguration( it.first, it.second, it.third ) },
     unknown( DefaultDeviceRegistration() ) { CustomDeviceRegistration( it.first, it.second, it.third ) },
     unknown( StubSamplingConfiguration( "" ) ) { CustomSamplingConfiguration( it.first, it.second, it.third ) },
-    unknown( StubTaskDescriptor() ) { CustomTaskDescriptor( it.first, it.second, it.third ) },
-    unknown( StubTrigger( "source" ) ) { CustomTrigger( it.first, it.second, it.third ) },
+    unknown( StubTaskConfiguration() ) { CustomTaskConfiguration( it.first, it.second, it.third ) },
+    unknown( StubTriggerConfiguration( "source" ) ) { CustomTriggerConfiguration( it.first, it.second, it.third ) },
 )
 
 /**
  * Convert the specified [stub] to the corresponding [UnknownPolymorphicWrapper] as if it were unknown at runtime.
  */
-@OptIn( ExperimentalSerializationApi::class )
 inline fun <reified Base : Any> unknown( stub: Base, constructor: (Triple<String, String, Json>) -> Base ): Base
 {
     val originalObject = testJson.encodeToJsonElement( PolymorphicSerializer( Base::class ), stub ) as JsonObject

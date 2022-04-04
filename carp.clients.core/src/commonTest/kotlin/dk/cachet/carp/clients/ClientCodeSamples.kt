@@ -1,7 +1,7 @@
 package dk.cachet.carp.clients
 
-import dk.cachet.carp.clients.domain.SmartphoneClient
 import dk.cachet.carp.clients.application.study.StudyStatus
+import dk.cachet.carp.clients.domain.SmartphoneClient
 import dk.cachet.carp.clients.domain.createDataCollectorFactory
 import dk.cachet.carp.clients.domain.createParticipantInvitation
 import dk.cachet.carp.clients.domain.data.DataListener
@@ -26,7 +26,7 @@ import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -34,7 +34,7 @@ class ClientCodeSamples
 {
     @Test
     @Suppress( "UnusedPrivateMember", "UNUSED_VARIABLE" )
-    fun readme() = runSuspendTest {
+    fun readme() = runTest {
         val (participationService, deploymentService) = createEndpoints()
         val dataCollectorFactory = createDataCollectorFactory()
 
@@ -89,7 +89,7 @@ class ClientCodeSamples
 
         // Create deployment for the example protocol.
         val protocol = createExampleProtocol()
-        val invitation = createParticipantInvitation( protocol, accountIdentity )
+        val invitation = createParticipantInvitation( accountIdentity )
         deploymentService.createStudyDeployment( UUID.randomUUID(), protocol.getSnapshot(), listOf( invitation ) )
 
         return Pair( participationService, deploymentService )
@@ -108,7 +108,7 @@ class ClientCodeSamples
         val phone = Smartphone( "Patient's phone" )
         protocol.addPrimaryDevice( phone )
 
-        // This is not in the protocols readme, but is needed for the connected device example.
+        // This is not in the "protocols" readme, but is needed for the connected device example.
         val connected = StubDeviceConfiguration( "External sensor" )
         protocol.addConnectedDevice( connected, phone )
 

@@ -14,7 +14,7 @@ import dk.cachet.carp.studies.application.StudyStatus
 
 /**
  * A proxy for a study [service] which notifies of incoming requests and responses through [log]
- * and keeps a history of requests in [loggedRequests] and published events in [loggedEvents].
+ * and keeps a history of requests and published events in [loggedRequests].
  */
 class StudyServiceLoggingProxy(
     service: StudyService,
@@ -39,7 +39,7 @@ class StudyServiceLoggingProxy(
     ): StudyStatus =
         log( StudyServiceRequest.CreateStudy( ownerId, name, description, invitation ) )
 
-    override suspend fun setInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus =
+    override suspend fun setInternalDescription( studyId: UUID, name: String, description: String? ): StudyStatus =
         log( StudyServiceRequest.SetInternalDescription( studyId, name, description ) )
 
     override suspend fun getStudyDetails( studyId: UUID ): StudyDetails =
@@ -56,6 +56,9 @@ class StudyServiceLoggingProxy(
 
     override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus =
         log( StudyServiceRequest.SetProtocol( studyId, protocol ) )
+
+    override suspend fun removeProtocol( studyId: UUID ): StudyStatus =
+        log( StudyServiceRequest.RemoveProtocol( studyId ) )
 
     override suspend fun goLive( studyId: UUID ): StudyStatus =
         log( StudyServiceRequest.GoLive( studyId ) )

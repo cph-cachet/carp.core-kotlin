@@ -1,12 +1,13 @@
 package dk.cachet.carp.deployments.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
-import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import dk.cachet.carp.common.infrastructure.serialization.CLASS_DISCRIMINATOR
 import dk.cachet.carp.common.infrastructure.serialization.JSON
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
+import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
@@ -71,7 +72,7 @@ class StudyDeploymentStatusTest
             listOf(
                 ParticipantInvitation(
                     UUID.randomUUID(),
-                    setOf( primary.roleName ),
+                    AssignedTo.All,
                     UsernameAccountIdentity( "Test" ),
                     StudyInvitation( "Test" )
                 )

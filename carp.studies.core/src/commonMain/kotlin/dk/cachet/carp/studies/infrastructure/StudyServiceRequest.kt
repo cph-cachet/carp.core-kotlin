@@ -6,8 +6,8 @@ import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyDetails
+import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyStatus
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Required
@@ -41,7 +41,7 @@ sealed class StudyServiceRequest<out TReturn> : ApplicationServiceRequest<StudyS
     }
 
     @Serializable
-    data class SetInternalDescription( val studyId: UUID, val name: String, val description: String ) :
+    data class SetInternalDescription( val studyId: UUID, val name: String, val description: String? ) :
         StudyServiceRequest<StudyStatus>()
     {
         override fun getResponseSerializer() = serializer<StudyStatus>()
@@ -83,6 +83,13 @@ sealed class StudyServiceRequest<out TReturn> : ApplicationServiceRequest<StudyS
     {
         override fun getResponseSerializer() = serializer<StudyStatus>()
         override suspend fun invokeOn( service: StudyService ) = service.setProtocol( studyId, protocol )
+    }
+
+    @Serializable
+    data class RemoveProtocol( val studyId: UUID ) : StudyServiceRequest<StudyStatus>()
+    {
+        override fun getResponseSerializer() = serializer<StudyStatus>()
+        override suspend fun invokeOn( service: StudyService ) = service.removeProtocol( studyId )
     }
 
     @Serializable

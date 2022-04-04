@@ -54,11 +54,15 @@ sealed class ParticipationServiceRequest<out TReturn> : ApplicationServiceReques
     }
 
     @Serializable
-    data class SetParticipantData( val studyDeploymentId: UUID, val data: Map<InputDataType, Data?> ) :
+    data class SetParticipantData(
+        val studyDeploymentId: UUID,
+        val data: Map<InputDataType, Data?>,
+        val inputByParticipantRole: String? = null
+    ) :
         ParticipationServiceRequest<ParticipantData>()
     {
         override fun getResponseSerializer() = serializer<ParticipantData>()
         override suspend fun invokeOn( service: ParticipationService ) =
-            service.setParticipantData( studyDeploymentId, data )
+            service.setParticipantData( studyDeploymentId, data, inputByParticipantRole )
     }
 }

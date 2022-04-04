@@ -5,7 +5,7 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
-import dk.cachet.carp.common.application.tasks.TaskDescriptorList
+import dk.cachet.carp.common.application.tasks.TaskConfigurationList
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -18,7 +18,7 @@ data class CustomProtocolDevice( override val roleName: String, override val isO
     PrimaryDeviceConfiguration<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {
     object Sensors : DataTypeSamplingSchemeMap()
-    object Tasks : TaskDescriptorList()
+    object Tasks : TaskConfigurationList()
 
 
     // Measures and data types are defined in the custom `CustomProtocolTask.studyProtocol` and thus not managed by core.

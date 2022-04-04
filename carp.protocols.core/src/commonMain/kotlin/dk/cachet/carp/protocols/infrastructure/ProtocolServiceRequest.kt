@@ -2,7 +2,7 @@ package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.ApiVersion
-import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.protocols.application.ProtocolService
@@ -47,7 +47,7 @@ sealed class ProtocolServiceRequest<out TReturn> : ApplicationServiceRequest<Pro
     data class UpdateParticipantDataConfiguration(
         val protocolId: UUID,
         val versionTag: String,
-        val expectedParticipantData: Set<ParticipantAttribute>
+        val expectedParticipantData: Set<ExpectedParticipantData>
     ) : ProtocolServiceRequest<StudyProtocolSnapshot>()
     {
         override fun getResponseSerializer() = serializer<StudyProtocolSnapshot>()

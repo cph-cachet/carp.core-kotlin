@@ -5,21 +5,25 @@ package dk.cachet.carp.deployments.domain
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.devices.AltBeaconDeviceRegistration
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.application.triggers.TaskControl
+import dk.cachet.carp.common.application.users.AssignedTo
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
+import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.CustomPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
@@ -69,7 +73,7 @@ class StudyDeploymentTest
 
         val incorrectInvitation = ParticipantInvitation(
             UUID.randomUUID(),
-            setOf( "Invalid" ),
+            AssignedTo.Roles( setOf( "Invalid" ) ),
             UsernameAccountIdentity( "Test" ),
             StudyInvitation( "Test" )
         )
@@ -105,15 +109,15 @@ class StudyDeploymentTest
             addConnectedDevice( connectedDevice, primaryDevice )
 
             val trigger = addTrigger( primaryDevice.atStartOfStudy() )
-            val stubMeasure = Measure.DataStream( STUB_DATA_TYPE )
-            val task = StubTaskDescriptor(
+            val stubMeasure = Measure.DataStream( STUB_DATA_POINT_TYPE )
+            val task = StubTaskConfiguration(
                 "Task",
                 listOf( stubMeasure, trigger.measure() ),
                 "Description"
 
             )
             addTaskControl( trigger.start( task, primaryDevice ) )
-            val connectedDeviceTask = StubTaskDescriptor( "Connected task", listOf( stubMeasure ) )
+            val connectedDeviceTask = StubTaskConfiguration( "Connected task", listOf( stubMeasure ) )
             addTaskControl( trigger.start( connectedDeviceTask, connectedDevice ) )
         }
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
@@ -121,10 +125,10 @@ class StudyDeploymentTest
         val dataStreams = deployment.requiredDataStreams
         assertEquals( deployment.id, dataStreams.studyDeploymentId )
         val expectedPrimaryDeviceTypes =
-            listOf( STUB_DATA_TYPE, CarpDataTypes.TRIGGERED_TASK.type, CarpDataTypes.COMPLETED_TASK.type )
+            listOf( STUB_DATA_POINT_TYPE, CarpDataTypes.TRIGGERED_TASK.type, CarpDataTypes.COMPLETED_TASK.type )
                 .map { DataStreamsConfiguration.ExpectedDataStream( primaryDevice.roleName, it ) }
         val expectedConnectedDeviceType =
-            listOf( STUB_DATA_TYPE, CarpDataTypes.COMPLETED_TASK.type )
+            listOf( STUB_DATA_POINT_TYPE, CarpDataTypes.COMPLETED_TASK.type )
                 .map { DataStreamsConfiguration.ExpectedDataStream( connectedDevice.roleName, it ) }
         assertEquals(
             ( expectedPrimaryDeviceTypes + expectedConnectedDeviceType ).toSet(),
@@ -366,19 +370,24 @@ class StudyDeploymentTest
         assertEquals( deployment.protocolSnapshot, fromSnapshot.protocolSnapshot )
         assertEquals(
             deployment.registrableDevices.count(),
-            deployment.registrableDevices.intersect( fromSnapshot.registrableDevices ).count() )
+            deployment.registrableDevices.intersect( fromSnapshot.registrableDevices ).count()
+        )
         assertEquals(
             deployment.registeredDevices.count(),
-            deployment.registeredDevices.entries.intersect( fromSnapshot.registeredDevices.entries ).count() )
+            deployment.registeredDevices.entries.intersect( fromSnapshot.registeredDevices.entries ).count()
+        )
         assertEquals(
             deployment.deviceRegistrationHistory.count(),
-            deployment.deviceRegistrationHistory.entries.intersect( fromSnapshot.deviceRegistrationHistory.entries ).count() )
+            deployment.deviceRegistrationHistory.entries.intersect( fromSnapshot.deviceRegistrationHistory.entries ).count()
+        )
         assertEquals(
             deployment.deployedDevices.count(),
-            deployment.deployedDevices.intersect( fromSnapshot.deployedDevices ).count() )
+            deployment.deployedDevices.intersect( fromSnapshot.deployedDevices ).count()
+        )
         assertEquals(
             deployment.invalidatedDeployedDevices.count(),
-            deployment.invalidatedDeployedDevices.intersect( fromSnapshot.invalidatedDeployedDevices ).count() )
+            deployment.invalidatedDeployedDevices.intersect( fromSnapshot.invalidatedDeployedDevices ).count()
+        )
         assertEquals( deployment.startedOn, fromSnapshot.startedOn )
         assertEquals( deployment.isStopped, fromSnapshot.isStopped )
         assertEquals( 0, fromSnapshot.consumeEvents().size )
@@ -409,17 +418,19 @@ class StudyDeploymentTest
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
         val invitation = ParticipantInvitation(
             UUID.randomUUID(),
-            setOf( deviceRoleName ),
+            AssignedTo.All,
             UsernameAccountIdentity( "Test" ),
             StudyInvitation( "Test " )
         )
         val deployment = StudyDeployment.fromInvitations( protocol.getSnapshot(), listOf( invitation ) )
 
-        val status = deployment.getStatus()
-        assertEquals(
-            listOf( ParticipantStatus( invitation.participantId, invitation.assignedPrimaryDeviceRoleNames ) ),
-            status.participantsStatus
+        val expectedParticipantStatus = ParticipantStatus(
+            invitation.participantId,
+            AssignedTo.All,
+            setOf( deviceRoleName )
         )
+        val status = deployment.getStatus()
+        assertEquals( listOf( expectedParticipantStatus ), status.participantStatusList )
     }
 
     @Test
@@ -433,9 +444,9 @@ class StudyDeploymentTest
         // Start of deployment, no devices registered.
         val status: StudyDeploymentStatus = deployment.getStatus()
         assertEquals( deployment.id, status.studyDeploymentId )
-        assertEquals( 2, status.devicesStatus.count() )
-        assertTrue { status.devicesStatus.any { it.device == primary } }
-        assertTrue { status.devicesStatus.any { it.device == connected } }
+        assertEquals( 2, status.deviceStatusList.count() )
+        assertTrue { status.deviceStatusList.any { it.device == primary } }
+        assertTrue { status.deviceStatusList.any { it.device == connected } }
         assertTrue( status is StudyDeploymentStatus.Invited )
         val toRegister = status.getRemainingDevicesToRegister()
         val expectedToRegister = setOf<AnyDeviceConfiguration>( primary, connected )
@@ -543,10 +554,14 @@ class StudyDeploymentTest
         protocol.applicationData = "some data"
         val primary = protocol.primaryDevices.first { it.roleName == "Primary" }
         val connected = protocol.devices.first { it.roleName == "Connected" }
-        val primaryTask = StubTaskDescriptor( "Primary task" )
-        val connectedTask = StubTaskDescriptor( "Connected task" )
+        val primaryTask = StubTaskConfiguration( "Primary task" )
+        val connectedTask = StubTaskConfiguration( "Connected task" )
         protocol.addTaskControl( primary.atStartOfStudy().start( primaryTask, primary ) )
         protocol.addTaskControl( primary.atStartOfStudy().start( connectedTask, connected ) )
+        val expectedData = ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "namespace", "type" ) )
+        )
+        protocol.addExpectedParticipantData( expectedData )
         val deployment = studyDeploymentFor( protocol )
         val registration = DefaultDeviceRegistration()
         deployment.registerDevice( primary, registration )
@@ -560,6 +575,7 @@ class StudyDeploymentTest
         assertEquals( registration, deviceDeployment.registration )
         assertEquals( protocol.getConnectedDevices( primary ).toSet(), deviceDeployment.connectedDevices )
         assertEquals( 1, deviceDeployment.connectedDeviceRegistrations.count() )
+        assertEquals( setOf( expectedData ), deviceDeployment.expectedParticipantData )
         assertEquals( protocol.applicationData, deviceDeployment.applicationData )
 
         // Device deployment lists both tasks, even if one is destined for the connected device.
@@ -614,8 +630,8 @@ class StudyDeploymentTest
             addPrimaryDevice( targetPrimary )
         }
         val measure = Measure.DataStream( DataType( "namespace", "type" ) )
-        val task = StubTaskDescriptor( "Stub task", listOf( measure ) )
-        protocol.addTaskControl( StubTrigger( sourcePrimary ).start( task, targetPrimary ) )
+        val task = StubTaskConfiguration( "Stub task", listOf( measure ) )
+        protocol.addTaskControl( StubTriggerConfiguration( sourcePrimary ).start( task, targetPrimary ) )
         val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( sourcePrimary, DefaultDeviceRegistration() )
         deployment.registerDevice( targetPrimary, DefaultDeviceRegistration() )
@@ -701,7 +717,8 @@ class StudyDeploymentTest
         assertTrue( deployment.deployedDevices.contains( device ) )
         assertEquals(
             StudyDeployment.Event.DeviceDeployed( device ),
-            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().singleOrNull() )
+            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().singleOrNull()
+        )
     }
 
     @Test
@@ -728,7 +745,8 @@ class StudyDeploymentTest
         assertNotNull( deployment.startedOn )
         assertEquals(
             deployment.startedOn,
-            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Started>().first().startedOn )
+            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Started>().first().startedOn
+        )
     }
 
     @Test

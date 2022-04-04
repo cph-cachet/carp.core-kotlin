@@ -2,7 +2,7 @@ package dk.cachet.carp.protocols.domain.deployment
 
 import dk.cachet.carp.common.application.tasks.BackgroundTask
 import dk.cachet.carp.common.application.tasks.Measure
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlin.test.*
 
@@ -16,7 +16,7 @@ class BackgroundTaskWithNoMeasuresWarningTest
     fun isIssuePresent_false_for_task_with_measures()
     {
         val protocol = createEmptyProtocol()
-        val taskWithMeasures = BackgroundTask( "Task", listOf( Measure.DataStream( STUB_DATA_TYPE ) ) )
+        val taskWithMeasures = BackgroundTask( "Task", listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) ) )
         protocol.addTask( taskWithMeasures )
 
         val warning = BackgroundTaskWithNoMeasuresWarning()

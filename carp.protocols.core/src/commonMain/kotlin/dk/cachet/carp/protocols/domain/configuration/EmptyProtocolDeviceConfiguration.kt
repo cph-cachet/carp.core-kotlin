@@ -2,6 +2,7 @@ package dk.cachet.carp.protocols.domain.configuration
 
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import dk.cachet.carp.common.domain.ExtractUniqueKeyMap
 
 
@@ -16,7 +17,7 @@ internal class EmptyProtocolDeviceConfiguration : AbstractMap<String, AnyDeviceC
     private val _devices: ExtractUniqueKeyMap<String, AnyDeviceConfiguration> =
         ExtractUniqueKeyMap( { device -> device.roleName } )
         {
-            key -> IllegalArgumentException( "Role name \"$key\" is not unique within device configuration." )
+            IllegalArgumentException( "Role name \"$it\" is not unique within device configuration." )
         }
 
     override val entries: Set<Map.Entry<String, AnyDeviceConfiguration>>

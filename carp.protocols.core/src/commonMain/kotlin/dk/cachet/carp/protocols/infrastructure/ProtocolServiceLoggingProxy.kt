@@ -2,7 +2,7 @@ package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.EventBus
-import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.infrastructure.services.EventBusLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
@@ -13,7 +13,7 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
 /**
  * A proxy for a protocol [service] which notifies of incoming requests and responses through [log]
- * and keeps a history of requests in [loggedRequests] and published events in [loggedEvents].
+ * and keeps a history of requests and published events in [loggedRequests].
  */
 class ProtocolServiceLoggingProxy(
     service: ProtocolService,
@@ -39,7 +39,7 @@ class ProtocolServiceLoggingProxy(
     override suspend fun updateParticipantDataConfiguration(
         protocolId: UUID,
         versionTag: String,
-        expectedParticipantData: Set<ParticipantAttribute>
+        expectedParticipantData: Set<ExpectedParticipantData>
     ): StudyProtocolSnapshot = log(
         ProtocolServiceRequest.UpdateParticipantDataConfiguration( protocolId, versionTag, expectedParticipantData )
     )

@@ -11,6 +11,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
     import EmailAddress = cdk.cachet.carp.common.application.EmailAddress
     import UUID = cdk.cachet.carp.common.application.UUID
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
+    import AssignedTo = cdk.cachet.carp.common.application.users.AssignedTo
     import ApplicationServiceRequest = cdk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
     import ApiVersion = cdk.cachet.carp.common.application.services.ApiVersion
 
@@ -50,6 +51,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             readonly studyId: UUID
             readonly name: string
             readonly createdOn: Instant
+            readonly studyProtocolId: UUID | null
             readonly canSetInvitation: boolean
             readonly canSetStudyProtocol: boolean
             readonly canDeployToParticipants: boolean
@@ -63,7 +65,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
             class Configuring extends StudyStatus
             {
                 constructor(
-                    studyId: UUID, name: string, createdOn: Instant,
+                    studyId: UUID,
+                    name: string,
+                    createdOn: Instant,
+                    studyProtocolId: UUID | null,
                     canSetInvitation: boolean,
                     canSetStudyProtocol: boolean,
                     canDeployToParticipants: boolean,
@@ -74,7 +79,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
             class Live extends StudyStatus
             {
                 constructor(
-                    studyId: UUID, name: string, createdOn: Instant,
+                    studyId: UUID,
+                    name: string,
+                    createdOn: Instant,
+                    studyProtocolId: UUID | null,
                     canSetInvitation: boolean,
                     canSetStudyProtocol: boolean,
                     canDeployToParticipants: boolean )
@@ -85,18 +93,18 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
     namespace dk.cachet.carp.studies.application.users
     {
-        class AssignParticipantDevices
+        class AssignedParticipantRoles
         {
-            constructor( participantId: UUID, primaryDeviceRoleNames: HashSet<string> )
+            constructor( participantId: UUID, assignedRoles: AssignedTo )
 
-            static get Companion(): AssignParticipantDevices$Companion
+            static get Companion(): AssignedParticipantRoles$Companion
 
             readonly participantId: UUID
-            readonly primaryDeviceRoleNames: HashSet<string>
+            readonly assignedRoles: AssignedTo
         }
-        function participantIds_ttprz$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<UUID>
-        function deviceRoles_ttprz$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<string>
-        interface AssignParticipantDevices$Companion { serializer(): any }
+        function participantIds_skpkn2$( assignedGroup: ArrayList<AssignedParticipantRoles> ): HashSet<UUID>
+        function participantRoles_skpkn2$( assignedGroup: ArrayList<AssignedParticipantRoles> ): HashSet<string>
+        interface AssignedParticipantRoles$Companion { serializer(): any }
 
 
         class Participant
@@ -169,7 +177,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
     namespace dk.cachet.carp.studies.infrastructure
     {
-        import AssignParticipantDevices = dk.cachet.carp.studies.application.users.AssignParticipantDevices
+        import AssignedParticipantRoles = dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 
 
         abstract class StudyServiceRequest implements ApplicationServiceRequest
@@ -209,6 +217,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
             {
                 constructor( studyId: UUID, protocol: StudyProtocolSnapshot )
             }
+            class RemoveProtocol extends StudyServiceRequest
+            {
+                constructor( studyId: UUID )
+            }
             class GoLive extends StudyServiceRequest
             {
                 constructor( studyId: UUID )
@@ -243,7 +255,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             }
             class InviteNewParticipantGroup extends RecruitmentServiceRequest
             {
-                constructor( studyId: UUID, group: HashSet<AssignParticipantDevices> )
+                constructor( studyId: UUID, group: HashSet<AssignedParticipantRoles> )
             }
             class GetParticipantGroupStatusList extends RecruitmentServiceRequest
             {

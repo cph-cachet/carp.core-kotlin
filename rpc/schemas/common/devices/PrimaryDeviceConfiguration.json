@@ -9,7 +9,8 @@
   ],
   "$defs": {
     "PrimaryDeviceConfiguration": {
-      "allOf": [ { "$ref": "DeviceConfiguration.json#/$defs/DeviceConfiguration" } ],
+      "$anchor": "PrimaryDeviceConfiguration",
+      "allOf": [ { "$ref": "DeviceConfiguration.json#DeviceConfiguration" } ],
       "properties": {
         "isPrimaryDevice": { "const": true }
       },

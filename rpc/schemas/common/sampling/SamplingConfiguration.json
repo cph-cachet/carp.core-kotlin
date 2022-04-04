@@ -21,6 +21,7 @@
   ],
   "$defs": {
     "SamplingConfiguration": {
+      "$anchor": "SamplingConfiguration",
       "type": "object",
       "properties": {
         "__type": true

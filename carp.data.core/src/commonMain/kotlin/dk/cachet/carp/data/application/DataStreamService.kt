@@ -51,7 +51,9 @@ interface DataStreamService : ApplicationService<DataStreamService, DataStreamSe
      * In case no data for [dataStream] is stored in this repository, or is available for the specified range,
      * an empty [DataStreamBatch] is returned.
      *
-     * @throws IllegalArgumentException when [dataStream] has never been opened.
+     * @throws IllegalArgumentException if:
+     *  - [dataStream] has never been opened
+     *  - [fromSequenceId] is negative or [toSequenceIdInclusive] is smaller than [fromSequenceId]
      */
     suspend fun getDataStream(
         dataStream: DataStreamId,
@@ -69,7 +71,8 @@ interface DataStreamService : ApplicationService<DataStreamService, DataStreamSe
     /**
      * Close data streams and remove all data for each of the [studyDeploymentIds].
      *
-     * @return True when any data streams have been removed, or false when there were no data streams to remove.
+     * @return The IDs of the study deployments for which data streams were configured.
+     * IDs for which no study deployment exists are ignored.
      */
-    suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Boolean
+    suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Set<UUID>
 }

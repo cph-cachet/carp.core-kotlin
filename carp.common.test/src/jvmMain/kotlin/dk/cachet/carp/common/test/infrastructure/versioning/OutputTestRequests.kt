@@ -6,10 +6,10 @@ import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingPr
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import java.io.File
 import org.apache.commons.io.FileUtils
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInfo
+import java.io.File
 import kotlin.reflect.KClass
 import kotlin.test.*
 
@@ -27,7 +27,7 @@ open class OutputTestRequests<TService : ApplicationService<TService, *>>( appli
 {
     @Suppress( "UNCHECKED_CAST" )
     protected var loggedService: ApplicationServiceLoggingProxy<TService, *>? = null
-    private val applicationServiceInfo = ApplicationServiceInfo( applicationServiceKlass.java )
+    private val applicationServiceInfo = ApplicationServiceInfo.of( applicationServiceKlass.java )
 
     companion object
     {

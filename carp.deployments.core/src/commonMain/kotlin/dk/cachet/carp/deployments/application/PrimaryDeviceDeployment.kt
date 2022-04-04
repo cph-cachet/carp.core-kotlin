@@ -6,9 +6,11 @@ import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl
-import dk.cachet.carp.common.application.triggers.Trigger
+import dk.cachet.carp.common.application.triggers.TriggerConfiguration
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
+import dk.cachet.carp.common.application.users.hasNoConflicts
 import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -39,15 +41,19 @@ data class PrimaryDeviceDeployment(
     /**
      * All tasks which should be able to be executed on this or connected devices.
      */
-    val tasks: Set<TaskDescriptor<*>> = emptySet(),
+    val tasks: Set<TaskConfiguration<*>> = emptySet(),
     /**
      * All triggers originating from this device and connected devices, stored per assigned id unique within the study protocol.
      */
-    val triggers: Map<Int, Trigger<*>> = emptyMap(),
+    val triggers: Map<Int, TriggerConfiguration<*>> = emptyMap(),
     /**
      * Determines which tasks need to be started or stopped when the conditions defined by [triggers] are met.
      */
     val taskControls: Set<TaskControl> = emptySet(),
+    /**
+     * Expected data about participants in the deployment to be input by users.
+     */
+    val expectedParticipantData: Set<ExpectedParticipantData> = emptySet(),
     /**
      * Application-specific data to be stored as part of a study deployment.
      *
@@ -58,6 +64,9 @@ data class PrimaryDeviceDeployment(
     val applicationData: String? = null
 )
 {
+    init { expectedParticipantData.hasNoConflicts( exceptionOnConflict = true ) }
+
+
     /**
      * Runtime info of a primary device or connected device (determined by [isConnectedDevice]) in a study deployment.
      */
@@ -77,7 +86,7 @@ data class PrimaryDeviceDeployment(
          * The set of tasks which may be sent to this device over the course of the deployment,
          * or an empty set in case there are none.
          */
-        val tasks: Set<TaskDescriptor<*>>
+        val tasks: Set<TaskConfiguration<*>>
     )
 
 
@@ -130,7 +139,7 @@ data class PrimaryDeviceDeployment(
         }
     }
 
-    private fun getDeviceTasks( device: AnyDeviceConfiguration ): Set<TaskDescriptor<*>> = taskControls
+    private fun getDeviceTasks( device: AnyDeviceConfiguration ): Set<TaskConfiguration<*>> = taskControls
         .filter { it.destinationDeviceRoleName == device.roleName }
         .map { triggered -> tasks.first { it.name == triggered.taskName } }
         .toSet()

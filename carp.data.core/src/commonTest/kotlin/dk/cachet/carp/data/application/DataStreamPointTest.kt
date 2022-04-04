@@ -1,7 +1,8 @@
 package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.test.StubData
+import dk.cachet.carp.common.application.toEpochMicroseconds
+import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.data.infrastructure.measurement
 import kotlinx.datetime.Clock
 import kotlin.test.Test
@@ -17,14 +18,15 @@ class DataStreamPointTest
     @Test
     fun initializing_DataStreamPoint_with_negative_sequenceId_fails()
     {
+        val now = Clock.System.now()
         assertFailsWith<IllegalArgumentException> {
             DataStreamPoint(
                 -1,
                 UUID.randomUUID(),
                 "Device",
-                measurement( StubData(), 0 ),
+                measurement( StubDataPoint(), 0 ),
                 listOf( 1 ),
-                SyncPoint( Clock.System.now() )
+                SyncPoint( now, now.toEpochMicroseconds() )
             )
         }
     }
@@ -32,14 +34,15 @@ class DataStreamPointTest
     @Test
     fun initializing_DataStreamPoint_with_empty_triggerIds_fails()
     {
+        val now = Clock.System.now()
         assertFailsWith<IllegalArgumentException> {
             DataStreamPoint(
                 0,
                 UUID.randomUUID(),
                 "Device",
-                measurement( StubData(), 0 ),
+                measurement( StubDataPoint(), 0 ),
                 emptyList(),
-                SyncPoint( Clock.System.now() )
+                SyncPoint( now, now.toEpochMicroseconds() )
             )
         }
     }
@@ -52,7 +55,7 @@ class DataStreamPointTest
             0,
             UUID.randomUUID(),
             "Test device",
-            measurement( StubData(), 1000, null ),
+            measurement( StubDataPoint(), 1000, null ),
             listOf( 0 ),
             doubleSpeed
         )

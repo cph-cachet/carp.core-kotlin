@@ -65,7 +65,8 @@
         "__type": { "const": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.SetParticipantData" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyDeploymentId": { "type": "string", "format": "uuid" },
-        "data": { "$ref": "../users/ParticipantDataMap.json" }
+        "data": { "$ref": "../users/ParticipantDataMap.json" },
+        "inputByParticipantRole": { "type": [ "string", "null" ] }
       },
       "required": [ "__type", "apiVersion", "studyDeploymentId", "data" ],
       "additionalProperties": false,

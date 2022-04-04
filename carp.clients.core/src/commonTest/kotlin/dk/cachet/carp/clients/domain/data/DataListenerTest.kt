@@ -1,7 +1,7 @@
 package dk.cachet.carp.clients.domain.data
 
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import kotlin.test.*
 
@@ -17,11 +17,11 @@ class DataListenerTest
     @Test
     fun supportsData_matches_supported_types_on_primary_device()
     {
-        val primaryDataTypes = setOf( STUB_DATA_TYPE )
+        val primaryDataTypes = setOf( STUB_DATA_POINT_TYPE )
         val factory = StubDeviceDataCollectorFactory( primaryDataTypes, connectedSupportedDataTypes = emptySet() )
         val listener = DataListener( factory )
 
-        assertTrue( listener.supportsData( STUB_DATA_TYPE ) )
+        assertTrue( listener.supportsData( STUB_DATA_POINT_TYPE ) )
         assertFalse( listener.supportsData( unsupportedType ) )
     }
 
@@ -31,13 +31,13 @@ class DataListenerTest
         val deviceType = StubDeviceConfiguration::class
         val factory = StubConnectedDeviceDataCollectorFactory(
             localSupportedDataTypes = emptySet(),
-            connectedSupportedDataTypes = mapOf( deviceType to setOf( STUB_DATA_TYPE ) )
+            connectedSupportedDataTypes = mapOf( deviceType to setOf( STUB_DATA_POINT_TYPE ) )
         )
         val listener = DataListener( factory )
 
         val registration = StubDeviceConfiguration().createRegistration()
         assertNotNull( listener.tryGetConnectedDataCollector( deviceType, registration ) )
-        assertTrue( listener.supportsDataOnConnectedDevice( STUB_DATA_TYPE, deviceType, registration ) )
+        assertTrue( listener.supportsDataOnConnectedDevice( STUB_DATA_POINT_TYPE, deviceType, registration ) )
         assertFalse( listener.supportsDataOnConnectedDevice( unsupportedType, deviceType, registration ) )
     }
 
@@ -50,6 +50,6 @@ class DataListenerTest
         val unsupportedDeviceType = StubDeviceConfiguration::class
         val registration = StubDeviceConfiguration().createRegistration()
         assertNull( listener.tryGetConnectedDataCollector( unsupportedDeviceType, registration ) )
-        assertFalse( listener.supportsDataOnConnectedDevice( STUB_DATA_TYPE, unsupportedDeviceType, registration ) )
+        assertFalse( listener.supportsDataOnConnectedDevice( STUB_DATA_POINT_TYPE, unsupportedDeviceType, registration ) )
     }
 }

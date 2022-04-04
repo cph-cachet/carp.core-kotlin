@@ -1,7 +1,7 @@
 package dk.cachet.carp.studies.application
 
-import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
+import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.common.test.infrastructure.TestUUIDFactory
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService

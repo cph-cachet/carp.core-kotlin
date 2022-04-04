@@ -4,14 +4,16 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl
-import dk.cachet.carp.common.application.triggers.Trigger
+import dk.cachet.carp.common.application.triggers.TriggerConfiguration
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
@@ -57,14 +59,14 @@ class StudyProtocolSnapshotTest
         assertTrue( newPrimaryDeviceSnapshot.hashCode() != newConnectedDeviceSnapshot.hashCode() )
 
         // New trigger.
-        val trigger = StubTrigger( primaryDevice )
+        val trigger = StubTriggerConfiguration( primaryDevice )
         protocol.addTrigger( trigger )
         val newTriggerSnapshot = protocol.getSnapshot()
         assertTrue( newConnectedDeviceSnapshot != newTriggerSnapshot )
         assertTrue( newConnectedDeviceSnapshot.hashCode() != newTriggerSnapshot.hashCode() )
 
         // New task.
-        val task = StubTaskDescriptor( "New task" )
+        val task = StubTaskConfiguration( "New task" )
         protocol.addTask( task )
         val newTaskSnapshot = protocol.getSnapshot()
         assertTrue( newTriggerSnapshot != newTaskSnapshot )
@@ -84,18 +86,28 @@ class StudyProtocolSnapshotTest
         val connectedDevices = listOf<AnyDeviceConfiguration>( StubDeviceConfiguration( "C1" ), StubDeviceConfiguration( "C2" ) )
         val connections = listOf(
             StudyProtocolSnapshot.DeviceConnection( "C1", "M1" ),
-            StudyProtocolSnapshot.DeviceConnection( "C2", "M2" ) )
-        val tasks = listOf<TaskDescriptor<*>>( StubTaskDescriptor( "T1" ), StubTaskDescriptor( "T2" ) )
-        val triggers = mapOf<Int, Trigger<*>>(
-            0 to StubTrigger( primaryDevices[ 0 ] ),
-            1 to StubTrigger( primaryDevices[ 1 ] ) )
+            StudyProtocolSnapshot.DeviceConnection( "C2", "M2" )
+        )
+        val tasks = listOf<TaskConfiguration<*>>( StubTaskConfiguration( "T1" ), StubTaskConfiguration( "T2" ) )
+        val triggers = mapOf<Int, TriggerConfiguration<*>>(
+            0 to StubTriggerConfiguration( primaryDevices[ 0 ] ),
+            1 to StubTriggerConfiguration( primaryDevices[ 1 ] )
+        )
         val triggeredTasks = listOf(
             TaskControl( 0, "T1", "C1", TaskControl.Control.Start ),
             TaskControl( 1, "T2", "C2", TaskControl.Control.Start )
         )
+        val participantRoles = listOf(
+            ParticipantRole( "Role 1", true ),
+            ParticipantRole( "Role 2", false )
+        )
         val expectedParticipantData = listOf(
-            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) ),
-            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "othertype" ) ),
+            ExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) ) ),
+            ExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "othertype" ) ) )
+        )
+        val assignedDevices = mapOf(
+            "M1" to setOf( "Role 1" ),
+            "M2" to setOf( "Role 2" )
         )
 
         val protocolId = UUID.randomUUID()
@@ -110,7 +122,9 @@ class StudyProtocolSnapshotTest
             name,
             description,
             primaryDevices.toSet(), connectedDevices.toSet(), connections.toSet(),
-            tasks.toSet(), triggers, triggeredTasks.toSet(), expectedParticipantData.toSet(), "" )
+            tasks.toSet(), triggers, triggeredTasks.toSet(),
+            participantRoles.toSet(), assignedDevices, expectedParticipantData.toSet(), ""
+        )
         val reorganizedSnapshot = StudyProtocolSnapshot(
             protocolId,
             createdOn,
@@ -118,7 +132,9 @@ class StudyProtocolSnapshotTest
             name,
             description,
             primaryDevices.reversed().toSet(), connectedDevices.reversed().toSet(), connections.reversed().toSet(),
-            tasks.reversed().toSet(), triggers, triggeredTasks.reversed().toSet(), expectedParticipantData.reversed().toSet(), "" )
+            tasks.reversed().toSet(), triggers, triggeredTasks.reversed().toSet(),
+            participantRoles.reversed().toSet(), assignedDevices, expectedParticipantData.reversed().toSet(), ""
+        )
 
         assertEquals( snapshot, reorganizedSnapshot )
         assertEquals( snapshot.hashCode(), reorganizedSnapshot.hashCode() )
@@ -129,8 +145,8 @@ class StudyProtocolSnapshotTest
     {
         val device1 = StubPrimaryDeviceConfiguration( "One" )
         val device2 = StubPrimaryDeviceConfiguration( "Two" )
-        val trigger1 = StubTrigger( "One" )
-        val trigger2 = StubTrigger( "Two" )
+        val trigger1 = StubTriggerConfiguration( "One" )
+        val trigger2 = StubTriggerConfiguration( "Two" )
 
         // Create two identical base protocols. protocol1 is cloned to make sure `createdOn` is the same.
         val protocol1 = createEmptyProtocol()
@@ -158,8 +174,8 @@ class StudyProtocolSnapshotTest
     fun trigger_ids_need_to_sequential_starting_from_zero()
     {
         val primaryDevice = StubPrimaryDeviceConfiguration()
-        val task = StubTaskDescriptor()
-        val trigger = StubTrigger( primaryDevice )
+        val task = StubTaskConfiguration()
+        val trigger = StubTriggerConfiguration( primaryDevice )
 
         val correctSnapshot = StudyProtocolSnapshot(
             UUID.randomUUID(),

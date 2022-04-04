@@ -2,12 +2,13 @@ package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.createParticipantInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryWithConnectedDeviceProtocol
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -26,7 +27,7 @@ interface DeploymentServiceTest
 
 
     @Test
-    fun createStudyDeployment_registers_preregistered_devices() = runSuspendTest {
+    fun createStudyDeployment_registers_preregistered_devices() = runTest {
         val deploymentService = createService()
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val primaryDevice = protocol.primaryDevices.single()
@@ -37,7 +38,7 @@ interface DeploymentServiceTest
         deploymentService.createStudyDeployment(
             deploymentId,
             protocol.getSnapshot(),
-            listOf( createParticipantInvitation( protocol ) ),
+            listOf( createParticipantInvitation() ),
             mapOf( connectedDevice.roleName to preregistration )
         )
         deploymentService.registerDevice( deploymentId, primaryDevice.roleName, primaryDevice.createRegistration() )
@@ -47,7 +48,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun createStudyDeployment_fails_for_existing_id() = runSuspendTest {
+    fun createStudyDeployment_fails_for_existing_id() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Primary" )
 
@@ -55,7 +56,7 @@ interface DeploymentServiceTest
         val protocol = createSinglePrimaryDeviceProtocol( deviceRole )
         val invitation = ParticipantInvitation(
             UUID.randomUUID(),
-            setOf( deviceRole ),
+            AssignedTo.All,
             AccountIdentity.fromUsername( "User" ),
             StudyInvitation( "Some study" )
         )
@@ -65,7 +66,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun removeStudyDeployments_succeeds() = runSuspendTest {
+    fun removeStudyDeployments_succeeds() = runTest {
         val deploymentService = createService()
         val deploymentId1 = addTestDeployment( deploymentService, "Test device" )
         val deploymentId2 = addTestDeployment( deploymentService, "Test device" )
@@ -78,7 +79,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun removeStudyDeployments_ignores_unknown_ids() = runSuspendTest {
+    fun removeStudyDeployments_ignores_unknown_ids() = runTest {
         val deploymentService = createService()
         val deploymentId = addTestDeployment( deploymentService, "Test device" )
         val unknownId = UUID.randomUUID()
@@ -89,7 +90,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun getStudyDeploymentStatus_succeeds() = runSuspendTest {
+    fun getStudyDeploymentStatus_succeeds() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
 
@@ -98,23 +99,23 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun getStudyDeploymentStatus_fails_for_unknown_studyDeploymentId() = runSuspendTest {
+    fun getStudyDeploymentStatus_fails_for_unknown_studyDeploymentId() = runTest {
         val deploymentService = createService()
 
         assertFailsWith<IllegalArgumentException> { deploymentService.getStudyDeploymentStatus( unknownId ) }
     }
 
     @Test
-    fun getStudyDeploymentStatusList_succeeds() = runSuspendTest {
+    fun getStudyDeploymentStatusList_succeeds() = runTest {
         val deploymentService = createService()
         val deviceRoleName = "Primary"
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol( deviceRoleName )
         val protocolSnapshot = protocol.getSnapshot()
 
-        val invitation1 = createParticipantInvitation( protocol, AccountIdentity.fromUsername( "User 1" ) )
+        val invitation1 = createParticipantInvitation( AccountIdentity.fromUsername( "User 1" ) )
         val deploymentId1 = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId1, protocolSnapshot, listOf( invitation1 ) )
-        val invitation2 = createParticipantInvitation( protocol, AccountIdentity.fromUsername( "User 2" ) )
+        val invitation2 = createParticipantInvitation( AccountIdentity.fromUsername( "User 2" ) )
         val deploymentId2 = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId2, protocolSnapshot, listOf( invitation2 ) )
 
@@ -123,7 +124,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun getStudyDeploymentStatusList_fails_when_containing_an_unknown_studyDeploymentId() = runSuspendTest {
+    fun getStudyDeploymentStatusList_fails_when_containing_an_unknown_studyDeploymentId() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
 
@@ -132,7 +133,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun registerDevice_can_be_called_multiple_times() = runSuspendTest {
+    fun registerDevice_can_be_called_multiple_times() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Primary" )
         val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
@@ -145,7 +146,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun registerDevice_cannot_be_called_with_same_registration_when_stopped() = runSuspendTest {
+    fun registerDevice_cannot_be_called_with_same_registration_when_stopped() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Primary" )
         val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
@@ -161,7 +162,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun unregisterDevice_succeeds() = runSuspendTest {
+    fun unregisterDevice_succeeds() = runTest {
         val deploymentService = createService()
         val deviceRolename = "Test device"
         val studyDeploymentId = addTestDeployment( deploymentService, deviceRolename )
@@ -174,7 +175,7 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun stop_succeeds() = runSuspendTest {
+    fun stop_succeeds() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Test device" )
 
@@ -183,14 +184,14 @@ interface DeploymentServiceTest
     }
 
     @Test
-    fun stop_fails_for_unknown_studyDeploymentId() = runSuspendTest {
+    fun stop_fails_for_unknown_studyDeploymentId() = runTest {
         val deploymentService = createService()
 
         assertFailsWith<IllegalArgumentException> { deploymentService.stop( unknownId ) }
     }
 
     @Test
-    fun modifications_after_stop_not_allowed() = runSuspendTest {
+    fun modifications_after_stop_not_allowed() = runTest {
         val deploymentService = createService()
         val studyDeploymentId = addTestDeployment( deploymentService, "Primary", "Connected" )
         val status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
@@ -222,7 +223,7 @@ interface DeploymentServiceTest
     ): UUID
     {
         val protocol = createSinglePrimaryWithConnectedDeviceProtocol( primaryDeviceRoleName, connectedDeviceRoleName )
-        val invitation = createParticipantInvitation( protocol )
+        val invitation = createParticipantInvitation()
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )
 

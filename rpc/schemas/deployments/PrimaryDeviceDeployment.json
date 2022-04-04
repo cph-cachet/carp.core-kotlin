@@ -14,16 +14,20 @@
     },
     "tasks": {
       "type": "array",
-      "items": { "$ref": "../common/tasks/TaskDescriptor.json" }
+      "items": { "$ref": "../common/tasks/TaskConfiguration.json" }
     },
     "triggers": {
       "type": "object",
       "propertyNames": { "pattern": "^\\d$" },
-      "additionalProperties": { "$ref": "../common/triggers/Trigger.json" }
+      "additionalProperties": { "$ref": "../common/triggers/TriggerConfiguration.json" }
     },
     "taskControls": {
       "type": "array",
       "items": { "$ref": "../common/triggers/TaskControl.json" }
+    },
+    "expectedParticipantData": {
+      "type": "array",
+      "items":{ "$ref":  "../common/users/ExpectedParticipantData.json" }
     },
     "applicationData": { "$ref": "../common/ApplicationData.json" }
   },

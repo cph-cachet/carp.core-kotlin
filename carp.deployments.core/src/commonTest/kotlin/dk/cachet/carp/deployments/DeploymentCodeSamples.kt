@@ -5,6 +5,7 @@ import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService
@@ -17,7 +18,7 @@ import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import kotlin.test.*
 
@@ -26,7 +27,7 @@ class DeploymentCodeSamples
 {
     @Test
     @Suppress( "UnusedPrivateMember", "UNUSED_VARIABLE" )
-    fun readme() = runSuspendTest {
+    fun readme() = runTest {
         val deploymentService: DeploymentService = createDeploymentEndpoint()
         val trackPatientStudy: StudyProtocol = createExampleProtocol()
         val patientPhone: Smartphone = trackPatientStudy.primaryDevices.first() as Smartphone // "Patient's phone"
@@ -34,7 +35,7 @@ class DeploymentCodeSamples
         // This is called by `StudyService` when deploying a participant group.
         val invitation = ParticipantInvitation(
             participantId = UUID.randomUUID(),
-            assignedPrimaryDeviceRoleNames = setOf( patientPhone.roleName ),
+            assignedRoles = AssignedTo.All,
             identity = AccountIdentity.fromEmailAddress( "test@test.com" ),
             invitation = StudyInvitation( "Movement study", "This study tracks your movements." )
         )
@@ -90,5 +91,6 @@ class DeploymentCodeSamples
     private fun createDeploymentEndpoint(): DeploymentService = DeploymentServiceHost(
         InMemoryDeploymentRepository(),
         InMemoryDataStreamService(),
-        eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
+        eventBus.createApplicationServiceAdapter( DeploymentService::class )
+    )
 }

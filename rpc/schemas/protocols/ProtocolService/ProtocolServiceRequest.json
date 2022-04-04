@@ -52,7 +52,7 @@
         "versionTag": { "type": "string" },
         "expectedParticipantData": {
           "type": "array",
-          "items": { "$ref": "../../common/users/ParticipantAttribute.json" }
+          "items": { "$ref": "../../common/users/ExpectedParticipantData.json"}
         }
       },
       "required": [ "__type", "apiVersion", "protocolId", "versionTag", "expectedParticipantData" ],

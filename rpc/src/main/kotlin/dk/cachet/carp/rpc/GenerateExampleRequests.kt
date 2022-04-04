@@ -98,6 +98,7 @@ private val phone = Smartphone( "Participant's phone", false ) {
         geolocation { batteryNormal { granularity = Granularity.Detailed } }
     }
 }
+private val participantRole = ParticipantRole( "Participant", false )
 private val bikeBeacon = AltBeacon( "Participant's bike", true )
 private val measurePhoneMovement = BackgroundTask(
     "Monitor movement",
@@ -120,14 +121,18 @@ private val phoneProtocol = StudyProtocol(
     protocolCreatedOn
 ).apply {
     addPrimaryDevice( phone )
+    addParticipantRole( participantRole )
     addConnectedDevice( bikeBeacon, phone )
     addTaskControl( startOfStudyTrigger.start( measurePhoneMovement, phone ) )
     addTaskControl( startOfStudyTrigger.start( measureBikeProximity, bikeBeacon ) )
     applicationData = "{\"uiTheme\": \"black\"}"
 }.getSnapshot()
 private val startOfStudyTriggerId = phoneProtocol.triggers.entries.first { it.value == startOfStudyTrigger }.key
-private val expectedParticipantData = setOf<ParticipantAttribute>(
-    ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
+private val expectedParticipantData = setOf(
+    ExpectedParticipantData(
+        ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ),
+        AssignedTo.Roles( setOf( participantRole.role ) )
+    )
 )
 
 // Example protocol factory protocols.
@@ -145,8 +150,8 @@ private val studyId = UUID( "791fd191-4279-482f-9ef5-5b4508efd959" )
 private const val studyName = "Copenhagen transportation study"
 private const val studyDescription = "Track how people walk/bike in Copenhagen."
 private val studyCreatedOn = Instant.fromEpochSeconds( 1642503800 )
-private val studyConfiguringStatus = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, true, true, false, false )
-private val studyLiveStatus = StudyStatus.Live( studyId, studyName, studyCreatedOn, false, false, true )
+private val studyConfiguringStatus = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, null, true, true, false, false )
+private val studyLiveStatus = StudyStatus.Live( studyId, studyName, studyCreatedOn, phoneProtocol.id, false, false, true )
 
 // Deployment data matching the example protocol.
 private val deploymentId = UUID( "c9cc5317-48da-45f2-958e-58bc07f34681" )
@@ -160,10 +165,22 @@ private val studyInvitation = StudyInvitation(
     "Participate in this study, which keeps track of how much you walk and bike!",
     "{\"trialGroup\", \"A\"}"
 )
-private val participantInvitation = ParticipantInvitation( participantId, setOf( phone.roleName ), participantAccount, studyInvitation )
+private val participantAssignedRoles = AssignedTo.Roles( setOf( participantRole.role ) )
+private val participantInvitation = ParticipantInvitation(
+    participantId,
+    participantAssignedRoles,
+    participantAccount,
+    studyInvitation
+)
 private val participantData = ParticipantData(
     deploymentId,
-    mapOf( CarpInputDataTypes.SEX to Sex.Male )
+    emptyMap(),
+    listOf(
+        ParticipantData.RoleData(
+            participantRole.role,
+            mapOf( CarpInputDataTypes.SEX to Sex.Male )
+        )
+    )
 )
 private val bikeBeaconPreregistration = bikeBeacon.createRegistration {
     manufacturerId = 0x118
@@ -175,7 +192,9 @@ private val phoneRegistration = phone.createRegistration {
     deviceId = UUID( "fc7b41b0-e9e2-4b5d-8c3d-5119b556a3f0" ).toString()
 }.setRegistrationCreatedOn( Instant.fromEpochSeconds( 1642514110 ) )
 private val bikeBeaconStatus = DeviceDeploymentStatus.Registered( bikeBeacon, false, emptySet(), emptySet() )
-private val participantsStatus = listOf( ParticipantStatus( participantId, setOf( phone.roleName ) ) )
+private val participantStatusList = listOf(
+    ParticipantStatus( participantId, participantAssignedRoles, setOf( phone.roleName ) )
+)
 private val invitedDeploymentStatus = StudyDeploymentStatus.Invited(
     deploymentCreatedOn,
     deploymentId,
@@ -183,7 +202,7 @@ private val invitedDeploymentStatus = StudyDeploymentStatus.Invited(
         DeviceDeploymentStatus.Unregistered( phone, true, setOf( phone.roleName ), emptySet() ),
         bikeBeaconStatus
     ),
-    participantsStatus,
+    participantStatusList,
     null
 )
 private val runningDeploymentStatus = StudyDeploymentStatus.Running(
@@ -193,7 +212,7 @@ private val runningDeploymentStatus = StudyDeploymentStatus.Running(
         DeviceDeploymentStatus.Deployed( phone ),
         bikeBeaconStatus
     ),
-    participantsStatus,
+    participantStatusList,
     Instant.fromEpochSeconds( 1642504500 )
 )
 private val stoppedDeploymentStatus = StudyDeploymentStatus.Stopped(
@@ -203,7 +222,7 @@ private val stoppedDeploymentStatus = StudyDeploymentStatus.Stopped(
         DeviceDeploymentStatus.Deployed( phone ),
         bikeBeaconStatus
     ),
-    participantsStatus,
+    participantStatusList,
     runningDeploymentStatus.startedOn,
     Instant.fromEpochSeconds( 1642506000 )
 )
@@ -220,6 +239,7 @@ private val phoneDeviceDeployment = PrimaryDeviceDeployment(
         TaskControl( startOfStudyTriggerId, measurePhoneMovement.name, phone.roleName, TaskControl.Control.Start ),
         TaskControl( startOfStudyTriggerId, measureBikeProximity.name, bikeBeacon.roleName, TaskControl.Control.Start )
     ),
+    expectedParticipantData,
     phoneProtocol.applicationData
 )
 
@@ -231,12 +251,12 @@ private val expectedDataStreams = setOf(
     DataStreamsConfiguration.ExpectedDataStream.fromDataStreamId( phoneStepsDataStream )
 )
 private val geoDataSequence =
-    MutableDataStreamSequence( phoneGeoDataStream, 0, listOf( startOfStudyTriggerId ) ).apply {
+    MutableDataStreamSequence<Geolocation>( phoneGeoDataStream, 0, listOf( startOfStudyTriggerId ) ).apply {
         appendMeasurements( measurement( Geolocation( 55.68061908805645, 12.582050313435703 ), 1642505045000000L ) )
         appendMeasurements( measurement( Geolocation( 55.680802203873114, 12.581802212861367 ), 1642505144000000L ) )
     }
 private val stepsDataSequence =
-    MutableDataStreamSequence( phoneStepsDataStream, 0, listOf( startOfStudyTriggerId ) ).apply {
+    MutableDataStreamSequence<StepCount>( phoneStepsDataStream, 0, listOf( startOfStudyTriggerId ) ).apply {
         appendMeasurements( measurement( StepCount( 0 ), 1642505045000000L ) )
         appendMeasurements( measurement( StepCount( 30 ), 1642505144000000L ) )
     }
@@ -312,7 +332,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
         request = StudyServiceRequest.GetStudiesOverview( ownerId ),
         response = listOf(
             studyConfiguringStatus,
-            StudyStatus.Live( UUID( "3566eb9c-1d2f-4ed9-bf8a-8ea43638773d" ), "Heartrate study", Instant.fromEpochSeconds( 1642514000 ), false, false, true )
+            StudyStatus.Live( UUID( "3566eb9c-1d2f-4ed9-bf8a-8ea43638773d" ), "Heartrate study", studyCreatedOn, phoneProtocol.id, false, false, true )
         )
     ),
     StudyService::setInvitation to example(
@@ -321,7 +341,11 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
     ),
     StudyService::setProtocol to example(
         request = StudyServiceRequest.SetProtocol( studyId, phoneProtocol ),
-        response = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, true, true, false, true )
+        response = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, phoneProtocol.id, true, true, false, true )
+    ),
+    StudyService::removeProtocol to example(
+        request = StudyServiceRequest.RemoveProtocol( studyId ),
+        response = StudyStatus.Configuring( studyId, studyName, studyCreatedOn, null, true, true, false, false )
     ),
     StudyService::goLive to example(
         request = StudyServiceRequest.GoLive( studyId ),
@@ -349,7 +373,10 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
         )
     ),
     RecruitmentService::inviteNewParticipantGroup to example(
-        request = RecruitmentServiceRequest.InviteNewParticipantGroup( studyId, setOf( AssignParticipantDevices( participantId, setOf( phone.roleName ) )) ),
+        request = RecruitmentServiceRequest.InviteNewParticipantGroup(
+            studyId,
+            setOf( AssignedParticipantRoles( participantId, participantAssignedRoles ) )
+        ),
         response = ParticipantGroupStatus.Invited( deploymentId, participants, participantGroupInvitedOn, invitedDeploymentStatus )
     ),
     RecruitmentService::getParticipantGroupStatusList to example(
@@ -392,7 +419,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
                 DeviceDeploymentStatus.Registered( phone, true, emptySet(), emptySet() ),
                 bikeBeaconStatus
             ),
-            participantsStatus,
+            participantStatusList,
             null
         )
     ),
@@ -418,7 +445,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
         request = ParticipationServiceRequest.GetActiveParticipationInvitations( participantAccountId ),
         response = setOf(
             ActiveParticipationInvitation(
-                Participation( deploymentId, participantId ),
+                Participation( deploymentId, participantAssignedRoles, participantId ),
                 studyInvitation,
                 setOf( AssignedPrimaryDevice( phone ) )
             )
@@ -433,7 +460,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
         response = listOf( participantData )
     ),
     ParticipationService::setParticipantData to example(
-        request = ParticipationServiceRequest.SetParticipantData( deploymentId, participantData.data ),
+        request = ParticipationServiceRequest.SetParticipantData( deploymentId, participantData.roles.first().data, participantRole.role ),
         response = participantData
     ),
 
@@ -453,6 +480,6 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = 
     ),
     DataStreamService::removeDataStreams to example(
         request = DataStreamServiceRequest.RemoveDataStreams( deploymentIds ),
-        response = true
+        response = deploymentIds
     )
 )

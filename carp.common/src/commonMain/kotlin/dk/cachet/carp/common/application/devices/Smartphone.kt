@@ -9,7 +9,7 @@ import dk.cachet.carp.common.application.sampling.*
 import dk.cachet.carp.common.application.tasks.*
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 
 typealias SmartphoneDeviceRegistration = DefaultDeviceRegistration
@@ -55,18 +55,33 @@ data class Smartphone(
         val STEP_COUNT = add( NoOptionsSamplingScheme( CarpDataTypes.STEP_COUNT ) ) // No configuration options available.
 
         /**
-         * Acceleration along perpendicular x, y, and z axes,
-         * as measured by the phone's accelerometer and calibrated to exclude gravity and sensor bias.
+         * Rate of change in velocity, excluding gravity, along perpendicular x, y, and z axes in the device's coordinate system,
+         * as measured by the phone's accelerometer and calibrated to exclude sensor bias.
          * This uses the same coordinate system as the other sensors referring to x, y, and z axes.
          *
          * Android (https://developer.android.com/guide/topics/sensors/sensors_overview):
          * - This corresponds to `TYPE_LINEAR_ACCELERATION`.
          * - The sampling scheme's default measure interval corresponds to `SENSOR_DELAY_NORMAL` (200 ms).
-         * - The linear acceleration sensor always has an offset, which you need to remove: https://developer.android.com/guide/topics/sensors/sensors_motion
+         * - The accelerometer always has an offset, which you need to remove: https://developer.android.com/guide/topics/sensors/sensors_motion#sensors-motion-linear
          * - Only available starting from Android 3.0 (API Level 11): earlier versions don't support setting the interval as an absolute value.
          */
         val NON_GRAVITATIONAL_ACCELERATION = add(
-            IntervalSamplingScheme( CarpDataTypes.NON_GRAVITATIONAL_ACCELERATION, Duration.milliseconds( 200 ) )
+            IntervalSamplingScheme( CarpDataTypes.NON_GRAVITATIONAL_ACCELERATION, 200.milliseconds )
+        )
+
+        /**
+         * Rate of change in velocity, including gravity, along perpendicular x, y, and z axes in the device's coordinate system,
+         * as measured by the phone's accelerometer and calibrated to exclude sensor bias.
+         * This uses the same coordinate system as the other sensors referring to x, y, and z axes.
+         *
+         * Android (https://developer.android.com/guide/topics/sensors/sensors_overview):
+         * - This corresponds to `TYPE_ACCELEROMETER`.
+         * - The sampling scheme's default measure interval corresponds to `SENSOR_DELAY_NORMAL` (200 ms).
+         * - The accelerometer always has an offset, which you need to remove: https://developer.android.com/guide/topics/sensors/sensors_motion#sensors-motion-linear
+         * - Only available starting from Android 3.0 (API Level 11): earlier versions don't support setting the interval as an absolute value.
+         */
+        val ACCELERATION = add(
+            IntervalSamplingScheme( CarpDataTypes.ACCELERATION, 200.milliseconds )
         )
 
         /**
@@ -80,14 +95,14 @@ data class Smartphone(
          * - Only available starting from Android 3.0 (API Level 11): earlier versions don't support setting the interval as an absolute value.
          */
         val ANGULAR_VELOCITY = add(
-            IntervalSamplingScheme( CarpDataTypes.ANGULAR_VELOCITY, Duration.milliseconds( 200 ) )
+            IntervalSamplingScheme( CarpDataTypes.ANGULAR_VELOCITY, 200.milliseconds )
         )
     }
 
     /**
      * ALl tasks commonly available on smartphones.
      */
-    object Tasks : TaskDescriptorList()
+    object Tasks : TaskConfigurationList()
     {
         /**
          * Redirect to a web page which contains the task which needs to be performed.

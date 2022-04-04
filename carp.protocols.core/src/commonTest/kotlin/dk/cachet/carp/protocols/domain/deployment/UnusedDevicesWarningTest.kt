@@ -2,8 +2,8 @@ package dk.cachet.carp.protocols.domain.deployment
 
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import kotlin.test.*
@@ -20,7 +20,7 @@ class UnusedDevicesWarningTest
 
         val warning = UnusedDevicesWarning()
         assertTrue( warning.isIssuePresent( protocol ) )
-        val expectedUnused = listOf( unusedDevice )
+        val expectedUnused = setOf( unusedDevice )
         val unused = warning.getUnusedDevices( protocol )
         assertEquals( expectedUnused.count(), unused.intersect( expectedUnused ).count() )
     }
@@ -35,12 +35,12 @@ class UnusedDevicesWarningTest
         {
             addPrimaryDevice( primary )
             addConnectedDevice( unusedConnected, primary )
-            addTaskControl( StubTrigger( primary ).start( StubTaskDescriptor(), primary ) )
+            addTaskControl( StubTriggerConfiguration( primary ).start( StubTaskConfiguration(), primary ) )
         }
 
         val warning = UnusedDevicesWarning()
         assertTrue( warning.isIssuePresent( protocol ) )
-        val expectedUnused = listOf( unusedConnected )
+        val expectedUnused = setOf( unusedConnected )
         val unused = warning.getUnusedDevices( protocol )
         assertEquals( expectedUnused.count(), unused.intersect( expectedUnused ).count() )
     }
@@ -55,7 +55,7 @@ class UnusedDevicesWarningTest
         {
             addPrimaryDevice( primary )
             addConnectedDevice( connected, primary )
-            addTaskControl( StubTrigger( connected ).start( StubTaskDescriptor(), connected ) )
+            addTaskControl( StubTriggerConfiguration( connected ).start( StubTaskConfiguration(), connected ) )
         }
 
         val warning = UnusedDevicesWarning()
@@ -75,7 +75,7 @@ class UnusedDevicesWarningTest
             addPrimaryDevice( primary1 )
             addConnectedDevice( primary2, primary1 )
             addConnectedDevice( connected, primary2 )
-            addTaskControl( StubTrigger( connected ).start( StubTaskDescriptor(), connected ) )
+            addTaskControl( StubTriggerConfiguration( connected ).start( StubTaskConfiguration(), connected ) )
         }
 
         val warning = UnusedDevicesWarning()
@@ -93,7 +93,7 @@ class UnusedDevicesWarningTest
         {
             addPrimaryDevice( device1 )
             addConnectedDevice( device2, device1 )
-            addTaskControl( StubTrigger( device1 ).start( StubTaskDescriptor(), device2 ) )
+            addTaskControl( StubTriggerConfiguration( device1 ).start( StubTaskConfiguration(), device2 ) )
         }
 
         val warning = UnusedDevicesWarning()

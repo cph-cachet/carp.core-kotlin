@@ -79,7 +79,7 @@ class CurlyBracesOnSeparateLineLambdaTest
     @Test
     fun lambdas_have_no_parent_definition_to_align_with()
     {
-        // Currently this rule does not require aligning with any 'parent'.
+        // Currently, this rule does not require aligning with any 'parent'.
         // Normal indentation rules (checked by another rule) should apply here, though.
         val indented =
             """

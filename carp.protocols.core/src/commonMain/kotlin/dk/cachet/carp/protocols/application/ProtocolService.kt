@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.datetime.Clock
@@ -57,13 +58,13 @@ interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.
      *
      * @throws IllegalArgumentException when:
      *   - no protocol with [protocolId] is found
-     *   - [expectedParticipantData] contains two or more attributes with the same input type.
+     *   - [expectedParticipantData] contains differing [ParticipantAttribute]s with the same input data type
      * @return The updated [StudyProtocolSnapshot].
      */
     suspend fun updateParticipantDataConfiguration(
         protocolId: UUID,
         versionTag: String,
-        expectedParticipantData: Set<ParticipantAttribute>
+        expectedParticipantData: Set<ExpectedParticipantData>
     ): StudyProtocolSnapshot
 
     /**

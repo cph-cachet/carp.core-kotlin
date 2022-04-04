@@ -13,6 +13,8 @@ declare module 'carp.core-kotlin-carp.deployments.core'
     import UUID = cdk.cachet.carp.common.application.UUID
     import DeviceRegistration = cdk.cachet.carp.common.application.devices.DeviceRegistration
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
+    import AssignedTo = cdk.cachet.carp.common.application.users.AssignedTo
+    import ExpectedParticipantData = cdk.cachet.carp.common.application.users.ExpectedParticipantData
     import ApplicationServiceRequest = cdk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
     import ApiVersion = cdk.cachet.carp.common.application.services.ApiVersion
 
@@ -28,8 +30,8 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         abstract class DeviceDeploymentStatus
         {
             readonly device: any
-            readonly canBeDeployed: Boolean
-            readonly canObtainDeviceDeployment: Boolean
+            readonly canBeDeployed: boolean
+            readonly canObtainDeviceDeployment: boolean
 
             static get Companion(): DeviceDeploymentStatus$Companion
         }
@@ -37,9 +39,9 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
         namespace DeviceDeploymentStatus
         {
-            abstract class NotDeployed
+            abstract class NotDeployed extends DeviceDeploymentStatus
             {
-                readonly isReadyForDeployment: Boolean
+                readonly isReadyForDeployment: boolean
                 readonly remainingDevicesToRegisterToObtainDeployment: HashSet<string>
                 readonly remainingDevicesToRegisterBeforeDeployment: HashSet<string>
 
@@ -48,7 +50,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             {
                 constructor(
                     device: any,
-                    canBeDeployed: Boolean,
+                    canBeDeployed: boolean,
                     remainingDevicesToRegisterToObtainDeployment: HashSet<string>,
                     remainingDevicesToRegisterBeforeDeployment: HashSet<string> )
             }
@@ -56,7 +58,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             {
                 constructor(
                     device: any,
-                    canBeDeployed: Boolean,
+                    canBeDeployed: boolean,
                     remainingDevicesToRegisterToObtainDeployment: HashSet<string>,
                     remainingDevicesToRegisterBeforeDeployment: HashSet<string> )
             }
@@ -84,6 +86,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
                 tasks?: HashSet<any>,
                 triggers?: HashMap<number, any>,
                 taskControls?: HashSet<any>,
+                expectedParticipantData?: HashSet<ExpectedParticipantData>,
                 applicationData?: string | null )
 
                 static get Companion(): PrimaryDeviceDeployment$Companion
@@ -95,6 +98,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
                 readonly tasks: HashSet<any>
                 readonly triggers: HashMap<number, any>
                 readonly taskControls: HashSet<any>
+                readonly expectedParticipantData: HashSet<ExpectedParticipantData>
                 readonly applicationData: string | null
         }
         interface PrimaryDeviceDeployment$Companion { serializer(): any }
@@ -104,8 +108,8 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         {
             readonly createdOn: Instant
             readonly studyDeploymentId: UUID
-            readonly devicesStatus: ArrayList<DeviceDeploymentStatus>
-            readonly participantsStatus: ArrayList<ParticipantStatus>
+            readonly deviceStatusList: ArrayList<DeviceDeploymentStatus>
+            readonly participantStatusList: ArrayList<ParticipantStatus>
             readonly startedOn: Instant | null
 
             static get Companion(): StudyDeploymentStatus$Companion
@@ -116,19 +120,19 @@ declare module 'carp.core-kotlin-carp.deployments.core'
         {
             class Invited extends StudyDeploymentStatus
             {
-                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, participantsStatus: ArrayList<ParticipantStatus>, startedOn: Instant | null )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, deviceStatusList: ArrayList<DeviceDeploymentStatus>, participantStatusList: ArrayList<ParticipantStatus>, startedOn: Instant | null )
             }
             class DeployingDevices extends StudyDeploymentStatus
             {
-                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, participantsStatus: ArrayList<ParticipantStatus>, startedOn: Instant | null  )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, deviceStatusList: ArrayList<DeviceDeploymentStatus>, participantStatusList: ArrayList<ParticipantStatus>, startedOn: Instant | null  )
             }
             class Running extends StudyDeploymentStatus
             {
-                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, participantsStatus: ArrayList<ParticipantStatus>, startedOn: Instant )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, deviceStatusList: ArrayList<DeviceDeploymentStatus>, participantStatusList: ArrayList<ParticipantStatus>, startedOn: Instant )
             }
             class Stopped extends StudyDeploymentStatus
             {
-                constructor( createdOn: Instant, studyDeploymentId: UUID, devicesStatus: ArrayList<DeviceDeploymentStatus>, participantsStatus: ArrayList<ParticipantStatus>, startedOn: Instant | null, stoppedOn: Instant  )
+                constructor( createdOn: Instant, studyDeploymentId: UUID, deviceStatusList: ArrayList<DeviceDeploymentStatus>, participantStatusList: ArrayList<ParticipantStatus>, startedOn: Instant | null, stoppedOn: Instant  )
 
                 readonly stoppedOn: Instant
             }
@@ -138,6 +142,9 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
     namespace dk.cachet.carp.deployments.application.users
     {
+        import RoleData = dk.cachet.carp.deployments.application.users.ParticipantData.RoleData
+
+
         class ActiveParticipationInvitation
         {
             constructor( participation: Participation, invitation: StudyInvitation, assignedDevices: HashSet<AssignedPrimaryDevice> )
@@ -163,32 +170,48 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
         class Participation
         {
-            constructor( studyDeploymentId: UUID, participantId?: UUID )
+            constructor( studyDeploymentId: UUID, assignedRoles?: AssignedTo, participantId?: UUID )
 
             static get Companion(): Participation$Companion
 
             readonly studyDeploymentId: UUID
+            readonly assignedRoles: AssignedTo
             readonly participantId: UUID
         }
         interface Participation$Companion { serializer(): any }
 
         class ParticipantData
         {
-            constructor( studyDeploymentId: UUID, data: HashMap<NamespacedId, any> )
+            constructor( studyDeploymentId: UUID, common: HashMap<NamespacedId, any>, roles: ArrayList<RoleData> )
 
             static get Companion(): ParticipantData$Companion
 
             readonly studyDeploymentId: UUID
-            readonly data: HashMap<NamespacedId, any>
+            readonly common: HashMap<NamespacedId, any>
+            readonly roles: ArrayList<RoleData>
         }
         interface ParticipantData$Companion { serializer(): any }
 
+        namespace ParticipantData
+        {
+            class RoleData
+            {
+                constructor( roleName: string, data: HashMap<NamespacedId, any> )
+
+                static get Companion(): ParticipantData$RoleData$Companion
+
+                readonly roleName: string
+                readonly data: HashMap<NamespacedId, any>
+            }
+            interface ParticipantData$RoleData$Companion { serializer(): any }
+        }
+
         class ParticipantInvitation
         {
-            constructor( participantId: UUID, assignedPrimaryDeviceRoleNames: HashSet<string>, identity: AccountIdentity, invitation: StudyInvitation )
+            constructor( participantId: UUID, assignedRoles: AssignedTo, identity: AccountIdentity, invitation: StudyInvitation )
 
             readonly participantId: UUID
-            readonly assignedPrimaryDeviceRoleNames: HashSet<string>
+            readonly assignedRoles: AssignedTo
             readonly identity: AccountIdentity
             readonly invitation: StudyInvitation
 
@@ -198,9 +221,10 @@ declare module 'carp.core-kotlin-carp.deployments.core'
 
         class ParticipantStatus
         {
-            constructor( participantId: UUID, assignedPrimaryDeviceRoleNames: HashSet<string> )
+            constructor( participantId: UUID, assignedParticipantRoles: AssignedTo, assignedPrimaryDeviceRoleNames: HashSet<string> )
 
             readonly participantId: UUID
+            readonly assignedParticipantRoles: AssignedTo
             readonly assignedPrimaryDeviceRoleNames: HashSet<string>
 
             static get Companion(): ParticipantStatus$Companion
@@ -296,7 +320,7 @@ declare module 'carp.core-kotlin-carp.deployments.core'
             }
             class SetParticipantData extends ParticipationServiceRequest
             {
-                constructor( studyDeploymentId: UUID, data: HashMap<NamespacedId, any | null> )
+                constructor( studyDeploymentId: UUID, data: HashMap<NamespacedId, any | null>, inputByParticipantRole?: string | null )
             }
         }
     }

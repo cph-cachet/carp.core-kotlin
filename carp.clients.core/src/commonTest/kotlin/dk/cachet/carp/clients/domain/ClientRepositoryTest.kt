@@ -6,7 +6,7 @@ import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
 import kotlin.test.*
 
@@ -20,13 +20,13 @@ interface ClientRepositoryTest
 
 
     @Test
-    fun deviceRegistration_is_initially_null() = runSuspendTest {
+    fun deviceRegistration_is_initially_null() = runTest {
         val repo = createRepository()
         assertNull( repo.getDeviceRegistration() )
     }
 
     @Test
-    fun addStudy_can_be_retrieved() = runSuspendTest {
+    fun addStudy_can_be_retrieved() = runTest {
         val repo = createRepository()
 
         val study = Study( UUID.randomUUID(), "Device role" )
@@ -49,7 +49,7 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun addStudy_fails_for_existing_study() = runSuspendTest {
+    fun addStudy_fails_for_existing_study() = runTest {
         val repo = createRepository()
         val study = Study( UUID.randomUUID(), "Device role" )
         repo.addStudy( study )
@@ -58,7 +58,7 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun getStudy_is_null_for_unknown_study() = runSuspendTest {
+    fun getStudy_is_null_for_unknown_study() = runTest {
         val repo = createRepository()
 
         val unknownId = UUID.randomUUID()
@@ -66,7 +66,7 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun getStudyByDeployment_is_null_for_unknown_study() = runSuspendTest {
+    fun getStudyByDeployment_is_null_for_unknown_study() = runTest {
         val repo = createRepository()
 
         val unknownId = UUID.randomUUID()
@@ -74,14 +74,14 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun getStudyList_is_empty_initially() = runSuspendTest {
+    fun getStudyList_is_empty_initially() = runTest {
         val repo = createRepository()
 
         assertEquals( 0, repo.getStudyList().count() )
     }
 
     @Test
-    fun updateStudy_succeeds() = runSuspendTest {
+    fun updateStudy_succeeds() = runTest {
         val repo = createRepository()
         val deploymentId = UUID.randomUUID()
         val deviceRoleName = "Device role"
@@ -113,7 +113,7 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun updateStudy_fails_for_unknown_study() = runSuspendTest {
+    fun updateStudy_fails_for_unknown_study() = runTest {
         val repo = createRepository()
 
         val study = Study( UUID.randomUUID(), "Device role" )
@@ -121,7 +121,7 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun removeStudy_succeeds() = runSuspendTest {
+    fun removeStudy_succeeds() = runTest {
         val repo = createRepository()
         val study = Study( UUID.randomUUID(), "Device role" )
         repo.addStudy( study )
@@ -135,7 +135,7 @@ interface ClientRepositoryTest
     }
 
     @Test
-    fun removeStudy_succeeds_when_study_not_present() = runSuspendTest {
+    fun removeStudy_succeeds_when_study_not_present() = runTest {
         val repo = createRepository()
         val study = Study( UUID.randomUUID(), "Device role" )
         repo.removeStudy( study )

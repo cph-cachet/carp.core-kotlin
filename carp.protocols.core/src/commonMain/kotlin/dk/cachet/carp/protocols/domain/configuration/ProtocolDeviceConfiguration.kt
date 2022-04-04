@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.domain.configuration
 
-import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.devices.DeviceConfiguration
 
 
 /**

@@ -4,7 +4,7 @@
     { "$ref": "#/$defs/DeviceRegistration" },
     {
       "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.devices.AltBeaconDeviceRegistration" } } },
-      "then": { "$ref": "AltBeacon.json#/$defs/DeviceRegistration" }
+      "then": { "$ref": "AltBeacon.json#DeviceRegistration" }
     },
     {
       "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.devices.BLESerialNumberDeviceRegistration" } } },
@@ -21,6 +21,7 @@
   ],
   "$defs": {
     "DeviceRegistration": {
+      "$anchor": "DeviceRegistration",
       "type": "object",
       "properties": {
         "__type": true,

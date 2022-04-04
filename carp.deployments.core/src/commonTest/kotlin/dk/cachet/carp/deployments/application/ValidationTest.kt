@@ -4,6 +4,8 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.application.users.AssignedTo
+import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
@@ -22,8 +24,8 @@ class ValidationTest
     private val identity: AccountIdentity = AccountIdentity.fromEmailAddress( "test@test.com" )
     private val invitation: StudyInvitation = StudyInvitation( "Some study" )
 
-    private fun createInvitation( assignedDevices: Set<String> ) =
-        ParticipantInvitation( participantId, assignedDevices, identity, invitation )
+    private fun createInvitation( assignedTo: AssignedTo ) =
+        ParticipantInvitation( participantId, assignedTo, identity, invitation )
 
 
     @Test
@@ -31,20 +33,20 @@ class ValidationTest
     {
         val deviceRoleName = "Test device"
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName ).getSnapshot()
-        val invitation = createInvitation( setOf( deviceRoleName ) )
+        val invitation = createInvitation( AssignedTo.All )
 
         protocol.throwIfInvalidInvitations( listOf( invitation ) )
     }
 
     @Test
-    fun throwIfInvalidInvitations_for_valid_invitations_with_unassigned_optional_primary_device()
+    fun throwIfInvalidInvitations_for_valid_invitations_with_unassigned_optional_participant_role()
     {
-        val toAssign = "Test device"
+        val toAssign = "Assigned role"
         val protocol = createEmptyProtocol().apply {
-            addPrimaryDevice( StubPrimaryDeviceConfiguration( toAssign ) )
-            addPrimaryDevice( StubPrimaryDeviceConfiguration( "Unassigned optional device", true ) )
+            addParticipantRole( ParticipantRole( toAssign, false ) )
+            addParticipantRole( ParticipantRole( "Unassigned optional role", true ) )
         }.getSnapshot()
-        val invitation = createInvitation( setOf( toAssign ) )
+        val invitation = createInvitation( AssignedTo.Roles( setOf( toAssign ) ) )
 
         protocol.throwIfInvalidInvitations( listOf( invitation ) )
     }
@@ -58,10 +60,10 @@ class ValidationTest
     }
 
     @Test
-    fun throwIfInvalidInvitations_throws_for_invalid_primary_device()
+    fun throwIfInvalidInvitations_throws_for_invalid_participant_role()
     {
-        val protocol = createSinglePrimaryDeviceProtocol( "Primary" ).getSnapshot()
-        val invitation = createInvitation( setOf( "Invalid" ) )
+        val protocol = createSinglePrimaryDeviceProtocol().getSnapshot()
+        val invitation = createInvitation( AssignedTo.Roles( setOf( "Invalid role" ) ) )
 
         assertFailsWith<IllegalArgumentException> { protocol.throwIfInvalidInvitations( listOf( invitation ) ) }
     }
@@ -69,12 +71,36 @@ class ValidationTest
     @Test
     fun throwIfInvalidInvitations_throws_for_unassigned_primary_device()
     {
+        val deviceToAssign = StubPrimaryDeviceConfiguration( "Assigned device" )
+        val unassignedDevice = StubPrimaryDeviceConfiguration( "Unassigned device" )
+        val assignedParticipantRole = ParticipantRole( "Assigned role", false )
+        val unassignedParticipantRole = ParticipantRole( "Unassigned role", true )
+        val assignToParticipant = AssignedTo.Roles( setOf( assignedParticipantRole.role ) )
+        val protocol = createEmptyProtocol().apply {
+            addPrimaryDevice( deviceToAssign )
+            addParticipantRole( assignedParticipantRole )
+            changeDeviceAssignment( deviceToAssign, assignToParticipant )
+
+            addPrimaryDevice( unassignedDevice )
+            addParticipantRole( unassignedParticipantRole )
+            changeDeviceAssignment( unassignedDevice, AssignedTo.Roles( setOf( unassignedParticipantRole.role ) ) )
+        }.getSnapshot()
+        val invitation = createInvitation( assignToParticipant )
+
+        assertFailsWith<IllegalArgumentException> { protocol.throwIfInvalidInvitations( listOf( invitation ) ) }
+    }
+
+    @Test
+    fun throwIfInvalidInvitations_throws_for_unassigned_participant_role()
+    {
         val toAssign = "Test device"
         val protocol = createEmptyProtocol().apply {
             addPrimaryDevice( StubPrimaryDeviceConfiguration( toAssign ) )
             addPrimaryDevice( StubPrimaryDeviceConfiguration( "Unassigned second device" ) )
+            addParticipantRole( ParticipantRole( "Role 1", false ) )
+            addParticipantRole( ParticipantRole( "Unassigned role", false ) )
         }.getSnapshot()
-        val invitation = createInvitation( setOf( toAssign ) )
+        val invitation = createInvitation( AssignedTo.Roles( setOf( "Role 1" ) ) )
 
         assertFailsWith<IllegalArgumentException> { protocol.throwIfInvalidInvitations( listOf( invitation ) ) }
     }

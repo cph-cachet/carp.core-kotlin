@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 
 /**
- * A [TaskDescriptor] which contains a definition on how to run tasks, measures, and triggers which differs from the CARP domain model.
+ * A [TaskConfiguration] which contains a definition on how to run tasks, measures, and triggers which differs from the CARP domain model.
  */
 @Serializable
 data class CustomProtocolTask(
@@ -14,7 +14,7 @@ data class CustomProtocolTask(
      * A definition on how to run a study on a primary device, serialized as a string.
      */
     val studyProtocol: String
-) : TaskDescriptor<NoData>
+) : TaskConfiguration<NoData>
 {
     /**
      * Description is empty, since it is likely defined in [studyProtocol] in a different format.

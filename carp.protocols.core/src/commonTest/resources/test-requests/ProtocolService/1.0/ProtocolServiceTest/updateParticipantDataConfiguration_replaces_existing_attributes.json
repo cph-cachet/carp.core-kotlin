@@ -1,0 +1,95 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.Add",
+            "apiVersion": "1.0",
+            "protocol": {
+                "id": "0c615854-5ff1-4f7e-b6c3-0e2731e6c423",
+                "createdOn": "2022-04-04T15:04:38.844172100Z",
+                "ownerId": "27879e75-ccc1-4866-9ab3-4ece1b735052",
+                "name": "Test protocol",
+                "description": "Test description",
+                "expectedParticipantData": [
+                    {
+                        "attribute": {
+                            "__type": "dk.cachet.carp.common.application.users.ParticipantAttribute.DefaultParticipantAttribute",
+                            "inputDataType": "namespace.type"
+                        }
+                    }
+                ]
+            },
+            "versionTag": "Version"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.UpdateParticipantDataConfiguration",
+            "apiVersion": "1.0",
+            "protocolId": "0c615854-5ff1-4f7e-b6c3-0e2731e6c423",
+            "versionTag": "Version",
+            "expectedParticipantData": [
+                {
+                    "attribute": {
+                        "__type": "dk.cachet.carp.common.application.users.ParticipantAttribute.DefaultParticipantAttribute",
+                        "inputDataType": "namespace.other_type"
+                    }
+                }
+            ]
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+            "id": "0c615854-5ff1-4f7e-b6c3-0e2731e6c423",
+            "createdOn": "2022-04-04T15:04:38.844172100Z",
+            "ownerId": "27879e75-ccc1-4866-9ab3-4ece1b735052",
+            "name": "Test protocol",
+            "description": "Test description",
+            "expectedParticipantData": [
+                {
+                    "attribute": {
+                        "__type": "dk.cachet.carp.common.application.users.ParticipantAttribute.DefaultParticipantAttribute",
+                        "inputDataType": "namespace.other_type"
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.GetBy",
+            "apiVersion": "1.0",
+            "protocolId": "0c615854-5ff1-4f7e-b6c3-0e2731e6c423",
+            "versionTag": "Version"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+            "id": "0c615854-5ff1-4f7e-b6c3-0e2731e6c423",
+            "createdOn": "2022-04-04T15:04:38.844172100Z",
+            "ownerId": "27879e75-ccc1-4866-9ab3-4ece1b735052",
+            "name": "Test protocol",
+            "description": "Test description",
+            "expectedParticipantData": [
+                {
+                    "attribute": {
+                        "__type": "dk.cachet.carp.common.application.users.ParticipantAttribute.DefaultParticipantAttribute",
+                        "inputDataType": "namespace.other_type"
+                    }
+                }
+            ]
+        }
+    }
+]

@@ -12,11 +12,17 @@
         "studyId": { "type": "string", "format": "uuid" },
         "name": { "type": "string" },
         "createdOn": { "type": "string", "format": "date-time" },
+        "studyProtocolId": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "format": "uuid" }
+          ]
+        },
         "canSetInvitation": { "type": "boolean" },
         "canSetStudyProtocol": { "type": "boolean" },
         "canDeployToParticipants": { "type": "boolean" }
       },
-      "required": [ "__type", "studyId", "name", "createdOn","canSetInvitation", "canSetStudyProtocol",  "canDeployToParticipants" ]
+      "required": [ "__type", "studyId", "name", "createdOn", "studyProtocolId", "canSetInvitation", "canSetStudyProtocol",  "canDeployToParticipants" ]
     },
     "Configuring": {
       "$anchor": "Configuring",

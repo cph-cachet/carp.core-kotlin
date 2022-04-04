@@ -31,19 +31,17 @@ data class AccountParticipation(
 internal fun filterActiveParticipationInvitations(
     invitations: Set<AccountParticipation>,
     groups: List<ParticipantGroup>
-): Set<ActiveParticipationInvitation>
-{
-    return invitations
-        .map { it to (
-            groups.firstOrNull { g -> g.studyDeploymentId == it.participation.studyDeploymentId }
-                ?: throw IllegalArgumentException( "No deployment is passed to pair with one of the given invitations." )
-        ) }
-        .filter { (_, group) -> !group.isStudyDeploymentStopped }
-        .map { (invitation, group) ->
-            ActiveParticipationInvitation(
-                invitation.participation,
-                invitation.invitation,
-                invitation.assignedPrimaryDeviceRoleNames.map { group.getAssignedPrimaryDevice( it ) }.toSet()
-            )
-        }.toSet()
-}
+): Set<ActiveParticipationInvitation> = invitations
+    .map {
+        val matchingGroup = groups.firstOrNull { g -> g.studyDeploymentId == it.participation.studyDeploymentId }
+        requireNotNull( matchingGroup ) { "No deployment is passed to pair with one of the given invitations." }
+        it to matchingGroup
+    }
+    .filter { (_, group) -> !group.isStudyDeploymentStopped }
+    .map { (invitation, group) ->
+        ActiveParticipationInvitation(
+            invitation.participation,
+            invitation.invitation,
+            invitation.assignedPrimaryDeviceRoleNames.map { group.getAssignedPrimaryDevice( it ) }.toSet()
+        )
+    }.toSet()

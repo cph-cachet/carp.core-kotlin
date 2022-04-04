@@ -39,7 +39,7 @@ Allows deploying study protocols to participants and retrieving primary device d
 | `createStudyDeployment` | Instantiate a study deployment for a given protocol with invited participants. | | manage deployment: `studyDeploymentId`, in deployment: `studyDeploymentId` |
 | `removeStudyDeployments` | Remove study deployments and all related data to it. | manage deployment: (all) `studyDeploymentId`| |
 | `getStudyDeploymentStatus` | Get the status for a study deployment. | in deployment: `studyDeploymentId` | |
-| `getStudyDeploymentStatusList` | Get the statuses for a set of deployments. | in deployment: (all) `studyDeploymentIds` | |
+| `getStudyDeploymentStatusList` | Get the status for a set of deployments. | in deployment: (all) `studyDeploymentIds` | |
 | `registerDevice` | Register a device for a study deployment. | in deployment: `studyDeploymentId` | |
 | `unregisterDevice` | Unregister a device for a study deployment. | in deployment: `studyDeploymentId` | |
 | `getDeviceDeploymentFor` | Get the deployment configuration for a primary device in a study deployment. | in deployment: `studyDeploymentId` | |

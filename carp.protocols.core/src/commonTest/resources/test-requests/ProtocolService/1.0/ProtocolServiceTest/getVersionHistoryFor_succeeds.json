@@ -1,0 +1,73 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.Add",
+            "apiVersion": "1.0",
+            "protocol": {
+                "id": "0da6374d-a96a-48a5-a606-67600ce64968",
+                "createdOn": "2022-04-04T15:04:38.855175Z",
+                "ownerId": "27879e75-ccc1-4866-9ab3-4ece1b735052",
+                "name": "Test protocol",
+                "description": "Test description"
+            },
+            "versionTag": "1"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.AddVersion",
+            "apiVersion": "1.0",
+            "protocol": {
+                "id": "0da6374d-a96a-48a5-a606-67600ce64968",
+                "createdOn": "2022-04-04T15:04:38.855175Z",
+                "ownerId": "27879e75-ccc1-4866-9ab3-4ece1b735052",
+                "name": "Test protocol",
+                "description": "Test description",
+                "primaryDevices": [
+                    {
+                        "__type": "dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration",
+                        "isPrimaryDevice": true,
+                        "roleName": "Stub primary device"
+                    }
+                ]
+            },
+            "versionTag": "2"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.GetVersionHistoryFor",
+            "apiVersion": "1.0",
+            "protocolId": "0da6374d-a96a-48a5-a606-67600ce64968"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": [
+            {
+                "tag": "1",
+                "date": "1970-01-01T00:00:00Z"
+            },
+            {
+                "tag": "2",
+                "date": "1970-01-01T00:00:00Z"
+            }
+        ]
+    }
+]

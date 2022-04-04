@@ -23,10 +23,18 @@ typealias ServiceClass = Class<out ApplicationService<*, *>>
  */
 @OptIn( InternalSerializationApi::class )
 @Suppress( "MagicNumber" )
-class ApplicationServiceInfo( val serviceKlass: ServiceClass )
+class ApplicationServiceInfo private constructor( val serviceKlass: ServiceClass )
 {
     companion object
     {
+        private val applicationServiceInfo: MutableMap<ServiceClass, ApplicationServiceInfo> = mutableMapOf()
+
+        /**
+         * Retrieve [ApplicationServiceInfo] for [serviceKlass].
+         */
+        fun of( serviceKlass: ServiceClass ): ApplicationServiceInfo =
+            applicationServiceInfo.getOrPut( serviceKlass ) { ApplicationServiceInfo( serviceKlass ) }
+
         /**
          * Returns the [IntegrationEvent] class for [serviceKlass].
          *
@@ -130,6 +138,7 @@ class ApplicationServiceInfo( val serviceKlass: ServiceClass )
         val (subsystem, application, service) =
             try { splitNamespace.takeLast( 3 ) }
             catch ( _: IndexOutOfBoundsException ) { throw unexpectedNamespace }
+        assert( serviceName == service )
         if ( application != "application" ) throw unexpectedNamespace
         subsystemName = subsystem
         subsystemNamespace = splitNamespace.dropLast( 2 ).joinToString( "." )
@@ -191,9 +200,23 @@ class ApplicationServiceInfo( val serviceKlass: ServiceClass )
 
 
     /**
-     * Returns the service which is responsible for publishing the [event],
+     * Returns info for the service which is responsible for publishing the event identified by [classDiscriminator],
      * but only in case the event is published by this or one of the [dependentServices]; null otherwise.
+     *
+     * @throws IllegalArgumentException if [classDiscriminator] does not end in
+     *  "... <subsystem>.application.<service>.Event.<event-name>".
      */
-    fun getEventPublisher( event: IntegrationEvent<*> ): ServiceClass? = dependentServices.plus( serviceKlass )
-        .firstOrNull { getEventClass( it ).isInstance( event ) }
+    fun getEventPublisher( classDiscriminator: String ): ApplicationServiceInfo? =
+        dependentServices.plus( serviceKlass )
+            .map { of( it ) }
+            .firstOrNull {
+                val splitNamespace = classDiscriminator.split( '.' )
+                val subsystem =
+                    try { splitNamespace.takeLast( 5 ).first() }
+                    catch ( _: IndexOutOfBoundsException )
+                    {
+                        throw IllegalArgumentException( "Unexpected class discriminator." )
+                    }
+                subsystem == it.subsystemName
+            }
 }

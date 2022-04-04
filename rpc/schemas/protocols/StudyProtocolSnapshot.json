@@ -21,20 +21,31 @@
     },
     "tasks": {
       "type": "array",
-      "items": { "$ref": "../common/tasks/TaskDescriptor.json" }
+      "items": { "$ref": "../common/tasks/TaskConfiguration.json" }
     },
     "triggers": {
       "type": "object",
       "propertyNames": { "pattern": "^\\d$" },
-      "additionalProperties": { "$ref": "../common/triggers/Trigger.json" }
+      "additionalProperties": { "$ref": "../common/triggers/TriggerConfiguration.json" }
     },
     "taskControls": {
       "type": "array",
       "items": { "$ref": "../common/triggers/TaskControl.json" }
     },
+    "participantRoles": {
+      "type": "array",
+      "items": { "$ref": "../common/users/ParticipantRole.json" }
+    },
+    "assignedDevices": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
     "expectedParticipantData": {
       "type": "array",
-      "items": { "$ref": "../common/users/ParticipantAttribute.json" }
+      "items": { "$ref": "../common/users/ExpectedParticipantData.json" }
     },
     "applicationData": { "$ref":  "../common/ApplicationData.json" }
   },

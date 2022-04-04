@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.builtins.nullable
@@ -21,6 +22,7 @@ import kotlinx.serialization.json.JsonObject
 
  * In case the JSON contained in the String is malformed, it will be serialized as a normal escaped string.
  */
+@OptIn( ExperimentalSerializationApi::class )
 class ApplicationDataSerializer : KSerializer<String?>
 {
     override val descriptor: SerialDescriptor = String.serializer().nullable.descriptor

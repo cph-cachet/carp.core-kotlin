@@ -27,7 +27,7 @@ class JsonSchemasTest
             checkNotNull( requestSchema )
                 { "Could not locate JSON schema for \"${appService.requestObjectName}\". Searched for: $requestSchemaURI" }
 
-            @Suppress( "UnreachableCode" ) // Seemingly a bug in detekt 1.18.1
+            @Suppress( "UnreachableCode" ) // Seemingly a bug in detekt 1.20.0-RC2
             for ( r in requests )
             {
                 // Validate request.

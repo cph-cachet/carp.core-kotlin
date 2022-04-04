@@ -2,6 +2,7 @@ package dk.cachet.carp.deployments.application.users
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.application.users.AssignedTo
 import kotlinx.serialization.Serializable
 
 
@@ -15,9 +16,9 @@ data class ParticipantInvitation(
      */
     val participantId: UUID,
     /**
-     * The role names of the primary devices in the study protocol which the participant is asked to use.
+     * The participant roles in the study protocol which the participant is assigned to.
      */
-    val assignedPrimaryDeviceRoleNames: Set<String>,
+    val assignedRoles: AssignedTo,
     /**
      * The identity used to authenticate and invite the participant.
      */

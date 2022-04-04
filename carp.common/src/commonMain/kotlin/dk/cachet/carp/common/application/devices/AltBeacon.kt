@@ -7,7 +7,7 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptorList
+import dk.cachet.carp.common.application.tasks.TaskConfigurationList
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
@@ -31,7 +31,7 @@ data class AltBeacon(
         val SIGNAL_STRENGTH = add( NoOptionsSamplingScheme( CarpDataTypes.SIGNAL_STRENGTH ) )
     }
 
-    object Tasks : TaskDescriptorList()
+    object Tasks : TaskConfigurationList()
 
     override fun getSupportedDataTypes(): Set<DataType> = Sensors.keys
     override fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap = Sensors
@@ -86,15 +86,12 @@ data class AltBeaconDeviceRegistration(
     }
 
     @Required
-    override val deviceId: String =
-        // TODO: Remove this workaround once JS serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/716
-        @Suppress( "SENSELESS_COMPARISON" )
-        if ( arrayOf( manufacturerId, organizationId, majorId, minorId ).any { it == null } ) ""
-        else "$manufacturerId:$organizationId:$majorId:$minorId"
+    override val deviceId: String = "$manufacturerId:$organizationId:$majorId:$minorId"
 }
 
 
-@Serializable( with = NotSerializable::class )
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
+@Serializable( NotSerializable::class )
 class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>()
 {
     /**

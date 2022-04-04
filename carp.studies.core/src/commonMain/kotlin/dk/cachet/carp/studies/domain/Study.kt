@@ -37,7 +37,7 @@ class Study(
     createdOn: Instant = Clock.System.now()
 ) : AggregateRoot<Study, StudySnapshot, Study.Event>( id, createdOn )
 {
-    sealed class Event : DomainEvent()
+    sealed class Event : DomainEvent
     {
         data class InternalDescriptionChanged( val name: String, val description: String? ) : Event()
         data class InvitationChanged( val invitation: StudyInvitation ) : Event()
@@ -112,8 +112,8 @@ class Study(
      * Get the status (serializable) of this [Study].
      */
     fun getStatus(): StudyStatus =
-        if ( isLive ) StudyStatus.Live( id, name, createdOn, canSetInvitation, canSetStudyProtocol, canDeployToParticipants )
-        else StudyStatus.Configuring( id, name, createdOn, canSetInvitation, canSetStudyProtocol, canDeployToParticipants, canGoLive )
+        if ( isLive ) StudyStatus.Live( id, name, createdOn, protocolSnapshot?.id, canSetInvitation, canSetStudyProtocol, canDeployToParticipants )
+        else StudyStatus.Configuring( id, name, createdOn, protocolSnapshot?.id, canSetInvitation, canSetStudyProtocol, canDeployToParticipants, canGoLive )
 
     /**
      * Get [StudyDetails] for this [Study].

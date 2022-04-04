@@ -37,7 +37,8 @@ data class StudySnapshot(
                 description = study.description,
                 invitation = study.invitation,
                 protocolSnapshot = study.protocolSnapshot,
-                isLive = study.isLive )
+                isLive = study.isLive
+            )
         }
     }
 

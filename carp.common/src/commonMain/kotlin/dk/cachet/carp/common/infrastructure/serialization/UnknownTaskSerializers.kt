@@ -1,26 +1,30 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.data.NoData
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
 import dk.cachet.carp.common.application.tasks.Measure
+import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 
 /**
- * A wrapper used to load extending types from [TaskDescriptor] serialized as JSON which are unknown at runtime.
+ * A wrapper used to load extending types from [TaskConfiguration] serialized as JSON which are unknown at runtime.
  */
-@Serializable( TaskDescriptorSerializer::class )
-data class CustomTaskDescriptor( override val className: String, override val jsonSource: String, val serializer: Json ) :
-    TaskDescriptor<NoData>, UnknownPolymorphicWrapper
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
+@Serializable( TaskConfigurationSerializer::class )
+data class CustomTaskConfiguration(
+    override val className: String,
+    override val jsonSource: String,
+    val serializer: Json
+) : TaskConfiguration<NoData>, UnknownPolymorphicWrapper
 {
     @Serializable
     private data class BaseMembers(
         override val name: String,
         override val measures: List<Measure> = emptyList(),
         override val description: String? = null
-    ) : TaskDescriptor<NoData>
+    ) : TaskConfiguration<NoData>
 
     override val name: String
     override val measures: List<Measure>
@@ -36,7 +40,7 @@ data class CustomTaskDescriptor( override val className: String, override val js
 }
 
 /**
- * Custom serializer for [TaskDescriptor] which enables deserializing types that are unknown at runtime, yet extend from [TaskDescriptor].
+ * Custom serializer for [TaskConfiguration] which enables deserializing types that are unknown at runtime, yet extend from [TaskConfiguration].
  */
-object TaskDescriptorSerializer : KSerializer<TaskDescriptor<*>>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) } )
+object TaskConfigurationSerializer : KSerializer<TaskConfiguration<*>>
+    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTaskConfiguration( className, json, serializer ) } )

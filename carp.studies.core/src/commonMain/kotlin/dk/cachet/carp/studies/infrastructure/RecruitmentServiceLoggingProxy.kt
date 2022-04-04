@@ -8,14 +8,14 @@ import dk.cachet.carp.common.infrastructure.services.EventBusLog
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.studies.application.RecruitmentService
 import dk.cachet.carp.studies.application.StudyService
-import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 
 
 /**
  * A proxy for a recruitment [service] which notifies of incoming requests and responses through [log]
- * and keeps a history of requests in [loggedRequests] and published events in [loggedEvents].
+ * and keeps a history of requests and published events in [loggedRequests].
  */
 class RecruitmentServiceLoggingProxy(
     service: RecruitmentService,
@@ -44,7 +44,7 @@ class RecruitmentServiceLoggingProxy(
 
     override suspend fun inviteNewParticipantGroup(
         studyId: UUID,
-        group: Set<AssignParticipantDevices>
+        group: Set<AssignedParticipantRoles>
     ): ParticipantGroupStatus =
         log( RecruitmentServiceRequest.InviteNewParticipantGroup( studyId, group ) )
 

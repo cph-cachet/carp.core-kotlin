@@ -5,6 +5,7 @@ import dk.cachet.carp.clients.domain.connectedDevice
 import dk.cachet.carp.clients.domain.smartphone
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
@@ -14,7 +15,7 @@ import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
 import kotlin.test.*
 
@@ -35,7 +36,7 @@ class StudyTest
         dependentDevice: AnyPrimaryDeviceConfiguration? = null
     ) = Pair(
         Study( deploymentId, device.roleName ),
-        if (dependentDevice != null ) twoDeviceDeployment( device, dependentDevice )
+        if ( dependentDevice != null ) twoDeviceDeployment( device, dependentDevice )
         else singleDeviceDeployment( device )
     )
 
@@ -107,7 +108,7 @@ class StudyTest
             listOf(
                 ParticipantInvitation(
                     UUID.randomUUID(),
-                    setOf( device.roleName ),
+                    AssignedTo.All,
                     UsernameAccountIdentity( "Test" ),
                     StudyInvitation( "Test" )
                 )
@@ -126,7 +127,7 @@ class StudyTest
         listOf(
             ParticipantInvitation(
                 UUID.randomUUID(),
-                setOf( device.roleName, dependentDevice.roleName ),
+                AssignedTo.All,
                 UsernameAccountIdentity( "Test" ),
                 StudyInvitation( "Test" )
             )
@@ -291,7 +292,7 @@ class StudyTest
     }
 
     @Test
-    fun creating_study_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runSuspendTest {
+    fun creating_study_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runTest {
         // Create a study snapshot for the 'smartphone' with an unregistered connected device.
         val deploymentId = UUID.randomUUID()
         val study = Study( deploymentId, smartphone.roleName )

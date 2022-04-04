@@ -16,13 +16,12 @@ data class MACAddressDeviceRegistration(
     override val deviceDisplayName: String? = null
 ) : DeviceRegistration()
 {
-    // TODO: Remove this workaround once JS serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/716
-    @Suppress( "UNNECESSARY_SAFE_CALL" )
     @Required
-    override val deviceId: String = macAddress?.address
+    override val deviceId: String = macAddress.address
 }
 
 
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( with = NotSerializable::class )
 class MACAddressDeviceRegistrationBuilder : DeviceRegistrationBuilder<MACAddressDeviceRegistration>()
 {

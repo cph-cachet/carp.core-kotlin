@@ -9,7 +9,7 @@ import kotlinx.datetime.Instant
  */
 object TestClock : Clock
 {
-    private var currentInstant: Instant = Instant.fromEpochSeconds( 0 )
+    private val currentInstant: Instant = Instant.fromEpochSeconds( 0 )
 
     override fun now(): Instant = currentInstant
 }

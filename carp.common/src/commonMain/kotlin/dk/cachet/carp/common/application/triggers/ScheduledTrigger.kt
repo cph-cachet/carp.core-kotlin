@@ -19,7 +19,7 @@ data class ScheduledTrigger private constructor(
     override val sourceDeviceRoleName: String,
     val time: TimeOfDay,
     val recurrenceRule: RecurrenceRule
-) : Trigger<NoData>()
+) : TriggerConfiguration<NoData>()
 {
     @Transient
     override val requiresPrimaryDevice: Boolean = true

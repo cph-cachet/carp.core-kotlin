@@ -5,15 +5,20 @@ package dk.cachet.carp.protocols.domain
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
-import dk.cachet.carp.common.application.triggers.Trigger
-import dk.cachet.carp.common.application.triggers.TaskControl.Control as Control
+import dk.cachet.carp.common.application.tasks.TaskConfiguration
+import dk.cachet.carp.common.application.triggers.TaskControl.Control
+import dk.cachet.carp.common.application.triggers.TriggerConfiguration
+import dk.cachet.carp.common.application.users.AssignedTo
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ParticipantRole
+import dk.cachet.carp.common.application.users.hasNoConflicts
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolDeviceConfiguration
-import dk.cachet.carp.protocols.domain.configuration.EmptyParticipantDataConfiguration
-import dk.cachet.carp.protocols.domain.configuration.EmptyTaskConfiguration
+import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolParticipantConfiguration
+import dk.cachet.carp.protocols.domain.configuration.EmptyProtocolTaskConfiguration
+import dk.cachet.carp.protocols.domain.configuration.ProtocolParticipantConfiguration
 import dk.cachet.carp.protocols.domain.configuration.StudyProtocolComposition
 import dk.cachet.carp.protocols.domain.deployment.*
 import kotlinx.datetime.Clock
@@ -22,7 +27,7 @@ import kotlinx.datetime.Instant
 
 /**
  * A description of how a study is to be executed, defining the type(s) of primary device(s) ([AnyPrimaryDeviceConfiguration]) responsible for aggregating data,
- * the optional devices ([AnyDeviceConfiguration]) connected to them, and the [Trigger]'s which lead to data collection on said devices.
+ * the optional devices ([AnyDeviceConfiguration]) connected to them, and the [TriggerConfiguration]'s which lead to data collection on said devices.
  */
 @Suppress( "TooManyFunctions" ) // TODO: some of the device and task configuration methods are overridden solely to add events. Can this be refactored?
 class StudyProtocol(
@@ -42,13 +47,13 @@ class StudyProtocol(
     createdOn: Instant = Clock.System.now()
 ) : StudyProtocolComposition(
         EmptyProtocolDeviceConfiguration(),
-        EmptyTaskConfiguration(),
-        EmptyParticipantDataConfiguration(),
+        EmptyProtocolTaskConfiguration(),
+        EmptyProtocolParticipantConfiguration(),
         id,
         createdOn
     )
 {
-    sealed class Event : DomainEvent()
+    sealed class Event : DomainEvent
     {
         data class NameChanged( val name: String ) : Event()
         data class DescriptionChanged( val description: String? ) : Event()
@@ -57,18 +62,24 @@ class StudyProtocol(
             val connected: AnyDeviceConfiguration,
             val primary: AnyPrimaryDeviceConfiguration
         ) : Event()
-        data class TriggerAdded( val trigger: Trigger<*> ) : Event()
-        data class TaskAdded( val task: TaskDescriptor<*> ) : Event()
-        data class TaskRemoved( val task: TaskDescriptor<*> ) : Event()
+        data class TriggerAdded( val trigger: TriggerConfiguration<*> ) : Event()
+        data class TaskAdded( val task: TaskConfiguration<*> ) : Event()
+        data class TaskRemoved( val task: TaskConfiguration<*> ) : Event()
         data class TaskControlAdded( val control: TaskControl ) : Event()
         data class TaskControlRemoved( val control: TaskControl ) : Event()
-        data class ExpectedParticipantDataAdded( val attribute: ParticipantAttribute ) : Event()
-        data class ExpectedParticipantDataRemoved( val attribute: ParticipantAttribute ) : Event()
+        data class ParticipantRoleAdded( val role: ParticipantRole ) : Event()
+        data class DeviceAssignmentChanged(
+            val device: AnyPrimaryDeviceConfiguration,
+            val assignedTo: AssignedTo
+        ) : Event()
+        data class ExpectedParticipantDataAdded( val expectedData: ExpectedParticipantData ) : Event()
+        data class ExpectedParticipantDataRemoved( val expectedData: ExpectedParticipantData ) : Event()
     }
 
 
     companion object Factory
     {
+        @Suppress( "ComplexMethod" )
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
             val protocol = StudyProtocol(
@@ -109,15 +120,23 @@ class StudyProtocol(
             snapshot.taskControls.forEach { control ->
                 val triggerMatch = snapshot.triggers.entries.singleOrNull { it.key == control.triggerId }
                     ?: throw IllegalArgumentException( "Can't find trigger with id '${control.triggerId}' in snapshot." )
-                val task: TaskDescriptor<*> = protocol.tasks.singleOrNull { it.name == control.taskName }
+                val task: TaskConfiguration<*> = protocol.tasks.singleOrNull { it.name == control.taskName }
                     ?: throw IllegalArgumentException( "Can't find task with name '${control.taskName}' in snapshot." )
                 val device: AnyDeviceConfiguration = protocol.devices.singleOrNull { it.roleName == control.destinationDeviceRoleName }
                     ?: throw IllegalArgumentException( "Can't find device with role name '${control.destinationDeviceRoleName}' in snapshot." )
                 protocol.addTaskControl( triggerMatch.value, task, device, control.control )
             }
 
-            // Add expected participant data.
+            // Add expected participant roles and data.
+            snapshot.participantRoles.forEach { protocol.addParticipantRole( it ) }
             snapshot.expectedParticipantData.forEach { protocol.addExpectedParticipantData( it ) }
+
+            // Assign devices.
+            snapshot.assignedDevices.forEach { (deviceRoleName, assignedParticipantRoles) ->
+                val device = requireNotNull( protocol.primaryDevices.singleOrNull { it.roleName == deviceRoleName } )
+                    { "Can't find device with role name '$deviceRoleName' in snapshot." }
+                protocol.changeDeviceAssignment( device, AssignedTo.Roles( assignedParticipantRoles ) )
+            }
 
             // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
             protocol.consumeEvents()
@@ -167,9 +186,17 @@ class StudyProtocol(
      *  - [primaryDevice] contains invalid default sampling configurations
      * @return True if the [primaryDevice] has been added; false if it is already set as a primary device.
      */
-    override fun addPrimaryDevice( primaryDevice: AnyPrimaryDeviceConfiguration ): Boolean =
-        super.addPrimaryDevice( primaryDevice )
-        .eventIf( true ) { Event.PrimaryDeviceAdded( primaryDevice ) }
+    override fun addPrimaryDevice( primaryDevice: AnyPrimaryDeviceConfiguration ): Boolean
+    {
+        val isAdded = super.addPrimaryDevice( primaryDevice )
+        if ( isAdded )
+        {
+            _deviceAssignments[ primaryDevice ] = AssignedTo.All
+            event( Event.PrimaryDeviceAdded( primaryDevice ) )
+        }
+
+        return isAdded
+    }
 
     /**
      * Add a [device] which is connected to a [primaryDevice] within this configuration.
@@ -189,7 +216,7 @@ class StudyProtocol(
      * Set of triggers in the exact sequence by which they were added to the protocol.
      * A `LinkedHashSet` is used to guarantee this order is maintained, allowing to use the index as ID.
      */
-    private val _triggers: LinkedHashSet<Trigger<*>> = LinkedHashSet()
+    private val _triggers: LinkedHashSet<TriggerConfiguration<*>> = LinkedHashSet()
 
     /**
      * The list of triggers with assigned IDs which can start or stop tasks in this study protocol.
@@ -200,7 +227,7 @@ class StudyProtocol(
     /**
      * Stores which tasks need to be started or stopped when the conditions defined by [triggers] are met.
      */
-    private val triggerControls: MutableMap<Trigger<*>, MutableSet<TaskControl>> = mutableMapOf()
+    private val triggerControls: MutableMap<TriggerConfiguration<*>, MutableSet<TaskControl>> = mutableMapOf()
 
     /**
      * Add a [trigger] to this protocol.
@@ -210,7 +237,7 @@ class StudyProtocol(
      *   - [trigger] requires a primary device and the specified source device is not a primary device
      * @return The [trigger] and its newly assigned ID, or previously assigned ID in case the trigger is already included in this protocol.
      */
-    fun addTrigger( trigger: Trigger<*> ): TriggerWithId
+    fun addTrigger( trigger: TriggerConfiguration<*> ): TriggerWithId
     {
         val device: AnyDeviceConfiguration = deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
             ?: throw IllegalArgumentException( "The passed trigger does not belong to any device specified in this study protocol." )
@@ -241,8 +268,8 @@ class StudyProtocol(
      * @return True if the task control has been added; false if the same control is already present.
      */
     fun addTaskControl(
-        trigger: Trigger<*>,
-        task: TaskDescriptor<*>,
+        trigger: TriggerConfiguration<*>,
+        task: TaskConfiguration<*>,
         destinationDevice: AnyDeviceConfiguration,
         control: Control
     ): Boolean
@@ -280,7 +307,7 @@ class StudyProtocol(
      *
      * @throws IllegalArgumentException when [trigger] is not part of this study protocol.
      */
-    fun getTaskControls( trigger: Trigger<*> ): Iterable<TaskControl>
+    fun getTaskControls( trigger: TriggerConfiguration<*> ): Iterable<TaskControl>
     {
         require( trigger in _triggers ) { "The passed trigger is not part of this study protocol." }
 
@@ -304,7 +331,7 @@ class StudyProtocol(
     /**
      * Gets all the tasks triggered for the specified [device].
      */
-    fun getTasksForDevice( device: AnyDeviceConfiguration ): Set<TaskDescriptor<*>>
+    fun getTasksForDevice( device: AnyDeviceConfiguration ): Set<TaskConfiguration<*>>
     {
         return triggerControls
             .flatMap { it.value }
@@ -319,17 +346,17 @@ class StudyProtocol(
      * @throws IllegalArgumentException in case a task with the specified name already exists.
      * @return True if the [task] has been added; false if it is already included in this configuration.
      */
-    override fun addTask( task: TaskDescriptor<*> ): Boolean =
+    override fun addTask( task: TaskConfiguration<*> ): Boolean =
         super.addTask( task )
         .eventIf( true ) { Event.TaskAdded( task ) }
 
     /**
      * Remove a [task] currently present in this configuration
-     * including removing it from any [Trigger]'s which initiate it.
+     * including removing it from any [TaskControl]'s which initiate it.
      *
      * @return True if the [task] has been removed; false if it is not included in this configuration.
      */
-    override fun removeTask( task: TaskDescriptor<*> ): Boolean
+    override fun removeTask( task: TaskConfiguration<*> ): Boolean
     {
         // Remove all controls which control this task.
         triggerControls.values.forEach { controls ->
@@ -345,46 +372,91 @@ class StudyProtocol(
     }
 
     /**
-     * Add expected participant data [attribute] to be be input by users.
+     * Add a participant role which can be assigned to participants in the study.
      *
-     * @throws IllegalArgumentException in case a differing [attribute] with a matching input type is already added.
-     * @return True if the [attribute] has been added; false in case the same [attribute] has already been added before.
+     * @throws IllegalArgumentException in case a differing [role] with a matching role name is already added.
+     * @return True if the [role] has been added; false in case the same [role] has already been added before.
      */
-    override fun addExpectedParticipantData( attribute: ParticipantAttribute ): Boolean =
-        super.addExpectedParticipantData( attribute )
-        .eventIf( true ) { Event.ExpectedParticipantDataAdded( attribute ) }
+    override fun addParticipantRole( role: ParticipantRole ): Boolean =
+        super.addParticipantRole( role )
+        .eventIf( true ) { Event.ParticipantRoleAdded( role ) }
 
     /**
-     * Remove expected participant data [attribute] to be input by users.
+     * Add expected participant data to be input by users.
      *
-     * @return True if the [attribute] has been removed; false if it is not included in this configuration.
+     * @throws IllegalArgumentException if:
+     *  - [expectedData] is assigned to a participant role which is not part of this [ProtocolParticipantConfiguration]
+     *  - a differing [ParticipantAttribute] with a matching input data type is already added
+     *  - [expectedParticipantData] already contains an input data type which can be input by the same role
+     * @return True if the [expectedData] has been added; false in case the same [expectedData] has already been added before.
      */
-    override fun removeExpectedParticipantData( attribute: ParticipantAttribute ): Boolean =
-        super.removeExpectedParticipantData( attribute )
-        .eventIf( true ) { Event.ExpectedParticipantDataRemoved( attribute ) }
+    override fun addExpectedParticipantData( expectedData: ExpectedParticipantData ): Boolean =
+        super.addExpectedParticipantData( expectedData )
+        .eventIf( true ) { Event.ExpectedParticipantDataAdded( expectedData ) }
 
     /**
-     * Replace the expected participant data to be input by users with the specified [attributes].
+     * Remove expected participant data to be input by users.
+     *
+     * @return True if the [expectedData] has been removed; false if it is not included in this configuration.
+     */
+    override fun removeExpectedParticipantData( expectedData: ExpectedParticipantData ): Boolean =
+        super.removeExpectedParticipantData( expectedData )
+        .eventIf( true ) { Event.ExpectedParticipantDataRemoved( expectedData ) }
+
+    /**
+     * Replace the expected participant data to be input by users with the specified [expectedData].
      *
      * TODO: This is currently defined in `StudyProtocol` rather than `ParticipantDataConfiguration` due to the need to track events.
      *   Once eventing is implemented on `ParticipantDataConfiguration`, this can be moved where it logically belongs.
      *
-     * @throws IllegalArgumentException in case the specified [attributes] contain two or more attributes with the same input type.
-     * @return True if any attributes have been replaced; false if the specified [attributes] were the same as those already set.
+     * @throws IllegalArgumentException if:
+     *  - [expectedData] is assigned to a participant role which is not part of this protocol
+     *  - [expectedData] contains differing [ParticipantAttribute]s with the same input data type
+     *  - [expectedData] contains multiple attributes of the same input data type which are assigned to the same role
+     * @return True if any expected data has been replaced; false if the specified [expectedData] was the same as those already set.
      */
-    fun replaceExpectedParticipantData( attributes: Set<ParticipantAttribute> ): Boolean
+    fun replaceExpectedParticipantData( expectedData: Set<ExpectedParticipantData> ): Boolean
     {
-        require( attributes.map { it.inputDataType }.toSet().size == attributes.size )
-            { "The specified attributes contain two or more attributes with the same input type." }
+        // Throw when expected data is invalid so that the set isn't added partially.
+        expectedData.hasNoConflicts( exceptionOnConflict = true )
+        require( expectedData.all { isValidAssignment( it.assignedTo ) } ) // TODO: Make this part of `hasNoConflicts`?
+            { "Expected data contains participant role names which aren't part of the participant configuration." }
 
-        val toRemove = expectedParticipantData.minus( attributes )
-        val toAdd = attributes.minus( expectedParticipantData )
+        val toRemove = expectedParticipantData.minus( expectedData )
+        val toAdd = expectedData.minus( expectedParticipantData )
 
         if ( toRemove.isEmpty() && toAdd.isEmpty() ) return false
 
         toRemove.forEach { removeExpectedParticipantData( it ) }
         toAdd.forEach { addExpectedParticipantData( it ) }
         return true
+    }
+
+    /**
+     * For each of the primary device configurations in this protocol, the participant roles it has been [AssignedTo].
+     * By default, primary devices are [AssignedTo.All] roles.
+     */
+    val deviceAssignments: Map<AnyPrimaryDeviceConfiguration, AssignedTo>
+        get() = _deviceAssignments.toMap()
+
+    private val _deviceAssignments: MutableMap<AnyPrimaryDeviceConfiguration, AssignedTo> = mutableMapOf()
+
+    /**
+     * Change who the primary [device] is [assignedTo].
+     * By default, primary devices are [AssignedTo.All] roles.
+     *
+     * @throws IllegalArgumentException if:
+     *  - [device] is not part of this protocol
+     *  - [assignedTo] contains participant roles which are not part of this protocol
+     */
+    fun changeDeviceAssignment( device: AnyPrimaryDeviceConfiguration, assignedTo: AssignedTo ): Boolean
+    {
+        require( _deviceAssignments.containsKey( device ) ) { "The device configuration is not part of this protocol." }
+        require( isValidAssignment( assignedTo ) ) { "One of the assigned participant roles is not part of this protocol." }
+
+        val isChanged = _deviceAssignments.put( device, assignedTo ) != assignedTo
+        if ( isChanged ) event( Event.DeviceAssignmentChanged( device, assignedTo ) )
+        return isChanged
     }
 
     /**

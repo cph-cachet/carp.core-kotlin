@@ -23,12 +23,12 @@ sealed class StudyDeploymentStatus
     /**
      * The list of all devices part of this study deployment and their status.
      */
-    abstract val devicesStatus: List<DeviceDeploymentStatus>
+    abstract val deviceStatusList: List<DeviceDeploymentStatus>
 
     /**
      * The list of all participants and their status in this study deployment.
      */
-    abstract val participantsStatus: List<ParticipantStatus>
+    abstract val participantStatusList: List<ParticipantStatus>
 
     /**
      * The time when the study deployment was ready for the first time (all devices deployed); null otherwise.
@@ -43,8 +43,8 @@ sealed class StudyDeploymentStatus
     data class Invited(
         override val createdOn: Instant,
         override val studyDeploymentId: UUID,
-        override val devicesStatus: List<DeviceDeploymentStatus>,
-        override val participantsStatus: List<ParticipantStatus>,
+        override val deviceStatusList: List<DeviceDeploymentStatus>,
+        override val participantStatusList: List<ParticipantStatus>,
         override val startedOn: Instant?
     ) : StudyDeploymentStatus()
 
@@ -55,8 +55,8 @@ sealed class StudyDeploymentStatus
     data class DeployingDevices(
         override val createdOn: Instant,
         override val studyDeploymentId: UUID,
-        override val devicesStatus: List<DeviceDeploymentStatus>,
-        override val participantsStatus: List<ParticipantStatus>,
+        override val deviceStatusList: List<DeviceDeploymentStatus>,
+        override val participantStatusList: List<ParticipantStatus>,
         override val startedOn: Instant?
     ) : StudyDeploymentStatus()
 
@@ -68,8 +68,8 @@ sealed class StudyDeploymentStatus
     data class Running(
         override val createdOn: Instant,
         override val studyDeploymentId: UUID,
-        override val devicesStatus: List<DeviceDeploymentStatus>,
-        override val participantsStatus: List<ParticipantStatus>,
+        override val deviceStatusList: List<DeviceDeploymentStatus>,
+        override val participantStatusList: List<ParticipantStatus>,
         override val startedOn: Instant
     ) : StudyDeploymentStatus()
 
@@ -80,24 +80,24 @@ sealed class StudyDeploymentStatus
     data class Stopped(
         override val createdOn: Instant,
         override val studyDeploymentId: UUID,
-        override val devicesStatus: List<DeviceDeploymentStatus>,
-        override val participantsStatus: List<ParticipantStatus>,
+        override val deviceStatusList: List<DeviceDeploymentStatus>,
+        override val participantStatusList: List<ParticipantStatus>,
         override val startedOn: Instant?,
         val stoppedOn: Instant
     ) : StudyDeploymentStatus()
 
 
     /**
-     * Returns all [AnyDeviceConfiguration]'s in [devicesStatus] which still require registration.
+     * Returns all [AnyDeviceConfiguration]'s in [deviceStatusList] which still require registration.
      */
     fun getRemainingDevicesToRegister(): Set<AnyDeviceConfiguration> =
-        devicesStatus.filterIsInstance<DeviceDeploymentStatus.Unregistered>().map { it.device }.toSet()
+        deviceStatusList.filterIsInstance<DeviceDeploymentStatus.Unregistered>().map { it.device }.toSet()
 
     /**
      * Returns all [AnyPrimaryDeviceConfiguration] which are ready for deployment and are not deployed with the correct deployment yet.
      */
     fun getRemainingDevicesReadyToDeploy(): Set<AnyPrimaryDeviceConfiguration> =
-        devicesStatus
+        deviceStatusList
             .filter { it is DeviceDeploymentStatus.NotDeployed && it.canObtainDeviceDeployment }
             .map { it.device }
             .filterIsInstance<AnyPrimaryDeviceConfiguration>()
@@ -107,13 +107,13 @@ sealed class StudyDeploymentStatus
      * Get the status of a [device] in this study deployment.
      */
     fun getDeviceStatus( device: AnyDeviceConfiguration ): DeviceDeploymentStatus =
-        devicesStatus.firstOrNull { it.device == device }
+        deviceStatusList.firstOrNull { it.device == device }
             ?: throw IllegalArgumentException( "The given device was not found in this study deployment." )
 
     /**
      * Get the status of a device with the given [deviceRoleName] in this study deployment.
      */
     fun getDeviceStatus( deviceRoleName: String ): DeviceDeploymentStatus =
-        devicesStatus.firstOrNull { it.device.roleName == deviceRoleName }
+        deviceStatusList.firstOrNull { it.device.roleName == deviceRoleName }
             ?: throw IllegalArgumentException( "The device with the given role name was not found in this study deployment." )
 }

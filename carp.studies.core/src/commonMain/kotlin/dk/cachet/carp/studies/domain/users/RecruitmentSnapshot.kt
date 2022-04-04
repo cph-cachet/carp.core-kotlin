@@ -44,7 +44,8 @@ data class RecruitmentSnapshot(
                 studyProtocol,
                 invitation,
                 recruitment.participants,
-                participations )
+                participations
+            )
         }
     }
 

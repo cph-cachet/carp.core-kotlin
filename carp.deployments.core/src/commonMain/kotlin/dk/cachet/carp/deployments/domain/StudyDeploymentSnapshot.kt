@@ -45,7 +45,8 @@ data class StudyDeploymentSnapshot(
                 studyDeployment.deployedDevices.map { it.roleName }.toSet(),
                 studyDeployment.invalidatedDeployedDevices.map { it.roleName }.toSet(),
                 studyDeployment.startedOn,
-                studyDeployment.isStopped )
+                studyDeployment.isStopped
+            )
         }
     }
 

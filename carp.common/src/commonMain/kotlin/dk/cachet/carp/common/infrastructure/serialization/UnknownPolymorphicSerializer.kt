@@ -2,13 +2,12 @@ package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.infrastructure.reflect.AccessInternals
 import dk.cachet.carp.common.infrastructure.reflect.reflectIfAvailable
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonEncoder
@@ -27,7 +26,6 @@ import kotlin.reflect.KClass
  *  In case it is impossible for a base return type to implement this interface you can disable the runtime verification by setting this to false.
  *  However, ensure that all deriving classes of this base type implement [UnknownPolymorphicWrapper], otherwise serialization will not output the original JSON found upon deserializing.
  */
-@OptIn( ExperimentalSerializationApi::class )
 abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
     baseClass: KClass<P>,
     wrapperClass: KClass<W>,

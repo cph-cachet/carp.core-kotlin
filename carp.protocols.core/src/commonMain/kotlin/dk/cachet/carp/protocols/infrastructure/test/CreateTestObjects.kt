@@ -1,18 +1,22 @@
 package dk.cachet.carp.protocols.infrastructure.test
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.application.triggers.TaskControl
+import dk.cachet.carp.common.application.users.AssignedTo
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
+import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubTrigger
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
-import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.protocols.domain.StudyProtocol
 
 
@@ -64,10 +68,21 @@ fun createComplexProtocol(): StudyProtocol
     val connectedDevice = StubDeviceConfiguration()
     val chainedPrimaryDevice = StubPrimaryDeviceConfiguration( "Chained primary" )
     val chainedConnectedDevice = StubDeviceConfiguration( "Chained connected" )
-    val trigger = StubTrigger( connectedDevice )
-    val measures = listOf( Measure.DataStream( STUB_DATA_TYPE ) )
-    val task = StubTaskDescriptor( "Task", measures )
-    val expectedParticipantData = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
+    val trigger = StubTriggerConfiguration( connectedDevice )
+    val measures = listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) )
+    val task = StubTaskConfiguration( "Task", measures )
+    val mainRole = ParticipantRole( "Role", false )
+    val optionalRole = ParticipantRole( "Optional role", true )
+    val commonExpectedData =
+        ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) ),
+            AssignedTo.All
+        )
+    val mainRoleData =
+        ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ),
+            AssignedTo.Roles( setOf( mainRole.role ) )
+        )
     with ( protocol )
     {
         addPrimaryDevice( primaryDevice )
@@ -75,7 +90,11 @@ fun createComplexProtocol(): StudyProtocol
         addConnectedDevice( chainedPrimaryDevice, primaryDevice )
         addConnectedDevice( chainedConnectedDevice, chainedPrimaryDevice )
         addTaskControl( trigger, task, primaryDevice, TaskControl.Control.Start )
-        addExpectedParticipantData( expectedParticipantData )
+        addParticipantRole( mainRole )
+        addParticipantRole( optionalRole )
+        changeDeviceAssignment( primaryDevice, AssignedTo.Roles( setOf( mainRole.role ) ) )
+        addExpectedParticipantData( commonExpectedData )
+        addExpectedParticipantData( mainRoleData )
     }
 
     return protocol

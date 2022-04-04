@@ -54,11 +54,11 @@ class StudyServiceHost(
      *
      * @param studyId The id of the study to update the study details for.
      * @param name A descriptive name for the study.
-     * @param description A description of the study.
+     * @param description A description of the study; null to remove description.
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
-    override suspend fun setInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus
+    override suspend fun setInternalDescription( studyId: UUID, name: String, description: String? ): StudyStatus
     {
         val study = repository.getById( studyId )
         requireNotNull( study )
@@ -124,9 +124,9 @@ class StudyServiceHost(
      * Specify the study [protocol] to use for the study with the specified [studyId].
      *
      * @throws IllegalArgumentException when:
-     *   - a study with [studyId] does not exist
-     *   - the provided [protocol] snapshot is invalid
-     *   - the [protocol] contains errors preventing it from being used in deployments
+     *  - a study with [studyId] does not exist
+     *  - the provided [protocol] snapshot is invalid
+     *  - the [protocol] contains errors preventing it from being used in deployments
      * @throws IllegalStateException when the study protocol can no longer be set since the study went 'live'.
      */
     override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
@@ -136,6 +136,23 @@ class StudyServiceHost(
 
         // Configure study to use the protocol.
         study.protocolSnapshot = protocol
+        repository.update( study )
+
+        return study.getStatus()
+    }
+
+    /**
+     * Remove the currently set study protocol for the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     * @throws IllegalStateException when the study protocol can no longer be set since the study went 'live'.
+     */
+    override suspend fun removeProtocol( studyId: UUID ): StudyStatus
+    {
+        val study: Study? = repository.getById( studyId )
+        requireNotNull( study )
+
+        study.protocolSnapshot = null
         repository.update( study )
 
         return study.getStatus()

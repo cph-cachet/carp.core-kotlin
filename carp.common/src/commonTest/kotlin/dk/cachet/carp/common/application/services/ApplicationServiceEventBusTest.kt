@@ -1,7 +1,7 @@
 package dk.cachet.carp.common.application.services
 
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlin.test.*
@@ -51,7 +51,7 @@ class ApplicationServiceEventBusTest
     }
 
     @Test
-    fun publish_succeeds() = runSuspendTest {
+    fun publish_succeeds() = runTest {
         val bus = SingleThreadedEventBus()
         val serviceBus = bus.createApplicationServiceAdapter( TestService::class )
 
@@ -64,7 +64,7 @@ class ApplicationServiceEventBusTest
     }
 
     @Test
-    fun subscribe_succeeds() = runSuspendTest {
+    fun subscribe_succeeds() = runTest {
         val bus = SingleThreadedEventBus()
         val serviceBus = bus.createApplicationServiceAdapter( TestService::class )
 

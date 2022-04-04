@@ -20,6 +20,7 @@ import kotlin.reflect.KClass
 /**
  * A wrapper used to load extending types from [DeviceConfiguration] serialized as JSON which are unknown at runtime.
  */
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( DeviceConfigurationSerializer::class )
 data class CustomDeviceConfiguration(
     override val className: String,
@@ -52,7 +53,7 @@ data class CustomDeviceConfiguration(
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
 
     /**
-     * For unknown types, it cannot be determined whether or not a given registration is valid.
+     * For unknown types, it cannot be determined whether a given registration is valid.
      */
     override fun isValidRegistration( registration: DeviceRegistration ) = Trilean.UNKNOWN
 }
@@ -61,6 +62,7 @@ data class CustomDeviceConfiguration(
 /**
  * A wrapper used to load extending types from [PrimaryDeviceConfiguration] serialized as JSON which are unknown at runtime.
  */
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( PrimaryDeviceConfigurationSerializer::class )
 data class CustomPrimaryDeviceConfiguration(
     override val className: String,
@@ -93,7 +95,7 @@ data class CustomPrimaryDeviceConfiguration(
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
 
     /**
-     * For unknown types, it cannot be determined whether or not a given registration is valid.
+     * For unknown types, it cannot be determined whether a given registration is valid.
      */
     override fun isValidRegistration( registration: DeviceRegistration ) = Trilean.UNKNOWN
 }
@@ -150,6 +152,7 @@ object PrimaryDeviceConfigurationSerializer : KSerializer<AnyPrimaryDeviceConfig
 /**
  * A wrapper used to load extending types from [DeviceRegistration] serialized as JSON which are unknown at runtime.
  */
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( DeviceRegistrationSerializer::class )
 data class CustomDeviceRegistration(
     override val className: String,

@@ -1,13 +1,13 @@
 package dk.cachet.carp.protocols.domain.deployment
 
-import dk.cachet.carp.common.application.tasks.TaskDescriptor
+import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl
-import dk.cachet.carp.common.application.triggers.Trigger
+import dk.cachet.carp.common.application.triggers.TriggerConfiguration
 import dk.cachet.carp.protocols.domain.StudyProtocol
 
 
 /**
- * Evaluates whether a [StudyProtocol] contains any tasks which are never started by a [Trigger].
+ * Evaluates whether a [StudyProtocol] contains any tasks which are never started by a [TriggerConfiguration].
  * Tasks which are never started by a trigger are never used during the study.
  */
 class UnstartedTasksWarning internal constructor() : DeploymentWarning
@@ -19,9 +19,9 @@ class UnstartedTasksWarning internal constructor() : DeploymentWarning
 
     override fun isIssuePresent( protocol: StudyProtocol ): Boolean = getUnstartedTasks( protocol ).any()
 
-    fun getUnstartedTasks( protocol: StudyProtocol ): Set<TaskDescriptor<*>>
+    fun getUnstartedTasks( protocol: StudyProtocol ): Set<TaskConfiguration<*>>
     {
-        val startedTasks: List<TaskDescriptor<*>> = protocol.triggers.flatMap { (triggerId, _) ->
+        val startedTasks: List<TaskConfiguration<*>> = protocol.triggers.flatMap { (triggerId, _) ->
             protocol.getTaskControls( triggerId )
                 .filter { it.control == TaskControl.Control.Start }
                 .map { it.task }

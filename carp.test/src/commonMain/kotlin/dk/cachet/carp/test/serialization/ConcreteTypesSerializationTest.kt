@@ -5,6 +5,7 @@ package dk.cachet.carp.test.serialization
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.SerializersModuleCollector
@@ -90,9 +91,25 @@ fun getPolymorphicSerializers( serialModule: SerializersModule ): Map<KClass<*>,
                 serializers[ actualClass ] = actualSerializer
             }
 
+            override fun <Base : Any> polymorphicDefaultDeserializer(
+                baseClass: KClass<Base>,
+                defaultDeserializerProvider: (className: String?) -> DeserializationStrategy<out Base>?
+            )
+            {
+                // The default serializer is not returned by this method.
+            }
+
+            override fun <Base : Any> polymorphicDefaultSerializer(
+                baseClass: KClass<Base>,
+                defaultSerializerProvider: (value: Base) -> SerializationStrategy<Base>?
+            )
+            {
+                // The default serializer is not returned by this method.
+            }
+
             override fun <Base : Any> polymorphicDefault(
                 baseClass: KClass<Base>,
-                defaultSerializerProvider: (className: String?) -> DeserializationStrategy<out Base>?
+                defaultDeserializerProvider: (className: String?) -> DeserializationStrategy<out Base>?
             )
             {
                 // The default serializer is not returned by this method.

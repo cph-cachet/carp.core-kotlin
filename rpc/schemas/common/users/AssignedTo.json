@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/All" },
+    { "$ref": "#/$defs/Roles" }
+  ],
+  "$defs": {
+    "All": {
+      "$anchor": "All",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.common.application.users.AssignedTo.All" }
+      },
+      "required": [ "__type" ]
+    },
+    "Roles": {
+      "$anchor": "Roles",
+      "type": "object",
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.common.application.users.AssignedTo.Roles" },
+        "roleNames": {
+          "type": "array",
+          "items": "string"
+        }
+      },
+      "required": [ "__type", "roleNames" ]
+    }
+  }
+}

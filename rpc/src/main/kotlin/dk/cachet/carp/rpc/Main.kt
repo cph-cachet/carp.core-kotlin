@@ -13,10 +13,10 @@ import java.io.File
 val applicationServices = Reflections( "dk.cachet.carp" )
     .getSubTypesOf( ApplicationService::class.java )
     .filter { it.isInterface }
-    .map { ApplicationServiceInfo( it ) }
+    .map { ApplicationServiceInfo.of( it ) }
 
 
-fun main( args: Array<String> )
+fun main()
 {
     // Create example requests for all request objects and responses of application service methods.
     val exampleRequests = applicationServices
