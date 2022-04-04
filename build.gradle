@@ -14,7 +14,7 @@ buildscript {
 
             // JVM versions.
             jvmTarget:'1.8',
-            dokkaPlugin:'1.5.30',
+            dokkaPlugin:'1.6.10',
             reflections:'0.10.2',
 
             // JS versions.
