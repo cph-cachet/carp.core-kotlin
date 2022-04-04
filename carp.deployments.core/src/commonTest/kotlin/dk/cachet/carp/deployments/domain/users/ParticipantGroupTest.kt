@@ -214,19 +214,19 @@ class ParticipantGroupTest
     }
 
     @Test
-    fun setData_assigned_to_anyone_succeeds()
+    fun setData_assigned_to_all_roles_succeeds()
     {
         val protocol: StudyProtocol = createSinglePrimaryDeviceProtocol()
         val commonData = ExpectedParticipantData(
             ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ),
-            AssignedTo.Anyone
+            AssignedTo.All
         )
         protocol.addExpectedParticipantData( commonData )
 
         val group = createParticipantGroup( protocol )
 
-        val assignToAnyoneRole = null
-        val isSet = group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male, assignToAnyoneRole )
+        val assignToAllRoles = null
+        val isSet = group.setData( CarpInputDataTypes, CarpInputDataTypes.SEX, Sex.Male, assignToAllRoles )
         assertTrue( isSet )
         assertEquals( Sex.Male, group.commonData[ CarpInputDataTypes.SEX ] )
         assertEquals(
@@ -236,7 +236,7 @@ class ParticipantGroupTest
     }
 
     @Test
-    fun setData_assigned_to_role_succeeds()
+    fun setData_assigned_to_specific_role_succeeds()
     {
         val protocol: StudyProtocol = createSinglePrimaryDeviceProtocol().apply {
             addParticipantRole( ParticipantRole( "Patient", false ) )
@@ -260,14 +260,14 @@ class ParticipantGroupTest
     }
 
     @Test
-    fun setData_assigned_to_anyone_but_input_by_participant_role_succeeds()
+    fun setData_assigned_to_all_roles_but_input_by_specific_role_succeeds()
     {
         val protocol: StudyProtocol = createSinglePrimaryDeviceProtocol()
         val participantRole = "Magician"
         protocol.addParticipantRole( ParticipantRole( participantRole, false ) )
         val expectedData = ExpectedParticipantData(
             ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ),
-            AssignedTo.Anyone
+            AssignedTo.All
         )
         protocol.addExpectedParticipantData( expectedData )
 

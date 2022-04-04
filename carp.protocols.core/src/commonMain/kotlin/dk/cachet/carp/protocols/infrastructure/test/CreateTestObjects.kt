@@ -76,7 +76,7 @@ fun createComplexProtocol(): StudyProtocol
     val commonExpectedData =
         ExpectedParticipantData(
             ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) ),
-            AssignedTo.Anyone
+            AssignedTo.All
         )
     val mainRoleData =
         ExpectedParticipantData(

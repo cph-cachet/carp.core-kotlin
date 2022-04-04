@@ -92,7 +92,7 @@ class HostsIntegrationTest
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
         // Call succeeding means recruitment is ready for deployment.
-        val assignRoles = setOf( AssignParticipantRoles( participant.id, AssignedTo.Anyone ) )
+        val assignRoles = setOf( AssignParticipantRoles( participant.id, AssignedTo.All ) )
         recruitmentService.inviteNewParticipantGroup( study.studyId, assignRoles )
 
         assertEquals( study.studyId, studyGoneLive?.study?.studyId )
@@ -104,7 +104,7 @@ class HostsIntegrationTest
 
         // Add participant and deploy participant group.
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
-        val assignRoles = AssignParticipantRoles( participant.id, AssignedTo.Anyone )
+        val assignRoles = AssignParticipantRoles( participant.id, AssignedTo.All )
         val group = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignRoles ) )
         val deploymentId = group.id
 

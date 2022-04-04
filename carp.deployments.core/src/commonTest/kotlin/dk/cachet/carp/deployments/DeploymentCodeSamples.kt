@@ -35,7 +35,7 @@ class DeploymentCodeSamples
         // This is called by `StudyService` when deploying a participant group.
         val invitation = ParticipantInvitation(
             participantId = UUID.randomUUID(),
-            assignedRoles = AssignedTo.Anyone,
+            assignedRoles = AssignedTo.All,
             identity = AccountIdentity.fromEmailAddress( "test@test.com" ),
             invitation = StudyInvitation( "Movement study", "This study tracks your movements." )
         )

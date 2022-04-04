@@ -86,8 +86,8 @@ class ParticipantGroupServiceTest
         }
         val identity = AccountIdentity.fromUsername( "Test" )
         val studyInvitation = StudyInvitation( "Some study" )
-        val invitation1 = ParticipantInvitation( UUID.randomUUID(), AssignedTo.Anyone, identity, studyInvitation )
-        val invitation2 = ParticipantInvitation( UUID.randomUUID(), AssignedTo.Anyone, identity, studyInvitation )
+        val invitation1 = ParticipantInvitation( UUID.randomUUID(), AssignedTo.All, identity, studyInvitation )
+        val invitation2 = ParticipantInvitation( UUID.randomUUID(), AssignedTo.All, identity, studyInvitation )
 
         val createdEvent = DeploymentService.Event.StudyDeploymentCreated(
             studyDeploymentId,
@@ -118,7 +118,7 @@ class ParticipantGroupServiceTest
     }
 
     @Test
-    fun getAssignedDeviceRoleNames_returns_all_primary_devices_for_anyone()
+    fun getAssignedDeviceRoleNames_returns_all_primary_devices_when_assigned_to_all_roles()
     {
         val unassignedDevice = StubPrimaryDeviceConfiguration( "One" )
         val protocol = createEmptyProtocol().apply {
@@ -127,7 +127,7 @@ class ParticipantGroupServiceTest
             addConnectedDevice( StubDeviceConfiguration(), unassignedDevice )
         }.getSnapshot()
 
-        val assignedDevices = protocol.getAssignedDeviceRoleNames( AssignedTo.Anyone )
+        val assignedDevices = protocol.getAssignedDeviceRoleNames( AssignedTo.All )
         assertEquals( setOf( "One", "Two" ), assignedDevices )
     }
 
@@ -154,12 +154,12 @@ class ParticipantGroupServiceTest
         val bothRolesDevices = protocol.getAssignedDeviceRoleNames( AssignedTo.Roles( setOf( role1, role2 ) ) )
         val allDeviceRoles = setOf( "One", "Two" )
         assertEquals( allDeviceRoles, bothRolesDevices )
-        val anyRoleDevices = protocol.getAssignedDeviceRoleNames( AssignedTo.Anyone )
+        val anyRoleDevices = protocol.getAssignedDeviceRoleNames( AssignedTo.All )
         assertEquals( allDeviceRoles, anyRoleDevices )
     }
 
     @Test
-    fun getAssignedDeviceRoleNames_includes_devices_assigned_to_anyone_for_specific_roles()
+    fun getAssignedDeviceRoleNames_includes_devices_assigned_to_all_roles_for_specific_roles()
     {
         val assignedDevice = StubPrimaryDeviceConfiguration( "One" )
         val role = "Role"

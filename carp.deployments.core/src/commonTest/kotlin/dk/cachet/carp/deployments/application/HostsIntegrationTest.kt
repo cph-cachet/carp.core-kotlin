@@ -86,7 +86,7 @@ class HostsIntegrationTest
         val participantGroupData = participationService.getParticipantData( deploymentId )
 
         assertEquals( deploymentId, deploymentCreated?.studyDeploymentId )
-        val commonExpectedData = protocol.expectedParticipantData.filter { it.assignedTo == AssignedTo.Anyone }
+        val commonExpectedData = protocol.expectedParticipantData.filter { it.assignedTo == AssignedTo.All }
         assertEquals( commonExpectedData.size, participantGroupData.common.size )
     }
 
@@ -99,7 +99,7 @@ class HostsIntegrationTest
         val toInvite = EmailAccountIdentity( "test@test.com" )
         val studyInvitation = StudyInvitation( "Some study" )
         val invitations = listOf(
-            ParticipantInvitation( UUID.randomUUID(), AssignedTo.Anyone, toInvite, studyInvitation )
+            ParticipantInvitation( UUID.randomUUID(), AssignedTo.All, toInvite, studyInvitation )
         )
         val deploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), invitations )

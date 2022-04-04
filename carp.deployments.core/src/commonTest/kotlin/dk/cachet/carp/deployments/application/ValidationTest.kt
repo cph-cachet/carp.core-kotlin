@@ -33,7 +33,7 @@ class ValidationTest
     {
         val deviceRoleName = "Test device"
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName ).getSnapshot()
-        val invitation = createInvitation( AssignedTo.Anyone )
+        val invitation = createInvitation( AssignedTo.All )
 
         protocol.throwIfInvalidInvitations( listOf( invitation ) )
     }

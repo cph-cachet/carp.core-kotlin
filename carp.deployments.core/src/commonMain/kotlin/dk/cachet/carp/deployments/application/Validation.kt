@@ -31,8 +31,8 @@ fun StudyProtocolSnapshot.throwIfInvalidInvitations( invitations: List<Participa
             { "The assigned participant role \"$assigned\" is not part of the study protocol." }
     }
 
-    val rolesIncludeAny = invitations.any { it.assignedRoles is AssignedTo.Anyone }
-    if ( !rolesIncludeAny ) // When any role is assigned, it covers all roles and devices; no need to check.
+    val allRolesAssigned = invitations.any { it.assignedRoles is AssignedTo.All }
+    if ( !allRolesAssigned ) // When all roles are assigned, it also covers all devices; no need to check.
     {
         val requiredRoles = participantRoles.filter { !it.isOptional }.map { it.role }.toSet()
         require( assignedParticipantRoles.containsAll( requiredRoles ) )

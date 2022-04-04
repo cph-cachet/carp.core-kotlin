@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
 data class ParticipantData(
     val studyDeploymentId: UUID,
     /**
-     * Data that is related to anyone in the study deployment.
+     * Data that is related to everyone in the study deployment.
      */
     val common: Map<InputDataType, Data?>,
     /**

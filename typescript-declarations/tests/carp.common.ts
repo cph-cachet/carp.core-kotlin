@@ -94,7 +94,7 @@ describe( "carp.common", () => {
             new ExpectedParticipantData( new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ) ),
             ExpectedParticipantData.Companion,
             AssignedTo.Companion,
-            AssignedTo.Anyone,
+            AssignedTo.All,
             new ApiVersion( 1, 0 ),
             [ "ApplicationServiceRequest", new DeploymentServiceRequest.GetStudyDeploymentStatus( UUID.Companion.randomUUID() ) ]
         ]

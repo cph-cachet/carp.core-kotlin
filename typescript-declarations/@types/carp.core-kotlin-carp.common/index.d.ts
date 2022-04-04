@@ -281,7 +281,7 @@ declare module 'carp.core-kotlin-carp.common'
         abstract class AssignedTo
         {
             static get Companion(): AssignedTo$Companion
-            static get Anyone(): any
+            static get All(): any
         }
         interface AssignedTo$Companion { serializer(): any }
 

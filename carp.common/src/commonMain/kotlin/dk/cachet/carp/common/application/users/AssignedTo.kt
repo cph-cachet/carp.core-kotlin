@@ -10,10 +10,10 @@ import kotlinx.serialization.Serializable
 sealed class AssignedTo
 {
     /**
-     * Assign this to anyone in the study protocol.
+     * Assign this to all participants in the study protocol.
      */
     @Serializable
-    object Anyone : AssignedTo()
+    object All : AssignedTo()
 
     /**
      * Assign this to the specified [roleNames] in the study protocol.

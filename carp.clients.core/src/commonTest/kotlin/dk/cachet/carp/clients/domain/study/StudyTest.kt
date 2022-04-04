@@ -108,7 +108,7 @@ class StudyTest
             listOf(
                 ParticipantInvitation(
                     UUID.randomUUID(),
-                    AssignedTo.Anyone,
+                    AssignedTo.All,
                     UsernameAccountIdentity( "Test" ),
                     StudyInvitation( "Test" )
                 )
@@ -127,7 +127,7 @@ class StudyTest
         listOf(
             ParticipantInvitation(
                 UUID.randomUUID(),
-                AssignedTo.Anyone,
+                AssignedTo.All,
                 UsernameAccountIdentity( "Test" ),
                 StudyInvitation( "Test" )
             )

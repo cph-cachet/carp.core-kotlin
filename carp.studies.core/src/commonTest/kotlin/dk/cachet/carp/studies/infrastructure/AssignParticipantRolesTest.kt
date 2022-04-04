@@ -17,7 +17,7 @@ class AssignParticipantRolesTest
     @Test
     fun can_serialize_and_deserialize_assigned_participant_using_JSON()
     {
-        val assign = AssignParticipantRoles( UUID.randomUUID(), AssignedTo.Anyone )
+        val assign = AssignParticipantRoles( UUID.randomUUID(), AssignedTo.All )
 
         val serialized: String = JSON.encodeToString( assign )
         val parsed: AssignParticipantRoles = JSON.decodeFromString( serialized )

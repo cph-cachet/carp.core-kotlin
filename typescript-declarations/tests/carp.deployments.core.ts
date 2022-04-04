@@ -68,7 +68,7 @@ describe( "carp.deployments.core", () => {
             RoleData.Companion,
             new ParticipantInvitation( UUID.Companion.randomUUID(), toSet( [] ), new UsernameAccountIdentity( new Username( "Test" ) ), studyInvitation ),
             ParticipantInvitation.Companion,
-            new ParticipantStatus( UUID.Companion.randomUUID(), AssignedTo.Anyone, toSet( [] ) ),
+            new ParticipantStatus( UUID.Companion.randomUUID(), AssignedTo.All, toSet( [] ) ),
             ParticipantStatus.Companion,
             new Participation( UUID.Companion.randomUUID() ),
             Participation.Companion,

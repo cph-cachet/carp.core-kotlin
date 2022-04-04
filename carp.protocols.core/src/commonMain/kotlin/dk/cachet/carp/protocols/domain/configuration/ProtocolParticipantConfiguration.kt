@@ -14,7 +14,7 @@ interface ProtocolParticipantConfiguration
     /**
      * Roles which can be assigned to participants in the study and [ParticipantAttribute]s can be linked to.
      * If a [ParticipantAttribute] is not linked to any specific participant role,
-     * the participant data can be filled out by anyone in the study deployment.
+     * the participant data can be filled out by all participants in the study deployment.
      */
     val participantRoles: Set<ParticipantRole>
 
@@ -38,7 +38,7 @@ interface ProtocolParticipantConfiguration
     fun isValidAssignment( assignment: AssignedTo ): Boolean =
         when ( assignment )
         {
-            is AssignedTo.Anyone -> true
+            is AssignedTo.All -> true
             is AssignedTo.Roles ->
             {
                 val roles = participantRoles.map { it.role }

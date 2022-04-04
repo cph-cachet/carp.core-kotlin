@@ -24,7 +24,7 @@ fun Collection<AssignParticipantRoles>.participantRoles(): Set<String> = this
     .flatMap {
         when ( it.assignedRoles )
         {
-            is AssignedTo.Anyone -> emptySet()
+            is AssignedTo.All -> emptySet()
             is AssignedTo.Roles -> it.assignedRoles.roleNames
         }
     }

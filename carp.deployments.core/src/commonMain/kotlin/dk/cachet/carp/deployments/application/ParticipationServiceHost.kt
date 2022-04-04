@@ -105,7 +105,7 @@ class ParticipationServiceHost(
      * or unset it by passing `null`.
      * When you want to set data that was assigned to a specific participant role,
      * [inputByParticipantRole] needs to be set.
-     * You can still set common data (assigned to anyone) in the same call.
+     * You can still set common data (assigned to all roles) in the same call.
      *
      * @throws IllegalArgumentException when:
      *   - there is no study deployment with [studyDeploymentId]
@@ -117,7 +117,7 @@ class ParticipationServiceHost(
         studyDeploymentId: UUID,
         data: Map<InputDataType, Data?>,
         /**
-         * The participant role who filled out [data]; null if anyone can set it.
+         * The participant role who filled out [data]; null if all roles can set it.
          */
         inputByParticipantRole: String?
     ): ParticipantData
