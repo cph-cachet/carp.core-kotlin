@@ -31,11 +31,11 @@ import StudyInvitation = ddk.cachet.carp.deployments.application.users.StudyInvi
 import { dk } from 'carp.core-kotlin-carp.studies.core'
 import StudyDetails = dk.cachet.carp.studies.application.StudyDetails
 import StudyStatus = dk.cachet.carp.studies.application.StudyStatus
-import AssignParticipantRoles = dk.cachet.carp.studies.application.users.AssignParticipantRoles
+import AssignedParticipantRoles = dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import Participant = dk.cachet.carp.studies.application.users.Participant
 import ParticipantGroupStatus = dk.cachet.carp.studies.application.users.ParticipantGroupStatus
-import getAssignedParticipantIds = dk.cachet.carp.studies.application.users.participantIds_yyd5wh$
-import getAssignedParticipantRoles = dk.cachet.carp.studies.application.users.participantRoles_yyd5wh$
+import getAssignedParticipantIds = dk.cachet.carp.studies.application.users.participantIds_skpkn2$
+import getAssignedParticipantRoles = dk.cachet.carp.studies.application.users.participantRoles_skpkn2$
 import RecruitmentServiceRequest = dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest
 import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
 
@@ -53,8 +53,8 @@ describe( "carp.studies.core", () => {
             new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), null, true, true, false, true ),
             new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), UUID.Companion.randomUUID(), false, false, true ),
             StudyStatus.Companion,
-            new AssignParticipantRoles( UUID.Companion.randomUUID(), AssignedTo.All ),
-            AssignParticipantRoles.Companion,
+            new AssignedParticipantRoles( UUID.Companion.randomUUID(), AssignedTo.All ),
+            AssignedParticipantRoles.Companion,
             new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ),
             Participant.Companion,
             [ "ParticipantGroupStatus", new ParticipantGroupStatus.Staged( deploymentId, new HashSet<Participant>() ) ],
@@ -73,12 +73,12 @@ describe( "carp.studies.core", () => {
     } )
 
 
-    describe( "AssignParticipantRoles", () => {
+    describe( "AssignedParticipantRoles", () => {
         it( "getAssigned participantIds and participantRoles works", () => {
             const participant1 = UUID.Companion.randomUUID()
             const participant2 = UUID.Companion.randomUUID()
-            const assigned1 = new AssignParticipantRoles( participant1, new AssignedTo.Roles( toSet( [ "Test" ] ) ) )
-            const assigned2 = new AssignParticipantRoles( participant2, AssignedTo.All )
+            const assigned1 = new AssignedParticipantRoles( participant1, new AssignedTo.Roles( toSet( [ "Test" ] ) ) )
+            const assigned2 = new AssignedParticipantRoles( participant2, AssignedTo.All )
             const assignedGroup = new ArrayList( [ assigned1, assigned2 ] )
             expect( getAssignedParticipantIds( assignedGroup ) ).instanceof( HashSet )
             expect( getAssignedParticipantRoles( assignedGroup ) ).instanceof( HashSet )
@@ -134,7 +134,7 @@ describe( "carp.studies.core", () => {
             const deployGroup = new RecruitmentServiceRequest.InviteNewParticipantGroup(
                 UUID.Companion.randomUUID(),
                 toSet( [
-                    new AssignParticipantRoles( UUID.Companion.randomUUID(), AssignedTo.All )
+                    new AssignedParticipantRoles( UUID.Companion.randomUUID(), AssignedTo.All )
                 ] )
             )
 

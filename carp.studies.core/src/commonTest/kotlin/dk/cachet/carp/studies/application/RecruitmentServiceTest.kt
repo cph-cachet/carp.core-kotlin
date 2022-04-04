@@ -11,7 +11,7 @@ import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.studies.application.users.AssignParticipantRoles
+import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import kotlinx.coroutines.test.runTest
 import kotlin.test.*
@@ -100,7 +100,7 @@ interface RecruitmentServiceTest
         val (studyId, _) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
-        val assignParticipant = AssignParticipantRoles( participant.id, AssignedTo.All )
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
         val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
         assertEquals( participant, groupStatus.participants.single() )
         val participantGroups = recruitmentService.getParticipantGroupStatusList( studyId )
@@ -111,7 +111,7 @@ interface RecruitmentServiceTest
     @Test
     fun inviteNewParticipantGroup_fails_for_unknown_studyId() = runTest {
         val (recruitmentService, _) = createService()
-        val assignParticipant = AssignParticipantRoles( UUID.randomUUID(), AssignedTo.All )
+        val assignParticipant = AssignedParticipantRoles( UUID.randomUUID(), AssignedTo.All )
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -132,7 +132,7 @@ interface RecruitmentServiceTest
         val (recruitmentService, studyService) = createService()
         val (studyId, _) = createLiveStudy( studyService )
 
-        val assignParticipant = AssignParticipantRoles( unknownId, AssignedTo.All )
+        val assignParticipant = AssignedParticipantRoles( unknownId, AssignedTo.All )
         assertFailsWith<IllegalArgumentException>
         {
             recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
@@ -145,7 +145,7 @@ interface RecruitmentServiceTest
         val (studyId, _) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
-        val assignParticipant = AssignParticipantRoles( participant.id, AssignedTo.Roles( setOf( "Unknown role" ) ) )
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.Roles( setOf( "Unknown role" ) ) )
         assertFailsWith<IllegalArgumentException>
         {
             recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
@@ -159,7 +159,7 @@ interface RecruitmentServiceTest
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
         val role = protocol.participantRoles.first().role
-        val assignParticipant = AssignParticipantRoles( participant.id, AssignedTo.Roles( setOf( role ) ) )
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.Roles( setOf( role ) ) )
         assertFailsWith<IllegalArgumentException>
         {
             recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
@@ -171,7 +171,7 @@ interface RecruitmentServiceTest
         val (recruitmentService, studyService) = createService()
         val (studyId, _) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
-        val assignParticipant = AssignParticipantRoles( participant.id, AssignedTo.All )
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
         val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
 
         // Deploy the same group a second time.
@@ -184,7 +184,7 @@ interface RecruitmentServiceTest
         val (recruitmentService, studyService) = createService()
         val (studyId, _) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
-        val assignParticipant = AssignParticipantRoles( participant.id, AssignedTo.All )
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
         val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
 
         // Stop previous group. A new deployment with the same participants should be a new participant group.
@@ -199,11 +199,11 @@ interface RecruitmentServiceTest
         val (studyId, _) = createLiveStudy( studyService )
 
         val p1 = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
-        val assignedP1 = AssignParticipantRoles( p1.id, AssignedTo.All )
+        val assignedP1 = AssignedParticipantRoles( p1.id, AssignedTo.All )
         recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignedP1 ) )
 
         val p2 = recruitmentService.addParticipant( studyId, EmailAddress( "test2@test.com" ) )
-        val assignedP2 = AssignParticipantRoles( p2.id, AssignedTo.All )
+        val assignedP2 = AssignedParticipantRoles( p2.id, AssignedTo.All )
         recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignedP2 ) )
 
         val participantGroups = recruitmentService.getParticipantGroupStatusList( studyId )
@@ -224,7 +224,7 @@ interface RecruitmentServiceTest
         val (recruitmentService, studyService) = createService()
         val (studyId, _) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
-        val assignParticipant = AssignParticipantRoles( participant.id, AssignedTo.All )
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
         val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
 
         val stoppedGroupStatus = recruitmentService.stopParticipantGroup( studyId, groupStatus.id )

@@ -235,7 +235,7 @@ if ( studyStatus is StudyStatus.Configuring && studyStatus.canGoLive )
 if ( studyStatus.canDeployToParticipants )
 {
     // Create a 'participant group' with a single participant; `AssignedTo.All` assigns the "Patient's phone".
-    val participation = AssignParticipantRoles( participant.id, AssignedTo.All )
+    val participation = AssignedParticipantRoles( participant.id, AssignedTo.All )
     val participantGroup = setOf( participation )
 
     val groupStatus: ParticipantGroupStatus = recruitmentService.inviteNewParticipantGroup( studyId, participantGroup )

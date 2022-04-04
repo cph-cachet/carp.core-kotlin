@@ -18,7 +18,7 @@ import dk.cachet.carp.studies.application.RecruitmentServiceHost
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceHost
 import dk.cachet.carp.studies.application.StudyStatus
-import dk.cachet.carp.studies.application.users.AssignParticipantRoles
+import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.infrastructure.InMemoryParticipantRepository
@@ -58,7 +58,7 @@ class StudiesCodeSamples
         if ( studyStatus.canDeployToParticipants )
         {
             // Create a 'participant group' with a single participant; `AssignedTo.All` assigns the "Patient's phone".
-            val participation = AssignParticipantRoles( participant.id, AssignedTo.All )
+            val participation = AssignedParticipantRoles( participant.id, AssignedTo.All )
             val participantGroup = setOf( participation )
 
             val groupStatus: ParticipantGroupStatus = recruitmentService.inviteNewParticipantGroup( studyId, participantGroup )

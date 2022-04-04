@@ -7,7 +7,7 @@ import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.DependentServices
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.deployments.application.DeploymentService
-import dk.cachet.carp.studies.application.users.AssignParticipantRoles
+import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import kotlinx.serialization.Required
@@ -67,7 +67,7 @@ interface RecruitmentService : ApplicationService<RecruitmentService, Recruitmen
      *  - not all necessary participant roles part of the study have been assigned a participant
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignParticipantRoles> ): ParticipantGroupStatus
+    suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignedParticipantRoles> ): ParticipantGroupStatus
 
     /**
      * Get the status of all deployed participant groups in the study with the specified [studyId].

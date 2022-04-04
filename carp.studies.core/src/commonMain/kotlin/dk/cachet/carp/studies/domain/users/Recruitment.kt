@@ -2,7 +2,6 @@ package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
@@ -11,8 +10,7 @@ import dk.cachet.carp.deployments.application.throwIfInvalidInvitations
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.studies.application.users.AssignParticipantRoles
+import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.application.users.participantIds
@@ -118,7 +116,7 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
      *  - not all primary devices part of the study protocol have been assigned a participant
      *  - not all necessary participant roles part of the study have been assigned a participant
      */
-    fun createInvitations( group: Set<AssignParticipantRoles> ): Pair<StudyProtocolSnapshot, List<ParticipantInvitation>>
+    fun createInvitations( group: Set<AssignedParticipantRoles> ): Pair<StudyProtocolSnapshot, List<ParticipantInvitation>>
     {
         val status = getStatus()
         check( status is RecruitmentStatus.ReadyForDeployment )
