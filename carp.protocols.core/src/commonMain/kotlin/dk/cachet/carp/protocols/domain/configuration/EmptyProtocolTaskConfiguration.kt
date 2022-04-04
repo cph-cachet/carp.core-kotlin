@@ -15,7 +15,7 @@ class EmptyProtocolTaskConfiguration : AbstractMap<String, TaskConfiguration<*>>
     private val _tasks: ExtractUniqueKeyMap<String, TaskConfiguration<*>> =
         ExtractUniqueKeyMap( { task -> task.name } )
         {
-            key -> IllegalArgumentException( "Task name \"$key\" is not unique within task configuration." )
+            IllegalArgumentException( "Task name \"$it\" is not unique within task configuration." )
         }
 
     override val entries: Set<Map.Entry<String, TaskConfiguration<*>>>

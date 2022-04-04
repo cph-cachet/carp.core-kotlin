@@ -71,7 +71,8 @@ data class StudyProtocolSnapshot(
                 taskControls = triggers
                     .flatMap { trigger -> protocol.getTaskControls( trigger.value ).map { trigger to it } }
                     .map { (trigger, control) ->
-                        TaskControl( trigger.key, control.task.name, control.destinationDevice.roleName, control.control ) }
+                        TaskControl( trigger.key, control.task.name, control.destinationDevice.roleName, control.control )
+                    }
                     .toSet(),
                 participantRoles = protocol.participantRoles.toSet(),
                 assignedDevices = protocol.deviceAssignments

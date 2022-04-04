@@ -77,12 +77,13 @@ fun StudyProtocolSnapshot.getAssignedDeviceRoleNames( assignedParticipantRoles: 
     return when ( assignedParticipantRoles )
     {
         is AssignedTo.All -> primaryDeviceRoleNames // All roles are assigned, thus can use all devices.
-        is AssignedTo.Roles -> primaryDeviceRoleNames
-            .filter { deviceRole ->
-                // No specific participant role assigned to a device means all participants can use it.
-                val rolesForDevice =
-                    this.assignedDevices[ deviceRole ] ?: return@filter true
-                assignedParticipantRoles.roleNames.any { it in rolesForDevice }
-            }
+        is AssignedTo.Roles ->
+            primaryDeviceRoleNames
+                .filter { deviceRole ->
+                    // No specific participant role assigned to a device means all participants can use it.
+                    val rolesForDevice =
+                        this.assignedDevices[ deviceRole ] ?: return@filter true
+                    assignedParticipantRoles.roleNames.any { it in rolesForDevice }
+                }
     }.toSet()
 }

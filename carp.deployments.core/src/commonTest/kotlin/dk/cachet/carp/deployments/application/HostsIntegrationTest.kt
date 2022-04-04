@@ -61,14 +61,16 @@ class HostsIntegrationTest
         deploymentService = DeploymentServiceHost(
             InMemoryDeploymentRepository(),
             dataStreamService,
-            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
+            eventBus.createApplicationServiceAdapter( DeploymentService::class )
+        )
 
         // Create participation service.
         accountService = InMemoryAccountService()
         participationService = ParticipationServiceHost(
             InMemoryParticipationRepository(),
             ParticipantGroupService( accountService ),
-            eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
+            eventBus.createApplicationServiceAdapter( ParticipationService::class )
+        )
     }
 
     @Test

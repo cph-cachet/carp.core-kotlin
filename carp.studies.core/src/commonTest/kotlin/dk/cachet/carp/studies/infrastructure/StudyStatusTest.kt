@@ -25,7 +25,8 @@ class StudyStatusTest
             canSetInvitation = false,
             canSetStudyProtocol = true,
             canDeployToParticipants = false,
-            canGoLive = false )
+            canGoLive = false
+        )
 
         val serialized = JSON.encodeToString<StudyStatus>( status )
         val parsed: StudyStatus = JSON.decodeFromString( serialized )

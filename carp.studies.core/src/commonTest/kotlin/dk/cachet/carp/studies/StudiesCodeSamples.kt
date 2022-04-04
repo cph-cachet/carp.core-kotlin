@@ -74,17 +74,20 @@ class StudiesCodeSamples
         val studyRepo = InMemoryStudyRepository()
         val studyService = StudyServiceHost(
             studyRepo,
-            eventBus.createApplicationServiceAdapter( StudyService::class ) )
+            eventBus.createApplicationServiceAdapter( StudyService::class )
+        )
 
         val deploymentService = DeploymentServiceHost(
             InMemoryDeploymentRepository(),
             InMemoryDataStreamService(),
-            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
+            eventBus.createApplicationServiceAdapter( DeploymentService::class )
+        )
 
         val recruitmentService = RecruitmentServiceHost(
             InMemoryParticipantRepository(),
             deploymentService,
-            eventBus.createApplicationServiceAdapter( RecruitmentService::class ) )
+            eventBus.createApplicationServiceAdapter( RecruitmentService::class )
+        )
 
         return Pair( studyService, recruitmentService )
     }

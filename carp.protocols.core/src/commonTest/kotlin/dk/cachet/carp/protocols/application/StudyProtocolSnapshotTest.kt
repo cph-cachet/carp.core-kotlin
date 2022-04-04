@@ -86,11 +86,13 @@ class StudyProtocolSnapshotTest
         val connectedDevices = listOf<AnyDeviceConfiguration>( StubDeviceConfiguration( "C1" ), StubDeviceConfiguration( "C2" ) )
         val connections = listOf(
             StudyProtocolSnapshot.DeviceConnection( "C1", "M1" ),
-            StudyProtocolSnapshot.DeviceConnection( "C2", "M2" ) )
+            StudyProtocolSnapshot.DeviceConnection( "C2", "M2" )
+        )
         val tasks = listOf<TaskConfiguration<*>>( StubTaskConfiguration( "T1" ), StubTaskConfiguration( "T2" ) )
         val triggers = mapOf<Int, TriggerConfiguration<*>>(
             0 to StubTriggerConfiguration( primaryDevices[ 0 ] ),
-            1 to StubTriggerConfiguration( primaryDevices[ 1 ] ) )
+            1 to StubTriggerConfiguration( primaryDevices[ 1 ] )
+        )
         val triggeredTasks = listOf(
             TaskControl( 0, "T1", "C1", TaskControl.Control.Start ),
             TaskControl( 1, "T2", "C2", TaskControl.Control.Start )
@@ -100,12 +102,8 @@ class StudyProtocolSnapshotTest
             ParticipantRole( "Role 2", false )
         )
         val expectedParticipantData = listOf(
-            ExpectedParticipantData(
-                ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
-            ),
-            ExpectedParticipantData(
-                ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "othertype" ) )
-            )
+            ExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) ) ),
+            ExpectedParticipantData( ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "othertype" ) ) )
         )
         val assignedDevices = mapOf(
             "M1" to setOf( "Role 1" ),
@@ -125,7 +123,8 @@ class StudyProtocolSnapshotTest
             description,
             primaryDevices.toSet(), connectedDevices.toSet(), connections.toSet(),
             tasks.toSet(), triggers, triggeredTasks.toSet(),
-            participantRoles.toSet(), assignedDevices, expectedParticipantData.toSet(), "" )
+            participantRoles.toSet(), assignedDevices, expectedParticipantData.toSet(), ""
+        )
         val reorganizedSnapshot = StudyProtocolSnapshot(
             protocolId,
             createdOn,
@@ -134,7 +133,8 @@ class StudyProtocolSnapshotTest
             description,
             primaryDevices.reversed().toSet(), connectedDevices.reversed().toSet(), connections.reversed().toSet(),
             tasks.reversed().toSet(), triggers, triggeredTasks.reversed().toSet(),
-            participantRoles.reversed().toSet(), assignedDevices, expectedParticipantData.reversed().toSet(), "" )
+            participantRoles.reversed().toSet(), assignedDevices, expectedParticipantData.reversed().toSet(), ""
+        )
 
         assertEquals( snapshot, reorganizedSnapshot )
         assertEquals( snapshot.hashCode(), reorganizedSnapshot.hashCode() )

@@ -35,7 +35,8 @@ class ParticipationServiceHostTest : ParticipationServiceTest
             val participationService = ParticipationServiceHost(
                 InMemoryParticipationRepository(),
                 ParticipantGroupService( accountService ),
-                eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
+                eventBus.createApplicationServiceAdapter( ParticipationService::class )
+            )
 
             return ParticipationServiceTest.DependentServices(
                 participationService,

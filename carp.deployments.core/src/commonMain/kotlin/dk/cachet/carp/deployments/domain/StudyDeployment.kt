@@ -66,7 +66,8 @@ class StudyDeployment private constructor(
                 ParticipantStatus(
                     invitation.participantId,
                     invitation.assignedRoles,
-                    protocolSnapshot.getAssignedDeviceRoleNames( invitation.assignedRoles ) )
+                    protocolSnapshot.getAssignedDeviceRoleNames( invitation.assignedRoles )
+                )
             }
 
             return StudyDeployment( protocolSnapshot, participants, id, now )
@@ -323,10 +324,13 @@ class StudyDeployment private constructor(
             val otherDevice = it.key
             val areUnknownDevices = device is UnknownPolymorphicWrapper && otherDevice is UnknownPolymorphicWrapper
             val matchingUnknownDevices: Boolean by lazy { (device as UnknownPolymorphicWrapper).className == (otherDevice as UnknownPolymorphicWrapper).className }
-            isSameId && ( (!areUnknownDevices && otherDevice::class == device::class) || (areUnknownDevices && matchingUnknownDevices) ) }
-        require( isUnique ) {
+            isSameId && ( (!areUnknownDevices && otherDevice::class == device::class) || (areUnknownDevices && matchingUnknownDevices) )
+        }
+        require( isUnique )
+        {
             "The deviceId specified in the passed registration is already in use by a device of the same type. " +
-            "Cannot register the same device for different device roles within a deployment." }
+            "Cannot register the same device for different device roles within a deployment."
+        }
 
         // Add device to currently registered devices, but also store it in registration history.
         _registeredDevices[ device ] = registration
@@ -413,8 +417,11 @@ class StudyDeployment private constructor(
             .filter { it.value.sourceDeviceRoleName in relevantDeviceRoles }
         val taskControls = usedTriggers
             .map { it to protocol.getTaskControls( it.value ) }
-            .flatMap { pair -> pair.second.map {
-                TaskControl( pair.first.key, it.task.name, it.destinationDevice.roleName, it.control ) } }
+            .flatMap { pair ->
+                pair.second.map {
+                    TaskControl( pair.first.key, it.task.name, it.destinationDevice.roleName, it.control )
+                }
+            }
             .toSet()
 
         return PrimaryDeviceDeployment(
@@ -453,7 +460,8 @@ class StudyDeployment private constructor(
         // Verify whether the specified device is ready to be deployed.
         val canDeploy = getDeviceStatus( device ).let {
             it is DeviceDeploymentStatus.Deployed ||
-            it is DeviceDeploymentStatus.NotDeployed && it.isReadyForDeployment }
+            it is DeviceDeploymentStatus.NotDeployed && it.isReadyForDeployment
+        }
         check( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
         _deployedDevices

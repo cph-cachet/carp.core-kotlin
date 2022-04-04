@@ -49,19 +49,22 @@ class HostsIntegrationTest
         deploymentService = DeploymentServiceHost(
             InMemoryDeploymentRepository(),
             InMemoryDataStreamService(),
-            eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
+            eventBus.createApplicationServiceAdapter( DeploymentService::class )
+        )
 
         // Create dependent participation service.
         val accountService = InMemoryAccountService()
         participationService = ParticipationServiceHost(
             InMemoryParticipationRepository(),
             ParticipantGroupService( accountService ),
-            eventBus.createApplicationServiceAdapter( ParticipationService::class ) )
+            eventBus.createApplicationServiceAdapter( ParticipationService::class )
+        )
 
         recruitmentService = RecruitmentServiceHost(
             InMemoryParticipantRepository(),
             deploymentService,
-            eventBus.createApplicationServiceAdapter( RecruitmentService::class ) )
+            eventBus.createApplicationServiceAdapter( RecruitmentService::class )
+        )
     }
 
 

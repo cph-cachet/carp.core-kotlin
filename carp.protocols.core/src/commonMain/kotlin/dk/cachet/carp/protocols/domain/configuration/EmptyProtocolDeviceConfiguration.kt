@@ -17,7 +17,7 @@ internal class EmptyProtocolDeviceConfiguration : AbstractMap<String, AnyDeviceC
     private val _devices: ExtractUniqueKeyMap<String, AnyDeviceConfiguration> =
         ExtractUniqueKeyMap( { device -> device.roleName } )
         {
-            key -> IllegalArgumentException( "Role name \"$key\" is not unique within device configuration." )
+            IllegalArgumentException( "Role name \"$it\" is not unique within device configuration." )
         }
 
     override val entries: Set<Map.Entry<String, AnyDeviceConfiguration>>

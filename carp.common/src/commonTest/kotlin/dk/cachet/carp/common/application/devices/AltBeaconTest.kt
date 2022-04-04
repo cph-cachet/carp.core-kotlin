@@ -17,10 +17,12 @@ class AltBeaconTest
     {
         val registration1 = AltBeaconDeviceRegistration(
             0, UUID( "00000000-0000-0000-0000-000000000000" ),
-            1, 1, 0 )
+            1, 1, 0
+        )
         val registration2 = AltBeaconDeviceRegistration(
             0, UUID( "00000000-0000-0000-0000-000000000000" ),
-            1, 2, 0 )
+            1, 2, 0
+        )
 
         assertNotEquals( registration1.deviceId, registration2.deviceId )
     }

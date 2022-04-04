@@ -370,19 +370,24 @@ class StudyDeploymentTest
         assertEquals( deployment.protocolSnapshot, fromSnapshot.protocolSnapshot )
         assertEquals(
             deployment.registrableDevices.count(),
-            deployment.registrableDevices.intersect( fromSnapshot.registrableDevices ).count() )
+            deployment.registrableDevices.intersect( fromSnapshot.registrableDevices ).count()
+        )
         assertEquals(
             deployment.registeredDevices.count(),
-            deployment.registeredDevices.entries.intersect( fromSnapshot.registeredDevices.entries ).count() )
+            deployment.registeredDevices.entries.intersect( fromSnapshot.registeredDevices.entries ).count()
+        )
         assertEquals(
             deployment.deviceRegistrationHistory.count(),
-            deployment.deviceRegistrationHistory.entries.intersect( fromSnapshot.deviceRegistrationHistory.entries ).count() )
+            deployment.deviceRegistrationHistory.entries.intersect( fromSnapshot.deviceRegistrationHistory.entries ).count()
+        )
         assertEquals(
             deployment.deployedDevices.count(),
-            deployment.deployedDevices.intersect( fromSnapshot.deployedDevices ).count() )
+            deployment.deployedDevices.intersect( fromSnapshot.deployedDevices ).count()
+        )
         assertEquals(
             deployment.invalidatedDeployedDevices.count(),
-            deployment.invalidatedDeployedDevices.intersect( fromSnapshot.invalidatedDeployedDevices ).count() )
+            deployment.invalidatedDeployedDevices.intersect( fromSnapshot.invalidatedDeployedDevices ).count()
+        )
         assertEquals( deployment.startedOn, fromSnapshot.startedOn )
         assertEquals( deployment.isStopped, fromSnapshot.isStopped )
         assertEquals( 0, fromSnapshot.consumeEvents().size )
@@ -712,7 +717,8 @@ class StudyDeploymentTest
         assertTrue( deployment.deployedDevices.contains( device ) )
         assertEquals(
             StudyDeployment.Event.DeviceDeployed( device ),
-            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().singleOrNull() )
+            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.DeviceDeployed>().singleOrNull()
+        )
     }
 
     @Test
@@ -739,7 +745,8 @@ class StudyDeploymentTest
         assertNotNull( deployment.startedOn )
         assertEquals(
             deployment.startedOn,
-            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Started>().first().startedOn )
+            deployment.consumeEvents().filterIsInstance<StudyDeployment.Event.Started>().first().startedOn
+        )
     }
 
     @Test

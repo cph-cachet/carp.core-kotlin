@@ -100,9 +100,11 @@ interface ParticipationServiceTest
         assertEquals( setOf( commonExpectedData.inputDataType ), participantData.common.keys )
         assertTrue( participantData.common.values.all { it == null } )
         assertEquals( participantRoleNames, participantData.roles.map { it.roleName }.toSet() )
-        assertTrue( participantData.roles.all {
-            it.data.keys.firstOrNull() == CarpInputDataTypes.SEX && it.data.values.firstOrNull() == null
-        } )
+        assertTrue(
+            participantData.roles.all {
+                it.data.keys.firstOrNull() == CarpInputDataTypes.SEX && it.data.values.firstOrNull() == null
+            }
+        )
     }
 
     @Test

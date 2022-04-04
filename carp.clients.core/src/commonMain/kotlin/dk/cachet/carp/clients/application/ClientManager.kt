@@ -151,7 +151,8 @@ abstract class ClientManager<
     {
         val dataCollector = dataListener.tryGetConnectedDataCollector(
             registeredDevice.device::class,
-            registeredDevice.registration )
+            registeredDevice.registration
+        )
 
         // `tryDeployment`, through which registeredDevice is obtained, would have failed if data collector could not be created.
         checkNotNull( dataCollector )

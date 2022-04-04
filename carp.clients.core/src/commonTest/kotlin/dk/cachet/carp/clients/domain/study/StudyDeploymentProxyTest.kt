@@ -160,7 +160,8 @@ class StudyDeploymentProxyTest
         deploymentService.registerDevice(
             deploymentStatus.studyDeploymentId,
             deviceSmartphoneDependsOn.roleName,
-            deviceSmartphoneDependsOn.createRegistration() )
+            deviceSmartphoneDependsOn.createRegistration()
+        )
         studyDeployment.tryDeployment( study, deviceRegistration )
         status = study.getStatus()
         assertTrue( status is StudyStatus.AwaitingOtherDeviceDeployments )
@@ -189,7 +190,8 @@ class StudyDeploymentProxyTest
         deploymentService.registerDevice(
             deploymentStatus.studyDeploymentId,
             connectedDevice.roleName,
-            connectedDevice.createRegistration() )
+            connectedDevice.createRegistration()
+        )
         studyDeployment.tryDeployment( study, deviceRegistration )
         status = study.getStatus()
         assertTrue( status is StudyStatus.Running )
@@ -225,17 +227,20 @@ class StudyDeploymentProxyTest
         protocol.addTaskControl( smartphone.atStartOfStudy().start( connectedTask, connectedDevice ) )
 
         // Create a data listener which supports the requested devices and types in the protocol
-        val dataListener = DataListener( StubConnectedDeviceDataCollectorFactory(
-            localSupportedDataTypes = setOf( STUB_DATA_POINT_TYPE ),
-            mapOf( StubDeviceConfiguration::class to setOf( connectedDataType ) )
-        ) )
+        val dataListener = DataListener(
+            StubConnectedDeviceDataCollectorFactory(
+                localSupportedDataTypes = setOf( STUB_DATA_POINT_TYPE ),
+                mapOf( StubDeviceConfiguration::class to setOf( connectedDataType ) )
+            )
+        )
 
         // Create study deployment with preregistered connected device (otherwise study initialization won't complete).
         val (deploymentService, deploymentStatus) = createStudyDeployment( protocol )
         deploymentService.registerDevice(
             deploymentStatus.studyDeploymentId,
             connectedDevice.roleName,
-            connectedDevice.createRegistration() )
+            connectedDevice.createRegistration()
+        )
 
         // Initializing study for the smartphone deployment should succeed since devices and data types are supported.
         val studyDeployment = StudyDeploymentProxy( deploymentService, dataListener )
@@ -272,7 +277,8 @@ class StudyDeploymentProxyTest
         deploymentService.registerDevice(
             deploymentStatus.studyDeploymentId,
             connectedDevice.roleName,
-            connectedDevice.createRegistration() )
+            connectedDevice.createRegistration()
+        )
 
         // Create a listener which does not support measuring on the connected device.
         val localDataCollector = StubDeviceDataCollector( emptySet() )

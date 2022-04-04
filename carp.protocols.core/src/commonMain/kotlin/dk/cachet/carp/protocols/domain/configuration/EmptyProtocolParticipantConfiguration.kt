@@ -21,7 +21,7 @@ class EmptyProtocolParticipantConfiguration : ProtocolParticipantConfiguration
     private val _participantRoles: ExtractUniqueKeyMap<String, ParticipantRole> =
         ExtractUniqueKeyMap( { role -> role.role } )
         {
-            key -> IllegalArgumentException( "Role name \"$key\" is not unique within participant configuration." )
+            IllegalArgumentException( "Role name \"$it\" is not unique within participant configuration." )
         }
 
     override val participantRoles: Set<ParticipantRole>

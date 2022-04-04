@@ -91,5 +91,6 @@ class DeploymentCodeSamples
     private fun createDeploymentEndpoint(): DeploymentService = DeploymentServiceHost(
         InMemoryDeploymentRepository(),
         InMemoryDataStreamService(),
-        eventBus.createApplicationServiceAdapter( DeploymentService::class ) )
+        eventBus.createApplicationServiceAdapter( DeploymentService::class )
+    )
 }
