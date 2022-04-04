@@ -41,7 +41,7 @@ sealed class StudyServiceRequest<out TReturn> : ApplicationServiceRequest<StudyS
     }
 
     @Serializable
-    data class SetInternalDescription( val studyId: UUID, val name: String, val description: String ) :
+    data class SetInternalDescription( val studyId: UUID, val name: String, val description: String? ) :
         StudyServiceRequest<StudyStatus>()
     {
         override fun getResponseSerializer() = serializer<StudyStatus>()

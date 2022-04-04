@@ -54,11 +54,11 @@ class StudyServiceHost(
      *
      * @param studyId The id of the study to update the study details for.
      * @param name A descriptive name for the study.
-     * @param description A description of the study.
+     * @param description A description of the study; null to remove description.
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
-    override suspend fun setInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus
+    override suspend fun setInternalDescription( studyId: UUID, name: String, description: String? ): StudyStatus
     {
         val study = repository.getById( studyId )
         requireNotNull( study )

@@ -61,11 +61,11 @@ interface StudyService : ApplicationService<StudyService, StudyService.Event>
      *
      * @param studyId The id of the study to update the study details for.
      * @param name A descriptive name for the study.
-     * @param description A description of the study.
+     * @param description A description of the study; null to remove description.
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
-    suspend fun setInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus
+    suspend fun setInternalDescription( studyId: UUID, name: String, description: String? ): StudyStatus
 
     /**
      * Gets detailed information about the study with the specified [studyId], including which study protocol is set.

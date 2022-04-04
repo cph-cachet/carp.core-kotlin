@@ -39,7 +39,7 @@ class StudyServiceLoggingProxy(
     ): StudyStatus =
         log( StudyServiceRequest.CreateStudy( ownerId, name, description, invitation ) )
 
-    override suspend fun setInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus =
+    override suspend fun setInternalDescription( studyId: UUID, name: String, description: String? ): StudyStatus =
         log( StudyServiceRequest.SetInternalDescription( studyId, name, description ) )
 
     override suspend fun getStudyDetails( studyId: UUID ): StudyDetails =
