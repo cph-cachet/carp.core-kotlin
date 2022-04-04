@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.application.tasks.Measure
+import dk.cachet.carp.common.application.toEpochMicroseconds
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
@@ -217,7 +218,8 @@ class HostsIntegrationTest
 
         // Prepare data to append to data stream.
         val stubStreamId = dataStreamId<StubDataPoint>( deploymentId, primaryDevice.roleName )
-        val syncPoint = SyncPoint( Clock.System.now() )
+        val now = Clock.System.now()
+        val syncPoint = SyncPoint( now, now.toEpochMicroseconds() )
         val toAppend = MutableDataStreamBatch()
         toAppend.appendSequence(
             MutableDataStreamSequence<StubDataPoint>( stubStreamId, 0, listOf( atStartOfStudy.id ), syncPoint )

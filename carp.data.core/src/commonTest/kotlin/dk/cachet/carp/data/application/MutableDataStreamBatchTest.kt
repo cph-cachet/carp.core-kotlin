@@ -1,6 +1,7 @@
 package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.toEpochMicroseconds
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
 import dk.cachet.carp.common.infrastructure.test.StubDataTimeSpan
 import dk.cachet.carp.data.infrastructure.dataStreamId
@@ -140,11 +141,12 @@ class MutableDataStreamBatchTest
     {
         val batch = MutableDataStreamBatch()
         val dataStream = dataStreamId<StubDataPoint>( UUID.randomUUID(), "Device" )
+        val now = Clock.System.now()
         val firstSequence = MutableDataStreamSequence<StubDataPoint>(
             dataStream,
             0,
             stubTriggerIds,
-            SyncPoint( Clock.System.now() )
+            SyncPoint( now, now.toEpochMicroseconds() )
         )
         firstSequence.appendMeasurements( measurement( StubDataPoint(), 0 ) )
         batch.appendSequence( firstSequence )

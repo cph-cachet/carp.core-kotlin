@@ -1,6 +1,7 @@
 package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.toEpochMicroseconds
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
@@ -18,13 +19,14 @@ import kotlin.test.*
 class DataStreamSequenceTest
 {
     private val json = createDefaultJSON( STUBS_SERIAL_MODULE )
+    private val now = Clock.System.now()
     private val testDataStreamSequence =
         with(
             MutableDataStreamSequence<StubDataPoint>(
                 dataStreamId<StubDataPoint>( UUID.randomUUID(), "Device" ),
                 0,
                 listOf( 1 ),
-                SyncPoint( Clock.System.now() )
+                SyncPoint( now, now.toEpochMicroseconds() )
             )
         )
         {

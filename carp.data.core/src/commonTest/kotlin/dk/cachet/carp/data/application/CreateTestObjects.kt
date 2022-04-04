@@ -9,7 +9,8 @@ import kotlinx.datetime.Clock
 
 
 val stubDeploymentId = UUID.randomUUID()
-val stubSyncPoint = SyncPoint( Clock.System.now() )
+val now = Clock.System.now()
+val stubSyncPoint = SyncPoint( now, now.toEpochMicroseconds() )
 val stubTriggerIds = listOf( 1 )
 const val stubSequenceDeviceRoleName = "Device"
 
