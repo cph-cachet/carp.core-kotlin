@@ -1,0 +1,71 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.OpenDataStreams",
+            "apiVersion": "1.0",
+            "configuration": {
+                "studyDeploymentId": "c6f89919-3836-43a3-9022-47497dd5c1f3",
+                "expectedDataStreams": [
+                    {
+                        "deviceRoleName": "Device",
+                        "dataType": "dk.cachet.carp.stubpoint"
+                    }
+                ]
+            }
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+        }
+    },
+    {
+        "outcome": "Failed",
+        "request": {
+            "__type": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.AppendToDataStreams",
+            "apiVersion": "1.0",
+            "studyDeploymentId": "1884f029-c9db-493d-b5fd-7dd0fc4b4cbb",
+            "batch": [
+                {
+                    "dataStream": {
+                        "studyDeploymentId": "c6f89919-3836-43a3-9022-47497dd5c1f3",
+                        "deviceRoleName": "Device",
+                        "dataType": "dk.cachet.carp.stubpoint"
+                    },
+                    "firstSequenceId": 0,
+                    "measurements": [
+                        {
+                            "sensorStartTime": 0,
+                            "data": {
+                                "__type": "dk.cachet.carp.stubpoint",
+                                "data": "Stub"
+                            }
+                        },
+                        {
+                            "sensorStartTime": 0,
+                            "data": {
+                                "__type": "dk.cachet.carp.stubpoint",
+                                "data": "Stub"
+                            }
+                        }
+                    ],
+                    "triggerIds": [
+                        1
+                    ],
+                    "syncPoint": {
+                        "synchronizedOn": "2022-04-04T15:12:48.664823Z",
+                        "sensorTimestampAtSyncPoint": 1649085168664823,
+                        "relativeClockSpeed": 1.0
+                    }
+                }
+            ]
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "exceptionType": "IllegalArgumentException"
+    }
+]

@@ -1,0 +1,16 @@
+[
+    {
+        "outcome": "Failed",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.StopParticipantGroup",
+            "apiVersion": "1.0",
+            "studyId": "d8765bd5-0b80-437d-9646-5edd04e30451",
+            "groupId": "65e4dcb6-5380-48ae-a379-e823367ead2d"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "exceptionType": "IllegalArgumentException"
+    }
+]

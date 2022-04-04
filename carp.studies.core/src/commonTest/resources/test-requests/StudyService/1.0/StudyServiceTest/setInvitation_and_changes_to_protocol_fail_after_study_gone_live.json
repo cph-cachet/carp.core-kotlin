@@ -1,0 +1,183 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.CreateStudy",
+            "apiVersion": "1.0",
+            "ownerId": "e3ac8ffb-55f4-404b-8b0f-ff1f14c53bb7",
+            "name": "Test"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+            {
+                "__type": "dk.cachet.carp.studies.application.StudyService.Event.StudyCreated",
+                "aggregateId": "00000000-0000-0000-0000-000000000001",
+                "apiVersion": "1.0",
+                "study": {
+                    "studyId": "00000000-0000-0000-0000-000000000001",
+                    "ownerId": "e3ac8ffb-55f4-404b-8b0f-ff1f14c53bb7",
+                    "name": "Test",
+                    "createdOn": "1970-01-01T00:00:00Z",
+                    "description": null,
+                    "invitation": {
+                        "name": "Test"
+                    },
+                    "protocolSnapshot": null
+                }
+            }
+        ],
+        "response": {
+            "__type": "dk.cachet.carp.studies.application.StudyStatus.Configuring",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "name": "Test",
+            "createdOn": "1970-01-01T00:00:00Z",
+            "studyProtocolId": null,
+            "canSetInvitation": true,
+            "canSetStudyProtocol": true,
+            "canDeployToParticipants": false,
+            "canGoLive": false
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.SetProtocol",
+            "apiVersion": "1.0",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "protocol": {
+                "id": "65a429f4-b90e-49db-a493-9bb497b8e778",
+                "createdOn": "2022-04-04T15:14:30.979611800Z",
+                "ownerId": "e7dff3f1-b10c-4dbb-bdc6-7a20fb194cb0",
+                "name": "Test protocol",
+                "primaryDevices": [
+                    {
+                        "__type": "dk.cachet.carp.common.application.devices.Smartphone",
+                        "isPrimaryDevice": true,
+                        "roleName": "User's phone"
+                    }
+                ]
+            }
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+            "__type": "dk.cachet.carp.studies.application.StudyStatus.Configuring",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "name": "Test",
+            "createdOn": "1970-01-01T00:00:00Z",
+            "studyProtocolId": "65a429f4-b90e-49db-a493-9bb497b8e778",
+            "canSetInvitation": true,
+            "canSetStudyProtocol": true,
+            "canDeployToParticipants": false,
+            "canGoLive": true
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.GoLive",
+            "apiVersion": "1.0",
+            "studyId": "00000000-0000-0000-0000-000000000001"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+            {
+                "__type": "dk.cachet.carp.studies.application.StudyService.Event.StudyGoneLive",
+                "aggregateId": "00000000-0000-0000-0000-000000000001",
+                "apiVersion": "1.0",
+                "study": {
+                    "studyId": "00000000-0000-0000-0000-000000000001",
+                    "ownerId": "e3ac8ffb-55f4-404b-8b0f-ff1f14c53bb7",
+                    "name": "Test",
+                    "createdOn": "1970-01-01T00:00:00Z",
+                    "description": null,
+                    "invitation": {
+                        "name": "Test"
+                    },
+                    "protocolSnapshot": {
+                        "id": "65a429f4-b90e-49db-a493-9bb497b8e778",
+                        "createdOn": "2022-04-04T15:14:30.979611800Z",
+                        "ownerId": "e7dff3f1-b10c-4dbb-bdc6-7a20fb194cb0",
+                        "name": "Test protocol",
+                        "primaryDevices": [
+                            {
+                                "__type": "dk.cachet.carp.common.application.devices.Smartphone",
+                                "isPrimaryDevice": true,
+                                "roleName": "User's phone"
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "response": {
+            "__type": "dk.cachet.carp.studies.application.StudyStatus.Live",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "name": "Test",
+            "createdOn": "1970-01-01T00:00:00Z",
+            "studyProtocolId": "65a429f4-b90e-49db-a493-9bb497b8e778",
+            "canSetInvitation": false,
+            "canSetStudyProtocol": false,
+            "canDeployToParticipants": true
+        }
+    },
+    {
+        "outcome": "Failed",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.SetInvitation",
+            "apiVersion": "1.0",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "invitation": {
+                "name": "Some study"
+            }
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "exceptionType": "IllegalStateException"
+    },
+    {
+        "outcome": "Failed",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.SetProtocol",
+            "apiVersion": "1.0",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "protocol": {
+                "id": "65a429f4-b90e-49db-a493-9bb497b8e778",
+                "createdOn": "2022-04-04T15:14:30.979611800Z",
+                "ownerId": "e7dff3f1-b10c-4dbb-bdc6-7a20fb194cb0",
+                "name": "Test protocol",
+                "primaryDevices": [
+                    {
+                        "__type": "dk.cachet.carp.common.application.devices.Smartphone",
+                        "isPrimaryDevice": true,
+                        "roleName": "User's phone"
+                    }
+                ]
+            }
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "exceptionType": "IllegalStateException"
+    },
+    {
+        "outcome": "Failed",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.RemoveProtocol",
+            "apiVersion": "1.0",
+            "studyId": "00000000-0000-0000-0000-000000000001"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "exceptionType": "IllegalStateException"
+    }
+]

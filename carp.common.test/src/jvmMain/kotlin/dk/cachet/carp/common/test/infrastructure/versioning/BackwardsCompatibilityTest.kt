@@ -75,7 +75,6 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
      * to test resources under a matching version folder to make this test pass.
      */
     @Test
-    @Ignore
     fun versioned_test_requests_for_current_api_version_available()
     {
         val version = currentVersion.toString()
@@ -104,7 +103,6 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
     }
 
     @Test
-    @Ignore
     fun can_replay_backwards_compatible_test_requests() = runTest {
         val compatibleTests = availableTestVersions.filter { it.major == currentVersion.major }
 
