@@ -17,7 +17,7 @@ All the built-in data types belong to the namespace: **dk.cachet.carp**.
 | [stepcount](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/StepCount.kt) | The number of steps a participant has taken in a specified time interval. |
 | [ecg](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/ECG.kt) | Electrocardiogram data of a single lead. |
 | [heartrate](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/HeartRate.kt) | Number of heart contractions (beats) per minute. |
-| [rrinterval](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/RRInterval.kt) | The time interval between two consecutive heartbeats (R-R interval). |
+| [interbeatinterval](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/InterbeatInterval.kt) | The time interval between two consecutive heartbeats. |
 | [sensorskincontact](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/SensorSkinContact.kt) | Whether a sensor requiring contact with skin is making proper contact at a specific point in time. |
 | [nongravitationalacceleration](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/NonGravitationalAcceleration.kt) | Acceleration excluding gravity along perpendicular x, y, and z axes. |
 | [angularvelocity](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/AngularVelocity.kt) | Rate of rotation around perpendicular x, y, and z axes. |

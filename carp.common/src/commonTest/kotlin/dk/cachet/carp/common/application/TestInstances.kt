@@ -27,7 +27,7 @@ val commonInstances = listOf(
     HeartRate( 60 ),
     NoData,
     NonGravitationalAcceleration( 42.0, 42.0, 42.0 ),
-    RRInterval,
+    InterbeatInterval,
     SensorSkinContact( true ),
     SignalStrength( 0 ),
     StepCount( 42 ),
