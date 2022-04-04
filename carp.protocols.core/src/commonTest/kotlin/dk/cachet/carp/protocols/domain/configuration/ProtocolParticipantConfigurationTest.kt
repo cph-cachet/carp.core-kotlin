@@ -119,7 +119,7 @@ interface ProtocolParticipantConfigurationTest
         val participantRole = "Test"
         configuration.addParticipantRole( ParticipantRole( participantRole, false ) )
         val attribute = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
-        configuration.addExpectedParticipantData( ExpectedParticipantData( attribute, AssignedTo.Anyone ) )
+        configuration.addExpectedParticipantData( ExpectedParticipantData( attribute, AssignedTo.All ) )
 
         assertFailsWith<IllegalArgumentException>
         {

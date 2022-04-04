@@ -197,13 +197,13 @@ class ParticipantGroup private constructor(
     }
 
     /**
-     * Data related to anyone in the group.
+     * Data related to everyone in the group.
      */
     val commonData: Map<InputDataType, Data?>
         get() = _commonData
 
     private val _commonData: MutableMap<InputDataType, Data?> = expectedData
-        .filter { it.assignedTo is AssignedTo.Anyone }
+        .filter { it.assignedTo is AssignedTo.All }
         .associate { it.inputDataType to null } // All participant data is null by default.
         .toMutableMap()
 
@@ -242,7 +242,7 @@ class ParticipantGroup private constructor(
         inputDataType: InputDataType,
         data: Data?,
         /**
-         * The participant role who filled out [data]; null if anyone can set the specified [inputDataType].
+         * The participant role who filled out [data]; null if all participants can set the specified [inputDataType].
          */
         inputByParticipantRole: String? = null
     ): Boolean
@@ -250,7 +250,7 @@ class ParticipantGroup private constructor(
         val dataToSet = getExpectedDataOrThrow( registeredInputDataTypes, inputDataType, data, inputByParticipantRole )
 
         val prevData =
-            if ( dataToSet.assignedTo == AssignedTo.Anyone ) _commonData.put( inputDataType, data )
+            if ( dataToSet.assignedTo == AssignedTo.All ) _commonData.put( inputDataType, data )
             else
             {
                 val roleData = checkNotNull( _roleData[ inputByParticipantRole ] )
@@ -274,7 +274,7 @@ class ParticipantGroup private constructor(
         registeredInputDataTypes: InputDataTypeList,
         data: Map<InputDataType, Data?>,
         /**
-         * The participant role who filled out [data]; null if anyone can set it.
+         * The participant role who filled out [data]; null if all participants can set it.
          */
         inputByParticipantRole: String? = null
     ): Boolean
@@ -302,7 +302,7 @@ class ParticipantGroup private constructor(
             .filter {
                 when ( val assignedTo = it.assignedTo )
                 {
-                    is AssignedTo.Anyone -> true
+                    is AssignedTo.All -> true
                     is AssignedTo.Roles -> assignedToParticipantRole in assignedTo.roleNames
                 }
             }

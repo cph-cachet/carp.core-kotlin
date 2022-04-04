@@ -191,7 +191,7 @@ class StudyProtocol(
         val isAdded = super.addPrimaryDevice( primaryDevice )
         if ( isAdded )
         {
-            _deviceAssignments[ primaryDevice ] = AssignedTo.Anyone
+            _deviceAssignments[ primaryDevice ] = AssignedTo.All
             event( Event.PrimaryDeviceAdded( primaryDevice ) )
         }
 
@@ -434,7 +434,7 @@ class StudyProtocol(
 
     /**
      * For each of the primary device configurations in this protocol, the participant roles it has been [AssignedTo].
-     * By default, devices are [AssignedTo.Anyone].
+     * By default, primary devices are [AssignedTo.All] roles.
      */
     val deviceAssignments: Map<AnyPrimaryDeviceConfiguration, AssignedTo>
         get() = _deviceAssignments.toMap()
@@ -443,7 +443,7 @@ class StudyProtocol(
 
     /**
      * Change who the primary [device] is [assignedTo].
-     * By default, primary devices are [AssignedTo.Anyone].
+     * By default, primary devices are [AssignedTo.All] roles.
      *
      * @throws IllegalArgumentException if:
      *  - [device] is not part of this protocol

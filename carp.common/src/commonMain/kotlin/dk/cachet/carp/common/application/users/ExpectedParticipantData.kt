@@ -11,10 +11,10 @@ import kotlinx.serialization.Serializable
 data class ExpectedParticipantData(
     val attribute: ParticipantAttribute,
     /**
-     * Determines whether the attribute can be set by [AssignedTo.Anyone] in the study (one field for all participants),
+     * Determines whether the attribute can be set by [AssignedTo.All] participants in the study (one field for all),
      * or an individual attribute can be set by each of the specified [AssignedTo.Roles] (one field per role).
      */
-    val assignedTo: AssignedTo = AssignedTo.Anyone
+    val assignedTo: AssignedTo = AssignedTo.All
 )
 {
     val inputDataType: InputDataType
@@ -48,9 +48,9 @@ fun Set<ExpectedParticipantData>.hasNoConflicts( exceptionOnConflict: Boolean = 
     // Check for multiple attributes of the same input data type which are assigned to the same role.
     val noMultipleInputType = expectedDataByInputType
         .all { (_, expectedData) ->
-            if ( AssignedTo.Anyone in expectedData.map { it.assignedTo } )
+            if ( AssignedTo.All in expectedData.map { it.assignedTo } )
             {
-                // Any additional expected data would specify roles and thus conflict with the `Anyone` configuration.
+                // Any additional expected data would specify roles and thus conflict with the `All` configuration.
                 expectedData.size == 1
             }
             else

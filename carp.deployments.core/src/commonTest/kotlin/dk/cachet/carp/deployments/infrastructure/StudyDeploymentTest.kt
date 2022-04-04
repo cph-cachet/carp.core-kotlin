@@ -52,7 +52,7 @@ class StudyDeploymentTest
         val invitations = listOf(
             ParticipantInvitation(
                 UUID.randomUUID(),
-                AssignedTo.Anyone,
+                AssignedTo.All,
                 UsernameAccountIdentity( "Test" ),
                 StudyInvitation( "Test" )
             )

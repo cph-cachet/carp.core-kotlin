@@ -56,7 +56,7 @@ interface ParticipationServiceTest
         val invitation = StudyInvitation( "Test study", "description", "Custom data" )
         val participantInvitation = ParticipantInvitation(
             participantId = UUID.randomUUID(),
-            AssignedTo.Anyone,
+            AssignedTo.All,
             identity,
             invitation
         )
@@ -138,7 +138,7 @@ interface ParticipationServiceTest
     }
 
     @Test
-    fun setParticipantData_assigned_to_anyone_succeeds() = runTest {
+    fun setParticipantData_assigned_to_all_roles_succeeds() = runTest {
         val (participationService, deploymentService, _) = createService()
 
         // Create protocol without roles with expected 'sex' participant data.

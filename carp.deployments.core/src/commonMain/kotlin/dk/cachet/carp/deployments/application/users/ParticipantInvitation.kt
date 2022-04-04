@@ -16,8 +16,7 @@ data class ParticipantInvitation(
      */
     val participantId: UUID,
     /**
-     * The participant roles in the study protocol which the participant is assigned to,
-     * or [AssignedTo.Anyone] if the participant can choice any/all roles.
+     * The participant roles in the study protocol which the participant is assigned to.
      */
     val assignedRoles: AssignedTo,
     /**

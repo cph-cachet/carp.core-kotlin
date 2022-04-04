@@ -56,7 +56,7 @@ interface DeploymentServiceTest
         val protocol = createSinglePrimaryDeviceProtocol( deviceRole )
         val invitation = ParticipantInvitation(
             UUID.randomUUID(),
-            AssignedTo.Anyone,
+            AssignedTo.All,
             AccountIdentity.fromUsername( "User" ),
             StudyInvitation( "Some study" )
         )

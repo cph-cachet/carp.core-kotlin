@@ -88,7 +88,7 @@ suspend fun createStudyDeployment( protocol: StudyProtocol ): Pair<DeploymentSer
 fun createParticipantInvitation( identity: AccountIdentity? = null ): ParticipantInvitation =
     ParticipantInvitation(
         UUID.randomUUID(),
-        AssignedTo.Anyone,
+        AssignedTo.All,
         identity ?: AccountIdentity.fromUsername( "Test" ),
         StudyInvitation( "Some study" )
     )

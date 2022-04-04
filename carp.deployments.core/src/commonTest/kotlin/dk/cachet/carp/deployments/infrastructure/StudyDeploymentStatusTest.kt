@@ -72,7 +72,7 @@ class StudyDeploymentStatusTest
             listOf(
                 ParticipantInvitation(
                     UUID.randomUUID(),
-                    AssignedTo.Anyone,
+                    AssignedTo.All,
                     UsernameAccountIdentity( "Test" ),
                     StudyInvitation( "Test" )
                 )

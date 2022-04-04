@@ -2,15 +2,15 @@
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
   "oneOf": [
-    { "$ref": "#/$defs/Anyone" },
+    { "$ref": "#/$defs/All" },
     { "$ref": "#/$defs/Roles" }
   ],
   "$defs": {
-    "Anyone": {
-      "$anchor": "Anyone",
+    "All": {
+      "$anchor": "All",
       "type": "object",
   	  "properties": {
-        "__type": { "const": "dk.cachet.carp.common.application.users.AssignedTo.Anyone" }
+        "__type": { "const": "dk.cachet.carp.common.application.users.AssignedTo.All" }
       },
       "required": [ "__type" ]
     },

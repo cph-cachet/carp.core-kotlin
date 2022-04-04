@@ -2,7 +2,6 @@ package dk.cachet.carp.studies
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.application.users.AssignedTo
@@ -58,8 +57,8 @@ class StudiesCodeSamples
         // Once the study is live, you can 'deploy' it to participant's devices. They will be invited.
         if ( studyStatus.canDeployToParticipants )
         {
-            // Create a 'participant group' with a single participant, with no specific participant role assignment.
-            val participation = AssignParticipantRoles( participant.id, AssignedTo.Anyone )
+            // Create a 'participant group' with a single participant; `AssignedTo.All` assigns the "Patient's phone".
+            val participation = AssignParticipantRoles( participant.id, AssignedTo.All )
             val participantGroup = setOf( participation )
 
             val groupStatus: ParticipantGroupStatus = recruitmentService.inviteNewParticipantGroup( studyId, participantGroup )

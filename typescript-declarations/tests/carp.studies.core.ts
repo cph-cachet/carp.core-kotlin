@@ -53,7 +53,7 @@ describe( "carp.studies.core", () => {
             new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), null, true, true, false, true ),
             new StudyStatus.Live( UUID.Companion.randomUUID(), "Test", Clock.System.now(), UUID.Companion.randomUUID(), false, false, true ),
             StudyStatus.Companion,
-            new AssignParticipantRoles( UUID.Companion.randomUUID(), AssignedTo.Anyone ),
+            new AssignParticipantRoles( UUID.Companion.randomUUID(), AssignedTo.All ),
             AssignParticipantRoles.Companion,
             new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ),
             Participant.Companion,
@@ -78,7 +78,7 @@ describe( "carp.studies.core", () => {
             const participant1 = UUID.Companion.randomUUID()
             const participant2 = UUID.Companion.randomUUID()
             const assigned1 = new AssignParticipantRoles( participant1, new AssignedTo.Roles( toSet( [ "Test" ] ) ) )
-            const assigned2 = new AssignParticipantRoles( participant2, AssignedTo.Anyone )
+            const assigned2 = new AssignParticipantRoles( participant2, AssignedTo.All )
             const assignedGroup = new ArrayList( [ assigned1, assigned2 ] )
             expect( getAssignedParticipantIds( assignedGroup ) ).instanceof( HashSet )
             expect( getAssignedParticipantRoles( assignedGroup ) ).instanceof( HashSet )
@@ -134,7 +134,7 @@ describe( "carp.studies.core", () => {
             const deployGroup = new RecruitmentServiceRequest.InviteNewParticipantGroup(
                 UUID.Companion.randomUUID(),
                 toSet( [
-                    new AssignParticipantRoles( UUID.Companion.randomUUID(), AssignedTo.Anyone )
+                    new AssignParticipantRoles( UUID.Companion.randomUUID(), AssignedTo.All )
                 ] )
             )
 

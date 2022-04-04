@@ -32,7 +32,7 @@ fun studyDeploymentFor( protocol: StudyProtocol ): StudyDeployment
     val identity = UsernameAccountIdentity( "Test user" )
     val invitation = StudyInvitation( "Test" )
     val invitations = protocol.primaryDevices.map {
-        ParticipantInvitation( UUID.randomUUID(), AssignedTo.Anyone, identity, invitation )
+        ParticipantInvitation( UUID.randomUUID(), AssignedTo.All, identity, invitation )
     }
 
     return StudyDeployment.fromInvitations( snapshot, invitations )
@@ -87,7 +87,7 @@ fun createStoppedDeployment( primaryDeviceRoleName: String ): StudyDeployment =
 fun createParticipantInvitation( identity: AccountIdentity? = null ): ParticipantInvitation =
     ParticipantInvitation(
         UUID.randomUUID(),
-        AssignedTo.Anyone,
+        AssignedTo.All,
         identity ?: AccountIdentity.fromUsername( "Test" ),
         StudyInvitation( "Some study" )
     )

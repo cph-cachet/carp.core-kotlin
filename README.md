@@ -234,8 +234,8 @@ if ( studyStatus is StudyStatus.Configuring && studyStatus.canGoLive )
 // Once the study is live, you can 'deploy' it to participant's devices. They will be invited.
 if ( studyStatus.canDeployToParticipants )
 {
-    // Create a 'participant group' with a single participant, with no specific participant role assignment.
-    val participation = AssignParticipantRoles( participant.id, AssignedTo.Anyone )
+    // Create a 'participant group' with a single participant; `AssignedTo.All` assigns the "Patient's phone".
+    val participation = AssignParticipantRoles( participant.id, AssignedTo.All )
     val participantGroup = setOf( participation )
 
     val groupStatus: ParticipantGroupStatus = recruitmentService.inviteNewParticipantGroup( studyId, participantGroup )
@@ -254,7 +254,7 @@ val patientPhone: Smartphone = trackPatientStudy.primaryDevices.first() as Smart
 // This is called by `StudyService` when deploying a participant group.
 val invitation = ParticipantInvitation(
     participantId = UUID.randomUUID(),
-    assignedRoles = AssignedTo.Anyone,
+    assignedRoles = AssignedTo.All,
     identity = AccountIdentity.fromEmailAddress( "test@test.com" ),
     invitation = StudyInvitation( "Movement study", "This study tracks your movements." )
 )

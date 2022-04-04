@@ -413,7 +413,7 @@ class StudyDeploymentTest
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
         val invitation = ParticipantInvitation(
             UUID.randomUUID(),
-            AssignedTo.Anyone,
+            AssignedTo.All,
             UsernameAccountIdentity( "Test" ),
             StudyInvitation( "Test " )
         )
@@ -421,7 +421,7 @@ class StudyDeploymentTest
 
         val expectedParticipantStatus = ParticipantStatus(
             invitation.participantId,
-            AssignedTo.Anyone,
+            AssignedTo.All,
             setOf( deviceRoleName )
         )
         val status = deployment.getStatus()

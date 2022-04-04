@@ -13,7 +13,7 @@ import kotlinx.serialization.Serializable
 data class Participation(
     val studyDeploymentId: UUID,
     @Required
-    val assignedRoles: AssignedTo = AssignedTo.Anyone,
+    val assignedRoles: AssignedTo = AssignedTo.All,
     @Required
     val participantId: UUID = UUID.randomUUID(),
 )

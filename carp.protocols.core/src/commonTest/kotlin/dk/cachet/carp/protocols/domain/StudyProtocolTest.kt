@@ -482,7 +482,7 @@ class StudyProtocolTest
         }
 
         protocol.consumeEvents() // Not interested in previous events.
-        assertEquals( AssignedTo.Anyone, protocol.deviceAssignments[ device ] )
+        assertEquals( AssignedTo.All, protocol.deviceAssignments[ device ] )
         val assignRole = AssignedTo.Roles( setOf( role.role ) )
         protocol.changeDeviceAssignment( device, assignRole )
         assertEquals( assignRole, protocol.deviceAssignments[ device ] )
