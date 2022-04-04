@@ -96,9 +96,10 @@ which implementing infrastructures are expected to implement as remote procedure
 Asynchronous communication between subsystems happens via an event bus,
 which implementing infrastructures are expected to implement using a message queue which guarantees order for all `IntegrationEvent`'s sharing the same `aggregateId`.
 
-Not all subsystems are implemented yet.
-Currently, this project contains an unstable (not backwards compatible) alpha version of the protocols, studies, deployments, clients, and data subsystems.
-Many changes will happen as the rest of the infrastructure is implemented.
+Not all subsystems are implemented or complete yet.
+Currently, this project contains a stable version of the protocols, studies, deployments, and data subsystems.
+The client subsystem is still considered alpha and expected to change in the future.
+The resources and analysis subsystem are envisioned later additions.
 
 ## Infrastructure helpers
 
@@ -283,6 +284,33 @@ if ( patientPhoneStatus.canObtainDeviceDeployment ) // True since there are no d
 // Now that all devices have been registered and deployed, the deployment is running.
 status = deploymentService.getStudyDeploymentStatus( studyDeploymentId )
 val isReady = status is StudyDeploymentStatus.Running // True.
+```
+
+<a name="example-data"></a>
+**carp.data**: Calls to this subsystem are abstracted away by the 'deployments' subsystem and are planned to be abstracted away by the 'clients' subsystem.
+Example code which is called once a deployment is running and data is subsequently uploaded by the client.
+
+```kotlin
+val dataStreamService: DataStreamService = createDataStreamEndpoint()
+val studyDeploymentId: UUID = getStudyDeploymentId() // Provided by the 'deployments' subsystem.
+
+// This is called by the `DeploymentsService` once the deployment starts running.
+val device = "Patient's phone"
+val geolocation = DataStreamsConfiguration.ExpectedDataStream( device, CarpDataTypes.GEOLOCATION.type )
+val stepCount = DataStreamsConfiguration.ExpectedDataStream( device, CarpDataTypes.STEP_COUNT.type )
+val configuration = DataStreamsConfiguration( studyDeploymentId, setOf( geolocation, stepCount ) )
+dataStreamService.openDataStreams( configuration )
+
+// Upload data from the client.
+val geolocationData = MutableDataStreamSequence<Geolocation>(
+    dataStream = dataStreamId<Geolocation>( studyDeploymentId, device ),
+    firstSequenceId = 0,
+    triggerIds = listOf( 0 ) // Provided by device deployment; maps to the `atStartOfStudy()` trigger.
+)
+val uploadData: DataStreamBatch = MutableDataStreamBatch().apply {
+    appendSequence( geolocationData )
+}
+dataStreamService.appendToDataStreams( studyDeploymentId, uploadData )
 ```
 
 <a name="example-client"></a>
