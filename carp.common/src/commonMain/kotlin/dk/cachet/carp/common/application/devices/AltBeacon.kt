@@ -86,11 +86,7 @@ data class AltBeaconDeviceRegistration(
     }
 
     @Required
-    override val deviceId: String =
-        // TODO: Remove this workaround once JS serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/716
-        @Suppress( "SENSELESS_COMPARISON" )
-        if ( arrayOf( manufacturerId, organizationId, majorId, minorId ).any { it == null } ) ""
-        else "$manufacturerId:$organizationId:$majorId:$minorId"
+    override val deviceId: String = "$manufacturerId:$organizationId:$majorId:$minorId"
 }
 
 
