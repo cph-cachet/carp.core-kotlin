@@ -112,6 +112,19 @@ interface DataStreamServiceTest
     }
 
     @Test
+    fun getDataStream_fails_for_wrong_sequence_ids() = runTest {
+        val service = createServiceWithOpenStubDataPointStream()
+
+        val batch = MutableDataStreamBatch()
+        val sequence = createStubSequence( 0, StubDataPoint(), StubDataPoint() )
+        batch.appendSequence( sequence )
+        service.appendToDataStreams( stubDeploymentId, batch )
+
+        assertFailsWith<IllegalArgumentException> { service.getDataStream( sequence.dataStream, -1, 10 ) }
+        assertFailsWith<IllegalArgumentException> { service.getDataStream( sequence.dataStream, 1, 0 ) }
+    }
+
+    @Test
     fun closeDataStreams_succeeds() = runTest {
         val service = createServiceWithOpenStubDataPointStream()
 

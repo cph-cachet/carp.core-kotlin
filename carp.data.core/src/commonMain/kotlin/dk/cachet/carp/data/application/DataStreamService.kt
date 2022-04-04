@@ -51,7 +51,9 @@ interface DataStreamService : ApplicationService<DataStreamService, DataStreamSe
      * In case no data for [dataStream] is stored in this repository, or is available for the specified range,
      * an empty [DataStreamBatch] is returned.
      *
-     * @throws IllegalArgumentException when [dataStream] has never been opened.
+     * @throws IllegalArgumentException if:
+     *  - [dataStream] has never been opened
+     *  - [fromSequenceId] is negative or [toSequenceIdInclusive] is smaller than [fromSequenceId]
      */
     suspend fun getDataStream(
         dataStream: DataStreamId,

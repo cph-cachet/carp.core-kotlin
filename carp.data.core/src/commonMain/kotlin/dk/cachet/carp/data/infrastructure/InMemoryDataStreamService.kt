@@ -71,7 +71,9 @@ class InMemoryDataStreamService : DataStreamService
      * In case no data for [dataStream] is stored in this repository, or is available for the specified range,
      * an empty [DataStreamBatch] is returned.
      *
-     * @throws IllegalArgumentException when [dataStream] has never been opened.
+     * @throws IllegalArgumentException if:
+     *  - [dataStream] has never been opened
+     *  - [fromSequenceId] is negative or [toSequenceIdInclusive] is smaller than [fromSequenceId]
      */
     override suspend fun getDataStream(
         dataStream: DataStreamId,
@@ -83,6 +85,8 @@ class InMemoryDataStreamService : DataStreamService
         requireNotNull( configuration ) { "No data streams configured for this study deployment." }
         require( dataStream in configuration.expectedDataStreamIds )
             { "The batch contains a sequence with a data stream which wasn't configured for this study deployment." }
+        require( fromSequenceId >= 0 && (toSequenceIdInclusive == null || toSequenceIdInclusive >= fromSequenceId) )
+            { "The starting sequence ID is negative or the end sequence ID is smaller than the starting ID." }
 
         return dataStreams.sequences
             .filter { it.dataStream == dataStream }
