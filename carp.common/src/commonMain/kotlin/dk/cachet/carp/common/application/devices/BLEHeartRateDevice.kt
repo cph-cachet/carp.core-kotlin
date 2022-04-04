@@ -28,9 +28,9 @@ data class BLEHeartRateDevice(
         val HEART_RATE = add( NoOptionsSamplingScheme( CarpDataTypes.HEART_RATE ) )
 
         /**
-         * The time interval between two consecutive heartbeats (R-R interval).
+         * The time interval between two consecutive heartbeats.
          */
-        val RR_INTERVAL = add( NoOptionsSamplingScheme( CarpDataTypes.RR_INTERVAL ) )
+        val INTERBEAT_INTERVAL = add( NoOptionsSamplingScheme( CarpDataTypes.INTERBEAT_INTERVAL ) )
 
         /**
          * Whether the device is making proper skin contact.

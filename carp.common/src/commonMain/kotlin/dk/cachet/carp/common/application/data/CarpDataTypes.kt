@@ -39,11 +39,11 @@ object CarpDataTypes : DataTypeMetaDataMap()
      */
     val HEART_RATE = add( HEART_RATE_TYPE_NAME, "Heart rate", DataTimeType.POINT )
 
-    internal const val RR_INTERVAL_TYPE_NAME = "$CARP_NAMESPACE.rrinterval"
+    internal const val INTERBEAT_INTERVAL_TYPE_NAME = "$CARP_NAMESPACE.interbeatinterval"
     /**
-     * The time interval between two consecutive heartbeats (R-R interval).
+     * The time interval between two consecutive heartbeats.
      */
-    val RR_INTERVAL = add( RR_INTERVAL_TYPE_NAME, "R-R interval", DataTimeType.TIME_SPAN )
+    val INTERBEAT_INTERVAL = add( INTERBEAT_INTERVAL_TYPE_NAME, "Interbeat interval", DataTimeType.TIME_SPAN )
 
     internal const val SENSOR_SKIN_CONTACT_TYPE_NAME = "$CARP_NAMESPACE.sensorskincontact"
     /**

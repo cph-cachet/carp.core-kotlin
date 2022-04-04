@@ -25,8 +25,8 @@
       "then": { "$ref": "HeartRate.json" }
     },
     {
-      "if": { "properties": { "__type": { "const": "dk.cachet.carp.rrinterval" } } },
-      "then": { "$ref": "RRInterval.json" }
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.interbeatinterval" } } },
+      "then": { "$ref": "InterbeatInterval.json" }
     },
     {
       "if": { "properties": { "__type": { "const": "dk.cachet.carp.sensorskincontact" } } },
