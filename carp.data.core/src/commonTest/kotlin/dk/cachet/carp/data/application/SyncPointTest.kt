@@ -1,5 +1,7 @@
 package dk.cachet.carp.data.application
 
+import dk.cachet.carp.common.application.toEpochMicroseconds
+import kotlinx.datetime.Clock
 import kotlin.test.*
 
 
@@ -8,6 +10,16 @@ import kotlin.test.*
  */
 class SyncPointTest
 {
+    @Test
+    fun applyToTimestamp_for_same_clock_speed_succeeds()
+    {
+        val now = Clock.System.now()
+        val sync = SyncPoint( now, 1 )
+
+        val synchronized = sync.applyToTimestamp( 1 )
+        assertEquals( now.toEpochMicroseconds(), synchronized )
+    }
+
     @Test
     fun applyToTimestamp_for_double_speed_clock_succeeds()
     {

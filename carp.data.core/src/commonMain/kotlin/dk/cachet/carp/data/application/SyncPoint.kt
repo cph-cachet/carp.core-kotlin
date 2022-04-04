@@ -1,6 +1,5 @@
 package dk.cachet.carp.data.application
 
-import dk.cachet.carp.common.application.toEpochMicroseconds
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
@@ -23,7 +22,7 @@ data class SyncPoint(
      * The sensor time at [synchronizedOn].
      */
     @Required
-    val sensorTimestampAtSyncPoint: Long = synchronizedOn.toEpochMicroseconds(),
+    val sensorTimestampAtSyncPoint: Long,
     /**
      * The relative clock speed of UTC time compared to the sensor clock,
      * calculated as the variation of UTC time divided by the variation of sensor time.
@@ -40,7 +39,7 @@ data class SyncPoint(
          * The default [SyncPoint] for sensors which return timestamps as number of microseconds since the Unix epoch.
          * Applying this [SyncPoint] to timestamps is a no-op.
          */
-        val UnixEpoch: SyncPoint = SyncPoint( Instant.fromEpochSeconds( 0 ) )
+        val UnixEpoch: SyncPoint = SyncPoint( Instant.fromEpochSeconds( 0 ), 0 )
     }
 }
 
