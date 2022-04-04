@@ -45,7 +45,7 @@
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyId": { "type": "string", "format": "uuid" },
         "name": { "type": "string" },
-        "description": { "type": "string" }
+        "description": { "type": [ "string", "null" ] }
       },
       "required": [ "__type", "apiVersion", "studyId", "name", "description" ],
       "additionalProperties": false,
