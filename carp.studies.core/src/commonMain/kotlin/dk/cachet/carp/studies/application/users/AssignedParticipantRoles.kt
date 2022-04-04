@@ -10,17 +10,17 @@ import kotlinx.serialization.Serializable
  * to the participant identified by [participantId].
  */
 @Serializable
-data class AssignParticipantRoles( val participantId: UUID, val assignedRoles: AssignedTo )
+data class AssignedParticipantRoles( val participantId: UUID, val assignedRoles: AssignedTo )
 
 /**
- * Get the unique set of participant IDs defined in a collection of [AssignParticipantRoles].
+ * Get the unique set of participant IDs defined in a collection of [AssignedParticipantRoles].
  */
-fun Collection<AssignParticipantRoles>.participantIds(): Set<UUID> = this.map { it.participantId }.toSet()
+fun Collection<AssignedParticipantRoles>.participantIds(): Set<UUID> = this.map { it.participantId }.toSet()
 
 /**
- * Get the unique set of participant roles defined in a collection of [AssignParticipantRoles].
+ * Get the unique set of participant roles defined in a collection of [AssignedParticipantRoles].
  */
-fun Collection<AssignParticipantRoles>.participantRoles(): Set<String> = this
+fun Collection<AssignedParticipantRoles>.participantRoles(): Set<String> = this
     .flatMap {
         when ( it.assignedRoles )
         {

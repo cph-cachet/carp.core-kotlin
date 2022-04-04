@@ -93,18 +93,18 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
     namespace dk.cachet.carp.studies.application.users
     {
-        class AssignParticipantRoles
+        class AssignedParticipantRoles
         {
             constructor( participantId: UUID, assignedRoles: AssignedTo )
 
-            static get Companion(): AssignParticipantRoles$Companion
+            static get Companion(): AssignedParticipantRoles$Companion
 
             readonly participantId: UUID
             readonly assignedRoles: AssignedTo
         }
-        function participantIds_yyd5wh$( assignedGroup: ArrayList<AssignParticipantRoles> ): HashSet<UUID>
-        function participantRoles_yyd5wh$( assignedGroup: ArrayList<AssignParticipantRoles> ): HashSet<string>
-        interface AssignParticipantRoles$Companion { serializer(): any }
+        function participantIds_skpkn2$( assignedGroup: ArrayList<AssignedParticipantRoles> ): HashSet<UUID>
+        function participantRoles_skpkn2$( assignedGroup: ArrayList<AssignedParticipantRoles> ): HashSet<string>
+        interface AssignedParticipantRoles$Companion { serializer(): any }
 
 
         class Participant
@@ -177,7 +177,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
     namespace dk.cachet.carp.studies.infrastructure
     {
-        import AssignParticipantRoles = dk.cachet.carp.studies.application.users.AssignParticipantRoles
+        import AssignedParticipantRoles = dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 
 
         abstract class StudyServiceRequest implements ApplicationServiceRequest
@@ -255,7 +255,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             }
             class InviteNewParticipantGroup extends RecruitmentServiceRequest
             {
-                constructor( studyId: UUID, group: HashSet<AssignParticipantRoles> )
+                constructor( studyId: UUID, group: HashSet<AssignedParticipantRoles> )
             }
             class GetParticipantGroupStatusList extends RecruitmentServiceRequest
             {
