@@ -356,10 +356,11 @@ if ( status is StudyStatus.RegisteringDevices )
 
 In case you want to contribute, please follow our [contribution guidelines](https://github.com/cph-cachet/carp.core-kotlin/blob/develop/CONTRIBUTING.md).
 
-We recommend using IntelliJ IDEA 2021, as this is the development environment we use and is therefore fully tested.
+We recommend using IntelliJ IDEA 2022, as this is the development environment we use and is therefore fully tested.
 
-- Install the Kotlin plugin for IntelliJ IDEA (212-1.5.31-release-*): `Tools->Kotlin->Configure Kotlin Plugin Updates`
-- Open the project folder in IntelliJ 2021.
+- Open the project folder in IntelliJ 2022.
+- Make sure Google Chrome is installed; JS unit tests are run on headless Chrome.
+- In case you want to run TypeScript declaration tests (`verifyTsDeclarations`), install node.
 - To build/test/publish, click "Edit Configurations" to add configurations for [the included Gradle tasks](#gradle-tasks), or run them from the Gradle tool window.
 
 ### Gradle tasks
