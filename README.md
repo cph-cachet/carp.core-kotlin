@@ -1,8 +1,14 @@
-# Domain Model and Application Service Definitions for all CARP Subsystems
+# CARP Core Framework
 
 [![Publish snapshots status](https://github.com/cph-cachet/carp.core-kotlin/workflows/Publish%20snapshots/badge.svg?branch=develop)](https://github.com/cph-cachet/carp.core-kotlin/actions?query=workflow%3A%22Publish+snapshots%22) 
 
-This project is part of the [CACHET Research Platform (CARP)](http://carp.cachet.dk/)—an infrastructure supporting researchers in defining, deploying, and monitoring research studies involving data collection on multiple devices at multiple locations.
+CARP Core is a software framework to help developers build research platforms to run studies involving _distributed data collection_.
+It provides modules to define, deploy, and monitor research studies, and to collect data from multiple devices at multiple locations.
+
+It is the result of a collaboration between [iMotions](https://imotions.com/) and the [Copenhagen Center for Health Technology (CACHET)](https://www.cachet.dk/).
+Both use CARP Core to implement their respective research platforms: the [iMotions Mobile Research Platform](https://imotions.com/mobile-platform-landing-page-submissions/) and the [CACHET Research Platform (CARP)](https://carp.cachet.dk/).
+CARP Core is now maintained fully by iMotions (since 1.0), but [still part of CARP](https://carp.cachet.dk/core/) as an ongoing collaboration.   
+
 Following [domain-driven design](https://en.wikipedia.org/wiki/Domain-driven_design), this project contains all domain models and application services for all CARP subsystems ([depicted below](#architecture)), not having any dependencies on concrete infrastructure.
 As such, this project defines an **open standard for distributed data collection**, [available for Kotlin, the Java runtime, and JavaScript](#usage), which others can build upon to create their own infrastructure. 
 
