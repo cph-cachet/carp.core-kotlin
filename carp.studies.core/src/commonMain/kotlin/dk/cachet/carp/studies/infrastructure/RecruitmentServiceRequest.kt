@@ -1,58 +1,75 @@
-@file:JsExport
-
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.services.ServiceInvoker
-import dk.cachet.carp.common.infrastructure.services.createServiceInvoker
+import dk.cachet.carp.common.application.services.ApiVersion
+import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.studies.application.RecruitmentService
-import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
-import kotlin.js.JsExport
-
-// TODO: Due to a bug, `Service` and `Invoker` cannot be used here, although that would be preferred.
-//       Change this once this is fixed: https://youtrack.jetbrains.com/issue/KT-24700
-private typealias RecruitmentServiceInvoker<T> = ServiceInvoker<RecruitmentService, T>
-// private typealias Service = ParticipantService
-// private typealias Invoker<T> = ServiceInvoker<ParticipantService, T>
+import kotlinx.serialization.serializer
 
 
 /**
  * Serializable application service requests to [RecruitmentService] which can be executed on demand.
  */
 @Serializable
-sealed class RecruitmentServiceRequest
+sealed class RecruitmentServiceRequest<out TReturn> : ApplicationServiceRequest<RecruitmentService, TReturn>
 {
-    @Serializable
-    data class AddParticipant( val studyId: UUID, val email: EmailAddress ) :
-        RecruitmentServiceRequest(),
-        RecruitmentServiceInvoker<Participant> by createServiceInvoker( RecruitmentService::addParticipant, studyId, email )
+    @Required
+    override val apiVersion: ApiVersion = RecruitmentService.API_VERSION
+
+    object Serializer : KSerializer<RecruitmentServiceRequest<*>> by ignoreTypeParameters( ::serializer )
+
 
     @Serializable
-    data class GetParticipant( val studyId: UUID, val participantId: UUID ) :
-        RecruitmentServiceRequest(),
-        RecruitmentServiceInvoker<Participant> by createServiceInvoker( RecruitmentService::getParticipant, studyId, participantId )
+    data class AddParticipant( val studyId: UUID, val email: EmailAddress ) : RecruitmentServiceRequest<Participant>()
+    {
+        override fun getResponseSerializer() = serializer<Participant>()
+        override suspend fun invokeOn( service: RecruitmentService ) = service.addParticipant( studyId, email )
+    }
 
     @Serializable
-    data class GetParticipants( val studyId: UUID ) :
-        RecruitmentServiceRequest(),
-        RecruitmentServiceInvoker<List<Participant>> by createServiceInvoker( RecruitmentService::getParticipants, studyId )
+    data class GetParticipant( val studyId: UUID, val participantId: UUID ) : RecruitmentServiceRequest<Participant>()
+    {
+        override fun getResponseSerializer() = serializer<Participant>()
+        override suspend fun invokeOn( service: RecruitmentService ) = service.getParticipant( studyId, participantId )
+    }
 
     @Serializable
-    data class InviteNewParticipantGroup( val studyId: UUID, val group: Set<AssignParticipantDevices> ) :
-        RecruitmentServiceRequest(),
-        RecruitmentServiceInvoker<ParticipantGroupStatus> by createServiceInvoker( RecruitmentService::inviteNewParticipantGroup, studyId, group )
+    data class GetParticipants( val studyId: UUID ) : RecruitmentServiceRequest<List<Participant>>()
+    {
+        override fun getResponseSerializer() = serializer<List<Participant>>()
+        override suspend fun invokeOn( service: RecruitmentService ) = service.getParticipants( studyId )
+    }
+
+    @Serializable
+    data class InviteNewParticipantGroup( val studyId: UUID, val group: Set<AssignedParticipantRoles> ) :
+        RecruitmentServiceRequest<ParticipantGroupStatus>()
+    {
+        override fun getResponseSerializer() = serializer<ParticipantGroupStatus>()
+        override suspend fun invokeOn( service: RecruitmentService ) =
+            service.inviteNewParticipantGroup( studyId, group )
+    }
 
     @Serializable
     data class GetParticipantGroupStatusList( val studyId: UUID ) :
-        RecruitmentServiceRequest(),
-        RecruitmentServiceInvoker<List<ParticipantGroupStatus>> by createServiceInvoker( RecruitmentService::getParticipantGroupStatusList, studyId )
+        RecruitmentServiceRequest<List<ParticipantGroupStatus>>()
+    {
+        override fun getResponseSerializer() = serializer<List<ParticipantGroupStatus>>()
+        override suspend fun invokeOn( service: RecruitmentService ) = service.getParticipantGroupStatusList( studyId )
+    }
 
     @Serializable
     data class StopParticipantGroup( val studyId: UUID, val groupId: UUID ) :
-        RecruitmentServiceRequest(),
-        RecruitmentServiceInvoker<ParticipantGroupStatus> by createServiceInvoker( RecruitmentService::stopParticipantGroup, studyId, groupId )
+        RecruitmentServiceRequest<ParticipantGroupStatus>()
+    {
+        override fun getResponseSerializer() = serializer<ParticipantGroupStatus>()
+        override suspend fun invokeOn( service: RecruitmentService ) = service.stopParticipantGroup( studyId, groupId )
+    }
 }

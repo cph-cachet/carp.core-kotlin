@@ -5,7 +5,7 @@ import dk.cachet.carp.common.application.devices.DeviceRegistration
 
 
 /**
- * Provides access to the status of a device which is connected to a master device.
+ * Provides access to the status of a device which is connected to a primary device.
  *
  * TODO: Through here a reactive stream of device state (connectivity/battery) should be exposed, and last known state can be stored.
  */

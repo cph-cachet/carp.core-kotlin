@@ -14,13 +14,12 @@ actual class UUID actual constructor( actual val stringRepresentation: String )
     }
 
 
-    actual companion object
+    actual companion object : UUIDFactory
     {
-        @OptIn( ExperimentalStdlibApi::class )
         actual fun parse( uuid: String ): UUID = UUID( uuid.lowercase() )
 
         private const val base = 16
-        actual fun randomUUID(): UUID
+        actual override fun randomUUID(): UUID
         {
             // It does not seem like JS can generate true UUIDs, but this is a best effort:
             // https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript

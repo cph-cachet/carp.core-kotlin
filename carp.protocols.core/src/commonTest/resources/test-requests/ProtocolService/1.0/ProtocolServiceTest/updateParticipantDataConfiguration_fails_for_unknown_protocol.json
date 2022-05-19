@@ -1,0 +1,24 @@
+[
+    {
+        "outcome": "Failed",
+        "request": {
+            "__type": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.UpdateParticipantDataConfiguration",
+            "apiVersion": "1.0",
+            "protocolId": "75fead17-a797-4bd7-9ebb-7c0d0e21c22c",
+            "versionTag": "Unknown version",
+            "expectedParticipantData": [
+                {
+                    "attribute": {
+                        "__type": "dk.cachet.carp.common.application.users.ParticipantAttribute.DefaultParticipantAttribute",
+                        "inputDataType": "namespace.type"
+                    }
+                }
+            ]
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "exceptionType": "IllegalArgumentException"
+    }
+]

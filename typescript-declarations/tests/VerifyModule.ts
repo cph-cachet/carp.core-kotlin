@@ -1,21 +1,19 @@
 import { expect } from 'chai'
 import {
     AST_NODE_TYPES,
+    TSESTree,
     parse }
     from "@typescript-eslint/typescript-estree"
-import {
-    ClassBody,
-    ClassElement,
-    Identifier,
-    Literal,
-    ProgramStatement,
-    TSModuleBlock, 
-    TSModuleDeclaration, 
-    TSInterfaceBody,
-    TypeElement }
-    from "@typescript-eslint/types/dist/ast-spec"
+import ClassBody = TSESTree.ClassBody
+import ClassElement = TSESTree.ClassElement
+import Identifier = TSESTree.Identifier
+import Literal = TSESTree.Literal
+import ProgramStatement = TSESTree.ProgramStatement
+import TSModuleBlock = TSESTree.TSModuleBlock
+import TSModuleDeclaration = TSESTree.TSModuleDeclaration
+import TSInterfaceBody = TSESTree.TSInterfaceBody
+import TypeElement = TSESTree.TypeElement
 import * as fs from 'fs'
-import { getEffectiveTypeParameterDeclarations } from 'typescript'
 
 
 export default class VerifyModule
@@ -145,7 +143,7 @@ export default class VerifyModule
                     throw( Error( `verifyClassElement: Verifying valid declaration of '${element.key.type}' is not implemented.` ) )
                 }
                 break;
-            case AST_NODE_TYPES.ClassProperty:
+            case AST_NODE_TYPES.PropertyDefinition:
             {
                 const scopeToCheck = element.static
                     ? scope

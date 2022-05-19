@@ -1,8 +1,8 @@
 package dk.cachet.carp.protocols.domain.deployment
 
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.domain.stop
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
@@ -26,9 +26,9 @@ class UnstartedTasksWarningTest
     fun isIssuePresent_true_with_tasks_with_no_associated_triggers()
     {
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
-        protocol.addMasterDevice( device )
-        protocol.addTask( StubTaskDescriptor() )
+        val device = StubPrimaryDeviceConfiguration()
+        protocol.addPrimaryDevice( device )
+        protocol.addTask( StubTaskConfiguration() )
 
         val warning = UnstartedTasksWarning()
         assertTrue( warning.isIssuePresent( protocol ) )
@@ -38,9 +38,9 @@ class UnstartedTasksWarningTest
     fun isIssuePresent_true_with_tasks_which_are_only_stopped()
     {
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
-        val task = StubTaskDescriptor()
-        protocol.addMasterDevice( device )
+        val device = StubPrimaryDeviceConfiguration()
+        val task = StubTaskConfiguration()
+        protocol.addPrimaryDevice( device )
         protocol.addTask( task )
         protocol.addTaskControl( device.atStartOfStudy().stop( task, device ) )
 
@@ -52,19 +52,19 @@ class UnstartedTasksWarningTest
     fun getUnstartedTasks_returns_all_unstarted_tasks()
     {
         val protocol = createEmptyProtocol()
-        val device = StubMasterDeviceDescriptor()
-        val triggeredTask = StubTaskDescriptor( "Triggered" )
-        val unstartedTask = StubTaskDescriptor( "Untriggered" )
+        val device = StubPrimaryDeviceConfiguration()
+        val triggeredTask = StubTaskConfiguration( "Triggered" )
+        val unstartedTask = StubTaskConfiguration( "Untriggered" )
         with ( protocol )
         {
-            addMasterDevice( device )
-            addTaskControl( StubTrigger( device ).start( triggeredTask, device ) )
+            addPrimaryDevice( device )
+            addTaskControl( StubTriggerConfiguration( device ).start( triggeredTask, device ) )
             addTask( unstartedTask )
         }
 
         val warning = UnstartedTasksWarning()
         val unstarted = warning.getUnstartedTasks( protocol ).toList()
-        val expectedUnstarted = listOf( unstartedTask )
+        val expectedUnstarted = setOf( unstartedTask )
         assertEquals( expectedUnstarted.count(), unstarted.intersect( expectedUnstarted ).count() )
     }
 }

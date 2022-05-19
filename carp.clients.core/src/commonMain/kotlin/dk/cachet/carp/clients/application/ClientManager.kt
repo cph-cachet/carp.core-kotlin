@@ -1,5 +1,6 @@
 package dk.cachet.carp.clients.application
 
+import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.clients.domain.ClientRepository
 import dk.cachet.carp.clients.domain.DeviceRegistrationStatus
 import dk.cachet.carp.clients.domain.data.ConnectedDeviceDataCollector
@@ -8,11 +9,10 @@ import dk.cachet.carp.clients.domain.data.DeviceDataCollector
 import dk.cachet.carp.clients.domain.data.DeviceDataCollectorFactory
 import dk.cachet.carp.clients.domain.study.Study
 import dk.cachet.carp.clients.domain.study.StudyDeploymentProxy
-import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceRegistrationBuilder
-import dk.cachet.carp.common.application.devices.MasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.PrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.DeploymentService
 
 
@@ -20,7 +20,7 @@ import dk.cachet.carp.deployments.application.DeploymentService
  * Allows managing [Study]'s on a client device.
  */
 abstract class ClientManager<
-    TMasterDevice : MasterDeviceDescriptor<TRegistration, TRegistrationBuilder>,
+    TPrimaryDevice : PrimaryDeviceConfiguration<TRegistration, TRegistrationBuilder>,
     TRegistration : DeviceRegistration,
     TRegistrationBuilder : DeviceRegistrationBuilder<TRegistration>
 >(
@@ -33,7 +33,7 @@ abstract class ClientManager<
      */
     private val deploymentService: DeploymentService,
     /**
-     * Determines which [DeviceDataCollector] to use to collect data locally on this master device
+     * Determines which [DeviceDataCollector] to use to collect data locally on this primary device
      * and this factory is used to create [ConnectedDeviceDataCollector] instances for connected devices.
      */
     dataCollectorFactory: DeviceDataCollectorFactory
@@ -66,7 +66,7 @@ abstract class ClientManager<
     /**
      * Get the status for the studies which run on this client device.
      */
-    suspend fun getStudiesStatus(): List<StudyStatus> = repository.getStudyList().map { it.getStatus() }
+    suspend fun getStudyStatusList(): List<StudyStatus> = repository.getStudyList().map { it.getStatus() }
 
     /**
      * Add a study which needs to be executed on this client. No deployment is attempted yet.
@@ -110,7 +110,7 @@ abstract class ClientManager<
 
         // Try to deploy the study.
         // IllegalArgumentException's will be thrown here when deployment or role name does not exist, or device is already registered.
-        // TODO: Can/should it be reinforced here that only matching master device type can be deployed?
+        // TODO: Can/should it be reinforced here that only matching primary device type can be deployed?
         val registration = repository.getDeviceRegistration()!!
         studyDeployment.tryDeployment( study, registration )
 
@@ -151,7 +151,8 @@ abstract class ClientManager<
     {
         val dataCollector = dataListener.tryGetConnectedDataCollector(
             registeredDevice.device::class,
-            registeredDevice.registration )
+            registeredDevice.registration
+        )
 
         // `tryDeployment`, through which registeredDevice is obtained, would have failed if data collector could not be created.
         checkNotNull( dataCollector )

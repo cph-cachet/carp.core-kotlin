@@ -1,0 +1,16 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.GetAllForOwner",
+            "apiVersion": "1.0",
+            "ownerId": "a74b2093-5ab5-416e-b27d-14d3707e3510"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": [
+        ]
+    }
+]

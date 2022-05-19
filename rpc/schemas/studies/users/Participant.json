@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "accountIdentity": { "$ref": "../../common/users/AccountIdentity.json" },
+    "id": { "type": "string", "format": "uuid" }
+  },
+  "required": [ "accountIdentity", "id" ],
+  "additionalProperties": false
+}

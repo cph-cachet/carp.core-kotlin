@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "__type": { "const": "dk.cachet.carp.ecg" },
+    "milliVolt": { "type": "number" }
+  },
+  "required": [ "__type", "milliVolt" ],
+  "additionalProperties": false
+}

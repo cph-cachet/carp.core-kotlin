@@ -15,9 +15,6 @@ import dk.cachet.carp.common.application.sampling.SamplingConfiguration
  */
 object StubDataTypes : DataTypeMetaDataMap()
 {
-    internal const val STUB_DATA_TYPE_NAME = "${CarpDataTypes.CARP_NAMESPACE}.stub"
-    val STUB = add( STUB_DATA_TYPE_NAME, "Stub data", DataTimeType.EITHER )
-
     internal const val STUB_DATA_POINT_TYPE_NAME = "${CarpDataTypes.CARP_NAMESPACE}.stubpoint"
     val STUB_POINT = add( STUB_DATA_POINT_TYPE_NAME, "Stub data point", DataTimeType.POINT )
 
@@ -26,13 +23,12 @@ object StubDataTypes : DataTypeMetaDataMap()
 }
 
 
-val STUB_DATA_TYPE: DataType = DataType.fromString( StubDataTypes.STUB_DATA_TYPE_NAME )
 val STUB_DATA_POINT_TYPE: DataType = DataType.fromString( StubDataTypes.STUB_DATA_POINT_TYPE_NAME )
 val STUB_DATA_TIME_SPAN_TYPE: DataType = DataType.fromString( StubDataTypes.STUB_DATA_TIME_SPAN_TYPE_NAME )
 
 
 class StubDataTypeSamplingScheme :
-    DataTypeSamplingScheme<NoOptionsSamplingConfigurationBuilder>( StubDataTypes.STUB, NoOptionsSamplingConfiguration )
+    DataTypeSamplingScheme<NoOptionsSamplingConfigurationBuilder>( StubDataTypes.STUB_POINT, NoOptionsSamplingConfiguration )
 {
     override fun createSamplingConfigurationBuilder(): NoOptionsSamplingConfigurationBuilder = NoOptionsSamplingConfigurationBuilder
 

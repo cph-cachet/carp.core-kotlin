@@ -11,7 +11,7 @@ import kotlin.js.JsExport
  * This is similar to an enum, but removes the need for an intermediate enum type and generic type parameters are retained per member.
  *
  * Extend from this class as an object and assign members as follows:
- * `val SOME_TYPE = add( "dk.cachet.carp.sometype", "Some type", DataTimeType.EITHER )`.
+ * `val SOME_TYPE = add( "dk.cachet.carp.sometype", "Some type", DataTimeType.POINT )`.
  */
 open class DataTypeMetaDataMap : EnumObjectMap<DataType, DataTypeMetaData>( { metaData -> metaData.type } )
 {

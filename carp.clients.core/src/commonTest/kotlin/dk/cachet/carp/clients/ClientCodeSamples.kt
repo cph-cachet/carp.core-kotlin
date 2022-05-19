@@ -1,7 +1,7 @@
 package dk.cachet.carp.clients
 
-import dk.cachet.carp.clients.domain.SmartphoneClient
 import dk.cachet.carp.clients.application.study.StudyStatus
+import dk.cachet.carp.clients.domain.SmartphoneClient
 import dk.cachet.carp.clients.domain.createDataCollectorFactory
 import dk.cachet.carp.clients.domain.createParticipantInvitation
 import dk.cachet.carp.clients.domain.data.DataListener
@@ -13,7 +13,7 @@ import dk.cachet.carp.common.application.services.createApplicationServiceAdapte
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
-import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHost
@@ -24,10 +24,9 @@ import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
 import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -35,7 +34,7 @@ class ClientCodeSamples
 {
     @Test
     @Suppress( "UnusedPrivateMember", "UNUSED_VARIABLE" )
-    fun readme() = runSuspendTest {
+    fun readme() = runTest {
         val (participationService, deploymentService) = createEndpoints()
         val dataCollectorFactory = createDataCollectorFactory()
 
@@ -54,6 +53,7 @@ class ClientCodeSamples
             // Depending on the device type, different options are available.
             // E.g., for a smartphone, a UUID deviceId is generated. To override this default:
             deviceId = "xxxxxxxxx"
+            deviceDisplayName = "Pixel 6 Pro (Android 12)"
         }
         var status: StudyStatus = client.addStudy( studyDeploymentId, deviceToUse )
 
@@ -89,7 +89,7 @@ class ClientCodeSamples
 
         // Create deployment for the example protocol.
         val protocol = createExampleProtocol()
-        val invitation = createParticipantInvitation( protocol, accountIdentity )
+        val invitation = createParticipantInvitation( accountIdentity )
         deploymentService.createStudyDeployment( UUID.randomUUID(), protocol.getSnapshot(), listOf( invitation ) )
 
         return Pair( participationService, deploymentService )
@@ -102,14 +102,14 @@ class ClientCodeSamples
      */
     private fun createExampleProtocol(): StudyProtocol
     {
-        val owner = ProtocolOwner()
-        val protocol = StudyProtocol( owner, "Track patient movement" )
+        val ownerId = UUID.randomUUID()
+        val protocol = StudyProtocol( ownerId, "Track patient movement" )
 
         val phone = Smartphone( "Patient's phone" )
-        protocol.addMasterDevice( phone )
+        protocol.addPrimaryDevice( phone )
 
-        // This is not in the protocols readme, but is needed for the connected device example.
-        val connected = StubDeviceDescriptor( "External sensor" )
+        // This is not in the "protocols" readme, but is needed for the connected device example.
+        val connected = StubDeviceConfiguration( "External sensor" )
         protocol.addConnectedDevice( connected, phone )
 
         val sensors = Smartphone.Sensors

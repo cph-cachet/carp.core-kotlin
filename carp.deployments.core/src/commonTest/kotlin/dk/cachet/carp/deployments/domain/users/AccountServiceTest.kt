@@ -5,7 +5,7 @@ import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -30,7 +30,7 @@ abstract class AccountServiceTest
     fun inviteNewAccount_with_email_succeeds() =
         inviteNewAccountTest( AccountIdentity.fromEmailAddress( "user@user.com" ) )
 
-    private fun inviteNewAccountTest( identity: AccountIdentity ) = runSuspendTest {
+    private fun inviteNewAccountTest( identity: AccountIdentity ) = runTest {
         val service = createService()
 
         // Create and verify account.
@@ -51,7 +51,7 @@ abstract class AccountServiceTest
     fun inviteNewAccount_with_existing_email_fails() =
         inviteNewAccountWithExistingTest( AccountIdentity.fromEmailAddress( "user@user.com" ) )
 
-    private fun inviteNewAccountWithExistingTest( identity: AccountIdentity ) = runSuspendTest {
+    private fun inviteNewAccountWithExistingTest( identity: AccountIdentity ) = runTest {
         val service = createService()
         val participation = Participation( UUID.randomUUID() )
         service.inviteNewAccount( identity, studyInvitation, participation, listOf() )
@@ -62,7 +62,7 @@ abstract class AccountServiceTest
     }
 
     @Test
-    fun inviteExistingAccount_succeeds() = runSuspendTest {
+    fun inviteExistingAccount_succeeds() = runTest {
         val service = createService()
         val identity = UsernameAccountIdentity( "test" )
         val participation = Participation( UUID.randomUUID() )
@@ -73,7 +73,7 @@ abstract class AccountServiceTest
     }
 
     @Test
-    fun inviteExistingAccount_with_unknown_id_fails() = runSuspendTest {
+    fun inviteExistingAccount_with_unknown_id_fails() = runTest {
         val service = createService()
         val participation = Participation( UUID.randomUUID() )
 
@@ -84,7 +84,7 @@ abstract class AccountServiceTest
     }
 
     @Test
-    fun findAccount_null_when_not_found() = runSuspendTest {
+    fun findAccount_null_when_not_found() = runTest {
         val service = createService()
 
         val unknownIdentity = AccountIdentity.fromUsername( "Unknown" )

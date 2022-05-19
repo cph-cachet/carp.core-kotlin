@@ -22,8 +22,8 @@ data class ManualTrigger(
      * An optional description elaborating on what happens when initiating this trigger.
      */
     val description: String? = null
-) : Trigger<NoData>()
+) : TriggerConfiguration<NoData>()
 {
     @Transient
-    override val requiresMasterDevice: Boolean = true // Software is needed to display this to the user.
+    override val requiresPrimaryDevice: Boolean = true // Software is needed to display this to the user.
 }

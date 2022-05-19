@@ -9,6 +9,7 @@ import kotlinx.serialization.json.Json
 /**
  * A wrapper used to load extending types from [Data] serialized as JSON which are unknown at runtime.
  */
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( DataSerializer::class )
 data class CustomData( override val className: String, override val jsonSource: String, val serializer: Json ) :
     Data, UnknownPolymorphicWrapper

@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    { "$ref": "#/$defs/CreateStudyDeployment" },
+    { "$ref": "#/$defs/RemoveStudyDeployments" },
+    { "$ref": "#/$defs/GetStudyDeploymentStatus" },
+    { "$ref": "#/$defs/GetStudyDeploymentStatusList" },
+    { "$ref": "#/$defs/RegisterDevice" },
+    { "$ref": "#/$defs/UnregisterDevice" },
+    { "$ref": "#/$defs/GetDeviceDeploymentFor" },
+    { "$ref": "#/$defs/DeviceDeployed" },
+    { "$ref": "#/$defs/Stop" }
+  ],
+  "$defs": {
+    "ApiVersion": { "const": "1.0" },
+    "CreateStudyDeployment": {
+      "$anchor": "CreateStudyDeployment",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.CreateStudyDeployment" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "id": { "type": "string", "format": "uuid" },
+        "protocol": { "$ref":  "../../protocols/StudyProtocolSnapshot.json" },
+        "invitations": {
+          "type": "array",
+          "items": { "$ref": "../users/ParticipantInvitation.json" }
+        },
+        "connectedDevicePreregistrations": {
+          "type": "object",
+          "additionalProperties": { "$ref": "../../common/devices/DeviceRegistration.json" }
+        }
+      },
+      "required": [ "__type", "apiVersion", "id", "protocol", "invitations", "connectedDevicePreregistrations" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "CreateStudyDeployment-Response",
+        "$ref": "../StudyDeploymentStatus.json"
+      }
+    },
+    "RemoveStudyDeployments": {
+      "$anchor": "RemoveStudyDeployments",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.RemoveStudyDeployments" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyDeploymentIds": {
+          "type": "array",
+          "items": { "type": "string", "format": "uuid" }
+        }
+      },
+      "required": [ "__type", "apiVersion", "studyDeploymentIds" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "RemoveStudyDeployments-Response",
+        "type": "array",
+        "items": { "type": "string", "format": "uuid" }
+      }
+    },
+    "GetStudyDeploymentStatus": {
+      "$anchor": "GetStudyDeploymentStatus",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetStudyDeploymentStatus" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyDeploymentId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "__type", "apiVersion", "studyDeploymentId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetStudyDeploymentStatus-Response",
+        "$ref": "../StudyDeploymentStatus.json"
+      }
+    },
+    "GetStudyDeploymentStatusList": {
+      "$anchor": "GetStudyDeploymentStatusList",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetStudyDeploymentStatusList" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyDeploymentIds": {
+          "type": "array",
+          "items": { "type": "string", "format": "uuid" }
+        }
+      },
+      "required": [ "__type", "apiVersion", "studyDeploymentIds" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetStudyDeploymentStatusList-Response",
+        "type": "array",
+        "items": { "$ref": "../StudyDeploymentStatus.json" }
+      }
+    },
+    "RegisterDevice": {
+      "$anchor": "RegisterDevice",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.RegisterDevice" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyDeploymentId": { "type": "string", "format": "uuid" },
+        "deviceRoleName": { "type": "string" },
+        "registration": { "$ref": "../../common/devices/DeviceRegistration.json" }
+      },
+      "required": [ "__type", "apiVersion", "studyDeploymentId", "deviceRoleName", "registration" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "RegisterDevice-Response",
+        "$ref": "../StudyDeploymentStatus.json"
+      }
+    },
+    "UnregisterDevice": {
+      "$anchor": "UnregisterDevice",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.UnregisterDevice" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyDeploymentId": { "type": "string", "format": "uuid" },
+        "deviceRoleName": { "type": "string" }
+      },
+      "required": [ "__type", "apiVersion", "studyDeploymentId", "deviceRoleName" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "UnregisterDevice-Response",
+        "$ref": "../StudyDeploymentStatus.json"
+      }
+    },
+    "GetDeviceDeploymentFor": {
+      "$anchor": "GetDeviceDeploymentFor",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetDeviceDeploymentFor" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyDeploymentId": { "type": "string", "format": "uuid" },
+        "primaryDeviceRoleName": { "type": "string" }
+      },
+      "required": [ "__type", "apiVersion", "studyDeploymentId", "primaryDeviceRoleName" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "GetDeviceDeploymentFor-Response",
+        "$ref": "../PrimaryDeviceDeployment.json"
+      }
+    },
+    "DeviceDeployed": {
+      "$anchor": "DeviceDeployed",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.DeviceDeployed" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyDeploymentId": { "type": "string", "format": "uuid" },
+        "primaryDeviceRoleName": { "type": "string" },
+        "deviceDeploymentLastUpdatedOn": { "type": "string", "format": "date-time" }
+      },
+      "required": [ "__type", "apiVersion", "studyDeploymentId", "primaryDeviceRoleName", "deviceDeploymentLastUpdatedOn" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "DeviceDeployed-Response",
+        "$ref": "../StudyDeploymentStatus.json"
+      }
+    },
+    "Stop": {
+      "$anchor": "Stop",
+      "type": "object",
+  	  "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.Stop" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyDeploymentId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "__type", "apiVersion", "studyDeploymentId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "Stop-Response",
+        "$ref": "../StudyDeploymentStatus.json"
+      }
+    }
+  }
+}

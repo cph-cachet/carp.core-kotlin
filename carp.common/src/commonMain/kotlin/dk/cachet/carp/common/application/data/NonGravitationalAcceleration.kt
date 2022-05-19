@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
 /**
- * Holds acceleration data excluding gravity along perpendicular [x], [y], and [z] axes in meters per second squared (m/s^2).
+ * Holds rate of change in velocity, excluding gravity, along perpendicular [x], [y], and [z] axes in meters per second squared (m/s^2).
  */
 @Serializable
 @SerialName( CarpDataTypes.NON_GRAVITATIONAL_ACCELERATION_TYPE_NAME )

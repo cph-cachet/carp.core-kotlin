@@ -4,18 +4,18 @@ import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.clients.domain.connectedDevice
 import dk.cachet.carp.clients.domain.smartphone
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
-import dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.StudyDeployment
-import dk.cachet.carp.protocols.domain.ProtocolOwner
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
 import kotlin.test.*
 
@@ -28,21 +28,21 @@ import kotlin.test.*
 class StudyTest
 {
     private val deploymentId: UUID = UUID.randomUUID()
-    private val device: AnyMasterDeviceDescriptor = StubMasterDeviceDescriptor( "Device role" )
-    private val dependentDevice: AnyMasterDeviceDescriptor = StubMasterDeviceDescriptor( "Other device" )
+    private val device: AnyPrimaryDeviceConfiguration = StubPrimaryDeviceConfiguration( "Device role" )
+    private val dependentDevice: AnyPrimaryDeviceConfiguration = StubPrimaryDeviceConfiguration( "Other device" )
 
     private fun deploymentNotStarted(
-        device: AnyMasterDeviceDescriptor,
-        dependentDevice: AnyMasterDeviceDescriptor? = null
+        device: AnyPrimaryDeviceConfiguration,
+        dependentDevice: AnyPrimaryDeviceConfiguration? = null
     ) = Pair(
         Study( deploymentId, device.roleName ),
-        if (dependentDevice != null ) twoDeviceDeployment( device, dependentDevice )
+        if ( dependentDevice != null ) twoDeviceDeployment( device, dependentDevice )
         else singleDeviceDeployment( device )
     )
 
     private fun awaitingOtherDeviceRegistrations(
-        device: AnyMasterDeviceDescriptor,
-        dependentDevice: AnyMasterDeviceDescriptor
+        device: AnyPrimaryDeviceConfiguration,
+        dependentDevice: AnyPrimaryDeviceConfiguration
     ) =
         deploymentNotStarted( device, dependentDevice ).also { (study, deployment) ->
             deployment.registerDevice( device, device.createRegistration() )
@@ -51,8 +51,8 @@ class StudyTest
         }
 
     private fun awaitingDeviceDeployment(
-        device: AnyMasterDeviceDescriptor,
-        dependentDevice: AnyMasterDeviceDescriptor? = null
+        device: AnyPrimaryDeviceConfiguration,
+        dependentDevice: AnyPrimaryDeviceConfiguration? = null
     ) =
         deploymentNotStarted( device, dependentDevice ).also { (study, deployment) ->
             deployment.registerDevice( device, device.createRegistration() )
@@ -65,8 +65,8 @@ class StudyTest
         }
 
     private fun registeringDevices(
-        device: AnyMasterDeviceDescriptor,
-        dependentDevice: AnyMasterDeviceDescriptor? = null
+        device: AnyPrimaryDeviceConfiguration,
+        dependentDevice: AnyPrimaryDeviceConfiguration? = null
     ) =
         awaitingDeviceDeployment( device, dependentDevice ).also { (study, deployment) ->
             val deviceDeployment = deployment.getDeviceDeploymentFor( device )
@@ -75,8 +75,8 @@ class StudyTest
         }
 
     private fun awaitingOtherDeviceDeployments(
-        device: AnyMasterDeviceDescriptor,
-        dependentDevice: AnyMasterDeviceDescriptor
+        device: AnyPrimaryDeviceConfiguration,
+        dependentDevice: AnyPrimaryDeviceConfiguration
     ) =
         registeringDevices( device, dependentDevice ).also { (study, deployment) ->
             val deviceDeployment = deployment.getDeviceDeploymentFor( device )
@@ -86,8 +86,8 @@ class StudyTest
         }
 
     private fun running(
-        device: AnyMasterDeviceDescriptor,
-        dependentDevice: AnyMasterDeviceDescriptor? = null
+        device: AnyPrimaryDeviceConfiguration,
+        dependentDevice: AnyPrimaryDeviceConfiguration? = null
     ) =
         registeringDevices( device, dependentDevice ).also { (study, deployment) ->
             val deviceDeployment = deployment.getDeviceDeploymentFor( device )
@@ -102,13 +102,13 @@ class StudyTest
         }
 
 
-    private fun singleDeviceDeployment( device: AnyMasterDeviceDescriptor ) =
+    private fun singleDeviceDeployment( device: AnyPrimaryDeviceConfiguration ) =
         StudyDeployment.fromInvitations(
-            StudyProtocol( ProtocolOwner(), "Test" ).apply { addMasterDevice( device ) }.getSnapshot(),
+            StudyProtocol( UUID.randomUUID(), "Test" ).apply { addPrimaryDevice( device ) }.getSnapshot(),
             listOf(
                 ParticipantInvitation(
                     UUID.randomUUID(),
-                    setOf( device.roleName ),
+                    AssignedTo.All,
                     UsernameAccountIdentity( "Test" ),
                     StudyInvitation( "Test" )
                 )
@@ -117,17 +117,17 @@ class StudyTest
         )
 
     private fun twoDeviceDeployment(
-        device: AnyMasterDeviceDescriptor,
-        dependentDevice: AnyMasterDeviceDescriptor
+        device: AnyPrimaryDeviceConfiguration,
+        dependentDevice: AnyPrimaryDeviceConfiguration
     ) = StudyDeployment.fromInvitations(
-        StudyProtocol( ProtocolOwner(), "Test" ).apply {
-            addMasterDevice( device )
-            addMasterDevice( dependentDevice )
+        StudyProtocol( UUID.randomUUID(), "Test" ).apply {
+            addPrimaryDevice( device )
+            addPrimaryDevice( dependentDevice )
         }.getSnapshot(),
         listOf(
             ParticipantInvitation(
                 UUID.randomUUID(),
-                setOf( device.roleName, dependentDevice.roleName ),
+                AssignedTo.All,
                 UsernameAccountIdentity( "Test" ),
                 StudyInvitation( "Test" )
             )
@@ -292,12 +292,12 @@ class StudyTest
     }
 
     @Test
-    fun creating_study_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runSuspendTest {
+    fun creating_study_fromSnapshot_obtained_by_getSnapshot_is_the_same() = runTest {
         // Create a study snapshot for the 'smartphone' with an unregistered connected device.
         val deploymentId = UUID.randomUUID()
         val study = Study( deploymentId, smartphone.roleName )
         val connectedDevices = setOf( connectedDevice )
-        val masterDeviceDeployment = MasterDeviceDeployment(
+        val primaryDeviceDeployment = PrimaryDeviceDeployment(
             smartphone,
             smartphone.createRegistration(),
             connectedDevices
@@ -318,7 +318,7 @@ class StudyTest
                 null
             )
         )
-        study.deviceDeploymentReceived( masterDeviceDeployment )
+        study.deviceDeploymentReceived( primaryDeviceDeployment )
         val snapshot = study.getSnapshot()
         val fromSnapshot = Study.fromSnapshot( snapshot )
 

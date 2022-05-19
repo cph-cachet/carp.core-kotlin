@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "participantId": { "type": "string", "format": "uuid" },
+    "assignedParticipantRoles": { "$ref": "../../common/users/AssignedTo.json" },
+    "assignedPrimaryDeviceRoleNames": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "required": [ "participantId", "assignedParticipantRoles", "assignedPrimaryDeviceRoleNames" ],
+  "additionalProperties": false
+}

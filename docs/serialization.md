@@ -26,33 +26,33 @@ Other formats, such as ProtoBuf or CBOR, will throw a `SerializationException` w
 To facilitate the creation of these custom serializers, the abstract base class `UnknownPolymorphicSerializer<P: Any, W: P>` can be used (suggestions for a better name are still welcome).
 This is a _"serializer for polymorph objects of type [P] which wraps extending types unknown at runtime as instances of type [W]."_
 A helper function `createUnknownPolymorphicSerializer` simplifies creating these concrete classes by only having to pass a method which constructs the custom wrapper based on incoming JSON data.
-For example, the following code creates an `UnknownPolymorphicSerializer` for an abstract `TaskDescriptor` class.
+For example, the following code creates an `UnknownPolymorphicSerializer` for an abstract `TaskConfiguration` class.
 
 ```
-object TaskDescriptorSerializer : KSerializer<TaskDescriptor>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTaskDescriptor( className, json, serializer ) } )
+object TaskConfigurationSerializer : KSerializer<TaskConfiguration>
+    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTaskConfiguration( className, json, serializer ) } )
 ```
 
 The custom wrapper needs to:
 
- 1. Extend from the base class. E.g., `TaskDescriptor`.
+ 1. Extend from the base class. E.g., `TaskConfiguration`.
  2. Implement `UnknownPolymorphicWrapper`, which simply provides access to the class name and original JSON source.
- 3. Apply `@Serializable` to use the custom serializer. E.g, `@Serializable( TaskDescriptorSerializer::class )`.
+ 3. Apply `@Serializable` to use the custom serializer. E.g, `@Serializable( TaskConfigurationSerializer::class )`.
 
 The only real work lies in extracting the base properties using traditional JSON parsing.
-This can easily be done using a serializer of an intermediate concrete type, as exemplified in [`CustomTaskDescriptor`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/infrastructure/serialization/UnknownTaskSerializers.kt).
+This can easily be done using a serializer of an intermediate concrete type, as exemplified in [`CustomTaskConfiguration`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/infrastructure/serialization/UnknownTaskSerializers.kt).
 
 The custom serializer should be configured as the `default` serializer for the expected base type in the `SerializersModule`,
 and the wrapper should be registered as a subclass.
-For example, `TaskDescriptorSerializer` is the `UnknownPolymorphicSerializer` for the `Taskdescriptor` base class,
+For example, `TaskConfigurationSerializer` is the `UnknownPolymorphicSerializer` for the `TaskConfiguration` base class,
 which is registered [in the common subsystem `SerializersModule`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/infrastructure/serialization/Serialization.kt):
 ```
-polymorphic( TaskDescriptor::class )
+polymorphic( TaskConfiguration::class )
 {
     subclass( ConcurrentTask::class )
     ...
-    subclass( CustomTaskDescriptor::class )
-    default { TaskDescriptorSerializer }
+    subclass( CustomTaskConfiguration::class )
+    default { TaskConfigurationSerializer }
 }
 ```
 

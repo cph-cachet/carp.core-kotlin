@@ -1,6 +1,7 @@
 package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.intersect
 import dk.cachet.carp.common.domain.ExtractUniqueKeyMap
 import dk.cachet.carp.data.application.DataStreamBatch
@@ -70,7 +71,9 @@ class InMemoryDataStreamService : DataStreamService
      * In case no data for [dataStream] is stored in this repository, or is available for the specified range,
      * an empty [DataStreamBatch] is returned.
      *
-     * @throws IllegalArgumentException when [dataStream] has never been opened.
+     * @throws IllegalArgumentException if:
+     *  - [dataStream] has never been opened
+     *  - [fromSequenceId] is negative or [toSequenceIdInclusive] is smaller than [fromSequenceId]
      */
     override suspend fun getDataStream(
         dataStream: DataStreamId,
@@ -82,6 +85,8 @@ class InMemoryDataStreamService : DataStreamService
         requireNotNull( configuration ) { "No data streams configured for this study deployment." }
         require( dataStream in configuration.expectedDataStreamIds )
             { "The batch contains a sequence with a data stream which wasn't configured for this study deployment." }
+        require( fromSequenceId >= 0 && (toSequenceIdInclusive == null || toSequenceIdInclusive >= fromSequenceId) )
+            { "The starting sequence ID is negative or the end sequence ID is smaller than the starting ID." }
 
         return dataStreams.sequences
             .filter { it.dataStream == dataStream }
@@ -90,7 +95,7 @@ class InMemoryDataStreamService : DataStreamService
                 val subRange = it.range.intersect( queryRange )
 
                 if ( subRange.isEmpty() ) null
-                else MutableDataStreamSequence( dataStream, subRange.first, it.triggerIds, it.syncPoint )
+                else MutableDataStreamSequence<Data>( dataStream, subRange.first, it.triggerIds, it.syncPoint )
                     .apply {
                         val startOffset = subRange.first - it.range.first
                         val exclusiveEnd = startOffset + subRange.last - subRange.first + 1
@@ -120,14 +125,16 @@ class InMemoryDataStreamService : DataStreamService
     /**
      * Close data streams and remove all data for each of the [studyDeploymentIds].
      *
-     * @return True when any data streams have been removed, or false when there were no data streams to remove.
+     * @return The IDs of the study deployments for which data streams were configured.
+     * IDs for which no study deployment exists are ignored.
      */
-    override suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Boolean
+    override suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Set<UUID>
     {
         stoppedStudyDeploymentIds.removeAll( studyDeploymentIds )
 
-        return studyDeploymentIds.fold( false ) {
-            removedAny, toRemove -> configuredDataStreams.removeKey( toRemove ) || removedAny
-        }
+        return studyDeploymentIds.mapNotNull { toRemove ->
+            if ( configuredDataStreams.removeKey( toRemove ) ) toRemove
+            else null
+        }.toSet()
     }
 }

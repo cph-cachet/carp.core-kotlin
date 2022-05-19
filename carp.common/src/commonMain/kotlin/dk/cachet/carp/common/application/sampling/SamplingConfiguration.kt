@@ -3,9 +3,9 @@ package dk.cachet.carp.common.application.sampling
 import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.application.devices.DeviceDescriptor
-import dk.cachet.carp.common.application.devices.DeviceDescriptorBuilder
-import dk.cachet.carp.common.application.devices.DeviceDescriptorBuilderDsl
+import dk.cachet.carp.common.application.devices.DeviceConfiguration
+import dk.cachet.carp.common.application.devices.DeviceConfigurationBuilder
+import dk.cachet.carp.common.application.devices.DeviceConfigurationBuilderDsl
 import kotlinx.serialization.Polymorphic
 import kotlin.js.JsExport
 
@@ -21,9 +21,9 @@ interface SamplingConfiguration
 
 /**
  * A helper class to configure and construct immutable [SamplingConfiguration] classes
- * as part of setting up a [DeviceDescriptor].
+ * as part of setting up a [DeviceConfiguration].
 */
-@DeviceDescriptorBuilderDsl
+@DeviceConfigurationBuilderDsl
 interface SamplingConfigurationBuilder<TConfig : SamplingConfiguration>
 {
     /**
@@ -49,9 +49,9 @@ interface SamplingConfigurationBuilder<TConfig : SamplingConfiguration>
 
 
 /**
- * A base class which can be used by [DeviceDescriptorBuilder]s to initialize sampling configurations for all data types available on the device.
+ * A base class which can be used by [DeviceConfigurationBuilder]s to initialize sampling configurations for all data types available on the device.
  */
-@DeviceDescriptorBuilderDsl
+@DeviceConfigurationBuilderDsl
 @JsExport
 open class SamplingConfigurationMapBuilder
 {

@@ -9,8 +9,8 @@ import kotlinx.serialization.decodeFromHexString
 import kotlinx.serialization.encodeToHexString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import kotlinx.serialization.protobuf.ProtoBuf
 import kotlin.test.*
@@ -43,6 +43,8 @@ class UnknownPolymorphicSerializerTest
     @Serializable
     data class DerivingType( override val toOverrideProperty: String ) : BaseType()
 
+
+    @Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
     @Serializable( UnknownBaseTypeSerializer::class )
     data class CustomBaseType( override val className: String, override val jsonSource: String, val serializer: Json ) :
         BaseType(), UnknownPolymorphicWrapper

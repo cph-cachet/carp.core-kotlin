@@ -3,10 +3,10 @@ package dk.cachet.carp.deployments.domain.users
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
-import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.domain.Snapshot
-import dk.cachet.carp.common.infrastructure.serialization.MapAsArraySerializer
-import dk.cachet.carp.deployments.application.users.AssignedMasterDevice
+import dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
+import dk.cachet.carp.deployments.application.users.ParticipantData
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -19,12 +19,12 @@ data class ParticipantGroupSnapshot(
     override val id: UUID,
     override val createdOn: Instant,
     val studyDeploymentId: UUID,
-    val assignedMasterDevices: Set<AssignedMasterDevice>,
+    val assignedPrimaryDevices: Set<AssignedPrimaryDevice>,
     val isStudyDeploymentStopped: Boolean,
-    val expectedData: Set<ParticipantAttribute> = emptySet(),
+    val expectedData: Set<ExpectedParticipantData> = emptySet(),
     val participations: Set<AccountParticipation> = emptySet(),
-    @Serializable( MapAsArraySerializer::class )
-    val data: Map<InputDataType, Data?> = emptyMap()
+    val commonData: Map<InputDataType, Data?> = emptyMap(),
+    val roleData: List<ParticipantData.RoleData> = emptyList()
 ) : Snapshot<ParticipantGroup>
 {
     companion object
@@ -37,11 +37,12 @@ data class ParticipantGroupSnapshot(
                 group.id,
                 group.createdOn,
                 group.studyDeploymentId,
-                group.assignedMasterDevices.toSet(),
+                group.assignedPrimaryDevices.toSet(),
                 group.isStudyDeploymentStopped,
                 group.expectedData.toSet(),
                 group.participations.toSet(),
-                group.data.toMap()
+                group.commonData.toMap(),
+                group.roleData.toList()
             )
     }
 

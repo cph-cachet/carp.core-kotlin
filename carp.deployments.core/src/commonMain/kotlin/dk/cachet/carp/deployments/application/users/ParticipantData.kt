@@ -10,8 +10,22 @@ import kotlin.js.JsExport
 
 
 /**
- * Set [data] for all expected participant data in the study deployment with [studyDeploymentId].
+ * Set data for all expected participant data in the study deployment with [studyDeploymentId].
  * Data which is not set equals null.
  */
 @Serializable
-data class ParticipantData( val studyDeploymentId: UUID, val data: Map<InputDataType, Data?> )
+data class ParticipantData(
+    val studyDeploymentId: UUID,
+    /**
+     * Data that is related to everyone in the study deployment.
+     */
+    val common: Map<InputDataType, Data?>,
+    /**
+     * Data that is related to specific roles in the study deployment.
+     */
+    val roles: List<RoleData>
+)
+{
+    @Serializable
+    data class RoleData( val roleName: String, val data: Map<InputDataType, Data?> )
+}

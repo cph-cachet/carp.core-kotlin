@@ -9,12 +9,12 @@ import kotlinx.serialization.Serializable
 
 /**
  * A participant, uniquely identified by [participation], linked to an account identified by [accountId],
- * which was invited to a study deployment (using [invitation]) using the devices with [assignedMasterDeviceRoleNames].
+ * which was invited to a study deployment (using [invitation]) using the devices with [assignedPrimaryDeviceRoleNames].
  */
 @Serializable
 data class AccountParticipation(
     val participation: Participation,
-    val assignedMasterDeviceRoleNames: Set<String>,
+    val assignedPrimaryDeviceRoleNames: Set<String>,
     val accountId: UUID,
     val invitation: StudyInvitation
 )
@@ -31,19 +31,17 @@ data class AccountParticipation(
 internal fun filterActiveParticipationInvitations(
     invitations: Set<AccountParticipation>,
     groups: List<ParticipantGroup>
-): Set<ActiveParticipationInvitation>
-{
-    return invitations
-        .map { it to (
-            groups.firstOrNull { g -> g.studyDeploymentId == it.participation.studyDeploymentId }
-                ?: throw IllegalArgumentException( "No deployment is passed to pair with one of the given invitations." )
-        ) }
-        .filter { (_, group) -> !group.isStudyDeploymentStopped }
-        .map { (invitation, group) ->
-            ActiveParticipationInvitation(
-                invitation.participation,
-                invitation.invitation,
-                invitation.assignedMasterDeviceRoleNames.map { group.getAssignedMasterDevice( it ) }.toSet()
-            )
-        }.toSet()
-}
+): Set<ActiveParticipationInvitation> = invitations
+    .map {
+        val matchingGroup = groups.firstOrNull { g -> g.studyDeploymentId == it.participation.studyDeploymentId }
+        requireNotNull( matchingGroup ) { "No deployment is passed to pair with one of the given invitations." }
+        it to matchingGroup
+    }
+    .filter { (_, group) -> !group.isStudyDeploymentStopped }
+    .map { (invitation, group) ->
+        ActiveParticipationInvitation(
+            invitation.participation,
+            invitation.invitation,
+            invitation.assignedPrimaryDeviceRoleNames.map { group.getAssignedPrimaryDevice( it ) }.toSet()
+        )
+    }.toSet()

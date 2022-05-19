@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "synchronizedOn": { "type": "string", "format": "date-time" },
+    "sensorTimestampAtSyncPoint": { "type": "integer" },
+    "relativeClockSpeed": { "type": "number" }
+  },
+  "required": [ "synchronizedOn", "sensorTimestampAtSyncPoint", "relativeClockSpeed" ],
+  "additionalProperties": false
+}

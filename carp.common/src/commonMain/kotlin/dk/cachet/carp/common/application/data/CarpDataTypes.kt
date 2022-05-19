@@ -19,12 +19,6 @@ object CarpDataTypes : DataTypeMetaDataMap()
     const val CARP_NAMESPACE: String = "dk.cachet.carp"
 
 
-    internal const val FREE_FORM_TEXT_TYPE_NAME = "$CARP_NAMESPACE.freeformtext"
-    /**
-     * Text of which the interpretation is left up to the specific application.
-     */
-    val FREE_FORM_TEXT = add( FREE_FORM_TEXT_TYPE_NAME, "Application-specific data", DataTimeType.EITHER )
-
     internal const val GEOLOCATION_TYPE_NAME = "$CARP_NAMESPACE.geolocation"
     /**
      * Geographic location data, representing latitude and longitude within the World Geodetic System 1984.
@@ -49,11 +43,11 @@ object CarpDataTypes : DataTypeMetaDataMap()
      */
     val HEART_RATE = add( HEART_RATE_TYPE_NAME, "Heart rate", DataTimeType.POINT )
 
-    internal const val RR_INTERVAL_TYPE_NAME = "$CARP_NAMESPACE.rrinterval"
+    internal const val INTERBEAT_INTERVAL_TYPE_NAME = "$CARP_NAMESPACE.interbeatinterval"
     /**
-     * The time interval between two consecutive heartbeats (R-R interval).
+     * The time interval between two consecutive heartbeats.
      */
-    val RR_INTERVAL = add( RR_INTERVAL_TYPE_NAME, "R-R interval", DataTimeType.TIME_SPAN )
+    val INTERBEAT_INTERVAL = add( INTERBEAT_INTERVAL_TYPE_NAME, "Interbeat interval", DataTimeType.TIME_SPAN )
 
     internal const val SENSOR_SKIN_CONTACT_TYPE_NAME = "$CARP_NAMESPACE.sensorskincontact"
     /**
@@ -63,9 +57,15 @@ object CarpDataTypes : DataTypeMetaDataMap()
 
     internal const val NON_GRAVITATIONAL_ACCELERATION_TYPE_NAME = "$CARP_NAMESPACE.nongravitationalacceleration"
     /**
-     * Acceleration along perpendicular x, y, and z axes, excluding gravity.
+     * Rate of change in velocity, excluding gravity, along perpendicular x, y, and z axes in the device's coordinate system.
      */
     val NON_GRAVITATIONAL_ACCELERATION = add( NON_GRAVITATIONAL_ACCELERATION_TYPE_NAME, "Acceleration without gravity", DataTimeType.POINT )
+
+    internal const val ACCELERATION_TYPE_NAME = "$CARP_NAMESPACE.acceleration"
+    /**
+     * Rate of change in velocity, including gravity, along perpendicular x, y, and z axes in the device's coordinate system.
+     */
+    val ACCELERATION = add( ACCELERATION_TYPE_NAME, "Acceleration including gravity", DataTimeType.POINT )
 
     internal const val ANGULAR_VELOCITY_TYPE_NAME = "$CARP_NAMESPACE.angularvelocity"
     /**

@@ -1,0 +1,58 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.AddParticipant",
+            "apiVersion": "1.0",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "email": "test@test.com"
+        },
+        "precedingEvents": [
+            {
+                "__type": "dk.cachet.carp.studies.application.StudyService.Event.StudyCreated",
+                "aggregateId": "00000000-0000-0000-0000-000000000001",
+                "apiVersion": "1.0",
+                "study": {
+                    "studyId": "00000000-0000-0000-0000-000000000001",
+                    "ownerId": "b3db61d9-9603-4c60-b5d2-c8e3622a93de",
+                    "name": "Test",
+                    "createdOn": "1970-01-01T00:00:00Z",
+                    "description": null,
+                    "invitation": {
+                        "name": "Test"
+                    },
+                    "protocolSnapshot": null
+                }
+            }
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+            "accountIdentity": {
+                "__type": "dk.cachet.carp.common.application.users.EmailAccountIdentity",
+                "emailAddress": "test@test.com"
+            },
+            "id": "00000000-0000-0000-0000-000000000002"
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.AddParticipant",
+            "apiVersion": "1.0",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "email": "test@test.com"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+            "accountIdentity": {
+                "__type": "dk.cachet.carp.common.application.users.EmailAccountIdentity",
+                "emailAddress": "test@test.com"
+            },
+            "id": "00000000-0000-0000-0000-000000000002"
+        }
+    }
+]

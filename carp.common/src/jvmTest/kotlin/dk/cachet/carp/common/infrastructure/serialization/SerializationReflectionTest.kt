@@ -2,12 +2,12 @@ package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.concreteAccountIdentityTypes
 import dk.cachet.carp.common.application.concreteDataTypes
-import dk.cachet.carp.common.application.concreteDeviceDescriptorTypes
+import dk.cachet.carp.common.application.concreteDeviceConfigurationTypes
 import dk.cachet.carp.common.application.concreteDeviceRegistrationTypes
 import dk.cachet.carp.common.application.concreteInputElementTypes
 import dk.cachet.carp.common.application.concreteSamplingConfigurationTypes
-import dk.cachet.carp.common.application.concreteTaskDescriptorTypes
-import dk.cachet.carp.common.application.concreteTriggerTypes
+import dk.cachet.carp.common.application.concreteTaskConfigurationTypes
+import dk.cachet.carp.common.application.concreteTriggerConfigurationTypes
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.CUSTOM_INPUT_TYPE_NAME
 import dk.cachet.carp.common.application.data.input.CustomInputSerializer
@@ -33,8 +33,8 @@ class SerializationReflectionTest
         verifyTypesAreRegistered( concreteInputElementTypes )
 
     @Test
-    fun all_DeviceDescriptor_types_registered_for_serialization() =
-        verifyTypesAreRegistered( concreteDeviceDescriptorTypes )
+    fun all_DeviceConfiguration_types_registered_for_serialization() =
+        verifyTypesAreRegistered( concreteDeviceConfigurationTypes )
 
     @Test
     fun all_DeviceRegistration_types_registered_for_serialization() =
@@ -45,12 +45,12 @@ class SerializationReflectionTest
         verifyTypesAreRegistered( concreteSamplingConfigurationTypes )
 
     @Test
-    fun all_TaskDescriptor_types_registered_for_serialization() =
-        verifyTypesAreRegistered( concreteTaskDescriptorTypes )
+    fun all_TaskConfiguration_types_registered_for_serialization() =
+        verifyTypesAreRegistered( concreteTaskConfigurationTypes )
 
     @Test
     fun all_Trigger_types_registered_for_serialization() =
-        verifyTypesAreRegistered( concreteTriggerTypes )
+        verifyTypesAreRegistered( concreteTriggerConfigurationTypes )
 
     @Test
     fun all_AccountIdentity_types_registered_for_serialization() =

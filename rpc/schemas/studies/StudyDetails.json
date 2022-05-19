@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "studyId": { "type": "string", "format": "uuid" },
+    "ownerId": { "type": "string", "format": "uuid" },
+    "name": { "type": "string" },
+    "createdOn": { "type": "string", "format": "date-time" },
+    "description": { "type": [ "string", "null" ] },
+    "invitation": { "$ref": "../deployments/users/StudyInvitation.json" },
+    "protocolSnapshot": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "../protocols/StudyProtocolSnapshot.json" }
+      ]
+    }
+  },
+  "required": [ "studyId", "ownerId", "name", "createdOn", "description", "invitation", "protocolSnapshot" ],
+  "additionalProperties": false
+}

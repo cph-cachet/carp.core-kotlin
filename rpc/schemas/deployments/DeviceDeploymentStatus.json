@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "oneOf": [
+    { "$ref": "#/$defs/Unregistered" },
+    { "$ref": "#/$defs/Registered" },
+    { "$ref": "#/$defs/Deployed" },
+    { "$ref": "#/$defs/NeedsRedeployment" }
+  ],
+  "$defs": {
+    "DeviceDeploymentStatus": {
+      "type": "object",
+      "properties": {
+        "__type": true,
+        "device": { "$ref": "../common/devices/DeviceConfiguration.json" }
+      },
+      "required": [ "__type", "device" ]
+    },
+    "NotDeployed": {
+      "type": "object",
+      "properties": {
+        "remainingDevicesToRegisterToObtainDeployment": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "remainingDevicesToRegisterBeforeDeployment": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": [ "remainingDevicesToRegisterToObtainDeployment", "remainingDevicesToRegisterBeforeDeployment" ]
+    },
+    "Unregistered": {
+      "$anchor": "Unregistered",
+      "allOf": [ "#/$defs/DeviceDeploymentStatus", "#/$defs/NotDeployed" ],
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Unregistered" },
+        "canBeDeployed": { "type": "boolean" }
+      },
+      "required": [ "canBeDeployed" ],
+      "unevaluatedProperties": false
+    },
+    "Registered": {
+      "$anchor": "Registered",
+      "allOf": [ "#/$defs/DeviceDeploymentStatus", "#/$defs/NotDeployed" ],
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Registered" },
+        "canBeDeployed": { "type": "boolean" }
+      },
+      "required": [ "canBeDeployed" ],
+      "unevaluatedProperties": false
+    },
+    "Deployed": {
+      "$anchor": "Deployed",
+      "allOf": [ "#/$defs/DeviceDeploymentStatus" ],
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.Deployed" }
+      },
+      "unevaluatedProperties": false
+    },
+    "NeedsRedeployment": {
+      "$anchor": "NeedsRedeployment",
+      "allOf": [ "#/$defs/DeviceDeploymentStatus", "#/$defs/NotDeployed" ],
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.deployments.application.DeviceDeploymentStatus.NeedsRedeployment" }
+      },
+      "unevaluatedProperties": false
+    }
+  }
+}

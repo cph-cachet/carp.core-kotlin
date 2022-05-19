@@ -3,7 +3,7 @@ package dk.cachet.carp.deployments.infrastructure
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
 import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceRegistration
 import dk.cachet.carp.common.infrastructure.serialization.JSON
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import dk.cachet.carp.deployments.domain.StudyDeploymentSnapshot
@@ -68,17 +68,17 @@ class StudyDeploymentSnapshotTest
     }
 
     /**
-     * Create a serialized deployment (snapshot) of a study protocol with exactly one master device which is registered using an unknown device registration.
+     * Create a serialized deployment (snapshot) of a study protocol with exactly one primary device which is registered using an unknown device registration.
      */
     @ExperimentalSerializationApi
     private fun serializeDeploymentSnapshotIncludingUnknownRegistration(): String
     {
         val protocol = createEmptyProtocol()
-        val master = StubMasterDeviceDescriptor( "Stub" )
-        protocol.addMasterDevice( master )
+        val primary = StubPrimaryDeviceConfiguration( "Stub" )
+        protocol.addPrimaryDevice( primary )
         val deployment = studyDeploymentFor( protocol )
-        val registration = DefaultDeviceRegistration( "0" )
-        deployment.registerDevice( master, registration )
+        val registration = DefaultDeviceRegistration()
+        deployment.registerDevice( primary, registration )
 
         var serialized: String = JSON.encodeToString( deployment.getSnapshot() )
         serialized = serialized.makeUnknown( registration )

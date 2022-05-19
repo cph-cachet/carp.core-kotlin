@@ -2,20 +2,24 @@ package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.UUIDFactory
 import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
-import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.domain.users.ParticipantRepository
 import dk.cachet.carp.studies.domain.users.Recruitment
+import kotlinx.datetime.Clock
 
 
 class RecruitmentServiceHost(
     private val participantRepository: ParticipantRepository,
     private val deploymentService: DeploymentService,
-    private val eventBus: ApplicationServiceEventBus<RecruitmentService, RecruitmentService.Event>
+    private val eventBus: ApplicationServiceEventBus<RecruitmentService, RecruitmentService.Event>,
+    private val uuidFactory: UUIDFactory = UUID.Companion,
+    private val clock: Clock = Clock.System
 ) : RecruitmentService
 {
     init
@@ -23,7 +27,7 @@ class RecruitmentServiceHost(
         eventBus.subscribe {
             // Create a recruitment per study.
             event { created: StudyService.Event.StudyCreated ->
-                val recruitment = Recruitment( created.study.studyId )
+                val recruitment = Recruitment( created.study.studyId, uuidFactory.randomUUID(), clock.now() )
                 participantRepository.addRecruitment( recruitment )
             }
 
@@ -38,7 +42,7 @@ class RecruitmentServiceHost(
 
             // Propagate removal of all data related to a study.
             event { removed: StudyService.Event.StudyRemoved ->
-                // Remove deployments in the deployments subsystem.
+                // Remove deployments in the "deployments" subsystem.
                 val recruitment = participantRepository.getRecruitment( removed.studyId )
                 checkNotNull( recruitment )
                 val idsToRemove = recruitment.participantGroups.keys
@@ -60,7 +64,7 @@ class RecruitmentServiceHost(
     {
         val recruitment = getRecruitmentOrThrow( studyId )
 
-        val participant = recruitment.addParticipant( email )
+        val participant = recruitment.addParticipant( email, uuidFactory.randomUUID() )
         participantRepository.updateRecruitment( recruitment )
 
         return participant
@@ -99,12 +103,11 @@ class RecruitmentServiceHost(
      * @throws IllegalArgumentException when:
      *  - a study with [studyId] does not exist
      *  - [group] is empty
-     *  - any of the participants specified in [group] does not exist
-     *  - any of the master device roles specified in [group] are not part of the configured study protocol
-     *  - not all necessary master devices part of the study have been assigned a participant
+     *  - any of the participant roles specified in [group] does not exist
+     *  - not all necessary participant roles part of the study have been assigned a participant
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    override suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus
+    override suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignedParticipantRoles> ): ParticipantGroupStatus
     {
         val recruitment = getRecruitmentOrThrow( studyId )
         val (protocol, invitations) = recruitment.createInvitations( group )
@@ -124,7 +127,7 @@ class RecruitmentServiceHost(
         }
 
         // Create participant group, deploy, and send invitations.
-        val participantGroup = recruitment.addParticipantGroup( toDeployParticipantIds )
+        val participantGroup = recruitment.addParticipantGroup( toDeployParticipantIds, uuidFactory.randomUUID() )
         val deploymentStatus = deploymentService.createStudyDeployment( participantGroup.id, protocol, invitations )
         participantGroup.markAsInvited( deploymentStatus )
 
@@ -142,13 +145,13 @@ class RecruitmentServiceHost(
     {
         val recruitment: Recruitment = getRecruitmentOrThrow( studyId )
 
-        // Get study deployment statuses.
+        // Get study deployment status list.
         val studyDeploymentIds = recruitment.participantGroups.keys
-        val studyDeploymentStatuses: List<StudyDeploymentStatus> =
+        val studyDeploymentStatusList: List<StudyDeploymentStatus> =
             if ( studyDeploymentIds.isEmpty() ) emptyList()
             else deploymentService.getStudyDeploymentStatusList( studyDeploymentIds )
 
-        return studyDeploymentStatuses.map { recruitment.getParticipantGroupStatus( it ) }
+        return studyDeploymentStatusList.map { recruitment.getParticipantGroupStatus( it ) }
     }
 
     /**

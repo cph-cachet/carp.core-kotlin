@@ -15,7 +15,7 @@ class DeviceRegistrationTest
     @Test
     fun can_serialize_and_deserialize_device_registration_using_JSON()
     {
-        val default: DeviceRegistration = DefaultDeviceRegistration( "Test" )
+        val default: DeviceRegistration = DefaultDeviceRegistration()
 
         val serialized = testJson.encodeToString( DeviceRegistration.serializer(), default )
         val parsed: DeviceRegistration = testJson.decodeFromString( serialized )
@@ -50,7 +50,7 @@ class DeviceRegistrationTest
 
     private fun serializeUnknownDeviceRegistration(): String
     {
-        val registration = DefaultDeviceRegistration( "Test" )
+        val registration = DefaultDeviceRegistration()
         var serialized = testJson.encodeToString( DeviceRegistration.serializer(), registration )
         serialized = serialized.replace( "dk.cachet.carp.common.application.devices.DefaultDeviceRegistration", "com.unknown.CustomRegistration" )
 

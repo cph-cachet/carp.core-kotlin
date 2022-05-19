@@ -1,8 +1,8 @@
 package dk.cachet.carp.deployments.domain
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterWithConnectedDeviceProtocol
-import dk.cachet.carp.test.runSuspendTest
+import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryWithConnectedDeviceProtocol
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -21,9 +21,9 @@ interface DeploymentRepositoryTest
 
 
     @Test
-    fun adding_study_deployment_and_retrieving_it_succeeds() = runSuspendTest {
+    fun adding_study_deployment_and_retrieving_it_succeeds() = runTest {
         val repo = createRepository()
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
 
         repo.add( deployment )
@@ -34,9 +34,9 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun adding_study_deployment_with_existing_id_fails() = runSuspendTest {
+    fun adding_study_deployment_with_existing_id_fails() = runTest {
         val repo = createRepository()
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         repo.add( deployment )
 
@@ -47,9 +47,9 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getStudyDeploymentBy_succeeds() = runSuspendTest {
+    fun getStudyDeploymentBy_succeeds() = runTest {
         val repo = createRepository()
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         repo.add( deployment )
 
@@ -59,7 +59,7 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getStudyDeploymentBy_returns_null_for_unknown_id() = runSuspendTest {
+    fun getStudyDeploymentBy_returns_null_for_unknown_id() = runTest {
         val repo = createRepository()
 
         val deployment = repo.getStudyDeploymentBy( unknownId )
@@ -67,9 +67,9 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getStudyDeploymentsBy_succeeds() = runSuspendTest {
+    fun getStudyDeploymentsBy_succeeds() = runTest {
         val repo = createRepository()
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment1 = studyDeploymentFor( protocol )
         val deployment2 = studyDeploymentFor( protocol )
         repo.add( deployment1 )
@@ -82,9 +82,9 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun getStudyDeploymentsBy_ignores_unknown_ids() = runSuspendTest {
+    fun getStudyDeploymentsBy_ignores_unknown_ids() = runTest {
         val repo = createRepository()
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         repo.add( deployment )
 
@@ -94,23 +94,23 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun update_study_deployment_succeeds() = runSuspendTest {
+    fun update_study_deployment_succeeds() = runTest {
         val repo = createRepository()
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         repo.add( deployment )
-        val masterDevice = protocol.masterDevices.first()
-        val connectedDevice = protocol.getConnectedDevices( masterDevice ).first()
+        val primaryDevice = protocol.primaryDevices.first()
+        val connectedDevice = protocol.getConnectedDevices( primaryDevice ).first()
 
         // Perform various actions on deployment, modifying it.
         // TODO: This does not verify whether registration history and invalidated devices are updated.
         with ( deployment )
         {
-            registerDevice( masterDevice, masterDevice.createRegistration() )
+            registerDevice( primaryDevice, primaryDevice.createRegistration() )
             registerDevice( connectedDevice, connectedDevice.createRegistration() )
 
-            val deviceDeployment = deployment.getDeviceDeploymentFor( masterDevice )
-            deviceDeployed( masterDevice, deviceDeployment.lastUpdatedOn )
+            val deviceDeployment = deployment.getDeviceDeploymentFor( primaryDevice )
+            deviceDeployed( primaryDevice, deviceDeployment.lastUpdatedOn )
 
             stop()
         }
@@ -122,9 +122,9 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun update_study_deployment_fails_for_unknown_deployment() = runSuspendTest {
+    fun update_study_deployment_fails_for_unknown_deployment() = runTest {
         val repo = createRepository()
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
 
         assertFailsWith<IllegalArgumentException>
@@ -134,9 +134,9 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun remove_succeeds() = runSuspendTest {
+    fun remove_succeeds() = runTest {
         val repo = createRepository()
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment1 = studyDeploymentFor( protocol )
         val deployment2 = studyDeploymentFor( protocol )
         repo.add( deployment1 )
@@ -152,9 +152,9 @@ interface DeploymentRepositoryTest
     }
 
     @Test
-    fun remove_igores_unknown_ids() = runSuspendTest {
+    fun remove_igores_unknown_ids() = runTest {
         val repo = createRepository()
-        val protocol = createSingleMasterWithConnectedDeviceProtocol()
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         repo.add( deployment )
 

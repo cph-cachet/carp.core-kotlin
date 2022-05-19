@@ -12,11 +12,10 @@ actual class UUID actual constructor( actual val stringRepresentation: String )
     }
 
 
-    actual companion object
+    actual companion object : UUIDFactory
     {
-        @OptIn( ExperimentalStdlibApi::class )
         actual fun parse( uuid: String ): UUID = UUID( uuid.lowercase() )
-        actual fun randomUUID(): UUID = UUID( java.util.UUID.randomUUID().toString() )
+        actual override fun randomUUID(): UUID = UUID( java.util.UUID.randomUUID().toString() )
     }
 
 

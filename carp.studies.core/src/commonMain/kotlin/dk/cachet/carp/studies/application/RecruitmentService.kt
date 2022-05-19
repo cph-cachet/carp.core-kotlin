@@ -1,21 +1,34 @@
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.EmailAddress
-import dk.cachet.carp.common.application.services.ApplicationService
-import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.common.application.services.ApiVersion
+import dk.cachet.carp.common.application.services.ApplicationService
+import dk.cachet.carp.common.application.services.DependentServices
+import dk.cachet.carp.common.application.services.IntegrationEvent
+import dk.cachet.carp.deployments.application.DeploymentService
+import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
+import kotlinx.serialization.Required
+import kotlinx.serialization.Serializable
 
 
 /**
  * Application service which allows setting recruitment goals,
  * adding participants to studies, and creating deployments for them.
  */
+@DependentServices( StudyService::class )
 interface RecruitmentService : ApplicationService<RecruitmentService, RecruitmentService.Event>
 {
+    companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+
+    @Serializable
     sealed class Event : IntegrationEvent<RecruitmentService>
+    {
+        @Required
+        override val apiVersion: ApiVersion = DeploymentService.API_VERSION
+    }
 
 
     /**
@@ -50,12 +63,11 @@ interface RecruitmentService : ApplicationService<RecruitmentService, Recruitmen
      * @throws IllegalArgumentException when:
      *  - a study with [studyId] does not exist
      *  - [group] is empty
-     *  - any of the participants specified in [group] does not exist
-     *  - any of the master device roles specified in [group] are not part of the configured study protocol
-     *  - not all necessary master devices part of the study have been assigned a participant
+     *  - any of the participant roles specified in [group] does not exist
+     *  - not all necessary participant roles part of the study have been assigned a participant
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignParticipantDevices> ): ParticipantGroupStatus
+    suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignedParticipantRoles> ): ParticipantGroupStatus
 
     /**
      * Get the status of all deployed participant groups in the study with the specified [studyId].

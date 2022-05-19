@@ -10,7 +10,7 @@ import dk.cachet.carp.deployments.application.throwIfInvalidInvitations
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.studies.application.users.AssignParticipantDevices
+import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import dk.cachet.carp.studies.application.users.participantIds
@@ -24,7 +24,7 @@ import kotlinx.datetime.Instant
 class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: Instant = Clock.System.now() ) :
     AggregateRoot<Recruitment, RecruitmentSnapshot, Recruitment.Event>( id, createdOn )
 {
-    sealed class Event : DomainEvent()
+    sealed class Event : DomainEvent
     {
         data class ParticipantAdded( val participant: Participant ) : Event()
         data class ParticipantGroupAdded( val participantIds: Set<UUID> ) : Event()
@@ -61,7 +61,7 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
      * Add a [Participant] identified by the specified [email] address.
      * In case the [email] was already added before, the same [Participant] is returned.
      */
-    fun addParticipant( email: EmailAddress ): Participant
+    fun addParticipant( email: EmailAddress, id: UUID = UUID.randomUUID() ): Participant
     {
         // Verify whether participant was already added.
         val identity = EmailAccountIdentity( email )
@@ -70,7 +70,7 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
         // Add new participant in case it was not added before.
         if ( participant == null )
         {
-            participant = Participant( identity )
+            participant = Participant( identity, id )
             _participants.add( participant )
             event( Event.ParticipantAdded( participant ) )
         }
@@ -112,10 +112,11 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
      * @throws IllegalArgumentException when:
      *  - any of the participants specified in [group] does not exist
      *  - [group] is empty
-     *  - any of the device roles specified in [group] are not part of the configured study protocol
-     *  - not all master devices part of the study protocol have been assigned a participant
+     *  - any of the participant roles specified in [group] are not part of the configured study protocol
+     *  - not all primary devices part of the study protocol have been assigned a participant
+     *  - not all necessary participant roles part of the study have been assigned a participant
      */
-    fun createInvitations( group: Set<AssignParticipantDevices> ): Pair<StudyProtocolSnapshot, List<ParticipantInvitation>>
+    fun createInvitations( group: Set<AssignedParticipantRoles> ): Pair<StudyProtocolSnapshot, List<ParticipantInvitation>>
     {
         val status = getStatus()
         check( status is RecruitmentStatus.ReadyForDeployment )
@@ -131,7 +132,7 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
             val participant = allParticipants.getValue( toAssign.participantId )
             ParticipantInvitation(
                 participant.id,
-                toAssign.masterDeviceRoleNames,
+                toAssign.assignedRoles,
                 participant.accountIdentity,
                 status.invitation
             )
@@ -156,13 +157,13 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
      * @throws IllegalArgumentException when one or more of the participants aren't in this recruitment.
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    fun addParticipantGroup( participantIds: Set<UUID> ): StagedParticipantGroup
+    fun addParticipantGroup( participantIds: Set<UUID>, id: UUID = UUID.randomUUID() ): StagedParticipantGroup
     {
-        require( participantIds.all { id -> id in participants.map { it.id } } )
+        require( participants.map { it.id }.containsAll( participantIds ) )
             { "One of the participants for which to create a participant group isn't part of this recruitment." }
         check( getStatus() is RecruitmentStatus.ReadyForDeployment ) { "The study is not yet ready for deployment." }
 
-        val group = StagedParticipantGroup()
+        val group = StagedParticipantGroup( id )
         group.addParticipants( participantIds )
 
         _participantGroups[ group.id ] = group

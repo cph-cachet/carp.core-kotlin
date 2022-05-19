@@ -3,7 +3,9 @@
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
+import dk.cachet.carp.deployments.domain.users.getAssignedDeviceRoleNames
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlin.js.JsExport
 
@@ -13,21 +15,39 @@ import kotlin.js.JsExport
  *
  * @throws IllegalArgumentException when:
  *  - [invitations] is empty
- *  - any of the assigned device roles in [invitations] is not part of the study protocol
- *  - not all necessary master devices part of the study protocol have been assigned a participant
+ *  - any of the participant roles in [invitations] is not part of the study protocol
+ *  - not all necessary primary devices part of the study protocol have been assigned a participant
+ *  - not all necessary participant roles part of the study have been assigned a participant
  */
 fun StudyProtocolSnapshot.throwIfInvalidInvitations( invitations: List<ParticipantInvitation> )
 {
     require( invitations.isNotEmpty() ) { "No participants invited." }
 
-    val assignedMasterDeviceRoleNames = invitations.flatMap { it.assignedMasterDeviceRoleNames }.toSet()
-    assignedMasterDeviceRoleNames.forEach { assigned ->
-        require( assigned in masterDevices.map { it.roleName } )
-            { "The assigned master device with role name \"$assigned\" is not part of the study protocol." }
+    val assignedParticipantRoles = invitations
+        .map { it.assignedRoles }
+        .filterIsInstance<AssignedTo.Roles>()
+        .flatMap { it.roleNames }
+        .toSet()
+    val availableRoles = participantRoles.map { it.role }.toSet()
+    assignedParticipantRoles.forEach { assigned ->
+        require( assigned in availableRoles )
+            { "The assigned participant role \"$assigned\" is not part of the study protocol." }
     }
-    val requiredMasterDeviceRoleNames = masterDevices.filter { !it.isOptional }.map { it.roleName }
-    require( assignedMasterDeviceRoleNames.containsAll( requiredMasterDeviceRoleNames ) )
-        { "Not all necessary devices required for this study have been assigned to a participant." }
+
+    val allRolesAssigned = invitations.any { it.assignedRoles is AssignedTo.All }
+    if ( !allRolesAssigned ) // When all roles are assigned, it also covers all devices; no need to check.
+    {
+        val requiredRoles = participantRoles.filter { !it.isOptional }.map { it.role }.toSet()
+        require( assignedParticipantRoles.containsAll( requiredRoles ) )
+            { "Not all necessary participant roles have been assigned a participant." }
+
+        val requiredPrimaryDeviceRoleNames = primaryDevices.filter { !it.isOptional }.map { it.roleName }
+        val assignedPrimaryDeviceRoleNames = invitations
+            .flatMap { this.getAssignedDeviceRoleNames( it.assignedRoles ) }
+            .toSet()
+        require( assignedPrimaryDeviceRoleNames.containsAll( requiredPrimaryDeviceRoleNames ) )
+            { "Not all necessary devices required for this study have been assigned to a participant." }
+    }
 }
 
 /**

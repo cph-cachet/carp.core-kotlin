@@ -1,11 +1,14 @@
 package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.datetime.Clock
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 
 
@@ -15,8 +18,14 @@ import kotlinx.serialization.Serializable
  */
 interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.Event>
 {
+    companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+
     @Serializable
     sealed class Event : IntegrationEvent<ProtocolService>
+    {
+        @Required
+        override val apiVersion: ApiVersion = API_VERSION
+    }
 
 
     /**
@@ -24,7 +33,8 @@ interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.
      *
      * @param versionTag An optional label used to identify this first version of the [protocol]. "Initial" by default.
      * @throws IllegalArgumentException when:
-     *   - [protocol] already exists
+     *   - a [protocol] with the same id already exists
+     *   - a different [protocol] with the same owner and name in the latest version already exists
      *   - [protocol] is invalid
      */
     suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String = "Initial" )
@@ -36,6 +46,7 @@ interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.
      * @param versionTag An optional unique label used to identify this specific version of the [protocol]. The current date/time by default.
      * @throws IllegalArgumentException when:
      *   - [protocol] is not yet stored in the repository
+     *   - a different [protocol] with the same owner and name in the latest version already exists
      *   - [protocol] is invalid
      *   - the [versionTag] is already in use
      */
@@ -47,13 +58,13 @@ interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.
      *
      * @throws IllegalArgumentException when:
      *   - no protocol with [protocolId] is found
-     *   - [expectedParticipantData] contains two or more attributes with the same input type.
+     *   - [expectedParticipantData] contains differing [ParticipantAttribute]s with the same input data type
      * @return The updated [StudyProtocolSnapshot].
      */
     suspend fun updateParticipantDataConfiguration(
         protocolId: UUID,
         versionTag: String,
-        expectedParticipantData: Set<ParticipantAttribute>
+        expectedParticipantData: Set<ExpectedParticipantData>
     ): StudyProtocolSnapshot
 
     /**

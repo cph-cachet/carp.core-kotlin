@@ -3,6 +3,7 @@
 package dk.cachet.carp.deployments.application.users
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.AssignedTo
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
@@ -15,5 +16,7 @@ import kotlin.js.JsExport
 data class Participation(
     val studyDeploymentId: UUID,
     @Required
-    val participantId: UUID = UUID.randomUUID()
+    val assignedRoles: AssignedTo = AssignedTo.All,
+    @Required
+    val participantId: UUID = UUID.randomUUID(),
 )

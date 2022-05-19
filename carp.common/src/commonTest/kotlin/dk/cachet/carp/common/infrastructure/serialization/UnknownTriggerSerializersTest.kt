@@ -2,14 +2,14 @@
 
 package dk.cachet.carp.common.infrastructure.serialization
 
-import dk.cachet.carp.common.infrastructure.test.StubTrigger
+import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.test.*
 
 
 /**
- * Tests for [CustomTrigger].
+ * Tests for [CustomTriggerConfiguration].
  */
 class CustomTriggerTest
 {
@@ -22,10 +22,10 @@ class CustomTriggerTest
     @Test
     fun initialization_from_json_extracts_base_Trigger_properties()
     {
-        val trigger = StubTrigger( "Some device" )
-        val serialized: String = JSON.encodeToString( StubTrigger.serializer(), trigger )
+        val trigger = StubTriggerConfiguration( "Some device" )
+        val serialized: String = JSON.encodeToString( StubTriggerConfiguration.serializer(), trigger )
 
-        val custom = CustomTrigger( "Irrelevant", serialized, JSON )
+        val custom = CustomTriggerConfiguration( "Irrelevant", serialized, JSON )
         assertEquals( trigger.sourceDeviceRoleName, custom.sourceDeviceRoleName )
     }
 
@@ -40,7 +40,7 @@ class CustomTriggerTest
 
         assertFailsWith<IllegalArgumentException>
         {
-            CustomTrigger( "Irrelevant", serialized, JSON )
+            CustomTriggerConfiguration( "Irrelevant", serialized, JSON )
         }
     }
 }

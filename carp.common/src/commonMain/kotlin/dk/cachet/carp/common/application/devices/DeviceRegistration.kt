@@ -12,7 +12,7 @@ import kotlin.js.JsExport
 
 
 /**
- * A [DeviceRegistration] uniquely identifies a [DeviceDescriptor] once it is deployed in a study,
+ * A [DeviceRegistration] uniquely identifies a [DeviceConfiguration] once it is deployed in a study,
  * contains the necessary details for the client on how to connect to the device,
  * and stores device specifications which may be relevant to the researcher when interpreting collection data,
  * such as brand/model name and operating system version.
@@ -33,6 +33,13 @@ abstract class DeviceRegistration
     @Required
     abstract val deviceId: String
 
+    /**
+     * An optional concise textual representation for display purposes describing the key specifications of the device.
+     * E.g., device manufacturer, name, and operating system version.
+     */
+    @Required
+    abstract val deviceDisplayName: String?
+
     @Required
     val registrationCreatedOn: Instant = Clock.System.now()
 }
@@ -42,16 +49,25 @@ abstract class DeviceRegistration
  * A helper class to configure and construct immutable [DeviceRegistration] classes.
  *
  * TODO: This and extending classes are never expected to be serialized,
- *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceDescriptor].
+ *       but need to be [Serializable] since they are specified as generic type parameter on [DeviceConfiguration].
  */
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( NotSerializable::class )
 @DeviceRegistrationBuilderDsl
-interface DeviceRegistrationBuilder<T : DeviceRegistration>
+abstract class DeviceRegistrationBuilder<T : DeviceRegistration>
 {
+    /**
+     * An optional concise textual representation for display purposes describing the key specifications of the device.
+     * E.g., device manufacturer, name, and operating system version.
+     *
+     * In case this is not set, the builder may derive a default name based on the other registration properties.
+     */
+    var deviceDisplayName: String? = null
+
     /**
      * Build the immutable [DeviceRegistration] using the current configuration of this [DeviceRegistrationBuilder].
      */
-    fun build(): T
+    abstract fun build(): T
 }
 
 /**

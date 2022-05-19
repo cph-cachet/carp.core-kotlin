@@ -1,8 +1,9 @@
 package dk.cachet.carp.deployments.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.UUIDFactory
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.users.AccountIdentity
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
 import dk.cachet.carp.common.domain.users.Account
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
@@ -12,7 +13,7 @@ import dk.cachet.carp.deployments.domain.users.AccountService
 /**
  * An [AccountService] which holds accounts in memory as long as the instance is held in memory.
  */
-class InMemoryAccountService : AccountService
+class InMemoryAccountService( val uuidFactory: UUIDFactory = UUID.Companion ) : AccountService
 {
     private val accounts: MutableList<Account> = mutableListOf()
 
@@ -27,12 +28,12 @@ class InMemoryAccountService : AccountService
         identity: AccountIdentity,
         invitation: StudyInvitation,
         participation: Participation,
-        devices: List<AnyDeviceDescriptor>
+        devices: List<AnyDeviceConfiguration>
     ): Account
     {
         require( accounts.none { it.identity == identity } )
 
-        val account = Account( identity )
+        val account = Account( identity, uuidFactory.randomUUID() )
         accounts.add( account )
 
         return account
@@ -47,7 +48,7 @@ class InMemoryAccountService : AccountService
         accountId: UUID,
         invitation: StudyInvitation,
         participation: Participation,
-        devices: List<AnyDeviceDescriptor>
+        devices: List<AnyDeviceConfiguration>
     )
     {
         require( accounts.any { it.id == accountId } )

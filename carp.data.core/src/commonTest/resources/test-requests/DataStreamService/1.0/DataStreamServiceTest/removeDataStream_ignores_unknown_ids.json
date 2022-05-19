@@ -1,0 +1,42 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.OpenDataStreams",
+            "apiVersion": "1.0",
+            "configuration": {
+                "studyDeploymentId": "c6f89919-3836-43a3-9022-47497dd5c1f3",
+                "expectedDataStreams": [
+                    {
+                        "deviceRoleName": "Device",
+                        "dataType": "dk.cachet.carp.stubpoint"
+                    }
+                ]
+            }
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.RemoveDataStreams",
+            "apiVersion": "1.0",
+            "studyDeploymentIds": [
+                "c6f89919-3836-43a3-9022-47497dd5c1f3",
+                "50d760b8-c817-4e73-8cef-a85398b5875c"
+            ]
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": [
+            "c6f89919-3836-43a3-9022-47497dd5c1f3"
+        ]
+    }
+]

@@ -10,7 +10,7 @@ import kotlin.time.Duration
 
 
 /**
- * A [TaskDescriptor] which specifies that all containing measures and/or outputs should immediately start running
+ * A [TaskConfiguration] which specifies that all containing measures and/or outputs should immediately start running
  * in the background once triggered.
  * The task runs for the specified [duration], or until stopped, or until all measures and/or outputs have completed.
  *
@@ -27,7 +27,7 @@ data class BackgroundTask(
      */
     @Serializable( DurationSerializer::class )
     val duration: Duration = Duration.INFINITE
-) : TaskDescriptor<NoData> // Not an interactive task, so uploads no data other than measures.
+) : TaskConfiguration<NoData> // Not an interactive task, so uploads no data other than measures.
 
 
 /**
@@ -39,7 +39,7 @@ class BackgroundTaskBuilder(
      * Infinite by default.
      */
     var duration: Duration = Duration.INFINITE
-) : TaskDescriptorBuilder<BackgroundTask>()
+) : TaskConfigurationBuilder<BackgroundTask>()
 {
     override fun build( name: String ): BackgroundTask =
         BackgroundTask( name, measures, description, duration )

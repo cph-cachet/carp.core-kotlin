@@ -1,0 +1,106 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetParticipantData",
+            "apiVersion": "1.0",
+            "studyDeploymentId": "0ed11a5a-8e91-4a95-8339-4b4440b2bc77"
+        },
+        "precedingEvents": [
+            {
+                "__type": "dk.cachet.carp.deployments.application.DeploymentService.Event.StudyDeploymentCreated",
+                "aggregateId": "0ed11a5a-8e91-4a95-8339-4b4440b2bc77",
+                "apiVersion": "1.0",
+                "studyDeploymentId": "0ed11a5a-8e91-4a95-8339-4b4440b2bc77",
+                "protocol": {
+                    "id": "4da8e316-d259-4dbb-9673-9d4b8e976247",
+                    "createdOn": "2022-04-04T15:13:36.598612600Z",
+                    "ownerId": "27879e75-ccc1-4866-9ab3-4ece1b735052",
+                    "name": "Test protocol",
+                    "description": "Test description",
+                    "primaryDevices": [
+                        {
+                            "__type": "dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration",
+                            "isPrimaryDevice": true,
+                            "roleName": "Primary"
+                        }
+                    ],
+                    "participantRoles": [
+                        {
+                            "role": "Role 1",
+                            "isOptional": false
+                        },
+                        {
+                            "role": "Role 2",
+                            "isOptional": false
+                        }
+                    ],
+                    "expectedParticipantData": [
+                        {
+                            "attribute": {
+                                "__type": "dk.cachet.carp.common.application.users.ParticipantAttribute.CustomParticipantAttribute",
+                                "input": {
+                                    "__type": "dk.cachet.carp.common.application.data.input.elements.Text",
+                                    "prompt": "Custom"
+                                },
+                                "inputDataType": "dk.cachet.carp.input.custom.f764a86ca7874cce8ccc042a98d12467"
+                            }
+                        },
+                        {
+                            "attribute": {
+                                "__type": "dk.cachet.carp.common.application.users.ParticipantAttribute.DefaultParticipantAttribute",
+                                "inputDataType": "dk.cachet.carp.input.sex"
+                            },
+                            "assignedTo": {
+                                "__type": "dk.cachet.carp.common.application.users.AssignedTo.Roles",
+                                "roleNames": [
+                                    "Role 1",
+                                    "Role 2"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "invitations": [
+                    {
+                        "participantId": "513ad0d9-b50e-4ecd-80dd-6cb727cc26ad",
+                        "assignedRoles": {
+                            "__type": "dk.cachet.carp.common.application.users.AssignedTo.All"
+                        },
+                        "identity": {
+                            "__type": "dk.cachet.carp.common.application.users.UsernameAccountIdentity",
+                            "username": "Test"
+                        },
+                        "invitation": {
+                            "name": "Some study"
+                        }
+                    }
+                ],
+                "connectedDevicePreregistrations": {
+                }
+            }
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+            "studyDeploymentId": "0ed11a5a-8e91-4a95-8339-4b4440b2bc77",
+            "common": {
+                "dk.cachet.carp.input.custom.f764a86ca7874cce8ccc042a98d12467": null
+            },
+            "roles": [
+                {
+                    "roleName": "Role 1",
+                    "data": {
+                        "dk.cachet.carp.input.sex": null
+                    }
+                },
+                {
+                    "roleName": "Role 2",
+                    "data": {
+                        "dk.cachet.carp.input.sex": null
+                    }
+                }
+            ]
+        }
+    }
+]

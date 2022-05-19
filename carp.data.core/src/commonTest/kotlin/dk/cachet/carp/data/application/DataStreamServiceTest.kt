@@ -1,11 +1,11 @@
 package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
-import dk.cachet.carp.common.infrastructure.test.StubData
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
+import dk.cachet.carp.common.infrastructure.test.StubDataTimeSpan
 import dk.cachet.carp.data.infrastructure.dataStreamId
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -21,10 +21,10 @@ interface DataStreamServiceTest
 
 
     @Test
-    fun openDataStreams_succeeds() = runSuspendTest {
+    fun openDataStreams_succeeds() = runTest {
         val service = createService()
 
-        val dataStreamId = dataStreamId<StubData>( stubDeploymentId, "Some device" )
+        val dataStreamId = dataStreamId<StubDataPoint>( stubDeploymentId, "Some device" )
         val expectedStream = DataStreamsConfiguration.ExpectedDataStream.fromDataStreamId( dataStreamId )
         val configuration = DataStreamsConfiguration( stubDeploymentId, setOf( expectedStream ) )
         service.openDataStreams( configuration )
@@ -34,20 +34,20 @@ interface DataStreamServiceTest
     }
 
     @Test
-    fun openDataStreams_fails_when_data_streams_already_opened() = runSuspendTest {
-        val service = createServiceWithOpenStubDataStream()
+    fun openDataStreams_fails_when_data_streams_already_opened() = runTest {
+        val service = createServiceWithOpenStubDataPointStream()
 
-        val expectedStream = DataStreamsConfiguration.ExpectedDataStream( "Some device", STUB_DATA_TYPE )
+        val expectedStream = DataStreamsConfiguration.ExpectedDataStream( "Some device", STUB_DATA_POINT_TYPE )
         val configuration = DataStreamsConfiguration( stubDeploymentId, setOf( expectedStream ) )
         assertFailsWith<IllegalStateException> { service.openDataStreams( configuration ) }
     }
 
     @Test
-    fun appendToDataStreams_succeeds() = runSuspendTest {
-        val service = createServiceWithOpenStubDataStream()
+    fun appendToDataStreams_succeeds() = runTest {
+        val service = createServiceWithOpenStubDataPointStream()
 
         val batch = MutableDataStreamBatch()
-        val sequence = createStubSequence( 0, StubData() )
+        val sequence = createStubSequence( 0, StubDataPoint() )
         batch.appendSequence( sequence )
         service.appendToDataStreams( stubDeploymentId, batch )
 
@@ -56,70 +56,83 @@ interface DataStreamServiceTest
     }
 
     @Test
-    fun appendToDataStreams_fails_for_preceding_sequence() = runSuspendTest {
-        val service = createServiceWithOpenStubDataStream()
+    fun appendToDataStreams_fails_for_preceding_sequence() = runTest {
+        val service = createServiceWithOpenStubDataPointStream()
         val batch = MutableDataStreamBatch().apply {
-            appendSequence( createStubSequence( 0, StubData(), StubData() ) )
+            appendSequence( createStubSequence( 0, StubDataPoint(), StubDataPoint() ) )
         }
         service.appendToDataStreams( stubDeploymentId, batch )
 
         val appendBatch = MutableDataStreamBatch().apply {
-            appendSequence( createStubSequence( 1, StubData() ) )
+            appendSequence( createStubSequence( 1, StubDataPoint() ) )
         }
         assertFailsWith<IllegalArgumentException> { service.appendToDataStreams( stubDeploymentId, appendBatch ) }
     }
 
     @Test
-    fun appendToDataStreams_fails_for_nonmatching_studyDeploymentId() = runSuspendTest {
-        val service = createServiceWithOpenStubDataStream()
+    fun appendToDataStreams_fails_for_nonmatching_studyDeploymentId() = runTest {
+        val service = createServiceWithOpenStubDataPointStream()
 
         val batch = MutableDataStreamBatch().apply {
-            appendSequence( createStubSequence( 0, StubData(), StubData() ) )
+            appendSequence( createStubSequence( 0, StubDataPoint(), StubDataPoint() ) )
         }
         val unknownDeploymentId = UUID.randomUUID()
         assertFailsWith<IllegalArgumentException> { service.appendToDataStreams( unknownDeploymentId, batch ) }
     }
 
     @Test
-    fun appendToDataStreams_fails_for_unexpected_data_stream() = runSuspendTest {
-        val service = createServiceWithOpenStubDataStream()
+    fun appendToDataStreams_fails_for_unexpected_data_stream() = runTest {
+        val service = createServiceWithOpenStubDataPointStream()
 
         val unexpectedBatch = MutableDataStreamBatch().apply {
-            appendSequence( createStubSequence( 0, StubDataPoint() ) ) // `StubDataPoint` is unexpected.
+            appendSequence( createStubSequence( 0, StubDataTimeSpan() ) ) // `StubDataTimeSpan` is unexpected.
         }
         assertFailsWith<IllegalArgumentException> { service.appendToDataStreams( stubDeploymentId, unexpectedBatch ) }
     }
 
     @Test
-    fun appendToDataStreams_fails_for_closed_data_streams() = runSuspendTest {
-        val service = createServiceWithOpenStubDataStream()
+    fun appendToDataStreams_fails_for_closed_data_streams() = runTest {
+        val service = createServiceWithOpenStubDataPointStream()
         service.closeDataStreams( setOf( stubDeploymentId ) )
 
         val batch = MutableDataStreamBatch().apply {
-            appendSequence( createStubSequence( 0, StubData() ) )
+            appendSequence( createStubSequence( 0, StubDataPoint() ) )
         }
         assertFailsWith<IllegalStateException> { service.appendToDataStreams( stubDeploymentId, batch ) }
     }
 
     @Test
-    fun getDataStream_fails_for_unopened_streams() = runSuspendTest {
+    fun getDataStream_fails_for_unopened_streams() = runTest {
         val service = createService()
 
-        val unopenedStreamId = dataStreamId<StubData>( stubDeploymentId, stubSequenceDeviceRoleName )
+        val unopenedStreamId = dataStreamId<StubDataPoint>( stubDeploymentId, stubSequenceDeviceRoleName )
         assertFailsWith<IllegalArgumentException> {
             service.getDataStream( unopenedStreamId, 0 )
         }
     }
 
     @Test
-    fun closeDataStreams_succeeds() = runSuspendTest {
-        val service = createServiceWithOpenStubDataStream()
+    fun getDataStream_fails_for_wrong_sequence_ids() = runTest {
+        val service = createServiceWithOpenStubDataPointStream()
+
+        val batch = MutableDataStreamBatch()
+        val sequence = createStubSequence( 0, StubDataPoint(), StubDataPoint() )
+        batch.appendSequence( sequence )
+        service.appendToDataStreams( stubDeploymentId, batch )
+
+        assertFailsWith<IllegalArgumentException> { service.getDataStream( sequence.dataStream, -1, 10 ) }
+        assertFailsWith<IllegalArgumentException> { service.getDataStream( sequence.dataStream, 1, 0 ) }
+    }
+
+    @Test
+    fun closeDataStreams_succeeds() = runTest {
+        val service = createServiceWithOpenStubDataPointStream()
 
         service.closeDataStreams( setOf( stubDeploymentId ) )
     }
 
     @Test
-    fun closeDataStreams_fails_for_unopened_data_streams() = runSuspendTest {
+    fun closeDataStreams_fails_for_unopened_data_streams() = runTest {
         val service = createService()
 
         val unknownDeploymentId = UUID.randomUUID()
@@ -130,34 +143,38 @@ interface DataStreamServiceTest
     }
 
     @Test
-    fun removeDataStreams_succeeds() = runSuspendTest {
-        val service = createServiceWithOpenStubDataStream()
+    fun removeDataStreams_succeeds() = runTest {
+        val service = createServiceWithOpenStubDataPointStream()
         val batch = MutableDataStreamBatch().apply {
-            appendSequence( createStubSequence( 0, StubData(), StubData() ) )
+            appendSequence( createStubSequence( 0, StubDataPoint(), StubDataPoint() ) )
         }
+        service.appendToDataStreams( stubDeploymentId, batch )
 
-        service.removeDataStreams( setOf( stubDeploymentId ) )
+        val removed = service.removeDataStreams( setOf( stubDeploymentId ) )
+        assertEquals( setOf( stubDeploymentId ), removed )
 
-        val dataStreamId = dataStreamId<StubData>( stubDeploymentId, stubSequenceDeviceRoleName )
+        val dataStreamId = dataStreamId<StubDataPoint>( stubDeploymentId, stubSequenceDeviceRoleName )
         assertFailsWith<IllegalArgumentException> { service.getDataStream( dataStreamId, 0 ) }
     }
 
     @Test
-    fun removeDataStreams_returns_false_when_nothing_removed() = runSuspendTest {
-        val service = createService()
+    fun removeDataStream_ignores_unknown_ids() = runTest {
+        val service = createServiceWithOpenStubDataPointStream()
 
-        val unknownDeploymentId = UUID.randomUUID()
-        assertFalse( service.removeDataStreams( setOf( unknownDeploymentId ) ) )
+        val unknownDeploymentid = UUID.randomUUID()
+        val removed = service.removeDataStreams( setOf( stubDeploymentId, unknownDeploymentid ) )
+
+        assertEquals( setOf( stubDeploymentId ), removed )
     }
 
 
     /**
-     * Create a data stream service and open [stubDataStream] for [stubDeploymentId].
+     * Create a data stream service and open [stubDataPointStream] for [stubDeploymentId].
      */
-    private suspend fun createServiceWithOpenStubDataStream(): DataStreamService =
+    private suspend fun createServiceWithOpenStubDataPointStream(): DataStreamService =
         createService().apply {
             // Device name corresponds to the one created by `createStubSequence`.
-            val expectedStream = DataStreamsConfiguration.ExpectedDataStream( stubSequenceDeviceRoleName, STUB_DATA_TYPE )
+            val expectedStream = DataStreamsConfiguration.ExpectedDataStream( stubSequenceDeviceRoleName, STUB_DATA_POINT_TYPE )
 
             val configuration = DataStreamsConfiguration( stubDeploymentId, setOf( expectedStream ) )
             openDataStreams( configuration )

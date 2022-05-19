@@ -9,20 +9,24 @@ import kotlin.js.JsExport
 
 
 /**
- * Describes the status of a [Study]: the number of participants, progress towards study goal, etc.
+ * Describes the status of a study: the number of participants, progress towards study goal, etc.
  */
 @Serializable
 sealed class StudyStatus
 {
     abstract val studyId: UUID
     /**
-     * A descriptive name for the study, as assigned by the [StudyOwner].
+     * A descriptive name for the study, as assigned by the study owner.
      */
     abstract val name: String
     /**
      * The date when this study was created.
      */
     abstract val createdOn: Instant
+    /**
+     * In case a study protocol for this study is set, its id; null otherwise.
+     */
+    abstract val studyProtocolId: UUID?
     /**
      * Determines whether the invitation which is shared with participants can be changed for the study.
      */
@@ -45,6 +49,7 @@ sealed class StudyStatus
         override val studyId: UUID,
         override val name: String,
         override val createdOn: Instant,
+        override val studyProtocolId: UUID?,
         override val canSetInvitation: Boolean,
         override val canSetStudyProtocol: Boolean,
         override val canDeployToParticipants: Boolean,
@@ -63,6 +68,7 @@ sealed class StudyStatus
         override val studyId: UUID,
         override val name: String,
         override val createdOn: Instant,
+        override val studyProtocolId: UUID?,
         override val canSetInvitation: Boolean,
         override val canSetStudyProtocol: Boolean,
         override val canDeployToParticipants: Boolean

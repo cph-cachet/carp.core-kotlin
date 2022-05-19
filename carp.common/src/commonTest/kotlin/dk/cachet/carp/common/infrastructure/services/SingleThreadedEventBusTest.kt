@@ -1,10 +1,12 @@
 package dk.cachet.carp.common.infrastructure.services
 
+import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.services.publish
 import dk.cachet.carp.common.application.services.registerHandler
-import dk.cachet.carp.test.runSuspendTest
+import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlin.test.*
 
@@ -15,10 +17,16 @@ import kotlin.test.*
 class SingleThreadedEventBusTest
 {
     interface TestService : ApplicationService<TestService, BaseIntegrationEvent>
+    {
+        companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+    }
 
     @Serializable
     sealed class BaseIntegrationEvent( override val aggregateId: String? = null ) : IntegrationEvent<TestService>
     {
+        @Required
+        override val apiVersion: ApiVersion = TestService.API_VERSION
+
         @Serializable
         data class SomeIntegrationEvent( val data: String ) : BaseIntegrationEvent()
 
@@ -28,7 +36,7 @@ class SingleThreadedEventBusTest
 
 
     @Test
-    fun published_events_are_received_by_handlers() = runSuspendTest {
+    fun published_events_are_received_by_handlers() = runTest {
         val bus = SingleThreadedEventBus()
 
         var receivedEventData: String? = null
@@ -43,7 +51,7 @@ class SingleThreadedEventBusTest
     }
 
     @Test
-    fun handlers_only_receive_events_when_activated() = runSuspendTest {
+    fun handlers_only_receive_events_when_activated() = runTest {
         val bus = SingleThreadedEventBus()
 
         var receivedEventData: String? = null
@@ -56,7 +64,7 @@ class SingleThreadedEventBusTest
     }
 
     @Test
-    fun handlers_only_receive_requested_events() = runSuspendTest {
+    fun handlers_only_receive_requested_events() = runTest {
         val bus = SingleThreadedEventBus()
 
         var eventReceived = false
@@ -71,7 +79,7 @@ class SingleThreadedEventBusTest
 
 
     @Test
-    fun multiple_handlers_are_possible() = runSuspendTest {
+    fun multiple_handlers_are_possible() = runTest {
         val bus = SingleThreadedEventBus()
 
         var receivedBySubscriber1 = false
@@ -86,7 +94,7 @@ class SingleThreadedEventBusTest
     }
 
     @Test
-    fun polymorphic_handlers_are_possible() = runSuspendTest {
+    fun polymorphic_handlers_are_possible() = runTest {
         val bus = SingleThreadedEventBus()
 
         var receivedEvent = false
@@ -121,7 +129,7 @@ class SingleThreadedEventBusTest
     }
 
     @Test
-    fun extension_methods_succeeds() = runSuspendTest {
+    fun extension_methods_succeeds() = runTest {
         val bus = SingleThreadedEventBus()
 
         var receivedData: String? = null

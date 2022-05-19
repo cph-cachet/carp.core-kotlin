@@ -1,0 +1,15 @@
+[
+    {
+        "outcome": "Failed",
+        "request": {
+            "__type": "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.Stop",
+            "apiVersion": "1.0",
+            "studyDeploymentId": "9118655e-6d8b-4414-9008-28a02ed6da6f"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "exceptionType": "IllegalArgumentException"
+    }
+]

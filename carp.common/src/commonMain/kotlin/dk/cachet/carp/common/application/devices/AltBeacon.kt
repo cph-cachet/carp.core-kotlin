@@ -9,7 +9,7 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptorList
+import dk.cachet.carp.common.application.tasks.TaskConfigurationList
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
@@ -24,7 +24,7 @@ import kotlin.reflect.KClass
 data class AltBeacon(
     override val roleName: String,
     override val isOptional: Boolean = false,
-) : DeviceDescriptor<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
+) : DeviceConfiguration<AltBeaconDeviceRegistration, AltBeaconDeviceRegistrationBuilder>()
 {
     object Sensors : DataTypeSamplingSchemeMap()
     {
@@ -34,7 +34,7 @@ data class AltBeacon(
         val SIGNAL_STRENGTH = add( NoOptionsSamplingScheme( CarpDataTypes.SIGNAL_STRENGTH ) )
     }
 
-    object Tasks : TaskDescriptorList()
+    object Tasks : TaskConfigurationList()
 
     override fun getSupportedDataTypes(): Set<DataType> = Sensors.keys
     override fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap = Sensors
@@ -74,7 +74,9 @@ data class AltBeaconDeviceRegistration(
      * The average received signal strength at 1 meter from the beacon in decibel-milliwatts (dBm).
      * This value is constrained from -127 to 0.
      */
-    val referenceRssi: Short
+    val referenceRssi: Short,
+    @Required
+    override val deviceDisplayName: String? = null // TODO: We could map known manufacturerId's to display names.
 ) : DeviceRegistration()
 {
     companion object
@@ -87,16 +89,13 @@ data class AltBeaconDeviceRegistration(
     }
 
     @Required
-    override val deviceId: String =
-        // TODO: Remove this workaround once JS serialization bug is fixed: https://github.com/Kotlin/kotlinx.serialization/issues/716
-        @Suppress( "SENSELESS_COMPARISON" )
-        if ( arrayOf( manufacturerId, organizationId, majorId, minorId ).any { it == null } ) ""
-        else "$manufacturerId:$organizationId:$majorId:$minorId"
+    override val deviceId: String = "$manufacturerId:$organizationId:$majorId:$minorId"
 }
 
 
-@Serializable( with = NotSerializable::class )
-class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
+@Serializable( NotSerializable::class )
+class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>()
 {
     /**
      * The beacon's device manufacturer's company identifier code as maintained by the Bluetooth SIG assigned numbers database.
@@ -126,6 +125,12 @@ class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDe
      */
     var referenceRssi: Short = 0
 
-    override fun build(): AltBeaconDeviceRegistration =
-        AltBeaconDeviceRegistration( manufacturerId, organizationId, majorId, minorId, referenceRssi )
+    override fun build(): AltBeaconDeviceRegistration = AltBeaconDeviceRegistration(
+        manufacturerId,
+        organizationId,
+        majorId,
+        minorId,
+        referenceRssi,
+        deviceDisplayName
+    )
 }

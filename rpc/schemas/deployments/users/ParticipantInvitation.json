@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "participantId": { "type": "string", "format": "uuid" },
+    "assignedRoles": { "$ref": "../../common/users/AssignedTo.json" },
+    "identity": { "$ref": "../../common/users/AccountIdentity.json" },
+    "invitation": { "$ref": "../users/StudyInvitation.json" }
+  },
+  "required": [ "participantId", "assignedRoles", "identity", "invitation" ],
+  "additionalProperties": false
+}

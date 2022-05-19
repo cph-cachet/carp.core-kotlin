@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "allOf": [ { "$ref": "TriggerConfiguration.json#TriggerConfiguration" } ],
+  "properties": {
+    "__type": { "const": "dk.cachet.carp.common.application.triggers.ScheduledTrigger" },
+    "time": { "$ref": "../TimeOfDay.json" },
+    "recurrenceRule": { "$ref": "../RecurrenceRule.json" }
+  },
+  "required": [ "time", "recurrenceRule" ],
+  "unevaluatedProperties": false
+}

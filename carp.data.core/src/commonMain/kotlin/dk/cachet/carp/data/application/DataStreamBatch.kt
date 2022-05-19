@@ -1,6 +1,8 @@
 package dk.cachet.carp.data.application
 
+import dk.cachet.carp.common.application.data.Data
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -11,9 +13,10 @@ import kotlin.js.JsExport
 /**
  * A collection of non-overlapping, ordered, data stream [sequences].
  */
+@Serializable( DataStreamBatchSerializer::class )
 interface DataStreamBatch : Sequence<DataStreamPoint<*>>
 {
-    val sequences: Sequence<DataStreamSequence>
+    val sequences: Sequence<DataStreamSequence<*>>
 
 
     /**
@@ -41,13 +44,13 @@ interface DataStreamBatch : Sequence<DataStreamPoint<*>>
 @JsExport
 class MutableDataStreamBatch : DataStreamBatch
 {
-    private val sequenceMap: MutableMap<DataStreamId, MutableList<MutableDataStreamSequence>> = mutableMapOf()
+    private val sequenceMap: MutableMap<DataStreamId, MutableList<MutableDataStreamSequence<*>>> = mutableMapOf()
 
     /**
      * A list of sequences covering all sequences so far appended to this [MutableDataStreamBatch].
      * This may return less sequences than originally appended in case appended sequences were merged with prior ones.
      */
-    override val sequences: Sequence<DataStreamSequence>
+    override val sequences: Sequence<DataStreamSequence<*>>
         get() = sequenceMap.asSequence().flatMap { it.value }
 
 
@@ -58,7 +61,8 @@ class MutableDataStreamBatch : DataStreamBatch
      *  - the start of the [sequence] range precedes the end of a previously appended sequence to the same data stream
      *  - the sync point of [sequence] is older than that of previous sequences in this batch
      */
-    fun appendSequence( sequence: DataStreamSequence )
+    @Suppress( "UNCHECKED_CAST" )
+    fun appendSequence( sequence: DataStreamSequence<*> )
     {
         val sequenceList = sequenceMap[ sequence.dataStream ]
 
@@ -69,7 +73,7 @@ class MutableDataStreamBatch : DataStreamBatch
             return
         }
 
-        val last = sequenceList.last()
+        val last = sequenceList.last() as MutableDataStreamSequence<Data>
         require( last.range.last < sequence.range.first )
             { "Sequence range start lies before the end of a previously appended sequence to the same data stream." }
         require( last.syncPoint.synchronizedOn <= sequence.syncPoint.synchronizedOn )
@@ -78,7 +82,7 @@ class MutableDataStreamBatch : DataStreamBatch
         // Merge sequence with last sequence if possible; add new sequence otherwise.
         if ( last.isImmediatelyFollowedBy( sequence ) )
         {
-            last.appendSequence( sequence )
+            last.appendSequence( sequence as DataStreamSequence<Data> )
         }
         else { sequenceList.add( sequence.toMutableDataStreamSequence() ) }
     }

@@ -1,12 +1,12 @@
 package dk.cachet.carp.deployments.application
 
-import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
-import dk.cachet.carp.common.application.devices.AnyMasterDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployments.application.users.ParticipantData
 import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
@@ -48,9 +48,9 @@ class ParticipationServiceHost(
                 participationRepository.putParticipantGroup( group )
             }
 
-            // Keep track of master device registration changes.
+            // Keep track of primary device registration changes.
             event { registrationChange: DeploymentService.Event.DeviceRegistrationChanged ->
-                if ( registrationChange.device !is AnyMasterDeviceDescriptor ) return@event
+                if ( registrationChange.device !is AnyPrimaryDeviceConfiguration ) return@event
 
                 val group = participationRepository.getParticipantGroup( registrationChange.studyDeploymentId )
                 checkNotNull( group )
@@ -84,7 +84,7 @@ class ParticipationServiceHost(
     {
         val group = participationRepository.getParticipantGroupOrThrowBy( studyDeploymentId )
 
-        return ParticipantData( group.studyDeploymentId, group.data.toMap() )
+        return ParticipantData( group.studyDeploymentId, group.commonData.toMap(), group.roleData.toList() )
     }
 
     /**
@@ -97,11 +97,15 @@ class ParticipationServiceHost(
     {
         val groups = participationRepository.getParticipantGroupListOrThrow( studyDeploymentIds )
 
-        return groups.map { ParticipantData( it.studyDeploymentId, it.data.toMap() ) }
+        return groups.map { ParticipantData( it.studyDeploymentId, it.commonData.toMap(), it.roleData.toList() ) }
     }
 
     /**
-     * Set participant [data] in the study deployment with [studyDeploymentId], or unset it by passing `null`.
+     * Set [data] that was [inputByParticipantRole] in the study deployment with [studyDeploymentId],
+     * or unset it by passing `null`.
+     * When you want to set data that was assigned to a specific participant role,
+     * [inputByParticipantRole] needs to be set.
+     * You can still set common data (assigned to all roles) in the same call.
      *
      * @throws IllegalArgumentException when:
      *   - there is no study deployment with [studyDeploymentId]
@@ -109,12 +113,19 @@ class ParticipationServiceHost(
      *   - one or more of the set [data] isn't valid for the corresponding input data type
      * @return All data for the specified study deployment, including the newly set data.
      */
-    override suspend fun setParticipantData( studyDeploymentId: UUID, data: Map<InputDataType, Data?> ): ParticipantData
+    override suspend fun setParticipantData(
+        studyDeploymentId: UUID,
+        data: Map<InputDataType, Data?>,
+        /**
+         * The participant role who filled out [data]; null if all roles can set it.
+         */
+        inputByParticipantRole: String?
+    ): ParticipantData
     {
         val group = participationRepository.getParticipantGroupOrThrowBy( studyDeploymentId )
-        group.setData( participantDataInputTypes, data )
+        group.setData( participantDataInputTypes, data, inputByParticipantRole )
         participationRepository.putParticipantGroup( group )
 
-        return ParticipantData( group.studyDeploymentId, group.data.toMap() )
+        return ParticipantData( group.studyDeploymentId, group.commonData.toMap(), group.roleData.toList() )
     }
 }

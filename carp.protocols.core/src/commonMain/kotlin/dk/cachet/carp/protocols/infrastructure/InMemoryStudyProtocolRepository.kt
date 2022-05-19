@@ -19,12 +19,15 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
      * Add the specified study [protocol] to the repository.
      *
      * @param version Identifies this first initial version of the [protocol].
-     * @throws IllegalArgumentException when a [protocol] with the same owner and name already exists.
+     * @throws IllegalArgumentException when:
+     *   - a [protocol] with the same id already exists
+     *   - a different [protocol] with the same owner and name in the latest version already exists
      */
     override suspend fun add( protocol: StudyProtocol, version: ProtocolVersion )
     {
         require( protocol.id !in _protocols )
-            { "A protocol with the same owner and name is already stored in this repository." }
+            { "A protocol with the same id is already stored in this repository." }
+        requireUniqueOwnerAndName( protocol )
 
         val versions = mutableMapOf( version to protocol.getSnapshot() )
         _protocols[ protocol.id ] = versions
@@ -32,16 +35,18 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
 
     /**
      * Add a new [version] for the specified study [protocol] in the repository,
-     * of which a previous version with the same owner and name is already stored.
+     * of which a previous version with the same id is already stored.
      *
      * @throws IllegalArgumentException when:
      *   - the [protocol] is not yet stored in the repository
      *   - the tag specified in [version] is already in use
+     *   - a different [protocol] with the same owner and name in the latest version already exists
      */
     override suspend fun addVersion( protocol: StudyProtocol, version: ProtocolVersion )
     {
         val versions = getVersionsOrThrow( protocol.id )
         require( versions.keys.none { it.tag == version.tag } ) { "The version tag is already in use." }
+        requireUniqueOwnerAndName( protocol )
 
         versions[ version ] = protocol.getSnapshot()
     }
@@ -49,15 +54,25 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
     /**
      * Replace a [version] of a [protocol], of which a previous version with the same owner and name is already stored.
      *
-     * @throws IllegalArgumentException when the [protocol] with [version] to replace is not found.
+     * @throws IllegalArgumentException when:
+     *   - the [protocol] with [version] to replace is not found
+     *   - a different [protocol] with the same owner and name in the latest version already exists
      */
     override suspend fun replace( protocol: StudyProtocol, version: ProtocolVersion )
     {
         val versions = getVersionsOrThrow( protocol.id )
         require( version in versions.keys ) { "The specified version does not exist." }
+        requireUniqueOwnerAndName( protocol )
 
         versions[ version ] = protocol.getSnapshot()
     }
+
+    private fun requireUniqueOwnerAndName( protocol: StudyProtocol ) = require(
+        _protocols
+            .filter { it.key != protocol.id }
+            .values.map { it.values.last() }
+            .none { it.ownerId == protocol.ownerId && it.name == protocol.name }
+    ) { "A protocol with the same owner and name, used in the latest version, is already stored in this repository." }
 
     /**
      * Return the [StudyProtocol] with the specified protocol [id], or null when no such protocol is found.

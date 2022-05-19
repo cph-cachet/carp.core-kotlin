@@ -1,0 +1,107 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest.GetParticipantDataList",
+            "apiVersion": "1.0",
+            "studyDeploymentIds": [
+                "7f59a151-fdbd-42ab-a3ef-9332798b0292",
+                "5022cee4-c662-410d-8042-a31a21e2839b"
+            ]
+        },
+        "precedingEvents": [
+            {
+                "__type": "dk.cachet.carp.deployments.application.DeploymentService.Event.StudyDeploymentCreated",
+                "aggregateId": "7f59a151-fdbd-42ab-a3ef-9332798b0292",
+                "apiVersion": "1.0",
+                "studyDeploymentId": "7f59a151-fdbd-42ab-a3ef-9332798b0292",
+                "protocol": {
+                    "id": "da3d641c-81cb-4e04-82f0-56c70aa41cc1",
+                    "createdOn": "2022-04-04T15:13:36.659613900Z",
+                    "ownerId": "27879e75-ccc1-4866-9ab3-4ece1b735052",
+                    "name": "Test protocol",
+                    "description": "Test description",
+                    "primaryDevices": [
+                        {
+                            "__type": "dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration",
+                            "isPrimaryDevice": true,
+                            "roleName": "Primary"
+                        }
+                    ]
+                },
+                "invitations": [
+                    {
+                        "participantId": "359393a0-9459-4054-ae0b-4724b450733c",
+                        "assignedRoles": {
+                            "__type": "dk.cachet.carp.common.application.users.AssignedTo.All"
+                        },
+                        "identity": {
+                            "__type": "dk.cachet.carp.common.application.users.UsernameAccountIdentity",
+                            "username": "Test"
+                        },
+                        "invitation": {
+                            "name": "Some study"
+                        }
+                    }
+                ],
+                "connectedDevicePreregistrations": {
+                }
+            },
+            {
+                "__type": "dk.cachet.carp.deployments.application.DeploymentService.Event.StudyDeploymentCreated",
+                "aggregateId": "5022cee4-c662-410d-8042-a31a21e2839b",
+                "apiVersion": "1.0",
+                "studyDeploymentId": "5022cee4-c662-410d-8042-a31a21e2839b",
+                "protocol": {
+                    "id": "da3d641c-81cb-4e04-82f0-56c70aa41cc1",
+                    "createdOn": "2022-04-04T15:13:36.659613900Z",
+                    "ownerId": "27879e75-ccc1-4866-9ab3-4ece1b735052",
+                    "name": "Test protocol",
+                    "description": "Test description",
+                    "primaryDevices": [
+                        {
+                            "__type": "dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration",
+                            "isPrimaryDevice": true,
+                            "roleName": "Primary"
+                        }
+                    ]
+                },
+                "invitations": [
+                    {
+                        "participantId": "32f45f4e-1733-43af-b6f8-b8280c274053",
+                        "assignedRoles": {
+                            "__type": "dk.cachet.carp.common.application.users.AssignedTo.All"
+                        },
+                        "identity": {
+                            "__type": "dk.cachet.carp.common.application.users.UsernameAccountIdentity",
+                            "username": "Test"
+                        },
+                        "invitation": {
+                            "name": "Some study"
+                        }
+                    }
+                ],
+                "connectedDevicePreregistrations": {
+                }
+            }
+        ],
+        "publishedEvents": [
+        ],
+        "response": [
+            {
+                "studyDeploymentId": "7f59a151-fdbd-42ab-a3ef-9332798b0292",
+                "common": {
+                },
+                "roles": [
+                ]
+            },
+            {
+                "studyDeploymentId": "5022cee4-c662-410d-8042-a31a21e2839b",
+                "common": {
+                },
+                "roles": [
+                ]
+            }
+        ]
+    }
+]

@@ -13,7 +13,7 @@ typealias DataType = NamespacedId
 
 
 /**
- * Contains metadata about [type].
+ * Contains meta data about [type].
  */
 @JsExport
 data class DataTypeMetaData(
@@ -45,16 +45,5 @@ enum class DataTimeType
     /**
      * Data is related to a period of time between two specific point in time.
      */
-    TIME_SPAN,
-
-    /**
-     * Data can be either related to one specific point in time ([POINT]), or a [TIME_SPAN].
-     */
-    EITHER;
-
-
-    /**
-     * Determines whether this [DataTimeType] matches the [required] [DataTimeType].
-     */
-    fun matches( required: DataTimeType ): Boolean = required == EITHER || this == required
+    TIME_SPAN
 }

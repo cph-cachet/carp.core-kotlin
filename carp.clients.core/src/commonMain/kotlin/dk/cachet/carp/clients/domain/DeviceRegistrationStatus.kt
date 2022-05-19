@@ -1,7 +1,7 @@
 package dk.cachet.carp.clients.domain
 
 import dk.cachet.carp.common.application.ImplementAsDataClass
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 
 
@@ -11,14 +11,14 @@ import dk.cachet.carp.common.application.devices.DeviceRegistration
 @ImplementAsDataClass
 sealed class DeviceRegistrationStatus
 {
-    abstract val device: AnyDeviceDescriptor
+    abstract val device: AnyDeviceConfiguration
 
 
-    data class Unregistered internal constructor( override val device: AnyDeviceDescriptor ) :
+    data class Unregistered internal constructor( override val device: AnyDeviceConfiguration ) :
         DeviceRegistrationStatus()
 
     data class Registered internal constructor(
-        override val device: AnyDeviceDescriptor,
+        override val device: AnyDeviceConfiguration,
         val registration: DeviceRegistration
     ) : DeviceRegistrationStatus()
 }

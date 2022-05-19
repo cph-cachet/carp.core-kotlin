@@ -60,7 +60,7 @@ class AccountParticipationTest
         assertNull( retrievedRegistration )
 
         // Once the device is registered, this is communicated in the active invitation.
-        val toRegister = group.assignedMasterDevices.first { it.device.roleName == deviceRole }.device
+        val toRegister = group.assignedPrimaryDevices.first { it.device.roleName == deviceRole }.device
         val deviceRegistration = toRegister.createRegistration()
         group.updateDeviceRegistration( toRegister, deviceRegistration )
         activeInvitation = filterActiveParticipationInvitations(
@@ -92,7 +92,7 @@ class AccountParticipationTest
     @Test
     fun filterActiveParticipationInvitations_fails_when_participation_device_role_does_not_match()
     {
-        val group = ParticipantGroup.fromNewDeployment( createActiveDeployment( "Master" ) )
+        val group = ParticipantGroup.fromNewDeployment( createActiveDeployment( "Primary" ) )
 
         val participation = Participation( group.studyDeploymentId )
         val invitation = AccountParticipation(

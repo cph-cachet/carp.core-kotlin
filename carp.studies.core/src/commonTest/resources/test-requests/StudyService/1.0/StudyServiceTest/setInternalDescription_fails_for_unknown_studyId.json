@@ -1,0 +1,17 @@
+[
+    {
+        "outcome": "Failed",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.SetInternalDescription",
+            "apiVersion": "1.0",
+            "studyId": "e28590be-abcf-4ed9-ae02-51f03d639a03",
+            "name": "New name",
+            "description": "New description"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "exceptionType": "IllegalArgumentException"
+    }
+]

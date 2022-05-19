@@ -6,7 +6,7 @@ import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
-import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
 import kotlinx.datetime.Clock
 import kotlin.test.*
 
@@ -73,7 +73,7 @@ class RecruitmentTest
         val recruitment = Recruitment( studyId )
         assertTrue( recruitment.getStatus() is RecruitmentStatus.AwaitingStudyToGoLive )
 
-        val protocol = createSingleMasterDeviceProtocol().getSnapshot()
+        val protocol = createSinglePrimaryDeviceProtocol().getSnapshot()
         val invitation = StudyInvitation( "Study", "This study is about ..." )
         recruitment.lockInStudy( protocol, invitation )
 
@@ -87,7 +87,7 @@ class RecruitmentTest
     fun lockInStudy_only_allowed_once()
     {
         val recruitment = Recruitment( studyId )
-        val protocol = createSingleMasterDeviceProtocol().getSnapshot()
+        val protocol = createSinglePrimaryDeviceProtocol().getSnapshot()
         val invitation = StudyInvitation( "Some study" )
         recruitment.lockInStudy( protocol, invitation )
 

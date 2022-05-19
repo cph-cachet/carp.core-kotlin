@@ -11,6 +11,7 @@ import dk.cachet.carp.common.application.tasks.*
 import dk.cachet.carp.common.application.triggers.*
 import dk.cachet.carp.common.application.users.*
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 
 /**
@@ -18,15 +19,15 @@ import kotlin.time.Duration
  */
 val commonInstances = listOf(
     // `data` namespace.
+    Acceleration( 42.0, 42.0, 42.0 ),
     AngularVelocity( 42.0, 42.0, 42.0 ),
     CompletedTask( "Task", null ),
     ECG( 42.0 ),
-    FreeFormText( "Some text" ),
     Geolocation( 42.0, 42.0 ),
     HeartRate( 60 ),
     NoData,
     NonGravitationalAcceleration( 42.0, 42.0, 42.0 ),
-    RRInterval,
+    InterbeatInterval,
     SensorSkinContact( true ),
     SignalStrength( 0 ),
     StepCount( 42 ),
@@ -49,7 +50,7 @@ val commonInstances = listOf(
     Smartphone( "User's phone" ),
 
     // Shared device registrations in `devices` namespace.
-    DefaultDeviceRegistration( "Some device" ),
+    DefaultDeviceRegistration(),
     MACAddressDeviceRegistration( MACAddress( "00-00-00-00-00-00" ) ),
 
     // `sampling` namespace.
@@ -58,7 +59,7 @@ val commonInstances = listOf(
         GranularitySamplingConfiguration( Granularity.Coarse ),
     ),
     GranularitySamplingConfiguration( Granularity.Balanced ),
-    IntervalSamplingConfiguration( Duration.milliseconds( 1000 ) ),
+    IntervalSamplingConfiguration( 1000.milliseconds ),
     NoOptionsSamplingConfiguration,
 
     // `tasks` namespace.

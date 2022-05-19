@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "allOf": [ { "$ref": "DeviceConfiguration.json#DeviceConfiguration" } ],
+  "properties": {
+    "__type": { "const": "dk.cachet.carp.common.application.devices.AltBeacon" }
+  },
+  "unevaluatedProperties": false,
+  "$defs": {
+    "DeviceRegistration": {
+      "$anchor": "DeviceRegistration",
+      "allOf": [ { "$ref": "DeviceRegistration.json#DeviceRegistration" } ],
+      "properties": {
+        "manufacturerId": { "$ref": "../Short.json" },
+        "organizationId": { "type": "string", "format": "uuid" },
+        "majorId": { "$ref": "../Short.json" },
+        "minorId": { "$ref": "../Short.json" },
+        "referenceRssi": {
+          "type": "integer",
+          "minimum": -127,
+          "maximum": 0
+        }
+      },
+      "required": [ "manufacturerId", "organizationId", "majorId", "minorId", "referenceRssi" ],
+      "unevaluatedProperties": false
+    }
+  }
+}

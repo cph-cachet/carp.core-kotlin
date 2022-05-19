@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "allOf": [
+    { "$ref": "#/$defs/PrimaryDeviceConfiguration" },
+    {
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.devices.Smartphone" } } },
+      "then": { "$ref": "Smartphone.json" }
+    }
+  ],
+  "$defs": {
+    "PrimaryDeviceConfiguration": {
+      "$anchor": "PrimaryDeviceConfiguration",
+      "allOf": [ { "$ref": "DeviceConfiguration.json#DeviceConfiguration" } ],
+      "properties": {
+        "isPrimaryDevice": { "const": true }
+      },
+      "required": [ "isPrimaryDevice" ]
+    }
+  }
+}

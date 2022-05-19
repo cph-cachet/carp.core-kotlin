@@ -8,7 +8,7 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import dk.cachet.carp.common.application.tasks.TaskDescriptorList
+import dk.cachet.carp.common.application.tasks.TaskConfigurationList
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 import kotlin.reflect.KClass
@@ -21,7 +21,7 @@ import kotlin.reflect.KClass
 data class BLEHeartRateDevice(
     override val roleName: String,
     override val isOptional: Boolean = false
-) : DeviceDescriptor<MACAddressDeviceRegistration, MACAddressDeviceRegistrationBuilder>()
+) : DeviceConfiguration<MACAddressDeviceRegistration, MACAddressDeviceRegistrationBuilder>()
 {
     object Sensors : DataTypeSamplingSchemeMap()
     {
@@ -31,17 +31,17 @@ data class BLEHeartRateDevice(
         val HEART_RATE = add( NoOptionsSamplingScheme( CarpDataTypes.HEART_RATE ) )
 
         /**
-         * The time interval between two consecutive heartbeats (R-R interval).
+         * The time interval between two consecutive heartbeats.
          */
-        val RR_INTERVAL = add( NoOptionsSamplingScheme( CarpDataTypes.RR_INTERVAL ) )
+        val INTERBEAT_INTERVAL = add( NoOptionsSamplingScheme( CarpDataTypes.INTERBEAT_INTERVAL ) )
 
         /**
-         * Whether or not the device is making proper contact.
+         * Whether the device is making proper skin contact.
          */
         val SENSOR_SKIN_CONTACT = add( NoOptionsSamplingScheme( CarpDataTypes.SENSOR_SKIN_CONTACT ) )
     }
 
-    object Tasks : TaskDescriptorList()
+    object Tasks : TaskConfigurationList()
 
 
     override fun getSupportedDataTypes(): Set<DataType> = Sensors.keys

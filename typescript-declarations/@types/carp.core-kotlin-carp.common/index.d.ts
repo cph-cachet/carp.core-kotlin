@@ -39,17 +39,17 @@ declare module 'carp.core-kotlin-carp.common'
         {
             static get Companion(): RecurrenceRule$Companion
 
-            toString(): String
+            toString(): string
         }
         interface RecurrenceRule$Companion
         {
             serializer(): any
-            fromString_61zpoe$( rrule: String ): RecurrenceRule
+            fromString_61zpoe$( rrule: string ): RecurrenceRule
         }
 
         class TimeOfDay
         {
-            constructor( hour: Number, minutes: Number, seconds: Number )
+            constructor( hour: number, minutes: number, seconds: number )
 
             static get Companion(): TimeOfDay$Companion
         }
@@ -82,9 +82,14 @@ declare module 'carp.core-kotlin-carp.common'
 
     namespace dk.cachet.carp.common.application.devices
     {
-        abstract class DeviceDescriptor
+        abstract class DeviceConfiguration
         {
-            readonly roleName: String
+            readonly roleName: string
+        }
+
+        abstract class PrimaryDeviceConfiguration extends DeviceConfiguration
+        {
+            readonly isPrimaryDevice_8be2vx$: boolean
         }
 
         abstract class DeviceRegistration
@@ -92,16 +97,17 @@ declare module 'carp.core-kotlin-carp.common'
             static get Companion(): DeviceRegistration$Companion  
             
             readonly deviceId: string
+            readonly deviceDisplayName: string | null;
             readonly registrationCreatedOn: Instant
         }
         interface DeviceRegistration$Companion { serializer(): any }
 
         class DefaultDeviceRegistration extends DeviceRegistration
         {
-            constructor( deviceId: string )
+            constructor( deviceId?: string )
         }
 
-        class Smartphone extends DeviceDescriptor
+        class Smartphone extends PrimaryDeviceConfiguration
         {
             constructor( roleName: string, defaultSamplingConfiguration: HashMap<NamespacedId, any> )
         }
@@ -110,19 +116,19 @@ declare module 'carp.core-kotlin-carp.common'
 
     namespace dk.cachet.carp.common.application.tasks
     {
-        abstract class TaskDescriptor
+        abstract class TaskConfiguration
         {
-            readonly name: String
-            readonly description?: String
+            readonly name: string
+            readonly description: string | null;
         }
 
-        class WebTask extends TaskDescriptor
+        class WebTask extends TaskConfiguration
         {
-            constructor( name: String, measures: any, description: String, url: String )
+            constructor( name: string, measures: any, description: string, url: string )
 
             static get Companion(): WebTask$Companion
 
-            readonly url: String
+            readonly url: string
         }
         interface WebTask$Companion { serializer(): any }
     }
@@ -130,31 +136,31 @@ declare module 'carp.core-kotlin-carp.common'
 
     namespace dk.cachet.carp.common.application.triggers
     {
-        abstract class Trigger
+        abstract class TriggerConfiguration
         {
-            readonly requiresMasterDevice: Boolean
-            readonly sourceDeviceRoleName: String
+            readonly requiresPrimaryDevice: boolean
+            readonly sourceDeviceRoleName: string
         }
 
-        class ElapsedTimeTrigger extends Trigger
+        class ElapsedTimeTrigger extends TriggerConfiguration
         {
-            constructor( sourceDeviceRoleName: String, elapsedTime: Duration )
+            constructor( sourceDeviceRoleName: string, elapsedTime: Duration )
 
             readonly elapsedTime: Duration
 
         }
 
-        class ManualTrigger extends Trigger
+        class ManualTrigger extends TriggerConfiguration
         {
-            constructor( sourceDeviceRoleName: String, label: String, description?: String )
+            constructor( sourceDeviceRoleName: string, label: string, description?: string | null )
 
-            readonly label: String
-            readonly description?: String
+            readonly label: string
+            readonly description: string | null;
         }
 
-        class ScheduledTrigger extends Trigger
+        class ScheduledTrigger extends TriggerConfiguration
         {
-            constructor( sourceDeviceRoleName: String, time: TimeOfDay, recurrenceRule: RecurrenceRule )
+            constructor( sourceDeviceRoleName: string, time: TimeOfDay, recurrenceRule: RecurrenceRule )
 
             readonly time: TimeOfDay
             readonly recurrenceRule: RecurrenceRule
@@ -162,12 +168,12 @@ declare module 'carp.core-kotlin-carp.common'
 
         class TaskControl
         {
-            constructor( triggerId: Number, taskName: String, destinationDeviceRoleName: String, control: Number )
+            constructor( triggerId: number, taskName: string, destinationDeviceRoleName: string, control: number )
 
-            readonly triggerId: Number
-            readonly taskName: String
-            readonly destinationDeviceRoleName: String
-            readonly control: Number
+            readonly triggerId: number
+            readonly taskName: string
+            readonly destinationDeviceRoleName: string
+            readonly control: number
         }
     }
 
@@ -239,12 +245,51 @@ declare module 'carp.core-kotlin-carp.common'
         {
             class DefaultParticipantAttribute extends ParticipantAttribute
             {
-                constructor( inputType: NamespacedId )
+                constructor( inputDataType: NamespacedId )
             }
 
             class CustomParticipantAttribute extends ParticipantAttribute
             {
                 constructor( input: InputElement )
+            }
+        }
+
+
+        class ParticipantRole
+        {
+            constructor( role: string, isOptional: boolean )
+
+            static get Companion(): ParticipantRole$Companion
+
+            readonly role: string
+            readonly isOptional: boolean
+        }
+        interface ParticipantRole$Companion { serializer(): any }
+
+
+        class ExpectedParticipantData
+        {
+            constructor( attribute: ParticipantAttribute, assignedTo?: AssignedTo )
+
+            static get Companion(): ExpectedParticipantData$Companion
+
+            readonly attribute: ParticipantAttribute
+        }
+        interface ExpectedParticipantData$Companion { serializer(): any }
+
+
+        abstract class AssignedTo
+        {
+            static get Companion(): AssignedTo$Companion
+            static get All(): any
+        }
+        interface AssignedTo$Companion { serializer(): any }
+
+        namespace AssignedTo
+        {
+            class Roles extends AssignedTo
+            {
+                constructor( roleNames: HashSet<string> )
             }
         }
     }
@@ -294,5 +339,27 @@ declare module 'carp.core-kotlin-carp.common'
     namespace dk.cachet.carp.common.infrastructure.serialization
     {
         function createDefaultJSON_18xi4u$(): Json
+    }
+
+
+    namespace dk.cachet.carp.common.application.services
+    {
+        class ApiVersion
+        {
+            constructor( major: number, minor: number )
+
+            readonly major: number
+            readonly minor: number
+        }
+    }
+
+    namespace dk.cachet.carp.common.infrastructure.services
+    {
+        import ApiVersion = dk.cachet.carp.common.application.services.ApiVersion
+
+        interface ApplicationServiceRequest
+        {
+            readonly apiVersion: ApiVersion
+        }
     }
 }

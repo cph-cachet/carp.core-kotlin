@@ -1,0 +1,79 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.AddParticipant",
+            "apiVersion": "1.0",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "email": "test@test.com"
+        },
+        "precedingEvents": [
+            {
+                "__type": "dk.cachet.carp.studies.application.StudyService.Event.StudyCreated",
+                "aggregateId": "00000000-0000-0000-0000-000000000001",
+                "apiVersion": "1.0",
+                "study": {
+                    "studyId": "00000000-0000-0000-0000-000000000001",
+                    "ownerId": "f19eb574-5833-4ab3-9402-941b970ecc65",
+                    "name": "Test",
+                    "createdOn": "1970-01-01T00:00:00Z",
+                    "description": null,
+                    "invitation": {
+                        "name": "Test"
+                    },
+                    "protocolSnapshot": null
+                }
+            }
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+            "accountIdentity": {
+                "__type": "dk.cachet.carp.common.application.users.EmailAccountIdentity",
+                "emailAddress": "test@test.com"
+            },
+            "id": "00000000-0000-0000-0000-000000000002"
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.GetParticipant",
+            "apiVersion": "1.0",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "participantId": "00000000-0000-0000-0000-000000000002"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+            "accountIdentity": {
+                "__type": "dk.cachet.carp.common.application.users.EmailAccountIdentity",
+                "emailAddress": "test@test.com"
+            },
+            "id": "00000000-0000-0000-0000-000000000002"
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.GetParticipants",
+            "apiVersion": "1.0",
+            "studyId": "00000000-0000-0000-0000-000000000001"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": [
+            {
+                "accountIdentity": {
+                    "__type": "dk.cachet.carp.common.application.users.EmailAccountIdentity",
+                    "emailAddress": "test@test.com"
+                },
+                "id": "00000000-0000-0000-0000-000000000002"
+            }
+        ]
+    }
+]

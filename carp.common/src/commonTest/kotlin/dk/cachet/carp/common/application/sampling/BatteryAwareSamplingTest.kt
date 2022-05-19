@@ -6,7 +6,7 @@ import dk.cachet.carp.common.infrastructure.test.StubDataTypes
 import dk.cachet.carp.common.infrastructure.test.StubSamplingConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubSamplingConfigurationBuilder
 import kotlin.test.*
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 
 /**
@@ -16,7 +16,7 @@ class BatteryAwareSamplingSchemeTest
 {
     class TestBatteryAwareSamplingScheme :
         BatteryAwareSamplingScheme<StubSamplingConfiguration, StubSamplingConfigurationBuilder>(
-            StubDataTypes.STUB,
+            StubDataTypes.STUB_POINT,
             { StubSamplingConfigurationBuilder( "Test" ) },
             StubSamplingConfiguration( "Normal" ),
             StubSamplingConfiguration( "Low" )
@@ -58,7 +58,7 @@ class BatteryAwareSamplingSchemeTest
 
         val invalidConfiguration = BatteryAwareSamplingConfiguration(
             normal = StubSamplingConfiguration( "Balanced" ),
-            low = IntervalSamplingConfiguration( Duration.minutes( 1 ) ),
+            low = IntervalSamplingConfiguration( 1.minutes ),
             critical = StubSamplingConfiguration( "Off" )
         )
         assertFalse( scheme.isValid( invalidConfiguration ) )

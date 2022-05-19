@@ -4,6 +4,7 @@ import { kotlin } from 'kotlin'
 import ArrayList = kotlin.collections.ArrayList
 import toMap = kotlin.collections.toMap_v2dak7$
 import toSet = kotlin.collections.toSet_us0mfu$
+import toList = kotlin.collections.toList_us0mfu$
 
 import { kotlinx as kxd } from 'Kotlin-DateTime-library-kotlinx-datetime-js-legacy'
 import Clock = kxd.datetime.Clock
@@ -14,14 +15,16 @@ import DefaultDeviceRegistration = dkc.cachet.carp.common.application.devices.De
 import Smartphone = dkc.cachet.carp.common.application.devices.Smartphone
 import Username = dkc.cachet.carp.common.application.users.Username
 import UsernameAccountIdentity = dkc.cachet.carp.common.application.users.UsernameAccountIdentity
+import AssignedTo = dkc.cachet.carp.common.application.users.AssignedTo
 
 import { dk } from 'carp.core-kotlin-carp.deployments.core'
 import DeviceDeploymentStatus = dk.cachet.carp.deployments.application.DeviceDeploymentStatus
-import MasterDeviceDeployment = dk.cachet.carp.deployments.application.MasterDeviceDeployment
+import PrimaryDeviceDeployment = dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
 import StudyDeploymentStatus = dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import ActiveParticipationInvitation = dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
-import AssignedMasterDevice = dk.cachet.carp.deployments.application.users.AssignedMasterDevice
+import AssignedPrimaryDevice = dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
 import ParticipantData = dk.cachet.carp.deployments.application.users.ParticipantData
+import RoleData = dk.cachet.carp.deployments.application.users.ParticipantData.RoleData
 import Participation = dk.cachet.carp.deployments.application.users.Participation
 import ParticipantInvitation = dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import ParticipantStatus = dk.cachet.carp.deployments.application.users.ParticipantStatus
@@ -44,11 +47,11 @@ describe( "carp.deployments.core", () => {
             new DeviceDeploymentStatus.Deployed( null ),
             new DeviceDeploymentStatus.NeedsRedeployment( null, toSet( [] ), toSet( [] ) ),
             [ "DeviceDeploymentStatus$NotDeployed", new DeviceDeploymentStatus.Unregistered( null, true, toSet( [] ), toSet( [] ) ) ],
-            new MasterDeviceDeployment(
+            new PrimaryDeviceDeployment(
                 exampleDevice,
                 new DefaultDeviceRegistration( "some role" ),
-                toSet( [] ), toMap( [] ), toSet( [] ), toMap( [] ), toSet( [] ), "" ),
-            MasterDeviceDeployment.Companion,
+                toSet( [] ), toMap( [] ), toSet( [] ), toMap( [] ), toSet( [] ), toSet( [] ), "" ),
+            PrimaryDeviceDeployment.Companion,
             [ "StudyDeploymentStatus", new StudyDeploymentStatus.Invited( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), new ArrayList<ParticipantStatus>( [] ), null ) ],
             new StudyDeploymentStatus.Invited( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), new ArrayList<ParticipantStatus>( [] ), null ),
             new StudyDeploymentStatus.DeployingDevices( now, UUID.Companion.randomUUID(), new ArrayList<DeviceDeploymentStatus>( [] ), new ArrayList<ParticipantStatus>( [] ), null ),
@@ -57,20 +60,22 @@ describe( "carp.deployments.core", () => {
             StudyDeploymentStatus.Companion,
             new ActiveParticipationInvitation( new Participation( UUID.Companion.randomUUID() ), studyInvitation, toSet( [] ) ),
             ActiveParticipationInvitation.Companion,
-            new AssignedMasterDevice( exampleDevice, null ),
-            AssignedMasterDevice.Companion,
-            new ParticipantData( UUID.Companion.randomUUID(), toMap( [] ) ),
+            new AssignedPrimaryDevice( exampleDevice, null ),
+            AssignedPrimaryDevice.Companion,
+            new ParticipantData( UUID.Companion.randomUUID(), toMap( [] ), toList( [] ) ),
             ParticipantData.Companion,
+            new RoleData( "some role", toMap( [] ) ),
+            RoleData.Companion,
             new ParticipantInvitation( UUID.Companion.randomUUID(), toSet( [] ), new UsernameAccountIdentity( new Username( "Test" ) ), studyInvitation ),
             ParticipantInvitation.Companion,
-            new ParticipantStatus( UUID.Companion.randomUUID(), toSet( [] ) ),
+            new ParticipantStatus( UUID.Companion.randomUUID(), AssignedTo.All, toSet( [] ) ),
             ParticipantStatus.Companion,
             new Participation( UUID.Companion.randomUUID() ),
             Participation.Companion,
             studyInvitation,
             StudyInvitation.Companion,
-            DeploymentServiceRequest.Companion,
-            ParticipationServiceRequest.Companion,
+            [ "DeploymentServiceRequest", new DeploymentServiceRequest.Stop( UUID.Companion.randomUUID() ) ],
+            [ "ParticipationServiceRequest", new ParticipationServiceRequest.GetParticipantData( UUID.Companion.randomUUID() ) ]
         ]
 
         const moduleVerifier = new VerifyModule( 'carp.core-kotlin-carp.deployments.core', instances )

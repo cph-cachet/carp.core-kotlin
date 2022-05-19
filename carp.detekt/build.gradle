@@ -1,20 +1,16 @@
 group = 'dk.cachet.carp.detekt'
 
-repositories {
-    mavenCentral()
-}
-
 apply {
     plugin("kotlin")
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
     implementation "io.gitlab.arturbosch.detekt:detekt-api:${versions.detektPlugin}"
 
     testImplementation "io.gitlab.arturbosch.detekt:detekt-test:${versions.detektPlugin}"
-    testImplementation "org.jetbrains.kotlin:kotlin-test"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:${versions.kotlin}"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit5:${versions.kotlin}"
 }
 
 test {

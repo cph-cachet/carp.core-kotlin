@@ -1,7 +1,7 @@
 package dk.cachet.carp.protocols.domain.deployment
 
 import dk.cachet.carp.common.application.data.DataType
-import dk.cachet.carp.common.application.devices.AnyDeviceDescriptor
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.protocols.domain.StudyProtocol
 
@@ -16,7 +16,7 @@ class UnexpectedMeasuresWarning internal constructor() : DeploymentWarning
     /**
      * Holds an unexpected [measure] which at some point in the [StudyProtocol] may be sent to [device].
      */
-    data class UnexpectedMeasure( val device: AnyDeviceDescriptor, val measure: Measure )
+    data class UnexpectedMeasure( val device: AnyDeviceConfiguration, val measure: Measure )
 
     override val description: String =
         "The study protocol contains measures that are requested on a device for which the requested data type is not expected." +

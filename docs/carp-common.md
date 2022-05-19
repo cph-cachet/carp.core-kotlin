@@ -9,16 +9,15 @@ which subsequently get passed to the deployments and clients subsystem.
 `DataType`s are identified by a given _name_ within a _namespace_ and prescribe the data contained within each data point when measured.
 When a data type describes data over the course of a time interval, the time interval is stored within the header (shared by all data types) and not in data-type specific data.
 
-All of the built-in data types belong to the namespace: **dk.cachet.carp**.
+All the built-in data types belong to the namespace: **dk.cachet.carp**.
 
 | Name | Description |
 | --- | --- |
-| [freeformtext](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/FreeFormText.kt) | Text of which the interpretation is left up to the specific application. |
 | [geolocation](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Geolocation.kt) | Geographic location data, representing longitude and latitude. |
 | [stepcount](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/StepCount.kt) | The number of steps a participant has taken in a specified time interval. |
 | [ecg](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/ECG.kt) | Electrocardiogram data of a single lead. |
 | [heartrate](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/HeartRate.kt) | Number of heart contractions (beats) per minute. |
-| [rrinterval](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/RRInterval.kt) | The time interval between two consecutive heartbeats (R-R interval). |
+| [interbeatinterval](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/InterbeatInterval.kt) | The time interval between two consecutive heartbeats. |
 | [sensorskincontact](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/SensorSkinContact.kt) | Whether a sensor requiring contact with skin is making proper contact at a specific point in time. |
 | [nongravitationalacceleration](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/NonGravitationalAcceleration.kt) | Acceleration excluding gravity along perpendicular x, y, and z axes. |
 | [angularvelocity](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/AngularVelocity.kt) | Rate of rotation around perpendicular x, y, and z axes. |
@@ -26,14 +25,14 @@ All of the built-in data types belong to the namespace: **dk.cachet.carp**.
 | [triggeredtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/TriggeredTask.kt) | A task which was started or stopped by a trigger, referring to identifiers in the study protocol. |
 | [completedtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/CompletedTask.kt) | An interactive task which was completed over the course of a specified time interval. |
 
-## Device descriptors
+## Device configurations
 
-| Class | Master | Description |
+| Class | Primary | Description |
 | --- | :---: | --- |
 | [Smartphone](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/Smartphone.kt) | Yes | An internet-connected phone with built-in sensors. |
 | [AltBeacon](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt) | | A beacon meeting the open AltBeacon standard. |
 | [BLEHeartRateDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/BLEHeartRateDevice.kt) | | A Bluetooth device which implements a Heart Rate service. |
-| [CustomProtocolDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/CustomProtocolDevice.kt) | Yes | A master device which uses a single `CustomProtocolTask` to determine how to run a study on the device. |
+| [CustomProtocolDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/CustomProtocolDevice.kt) | Yes | A primary device which uses a single `CustomProtocolTask` to determine how to run a study on the device. |
 
 ## Sampling schemes and configurations
 
@@ -43,11 +42,11 @@ From sampling _schemes_, matching sampling _configurations_ can be created.
 Per data type, only one `SamplingConfiguration` is ever active on a device.
 The sampling configuration to be used is determined on clients in order of priority:
 
-1. The sampling configuration, if specified in the study protocol, of the `Measure.DataStream` in the last triggered _active_ `TaskDescriptor`. 
+1. The sampling configuration, if specified in the study protocol, of the `Measure.DataStream` in the last triggered _active_ `TaskConfiguration`. 
    Once a task stops, it is no longer "active".
-2. The default sampling configuration, if specified in the study protocol, for the `DeviceDescriptor`.
-   This can be retrieved through `MasterDeviceDeployment` on the client.
-3. The default sampling configuration hardcoded in the `Sensors` sampling schemes of the concrete `DeviceDescriptor`, if none of the previous configurations are present.
+2. The default sampling configuration, if specified in the study protocol, for the `DeviceConfiguration`.
+   This can be retrieved through `PrimaryDeviceDeployment` on the client.
+3. The default sampling configuration hardcoded in the `Sensors` sampling schemes of the concrete `DeviceConfiguration`, if none of the previous configurations are present.
 
 Some sampling schemes support specifying a different sampling configuration depending on how much battery is left,
 indicated by the "Battery-aware" column.
@@ -60,7 +59,7 @@ These extend from [BatteryAwareSampling](../carp.common/src/commonMain/kotlin/dk
 | [IntervalSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/IntervalSampling.kt) | | Specify a time interval in between subsequent measurements. |
 | [NoOptionsSampling](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/sampling/NoOptionsSampling.kt) | | Does not allow any sampling configuration. |
 
-## Tasks
+## Task configurations
 
 | Class | Description |
 | --- | --- |
@@ -68,7 +67,7 @@ These extend from [BatteryAwareSampling](../carp.common/src/commonMain/kotlin/dk
 | [CustomProtocolTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/CustomProtocolTask.kt) | Contains a definition on how to run tasks, measures, and triggers which differs from the CARP domain model. |
 | [WebTask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/tasks/WebTask.kt) | Redirects to a web page which contains the task which needs to be performed. |
 
-## Triggers
+## Trigger configurations
 
 | Class | Description |
 | --- | --- |

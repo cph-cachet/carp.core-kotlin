@@ -26,10 +26,10 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     polymorphic( Data::class )
     {
         // DataType classes.
+        subclass( Acceleration::class )
         subclass( AngularVelocity::class )
         subclass( CompletedTask::class )
         subclass( ECG::class )
-        subclass( FreeFormText::class )
         subclass( Geolocation::class )
         subclass( HeartRate::class )
         subclass( NonGravitationalAcceleration::class )
@@ -37,7 +37,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         // https://github.com/Kotlin/kotlinx.serialization/issues/1138#issuecomment-707989920
         // This can likely be removed once we upgrade to the new IR backend.
         subclass( NoData::class, NoData.serializer() )
-        subclass( RRInterval::class, RRInterval.serializer() )
+        subclass( InterbeatInterval::class, InterbeatInterval.serializer() )
         subclass( SignalStrength::class )
         subclass( SensorSkinContact::class )
         subclass( StepCount::class )
@@ -61,27 +61,27 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 
 
     // `devices` namespace.
-    fun PolymorphicModuleBuilder<AnyMasterDeviceDescriptor>.registerMasterDeviceDescriptorSubclasses()
+    fun PolymorphicModuleBuilder<AnyPrimaryDeviceConfiguration>.registerPrimaryDeviceConfigurationSubclasses()
     {
         subclass( CustomProtocolDevice::class )
         subclass( Smartphone::class )
 
-        subclass( CustomMasterDeviceDescriptor::class )
+        subclass( CustomPrimaryDeviceConfiguration::class )
     }
-    polymorphic( DeviceDescriptor::class )
+    polymorphic( DeviceConfiguration::class )
     {
         subclass( AltBeacon::class )
         subclass( BLEHeartRateDevice::class )
-        registerMasterDeviceDescriptorSubclasses()
+        registerPrimaryDeviceConfigurationSubclasses()
 
-        subclass( CustomDeviceDescriptor::class )
-        default { DeviceDescriptorSerializer }
+        subclass( CustomDeviceConfiguration::class )
+        default { DeviceConfigurationSerializer }
     }
-    polymorphic( MasterDeviceDescriptor::class )
+    polymorphic( PrimaryDeviceConfiguration::class )
     {
-        registerMasterDeviceDescriptorSubclasses()
+        registerPrimaryDeviceConfigurationSubclasses()
 
-        default { MasterDeviceDescriptorSerializer }
+        default { PrimaryDeviceConfigurationSerializer }
     }
     polymorphic( DeviceRegistration::class )
     {
@@ -114,26 +114,26 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 
 
     // `tasks` namespace.
-    polymorphic( TaskDescriptor::class )
+    polymorphic( TaskConfiguration::class )
     {
         subclass( BackgroundTask::class )
         subclass( CustomProtocolTask::class )
         subclass( WebTask::class )
 
-        subclass( CustomTaskDescriptor::class )
-        default { TaskDescriptorSerializer }
+        subclass( CustomTaskConfiguration::class )
+        default { TaskConfigurationSerializer }
     }
 
 
     // `triggers` namespace.
-    polymorphic( Trigger::class )
+    polymorphic( TriggerConfiguration::class )
     {
         subclass( ElapsedTimeTrigger::class )
         subclass( ManualTrigger::class )
         subclass( ScheduledTrigger::class )
 
-        subclass( CustomTrigger::class )
-        default { TriggerSerializer }
+        subclass( CustomTriggerConfiguration::class )
+        default { TriggerConfigurationSerializer }
     }
 
 
@@ -148,7 +148,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
 /**
  * Name of the class descriptor property for polymorphic serialization.
  */
-const val CLASS_DISCRIMINATOR: String = "\$type"
+const val CLASS_DISCRIMINATOR: String = "__type"
 
 /**
  * A default CARP infrastructure serializer capable of serializing all [dk.cachet.carp.common] types.

@@ -7,11 +7,15 @@ complexity:
 formatting:
   Filename:
     active: false
+  Indentation:
+    active: false
   MaximumLineLength:
     active: false
   NoConsecutiveBlankLines:
     active: false
   NoLineBreakAfterElse:
+    active: false
+  NoUnusedImports:
     active: false
   NoWildcardImports:
     active: false
@@ -24,6 +28,8 @@ formatting:
 
 naming:
   MemberNameEqualsClassName:
+    active: false
+  TopLevelPropertyNaming:
     active: false
 
 performance:
@@ -60,7 +66,7 @@ style:
   WildcardImport:
     # TODO: Consider deactivating this. The advantages of forcing individual types to be imported are limited.
     #       Namespaces are supposed to be cohesive sets of objects, thus importing them as a group makes sense.
-    excludes: ''
+    excludes: []
     excludeImports: ['kotlin.reflect.*', 'kotlin.test.*']
 
 verify-implementation:
@@ -78,6 +84,7 @@ verify-implementation:
       - 'kotlin.sequences.Sequence'
       - 'kotlinx.serialization.KSerializer'
       - 'kotlinx.serialization.modules.SerializersModuleCollector'
+      - 'kotlinx.datetime.Clock'
   Immutable:
     active: true
     excludes: *verify-implementation-excludes

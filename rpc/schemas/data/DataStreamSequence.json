@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "dataStream": { "$ref": "DataStreamId.json" },
+    "firstSequenceId": { "type": "integer", "minimum": 0 },
+    "measurements": {
+      "description": "Measurements in this sequence. All data types of measurement data needs to correspond to data type of `dataStream`.",
+      "type": "array",
+      "items": { "$ref": "Measurement.json" }
+    },
+    "triggerIds": {
+      "type": "array",
+      "items": { "type": "integer" },
+      "minItems": 1
+    },
+    "syncPoint": { "$ref": "SyncPoint.json" }
+  },
+  "required": [ "dataStream", "firstSequenceId", "measurements", "triggerIds" ],
+  "additionalProperties": false
+}

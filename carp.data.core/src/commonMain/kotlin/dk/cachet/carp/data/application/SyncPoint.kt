@@ -1,6 +1,5 @@
 package dk.cachet.carp.data.application
 
-import dk.cachet.carp.common.application.toEpochMicroseconds
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
@@ -8,7 +7,7 @@ import kotlin.js.JsExport
 
 
 /**
- * Information about a sensor clock at [synchronizedOn] on a master device
+ * Information about a sensor clock at [synchronizedOn] on a primary device
  * which allows converting sensor time to number of microseconds since the Unix epoch.
  *
  * The required units/sign to carry out this conversion are determined by the formula:
@@ -18,14 +17,14 @@ import kotlin.js.JsExport
 @JsExport
 data class SyncPoint(
     /**
-     * The UTC time as measured on the master device when it determined the synchronization point.
+     * The UTC time as measured on the primary device when it determined the synchronization point.
      */
     val synchronizedOn: Instant,
     /**
      * The sensor time at [synchronizedOn].
      */
     @Required
-    val sensorTimestampAtSyncPoint: Long = synchronizedOn.toEpochMicroseconds(),
+    val sensorTimestampAtSyncPoint: Long,
     /**
      * The relative clock speed of UTC time compared to the sensor clock,
      * calculated as the variation of UTC time divided by the variation of sensor time.
@@ -42,7 +41,7 @@ data class SyncPoint(
          * The default [SyncPoint] for sensors which return timestamps as number of microseconds since the Unix epoch.
          * Applying this [SyncPoint] to timestamps is a no-op.
          */
-        val UnixEpoch: SyncPoint = SyncPoint( Instant.fromEpochSeconds( 0 ) )
+        val UnixEpoch: SyncPoint = SyncPoint( Instant.fromEpochSeconds( 0 ), 0 )
     }
 }
 

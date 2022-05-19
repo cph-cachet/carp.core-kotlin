@@ -13,7 +13,7 @@ import kotlinx.serialization.encoding.encodeStructure
 /**
  * A serializer which supports registering [Enum]s as subclasses in polymorphic serialization when class discriminators are used.
  * When class discriminators are used, an enum is not encoded as a structure which the class discriminator can be added to.
- * An exception is thrown when initializing [Json]: "Serializer for <enum> of kind ENUM cannot be serialized polymorphically with class discriminator."
+ * An exception is thrown when initializing Json: "Serializer for <enum> of kind ENUM cannot be serialized polymorphically with class discriminator."
  * This serializer encodes the enum as a structure with a single `value` holding the enum value.
  *
  * Use this serializer to register the enum in the serializers module, e.g.:

@@ -1,29 +1,35 @@
 package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.StudyProtocolRepository
+import kotlinx.datetime.Clock
 
 
 /**
  * Implementation of [ProtocolService] which allows managing (multiple versions of) [StudyProtocolSnapshot]'s,
  * which can be instantiated locally through [StudyProtocol].
  */
-class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : ProtocolService
+class ProtocolServiceHost(
+    private val repository: StudyProtocolRepository,
+    private val clock: Clock = Clock.System
+) : ProtocolService
 {
     /**
      * Add the specified study [protocol].
      *
      * @param versionTag An optional label used to identify this first version of the [protocol]. "Initial" by default.
      * @throws IllegalArgumentException when:
-     *   - [protocol] already exists
+     *   - a [protocol] with the same id already exists
+     *   - a different [protocol] with the same owner and name in the latest version already exists
      *   - [protocol] is invalid
      */
     override suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String )
     {
         val initializedProtocol = StudyProtocol.fromSnapshot( protocol )
-        repository.add( initializedProtocol, ProtocolVersion( versionTag ) )
+        repository.add( initializedProtocol, ProtocolVersion( versionTag, clock.now() ) )
     }
 
     /**
@@ -33,13 +39,14 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
      * @param versionTag An optional unique label used to identify this specific version of the [protocol]. The current date/time by default.
      * @throws IllegalArgumentException when:
      *   - [protocol] is not yet stored in the repository
+     *   - a different [protocol] with the same owner and name in the latest version already exists
      *   - [protocol] is invalid
      *   - the [versionTag] is already in use
      */
     override suspend fun addVersion( protocol: StudyProtocolSnapshot, versionTag: String )
     {
         val initializedProtocol = StudyProtocol.fromSnapshot( protocol )
-        repository.addVersion( initializedProtocol, ProtocolVersion( versionTag ) )
+        repository.addVersion( initializedProtocol, ProtocolVersion( versionTag, clock.now() ) )
     }
 
     /**
@@ -48,13 +55,13 @@ class ProtocolServiceHost( private val repository: StudyProtocolRepository ) : P
      *
      * @throws IllegalArgumentException when:
      *   - no protocol with [protocolId] is found
-     *   - [expectedParticipantData] contains two or more attributes with the same input type.
+     *   - [expectedParticipantData] contains differing [ParticipantAttribute]s with the same input data type
      * @return The updated [StudyProtocolSnapshot].
      */
     override suspend fun updateParticipantDataConfiguration(
         protocolId: UUID,
         versionTag: String,
-        expectedParticipantData: Set<ParticipantAttribute>
+        expectedParticipantData: Set<ExpectedParticipantData>
     ): StudyProtocolSnapshot
     {
         val protocol = repository.getByOrThrow( protocolId, versionTag )

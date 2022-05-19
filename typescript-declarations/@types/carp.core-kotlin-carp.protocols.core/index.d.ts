@@ -9,11 +9,15 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
     import { dk as cdk } from 'carp.core-kotlin-carp.common'
     import UUID = cdk.cachet.carp.common.application.UUID
-    import DeviceDescriptor = cdk.cachet.carp.common.application.devices.DeviceDescriptor
+    import DeviceConfiguration = cdk.cachet.carp.common.application.devices.DeviceConfiguration
     import ParticipantAttribute = cdk.cachet.carp.common.application.users.ParticipantAttribute
-    import TaskDescriptor = cdk.cachet.carp.common.application.tasks.TaskDescriptor
+    import ParticipantRole = cdk.cachet.carp.common.application.users.ParticipantRole
+    import ExpectedParticipantData = cdk.cachet.carp.common.application.users.ExpectedParticipantData
+    import TaskConfiguration = cdk.cachet.carp.common.application.tasks.TaskConfiguration
     import TaskControl = cdk.cachet.carp.common.application.triggers.TaskControl
-    import Trigger = cdk.cachet.carp.common.application.triggers.Trigger
+    import TriggerConfiguration = cdk.cachet.carp.common.application.triggers.TriggerConfiguration
+    import ApplicationServiceRequest = cdk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
+    import ApiVersion = cdk.cachet.carp.common.application.services.ApiVersion
 
 
     namespace dk.cachet.carp.protocols.application
@@ -42,29 +46,15 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             readonly ownerId: UUID
             readonly name: string
             readonly description: string
-            readonly masterDevices: HashSet<DeviceDescriptor>
-            readonly tasks: HashSet<TaskDescriptor>
-            readonly triggers: HashMap<Number, Trigger>
+            readonly primaryDevices: HashSet<DeviceConfiguration>
+            readonly tasks: HashSet<TaskConfiguration>
+            readonly triggers: HashMap<number, TriggerConfiguration>
             readonly taskControls: Set<TaskControl>
-            readonly expectedParticipantData: HashSet<ParticipantAttribute>
+            readonly participantRoles: Set<ParticipantRole>
+            readonly assignedDevices: HashMap<string, Set<string>>
+            readonly expectedParticipantData: HashSet<ExpectedParticipantData>
         }
         interface StudyProtocolSnapshot$Companion { serializer(): any }
-    }
-
-
-    namespace dk.cachet.carp.protocols.domain
-    {
-        import UUID = cdk.cachet.carp.common.application.UUID
-
-        class ProtocolOwner
-        {
-            constructor( id?: UUID )
-
-            static get Companion(): ProtocolOwner$Companion
-
-            readonly id: UUID
-        }
-        interface ProtocolOwner$Companion { serializer(): any }
     }
 
 
@@ -73,11 +63,12 @@ declare module 'carp.core-kotlin-carp.protocols.core'
         import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
         
-        abstract class ProtocolServiceRequest
+        abstract class ProtocolServiceRequest implements ApplicationServiceRequest
         {
-            static get Companion(): ProtocolServiceRequest$Companion
+            readonly apiVersion: ApiVersion
+
+            static get Serializer(): any
         }
-        interface ProtocolServiceRequest$Companion { serializer(): any }
 
         namespace ProtocolServiceRequest
         {
@@ -91,7 +82,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
             }
             class UpdateParticipantDataConfiguration extends ProtocolServiceRequest
             {
-                constructor( protocolId: UUID, versionTag: string, expectedParticipantData: HashSet<ParticipantAttribute> )
+                constructor( protocolId: UUID, versionTag: string, expectedParticipantData: HashSet<ExpectedParticipantData> )
             }
             class GetBy extends ProtocolServiceRequest
             {
@@ -108,11 +99,12 @@ declare module 'carp.core-kotlin-carp.protocols.core'
         }
 
 
-        abstract class ProtocolFactoryServiceRequest
+        abstract class ProtocolFactoryServiceRequest implements ApplicationServiceRequest
         {
-            static get Companion(): ProtocolFactoryServiceRequest$Companion
+            readonly apiVersion: ApiVersion
+
+            static get Serializer(): any
         }
-        interface ProtocolFactoryServiceRequest$Companion { serializer(): any }
 
         namespace ProtocolFactoryServiceRequest
         {

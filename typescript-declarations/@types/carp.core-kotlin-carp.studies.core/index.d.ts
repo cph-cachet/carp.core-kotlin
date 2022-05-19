@@ -11,6 +11,9 @@ declare module 'carp.core-kotlin-carp.studies.core'
     import EmailAddress = cdk.cachet.carp.common.application.EmailAddress
     import UUID = cdk.cachet.carp.common.application.UUID
     import AccountIdentity = cdk.cachet.carp.common.application.users.AccountIdentity
+    import AssignedTo = cdk.cachet.carp.common.application.users.AssignedTo
+    import ApplicationServiceRequest = cdk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
+    import ApiVersion = cdk.cachet.carp.common.application.services.ApiVersion
 
     import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
     import StudyDeploymentStatus = ddk.cachet.carp.deployments.application.StudyDeploymentStatus
@@ -22,13 +25,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
     namespace dk.cachet.carp.studies.application
     {
-        import StudyOwner = dk.cachet.carp.studies.application.users.StudyOwner
-
-
         class StudyDetails
         {
             constructor(
-                studyId: UUID, studyOwner: StudyOwner, name: string, createdOn: Instant,
+                studyId: UUID, ownerId: UUID, name: string, createdOn: Instant,
                 description: string | null,
                 invitation: StudyInvitation,
                 protocolSnapshot: StudyProtocolSnapshot | null )
@@ -36,7 +36,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             static get Companion(): StudyDetails$Companion
 
             readonly studyId: UUID
-            readonly studyOwner: StudyOwner
+            readonly ownerId: UUID
             readonly name: string
             readonly createdOn: Instant
             readonly description: string | null
@@ -51,6 +51,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             readonly studyId: UUID
             readonly name: string
             readonly createdOn: Instant
+            readonly studyProtocolId: UUID | null
             readonly canSetInvitation: boolean
             readonly canSetStudyProtocol: boolean
             readonly canDeployToParticipants: boolean
@@ -64,7 +65,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
             class Configuring extends StudyStatus
             {
                 constructor(
-                    studyId: UUID, name: string, createdOn: Instant,
+                    studyId: UUID,
+                    name: string,
+                    createdOn: Instant,
+                    studyProtocolId: UUID | null,
                     canSetInvitation: boolean,
                     canSetStudyProtocol: boolean,
                     canDeployToParticipants: boolean,
@@ -75,7 +79,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
             class Live extends StudyStatus
             {
                 constructor(
-                    studyId: UUID, name: string, createdOn: Instant,
+                    studyId: UUID,
+                    name: string,
+                    createdOn: Instant,
+                    studyProtocolId: UUID | null,
                     canSetInvitation: boolean,
                     canSetStudyProtocol: boolean,
                     canDeployToParticipants: boolean )
@@ -86,18 +93,18 @@ declare module 'carp.core-kotlin-carp.studies.core'
 
     namespace dk.cachet.carp.studies.application.users
     {
-        class AssignParticipantDevices
+        class AssignedParticipantRoles
         {
-            constructor( participantId: UUID, masterDeviceRoleNames: HashSet<string> )
+            constructor( participantId: UUID, assignedRoles: AssignedTo )
 
-            static get Companion(): AssignParticipantDevices$Companion
+            static get Companion(): AssignedParticipantRoles$Companion
 
             readonly participantId: UUID
-            readonly masterDeviceRoleNames: HashSet<string>
+            readonly assignedRoles: AssignedTo
         }
-        function participantIds_ttprz$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<UUID>
-        function deviceRoles_ttprz$( assignedGroup: ArrayList<AssignParticipantDevices> ): HashSet<string>
-        interface AssignParticipantDevices$Companion { serializer(): any }
+        function participantIds_skpkn2$( assignedGroup: ArrayList<AssignedParticipantRoles> ): HashSet<UUID>
+        function participantRoles_skpkn2$( assignedGroup: ArrayList<AssignedParticipantRoles> ): HashSet<string>
+        interface AssignedParticipantRoles$Companion { serializer(): any }
 
 
         class Participant
@@ -165,37 +172,26 @@ declare module 'carp.core-kotlin-carp.studies.core'
                 readonly stoppedOn: Instant
             }
         }
-
-
-        class StudyOwner
-        {
-            constructor( id?: UUID )
-
-            static get Companion(): StudyOwner$Companion
-
-            readonly id: UUID
-        }
-        interface StudyOwner$Companion { serializer(): any }
     }
 
 
     namespace dk.cachet.carp.studies.infrastructure
     {
-        import AssignParticipantDevices = dk.cachet.carp.studies.application.users.AssignParticipantDevices
-        import StudyOwner = dk.cachet.carp.studies.application.users.StudyOwner
+        import AssignedParticipantRoles = dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 
 
-        abstract class StudyServiceRequest
+        abstract class StudyServiceRequest implements ApplicationServiceRequest
         {
-            static get Companion(): StudyServiceRequest$Companion
+            readonly apiVersion: ApiVersion
+
+            static get Serializer(): any
         }
-        interface StudyServiceRequest$Companion { serializer(): any }
 
         namespace StudyServiceRequest
         {
             class CreateStudy extends StudyServiceRequest
             {
-                constructor( owner: StudyOwner, name: string, description?: string | null, invitation?: StudyInvitation )
+                constructor( ownerId: UUID, name: string, description?: string | null, invitation?: StudyInvitation | null )
             }
             class SetInternalDescription extends StudyServiceRequest
             {
@@ -211,7 +207,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             }
             class GetStudiesOverview extends StudyServiceRequest
             {
-                constructor( owner: StudyOwner )
+                constructor( ownerId: UUID )
             }
             class SetInvitation extends StudyServiceRequest
             {
@@ -220,6 +216,10 @@ declare module 'carp.core-kotlin-carp.studies.core'
             class SetProtocol extends StudyServiceRequest
             {
                 constructor( studyId: UUID, protocol: StudyProtocolSnapshot )
+            }
+            class RemoveProtocol extends StudyServiceRequest
+            {
+                constructor( studyId: UUID )
             }
             class GoLive extends StudyServiceRequest
             {
@@ -232,11 +232,12 @@ declare module 'carp.core-kotlin-carp.studies.core'
         }
 
 
-        abstract class RecruitmentServiceRequest
+        abstract class RecruitmentServiceRequest implements ApplicationServiceRequest
         {
-            static get Companion(): RecruitmentServiceRequest$Companion
+            readonly apiVersion: ApiVersion
+
+            static get Serializer(): any
         }
-        interface RecruitmentServiceRequest$Companion { serializer(): any }
 
         namespace RecruitmentServiceRequest
         {
@@ -254,7 +255,7 @@ declare module 'carp.core-kotlin-carp.studies.core'
             }
             class InviteNewParticipantGroup extends RecruitmentServiceRequest
             {
-                constructor( studyId: UUID, group: HashSet<AssignParticipantDevices> )
+                constructor( studyId: UUID, group: HashSet<AssignedParticipantRoles> )
             }
             class GetParticipantGroupStatusList extends RecruitmentServiceRequest
             {

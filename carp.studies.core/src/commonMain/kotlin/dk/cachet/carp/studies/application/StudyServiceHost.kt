@@ -1,12 +1,13 @@
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.UUIDFactory
 import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.studies.application.users.StudyOwner
 import dk.cachet.carp.studies.domain.Study
 import dk.cachet.carp.studies.domain.StudyRepository
+import kotlinx.datetime.Clock
 
 
 /**
@@ -14,20 +15,22 @@ import dk.cachet.carp.studies.domain.StudyRepository
  */
 class StudyServiceHost(
     private val repository: StudyRepository,
-    private val eventBus: ApplicationServiceEventBus<StudyService, StudyService.Event>
+    private val eventBus: ApplicationServiceEventBus<StudyService, StudyService.Event>,
+    private val uuidFactory: UUIDFactory = UUID.Companion,
+    private val clock: Clock = Clock.System
 ) : StudyService
 {
     /**
-     * Create a new study for the specified [owner].
+     * Create a new study for the entity (e.g., person or group) with [ownerId].
      */
     override suspend fun createStudy(
-        owner: StudyOwner,
+        ownerId: UUID,
         /**
-         * A descriptive name for the study, assigned by, and only visible to, the [owner].
+         * A descriptive name for the study, assigned by, and only visible to, the entity with [ownerId].
          */
         name: String,
         /**
-         * An optional description of the study, assigned by, and only visible to, the [owner].
+         * An optional description of the study, assigned by, and only visible to, the entity with [ownerId].
          */
         description: String?,
         /**
@@ -38,7 +41,7 @@ class StudyServiceHost(
     ): StudyStatus
     {
         val ensuredInvitation = invitation ?: StudyInvitation( name )
-        val study = Study( owner, name, description, ensuredInvitation )
+        val study = Study( ownerId, name, description, ensuredInvitation, uuidFactory.randomUUID(), clock.now() )
 
         repository.add( study )
         eventBus.publish( StudyService.Event.StudyCreated( study.getStudyDetails() ) )
@@ -47,15 +50,15 @@ class StudyServiceHost(
     }
 
     /**
-     * Set study details which are visible only to the [StudyOwner].
+     * Set study details which are visible only to the study owner.
      *
      * @param studyId The id of the study to update the study details for.
      * @param name A descriptive name for the study.
-     * @param description A description of the study.
+     * @param description A description of the study; null to remove description.
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
-    override suspend fun setInternalDescription( studyId: UUID, name: String, description: String ): StudyStatus
+    override suspend fun setInternalDescription( studyId: UUID, name: String, description: String? ): StudyStatus
     {
         val study = repository.getById( studyId )
         requireNotNull( study )
@@ -96,10 +99,10 @@ class StudyServiceHost(
     }
 
     /**
-     * Get status for all studies created by the specified [owner].
+     * Get status for all studies created by the entity (e.g. person or group) with the specified [ownerId].
      */
-    override suspend fun getStudiesOverview( owner: StudyOwner ): List<StudyStatus> =
-        repository.getForOwner( owner ).map { it.getStatus() }
+    override suspend fun getStudiesOverview( ownerId: UUID ): List<StudyStatus> =
+        repository.getForOwner( ownerId ).map { it.getStatus() }
 
     /**
      * Specify an [invitation], shared with participants once they are invited to the study with the specified [studyId].
@@ -121,9 +124,9 @@ class StudyServiceHost(
      * Specify the study [protocol] to use for the study with the specified [studyId].
      *
      * @throws IllegalArgumentException when:
-     *   - a study with [studyId] does not exist
-     *   - the provided [protocol] snapshot is invalid
-     *   - the [protocol] contains errors preventing it from being used in deployments
+     *  - a study with [studyId] does not exist
+     *  - the provided [protocol] snapshot is invalid
+     *  - the [protocol] contains errors preventing it from being used in deployments
      * @throws IllegalStateException when the study protocol can no longer be set since the study went 'live'.
      */
     override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus
@@ -133,6 +136,23 @@ class StudyServiceHost(
 
         // Configure study to use the protocol.
         study.protocolSnapshot = protocol
+        repository.update( study )
+
+        return study.getStatus()
+    }
+
+    /**
+     * Remove the currently set study protocol for the study with the specified [studyId].
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     * @throws IllegalStateException when the study protocol can no longer be set since the study went 'live'.
+     */
+    override suspend fun removeProtocol( studyId: UUID ): StudyStatus
+    {
+        val study: Study? = repository.getById( studyId )
+        requireNotNull( study )
+
+        study.protocolSnapshot = null
         repository.update( study )
 
         return study.getStatus()

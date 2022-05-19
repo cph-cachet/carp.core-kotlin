@@ -7,8 +7,8 @@ import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.createComplexParticipantGroup
 import dk.cachet.carp.deployments.domain.studyDeploymentFor
 import dk.cachet.carp.protocols.domain.StudyProtocol
-import dk.cachet.carp.protocols.infrastructure.test.createSingleMasterDeviceProtocol
-import dk.cachet.carp.test.runSuspendTest
+import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
+import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 
 
@@ -27,9 +27,9 @@ interface ParticipationRepositoryTest
 
 
     @Test
-    fun getParticipations_succeeds() = runSuspendTest {
+    fun getParticipations_succeeds() = runTest {
         val repo = createRepository()
-        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        val protocol: StudyProtocol = createSinglePrimaryDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         val group = ParticipantGroup.fromNewDeployment( deployment )
 
@@ -37,13 +37,13 @@ interface ParticipationRepositoryTest
         val account = Account.withEmailIdentity( "test@test.com" )
         val participation = Participation( deployment.id )
         val invitation = StudyInvitation( "Some study" )
-        group.addParticipation( account, invitation, participation, protocol.masterDevices )
+        group.addParticipation( account, invitation, participation, protocol.primaryDevices )
         repo.putParticipantGroup( group )
 
         val expectedInvitations = setOf(
             AccountParticipation(
                 participation,
-                protocol.masterDevices.map { it.roleName }.toSet(),
+                protocol.primaryDevices.map { it.roleName }.toSet(),
                 account.id,
                 invitation
             )
@@ -53,7 +53,7 @@ interface ParticipationRepositoryTest
     }
 
     @Test
-    fun getParticipations_is_empty_when_no_participations() = runSuspendTest {
+    fun getParticipations_is_empty_when_no_participations() = runTest {
         val repo = createRepository()
 
         val invitations = repo.getParticipationInvitations( unknownId )
@@ -61,7 +61,7 @@ interface ParticipationRepositoryTest
     }
 
     @Test
-    fun putParticipantGroup_and_retrieving_it_succeeds() = runSuspendTest {
+    fun putParticipantGroup_and_retrieving_it_succeeds() = runTest {
         val repo = createRepository()
 
         val group = createComplexParticipantGroup()
@@ -74,16 +74,16 @@ interface ParticipationRepositoryTest
     }
 
     @Test
-    fun getParticipantGroup_is_null_when_not_found() = runSuspendTest {
+    fun getParticipantGroup_is_null_when_not_found() = runTest {
         val repo = createRepository()
 
         assertNull( repo.getParticipantGroup( unknownId ) )
     }
 
     @Test
-    fun getParticipantGroupList_succeeds() = runSuspendTest {
+    fun getParticipantGroupList_succeeds() = runTest {
         val repo = createRepository()
-        val protocol: StudyProtocol = createSingleMasterDeviceProtocol()
+        val protocol: StudyProtocol = createSinglePrimaryDeviceProtocol()
 
         val deployment1 = studyDeploymentFor( protocol )
         val group1 = ParticipantGroup.fromNewDeployment( deployment1 )
@@ -101,7 +101,7 @@ interface ParticipationRepositoryTest
     }
 
     @Test
-    fun getParticipantGroupList_is_empty_when_no_matches() = runSuspendTest {
+    fun getParticipantGroupList_is_empty_when_no_matches() = runTest {
         val repo = createRepository()
 
         val groups = repo.getParticipantGroupList( setOf( unknownId ) )
@@ -109,7 +109,7 @@ interface ParticipationRepositoryTest
     }
 
     @Test
-    fun putParticipant_returns_the_previously_stored_group() = runSuspendTest {
+    fun putParticipant_returns_the_previously_stored_group() = runTest {
         val repo = createRepository()
         val group = createComplexParticipantGroup()
 
@@ -122,7 +122,7 @@ interface ParticipationRepositoryTest
     }
 
     @Test
-    fun removeParticipantGroups_succeeds() = runSuspendTest {
+    fun removeParticipantGroups_succeeds() = runTest {
         val repo = createRepository()
         val group1 = createComplexParticipantGroup()
         val group2 = createComplexParticipantGroup()
@@ -137,7 +137,7 @@ interface ParticipationRepositoryTest
     }
 
     @Test
-    fun removeParticipantGroups_ignores_unknown_ids() = runSuspendTest {
+    fun removeParticipantGroups_ignores_unknown_ids() = runTest {
         val repo = createRepository()
         val group = createComplexParticipantGroup()
         repo.putParticipantGroup( group )

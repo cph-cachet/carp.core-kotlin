@@ -76,7 +76,7 @@ fun getIndentSize( element: PsiElement ): Int
 }
 
 /**
- * Get the element preceding the given [element], regardless of whether or not it is owned by a different parent.
+ * Get the element preceding the given [element], regardless of whether it is owned by a different parent.
  *
  * @return The preceding element, or null when there is no preceding element.
  */
@@ -96,7 +96,7 @@ fun getPrecedingElement( element: PsiElement ): PsiElement?
 }
 
 /**
- * Get the element succeeding the given [element], regardless of whether or not it is owned by a different parent.
+ * Get the element succeeding the given [element], regardless of whether it is owned by a different parent.
  *
  * @return The next element, or null when there is no next element.
  */

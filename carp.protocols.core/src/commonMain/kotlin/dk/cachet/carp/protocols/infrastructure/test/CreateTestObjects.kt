@@ -1,19 +1,22 @@
 package dk.cachet.carp.protocols.infrastructure.test
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.application.triggers.TaskControl
+import dk.cachet.carp.common.application.users.AssignedTo
+import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
+import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
-import dk.cachet.carp.common.infrastructure.test.StubDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubMasterDeviceDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubTaskDescriptor
-import dk.cachet.carp.common.infrastructure.test.StubTrigger
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_TYPE
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
-import dk.cachet.carp.protocols.domain.ProtocolOwner
+import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
+import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
+import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.protocols.domain.StudyProtocol
 
 
@@ -25,33 +28,33 @@ fun createEmptyProtocol( name: String = "Test protocol" ): StudyProtocol
 {
     JSON = createDefaultJSON( STUBS_SERIAL_MODULE )
 
-    val alwaysSameOwner = ProtocolOwner( UUID( "27879e75-ccc1-4866-9ab3-4ece1b735052" ) )
-    return StudyProtocol( alwaysSameOwner, name, "Test description" )
+    val alwaysSameOwnerId = UUID( "27879e75-ccc1-4866-9ab3-4ece1b735052" )
+    return StudyProtocol( alwaysSameOwnerId, name, "Test description" )
 }
 
 /**
- * Creates a study protocol with a single master device.
+ * Creates a study protocol with a single primary device.
  */
-fun createSingleMasterDeviceProtocol( masterDeviceName: String = "Master" ): StudyProtocol
+fun createSinglePrimaryDeviceProtocol( primaryDeviceName: String = "Primary" ): StudyProtocol
 {
     val protocol = createEmptyProtocol()
-    val master = StubMasterDeviceDescriptor( masterDeviceName )
-    protocol.addMasterDevice( master )
+    val primary = StubPrimaryDeviceConfiguration( primaryDeviceName )
+    protocol.addPrimaryDevice( primary )
     return protocol
 }
 
 /**
- * Creates a study protocol with a single master device which has a single connected device.
+ * Creates a study protocol with a single primary device which has a single connected device.
  */
-fun createSingleMasterWithConnectedDeviceProtocol(
-    masterDeviceName: String = "Master",
+fun createSinglePrimaryWithConnectedDeviceProtocol(
+    primaryDeviceName: String = "Primary",
     connectedDeviceName: String = "Connected"
 ): StudyProtocol
 {
     val protocol = createEmptyProtocol()
-    val master = StubMasterDeviceDescriptor( masterDeviceName )
-    protocol.addMasterDevice( master )
-    protocol.addConnectedDevice( StubDeviceDescriptor( connectedDeviceName ), master )
+    val primary = StubPrimaryDeviceConfiguration( primaryDeviceName )
+    protocol.addPrimaryDevice( primary )
+    protocol.addConnectedDevice( StubDeviceConfiguration( connectedDeviceName ), primary )
     return protocol
 }
 
@@ -61,22 +64,37 @@ fun createSingleMasterWithConnectedDeviceProtocol(
 fun createComplexProtocol(): StudyProtocol
 {
     val protocol = createEmptyProtocol()
-    val masterDevice = StubMasterDeviceDescriptor()
-    val connectedDevice = StubDeviceDescriptor()
-    val chainedMasterDevice = StubMasterDeviceDescriptor( "Chained master" )
-    val chainedConnectedDevice = StubDeviceDescriptor( "Chained connected" )
-    val trigger = StubTrigger( connectedDevice )
-    val measures = listOf( Measure.DataStream( STUB_DATA_TYPE ) )
-    val task = StubTaskDescriptor( "Task", measures )
-    val expectedParticipantData = ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) )
+    val primaryDevice = StubPrimaryDeviceConfiguration()
+    val connectedDevice = StubDeviceConfiguration()
+    val chainedPrimaryDevice = StubPrimaryDeviceConfiguration( "Chained primary" )
+    val chainedConnectedDevice = StubDeviceConfiguration( "Chained connected" )
+    val trigger = StubTriggerConfiguration( connectedDevice )
+    val measures = listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) )
+    val task = StubTaskConfiguration( "Task", measures )
+    val mainRole = ParticipantRole( "Role", false )
+    val optionalRole = ParticipantRole( "Optional role", true )
+    val commonExpectedData =
+        ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( InputDataType( "some", "type" ) ),
+            AssignedTo.All
+        )
+    val mainRoleData =
+        ExpectedParticipantData(
+            ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX ),
+            AssignedTo.Roles( setOf( mainRole.role ) )
+        )
     with ( protocol )
     {
-        addMasterDevice( masterDevice )
-        addConnectedDevice( connectedDevice, masterDevice )
-        addConnectedDevice( chainedMasterDevice, masterDevice )
-        addConnectedDevice( chainedConnectedDevice, chainedMasterDevice )
-        addTaskControl( trigger, task, masterDevice, TaskControl.Control.Start )
-        addExpectedParticipantData( expectedParticipantData )
+        addPrimaryDevice( primaryDevice )
+        addConnectedDevice( connectedDevice, primaryDevice )
+        addConnectedDevice( chainedPrimaryDevice, primaryDevice )
+        addConnectedDevice( chainedConnectedDevice, chainedPrimaryDevice )
+        addTaskControl( trigger, task, primaryDevice, TaskControl.Control.Start )
+        addParticipantRole( mainRole )
+        addParticipantRole( optionalRole )
+        changeDeviceAssignment( primaryDevice, AssignedTo.Roles( setOf( mainRole.role ) ) )
+        addExpectedParticipantData( commonExpectedData )
+        addExpectedParticipantData( mainRoleData )
     }
 
     return protocol
