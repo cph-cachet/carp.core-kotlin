@@ -83,8 +83,8 @@ configure( subprojects - devOpsModules ) {
             }
         }
         js(IR) {
-            binaries.executable()
             browser()
+            binaries.executable() // On Kotlin 1.6.10, this seems to be needed to generate TypeScript files.
         }
 
         sourceSets {
@@ -127,6 +127,15 @@ configure( subprojects - devOpsModules ) {
     // Treat compilation warning as errors for all compilation targets.
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         kotlinOptions { allWarningsAsErrors = true }
+    }
+
+    // Generate separate JS files per module: https://youtrack.jetbrains.com/issue/KT-44319
+    // TODO: Remove when upgrading to Kotlin 1.6.20, as it becomes the default:
+    //  https://kotlinlang.org/docs/whatsnew1620.html#separate-js-files-for-project-modules-by-default-with-ir-compiler
+    tasks.withType(org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile).configureEach {
+        kotlinOptions {
+            freeCompilerArgs += "-Xir-per-module"
+        }
     }
 
     // Publish configuration.
@@ -242,12 +251,12 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
     // Compile all subprojects which compile to JS.
     // TODO: Can the compiled sources be copied from the tasks of which we want to test the output directly?
     //  We only need main sources of coreModules and commonModules since these are the only ones tested.
-    //  But, only adding dependencies on those triggers warnings since other outputs exist in `/build//js/packages`.
+    //  But, only adding dependencies on those triggers warnings since other outputs exist in `/build/js/packages`.
     def projects = subprojects - devOpsModules
     projects.each {
         def project = it.name
-        dependsOn("$project:jsBrowserDistribution")
-        dependsOn("$project:compileTestKotlinJs")
+        dependsOn("$project:jsProductionExecutableCompileSync")
+        dependsOn("$project:jsTestTestProductionExecutableCompileSync")
     }
 
     // Copy compiled sources and dependencies to test project node_modules.
