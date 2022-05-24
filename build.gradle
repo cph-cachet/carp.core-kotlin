@@ -244,10 +244,6 @@ task setupTsProject(type: NpmTask) {
     args = ['install']
 }
 task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
-    // Make sure no old imported packages are left behind.
-    def importedPackages = file("$rootDir/build/js/packages_imported")
-    if (importedPackages.exists()) importedPackages.eachFile { it.delete() }
-
     // Compile all subprojects which compile to JS.
     // TODO: Can the compiled sources be copied from the tasks of which we want to test the output directly?
     //  We only need main sources of coreModules and commonModules since these are the only ones tested.
@@ -259,18 +255,26 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
         dependsOn("$project:jsTestTestProductionExecutableCompileSync")
     }
 
-    // Copy compiled sources and dependencies to test project node_modules.
-    from "$rootDir/build/js/packages"
-    exclude '**/node_modules/**'
-    from(importedPackages) {
-        eachFile {
-            def path = it.path
-            if (path == ".visited") return // We don't need this file.
+    // Copy compiled sources and dependencies to test project's node_modules.
+    from("$rootDir/build/js/packages") {
+        include "**/*.js"
+        include "**/*.d.ts"
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        includeEmptyDirs = false
+        eachFile { file ->
+            // Compiled sources have the name of the module they represent, followed by ".js" and ".d.ts".
+            // To be recognized by node, place them as "index.js" and "index.d.ts" in "node_modules/<module-name>".
+            def fileMatch = file.name =~ /(.+)\.(js|d\.ts)/
+            def fileName = fileMatch[0][1]
+            def extension = fileMatch[0][2]
+            file.relativePath = new RelativePath(true, fileName, "index.$extension")
 
-            // Remove intermediate version directory: e.g. "kotlin/1.5.10/kotlin.js"
-            it.path = path.replaceFirst(/\d+\.\d+.\d+\//, "")
+            // Compiled sources refer to other modules as adjacent .js source files.
+            // Change these to the named modules created in the previous step.
+            file.filter { line -> line.replaceAll(~/'\.\/(.+?)\.js'/, "'\$1'") }
         }
     }
+    exclude '**/node_modules/**'
     into "./$typescriptFolder/node_modules"
 }
 task compileTs(type: NpmTask, dependsOn: copyTestJsSources) {
