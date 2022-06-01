@@ -1,5 +1,4 @@
 @file:Suppress( "WildcardImport" )
-@file:JsExport
 
 package dk.cachet.carp.common.application.devices
 
@@ -23,6 +22,7 @@ typealias SmartphoneDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder
  * An internet-connected phone with built-in sensors.
  */
 @Serializable
+@JsExport
 data class Smartphone(
     override val roleName: String,
     override val isOptional: Boolean = false,

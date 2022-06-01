@@ -1,5 +1,3 @@
-@file:JsExport
-
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.UUID
@@ -15,6 +13,7 @@ import kotlin.js.JsExport
  * The base class can't be made concrete since this would prevent being able to serialize extending types (constructors may not contain parameters which are not properties).
  */
 @Serializable
+@JsExport
 data class DefaultDeviceRegistration(
     @Required
     override val deviceDisplayName: String? = null,

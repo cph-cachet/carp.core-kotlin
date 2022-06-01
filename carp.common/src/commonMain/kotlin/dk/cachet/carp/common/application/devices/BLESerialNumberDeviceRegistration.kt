@@ -1,5 +1,3 @@
-@file:JsExport
-
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
@@ -14,6 +12,7 @@ import kotlin.js.JsExport
  * to uniquely identify the device.
  */
 @Serializable
+@JsExport
 data class BLESerialNumberDeviceRegistration(
     val serialNumber: String,
     @Required

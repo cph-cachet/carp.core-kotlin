@@ -1,5 +1,3 @@
-@file:JsExport
-
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.data.DataTypeMetaData
@@ -12,6 +10,7 @@ import kotlin.reflect.KClass
 /**
  * A sampling scheme which changes based on how much battery the device has left.
  */
+@JsExport
 abstract class BatteryAwareSamplingScheme<
     TConfig : SamplingConfiguration,
     TBuilder : SamplingConfigurationBuilder<TConfig>
@@ -75,6 +74,7 @@ abstract class BatteryAwareSamplingScheme<
  * A sampling configuration which changes based on how much battery the device has left.
  */
 @Serializable
+@JsExport
 data class BatteryAwareSamplingConfiguration<TConfig : SamplingConfiguration>(
     /**
      * The sampling configuration to use when there is plenty of battery left.

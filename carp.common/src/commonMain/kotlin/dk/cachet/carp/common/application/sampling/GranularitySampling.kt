@@ -60,7 +60,6 @@ data class GranularitySamplingConfiguration( val granularity: Granularity ) : Sa
  * A helper class to configure and construct immutable [GranularitySamplingConfiguration] objects
  * as part of setting up a [DeviceConfiguration].
  */
-@JsExport
 class GranularitySamplingConfigurationBuilder( var granularity: Granularity ) :
     SamplingConfigurationBuilder<GranularitySamplingConfiguration>
 {

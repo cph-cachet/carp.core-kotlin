@@ -1,5 +1,3 @@
-@file:JsExport
-
 package dk.cachet.carp.common.application.tasks
 
 import dk.cachet.carp.common.application.data.NoData
@@ -17,6 +15,7 @@ import kotlin.time.Duration
  * TODO: Outputs are not yet specified.
  */
 @Serializable
+@JsExport
 data class BackgroundTask(
     override val name: String,
     override val measures: List<Measure> = emptyList(),

@@ -1,5 +1,3 @@
-@file:JsExport
-
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.MACAddress
@@ -13,6 +11,7 @@ import kotlin.js.JsExport
  * A [DeviceRegistration] for devices which have a MAC address.
  */
 @Serializable
+@JsExport
 data class MACAddressDeviceRegistration(
     val macAddress: MACAddress,
     @Required

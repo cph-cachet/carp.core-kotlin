@@ -8,6 +8,7 @@ import dk.cachet.carp.common.application.devices.DeviceConfigurationBuilder
 import dk.cachet.carp.common.application.devices.DeviceConfigurationBuilderDsl
 import kotlinx.serialization.Polymorphic
 import kotlin.js.JsExport
+import kotlin.js.JsName
 
 
 /**

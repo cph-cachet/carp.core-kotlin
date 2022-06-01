@@ -1,5 +1,3 @@
-@file:JsExport
-
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.Trilean
@@ -21,6 +19,7 @@ import kotlin.reflect.KClass
  * A beacon meeting the open AltBeacon standard.
  */
 @Serializable
+@JsExport
 data class AltBeacon(
     override val roleName: String,
     override val isOptional: Boolean = false,
@@ -53,6 +52,7 @@ data class AltBeacon(
  * The beacon ID is 20 bytes, made up out of the recommended subdivision [organizationId], [majorId], and [minorId].
  */
 @Serializable
+@JsExport
 data class AltBeaconDeviceRegistration(
     /**
      * The beacon device manufacturer's company identifier code as maintained by the Bluetooth SIG assigned numbers database.

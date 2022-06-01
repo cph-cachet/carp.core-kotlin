@@ -123,7 +123,6 @@ typealias DeviceType = KClass<out AnyDeviceConfiguration>
  * A helper class to configure and construct immutable [DeviceConfiguration] classes.
  */
 @DeviceConfigurationBuilderDsl
-@JsExport
 abstract class DeviceConfigurationBuilder<TSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilder>
 {
     private var samplingConfigurationBuilder: TSamplingConfigurationMapBuilder.() -> Unit = { }

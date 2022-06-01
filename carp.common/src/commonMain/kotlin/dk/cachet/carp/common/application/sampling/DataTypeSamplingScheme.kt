@@ -1,5 +1,3 @@
-@file:JsExport
-
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.EnumObjectMap
@@ -12,6 +10,7 @@ import kotlin.js.JsExport
 /**
  * Specifies the sampling scheme for a [DataType], including possible options, defaults, and constraints.
  */
+@JsExport
 abstract class DataTypeSamplingScheme<TConfigBuilder : SamplingConfigurationBuilder<*>>(
     /**
      * Information about the data type this sampling scheme relates to.

@@ -244,37 +244,34 @@ task setupTsProject(type: NpmTask) {
     args = ['install']
 }
 task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
-    // Compile all subprojects which compile to JS.
-    // TODO: Can the compiled sources be copied from the tasks of which we want to test the output directly?
-    //  We only need main sources of coreModules and commonModules since these are the only ones tested.
-    //  But, only adding dependencies on those triggers warnings since other outputs exist in `/build/js/packages`.
+    // Compile production sources for all subprojects that compile to JS.
     def projects = subprojects - devOpsModules
     projects.each {
         def project = it.name
         dependsOn("$project:jsProductionExecutableCompileSync")
-        dependsOn("$project:jsTestTestProductionExecutableCompileSync")
     }
 
-    // Copy compiled sources and dependencies to test project's node_modules.
-    from("$rootDir/build/js/packages") {
+    // Copy compiled JS and TypeScript sources to test project's node_modules.
+    from("$rootDir/build/js/packages/carp.core-kotlin-publish-npm-packages") {
         include "**/*.js"
-        include "**/*.d.ts"
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        includeEmptyDirs = false
-        eachFile { file ->
-            // Compiled sources have the name of the module they represent, followed by ".js" and ".d.ts".
-            // To be recognized by node, place them as "index.js" and "index.d.ts" in "node_modules/<module-name>".
-            def fileMatch = file.name =~ /(.+)\.(js|d\.ts)/
-            def fileName = fileMatch[0][1]
-            def extension = fileMatch[0][2]
-            file.relativePath = new RelativePath(true, fileName, "index.$extension")
-
-            // Compiled sources refer to other modules as adjacent .js source files.
-            // Change these to the named modules created in the previous step.
-            file.filter { line -> line.replaceAll(~/'\.\/(.+?)\.js'/, "'\$1'") }
-        }
     }
-    exclude '**/node_modules/**'
+    from("$rootDir/build/js/packages") {
+        // Use individually generated TypeScript declarations to exclude publish-npm-packages exports.
+        include "**/*.d.ts"
+        includeEmptyDirs = false
+    }
+    eachFile { file ->
+        // Compiled sources have the name of the module they represent, followed by ".js" and ".d.ts".
+        // To be recognized by node, place them as "index.js" and "index.d.ts" in "node_modules/<module-name>".
+        def fileMatch = file.name =~ /(.+)\.(js|d\.ts)/
+        def fileName = fileMatch[0][1]
+        def extension = fileMatch[0][2]
+        file.relativePath = new RelativePath(true, fileName, "index.$extension")
+
+        // Compiled sources refer to other modules as adjacent .js source files.
+        // Change these to the named modules created in the previous step.
+        file.filter { line -> line.replaceAll(~/'\.\/(.+?)\.js'/, "'\$1'") }
+    }
     into "./$typescriptFolder/node_modules"
 }
 task compileTs(type: NpmTask, dependsOn: copyTestJsSources) {

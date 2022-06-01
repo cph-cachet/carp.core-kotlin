@@ -1,7 +1,10 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application.users
 
 import dk.cachet.carp.common.application.data.input.InputDataType
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 
 /**

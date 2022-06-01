@@ -1,5 +1,3 @@
-@file:JsExport
-
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.data.DataTypeMetaData
@@ -13,6 +11,7 @@ import kotlin.time.Duration
 /**
  * Sampling scheme which allows configuring a time interval in between subsequent measurements.
  */
+@JsExport
 class IntervalSamplingScheme( dataType: DataTypeMetaData, val defaultMeasureInterval: Duration ) :
     DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>(
         dataType,
@@ -30,6 +29,7 @@ class IntervalSamplingScheme( dataType: DataTypeMetaData, val defaultMeasureInte
  * A sampling configuration which allows configuring the time [interval] in between subsequent measurements.
  */
 @Serializable
+@JsExport
 data class IntervalSamplingConfiguration(
     @Serializable( DurationSerializer::class )
     val interval: Duration

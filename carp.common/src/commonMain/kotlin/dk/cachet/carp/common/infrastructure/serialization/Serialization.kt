@@ -14,6 +14,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.*
+import kotlin.js.JsExport
 
 
 /**
@@ -161,6 +162,7 @@ var JSON: Json = createDefaultJSON()
  * This ensures a global configuration on how serialization should occur.
  * Additional types the serializer needs to be aware about (such as polymorph extending classes) should be registered through [module].
  */
+@JsExport
 fun createDefaultJSON( module: SerializersModule? = null ): Json
 {
     val jsonSerializersModule = if ( module == null ) COMMON_SERIAL_MODULE else COMMON_SERIAL_MODULE + module
