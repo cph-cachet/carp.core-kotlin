@@ -26,8 +26,18 @@ class EnumObjectMapTest
     @Test
     fun can_enumerate_and_access_interface_members()
     {
-        val supportedTypes = SupportedTypes.map { it.key }
-        assertEquals( listOf( GeolocationType.typeName ), supportedTypes )
+        // Keys can be enumerated.
+        assertEquals( setOf( GeolocationType.typeName ), SupportedTypes.keys )
+
+        // Maps can be merged.
+        val additionalType = object : DataType { override val typeName: String = "additional-type" }
+        val additionalTypes =
+            object : EnumObjectMap<String, DataType>( { type -> type.typeName } )
+            {
+                val ADDITIONAL_TYPE = add( additionalType )
+            }
+        val mergedMap: Map<String, DataType> = SupportedTypes + additionalTypes
+        assertEquals( setOf( GeolocationType.typeName, additionalType.typeName ), mergedMap.keys )
     }
 
     @Test
