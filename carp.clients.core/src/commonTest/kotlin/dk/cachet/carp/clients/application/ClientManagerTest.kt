@@ -1,8 +1,17 @@
-package dk.cachet.carp.clients.domain
+package dk.cachet.carp.clients.application
 
-import dk.cachet.carp.clients.application.ClientManager
 import dk.cachet.carp.clients.application.study.StudyStatus
+import dk.cachet.carp.clients.connectedDevice
+import dk.cachet.carp.clients.createDataCollectorFactory
+import dk.cachet.carp.clients.createDependentSmartphoneStudy
+import dk.cachet.carp.clients.createSmartphoneStudy
+import dk.cachet.carp.clients.createSmartphoneWithConnectedDeviceStudy
+import dk.cachet.carp.clients.createStudyDeployment
+import dk.cachet.carp.clients.deviceSmartphoneDependsOn
+import dk.cachet.carp.clients.domain.DeviceRegistrationStatus
+import dk.cachet.carp.clients.domain.SmartphoneClient
 import dk.cachet.carp.clients.infrastructure.InMemoryClientRepository
+import dk.cachet.carp.clients.smartphone
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.deployments.application.DeploymentService
 import kotlinx.coroutines.test.runTest
