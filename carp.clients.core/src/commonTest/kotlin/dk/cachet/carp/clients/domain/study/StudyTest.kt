@@ -234,6 +234,7 @@ class StudyTest
         val running = deployment.getStatus()
         study.deploymentStatusReceived( running )
 
+        assertTrue( running is StudyDeploymentStatus.Running )
         assertEquals(
             StudyStatus.Running( study.id, running, deviceDeployment ),
             study.getStatus()
@@ -268,6 +269,7 @@ class StudyTest
         val running = deployment.getStatus()
         study.deploymentStatusReceived( running )
 
+        assertTrue( running is StudyDeploymentStatus.Running )
         assertEquals(
             StudyStatus.Running( study.id, running, deployment.getDeviceDeploymentFor( device ) ),
             study.getStatus()
