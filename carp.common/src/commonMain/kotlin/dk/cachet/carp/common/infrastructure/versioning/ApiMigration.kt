@@ -27,11 +27,9 @@ abstract class ApiMigration( val minimumMinorVersion: Int, val targetMinorVersio
     abstract fun migrateResponse( request: JsonObject, response: ApiResponse, targetVersion: ApiVersion ): ApiResponse
     abstract fun migrateEvent( event: JsonObject ): JsonObject
 
-    protected fun JsonElement.replaceString( oldValue: String, newValue: String ): JsonPrimitive
-    {
-        require( this is JsonPrimitive && this.isString )
-        return JsonPrimitive( content.replace( oldValue, newValue ) )
-    }
+    protected fun JsonObject.migrate( builder: ApiMigrationBuilder.() -> Unit ): JsonObject =
+        ApiMigrationBuilder( this, minimumMinorVersion, targetMinorVersion )
+            .apply( builder ).build()
 }
 
 
@@ -48,24 +46,26 @@ class ApiResponse( val response: JsonElement?, val ex: Exception? )
 }
 
 
-/**
- * An [ApiMigration] which does not require any changes to JSON, other than updating the API version.
- */
-class UnchangedMigration( minimumMinorVersion: Int, targetMinorVersion: Int ) :
-    ApiMigration( minimumMinorVersion, targetMinorVersion )
+class ApiMigrationBuilder( jsonObject: Map<String, JsonElement>, minimumMinorVersion: Int, targetMinorVersion: Int )
 {
-    override fun migrateRequest( request: JsonObject ): JsonObject = updateVersion( request )
-    override fun migrateResponse( request: JsonObject, response: ApiResponse, targetVersion: ApiVersion ): ApiResponse =
-        response
-    override fun migrateEvent( event: JsonObject ): JsonObject = updateVersion( event )
+    private val json: MutableMap<String, JsonElement> = jsonObject.toMutableMap()
 
-    private fun updateVersion( toUpdate: JsonObject ) = toUpdate
-        .map {
-            if ( it.key == API_VERSION_FIELD )
-            {
-                it.key to it.value.replaceString( ".$minimumMinorVersion", ".$targetMinorVersion" )
-            }
-            else it.key to it.value
+    init
+    {
+        // When API version is included, it always needs to be migrated.
+        val version: JsonElement? = json[ API_VERSION_FIELD ]
+        if ( version != null )
+        {
+            json[ API_VERSION_FIELD ] = version.replaceString( ".$minimumMinorVersion", ".$targetMinorVersion" )
         }
-        .let { fields -> JsonObject( fields.toMap() ) }
+    }
+
+
+    private fun JsonElement.replaceString( oldValue: String, newValue: String ): JsonPrimitive
+    {
+        require( this is JsonPrimitive && this.isString )
+        return JsonPrimitive( content.replace( oldValue, newValue ) )
+    }
+
+    fun build(): JsonObject = JsonObject( json.toMap() )
 }
