@@ -13,6 +13,7 @@ import kotlinx.serialization.Serializable
 data class RecruitmentSnapshot(
     override val id: UUID,
     override val createdOn: Instant,
+    override val version: Int,
     val studyId: UUID,
     val studyProtocol: StudyProtocolSnapshot?,
     val invitation: StudyInvitation?,
@@ -23,9 +24,9 @@ data class RecruitmentSnapshot(
     companion object
     {
         /**
-         * Create a snapshot of the specified [recruitment].
+         * Create a snapshot of the specified [recruitment] using the specified snapshot [version].
          */
-        fun fromParticipantRecruitment( recruitment: Recruitment ): RecruitmentSnapshot
+        fun fromParticipantRecruitment( recruitment: Recruitment, version: Int ): RecruitmentSnapshot
         {
             val status = recruitment.getStatus()
             var studyProtocol: StudyProtocolSnapshot? = null
@@ -40,6 +41,7 @@ data class RecruitmentSnapshot(
             return RecruitmentSnapshot(
                 recruitment.id,
                 recruitment.createdOn,
+                version,
                 recruitment.studyId,
                 studyProtocol,
                 invitation,

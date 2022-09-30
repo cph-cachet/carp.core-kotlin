@@ -9,7 +9,7 @@
     { "$ref": "#/$defs/GetVersionHistoryFor" }
   ],
   "$defs": {
-    "ApiVersion": { "const": "1.0" },
+    "ApiVersion": { "const": "1.1" },
     "Add": {
       "$anchor": "Add",
       "type": "object",

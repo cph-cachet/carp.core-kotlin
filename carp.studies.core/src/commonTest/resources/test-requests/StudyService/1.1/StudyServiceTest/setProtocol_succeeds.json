@@ -1,0 +1,115 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.CreateStudy",
+            "apiVersion": "1.1",
+            "ownerId": "98fe56a7-debe-4be1-9b34-5efc2a3cd5c6",
+            "name": "Test"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+            {
+                "__type": "dk.cachet.carp.studies.application.StudyService.Event.StudyCreated",
+                "aggregateId": "00000000-0000-0000-0000-000000000001",
+                "apiVersion": "1.1",
+                "study": {
+                    "studyId": "00000000-0000-0000-0000-000000000001",
+                    "ownerId": "98fe56a7-debe-4be1-9b34-5efc2a3cd5c6",
+                    "name": "Test",
+                    "createdOn": "1970-01-01T00:00:00Z",
+                    "description": null,
+                    "invitation": {
+                        "name": "Test"
+                    },
+                    "protocolSnapshot": null
+                }
+            }
+        ],
+        "response": {
+            "__type": "dk.cachet.carp.studies.application.StudyStatus.Configuring",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "name": "Test",
+            "createdOn": "1970-01-01T00:00:00Z",
+            "studyProtocolId": null,
+            "canSetInvitation": true,
+            "canSetStudyProtocol": true,
+            "canDeployToParticipants": false,
+            "canGoLive": false
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.SetProtocol",
+            "apiVersion": "1.1",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "protocol": {
+                "id": "d2d3186d-2a60-43db-966b-f2b0a2e4c730",
+                "createdOn": "2022-10-04T10:37:26.214553800Z",
+                "version": 0,
+                "ownerId": "46cb70e1-bea8-4547-b43d-92af218837f2",
+                "name": "Test protocol",
+                "primaryDevices": [
+                    {
+                        "__type": "dk.cachet.carp.common.application.devices.Smartphone",
+                        "isPrimaryDevice": true,
+                        "roleName": "User's phone"
+                    }
+                ]
+            }
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+            "__type": "dk.cachet.carp.studies.application.StudyStatus.Configuring",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "name": "Test",
+            "createdOn": "1970-01-01T00:00:00Z",
+            "studyProtocolId": "d2d3186d-2a60-43db-966b-f2b0a2e4c730",
+            "canSetInvitation": true,
+            "canSetStudyProtocol": true,
+            "canDeployToParticipants": false,
+            "canGoLive": true
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.GetStudyDetails",
+            "apiVersion": "1.1",
+            "studyId": "00000000-0000-0000-0000-000000000001"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "ownerId": "98fe56a7-debe-4be1-9b34-5efc2a3cd5c6",
+            "name": "Test",
+            "createdOn": "1970-01-01T00:00:00Z",
+            "description": null,
+            "invitation": {
+                "name": "Test"
+            },
+            "protocolSnapshot": {
+                "id": "d2d3186d-2a60-43db-966b-f2b0a2e4c730",
+                "createdOn": "2022-10-04T10:37:26.214553800Z",
+                "version": 0,
+                "ownerId": "46cb70e1-bea8-4547-b43d-92af218837f2",
+                "name": "Test protocol",
+                "primaryDevices": [
+                    {
+                        "__type": "dk.cachet.carp.common.application.devices.Smartphone",
+                        "isPrimaryDevice": true,
+                        "roleName": "User's phone"
+                    }
+                ]
+            }
+        }
+    }
+]

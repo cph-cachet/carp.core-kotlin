@@ -118,6 +118,7 @@ class StudyProtocolSnapshotTest
         val snapshot = StudyProtocolSnapshot(
             protocolId,
             createdOn,
+            0,
             ownerId,
             name,
             description,
@@ -128,6 +129,7 @@ class StudyProtocolSnapshotTest
         val reorganizedSnapshot = StudyProtocolSnapshot(
             protocolId,
             createdOn,
+            0,
             ownerId,
             name,
             description,
@@ -180,6 +182,7 @@ class StudyProtocolSnapshotTest
         val correctSnapshot = StudyProtocolSnapshot(
             UUID.randomUUID(),
             Clock.System.now(),
+            0,
             UUID.randomUUID(),
             "Name",
             "Description",

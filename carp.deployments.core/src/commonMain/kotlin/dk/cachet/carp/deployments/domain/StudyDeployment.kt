@@ -120,6 +120,7 @@ class StudyDeployment private constructor(
 
             // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
             deployment.consumeEvents()
+            deployment.wasLoadedFromSnapshot( snapshot )
 
             return deployment
         }
@@ -496,7 +497,8 @@ class StudyDeployment private constructor(
 
 
     /**
-     * Get a serializable snapshot of the current state of this [StudyDeployment].
+     * Get an immutable snapshot of the current state of this [StudyDeployment] using the specified snapshot [version].
      */
-    override fun getSnapshot(): StudyDeploymentSnapshot = StudyDeploymentSnapshot.fromDeployment( this )
+    override fun getSnapshot( version: Int ): StudyDeploymentSnapshot =
+        StudyDeploymentSnapshot.fromDeployment( this, version )
 }

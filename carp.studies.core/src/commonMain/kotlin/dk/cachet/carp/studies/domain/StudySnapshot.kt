@@ -12,6 +12,7 @@ import kotlinx.serialization.Serializable
 data class StudySnapshot(
     override val id: UUID,
     override val createdOn: Instant,
+    override val version: Int,
     val ownerId: UUID,
     val name: String,
     val description: String? = null,
@@ -23,15 +24,14 @@ data class StudySnapshot(
     companion object
     {
         /**
-         * Create a snapshot of the specified [Study].
-         *
-         * @param study The [Study] to create a snapshot for.
+         * Create a snapshot of the specified [Study] using the specified snapshot [version].
          */
-        fun fromStudy( study: Study ): StudySnapshot
+        fun fromStudy( study: Study, version: Int ): StudySnapshot
         {
             return StudySnapshot(
                 id = study.id,
                 createdOn = study.createdOn,
+                version = version,
                 ownerId = study.ownerId,
                 name = study.name,
                 description = study.description,

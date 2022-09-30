@@ -18,7 +18,7 @@ import kotlinx.serialization.Serializable
  */
 interface ProtocolService : ApplicationService<ProtocolService, ProtocolService.Event>
 {
-    companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+    companion object { val API_VERSION = ApiVersion( 1, 1 ) }
 
     @Serializable
     sealed class Event : IntegrationEvent<ProtocolService>

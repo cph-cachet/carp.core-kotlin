@@ -16,6 +16,26 @@ abstract class AggregateRoot<TRoot, TSnapshot : Snapshot<TRoot>, TEvent : Domain
     val createdOn: Instant
 )
 {
+    /**
+     * If the aggregate root was loaded from a snapshot, its version; null otherwise.
+     * On repository writes, this value should be used to verify whether the expected version is edited.
+     */
+    var fromSnapshotVersion: Int? = null
+        private set
+
+    /**
+     * Specify that this aggregate root was loaded from [snapshot], which sets [fromSnapshotVersion] accordingly.
+     */
+    fun wasLoadedFromSnapshot( snapshot: TSnapshot )
+    {
+        check( fromSnapshotVersion == null )
+            { "An aggregate root should only be loaded from a snapshot once." }
+        check( events.size == 0 )
+            { "The snapshot an aggregate root was loaded from should be set before executing any operations on it." }
+
+        fromSnapshotVersion = snapshot.version
+    }
+
     private val events: MutableList<TEvent> = mutableListOf()
 
     /**
@@ -40,7 +60,17 @@ abstract class AggregateRoot<TRoot, TSnapshot : Snapshot<TRoot>, TEvent : Domain
     }
 
     /**
-     * Get an immutable snapshot representing the state of this aggregate at this moment in time.
+     * Get an immutable snapshot of the current the state of this aggregate.
      */
-    abstract fun getSnapshot(): TSnapshot
+    fun getSnapshot(): TSnapshot
+    {
+        val curSnapshotVersion = fromSnapshotVersion
+        val newSnapshotVersion = if ( curSnapshotVersion == null ) 0 else curSnapshotVersion + events.size
+        return getSnapshot( newSnapshotVersion )
+    }
+
+    /**
+     * Get an immutable snapshot of the current state of this aggregate using the specified snapshot [version].
+     */
+    protected abstract fun getSnapshot( version: Int ): TSnapshot
 }
