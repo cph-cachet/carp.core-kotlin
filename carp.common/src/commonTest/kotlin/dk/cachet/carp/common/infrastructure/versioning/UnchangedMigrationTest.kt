@@ -8,9 +8,9 @@ import kotlin.test.*
 
 
 /**
- * Tests for [ApiMigration].
+ * Tests for [UnchangedMigration].
  */
-class ApiMigrationTest
+class UnchangedMigrationTest
 {
     @Test
     fun migrateRequest_of_UnchangedMigration_changes_version_number()
