@@ -4,7 +4,7 @@
     { "$ref": "#/$defs/CreateCustomProtocol" }
   ],
   "$defs": {
-    "ApiVersion": { "const": "1.0" },
+    "ApiVersion": { "const": "1.1" },
     "CreateCustomProtocol": {
       "$anchor": "CreateCustomProtocol",
       "type": "object",

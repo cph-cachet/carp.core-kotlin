@@ -140,6 +140,7 @@ class StudyProtocol(
 
             // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
             protocol.consumeEvents()
+            protocol.wasLoadedFromSnapshot( snapshot )
 
             return protocol
         }
@@ -499,7 +500,8 @@ class StudyProtocol(
 
 
     /**
-     * Get a serializable snapshot of the current state of this [StudyProtocol].
+     * Get an immutable snapshot of the current state of this [StudyProtocol] using the specified snapshot [version].
      */
-    override fun getSnapshot(): StudyProtocolSnapshot = StudyProtocolSnapshot.fromProtocol( this )
+    override fun getSnapshot( version: Int ): StudyProtocolSnapshot =
+        StudyProtocolSnapshot.fromProtocol( this, version )
 }

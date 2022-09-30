@@ -23,6 +23,7 @@ import kotlinx.serialization.Serializable
 data class StudyProtocolSnapshot(
     override val id: UUID,
     override val createdOn: Instant,
+    override val version: Int,
     val ownerId: UUID,
     val name: String,
     val description: String? = null,
@@ -49,17 +50,16 @@ data class StudyProtocolSnapshot(
     companion object
     {
         /**
-         * Create a snapshot of the specified [StudyProtocol].
-         *
-         * @param protocol The [StudyProtocol] to create a snapshot for.
+         * Create a snapshot of the specified [StudyProtocol] using the specified snapshot [version].
          */
-        fun fromProtocol( protocol: StudyProtocol ): StudyProtocolSnapshot
+        fun fromProtocol( protocol: StudyProtocol, version: Int ): StudyProtocolSnapshot
         {
             val triggers = protocol.triggers.associate { it.id to it.trigger }
 
             return StudyProtocolSnapshot(
                 id = protocol.id,
                 createdOn = protocol.createdOn,
+                version = version,
                 ownerId = protocol.ownerId,
                 name = protocol.name,
                 description = protocol.description,

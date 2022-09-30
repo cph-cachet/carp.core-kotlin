@@ -13,6 +13,7 @@ import kotlinx.serialization.Serializable
 data class StudySnapshot(
     override val id: UUID,
     override val createdOn: Instant,
+    override val version: Int,
     val studyDeploymentId: UUID,
     val deviceRoleName: String,
     val deploymentStatus: StudyDeploymentStatus?,
@@ -21,7 +22,10 @@ data class StudySnapshot(
 {
     companion object
     {
-        fun fromStudy( study: Study ): StudySnapshot
+        /**
+         * Create a snapshot of the specified [study] using the specified snapshot [version].
+         */
+        fun fromStudy( study: Study, version: Int ): StudySnapshot
         {
             val status = study.getStatus()
             val deploymentInformation: PrimaryDeviceDeployment? =
@@ -35,6 +39,7 @@ data class StudySnapshot(
             return StudySnapshot(
                 study.id,
                 study.createdOn,
+                version,
                 study.studyDeploymentId,
                 study.deviceRoleName,
                 (status as? StudyStatus.DeploymentStatusAvailable)?.deploymentStatus,

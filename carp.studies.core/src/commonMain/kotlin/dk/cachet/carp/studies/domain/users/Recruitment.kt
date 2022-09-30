@@ -43,6 +43,7 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
             snapshot.participants.forEach { recruitment._participants.add( it ) }
             snapshot.participantGroups.forEach { recruitment._participantGroups[ it.key ] = it.value }
 
+            recruitment.wasLoadedFromSnapshot( snapshot )
             return recruitment
         }
     }
@@ -188,7 +189,8 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
     }
 
     /**
-     * Get a serializable snapshot of the current state of this [Recruitment].
+     * Get an immutable snapshot of the current state of this [Recruitment] using the specified snapshot [version].
      */
-    override fun getSnapshot(): RecruitmentSnapshot = RecruitmentSnapshot.fromParticipantRecruitment( this )
+    override fun getSnapshot( version: Int ): RecruitmentSnapshot =
+        RecruitmentSnapshot.fromParticipantRecruitment( this, version )
 }

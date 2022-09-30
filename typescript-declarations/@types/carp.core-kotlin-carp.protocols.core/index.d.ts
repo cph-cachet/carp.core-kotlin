@@ -43,6 +43,7 @@ declare module 'carp.core-kotlin-carp.protocols.core'
 
             readonly id: UUID
             readonly createdOn: Instant
+            readonly version: number
             readonly ownerId: UUID
             readonly name: string
             readonly description: string

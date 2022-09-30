@@ -1,0 +1,62 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.CreateStudy",
+            "apiVersion": "1.1",
+            "ownerId": "bf5bc225-a8c4-44fb-93ba-151b1ff25cb2",
+            "name": "Test"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+            {
+                "__type": "dk.cachet.carp.studies.application.StudyService.Event.StudyCreated",
+                "aggregateId": "00000000-0000-0000-0000-000000000001",
+                "apiVersion": "1.1",
+                "study": {
+                    "studyId": "00000000-0000-0000-0000-000000000001",
+                    "ownerId": "bf5bc225-a8c4-44fb-93ba-151b1ff25cb2",
+                    "name": "Test",
+                    "createdOn": "1970-01-01T00:00:00Z",
+                    "description": null,
+                    "invitation": {
+                        "name": "Test"
+                    },
+                    "protocolSnapshot": null
+                }
+            }
+        ],
+        "response": {
+            "__type": "dk.cachet.carp.studies.application.StudyStatus.Configuring",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "name": "Test",
+            "createdOn": "1970-01-01T00:00:00Z",
+            "studyProtocolId": null,
+            "canSetInvitation": true,
+            "canSetStudyProtocol": true,
+            "canDeployToParticipants": false,
+            "canGoLive": false
+        }
+    },
+    {
+        "outcome": "Failed",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.StudyServiceRequest.SetProtocol",
+            "apiVersion": "1.1",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "protocol": {
+                "id": "825b42c4-c37b-4bcc-9cec-f0d91393828f",
+                "createdOn": "2022-10-04T10:37:26.195645500Z",
+                "version": 0,
+                "ownerId": "069dbffd-6907-4ded-b947-209605929f36",
+                "name": "Not deployable"
+            }
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "exceptionType": "IllegalArgumentException"
+    }
+]

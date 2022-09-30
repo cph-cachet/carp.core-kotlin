@@ -14,8 +14,16 @@ import kotlinx.datetime.Instant
 interface Snapshot<TAggregateRoot>
 {
     val id: UUID
+
+    /**
+     * The date when the object represented by this snapshot was created.
+     */
     val createdOn: Instant
 
+    /**
+     * The number of edits made to the object represented by this snapshot, indicating its version number.
+     */
+    val version: Int
 
     /**
      * Load the aggregate root object from this snapshot.

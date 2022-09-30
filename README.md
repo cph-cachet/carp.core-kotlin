@@ -54,6 +54,7 @@ Two key **design goals** differentiate this project from similar projects:
   - [Example](#example)
 - [Building the project](#building-the-project)
   - [Gradle tasks](#gradle-tasks)
+  - [Development checklists](#development-checklists)
 
 ## Architecture
 
@@ -382,3 +383,9 @@ For `carp.core-kotlin`:
   For this to work you need to configure a `publish.properties` file with a signing signature and repository user in the project root folder.
   Preface with `setSnapshotVersion` task to publish to the snapshot repository, substituting the suffix of the version specified in `ext.globalVersion` with `-SNAPSHOT`.
   See main `build.gradle` for details.
+
+### Development checklists
+
+When changes are made to CARP Core, various parts in the codebase sometimes need to be updated accordingly.
+Generally speaking, failing tests will guide you as an attempt was made to catch omissions through automated tests.
+But, recommended workflows for common new features/changes are documented in [development checklists](docs/development-checklists.md).

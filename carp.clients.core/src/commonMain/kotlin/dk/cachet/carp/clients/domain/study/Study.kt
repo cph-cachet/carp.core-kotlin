@@ -38,11 +38,17 @@ class Study(
 
     companion object Factory
     {
-        internal fun fromSnapshot( snapshot: StudySnapshot ): Study =
-            Study( snapshot.studyDeploymentId, snapshot.deviceRoleName, snapshot.id, snapshot.createdOn ).apply {
-                deploymentStatus = snapshot.deploymentStatus
-                deploymentInformation = snapshot.deploymentInformation
-            }
+        internal fun fromSnapshot( snapshot: StudySnapshot ): Study
+        {
+            val study =
+                Study( snapshot.studyDeploymentId, snapshot.deviceRoleName, snapshot.id, snapshot.createdOn ).apply {
+                    deploymentStatus = snapshot.deploymentStatus
+                    deploymentInformation = snapshot.deploymentInformation
+                }
+            study.wasLoadedFromSnapshot( snapshot )
+
+            return study
+        }
     }
 
 
@@ -153,7 +159,7 @@ class Study(
     }
 
     /**
-     * Get a serializable snapshot of the current state of this [Study].
+     * Get an immutable snapshot of the current state of this [Study] using the specified snapshot [version].
      */
-    override fun getSnapshot(): StudySnapshot = StudySnapshot.fromStudy( this )
+    override fun getSnapshot( version: Int ): StudySnapshot = StudySnapshot.fromStudy( this, version )
 }

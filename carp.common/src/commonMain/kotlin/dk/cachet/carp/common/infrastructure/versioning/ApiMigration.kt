@@ -10,6 +10,16 @@ import kotlinx.serialization.json.JsonPrimitive
 
 internal val API_VERSION_FIELD = ApplicationServiceRequest<*, *>::apiVersion.name
 
+/**
+ * Get the class discriminator for this JSON object; or null if no class discriminator is found.
+ */
+fun Map<String, JsonElement>.getType(): String?
+{
+    // TODO: In case `CLASS_DISCRIMINATOR` is ever changed, this can't be hardcoded.
+    val type: JsonElement? = this[ CLASS_DISCRIMINATOR ]
+    return if ( type is JsonPrimitive && type.isString ) type.content else null
+}
+
 
 /**
  * Provides a conversion for request objects, responses, and integration events of API versions starting from
@@ -71,9 +81,7 @@ class ApiMigrationBuilder(
      */
     fun ifType( classDiscriminator: String, migration: ApiMigrationBuilder.() -> Unit )
     {
-        // TODO: In case `CLASS_DISCRIMINATOR` is ever changed, this can't be hardcoded.
-        val type: JsonElement? = json[ CLASS_DISCRIMINATOR ]
-        if ( type != null && type.equalsString( classDiscriminator ) ) apply( migration )
+        if ( json.getType() == classDiscriminator ) apply( migration )
     }
 
     /**
@@ -100,12 +108,6 @@ class ApiMigrationBuilder(
     {
         require( this is JsonPrimitive && this.isString )
         return JsonPrimitive( content.replace( oldValue, newValue ) )
-    }
-
-    private fun JsonElement.equalsString( value: String ): Boolean
-    {
-        require( this is JsonPrimitive && this.isString )
-        return content == value
     }
 
     fun build(): JsonObject = JsonObject( json.toMap() )

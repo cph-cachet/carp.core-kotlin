@@ -99,6 +99,7 @@ class ParticipantGroup private constructor(
                 }
             }
 
+            group.wasLoadedFromSnapshot( snapshot )
             return group
         }
     }
@@ -314,7 +315,8 @@ class ParticipantGroup private constructor(
     }
 
     /**
-     * Get a serializable snapshot of the current state of this [ParticipantGroup].
+     * Get an immutable snapshot of the current state of this [ParticipantGroup] using the specified snapshot [version].
      */
-    override fun getSnapshot(): ParticipantGroupSnapshot = ParticipantGroupSnapshot.fromParticipantGroup( this )
+    override fun getSnapshot( version: Int ): ParticipantGroupSnapshot =
+        ParticipantGroupSnapshot.fromParticipantGroup( this, version )
 }

@@ -18,6 +18,7 @@ import kotlinx.serialization.Serializable
 data class ParticipantGroupSnapshot(
     override val id: UUID,
     override val createdOn: Instant,
+    override val version: Int,
     val studyDeploymentId: UUID,
     val assignedPrimaryDevices: Set<AssignedPrimaryDevice>,
     val isStudyDeploymentStopped: Boolean,
@@ -30,12 +31,13 @@ data class ParticipantGroupSnapshot(
     companion object
     {
         /**
-         * Create a snapshot of the specified participant [group].
+         * Create a snapshot of the specified participant [group] using the specified snapshot [version].
          */
-        fun fromParticipantGroup( group: ParticipantGroup ): ParticipantGroupSnapshot =
+        fun fromParticipantGroup( group: ParticipantGroup, version: Int ): ParticipantGroupSnapshot =
             ParticipantGroupSnapshot(
                 group.id,
                 group.createdOn,
+                version,
                 group.studyDeploymentId,
                 group.assignedPrimaryDevices.toSet(),
                 group.isStudyDeploymentStopped,
