@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.infrastructure.versioning
 
 import dk.cachet.carp.common.application.services.ApiVersion
+import dk.cachet.carp.common.infrastructure.serialization.CLASS_DISCRIMINATOR
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -27,9 +28,9 @@ abstract class ApiMigration( val minimumMinorVersion: Int, val targetMinorVersio
     abstract fun migrateResponse( request: JsonObject, response: ApiResponse, targetVersion: ApiVersion ): ApiResponse
     abstract fun migrateEvent( event: JsonObject ): JsonObject
 
-    protected fun JsonObject.migrate( builder: ApiMigrationBuilder.() -> Unit ): JsonObject =
+    protected fun JsonObject.migrate( migration: ApiMigrationBuilder.() -> Unit ): JsonObject =
         ApiMigrationBuilder( this, minimumMinorVersion, targetMinorVersion )
-            .apply( builder ).build()
+            .apply( migration ).build()
 }
 
 
@@ -46,9 +47,13 @@ class ApiResponse( val response: JsonElement?, val ex: Exception? )
 }
 
 
-class ApiMigrationBuilder( jsonObject: Map<String, JsonElement>, minimumMinorVersion: Int, targetMinorVersion: Int )
+class ApiMigrationBuilder(
+    jsonObject: Map<String, JsonElement>,
+    val minimumMinorVersion: Int,
+    val targetMinorVersion: Int
+)
 {
-    private val json: MutableMap<String, JsonElement> = jsonObject.toMutableMap()
+    val json: MutableMap<String, JsonElement> = jsonObject.toMutableMap()
 
     init
     {
@@ -61,10 +66,46 @@ class ApiMigrationBuilder( jsonObject: Map<String, JsonElement>, minimumMinorVer
     }
 
 
+    /**
+     * Run a [migration] on this object in case it is a polymorphic type identified by [classDiscriminator].
+     */
+    fun ifType( classDiscriminator: String, migration: ApiMigrationBuilder.() -> Unit )
+    {
+        // TODO: In case `CLASS_DISCRIMINATOR` is ever changed, this can't be hardcoded.
+        val type: JsonElement? = json[ CLASS_DISCRIMINATOR ]
+        if ( type != null && type.equalsString( classDiscriminator ) ) apply( migration )
+    }
+
+    /**
+     * Retrieve the object identified by [fieldName] in this object, and run the specified [migration].
+     */
+    fun updateObject( fieldName: String, migration: ApiMigrationBuilder.() -> Unit )
+    {
+        val o = requireNotNull( json[ fieldName ] as? JsonObject )
+        val newJson: JsonObject = ApiMigrationBuilder( o, minimumMinorVersion, targetMinorVersion )
+            .apply( migration ).build()
+        json[ fieldName ] = newJson
+    }
+
+    /**
+     * Copy the value of the field with [fromFieldName] to the field with [toFieldName].
+     */
+    fun copyField( fromFieldName: String, toFieldName: String )
+    {
+        val from = requireNotNull( json[ fromFieldName ] )
+        json[ toFieldName ] = from
+    }
+
     private fun JsonElement.replaceString( oldValue: String, newValue: String ): JsonPrimitive
     {
         require( this is JsonPrimitive && this.isString )
         return JsonPrimitive( content.replace( oldValue, newValue ) )
+    }
+
+    private fun JsonElement.equalsString( value: String ): Boolean
+    {
+        require( this is JsonPrimitive && this.isString )
+        return content == value
     }
 
     fun build(): JsonObject = JsonObject( json.toMap() )
