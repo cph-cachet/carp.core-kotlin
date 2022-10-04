@@ -1,20 +1,18 @@
 package dk.cachet.carp.protocols.infrastructure.versioning
 
 import dk.cachet.carp.common.application.services.ApiVersion
-import dk.cachet.carp.common.infrastructure.versioning.ApiMigration
 import dk.cachet.carp.common.infrastructure.versioning.ApiResponse
 import dk.cachet.carp.common.infrastructure.versioning.ApplicationServiceApiMigrator
+import dk.cachet.carp.common.infrastructure.versioning.Major1Minor0To1Migration
 import dk.cachet.carp.common.infrastructure.versioning.getType
 import dk.cachet.carp.protocols.application.ProtocolFactoryService
 import dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceRequest
 import kotlinx.serialization.json.JsonObject
 
 
-private val addedSnapshotVersionField =
-    object : ApiMigration( 0, 1 )
+private val major1Minor0To1Migration =
+    object : Major1Minor0To1Migration()
     {
-        private val newField = "version"
-
         override fun migrateRequest( request: JsonObject ) = request.migrate { }
 
         override fun migrateResponse(
@@ -26,7 +24,7 @@ private val addedSnapshotVersionField =
             {
                 "dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceRequest.CreateCustomProtocol" ->
                 {
-                    val responseObject = (response.response as? JsonObject)?.migrate { json.remove( newField ) }
+                    val responseObject = (response.response as? JsonObject)?.migrate { removeVersionField() }
                     ApiResponse( responseObject, response.ex )
                 }
                 else -> response
@@ -40,5 +38,5 @@ val ProtocolFactoryServiceApiMigrator = ApplicationServiceApiMigrator(
     ProtocolFactoryService.API_VERSION,
     ProtocolFactoryServiceRequest.Serializer,
     ProtocolFactoryService.Event.serializer(),
-    listOf( addedSnapshotVersionField )
+    listOf( major1Minor0To1Migration )
 )
