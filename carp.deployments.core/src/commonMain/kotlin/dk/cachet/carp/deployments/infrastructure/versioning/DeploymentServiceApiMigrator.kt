@@ -1,23 +1,20 @@
 package dk.cachet.carp.deployments.infrastructure.versioning
 
 import dk.cachet.carp.common.application.services.ApiVersion
-import dk.cachet.carp.common.infrastructure.versioning.ApiMigration
 import dk.cachet.carp.common.infrastructure.versioning.ApiResponse
 import dk.cachet.carp.common.infrastructure.versioning.ApplicationServiceApiMigrator
+import dk.cachet.carp.common.infrastructure.versioning.Major1Minor0To1Migration
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 
 
-private val addedSnapshotVersionField =
-    object : ApiMigration( 0, 1 )
+private val major1Minor0To1Migration =
+    object : Major1Minor0To1Migration()
     {
-        private val newField = "version"
-
         override fun migrateRequest( request: JsonObject ) = request.migrate {
             ifType( "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.CreateStudyDeployment" ) {
-                updateObject( "protocol" ) { json[ newField ] = JsonPrimitive( 0 ) }
+                addVersionField( "protocol" )
             }
         }
 
@@ -25,7 +22,7 @@ private val addedSnapshotVersionField =
 
         override fun migrateEvent( event: JsonObject ) = event.migrate {
             ifType( "dk.cachet.carp.deployments.application.DeploymentService.Event.StudyDeploymentCreated" ) {
-                updateObject( "protocol" ) { json[ newField ] = JsonPrimitive( 0 ) }
+                addVersionField( "protocol" )
             }
         }
     }
@@ -35,5 +32,5 @@ val DeploymentServiceApiMigrator = ApplicationServiceApiMigrator(
     DeploymentService.API_VERSION,
     DeploymentServiceRequest.Serializer,
     DeploymentService.Event.serializer(),
-    listOf( addedSnapshotVersionField )
+    listOf( major1Minor0To1Migration )
 )
