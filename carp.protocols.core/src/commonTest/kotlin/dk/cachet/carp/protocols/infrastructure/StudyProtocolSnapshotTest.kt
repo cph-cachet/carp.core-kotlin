@@ -15,6 +15,7 @@ import dk.cachet.carp.common.infrastructure.test.StubSamplingConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
+import dk.cachet.carp.common.test.infrastructure.SnapshotTest
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
@@ -29,19 +30,12 @@ import kotlin.test.*
 /**
  * Tests for [StudyProtocolSnapshot] relying on core infrastructure.
  */
-class StudyProtocolSnapshotTest
+class StudyProtocolSnapshotTest :
+    SnapshotTest<StudyProtocol, StudyProtocolSnapshot>( StudyProtocolSnapshot.serializer() )
 {
-    @Test
-    fun can_serialize_and_deserialize_snapshot_using_JSON()
-    {
-        val protocol: StudyProtocol = createComplexProtocol()
-        val snapshot: StudyProtocolSnapshot = protocol.getSnapshot()
-
-        val serialized: String = JSON.encodeToString( snapshot )
-        val parsed: StudyProtocolSnapshot = JSON.decodeFromString( serialized )
-
-        assertEquals( snapshot, parsed )
-    }
+    override fun createObject() = createComplexProtocol()
+    override fun changeSnapshotVersion( toChange: StudyProtocolSnapshot, version: Int ) =
+        toChange.copy( version = version )
 
     /**
      * Types not known at compile time should not prevent deserializing a protocol, but should be loaded through a 'Custom' type wrapper.
