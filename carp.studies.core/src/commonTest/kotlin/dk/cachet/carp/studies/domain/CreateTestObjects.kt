@@ -1,9 +1,12 @@
 package dk.cachet.carp.studies.domain
 
+import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.Smartphone
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocol
+import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
+import dk.cachet.carp.studies.domain.users.Recruitment
 
 
 /**
@@ -24,4 +27,16 @@ fun createComplexStudy(): Study
     study.goLive()
 
     return study
+}
+
+fun createComplexRecruitment(): Recruitment
+{
+    val studyId = UUID.randomUUID()
+    val recruitment = Recruitment( studyId ).apply {
+        val participant = addParticipant( EmailAddress( "test@test.com" ) )
+        lockInStudy( createComplexProtocol().getSnapshot(), StudyInvitation( "Test" ) )
+        addParticipantGroup( setOf( participant.id ) )
+    }
+
+    return recruitment
 }

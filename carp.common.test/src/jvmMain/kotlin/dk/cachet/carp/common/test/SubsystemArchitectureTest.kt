@@ -2,6 +2,9 @@ package dk.cachet.carp.common.test
 
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
+import dk.cachet.carp.common.domain.Snapshot
+import dk.cachet.carp.common.test.infrastructure.SnapshotTest
+import kotlinx.serialization.builtins.serializer
 import org.reflections.Reflections
 import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KClass
@@ -15,6 +18,8 @@ import kotlin.test.*
 @Suppress( "FunctionName", "UnnecessaryAbstractClass" )
 abstract class SubsystemArchitectureTest( private val namespace: String )
 {
+    private val reflections = Reflections( namespace )
+
     /**
      * Verifies whether no 'domain' types (located in any `dk.cachet.carp.*.domain` namespace)
      * are used in the public interface of application services.
@@ -26,7 +31,6 @@ abstract class SubsystemArchitectureTest( private val namespace: String )
     fun no_domain_objects_used_in_application_service_interfaces()
     {
         // Find all application services and integration events in this subsystem.
-        val reflections = Reflections( namespace )
         val typesToCheck = reflections.getSubTypesOf( ApplicationService::class.java )
             .plus( reflections.getSubTypesOf( IntegrationEvent::class.java ) )
 
@@ -68,5 +72,24 @@ abstract class SubsystemArchitectureTest( private val namespace: String )
             .memberProperties.filter { it.visibility == KVisibility.PUBLIC }
             .map { it.returnType }
             .forEach { verifyNoDomainTypesUsedIn( it, usedInKlass, verifiedTypes ) }
+    }
+
+    @Test
+    fun snapshot_test_provided_for_each_snapshot()
+    {
+        // Find all snapshot classes.
+        val snapshotClasses = reflections.getSubTypesOf( Snapshot::class.java ).map { it.name }
+
+        // Find all tested snapshot classes.
+        val snapshotTests = reflections.getSubTypesOf( SnapshotTest::class.java )
+        val testedSnapshotClasses = snapshotTests.map { snapshotTest ->
+            val changeSnapshotMethod = SnapshotTest<*, *>::changeSnapshotVersion.name
+            snapshotTest.methods
+                // Filter out abstract overload to find concrete snapshot return type.
+                .first { it.name == changeSnapshotMethod && it.returnType.name != Snapshot::class.qualifiedName }
+                .returnType.name
+        }
+
+        assertEquals( snapshotClasses.toSet(), testedSnapshotClasses.toSet() )
     }
 }
