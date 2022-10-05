@@ -6,7 +6,6 @@ import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.DependentServices
 import dk.cachet.carp.common.application.services.IntegrationEvent
-import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
@@ -27,7 +26,7 @@ interface RecruitmentService : ApplicationService<RecruitmentService, Recruitmen
     sealed class Event : IntegrationEvent<RecruitmentService>
     {
         @Required
-        override val apiVersion: ApiVersion = DeploymentService.API_VERSION
+        override val apiVersion: ApiVersion = API_VERSION
     }
 
 
