@@ -129,7 +129,7 @@ class RecruitmentServiceHost(
         // Create participant group, deploy, and send invitations.
         val participantGroup = recruitment.addParticipantGroup( toDeployParticipantIds, uuidFactory.randomUUID() )
         val deploymentStatus = deploymentService.createStudyDeployment( participantGroup.id, protocol, invitations )
-        participantGroup.markAsInvited( deploymentStatus )
+        participantGroup.markAsDeployed()
 
         participantRepository.updateRecruitment( recruitment )
 
