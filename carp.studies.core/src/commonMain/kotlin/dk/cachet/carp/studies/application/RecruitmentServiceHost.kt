@@ -126,12 +126,16 @@ class RecruitmentServiceHost(
             return recruitment.getParticipantGroupStatus( deployedStatus )
         }
 
-        // Create participant group, deploy, and send invitations.
+        // Create participant group and mark as deployed.
         val participantGroup = recruitment.addParticipantGroup( toDeployParticipantIds, uuidFactory.randomUUID() )
-        val deploymentStatus = deploymentService.createStudyDeployment( participantGroup.id, protocol, invitations )
         participantGroup.markAsDeployed()
-
         participantRepository.updateRecruitment( recruitment )
+
+        // Create study deployment, which sends out invitations.
+        // TODO: If the repository gets updated but `createStudyDeployment` fails, state will be inconsistent.
+        //  This should use eventual consistency: https://github.com/imotions/carp.core-kotlin/issues/295
+        //  And probably be separate requests: https://github.com/imotions/carp.core-kotlin/issues/319
+        val deploymentStatus = deploymentService.createStudyDeployment( participantGroup.id, protocol, invitations )
 
         return recruitment.getParticipantGroupStatus( deploymentStatus )
     }
