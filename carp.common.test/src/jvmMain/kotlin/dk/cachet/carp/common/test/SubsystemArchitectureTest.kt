@@ -1,4 +1,4 @@
-package dk.cachet.carp.common.test.application
+package dk.cachet.carp.common.test
 
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
@@ -13,7 +13,7 @@ import kotlin.test.*
 
 
 @Suppress( "FunctionName", "UnnecessaryAbstractClass" )
-abstract class ApplicationServicesReflectionTest( private val namespace: String )
+abstract class SubsystemArchitectureTest( private val namespace: String )
 {
     /**
      * Verifies whether no 'domain' types (located in any `dk.cachet.carp.*.domain` namespace)
@@ -60,7 +60,7 @@ abstract class ApplicationServicesReflectionTest( private val namespace: String 
 
         // Verify whether the type is defined in a disallowed namespace.
         assert( !disallowedMatch.matches( typeName ) )
-            { "`$type` is in a disallowed namespace for types exposed on the public interface of `${usedInKlass.simpleName}`." }
+        { "`$type` is in a disallowed namespace for types exposed on the public interface of `${usedInKlass.simpleName}`." }
         verifiedTypes.add( type )
 
         // Recursive verification of all public properties.
