@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "__type": { "const": "dk.cachet.carp.eda" },
+    "microSiemens": {
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "required": [ "__type", "microSiemens" ],
+  "additionalProperties": false
+}
