@@ -57,6 +57,12 @@ object CarpDataTypes : DataTypeMetaDataMap()
      */
     val NON_GRAVITATIONAL_ACCELERATION = add( NON_GRAVITATIONAL_ACCELERATION_TYPE_NAME, "Acceleration without gravity", DataTimeType.POINT )
 
+    internal const val EDA_TYPE_NAME = "$CARP_NAMESPACE.eda"
+    /**
+     * Single-channel electrodermal activity, represented as skin conductance.
+     */
+    val EDA = add( EDA_TYPE_NAME, "Electrodermal activity", DataTimeType.POINT )
+
     internal const val ACCELERATION_TYPE_NAME = "$CARP_NAMESPACE.acceleration"
     /**
      * Rate of change in velocity, including gravity, along perpendicular x, y, and z axes in the device's coordinate system.

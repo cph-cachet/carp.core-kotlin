@@ -11,19 +11,20 @@ When a data type describes data over the course of a time interval, the time int
 
 All the built-in data types belong to the namespace: **dk.cachet.carp**.
 
-| Name | Description |
-| --- | --- |
-| [geolocation](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Geolocation.kt) | Geographic location data, representing longitude and latitude. |
-| [stepcount](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/StepCount.kt) | The number of steps a participant has taken in a specified time interval. |
-| [ecg](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/ECG.kt) | Electrocardiogram data of a single lead. |
-| [heartrate](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/HeartRate.kt) | Number of heart contractions (beats) per minute. |
-| [interbeatinterval](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/InterbeatInterval.kt) | The time interval between two consecutive heartbeats. |
-| [sensorskincontact](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/SensorSkinContact.kt) | Whether a sensor requiring contact with skin is making proper contact at a specific point in time. |
-| [nongravitationalacceleration](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/NonGravitationalAcceleration.kt) | Acceleration excluding gravity along perpendicular x, y, and z axes. |
-| [angularvelocity](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/AngularVelocity.kt) | Rate of rotation around perpendicular x, y, and z axes. |
-| [signalstrength](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/SignalStrength.kt) | The received signal strength of a wireless device. |
-| [triggeredtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/TriggeredTask.kt) | A task which was started or stopped by a trigger, referring to identifiers in the study protocol. |
-| [completedtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/CompletedTask.kt) | An interactive task which was completed over the course of a specified time interval. |
+| Name                                                                                                                                        | Description                                                                                        |
+|---------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| [geolocation](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Geolocation.kt)                                   | Geographic location data, representing longitude and latitude.                                     |
+| [stepcount](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/StepCount.kt)                                       | The number of steps a participant has taken in a specified time interval.                          |
+| [ecg](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/ECG.kt)                                                   | Electrocardiogram data of a single lead.                                                           |
+| [heartrate](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/HeartRate.kt)                                       | Number of heart contractions (beats) per minute.                                                   |
+| [interbeatinterval](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/InterbeatInterval.kt)                       | The time interval between two consecutive heartbeats.                                              |
+| [sensorskincontact](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/SensorSkinContact.kt)                       | Whether a sensor requiring contact with skin is making proper contact at a specific point in time. |
+| [nongravitationalacceleration](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/NonGravitationalAcceleration.kt) | Acceleration excluding gravity along perpendicular x, y, and z axes.                               |
+| [eda](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/EDA.kt)                                                   | Single-channel electrodermal activity, represented as skin conductance.                            | 
+| [angularvelocity](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/AngularVelocity.kt)                           | Rate of rotation around perpendicular x, y, and z axes.                                            |
+| [signalstrength](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/SignalStrength.kt)                             | The received signal strength of a wireless device.                                                 |
+| [triggeredtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/TriggeredTask.kt)                               | A task which was started or stopped by a trigger, referring to identifiers in the study protocol.  |
+| [completedtask](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/CompletedTask.kt)                               | An interactive task which was completed over the course of a specified time interval.              |
 
 ## Device configurations
 
