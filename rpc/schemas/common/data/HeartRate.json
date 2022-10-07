@@ -3,7 +3,10 @@
   "type": "object",
   "properties": {
     "__type": { "const": "dk.cachet.carp.heartrate" },
-    "bpm": { "type": "integer" }
+    "bpm": {
+      "type": "integer",
+      "minimum": 0
+    }
   },
   "required": [ "__type", "bpm" ],
   "additionalProperties": false
