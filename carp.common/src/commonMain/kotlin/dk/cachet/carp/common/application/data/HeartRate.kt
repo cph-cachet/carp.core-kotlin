@@ -10,3 +10,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName( CarpDataTypes.HEART_RATE_TYPE_NAME )
 data class HeartRate( val bpm: Int ) : Data
+{
+    init
+    {
+        require( bpm >= 0 ) { "Beats per minute needs to be a positive number." }
+    }
+}

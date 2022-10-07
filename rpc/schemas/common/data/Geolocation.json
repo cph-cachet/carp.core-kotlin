@@ -3,8 +3,16 @@
   "type": "object",
   "properties": {
     "__type": { "const": "dk.cachet.carp.geolocation" },
-    "latitude": { "type": "number" },
-    "longitude": { "type": "number" }
+    "latitude": {
+      "type": "number",
+      "minimum": -90,
+      "maximum": 90
+    },
+    "longitude": {
+      "type": "number",
+      "minimum": -180,
+      "maximum": 180
+    }
   },
   "required": [ "__type", "latitude", "longitude" ],
   "additionalProperties": false
