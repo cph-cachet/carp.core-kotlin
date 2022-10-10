@@ -29,9 +29,7 @@ interface DeploymentServiceTest
     @Test
     fun createStudyDeployment_registers_preregistered_devices() = runTest {
         val deploymentService = createService()
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
-        val primaryDevice = protocol.primaryDevices.single()
-        val connectedDevice = protocol.getConnectedDevices( primaryDevice ).single()
+        val (protocol, primaryDevice, connectedDevice) = createSinglePrimaryWithConnectedDeviceProtocol()
 
         val deploymentId = UUID.randomUUID()
         val preregistration = connectedDevice.createRegistration()
@@ -109,7 +107,7 @@ interface DeploymentServiceTest
     fun getStudyDeploymentStatusList_succeeds() = runTest {
         val deploymentService = createService()
         val deviceRoleName = "Primary"
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( deviceRoleName )
+        val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol( deviceRoleName )
         val protocolSnapshot = protocol.getSnapshot()
 
         val invitation1 = createParticipantInvitation( AccountIdentity.fromUsername( "User 1" ) )
@@ -222,7 +220,8 @@ interface DeploymentServiceTest
         connectedDeviceRoleName: String = "Connected"
     ): UUID
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( primaryDeviceRoleName, connectedDeviceRoleName )
+        val (protocol, _, _) =
+            createSinglePrimaryWithConnectedDeviceProtocol( primaryDeviceRoleName, connectedDeviceRoleName )
         val invitation = createParticipantInvitation()
         val studyDeploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( studyDeploymentId, protocol.getSnapshot(), listOf( invitation ) )

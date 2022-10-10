@@ -5,7 +5,6 @@ import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.CustomInput
 import dk.cachet.carp.common.application.data.input.Sex
 import dk.cachet.carp.common.application.data.input.elements.Text
-import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
@@ -43,12 +42,10 @@ fun studyDeploymentFor( protocol: StudyProtocol ): StudyDeployment
  */
 fun createComplexDeployment(): StudyDeployment
 {
-    val protocol = createSinglePrimaryWithConnectedDeviceProtocol( "Primary", "Connected" )
+    val (protocol, primary, connected) = createSinglePrimaryWithConnectedDeviceProtocol()
     val deployment = studyDeploymentFor( protocol )
 
     // Add device registrations.
-    val primary = deployment.registrableDevices.first { it.device.roleName == "Primary" }.device as AnyPrimaryDeviceConfiguration
-    val connected = deployment.registrableDevices.first { it.device.roleName == "Connected" }.device
     deployment.registerDevice( primary, primary.createRegistration() )
     deployment.registerDevice( connected, connected.createRegistration() )
 
