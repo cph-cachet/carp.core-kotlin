@@ -10,16 +10,33 @@ import kotlin.time.Duration
 /**
  * Sampling scheme which allows configuring a time interval in between subsequent measurements.
  */
-class IntervalSamplingScheme( dataType: DataTypeMetaData, val defaultMeasureInterval: Duration ) :
-    DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>(
-        dataType,
-        IntervalSamplingConfiguration( defaultMeasureInterval )
-    )
+class IntervalSamplingScheme(
+    dataType: DataTypeMetaData,
+    val defaultMeasureInterval: Duration,
+    /**
+     * A fixed set of [Duration] options which are valid; null if no such restriction exists.
+     */
+    val validOptions: Set<Duration>? = null
+) : DataTypeSamplingScheme<IntervalSamplingConfigurationBuilder>(
+    dataType,
+    IntervalSamplingConfiguration( defaultMeasureInterval )
+)
 {
+    init
+    {
+        if ( validOptions != null )
+        {
+            require( defaultMeasureInterval in validOptions )
+                { "If only a fixed set of options are valid, the default interval needs to be one of the options." }
+        }
+    }
+
     override fun createSamplingConfigurationBuilder(): IntervalSamplingConfigurationBuilder =
         IntervalSamplingConfigurationBuilder( defaultMeasureInterval )
 
-    override fun isValid( configuration: SamplingConfiguration ) = configuration is IntervalSamplingConfiguration
+    override fun isValid( configuration: SamplingConfiguration ) =
+        configuration is IntervalSamplingConfiguration &&
+        ( validOptions == null || configuration.interval in validOptions )
 }
 
 
