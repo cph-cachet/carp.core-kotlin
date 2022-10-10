@@ -19,7 +19,7 @@ class DataTypeSamplingSchemeTest
         val maxDuration: Duration = 42.seconds
 
         override fun createSamplingConfigurationBuilder(): IntervalSamplingConfigurationBuilder =
-            IntervalSamplingConfigurationBuilder( 5.seconds )
+            IntervalSamplingConfigurationBuilder( 5.seconds, null )
 
         override fun isValid( configuration: SamplingConfiguration ): Boolean =
             configuration is IntervalSamplingConfiguration && configuration.interval <= maxDuration
