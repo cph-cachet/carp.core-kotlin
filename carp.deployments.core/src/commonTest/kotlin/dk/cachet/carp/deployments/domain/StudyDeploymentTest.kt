@@ -312,6 +312,32 @@ class StudyDeploymentTest
     }
 
     @Test
+    fun unregisterDevice_for_connected_device_succeeds()
+    {
+        // Create deployment with registered devices.
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( "Primary", "Connected" )
+        val primary: AnyPrimaryDeviceConfiguration =
+            protocol.devices.first { it.roleName == "Primary" } as AnyPrimaryDeviceConfiguration
+        val connected = protocol.devices.first { it.roleName == "Connected" }
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( primary, primary.createRegistration() )
+        deployment.registerDevice( connected, connected.createRegistration() )
+
+        // Unregister device before device deployment obtained.
+        deployment.unregisterDevice( connected )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeployingDevices )
+
+        // Obtain device deployment.
+        deployment.registerDevice( connected, connected.createRegistration() )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( primary )
+        deployment.deviceDeployed( primary, deviceDeployment.lastUpdatedOn )
+
+        // Unregister device after device deployment obtained.
+        deployment.unregisterDevice( connected )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.Running )
+    }
+
+    @Test
     fun unregisterDevice_invalidates_dependent_deployments()
     {
         val protocol = createEmptyProtocol()
@@ -409,6 +435,30 @@ class StudyDeploymentTest
         val snapshot = deployment.getSnapshot()
         val fromSnapshot = StudyDeployment.fromSnapshot( snapshot )
         assertEquals( listOf( registration1, registration2 ), fromSnapshot.deviceRegistrationHistory[ primary ] )
+    }
+
+    @Test
+    fun fromSnapshot_succeeds_for_deployed_device_with_unregistered_connected_devices()
+    {
+        // Create deployment.
+        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( "Primary", "Connected" )
+        val primary: AnyPrimaryDeviceConfiguration =
+            protocol.devices.first { it.roleName == "Primary" } as AnyPrimaryDeviceConfiguration
+        val connected = protocol.devices.first { it.roleName == "Connected" }
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+
+        // Deploy device.
+        deployment.registerDevice( primary, primary.createRegistration() )
+        deployment.registerDevice( connected, connected.createRegistration() )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( primary )
+        deployment.deviceDeployed( primary, deviceDeployment.lastUpdatedOn )
+
+        // Unregister connected device after deployment.
+        deployment.unregisterDevice( connected )
+
+        val snapshot = deployment.getSnapshot()
+        val loaded = StudyDeployment.fromSnapshot( snapshot )
+        assertTrue( connected !in loaded.registeredDevices )
     }
 
     @Test
