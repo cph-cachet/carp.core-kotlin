@@ -26,13 +26,15 @@ class IntervalSamplingScheme(
     {
         if ( validOptions != null )
         {
+            require( validOptions.isNotEmpty() )
+                { "If only a fixed set of options are valid, at least one option needs to be present." }
             require( defaultMeasureInterval in validOptions )
                 { "If only a fixed set of options are valid, the default interval needs to be one of the options." }
         }
     }
 
     override fun createSamplingConfigurationBuilder(): IntervalSamplingConfigurationBuilder =
-        IntervalSamplingConfigurationBuilder( defaultMeasureInterval )
+        IntervalSamplingConfigurationBuilder( defaultMeasureInterval, validOptions )
 
     override fun isValid( configuration: SamplingConfiguration ) =
         configuration is IntervalSamplingConfiguration &&
@@ -54,8 +56,17 @@ data class IntervalSamplingConfiguration(
  * A helper class to configure and construct immutable [IntervalSamplingConfiguration] objects
  * as part of setting up a [DeviceConfiguration].
  */
-class IntervalSamplingConfigurationBuilder( var interval: Duration ) :
-    SamplingConfigurationBuilder<IntervalSamplingConfiguration>
+class IntervalSamplingConfigurationBuilder internal constructor(
+    var interval: Duration,
+    val validOptions: Set<Duration>?
+) : SamplingConfigurationBuilder<IntervalSamplingConfiguration>
 {
+    /**
+     * Select the nearest valid option to the requested [interval].
+     */
+    fun nearestOption( interval: Duration ): Duration =
+        if ( validOptions == null ) interval
+        else checkNotNull( validOptions.minByOrNull { (interval - it).absoluteValue } )
+
     override fun build(): IntervalSamplingConfiguration = IntervalSamplingConfiguration( interval )
 }
