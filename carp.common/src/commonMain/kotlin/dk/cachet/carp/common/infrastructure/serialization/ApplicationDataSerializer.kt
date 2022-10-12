@@ -19,7 +19,7 @@ import kotlinx.serialization.json.JsonObject
  *
  * This is useful to store application-specific data which is not statically known to a common base infrastructure
  * when JSON serialization is used, without having to escape the JSON data.
-
+ *
  * In case the JSON contained in the String is malformed, it will be serialized as a normal escaped string.
  */
 @OptIn( ExperimentalSerializationApi::class )
