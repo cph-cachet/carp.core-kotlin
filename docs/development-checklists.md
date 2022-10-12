@@ -81,6 +81,8 @@ But, below are the necessary steps to follow:
 3. Register the new data type for polymorphic serialization in [`COMMON_SERIAL_MODULE`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/infrastructure/serialization/Serialization.kt).
 4. Add a test instance of the new `Data` type to [`commonInstances`](../carp.common/src/commonTest/kotlin/dk/cachet/carp/common/application/TestInstances.kt).
 5. Include the data type [in the README](../docs/carp-common.md#data-types).
-6. Add a JSON schema in [`rpc/schemas/common/data`](../rpc/schemas/common/data) corresponding to the class name (e.g., `AngularVelocity.json`).
+6. Update JSON schemas for the new type:
+   - Add a new schema in [`rpc/schemas/common/data`](../rpc/schemas/common/data) corresponding to the class name (e.g., `AngularVelocity.json`).
+   - Add the new schema as a subtype in [`Data.json`](../rpc/schemas/common/data/Data.json). The existing examples should guide you, but double-check you specified the right data type constant.
    - _Warning_: the presence or validity of this schema [is not yet tested](https://github.com/imotions/carp.core-kotlin/issues/404).
      It is recommended to serialize an instance of the new data type (e.g., by running a slightly modified polymorphic serialization test in `DataSerializationTest`) and [validate the output manually for now](https://www.jsonschemavalidator.net/).
