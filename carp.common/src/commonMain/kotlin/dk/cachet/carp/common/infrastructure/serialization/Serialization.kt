@@ -37,6 +37,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         // This can likely be removed once we upgrade to the new IR backend.
         subclass( NoData::class, NoData.serializer() )
         subclass( InterbeatInterval::class, InterbeatInterval.serializer() )
+        subclass( PPG::class )
         subclass( SignalStrength::class )
         subclass( SensorSkinContact::class )
         subclass( StepCount::class )
