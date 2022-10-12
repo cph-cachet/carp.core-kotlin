@@ -9,4 +9,4 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @SerialName( CarpDataTypes.ECG_TYPE_NAME )
-data class ECG( val milliVolt: Double ) : Data
+data class ECG( val milliVolt: Double, override val sensorSpecificData: Data? = null ) : SensorData

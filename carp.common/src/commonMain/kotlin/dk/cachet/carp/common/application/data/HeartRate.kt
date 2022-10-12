@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @SerialName( CarpDataTypes.HEART_RATE_TYPE_NAME )
-data class HeartRate( val bpm: Int ) : Data
+data class HeartRate( val bpm: Int, override val sensorSpecificData: Data? = null ) : SensorData
 {
     init
     {

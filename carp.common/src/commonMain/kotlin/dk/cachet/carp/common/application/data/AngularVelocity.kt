@@ -11,4 +11,9 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @SerialName( CarpDataTypes.ANGULAR_VELOCITY_TYPE_NAME )
-data class AngularVelocity( val x: Double, val y: Double, val z: Double ) : Data
+data class AngularVelocity(
+    val x: Double,
+    val y: Double,
+    val z: Double,
+    override val sensorSpecificData: Data? = null
+) : SensorData

@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @SerialName( CarpDataTypes.STEP_COUNT_TYPE_NAME )
-data class StepCount( val steps: Int ) : Data
+data class StepCount( val steps: Int, override val sensorSpecificData: Data? = null ) : SensorData
 {
     init
     {
