@@ -29,6 +29,7 @@ val commonInstances = listOf(
     NoData,
     NonGravitationalAcceleration( 42.0, 42.0, 42.0 ),
     InterbeatInterval,
+    PPG( mapOf( "green" to 42.0 ) ),
     SensorSkinContact( true ),
     SignalStrength( 0 ),
     StepCount( 42 ),

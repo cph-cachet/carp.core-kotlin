@@ -33,6 +33,12 @@ object CarpDataTypes : DataTypeMetaDataMap()
      */
     val ECG = add( ECG_TYPE_NAME, "Electrocardiography (ECG)", DataTimeType.POINT )
 
+    internal const val PPG_TYPE_NAME = "$CARP_NAMESPACE.ppg"
+    /**
+     * Photoplethysmography (PPG) data, representing blood volume changes measured at the skin's surface.
+     */
+    val PPG = add( PPG_TYPE_NAME, "Photoplethysmography (PPG)", DataTimeType.POINT )
+
     internal const val HEART_RATE_TYPE_NAME = "$CARP_NAMESPACE.heartrate"
     /**
      * Represents the number of heart contractions (beats) per minute.

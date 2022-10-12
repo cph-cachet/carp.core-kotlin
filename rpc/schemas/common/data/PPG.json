@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "properties": {
+    "__type": { "const": "dk.cachet.carp.ppg" },
+    "lightSources": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "number" }
+    }
+  },
+  "required": [ "__type", "lightSources" ],
+  "additionalProperties": false
+}
