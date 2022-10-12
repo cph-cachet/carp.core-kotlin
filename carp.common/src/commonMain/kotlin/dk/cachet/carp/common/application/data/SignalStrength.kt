@@ -11,4 +11,4 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @SerialName( CarpDataTypes.SIGNAL_STRENGTH_TYPE_NAME )
-data class SignalStrength( val rssi: Short ) : Data
+data class SignalStrength( val rssi: Short, override val sensorSpecificData: Data? = null ) : SensorData

@@ -9,7 +9,11 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @SerialName( CarpDataTypes.GEOLOCATION_TYPE_NAME )
-data class Geolocation( val latitude: Double, val longitude: Double ) : Data
+data class Geolocation(
+    val latitude: Double,
+    val longitude: Double,
+    override val sensorSpecificData: Data? = null
+) : SensorData
 {
     companion object
     {

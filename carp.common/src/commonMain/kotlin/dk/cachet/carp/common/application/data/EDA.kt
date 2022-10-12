@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @SerialName( CarpDataTypes.EDA_TYPE_NAME )
-data class EDA( val microSiemens: Double ) : Data
+data class EDA( val microSiemens: Double, override val sensorSpecificData: Data? = null ) : SensorData
 {
     init
     {

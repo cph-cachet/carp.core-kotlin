@@ -9,4 +9,4 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @SerialName( CarpDataTypes.SENSOR_SKIN_CONTACT_TYPE_NAME )
-data class SensorSkinContact( val contact: Boolean ) : Data
+data class SensorSkinContact( val contact: Boolean, override val sensorSpecificData: Data? = null ) : SensorData

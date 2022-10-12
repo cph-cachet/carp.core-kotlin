@@ -16,8 +16,9 @@ data class PPG(
      * and the amount of measured reflected light (value).
      * The unit of the received data by the photodetector is determined by the sensor manufacturer.
      */
-    val lightSources: Map<String, Double>
-) : Data
+    val lightSources: Map<String, Double>,
+    override val sensorSpecificData: Data? = null
+) : SensorData
 {
     init { require( lightSources.isNotEmpty() ) { "Data for at least one light sources needs to be provided." } }
 }

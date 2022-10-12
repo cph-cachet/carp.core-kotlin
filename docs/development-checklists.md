@@ -55,22 +55,23 @@ These generated test resources will be used to verify the migrations (step 3) of
 These schemas are useful for non-Kotlin clients.
 If you forget to do this, `JsonSchemasTest` will fail; this test validates generated JSON output, known to be correct, using the schemas.
 
-## Add a new measure data type
+## Add a new sensor data type
 
 Keep in mind that CARP data types should be device-agnostic.
 The goal is that they can be reused for devices by different vendors.
 They act as a common data format.
-Therefore, don't include device-specific information in new [`Data`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Data.kt) types.
+Therefore, don't include device-specific information in new [`SensorData`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Data.kt) types.
 
-If device-specific data is needed, infrastructures built using CARP Core can still specify these in their own codebase.
-Furthermore, all [extendable domain objects](../docs/carp-protocols.md#extending-domain-objects) can be uploaded to CARP backends that [use the recommended CARP serializers](../docs/serialization.md#unknownpolymorphicserializer-deserializing-unknown-types);
+If device-specific data is needed, it can be passed using the `SensorData.sensorSpecificData` field, which is of type `Data`.
+Custom infrastructures built using CARP Core can specify custom `Data` types in their own codebase to hold sensor-specific data.
+All [extendable domain objects](../docs/carp-protocols.md#extending-domain-objects), including `Data`, can be uploaded to CARP backends that [use the recommended CARP serializers](../docs/serialization.md#unknownpolymorphicserializer-deserializing-unknown-types);
 they don't need the types at compile time or runtime, although then the data won't be validated on upload.
 
 Failing tests and static code analysis (`detektPasses`) will guide you to make sure newly introduced data types are immutable, serializable, registered, and tested.
 But, below are the necessary steps to follow:
 
 1. Add data type meta data to `CarpDataTypes`, following the template of existing data types.
-2. Add a new class extending from `Data` (or object in case the measure contains no data) to the `dk.cachet.carp.common.application.data` namespace in the `carp.common` subsystem (e.g., `AngularVelocity`). 
+2. Add a new class extending from `SensorData` (or object in case the measure contains no data) to the `dk.cachet.carp.common.application.data` namespace in the `carp.common` subsystem (e.g., `AngularVelocity`). 
    - Make sure to name the class after the collected _data_, and not the _sensor_ which collects the data (e.g., `AngularVelocity` vs `Gyro`).
    - Add clear KDoc documentation on how the data should be interpreted.
      For data fields, use/document SI units wherever appropriate, and choose sufficiently precise units so that no data is lost when unit conversions from raw data to the `Data` are done.
