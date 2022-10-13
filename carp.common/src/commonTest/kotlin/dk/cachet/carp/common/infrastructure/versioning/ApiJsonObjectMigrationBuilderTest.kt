@@ -14,9 +14,9 @@ import kotlin.test.*
 
 
 /**
- * Tests for [ApiMigration].
+ * Tests for [ApiJsonObjectMigrationBuilder].
  */
-class ApiMigrationTest
+class ApiJsonObjectMigrationBuilderTest
 {
     interface ToMigrate
 
@@ -40,7 +40,7 @@ class ApiMigrationTest
 
 
     @Test
-    fun migrate_builder_ifType_succeeds()
+    fun ifType_succeeds()
     {
         val toMigrate: ToMigrate = Migrate( 42, 42, MigrateInner( 42 ) )
         val toMigrateJson: JsonObject = json.encodeToJsonElement( toMigrateSerializer, toMigrate ).jsonObject
@@ -60,7 +60,7 @@ class ApiMigrationTest
     }
 
     @Test
-    fun migrate_builder_updateObject_succeeds()
+    fun updateObject_succeeds()
     {
         val toMigrate = Migrate( 42, 42, MigrateInner( 42 ) )
         val toMigrateJson = json.encodeToJsonElement( toMigrateSerializer, toMigrate ).jsonObject
@@ -77,7 +77,7 @@ class ApiMigrationTest
     }
 
     @Test
-    fun migrate_builder_copyField_succeeds()
+    fun copyField_succeeds()
     {
         val toMigrate = Migrate( 42, 0, MigrateInner( 0 ) )
         val toMigrateJson = json.encodeToJsonElement( toMigrateSerializer, toMigrate ).jsonObject
@@ -89,6 +89,6 @@ class ApiMigrationTest
         assertEquals( migrated[ Migrate::a.name ], migrated[ Migrate::b.name ] )
     }
 
-    private fun migrate( json: JsonObject, migration: ApiMigrationBuilder.() -> Unit ): JsonObject =
-        ApiMigrationBuilder( json, 0, 1 ).apply( migration ).build()
+    private fun migrate( json: JsonObject, migration: ApiJsonObjectMigrationBuilder.() -> Unit ): JsonObject =
+        ApiJsonObjectMigrationBuilder( json, 0, 1 ).apply( migration ).build()
 }
