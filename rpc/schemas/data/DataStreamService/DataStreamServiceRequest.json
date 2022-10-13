@@ -8,7 +8,7 @@
     { "$ref": "#/$defs/RemoveDataStreams" }
   ],
   "$defs": {
-    "ApiVersion": { "const": "1.0" },
+    "ApiVersion": { "const": "1.1" },
     "OpenDataStreams": {
       "$anchor": "OpenDataStreams",
       "type": "object",

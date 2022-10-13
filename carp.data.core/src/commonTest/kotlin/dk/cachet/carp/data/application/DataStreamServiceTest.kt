@@ -47,7 +47,11 @@ interface DataStreamServiceTest
         val service = createServiceWithOpenStubDataPointStream()
 
         val batch = MutableDataStreamBatch()
-        val sequence = createStubSequence( 0, StubDataPoint() )
+        val sequence = createStubSequence(
+            0,
+            StubDataPoint(),
+            StubDataPoint( sensorSpecificData = StubDataPoint( "sensor specific" ) )
+        )
         batch.appendSequence( sequence )
         service.appendToDataStreams( stubDeploymentId, batch )
 
