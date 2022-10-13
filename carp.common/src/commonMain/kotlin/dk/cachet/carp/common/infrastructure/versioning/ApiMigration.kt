@@ -3,6 +3,7 @@ package dk.cachet.carp.common.infrastructure.versioning
 import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.infrastructure.serialization.CLASS_DISCRIMINATOR
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -40,6 +41,10 @@ abstract class ApiMigration( val minimumMinorVersion: Int, val targetMinorVersio
 
     protected fun JsonObject.migrate( migration: ApiJsonObjectMigrationBuilder.() -> Unit ): JsonObject =
         ApiJsonObjectMigrationBuilder( this, minimumMinorVersion, targetMinorVersion )
+            .apply( migration ).build()
+
+    protected fun JsonArray.migrate( migration: ApiJsonArrayMigrationBuilder.() -> Unit ): JsonArray =
+        ApiJsonArrayMigrationBuilder( this, minimumMinorVersion, targetMinorVersion )
             .apply( migration ).build()
 }
 

@@ -4,6 +4,7 @@ import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
@@ -74,6 +75,21 @@ class ApiJsonObjectMigrationBuilderTest
 
         val inner = assertNotNull( migrated[ Migrate::inner.name ]?.jsonObject )
         assertEquals( toSet, inner[ MigrateInner::c.name ] )
+    }
+
+    @Test
+    fun updateArray_succeeds()
+    {
+        val jsonArray = JsonArray( listOf( JsonPrimitive( 42 ) ) )
+        val arrayField = "array"
+        val jsonObject = JsonObject( mapOf( arrayField to jsonArray ) )
+
+        val migrated = migrate( jsonObject ) {
+            updateArray( arrayField ) { json.clear() }
+        }
+
+        val emptyArrayField = JsonObject( mapOf( arrayField to JsonArray( emptyList() ) ) )
+        assertEquals( emptyArrayField, migrated )
     }
 
     @Test
