@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.infrastructure.versioning
 
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -43,6 +44,17 @@ class ApiJsonObjectMigrationBuilder(
     {
         val o = requireNotNull( json[ fieldName ] as? JsonObject )
         val newJson: JsonObject = ApiJsonObjectMigrationBuilder( o, minimumMinorVersion, targetMinorVersion )
+            .apply( migration ).build()
+        json[ fieldName ] = newJson
+    }
+
+    /**
+     * Retrieve the array identified by [fieldName] in this object, and run the specified [migration].
+     */
+    fun updateArray( fieldName: String, migration: ApiJsonArrayMigrationBuilder.() -> Unit )
+    {
+        val a = requireNotNull( json[ fieldName ] as? JsonArray )
+        val newJson: JsonArray = ApiJsonArrayMigrationBuilder( a, minimumMinorVersion, targetMinorVersion )
             .apply( migration ).build()
         json[ fieldName ] = newJson
     }
