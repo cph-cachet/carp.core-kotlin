@@ -12,15 +12,15 @@ abstract class Major1Minor0To1Migration : ApiMigration( 0, 1 )
 {
     private val newField = "version"
 
-    protected fun ApiMigrationBuilder.addVersionField( fieldName: String ) =
+    protected fun ApiJsonObjectMigrationBuilder.addVersionField( fieldName: String ) =
         updateObject( fieldName ) { json[ newField ] = JsonPrimitive( 0 ) }
 
-    protected fun ApiMigrationBuilder.removeVersionField()
+    protected fun ApiJsonObjectMigrationBuilder.removeVersionField()
     {
         json.remove( newField )
     }
 
-    protected fun ApiMigrationBuilder.removeVersionField( fieldName: String )
+    protected fun ApiJsonObjectMigrationBuilder.removeVersionField( fieldName: String )
     {
         if ( json[ fieldName ] != JsonNull )
         {
