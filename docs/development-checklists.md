@@ -57,15 +57,8 @@ If you forget to do this, `JsonSchemasTest` will fail; this test validates gener
 
 ## Add a new sensor data type
 
-Keep in mind that CARP data types should be device-agnostic.
-The goal is that they can be reused for devices by different vendors.
-They act as a common data format.
+Keep in mind that CARP [data types should be device-agnostic](carp-common.md#sensor-data-types).
 Therefore, don't include device-specific information in new [`SensorData`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/data/Data.kt) types.
-
-If device-specific data is needed, it can be passed using the `SensorData.sensorSpecificData` field, which is of type `Data`.
-Custom infrastructures built using CARP Core can specify custom `Data` types in their own codebase to hold sensor-specific data.
-All [extendable domain objects](../docs/carp-protocols.md#extending-domain-objects), including `Data`, can be uploaded to CARP backends that [use the recommended CARP serializers](../docs/serialization.md#unknownpolymorphicserializer-deserializing-unknown-types);
-they don't need the types at compile time or runtime, although then the data won't be validated on upload.
 
 Failing tests and static code analysis (`detektPasses`) will guide you to make sure newly introduced data types are immutable, serializable, registered, and tested.
 But, below are the necessary steps to follow:
