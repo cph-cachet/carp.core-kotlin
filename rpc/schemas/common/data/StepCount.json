@@ -1,10 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
+  "allOf": [ { "$ref": "Data.json#SensorData" } ],
   "properties": {
     "__type": { "const": "dk.cachet.carp.stepcount" },
     "steps": { "type": "integer" }
   },
   "required": [ "__type", "steps" ],
-  "additionalProperties": false
+  "unevaluatedProperties": false
 }

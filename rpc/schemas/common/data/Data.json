@@ -72,5 +72,19 @@
       "if": { "properties": { "__type": { "const": "dk.cachet.carp.input.sex" } } },
       "then": { "$ref": "input/Sex.json" }
     }
-  ]
+  ],
+  "$defs": {
+    "SensorData": {
+      "$anchor": "SensorData",
+      "type": "object",
+      "properties": {
+        "sensorSpecificData": {
+          "oneOf": [
+            { "$ref": "Data.json" },
+            { "type": "null" }
+          ]
+        }
+      }
+    }
+  }
 }

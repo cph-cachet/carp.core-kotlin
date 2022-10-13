@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
+  "allOf": [ { "$ref": "Data.json#SensorData" } ],
   "properties": {
     "__type": { "const": "dk.cachet.carp.geolocation" },
     "latitude": {
@@ -15,5 +16,5 @@
     }
   },
   "required": [ "__type", "latitude", "longitude" ],
-  "additionalProperties": false
+  "unevaluatedProperties": false
 }

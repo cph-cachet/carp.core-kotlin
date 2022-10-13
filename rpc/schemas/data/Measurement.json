@@ -7,7 +7,7 @@
       "description": "If set, sensorEndTime needs to lie after sensorStartTime.",
       "type": [ "integer", "null" ]
     },
-    "data": { "$ref": "../common/data/Data.json"}
+    "data": { "$ref": "../common/data/Data.json" }
   },
   "required": [ "sensorStartTime", "data" ],
   "additionalProperties": false
