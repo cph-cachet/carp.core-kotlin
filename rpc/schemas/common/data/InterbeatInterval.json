@@ -1,9 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
+  "allOf": [ { "$ref": "Data.json#SensorData" } ],
   "properties": {
     "__type": { "const": "dk.cachet.carp.interbeatinterval" }
   },
   "required": [ "__type" ],
-  "additionalProperties": false
+  "unevaluatedProperties": false
 }
