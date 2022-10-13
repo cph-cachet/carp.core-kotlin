@@ -5,8 +5,9 @@ import kotlinx.serialization.json.JsonPrimitive
 
 
 /**
- * A new `version` field was added to all aggregate root snapshots.
- * The only snapshot which was exposed is `StudyProtocolSnapshot`.
+ * - A new `version` field was added to all aggregate root snapshots.
+ *   The only snapshot which was exposed is `StudyProtocolSnapshot`.
+ * - An optional `sensorSpecificData` field was added to `Data` objects reflecting sensor data.
  */
 abstract class Major1Minor0To1Migration : ApiMigration( 0, 1 )
 {
