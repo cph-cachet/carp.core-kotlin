@@ -126,6 +126,7 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
      * @throws IllegalArgumentException when:
      * - a deployment with [studyDeploymentId] does not exist
      * - [primaryDeviceRoleName] is not present in the deployment
+     * - the device with [primaryDeviceRoleName] has not yet been registered
      * @throws IllegalStateException when the deployment for the requested primary device is not yet available.
      */
     suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, primaryDeviceRoleName: String ): PrimaryDeviceDeployment
