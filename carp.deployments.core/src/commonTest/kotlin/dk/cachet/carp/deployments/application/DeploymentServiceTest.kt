@@ -179,6 +179,28 @@ interface DeploymentServiceTest
     }
 
     @Test
+    fun getDeviceDeploymentFor_during_device_reregistrations() = runTest {
+        val (service, _) = createService()
+        val protocol = createSinglePrimaryDeviceProtocol( "Test device" )
+        val device = protocol.primaryDevices.first()
+        val deploymentId = UUID.randomUUID()
+        service.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( createParticipantInvitation() ) )
+        val firstRegistration = device.createRegistration()
+        service.registerDevice( deploymentId, device.roleName, firstRegistration )
+
+        val firstDeployment: PrimaryDeviceDeployment = service.getDeviceDeploymentFor( deploymentId, device.roleName )
+        assertEquals( firstRegistration, firstDeployment.registration )
+
+        service.unregisterDevice( deploymentId, device.roleName )
+        assertFailsWith<IllegalArgumentException> { service.getDeviceDeploymentFor( deploymentId, device.roleName ) }
+
+        val secondRegistration = device.createRegistration()
+        service.registerDevice( deploymentId, device.roleName, secondRegistration )
+        val secondDeployment = service.getDeviceDeploymentFor( deploymentId, device.roleName )
+        assertEquals( secondRegistration, secondDeployment.registration )
+    }
+
+    @Test
     fun stop_succeeds() = runTest {
         val (service, _) = createService()
         val studyDeploymentId = addTestDeployment( service, "Test device" )
