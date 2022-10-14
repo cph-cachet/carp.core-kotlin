@@ -15,7 +15,7 @@ class DeploymentServiceHostTest : DeploymentServiceTest
 {
     companion object
     {
-        fun createService(): Pair<DeploymentService, EventBus>
+        fun createService(): DeploymentServiceTest.DependentServices
         {
             val eventBus: EventBus = SingleThreadedEventBus()
 
@@ -26,9 +26,9 @@ class DeploymentServiceHostTest : DeploymentServiceTest
                 TestClock
             )
 
-            return Pair( deploymentService, eventBus )
+            return DeploymentServiceTest.DependentServices( deploymentService, eventBus )
         }
     }
 
-    override fun createService(): DeploymentService = DeploymentServiceHostTest.createService().first
+    override fun createService(): DeploymentServiceTest.DependentServices = DeploymentServiceHostTest.createService()
 }

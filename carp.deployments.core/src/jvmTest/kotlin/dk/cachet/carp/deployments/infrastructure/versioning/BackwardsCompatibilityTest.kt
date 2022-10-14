@@ -13,6 +13,7 @@ class DeploymentServiceBackwardsCompatibilityTest :
     BackwardsCompatibilityTest<DeploymentService>( DeploymentService::class )
 {
     override fun createService() = DeploymentServiceHostTest.createService()
+        .let { Pair( it.deploymentService, it.eventBus ) }
 }
 
 
