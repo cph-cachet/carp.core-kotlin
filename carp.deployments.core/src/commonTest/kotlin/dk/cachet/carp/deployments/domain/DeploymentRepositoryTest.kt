@@ -23,7 +23,7 @@ interface DeploymentRepositoryTest
     @Test
     fun adding_study_deployment_and_retrieving_it_succeeds() = runTest {
         val repo = createRepository()
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
 
         repo.add( deployment )
@@ -36,7 +36,7 @@ interface DeploymentRepositoryTest
     @Test
     fun adding_study_deployment_with_existing_id_fails() = runTest {
         val repo = createRepository()
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         repo.add( deployment )
 
@@ -49,7 +49,7 @@ interface DeploymentRepositoryTest
     @Test
     fun getStudyDeploymentBy_succeeds() = runTest {
         val repo = createRepository()
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         repo.add( deployment )
 
@@ -69,7 +69,7 @@ interface DeploymentRepositoryTest
     @Test
     fun getStudyDeploymentsBy_succeeds() = runTest {
         val repo = createRepository()
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment1 = studyDeploymentFor( protocol )
         val deployment2 = studyDeploymentFor( protocol )
         repo.add( deployment1 )
@@ -84,7 +84,7 @@ interface DeploymentRepositoryTest
     @Test
     fun getStudyDeploymentsBy_ignores_unknown_ids() = runTest {
         val repo = createRepository()
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         repo.add( deployment )
 
@@ -96,11 +96,9 @@ interface DeploymentRepositoryTest
     @Test
     fun update_study_deployment_succeeds() = runTest {
         val repo = createRepository()
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, primaryDevice, connectedDevice) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         repo.add( deployment )
-        val primaryDevice = protocol.primaryDevices.first()
-        val connectedDevice = protocol.getConnectedDevices( primaryDevice ).first()
 
         // Perform various actions on deployment, modifying it.
         // TODO: This does not verify whether registration history and invalidated devices are updated.
@@ -124,7 +122,7 @@ interface DeploymentRepositoryTest
     @Test
     fun update_study_deployment_fails_for_unknown_deployment() = runTest {
         val repo = createRepository()
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
 
         assertFailsWith<IllegalArgumentException>
@@ -136,7 +134,7 @@ interface DeploymentRepositoryTest
     @Test
     fun remove_succeeds() = runTest {
         val repo = createRepository()
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment1 = studyDeploymentFor( protocol )
         val deployment2 = studyDeploymentFor( protocol )
         repo.add( deployment1 )
@@ -154,7 +152,7 @@ interface DeploymentRepositoryTest
     @Test
     fun remove_igores_unknown_ids() = runTest {
         val repo = createRepository()
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         repo.add( deployment )
 

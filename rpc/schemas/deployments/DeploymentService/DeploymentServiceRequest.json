@@ -12,7 +12,7 @@
     { "$ref": "#/$defs/Stop" }
   ],
   "$defs": {
-    "ApiVersion": { "const": "1.0" },
+    "ApiVersion": { "const": "1.1" },
     "CreateStudyDeployment": {
       "$anchor": "CreateStudyDeployment",
       "type": "object",

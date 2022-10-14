@@ -3,6 +3,9 @@ package dk.cachet.carp.data.infrastructure
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
+import dk.cachet.carp.common.application.data.DataTimeType
+import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.data.DataTypeMetaDataMap
 import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
@@ -16,6 +19,7 @@ import dk.cachet.carp.data.application.stubDeploymentId
 import dk.cachet.carp.data.application.stubSequenceDeviceRoleName
 import dk.cachet.carp.data.application.stubSyncPoint
 import dk.cachet.carp.data.application.stubTriggerIds
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.test.*
 
@@ -180,5 +184,28 @@ class SerializerDerivedMethodsTest
 
         assertEquals( Trilean.FALSE, StubDataTypes.isValidDataStreamSequence( sequence ) )
         assertEquals( Trilean.FALSE, noRegistrations.isValidDataStreamSequence( sequence ) )
+    }
+
+    private object TestObjects
+    {
+        const val additionalTypeName = "some.namespace.additional_type"
+        val additionalType = DataType.fromString( additionalTypeName )
+    }
+
+    @Serializable
+    @SerialName( TestObjects.additionalTypeName )
+    data class AdditionalType( val ignore: String = "" ) : Data
+
+    @Test
+    fun validation_functions_can_operate_on_merged_maps()
+    {
+        val additionalType = DataType.fromString( TestObjects.additionalTypeName )
+        val additionalTypes = mapOf(
+            additionalType to DataTypeMetaData( additionalType, "Additional type", DataTimeType.POINT )
+        )
+        val mergedTypes = StubDataTypes + additionalTypes
+
+        val measurement = Measurement( 0, null, TestObjects.additionalType, AdditionalType() )
+        mergedTypes.isValidMeasurement( measurement )
     }
 }

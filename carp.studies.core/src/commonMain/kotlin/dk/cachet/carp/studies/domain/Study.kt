@@ -63,6 +63,7 @@ class Study(
 
             // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
             study.consumeEvents()
+            study.wasLoadedFromSnapshot( snapshot )
 
             return study
         }
@@ -180,7 +181,7 @@ class Study(
     val canDeployToParticipants: Boolean get() = isLive
 
     /**
-     * Get a serializable snapshot of the current state of this [Study].
+     * Get an immutable snapshot of the current state of this [Study] using the specified snapshot [version].
      */
-    override fun getSnapshot(): StudySnapshot = StudySnapshot.fromStudy( this )
+    override fun getSnapshot( version: Int ): StudySnapshot = StudySnapshot.fromStudy( this, version )
 }

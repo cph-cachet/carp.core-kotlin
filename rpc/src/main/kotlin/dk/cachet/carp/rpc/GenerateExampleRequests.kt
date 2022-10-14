@@ -252,7 +252,7 @@ private val expectedDataStreams = setOf(
 )
 private val geoDataSequence =
     MutableDataStreamSequence<Geolocation>( phoneGeoDataStream, 0, listOf( startOfStudyTriggerId ) ).apply {
-        appendMeasurements( measurement( Geolocation( 55.68061908805645, 12.582050313435703 ), 1642505045000000L ) )
+        appendMeasurements( measurement( Geolocation( 55.68061908805645, 12.582050313435703, sensorSpecificData = SignalStrength( 0 ) ), 1642505045000000L ) )
         appendMeasurements( measurement( Geolocation( 55.680802203873114, 12.581802212861367 ), 1642505144000000L ) )
     }
 private val stepsDataSequence =

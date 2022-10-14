@@ -16,6 +16,7 @@ import kotlinx.serialization.Serializable
 data class StudyDeploymentSnapshot(
     override val id: UUID,
     override val createdOn: Instant,
+    override val version: Int,
     val studyProtocolSnapshot: StudyProtocolSnapshot,
     val participants: List<ParticipantStatus>,
     val registeredDevices: Set<String> = emptySet(),
@@ -29,15 +30,14 @@ data class StudyDeploymentSnapshot(
     companion object
     {
         /**
-         * Create a snapshot of the specified [StudyDeployment].
-         *
-         * @param studyDeployment The [StudyDeployment] to create a snapshot for.
+         * Create a snapshot of the specified [studyDeployment] using the specified snapshot [version].
          */
-        fun fromDeployment( studyDeployment: StudyDeployment ): StudyDeploymentSnapshot
+        fun fromDeployment( studyDeployment: StudyDeployment, version: Int ): StudyDeploymentSnapshot
         {
             return StudyDeploymentSnapshot(
                 studyDeployment.id,
                 studyDeployment.createdOn,
+                version,
                 studyDeployment.protocolSnapshot,
                 studyDeployment.participants.toList(),
                 studyDeployment.registeredDevices.map { it.key.roleName }.toSet(),

@@ -1,13 +1,25 @@
 package dk.cachet.carp.common.infrastructure.versioning
 
 import dk.cachet.carp.common.application.services.ApiVersion
+import dk.cachet.carp.common.infrastructure.serialization.CLASS_DISCRIMINATOR
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 
 internal val API_VERSION_FIELD = ApplicationServiceRequest<*, *>::apiVersion.name
+
+/**
+ * Get the class discriminator for this JSON object; or null if no class discriminator is found.
+ */
+fun Map<String, JsonElement>.getType(): String?
+{
+    // TODO: In case `CLASS_DISCRIMINATOR` is ever changed, this can't be hardcoded.
+    val type: JsonElement? = this[ CLASS_DISCRIMINATOR ]
+    return if ( type is JsonPrimitive && type.isString ) type.content else null
+}
 
 
 /**
@@ -27,11 +39,13 @@ abstract class ApiMigration( val minimumMinorVersion: Int, val targetMinorVersio
     abstract fun migrateResponse( request: JsonObject, response: ApiResponse, targetVersion: ApiVersion ): ApiResponse
     abstract fun migrateEvent( event: JsonObject ): JsonObject
 
-    protected fun JsonElement.replaceString( oldValue: String, newValue: String ): JsonPrimitive
-    {
-        require( this is JsonPrimitive && this.isString )
-        return JsonPrimitive( content.replace( oldValue, newValue ) )
-    }
+    protected fun JsonObject.migrate( migration: ApiJsonObjectMigrationBuilder.() -> Unit ): JsonObject =
+        ApiJsonObjectMigrationBuilder( this, minimumMinorVersion, targetMinorVersion )
+            .apply( migration ).build()
+
+    protected fun JsonArray.migrate( migration: ApiJsonArrayMigrationBuilder.() -> Unit ): JsonArray =
+        ApiJsonArrayMigrationBuilder( this, minimumMinorVersion, targetMinorVersion )
+            .apply( migration ).build()
 }
 
 
@@ -48,24 +62,4 @@ class ApiResponse( val response: JsonElement?, val ex: Exception? )
 }
 
 
-/**
- * An [ApiMigration] which does not require any changes to JSON, other than updating the API version.
- */
-class UnchangedMigration( minimumMinorVersion: Int, targetMinorVersion: Int ) :
-    ApiMigration( minimumMinorVersion, targetMinorVersion )
-{
-    override fun migrateRequest( request: JsonObject ): JsonObject = updateVersion( request )
-    override fun migrateResponse( request: JsonObject, response: ApiResponse, targetVersion: ApiVersion ): ApiResponse =
-        response
-    override fun migrateEvent( event: JsonObject ): JsonObject = updateVersion( event )
 
-    private fun updateVersion( toUpdate: JsonObject ) = toUpdate
-        .map {
-            if ( it.key == API_VERSION_FIELD )
-            {
-                it.key to it.value.replaceString( ".$minimumMinorVersion", ".$targetMinorVersion" )
-            }
-            else it.key to it.value
-        }
-        .let { fields -> JsonObject( fields.toMap() ) }
-}

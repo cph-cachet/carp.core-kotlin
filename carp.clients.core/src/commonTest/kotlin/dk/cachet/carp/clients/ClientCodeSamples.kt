@@ -2,8 +2,6 @@ package dk.cachet.carp.clients
 
 import dk.cachet.carp.clients.application.study.StudyStatus
 import dk.cachet.carp.clients.domain.SmartphoneClient
-import dk.cachet.carp.clients.domain.createDataCollectorFactory
-import dk.cachet.carp.clients.domain.createParticipantInvitation
 import dk.cachet.carp.clients.domain.data.DataListener
 import dk.cachet.carp.clients.infrastructure.InMemoryClientRepository
 import dk.cachet.carp.common.application.UUID

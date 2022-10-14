@@ -3,25 +3,14 @@ package dk.cachet.carp.clients.infrastructure
 import dk.cachet.carp.clients.domain.study.Study
 import dk.cachet.carp.clients.domain.study.StudySnapshot
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.serialization.JSON
-import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlin.test.*
+import dk.cachet.carp.common.test.infrastructure.SnapshotTest
 
 
 /**
  * Tests for [StudySnapshot].
  */
-class StudySnapshotTest
+class StudySnapshotTest : SnapshotTest<Study, StudySnapshot>( StudySnapshot.serializer() )
 {
-    @Test
-    fun can_serialize_and_deserialize_snapshot_using_JSON() = runTest {
-        val study = Study( UUID.randomUUID(), "Some device" )
-        val snapshot = study.getSnapshot()
-
-        val serialized = JSON.encodeToString( snapshot )
-        val parsed: StudySnapshot = JSON.decodeFromString( serialized )
-        assertEquals( snapshot, parsed )
-    }
+    override fun createObject() = Study( UUID.randomUUID(), "Some device" )
+    override fun changeSnapshotVersion( toChange: StudySnapshot, version: Int ) = toChange.copy( version = version )
 }

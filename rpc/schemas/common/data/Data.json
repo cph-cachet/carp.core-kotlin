@@ -21,6 +21,10 @@
       "then": { "$ref": "ECG.json" }
     },
     {
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.ppg" } } },
+      "then": { "$ref": "PPG.json" }
+    },
+    {
       "if": { "properties": { "__type": { "const": "dk.cachet.carp.heartrate" } } },
       "then": { "$ref": "HeartRate.json" }
     },
@@ -35,6 +39,10 @@
     {
       "if": { "properties": { "__type": { "const": "dk.cachet.carp.nongravitationalacceleration" } } },
       "then": { "$ref": "NonGravitationalAcceleration.json" }
+    },
+    {
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.eda" } } },
+      "then": { "$ref": "EDA.json" }
     },
     {
       "if": { "properties": { "__type": { "const": "dk.cachet.carp.acceleration" } } },
@@ -64,5 +72,19 @@
       "if": { "properties": { "__type": { "const": "dk.cachet.carp.input.sex" } } },
       "then": { "$ref": "input/Sex.json" }
     }
-  ]
+  ],
+  "$defs": {
+    "SensorData": {
+      "$anchor": "SensorData",
+      "type": "object",
+      "properties": {
+        "sensorSpecificData": {
+          "oneOf": [
+            { "$ref": "Data.json" },
+            { "type": "null" }
+          ]
+        }
+      }
+    }
+  }
 }

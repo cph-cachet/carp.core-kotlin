@@ -36,8 +36,7 @@ class StudyDeploymentStatusTest
     @Test
     fun can_serialize_and_deserialize_deployment_status_using_JSON()
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
-        val primary = protocol.primaryDevices.single()
+        val (protocol, primary, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         deployment.registrableDevices.forEach {
             deployment.registerDevice( it.device, it.device.createRegistration() )

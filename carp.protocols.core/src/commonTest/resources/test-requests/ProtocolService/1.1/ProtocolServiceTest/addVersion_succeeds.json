@@ -1,0 +1,80 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.Add",
+            "apiVersion": "1.1",
+            "protocol": {
+                "id": "1fed069b-5980-45d6-8907-97f0ba6d19a0",
+                "createdOn": "2022-10-04T10:34:27.972490200Z",
+                "version": 0,
+                "ownerId": "27879e75-ccc1-4866-9ab3-4ece1b735052",
+                "name": "Test protocol",
+                "description": "Test description"
+            }
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.AddVersion",
+            "apiVersion": "1.1",
+            "protocol": {
+                "id": "1fed069b-5980-45d6-8907-97f0ba6d19a0",
+                "createdOn": "2022-10-04T10:34:27.972490200Z",
+                "version": 0,
+                "ownerId": "27879e75-ccc1-4866-9ab3-4ece1b735052",
+                "name": "Test protocol",
+                "description": "Test description",
+                "primaryDevices": [
+                    {
+                        "__type": "dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration",
+                        "isPrimaryDevice": true,
+                        "roleName": "Stub primary device"
+                    }
+                ]
+            },
+            "versionTag": "Version 2"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+        }
+    },
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest.GetBy",
+            "apiVersion": "1.1",
+            "protocolId": "1fed069b-5980-45d6-8907-97f0ba6d19a0",
+            "versionTag": "Version 2"
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+            "id": "1fed069b-5980-45d6-8907-97f0ba6d19a0",
+            "createdOn": "2022-10-04T10:34:27.972490200Z",
+            "version": 0,
+            "ownerId": "27879e75-ccc1-4866-9ab3-4ece1b735052",
+            "name": "Test protocol",
+            "description": "Test description",
+            "primaryDevices": [
+                {
+                    "__type": "dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration",
+                    "isPrimaryDevice": true,
+                    "roleName": "Stub primary device"
+                }
+            ]
+        }
+    }
+]

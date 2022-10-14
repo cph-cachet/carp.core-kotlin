@@ -86,7 +86,7 @@ class StudyDeploymentTest
     @Test
     fun new_deployment_has_unregistered_primary_device()
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, primary, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         // Two devices can be registered, but none are by default.
@@ -96,7 +96,7 @@ class StudyDeploymentTest
 
         // Only the primary device requires deployment.
         val requiredDeployment = deployment.registrableDevices.single { it.requiresDeployment }
-        assertEquals( protocol.primaryDevices.single(), requiredDeployment.device )
+        assertEquals( primary, requiredDeployment.device )
     }
 
     @Test
@@ -182,7 +182,7 @@ class StudyDeploymentTest
     @Test
     fun cant_registerDevice_not_part_of_deployment()
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         val invalidDevice = StubPrimaryDeviceConfiguration( "Not part of deployment" )
@@ -312,6 +312,29 @@ class StudyDeploymentTest
     }
 
     @Test
+    fun unregisterDevice_for_connected_device_succeeds()
+    {
+        // Create deployment with registered devices.
+        val (protocol, primary, connected) = createSinglePrimaryWithConnectedDeviceProtocol()
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+        deployment.registerDevice( primary, primary.createRegistration() )
+        deployment.registerDevice( connected, connected.createRegistration() )
+
+        // Unregister device before device deployment obtained.
+        deployment.unregisterDevice( connected )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.DeployingDevices )
+
+        // Obtain device deployment.
+        deployment.registerDevice( connected, connected.createRegistration() )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( primary )
+        deployment.deviceDeployed( primary, deviceDeployment.lastUpdatedOn )
+
+        // Unregister device after device deployment obtained.
+        deployment.unregisterDevice( connected )
+        assertTrue( deployment.getStatus() is StudyDeploymentStatus.Running )
+    }
+
+    @Test
     fun unregisterDevice_invalidates_dependent_deployments()
     {
         val protocol = createEmptyProtocol()
@@ -340,9 +363,8 @@ class StudyDeploymentTest
     @Test
     fun unregisterDevice_fails_for_device_not_part_of_deployment()
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, primary, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
-        val primary = protocol.devices.first { it is AnyPrimaryDeviceConfiguration }
 
         assertFailsWith<IllegalArgumentException> { deployment.unregisterDevice( primary ) }
     }
@@ -350,7 +372,7 @@ class StudyDeploymentTest
     @Test
     fun unregisterDevice_fails_for_device_which_is_not_registered()
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         val invalidDevice = StubPrimaryDeviceConfiguration( "Not part of deployment" )
@@ -412,6 +434,27 @@ class StudyDeploymentTest
     }
 
     @Test
+    fun fromSnapshot_succeeds_for_deployed_device_with_unregistered_connected_devices()
+    {
+        // Create deployment.
+        val (protocol, primary, connected) = createSinglePrimaryWithConnectedDeviceProtocol()
+        val deployment: StudyDeployment = studyDeploymentFor( protocol )
+
+        // Deploy device.
+        deployment.registerDevice( primary, primary.createRegistration() )
+        deployment.registerDevice( connected, connected.createRegistration() )
+        val deviceDeployment = deployment.getDeviceDeploymentFor( primary )
+        deployment.deviceDeployed( primary, deviceDeployment.lastUpdatedOn )
+
+        // Unregister connected device after deployment.
+        deployment.unregisterDevice( connected )
+
+        val snapshot = deployment.getSnapshot()
+        val loaded = StudyDeployment.fromSnapshot( snapshot )
+        assertTrue( connected !in loaded.registeredDevices )
+    }
+
+    @Test
     fun getStatus_contains_invited_participants()
     {
         val deviceRoleName = "Primary"
@@ -436,9 +479,7 @@ class StudyDeploymentTest
     @Test
     fun getStatus_lifecycle_primary_and_connected()
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( "Primary", "Connected" )
-        val primary = protocol.devices.first { it.roleName == "Primary" } as AnyPrimaryDeviceConfiguration
-        val connected = protocol.devices.first { it.roleName == "Connected" }
+        val (protocol, primary, connected) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         // Start of deployment, no devices registered.
@@ -550,10 +591,8 @@ class StudyDeploymentTest
     @Test
     fun getDeviceDeploymentFor_succeeds()
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( "Primary", "Connected" )
+        val (protocol, primary, connected) = createSinglePrimaryWithConnectedDeviceProtocol()
         protocol.applicationData = "some data"
-        val primary = protocol.primaryDevices.first { it.roleName == "Primary" }
-        val connected = protocol.devices.first { it.roleName == "Connected" }
         val primaryTask = StubTaskConfiguration( "Primary task" )
         val connectedTask = StubTaskConfiguration( "Connected task" )
         protocol.addTaskControl( primary.atStartOfStudy().start( primaryTask, primary ) )
@@ -593,9 +632,7 @@ class StudyDeploymentTest
     @Test
     fun getDeviceDeploymentFor_with_preregistered_device_succeeds()
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( "Primary", "Connected" )
-        val primary = protocol.primaryDevices.first { it.roleName == "Primary" }
-        val connected = protocol.devices.first { it.roleName == "Connected" }
+        val (protocol, primary, connected) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( primary, DefaultDeviceRegistration() )
 
@@ -610,8 +647,7 @@ class StudyDeploymentTest
     @Test
     fun getDeviceDeploymentFor_without_preregistered_device_succeeds()
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( "Primary", "Connected" )
-        val primary = protocol.primaryDevices.first { it.roleName == "Primary" }
+        val (protocol, primary, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( primary, DefaultDeviceRegistration() )
 
@@ -684,7 +720,7 @@ class StudyDeploymentTest
     @Test
     fun getDeviceDeploymentFor_fails_when_device_not_in_protocol()
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol()
+        val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
 
         assertFailsWith<IllegalArgumentException>
@@ -696,8 +732,7 @@ class StudyDeploymentTest
     @Test
     fun getDeviceDeploymentFor_fails_when_device_cant_be_deployed_yet()
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( "Primary", "Connected" )
-        val primary = protocol.primaryDevices.first { it.roleName == "Primary" }
+        val (protocol, primary, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
 
         assertFailsWith<IllegalStateException> { deployment.getDeviceDeploymentFor( primary ) }
@@ -791,8 +826,7 @@ class StudyDeploymentTest
     @Test
     fun deviceDeployed_fails_when_connected_device_is_unregistered()
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( "Primary", "Connected" )
-        val primary = protocol.primaryDevices.first { it.roleName == "Primary" }
+        val (protocol, primary, _) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( primary, DefaultDeviceRegistration() )
         val deviceDeployment = deployment.getDeviceDeploymentFor( primary )
@@ -864,9 +898,7 @@ class StudyDeploymentTest
     @Test
     fun modifications_after_stop_not_allowed()
     {
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( "Primary", "Connected" )
-        val primary = protocol.primaryDevices.first { it.roleName == "Primary" }
-        val connected = protocol.devices.first { it.roleName == "Connected" }
+        val (protocol, primary, connected) = createSinglePrimaryWithConnectedDeviceProtocol()
         val deployment = studyDeploymentFor( protocol )
         deployment.registerDevice( primary, primary.createRegistration() )
         deployment.registerDevice( connected, connected.createRegistration() )

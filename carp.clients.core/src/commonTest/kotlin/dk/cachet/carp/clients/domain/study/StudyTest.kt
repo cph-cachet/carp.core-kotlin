@@ -1,8 +1,8 @@
 package dk.cachet.carp.clients.domain.study
 
 import dk.cachet.carp.clients.application.study.StudyStatus
-import dk.cachet.carp.clients.domain.connectedDevice
-import dk.cachet.carp.clients.domain.smartphone
+import dk.cachet.carp.clients.connectedDevice
+import dk.cachet.carp.clients.smartphone
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.users.AssignedTo
@@ -234,6 +234,7 @@ class StudyTest
         val running = deployment.getStatus()
         study.deploymentStatusReceived( running )
 
+        assertTrue( running is StudyDeploymentStatus.Running )
         assertEquals(
             StudyStatus.Running( study.id, running, deviceDeployment ),
             study.getStatus()
@@ -268,6 +269,7 @@ class StudyTest
         val running = deployment.getStatus()
         study.deploymentStatusReceived( running )
 
+        assertTrue( running is StudyDeploymentStatus.Running )
         assertEquals(
             StudyStatus.Running( study.id, running, deployment.getDeviceDeploymentFor( device ) ),
             study.getStatus()

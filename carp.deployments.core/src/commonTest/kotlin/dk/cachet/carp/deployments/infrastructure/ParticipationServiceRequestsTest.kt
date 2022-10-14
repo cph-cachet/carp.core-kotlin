@@ -33,6 +33,6 @@ class ParticipationServiceRequestsTest : ApplicationServiceRequestsTest<Particip
 
     override fun createServiceLoggingProxy(): ApplicationServiceLoggingProxy<ParticipationService, ParticipationService.Event> =
         ParticipationServiceHostTest
-            .createService()
+            .createSUT()
             .let { ParticipationServiceLoggingProxy( it.participationService, it.eventBus ) }
 }

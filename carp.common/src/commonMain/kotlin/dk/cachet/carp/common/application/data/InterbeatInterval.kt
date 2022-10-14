@@ -10,4 +10,4 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @SerialName( CarpDataTypes.INTERBEAT_INTERVAL_TYPE_NAME )
-object InterbeatInterval : Data
+data class InterbeatInterval( override val sensorSpecificData: Data? = null ) : SensorData

@@ -94,18 +94,14 @@ class StudyDeployment private constructor(
                 }
 
                 // In case snapshot indicates the device is currently not registered, unregister it.
-                if ( roleName !in snapshot.registeredDevices )
-                {
-                    deployment.unregisterDevice( device )
-                }
+                if ( roleName !in snapshot.registeredDevices ) deployment.unregisterDevice( device )
             }
 
             // Add deployed devices.
             snapshot.deployedDevices.forEach { roleName ->
                 val deployedDevice = deployment.protocolSnapshot.primaryDevices.firstOrNull { it.roleName == roleName }
                     ?: throw IllegalArgumentException( "Can't find deployed device with role name '$roleName' in snapshot." )
-                val deviceDeployment = deployment.getDeviceDeploymentFor( deployedDevice )
-                deployment.deviceDeployed( deployedDevice, deviceDeployment.lastUpdatedOn )
+                deployment._deployedDevices.add( deployedDevice )
             }
 
             // Add invalidated deployed devices.
@@ -120,6 +116,7 @@ class StudyDeployment private constructor(
 
             // Events introduced by loading the snapshot are not relevant to a consumer wanting to persist changes.
             deployment.consumeEvents()
+            deployment.wasLoadedFromSnapshot( snapshot )
 
             return deployment
         }
@@ -449,7 +446,8 @@ class StudyDeployment private constructor(
     fun deviceDeployed( device: AnyPrimaryDeviceConfiguration, deviceDeploymentLastUpdatedOn: Instant )
     {
         // Verify whether the specified device is part of the protocol of this deployment.
-        require( device in protocolSnapshot.primaryDevices ) { "The specified primary device is not part of the protocol of this deployment." }
+        require( device in protocolSnapshot.primaryDevices )
+            { "The specified primary device is not part of the protocol of this deployment." }
 
         // Verify whether deployment matches the expected deployment.
         val latestDeployment = getDeviceDeploymentFor( device )
@@ -462,7 +460,8 @@ class StudyDeployment private constructor(
             it is DeviceDeploymentStatus.Deployed ||
             it is DeviceDeploymentStatus.NotDeployed && it.isReadyForDeployment
         }
-        check( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
+        check( canDeploy )
+            { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
         _deployedDevices
             .add( device )
@@ -496,7 +495,8 @@ class StudyDeployment private constructor(
 
 
     /**
-     * Get a serializable snapshot of the current state of this [StudyDeployment].
+     * Get an immutable snapshot of the current state of this [StudyDeployment] using the specified snapshot [version].
      */
-    override fun getSnapshot(): StudyDeploymentSnapshot = StudyDeploymentSnapshot.fromDeployment( this )
+    override fun getSnapshot( version: Int ): StudyDeploymentSnapshot =
+        StudyDeploymentSnapshot.fromDeployment( this, version )
 }

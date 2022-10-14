@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "allOf": [ { "$ref": "Data.json#SensorData" } ],
+  "properties": {
+    "__type": { "const": "dk.cachet.carp.ppg" },
+    "lightSources": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "number" }
+    }
+  },
+  "required": [ "__type", "lightSources" ],
+  "unevaluatedProperties": false
+}

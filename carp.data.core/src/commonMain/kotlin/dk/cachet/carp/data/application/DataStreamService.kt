@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
  */
 interface DataStreamService : ApplicationService<DataStreamService, DataStreamService.Event>
 {
-    companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+    companion object { val API_VERSION = ApiVersion( 1, 1 ) }
 
     @Serializable
     sealed class Event : IntegrationEvent<DataStreamService>

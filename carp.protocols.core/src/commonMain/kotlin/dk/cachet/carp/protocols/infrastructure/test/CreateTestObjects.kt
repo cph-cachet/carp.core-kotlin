@@ -3,6 +3,9 @@ package dk.cachet.carp.protocols.infrastructure.test
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
+import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.devices.PrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.users.AssignedTo
@@ -49,14 +52,22 @@ fun createSinglePrimaryDeviceProtocol( primaryDeviceName: String = "Primary" ): 
 fun createSinglePrimaryWithConnectedDeviceProtocol(
     primaryDeviceName: String = "Primary",
     connectedDeviceName: String = "Connected"
-): StudyProtocol
+): SinglePrimaryWithConnectedTestProtocol
 {
     val protocol = createEmptyProtocol()
     val primary = StubPrimaryDeviceConfiguration( primaryDeviceName )
     protocol.addPrimaryDevice( primary )
-    protocol.addConnectedDevice( StubDeviceConfiguration( connectedDeviceName ), primary )
-    return protocol
+    val connected = StubDeviceConfiguration( connectedDeviceName )
+    protocol.addConnectedDevice( connected, primary )
+
+    return SinglePrimaryWithConnectedTestProtocol( protocol, primary, connected )
 }
+
+data class SinglePrimaryWithConnectedTestProtocol(
+    val protocoL: StudyProtocol,
+    val primary: AnyPrimaryDeviceConfiguration,
+    val connected: AnyDeviceConfiguration
+)
 
 /**
  * Creates a study protocol with a couple of devices and tasks added.

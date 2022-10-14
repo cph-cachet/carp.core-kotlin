@@ -1,0 +1,53 @@
+[
+    {
+        "outcome": "Succeeded",
+        "request": {
+            "__type": "dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceRequest.CreateCustomProtocol",
+            "apiVersion": "1.1",
+            "ownerId": "9c49eaa5-845b-4b25-91d0-85d10117a064",
+            "name": "Name",
+            "customProtocol": "{...}",
+            "description": null
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "response": {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "createdOn": "1970-01-01T00:00:00Z",
+            "version": 0,
+            "ownerId": "9c49eaa5-845b-4b25-91d0-85d10117a064",
+            "name": "Name",
+            "primaryDevices": [
+                {
+                    "__type": "dk.cachet.carp.common.application.devices.CustomProtocolDevice",
+                    "isPrimaryDevice": true,
+                    "roleName": "Custom device"
+                }
+            ],
+            "tasks": [
+                {
+                    "__type": "dk.cachet.carp.common.application.tasks.CustomProtocolTask",
+                    "name": "Custom device task",
+                    "studyProtocol": "{...}"
+                }
+            ],
+            "triggers": {
+                "0": {
+                    "__type": "dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger",
+                    "sourceDeviceRoleName": "Custom device",
+                    "elapsedTime": "PT0S"
+                }
+            },
+            "taskControls": [
+                {
+                    "triggerId": 0,
+                    "taskName": "Custom device task",
+                    "destinationDeviceRoleName": "Custom device",
+                    "control": "Start"
+                }
+            ]
+        }
+    }
+]

@@ -1,10 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "type": "object",
+  "allOf": [ { "$ref": "Data.json#SensorData" } ],
   "properties": {
     "__type": { "const": "dk.cachet.carp.heartrate" },
-    "bpm": { "type": "integer" }
+    "bpm": {
+      "type": "integer",
+      "minimum": 0
+    }
   },
   "required": [ "__type", "bpm" ],
-  "additionalProperties": false
+  "unevaluatedProperties": false
 }

@@ -35,7 +35,10 @@ interface ParticipationServiceTest
     }
 
 
-    data class DependentServices(
+    /**
+     * System under test: the [participationService] and all dependencies to be used in tests.
+     */
+    data class SUT(
         val participationService: ParticipationService,
         val deploymentService: DeploymentService,
         val accountService: AccountService,
@@ -43,14 +46,14 @@ interface ParticipationServiceTest
     )
 
     /**
-     * Create a deployment service and account service it depends on to be used in the tests.
+     * Create the system under test (SUT): the [ParticipationService] and all dependencies to be used in tests.
      */
-    fun createService(): DependentServices
+    fun createSUT(): SUT
 
 
     @Test
     fun getActiveParticipationInvitations_succeeds() = runTest {
-        val (participationService, deploymentService, accountService) = createService()
+        val (participationService, deploymentService, accountService) = createSUT()
         val protocol = createSinglePrimaryDeviceProtocol()
         val identity = AccountIdentity.fromEmailAddress( "test@test.com" )
         val invitation = StudyInvitation( "Test study", "description", "Custom data" )
@@ -75,7 +78,7 @@ interface ParticipationServiceTest
 
     @Test
     fun getParticipantData_initially_returns_null_for_all_expected_data() = runTest {
-        val (participationService, deploymentService, _) = createService()
+        val (participationService, deploymentService, _) = createSUT()
 
         // Create protocol with one common custom attribute and 'sex' assigned to two participant roles.
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
@@ -109,14 +112,14 @@ interface ParticipationServiceTest
 
     @Test
     fun getParticipantData_fails_for_unknown_deploymentId() = runTest {
-        val (participationService, _, _) = createService()
+        val (participationService, _, _) = createSUT()
 
         assertFailsWith<IllegalArgumentException> { participationService.getParticipantData( unknownId ) }
     }
 
     @Test
     fun getParticipantDataList_succeeds() = runTest {
-        val (participationService, deploymentService, _) = createService()
+        val (participationService, deploymentService, _) = createSUT()
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
         val protocolSnapshot = protocol.getSnapshot()
         val invitation1 = createParticipantInvitation()
@@ -133,7 +136,7 @@ interface ParticipationServiceTest
 
     @Test
     fun getParticipantDataList_fails_for_unknown_deploymentId() = runTest {
-        val (participationService, _, _) = createService()
+        val (participationService, _, _) = createSUT()
 
         val deploymentIds = setOf( unknownId )
         assertFailsWith<IllegalArgumentException> { participationService.getParticipantDataList( deploymentIds ) }
@@ -141,7 +144,7 @@ interface ParticipationServiceTest
 
     @Test
     fun setParticipantData_assigned_to_all_roles_succeeds() = runTest {
-        val (participationService, deploymentService, _) = createService()
+        val (participationService, deploymentService, _) = createSUT()
 
         // Create protocol without roles with expected 'sex' participant data.
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
@@ -163,7 +166,7 @@ interface ParticipationServiceTest
 
     @Test
     fun setParticipantData_assigned_to_role_succeeds() = runTest {
-        val (participationService, deploymentService, _) = createService()
+        val (participationService, deploymentService, _) = createSUT()
 
         // Create protocol with expected 'sex' participant data for a single participant role.
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )
@@ -191,7 +194,7 @@ interface ParticipationServiceTest
 
     @Test
     fun setParticipantData_fails_for_unknown_deploymentId() = runTest {
-        val (participationService, _, _) = createService()
+        val (participationService, _, _) = createSUT()
 
         val toSet = mapOf( CarpInputDataTypes.SEX to Sex.Male )
         assertFailsWith<IllegalArgumentException>
@@ -202,7 +205,7 @@ interface ParticipationServiceTest
 
     @Test
     fun setParticipantData_fails_for_unexpected_input_for_protocol() = runTest {
-        val (participationService, deploymentService, _) = createService()
+        val (participationService, deploymentService, _) = createSUT()
         val studyDeploymentId = addTestDeployment( deploymentService )
 
         val toSet = mapOf( CarpInputDataTypes.SEX to Sex.Male )
@@ -214,7 +217,7 @@ interface ParticipationServiceTest
 
     @Test
     fun setParticipantData_fails_for_invalid_data() = runTest {
-        val (participationService, deploymentService, _) = createService()
+        val (participationService, deploymentService, _) = createSUT()
 
         // Create protocol with expected 'sex' participant data.
         val protocol = createSinglePrimaryDeviceProtocol( deviceRoleName )

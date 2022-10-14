@@ -94,7 +94,7 @@ sealed class StudyStatus
     /**
      * Deployment information has been received.
      */
-    interface DeviceDeploymentReceived
+    interface DeviceDeploymentReceived : DeploymentStatusAvailable
     {
         // TODO: This should be consumed within this domain model and not be public.
         //  Currently, it is in order to work towards a first MVP which includes server/client communication through the domain model.
@@ -145,7 +145,7 @@ sealed class StudyStatus
      */
     data class Running(
         override val id: UUID,
-        override val deploymentStatus: StudyDeploymentStatus,
+        override val deploymentStatus: StudyDeploymentStatus.Running,
         override val deploymentInformation: PrimaryDeviceDeployment
     ) : StudyStatus(), DeviceDeploymentReceived, DeploymentStatusAvailable
     {

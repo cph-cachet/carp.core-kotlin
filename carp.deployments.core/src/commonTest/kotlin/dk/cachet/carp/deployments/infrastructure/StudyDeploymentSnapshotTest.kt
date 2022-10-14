@@ -6,6 +6,8 @@ import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.common.infrastructure.test.makeUnknown
+import dk.cachet.carp.common.test.infrastructure.SnapshotTest
+import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.deployments.domain.StudyDeploymentSnapshot
 import dk.cachet.carp.deployments.domain.createComplexDeployment
 import dk.cachet.carp.deployments.domain.studyDeploymentFor
@@ -19,24 +21,17 @@ import kotlin.test.*
 /**
  * Tests for [StudyDeploymentSnapshot] relying on core infrastructure.
  */
-class StudyDeploymentSnapshotTest
+class StudyDeploymentSnapshotTest :
+    SnapshotTest<StudyDeployment, StudyDeploymentSnapshot>( StudyDeploymentSnapshot.serializer() )
 {
+    override fun createObject() = createComplexDeployment()
+    override fun changeSnapshotVersion( toChange: StudyDeploymentSnapshot, version: Int ) =
+        toChange.copy( version = version )
+
     @BeforeTest
     fun initializeSerializer()
     {
         JSON = createTestJSON()
-    }
-
-    @Test
-    fun can_serialize_and_deserialize_snapshot_using_JSON()
-    {
-        val deployment = createComplexDeployment()
-        val snapshot: StudyDeploymentSnapshot = deployment.getSnapshot()
-
-        val serialized: String = JSON.encodeToString( snapshot )
-        val parsed: StudyDeploymentSnapshot = JSON.decodeFromString( serialized )
-
-        assertEquals( snapshot, parsed )
     }
 
     /**

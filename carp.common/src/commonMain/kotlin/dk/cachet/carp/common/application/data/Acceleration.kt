@@ -8,4 +8,9 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @SerialName( CarpDataTypes.ACCELERATION_TYPE_NAME )
-data class Acceleration( val x: Double, val y: Double, val z: Double ) : Data
+data class Acceleration(
+    val x: Double,
+    val y: Double,
+    val z: Double,
+    override val sensorSpecificData: Data? = null
+) : SensorData

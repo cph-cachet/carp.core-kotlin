@@ -11,11 +11,12 @@ class OutputDeploymentServiceTestRequests :
     OutputTestRequests<DeploymentService>( DeploymentService::class ),
     DeploymentServiceTest
 {
-    override fun createService(): DeploymentService
+    override fun createSUT(): DeploymentServiceTest.SUT
     {
-        val services = DeploymentServiceHostTest.createService()
+        val services = DeploymentServiceHostTest.createSUT()
+        val service = DeploymentServiceLoggingProxy( services.deploymentService, services.eventBus )
+        loggedService = service
 
-        return DeploymentServiceLoggingProxy( services.first, services.second )
-            .also { loggedService = it }
+        return DeploymentServiceTest.SUT( service, services.eventBus )
     }
 }

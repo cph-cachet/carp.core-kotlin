@@ -28,37 +28,29 @@ class StagedParticipantGroupTest
         val group = StagedParticipantGroup()
         val participantId = UUID.randomUUID()
         group.addParticipants( setOf( participantId ) )
-        val stubInvitedStatus =
-            StudyDeploymentStatus.Invited( Clock.System.now(), UUID.randomUUID(), emptyList(), emptyList(), Clock.System.now() )
-        group.markAsInvited( stubInvitedStatus )
+        group.markAsDeployed()
 
         val newParticipantId = UUID.randomUUID()
         assertFailsWith<IllegalStateException> { group.addParticipants( setOf( newParticipantId ) ) }
     }
 
     @Test
-    fun markAsInvited_succeeds()
+    fun markAsDeployed_succeeds()
     {
         val group = StagedParticipantGroup()
         val participantId = UUID.randomUUID()
         group.addParticipants( setOf( participantId ) )
         assertFalse( group.isDeployed )
 
-        val expectedInvitedOn: Instant = Clock.System.now()
-        val mockInvitedStatus =
-            StudyDeploymentStatus.Invited( expectedInvitedOn, UUID.randomUUID(), emptyList(), emptyList(), Clock.System.now() )
-        group.markAsInvited( mockInvitedStatus )
+        group.markAsDeployed()
 
-        assertEquals( expectedInvitedOn, group.invitedOn )
         assertTrue( group.isDeployed )
     }
 
     @Test
-    fun markAsInvited_fails_when_no_participants_are_added()
+    fun markAsDeployed_fails_when_no_participants_are_added()
     {
         val group = StagedParticipantGroup()
-        val stubInvitedStatus =
-            StudyDeploymentStatus.Invited( Clock.System.now(), UUID.randomUUID(), emptyList(), emptyList(), Clock.System.now() )
-        assertFailsWith<IllegalStateException> { group.markAsInvited( stubInvitedStatus ) }
+        assertFailsWith<IllegalStateException> { group.markAsDeployed() }
     }
 }

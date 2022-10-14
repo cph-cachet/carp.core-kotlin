@@ -140,4 +140,22 @@ class SmartphoneSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilde
      */
     fun geolocation( builder: AdaptiveGranularitySamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
         addConfiguration( Smartphone.Sensors.GEOLOCATION, builder )
+
+    /**
+     * Configure sampling configuration for [CarpDataTypes.NON_GRAVITATIONAL_ACCELERATION].
+     */
+    fun nonGravitationalAcceleration( builder: IntervalSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
+        addConfiguration( Smartphone.Sensors.NON_GRAVITATIONAL_ACCELERATION, builder )
+
+    /**
+     * Configure sampling configuration for [CarpDataTypes.ACCELERATION].
+     */
+    fun acceleration( builder: IntervalSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
+        addConfiguration( Smartphone.Sensors.ACCELERATION, builder )
+
+    /**
+     * Configure sampling configuration for [CarpDataTypes.ANGULAR_VELOCITY].
+     */
+    fun angularVelocity( builder: IntervalSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
+        addConfiguration( Smartphone.Sensors.ANGULAR_VELOCITY, builder )
 }

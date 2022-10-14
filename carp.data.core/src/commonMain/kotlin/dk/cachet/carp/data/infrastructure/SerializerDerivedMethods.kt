@@ -54,9 +54,9 @@ inline fun <reified TData : Data> measurement(
 
 /**
  * Determines whether [Data] and [DataTimeType] of [measurement] corresponds to the expected values for [DataType]
- * as determined by [DataTypeMetaDataMap], or [Trilean.UNKNOWN] in case the type of [DataType] is not registered.
+ * as determined by [DataTypeMetaData] in this map, or [Trilean.UNKNOWN] in case the type of [DataType] is not registered.
  */
-fun DataTypeMetaDataMap.isValidMeasurement( measurement: Measurement<*> ): Trilean
+fun Map<DataType, DataTypeMetaData>.isValidMeasurement( measurement: Measurement<*> ): Trilean
 {
     val expectedDataType = measurement.dataType
     val registeredType = this[ expectedDataType ] ?: return Trilean.UNKNOWN
@@ -70,12 +70,12 @@ fun DataTypeMetaDataMap.isValidMeasurement( measurement: Measurement<*> ): Trile
 }
 
 /**
- * Determines whether all [Measurement]s in [sequence] are valid as determined by [DataTypeMetaDataMap],
+ * Determines whether all [Measurement]s in [sequence] are valid as determined by [DataTypeMetaData] in this map,
  * and all timestamps are ordered correctly.
- * If data type isn't registered in [DataTypeMetaDataMap], [Trilean.UNKNOWN] is returned if measurements
+ * If data type isn't registered in this map, [Trilean.UNKNOWN] is returned if measurements
  * all share the same [DataTimeType] and are ordered correspondingly; [Trilean.FALSE] otherwise.
  */
-fun DataTypeMetaDataMap.isValidDataStreamSequence( sequence: DataStreamSequence<*> ): Trilean
+fun Map<DataType, DataTypeMetaData>.isValidDataStreamSequence( sequence: DataStreamSequence<*> ): Trilean
 {
     val expectedDataType = sequence.dataStream.dataType
     val registeredType: DataTypeMetaData? = this[ expectedDataType ]

@@ -141,8 +141,8 @@ interface StudyProtocolRepositoryTest
     fun replace_fails_for_protocol_which_does_not_exist() = runTest {
         val repo = createRepository()
 
-        val protocol = StudyProtocol( ownerId, "Study")
-        assertFailsWith<IllegalArgumentException> { repo.replace( protocol, ProtocolVersion( "Version" )) }
+        val protocol = StudyProtocol( ownerId, "Study" )
+        assertFailsWith<IllegalArgumentException> { repo.replace( protocol, ProtocolVersion( "Version" ) ) }
     }
 
     @Test

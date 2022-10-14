@@ -110,13 +110,12 @@ class ValidationTest
     {
         val primaryRoleName = "Primary"
         val connectedRoleName = "Connected"
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( primaryRoleName, connectedRoleName ).getSnapshot()
+        val (protocol, _, connected) =
+            createSinglePrimaryWithConnectedDeviceProtocol( primaryRoleName, connectedRoleName )
 
-        val preregistrations = mapOf(
-            connectedRoleName to protocol.connectedDevices.first { it.roleName == connectedRoleName }.createRegistration()
-        )
-
-        protocol.throwIfInvalidPreregistrations( preregistrations )
+        val preregistrations = mapOf( connectedRoleName to connected.createRegistration() )
+        val protocolSnapshot = protocol.getSnapshot()
+        protocolSnapshot.throwIfInvalidPreregistrations( preregistrations )
     }
 
     @Test
@@ -124,14 +123,13 @@ class ValidationTest
     {
         val primaryRoleName = "Primary"
         val connectedRoleName = "Connected"
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( primaryRoleName, connectedRoleName ).getSnapshot()
+        val (protocol, primary, _) =
+            createSinglePrimaryWithConnectedDeviceProtocol( primaryRoleName, connectedRoleName )
 
-        val preregistrations = mapOf(
-            primaryRoleName to protocol.primaryDevices.first { it.roleName == primaryRoleName }.createRegistration()
-        )
-
+        val preregistrations = mapOf( primaryRoleName to primary.createRegistration() )
+        val protocolSnapshot = protocol.getSnapshot()
         assertFailsWith<IllegalArgumentException> {
-            protocol.throwIfInvalidPreregistrations( preregistrations )
+            protocolSnapshot.throwIfInvalidPreregistrations( preregistrations )
         }
     }
 
@@ -153,7 +151,7 @@ class ValidationTest
     {
         val primaryRoleName = "Primary"
         val connectedRoleName = "Connected"
-        val protocol = createSinglePrimaryWithConnectedDeviceProtocol( primaryRoleName, connectedRoleName ).getSnapshot()
+        val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol( primaryRoleName, connectedRoleName )
 
         val invalidRegistration =
             object : DeviceRegistration()
@@ -163,8 +161,9 @@ class ValidationTest
             }
         val preregistrations = mapOf( connectedRoleName to invalidRegistration )
 
+        val protocolSnapshot = protocol.getSnapshot()
         assertFailsWith<IllegalArgumentException> {
-            protocol.throwIfInvalidPreregistrations( preregistrations )
+            protocolSnapshot.throwIfInvalidPreregistrations( preregistrations )
         }
     }
 }
