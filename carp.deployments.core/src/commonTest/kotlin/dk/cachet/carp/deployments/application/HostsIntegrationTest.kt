@@ -1,6 +1,7 @@
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.SensorData
 import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.createApplicationServiceAdapter
 import dk.cachet.carp.common.application.tasks.Measure
@@ -19,6 +20,7 @@ import dk.cachet.carp.data.application.MutableDataStreamSequence
 import dk.cachet.carp.data.application.SyncPoint
 import dk.cachet.carp.data.infrastructure.InMemoryDataStreamService
 import dk.cachet.carp.data.infrastructure.dataStreamId
+import dk.cachet.carp.data.infrastructure.getDataType
 import dk.cachet.carp.data.infrastructure.measurement
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
@@ -28,6 +30,7 @@ import dk.cachet.carp.deployments.domain.users.ParticipantGroupService
 import dk.cachet.carp.deployments.infrastructure.InMemoryAccountService
 import dk.cachet.carp.deployments.infrastructure.InMemoryDeploymentRepository
 import dk.cachet.carp.deployments.infrastructure.InMemoryParticipationRepository
+import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
@@ -118,6 +121,19 @@ class HostsIntegrationTest
     }
 
     @Test
+    fun deviceDeployed_opens_data_streams() = runTest {
+        // Create a device deployment for a protocol with a known data stream.
+        val protocol = createSinglePrimaryDeviceProtocol()
+        addPrimaryDeviceDataStream<StubDataPoint>( protocol )
+        val deploymentId = createSinglePrimaryDeviceDeployment( protocol )
+
+        val primaryDevice = protocol.primaryDevices.single()
+        val dataStreamId = dataStreamId<StubDataPoint>( deploymentId, primaryDevice.roleName )
+        val stream = dataStreamService.getDataStream( dataStreamId, 0 )
+        assertTrue( stream.isEmpty() )
+    }
+
+    @Test
     fun removing_deployment_removes_participant_group_and_data_streams() = runTest {
         var deploymentRemoved: DeploymentService.Event.StudyDeploymentRemoved? = null
         eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentRemoved::class, this )
@@ -126,29 +142,47 @@ class HostsIntegrationTest
         }
         eventBus.activateHandlers( this )
 
-        // Create a protocol which when deployed has one `STUB_DATA_TYPE` data stream.
-        val primaryDevice = StubPrimaryDeviceConfiguration()
-        val deviceRoleName = primaryDevice.roleName
-        val protocol = createEmptyProtocol()
-        protocol.addPrimaryDevice( primaryDevice )
-        val task = StubTaskConfiguration( "Task", listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) ) )
-        val atStartOfStudy = protocol.addTrigger( primaryDevice.atStartOfStudy() )
-        protocol.addTaskControl( atStartOfStudy.start( task, primaryDevice ) )
-
-        // Create deployment and complete device deployment so that data streams are opened.
-        val invitation = createParticipantInvitation()
-        val deploymentId = UUID.randomUUID()
-        deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
-        deploymentService.registerDevice( deploymentId, deviceRoleName, primaryDevice.createRegistration() )
-        val deviceDeployment = deploymentService.getDeviceDeploymentFor( deploymentId, primaryDevice.roleName )
-        deploymentService.deviceDeployed( deploymentId, deviceRoleName, deviceDeployment.lastUpdatedOn )
+        // Create a device deployment for a protocol with a known data stream.
+        val protocol = createSinglePrimaryDeviceProtocol()
+        addPrimaryDeviceDataStream<StubDataPoint>( protocol )
+        val deploymentId = createSinglePrimaryDeviceDeployment( protocol )
 
         deploymentService.removeStudyDeployments( setOf( deploymentId ) )
 
         assertEquals( deploymentId, deploymentRemoved?.studyDeploymentId )
+        val primaryDevice = protocol.primaryDevices.single()
         assertFailsWith<IllegalArgumentException> { participationService.getParticipantData( deploymentId ) }
-        val dataStreamId = dataStreamId<StubDataPoint>( deploymentId, deviceRoleName )
+        val dataStreamId = dataStreamId<StubDataPoint>( deploymentId, primaryDevice.roleName )
         assertFailsWith<IllegalArgumentException> { dataStreamService.getDataStream( dataStreamId, 0 ) }
+    }
+
+    /**
+     * Creates a deployment using [deploymentService] for a [protocol] that only contains a single primary device,
+     * and registers and deploys the primary devices.
+     */
+    private suspend fun createSinglePrimaryDeviceDeployment( protocol: StudyProtocol ): UUID
+    {
+        val deploymentId = UUID.randomUUID()
+        val invitation = createParticipantInvitation()
+        deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
+        val primaryDevice = protocol.primaryDevices.single()
+        deploymentService.registerDevice( deploymentId, primaryDevice.roleName, primaryDevice.createRegistration() )
+        val deviceDeployment = deploymentService.getDeviceDeploymentFor( deploymentId, primaryDevice.roleName )
+        deploymentService.deviceDeployed( deploymentId, primaryDevice.roleName, deviceDeployment.lastUpdatedOn )
+
+        return deploymentId
+    }
+
+    /**
+     * Update the protocol to measure [TData] at the start of the study on the primary device.
+     */
+    private inline fun <reified TData : SensorData> addPrimaryDeviceDataStream( protocol: StudyProtocol )
+    {
+        val dataType = getDataType( TData::class )
+        val primaryDevice = protocol.primaryDevices.single()
+        val task = StubTaskConfiguration( "Task", listOf( Measure.DataStream( dataType ) ) )
+        val atStartOfStudy = protocol.addTrigger( primaryDevice.atStartOfStudy() )
+        protocol.addTaskControl( atStartOfStudy.start( task, primaryDevice ) )
     }
 
     @Test
