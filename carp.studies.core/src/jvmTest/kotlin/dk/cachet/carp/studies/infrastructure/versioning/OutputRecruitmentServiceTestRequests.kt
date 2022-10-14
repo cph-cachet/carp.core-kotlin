@@ -11,13 +11,13 @@ class OutputRecruitmentServiceTestRequests :
     OutputTestRequests<RecruitmentService>( RecruitmentService::class ),
     RecruitmentServiceTest
 {
-    override fun createService(): RecruitmentServiceTest.DependentServices
+    override fun createSUT(): RecruitmentServiceTest.SUT
     {
-        val services = RecruitmentServiceHostTest.createService()
+        val services = RecruitmentServiceHostTest.createSUT()
         val service = RecruitmentServiceLoggingProxy( services.recruitmentService, services.eventBus )
         loggedService = service
 
-        return RecruitmentServiceTest.DependentServices(
+        return RecruitmentServiceTest.SUT(
             service,
             services.studyService,
             services.eventBus

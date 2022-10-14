@@ -21,20 +21,20 @@ private val unknownId: UUID = UUID.randomUUID()
  */
 interface DeploymentServiceTest
 {
-    data class DependentServices(
-        val deploymentService: DeploymentService,
-        val eventBus: EventBus
-    )
+    /**
+     * System under test: the [deploymentService] and all dependencies to be used in tests.
+     */
+    data class SUT( val deploymentService: DeploymentService, val eventBus: EventBus )
 
     /**
-     * Create a deployment service and dependent services to be used in tests.
+     * Create the system under test (SUT): the [DeploymentService] and all dependencies to be used in tests.
      */
-    fun createService(): DependentServices
+    fun createSUT(): SUT
 
 
     @Test
     fun createStudyDeployment_registers_preregistered_devices() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
         val (protocol, primaryDevice, connectedDevice) = createSinglePrimaryWithConnectedDeviceProtocol()
 
         val deploymentId = UUID.randomUUID()
@@ -53,7 +53,7 @@ interface DeploymentServiceTest
 
     @Test
     fun createStudyDeployment_fails_for_existing_id() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
         val studyDeploymentId = addTestDeployment( service, "Primary" )
 
         val deviceRole = "Test device"
@@ -71,7 +71,7 @@ interface DeploymentServiceTest
 
     @Test
     fun removeStudyDeployments_succeeds() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
         val deploymentId1 = addTestDeployment( service, "Test device" )
         val deploymentId2 = addTestDeployment( service, "Test device" )
         val deploymentIds = setOf( deploymentId1, deploymentId2 )
@@ -84,7 +84,7 @@ interface DeploymentServiceTest
 
     @Test
     fun removeStudyDeployments_ignores_unknown_ids() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
         val deploymentId = addTestDeployment( service, "Test device" )
         val unknownId = UUID.randomUUID()
         val deploymentIds = setOf( deploymentId, unknownId )
@@ -95,7 +95,7 @@ interface DeploymentServiceTest
 
     @Test
     fun getStudyDeploymentStatus_succeeds() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
         val studyDeploymentId = addTestDeployment( service, "Test device" )
 
         // Actual testing of the status responses should already be covered adequately in StudyDeployment tests.
@@ -104,14 +104,14 @@ interface DeploymentServiceTest
 
     @Test
     fun getStudyDeploymentStatus_fails_for_unknown_studyDeploymentId() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
 
         assertFailsWith<IllegalArgumentException> { service.getStudyDeploymentStatus( unknownId ) }
     }
 
     @Test
     fun getStudyDeploymentStatusList_succeeds() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
         val deviceRoleName = "Primary"
         val (protocol, _, _) = createSinglePrimaryWithConnectedDeviceProtocol( deviceRoleName )
         val protocolSnapshot = protocol.getSnapshot()
@@ -129,7 +129,7 @@ interface DeploymentServiceTest
 
     @Test
     fun getStudyDeploymentStatusList_fails_when_containing_an_unknown_studyDeploymentId() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
         val studyDeploymentId = addTestDeployment( service, "Test device" )
 
         val deploymentIds = setOf( studyDeploymentId, unknownId )
@@ -138,7 +138,7 @@ interface DeploymentServiceTest
 
     @Test
     fun registerDevice_can_be_called_multiple_times() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
         val studyDeploymentId = addTestDeployment( service, "Primary" )
         val status = service.getStudyDeploymentStatus( studyDeploymentId )
         val primary = status.getRemainingDevicesToRegister().first { it.roleName == "Primary" }
@@ -151,7 +151,7 @@ interface DeploymentServiceTest
 
     @Test
     fun registerDevice_cannot_be_called_with_same_registration_when_stopped() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
         val studyDeploymentId = addTestDeployment( service, "Primary" )
         val status = service.getStudyDeploymentStatus( studyDeploymentId )
         val primary = status.getRemainingDevicesToRegister().first { it.roleName == "Primary" }
@@ -167,7 +167,7 @@ interface DeploymentServiceTest
 
     @Test
     fun unregisterDevice_succeeds() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
         val deviceRolename = "Test device"
         val studyDeploymentId = addTestDeployment( service, deviceRolename )
         var status = service.getStudyDeploymentStatus( studyDeploymentId )
@@ -180,7 +180,7 @@ interface DeploymentServiceTest
 
     @Test
     fun getDeviceDeploymentFor_during_device_reregistrations() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
         val protocol = createSinglePrimaryDeviceProtocol( "Test device" )
         val device = protocol.primaryDevices.first()
         val deploymentId = UUID.randomUUID()
@@ -202,7 +202,7 @@ interface DeploymentServiceTest
 
     @Test
     fun stop_succeeds() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
         val studyDeploymentId = addTestDeployment( service, "Test device" )
 
         val status = service.stop( studyDeploymentId )
@@ -211,14 +211,14 @@ interface DeploymentServiceTest
 
     @Test
     fun stop_fails_for_unknown_studyDeploymentId() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
 
         assertFailsWith<IllegalArgumentException> { service.stop( unknownId ) }
     }
 
     @Test
     fun modifications_after_stop_not_allowed() = runTest {
-        val (service, _) = createService()
+        val (service, _) = createSUT()
         val studyDeploymentId = addTestDeployment( service, "Primary", "Connected" )
         val status = service.getStudyDeploymentStatus( studyDeploymentId )
         val primary = status.getRemainingDevicesToRegister().first { it.roleName == "Primary" }

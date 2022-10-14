@@ -25,21 +25,24 @@ private val unknownId: UUID = UUID.randomUUID()
  */
 interface RecruitmentServiceTest
 {
-    data class DependentServices(
+    /**
+     * System under test: the [recruitmentService] and all dependencies to be used in tests.
+     */
+    data class SUT(
         val recruitmentService: RecruitmentService,
         val studyService: StudyService,
         val eventBus: EventBus
     )
 
     /**
-     * Create a recruitment service and study service it depends on to be used in the tests.
+     * Create the system under test (SUT): the [RecruitmentService] and all dependencies to be used in tests.
      */
-    fun createService(): DependentServices
+    fun createSUT(): SUT
 
 
     @Test
     fun adding_and_retrieving_participant_succeeds() = runTest {
-        val (recruitmentService, studyService) = createService()
+        val (recruitmentService, studyService) = createSUT()
         val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
 
@@ -56,7 +59,7 @@ interface RecruitmentServiceTest
 
     @Test
     fun addParticipant_fails_for_unknown_studyId() = runTest {
-        val (recruitmentService, _) = createService()
+        val (recruitmentService, _) = createSUT()
 
         val email = EmailAddress( "test@test.com" )
         assertFailsWith<IllegalArgumentException> { recruitmentService.addParticipant( unknownId, email ) }
@@ -65,7 +68,7 @@ interface RecruitmentServiceTest
     @Suppress( "ReplaceAssertBooleanWithAssertEquality" )
     @Test
     fun addParticipant_twice_returns_same_participant() = runTest {
-        val (recruitmentService, studyService) = createService()
+        val (recruitmentService, studyService) = createSUT()
         val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
 
@@ -77,7 +80,7 @@ interface RecruitmentServiceTest
 
     @Test
     fun getParticipant_fails_for_unknown_id() = runTest {
-        val (recruitmentService, studyService) = createService()
+        val (recruitmentService, studyService) = createSUT()
         val study = studyService.createStudy( UUID.randomUUID(), "Test" )
 
         // Unknown study id.
@@ -89,14 +92,14 @@ interface RecruitmentServiceTest
 
     @Test
     fun getParticipants_fails_for_unknown_studyId() = runTest {
-        val (recruitmentService, _) = createService()
+        val (recruitmentService, _) = createSUT()
 
         assertFailsWith<IllegalArgumentException> { recruitmentService.getParticipants( unknownId ) }
     }
 
     @Test
     fun inviteNewParticipantGroup_succeeds() = runTest {
-        val (recruitmentService, studyService) = createService()
+        val (recruitmentService, studyService) = createSUT()
         val (studyId, _) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
@@ -110,7 +113,7 @@ interface RecruitmentServiceTest
 
     @Test
     fun inviteNewParticipantGroup_fails_for_unknown_studyId() = runTest {
-        val (recruitmentService, _) = createService()
+        val (recruitmentService, _) = createSUT()
         val assignParticipant = AssignedParticipantRoles( UUID.randomUUID(), AssignedTo.All )
 
         assertFailsWith<IllegalArgumentException>
@@ -121,7 +124,7 @@ interface RecruitmentServiceTest
 
     @Test
     fun inviteNewParticipantGroup_fails_for_empty_group() = runTest {
-        val (recruitmentService, studyService) = createService()
+        val (recruitmentService, studyService) = createSUT()
         val (studyId, _) = createLiveStudy( studyService )
 
         assertFailsWith<IllegalArgumentException> { recruitmentService.inviteNewParticipantGroup( studyId, setOf() ) }
@@ -129,7 +132,7 @@ interface RecruitmentServiceTest
 
     @Test
     fun inviteNewParticipantGroup_fails_for_unknown_participants() = runTest {
-        val (recruitmentService, studyService) = createService()
+        val (recruitmentService, studyService) = createSUT()
         val (studyId, _) = createLiveStudy( studyService )
 
         val assignParticipant = AssignedParticipantRoles( unknownId, AssignedTo.All )
@@ -141,7 +144,7 @@ interface RecruitmentServiceTest
 
     @Test
     fun inviteNewParticipantGroup_fails_for_unknown_participant_roles() = runTest {
-        val (recruitmentService, studyService) = createService()
+        val (recruitmentService, studyService) = createSUT()
         val (studyId, _) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
@@ -154,7 +157,7 @@ interface RecruitmentServiceTest
 
     @Test
     fun inviteNewParticipantGroup_fails_when_not_all_participant_roles_assigned() = runTest {
-        val (recruitmentService, studyService) = createService()
+        val (recruitmentService, studyService) = createSUT()
         val (studyId, protocol) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
 
@@ -168,7 +171,7 @@ interface RecruitmentServiceTest
 
     @Test
     fun inviteNewParticipantGroup_multiple_times_returns_same_group() = runTest {
-        val (recruitmentService, studyService) = createService()
+        val (recruitmentService, studyService) = createSUT()
         val (studyId, _) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
         val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
@@ -181,7 +184,7 @@ interface RecruitmentServiceTest
 
     @Test
     fun inviteNewParticipantGroup_for_previously_stopped_group_returns_new_group() = runTest {
-        val (recruitmentService, studyService) = createService()
+        val (recruitmentService, studyService) = createSUT()
         val (studyId, _) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
         val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
@@ -195,7 +198,7 @@ interface RecruitmentServiceTest
 
     @Test
     fun getParticipantGroupStatusList_returns_multiple_deployments() = runTest {
-        val (recruitmentService, studyService) = createService()
+        val (recruitmentService, studyService) = createSUT()
         val (studyId, _) = createLiveStudy( studyService )
 
         val p1 = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
@@ -214,14 +217,14 @@ interface RecruitmentServiceTest
 
     @Test
     fun getParticipantGroupStatusLists_fails_for_unknown_studyId() = runTest {
-        val (recruitmentService, _) = createService()
+        val (recruitmentService, _) = createSUT()
 
         assertFailsWith<IllegalArgumentException> { recruitmentService.getParticipantGroupStatusList( unknownId ) }
     }
 
     @Test
     fun stopParticipantGroup_succeeds() = runTest {
-        val (recruitmentService, studyService) = createService()
+        val (recruitmentService, studyService) = createSUT()
         val (studyId, _) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
         val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
@@ -233,7 +236,7 @@ interface RecruitmentServiceTest
 
     @Test
     fun stopParticipantGroup_fails_with_unknown_studyId() = runTest {
-        val (recruitmentService, _) = createService()
+        val (recruitmentService, _) = createSUT()
 
         assertFailsWith<IllegalArgumentException>
         {
@@ -243,7 +246,7 @@ interface RecruitmentServiceTest
 
     @Test
     fun stopParticipantGroup_fails_with_unknown_groupId() = runTest {
-        val (recruitmentService, studyService) = createService()
+        val (recruitmentService, studyService) = createSUT()
         val (studyId, _) = createLiveStudy( studyService )
 
         assertFailsWith<IllegalArgumentException> { recruitmentService.stopParticipantGroup( studyId, unknownId ) }
