@@ -19,7 +19,7 @@ class ParticipationServiceHostTest : ParticipationServiceTest
 {
     companion object
     {
-        fun createService(): ParticipationServiceTest.DependentServices
+        fun createSUT(): ParticipationServiceTest.SUT
         {
             val eventBus: EventBus = SingleThreadedEventBus()
 
@@ -38,7 +38,7 @@ class ParticipationServiceHostTest : ParticipationServiceTest
                 eventBus.createApplicationServiceAdapter( ParticipationService::class )
             )
 
-            return ParticipationServiceTest.DependentServices(
+            return ParticipationServiceTest.SUT(
                 participationService,
                 deploymentService,
                 accountService,
@@ -47,6 +47,5 @@ class ParticipationServiceHostTest : ParticipationServiceTest
         }
     }
 
-    override fun createService(): ParticipationServiceTest.DependentServices =
-        ParticipationServiceHostTest.createService()
+    override fun createSUT(): ParticipationServiceTest.SUT = ParticipationServiceHostTest.createSUT()
 }

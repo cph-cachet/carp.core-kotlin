@@ -12,7 +12,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 class DeploymentServiceBackwardsCompatibilityTest :
     BackwardsCompatibilityTest<DeploymentService>( DeploymentService::class )
 {
-    override fun createService() = DeploymentServiceHostTest.createService()
+    override fun createService() = DeploymentServiceHostTest.createSUT()
         .let { Pair( it.deploymentService, it.eventBus ) }
 }
 
@@ -21,6 +21,6 @@ class DeploymentServiceBackwardsCompatibilityTest :
 class ParticipationServiceBackwardsCompatibilityTest :
     BackwardsCompatibilityTest<ParticipationService>( ParticipationService::class )
 {
-    override fun createService() = ParticipationServiceHostTest.createService()
+    override fun createService() = ParticipationServiceHostTest.createSUT()
         .let { Pair( it.participationService, it.eventBus ) }
 }

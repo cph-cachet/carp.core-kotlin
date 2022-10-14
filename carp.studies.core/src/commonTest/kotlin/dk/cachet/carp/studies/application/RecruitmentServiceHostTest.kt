@@ -19,7 +19,7 @@ class RecruitmentServiceHostTest : RecruitmentServiceTest
 {
     companion object
     {
-        fun createService(): RecruitmentServiceTest.DependentServices
+        fun createSUT(): RecruitmentServiceTest.SUT
         {
             val eventBus = SingleThreadedEventBus()
 
@@ -48,9 +48,9 @@ class RecruitmentServiceHostTest : RecruitmentServiceTest
                 TestClock
             )
 
-            return RecruitmentServiceTest.DependentServices( recruitmentService, studyService, eventBus )
+            return RecruitmentServiceTest.SUT( recruitmentService, studyService, eventBus )
         }
     }
 
-    override fun createService(): RecruitmentServiceTest.DependentServices = RecruitmentServiceHostTest.createService()
+    override fun createSUT(): RecruitmentServiceTest.SUT = RecruitmentServiceHostTest.createSUT()
 }

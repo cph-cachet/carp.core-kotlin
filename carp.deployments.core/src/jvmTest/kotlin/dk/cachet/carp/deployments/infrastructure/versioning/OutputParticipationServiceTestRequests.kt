@@ -11,13 +11,13 @@ class OutputParticipationServiceTestRequests :
     OutputTestRequests<ParticipationService>( ParticipationService::class ),
     ParticipationServiceTest
 {
-    override fun createService(): ParticipationServiceTest.DependentServices
+    override fun createSUT(): ParticipationServiceTest.SUT
     {
-        val services = ParticipationServiceHostTest.createService()
+        val services = ParticipationServiceHostTest.createSUT()
         val service = ParticipationServiceLoggingProxy( services.participationService, services.eventBus )
         loggedService = service
 
-        return ParticipationServiceTest.DependentServices(
+        return ParticipationServiceTest.SUT(
             service,
             services.deploymentService,
             services.accountService,

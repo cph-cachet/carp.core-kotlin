@@ -36,6 +36,6 @@ class DeploymentServiceRequestsTest : ApplicationServiceRequestsTest<DeploymentS
 
     override fun createServiceLoggingProxy(): ApplicationServiceLoggingProxy<DeploymentService, DeploymentService.Event> =
         DeploymentServiceHostTest
-            .createService()
+            .createSUT()
             .let { DeploymentServiceLoggingProxy( it.deploymentService, it.eventBus ) }
 }

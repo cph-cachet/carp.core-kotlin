@@ -20,6 +20,6 @@ class StudyServiceBackwardsCompatibilityTest :
 class RecruitmentServiceBackwardsCompatibilityTest :
     BackwardsCompatibilityTest<RecruitmentService>( RecruitmentService::class )
 {
-    override fun createService() = RecruitmentServiceHostTest.createService()
+    override fun createService() = RecruitmentServiceHostTest.createSUT()
         .let { Pair( it.recruitmentService, it.eventBus ) }
 }

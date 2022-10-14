@@ -33,6 +33,6 @@ class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<Recruitmen
 
     override fun createServiceLoggingProxy(): ApplicationServiceLoggingProxy<RecruitmentService, RecruitmentService.Event> =
         RecruitmentServiceHostTest
-            .createService()
+            .createSUT()
             .let { RecruitmentServiceLoggingProxy( it.recruitmentService, it.eventBus ) }
 }
