@@ -134,6 +134,22 @@ class HostsIntegrationTest
     }
 
     @Test
+    fun deviceDeployed_second_time_after_reregistration_succeeds() = runTest {
+        // Create a device deployment and unregister the device after.
+        val protocol = createSinglePrimaryDeviceProtocol()
+        val deploymentId = createSinglePrimaryDeviceDeployment( protocol )
+        val primaryDevice = protocol.primaryDevices.single()
+        deploymentService.unregisterDevice( deploymentId, primaryDevice.roleName )
+
+        // Redeploy device.
+        deploymentService.registerDevice( deploymentId, primaryDevice.roleName, primaryDevice.createRegistration() )
+        val deviceDeployment = deploymentService.getDeviceDeploymentFor( deploymentId, primaryDevice.roleName )
+        val deploymentStatus =
+            deploymentService.deviceDeployed( deploymentId, primaryDevice.roleName, deviceDeployment.lastUpdatedOn )
+        assertTrue( deploymentStatus is StudyDeploymentStatus.Running )
+    }
+
+    @Test
     fun removing_deployment_removes_participant_group_and_data_streams() = runTest {
         var deploymentRemoved: DeploymentService.Event.StudyDeploymentRemoved? = null
         eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentRemoved::class, this )
