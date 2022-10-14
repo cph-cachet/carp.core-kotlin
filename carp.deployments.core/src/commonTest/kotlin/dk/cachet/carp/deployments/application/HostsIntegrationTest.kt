@@ -128,22 +128,26 @@ class HostsIntegrationTest
 
         // Create a protocol which when deployed has one `STUB_DATA_TYPE` data stream.
         val primaryDevice = StubPrimaryDeviceConfiguration()
+        val deviceRoleName = primaryDevice.roleName
         val protocol = createEmptyProtocol()
         protocol.addPrimaryDevice( primaryDevice )
         val task = StubTaskConfiguration( "Task", listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) ) )
         val atStartOfStudy = protocol.addTrigger( primaryDevice.atStartOfStudy() )
         protocol.addTaskControl( atStartOfStudy.start( task, primaryDevice ) )
 
-        // Deploy protocol.
+        // Create deployment and complete device deployment so that data streams are opened.
         val invitation = createParticipantInvitation()
         val deploymentId = UUID.randomUUID()
         deploymentService.createStudyDeployment( deploymentId, protocol.getSnapshot(), listOf( invitation ) )
-        val dataStreamId = dataStreamId<StubDataPoint>( deploymentId, primaryDevice.roleName )
+        deploymentService.registerDevice( deploymentId, deviceRoleName, primaryDevice.createRegistration() )
+        val deviceDeployment = deploymentService.getDeviceDeploymentFor( deploymentId, primaryDevice.roleName )
+        deploymentService.deviceDeployed( deploymentId, deviceRoleName, deviceDeployment.lastUpdatedOn )
 
         deploymentService.removeStudyDeployments( setOf( deploymentId ) )
 
         assertEquals( deploymentId, deploymentRemoved?.studyDeploymentId )
         assertFailsWith<IllegalArgumentException> { participationService.getParticipantData( deploymentId ) }
+        val dataStreamId = dataStreamId<StubDataPoint>( deploymentId, deviceRoleName )
         assertFailsWith<IllegalArgumentException> { dataStreamService.getDataStream( dataStreamId, 0 ) }
     }
 
