@@ -213,15 +213,15 @@ class DeploymentServiceHost(
         deployment.deviceDeployed( device, deviceDeploymentLastUpdatedOn )
         repository.update( deployment )
 
-        val deploymentStatus = deployment.getStatus()
-
-        // Once the deployment is running, open the required data streams.
-        if ( deploymentStatus is StudyDeploymentStatus.Running )
+        // Open the required data streams.
+        try { dataStreamService.openDataStreams( deployment.requiredDataStreams ) }
+        catch( ignore: IllegalStateException )
         {
-            dataStreamService.openDataStreams( deployment.requiredDataStreams )
+            // Upon re-deployments this may throw an exception indicating streams have already been opened.
+            // This can safely be ignored, since this is the goal of this call.
         }
 
-        return deploymentStatus
+        return deployment.getStatus()
     }
 
     /**
