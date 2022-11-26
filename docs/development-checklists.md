@@ -80,3 +80,45 @@ But, below are the necessary steps to follow:
    - Add the new schema as a subtype in [`Data.json`](../rpc/schemas/common/data/Data.json). The existing examples should guide you, but double-check you specified the right data type constant.
    - _Warning_: the presence or validity of this schema [is not yet tested](https://github.com/imotions/carp.core-kotlin/issues/404).
      It is recommended to serialize an instance of the new data type (e.g., by running a slightly modified polymorphic serialization test in `DataSerializationTest`) and [validate the output manually for now](https://www.jsonschemavalidator.net/).
+
+## Add a new connected device configuration
+
+Implementations of [`DeviceConfiguration`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/DeviceConfiguration.kt)
+define and provide access to a couple of associated classes, located under the `dk.cachet.carp.common.application.devices` namespace in the `carp.common` subsystem:
+
+- [`DeviceRegistration`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/DeviceRegistration.kt)
+uniquely identifies a physical device and includes _specifications_ about it (e.g., OS version, model number, ...) which can be retrieved programmatically.
+- `DeviceRegistrationBuilder` provides an API to construct instances of a specific `DeviceRegistration` type.
+   By linking concrete implementations of `DeviceConfiguration` to a corresponding `DeviceRegistrationBuilder`, a typesafe `DeviceConfiguration.createRegistration()` DSL is made available which helps to construct valid `DeviceRegistration`'s expected by the device.
+
+Failing tests and static code analysis (`detektPasses`) will guide you to make sure newly introduced `DeviceConfiguration` and `DeviceRegistration` types are
+immutable, serializable, registered, contain the expected fields and defaults, and are tested.
+But, below are the necessary steps to follow:
+
+1. Determine how to uniquely identify the device (e.g., serial number, MAC address, ...)
+   and create a class (or reuse an existing one) extending from `DeviceRegistration` (see _note_ below).
+   Whether to reuse an existing registration type or create a device-specific one should be decided based on how meaningful it is to log device-specific specifications,
+   i.e., whether it carries important information which helps interpret the device's behavior or data.
+2. Add a new class extending from [`DeviceConfiguration`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/DeviceConfiguration.kt) (see _note_ below), e.g., `BLEHeartRateDevice`.
+3. Implement the default values `isOptional = false` and `defaultSamplingConfiguration = emptyMap()`.
+   This can be done in the constructor or class body, depending on whether the user should be able to change the default.
+4. Add `Sensors` and `Tasks` as nested objects (even if empty):
+   - Include the available data streams and corresponding sampling schemes to `object Sensors : DataTypeSamplingSchemeMap()`.
+     Consider sensible default sampling configurations for each of the data stream sampling schemes.
+   - Add task builders for the available tasks to `object Tasks : TaskConfigurationList()`.
+     All devices support `BackgroundTask`, for which a builder is already added to `TaskConfigurationList`. 
+5. For the new `DeviceRegistration` (if added) and `DeviceConfiguration` types:
+   - Register type for polymorphic serialization in [`COMMON_SERIAL_MODULE`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/infrastructure/serialization/Serialization.kt).
+   - Add a test instance to [`commonInstances`](../carp.common/src/commonTest/kotlin/dk/cachet/carp/common/application/TestInstances.kt).
+   - Update JSON schemas for the new type:
+      - Add a new schema in [`rpc/schemas/common/devices`](../rpc/schemas/common/devices) corresponding to the class name (e.g., `BLEHeartRateDevice.json`).
+      - Add the new schema as a subtype in `DeviceRegistration.json` or `DeviceConfiguration.json`.
+        The existing examples should guide you, but double-check you specified the right type constant.
+      - _Warning_: the presence or validity of this schema [is not yet tested](https://github.com/imotions/carp.core-kotlin/issues/404).
+        It is recommended to serialize an instance of the new data type and [validate the output manually for now](https://www.jsonschemavalidator.net/).
+6. Include the `DeviceConfiguration` [in the README](../docs/carp-common.md#data-types).
+
+_Note_: When extending `DeviceConfiguration` or `DeviceRegistration`, do the following:
+- Ensure that the class is immutable (contains no mutable fields) and is a `data class`.
+- Make the class serializable using `kotlinx.serialization`.
+  For basic types, this should be as easy as marking it as `@Serializable`.
