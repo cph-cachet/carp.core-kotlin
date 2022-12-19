@@ -6,7 +6,7 @@ CARP Core is a software framework to help developers build research platforms to
 It provides modules to define, deploy, and monitor research studies, and to collect data from multiple devices at multiple locations.
 
 It is the result of a collaboration between [iMotions](https://imotions.com/) and the [Copenhagen Center for Health Technology (CACHET)](https://www.cachet.dk/).
-Both use CARP Core to implement their respective research platforms: the [iMotions Mobile Research Platform](https://imotions.com/mobile-platform-landing-page-submissions/) and the [CACHET Research Platform (CARP)](https://carp.cachet.dk/).
+Both use CARP Core to implement their respective research platforms: the [iMotions Mobile Research Platform](https://imotions.com/mobile-platform-landing-page-submissions/) and the [Copenhagen Research Platform (CARP)](https://carp.cachet.dk/).
 CARP Core is now maintained fully by iMotions (since 1.0), but [still part of CARP](https://carp.cachet.dk/core/) as an ongoing collaboration.   
 
 Following [domain-driven design](https://en.wikipedia.org/wiki/Domain-driven_design), this project contains all domain models and application services for all CARP subsystems ([depicted below](#architecture)), not having any dependencies on concrete infrastructure.
