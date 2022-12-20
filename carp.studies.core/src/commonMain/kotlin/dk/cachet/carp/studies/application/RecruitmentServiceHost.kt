@@ -1,5 +1,6 @@
 package dk.cachet.carp.studies.application
 
+import dk.cachet.carp.common.application.DefaultUUIDFactory
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.UUIDFactory
@@ -18,7 +19,7 @@ class RecruitmentServiceHost(
     private val participantRepository: ParticipantRepository,
     private val deploymentService: DeploymentService,
     private val eventBus: ApplicationServiceEventBus<RecruitmentService, RecruitmentService.Event>,
-    private val uuidFactory: UUIDFactory = UUID.Companion,
+    private val uuidFactory: UUIDFactory = DefaultUUIDFactory,
     private val clock: Clock = Clock.System
 ) : RecruitmentService
 {
