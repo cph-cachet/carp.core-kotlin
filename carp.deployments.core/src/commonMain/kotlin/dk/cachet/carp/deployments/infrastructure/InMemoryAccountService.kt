@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployments.infrastructure
 
+import dk.cachet.carp.common.application.DefaultUUIDFactory
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.UUIDFactory
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
@@ -13,7 +14,7 @@ import dk.cachet.carp.deployments.domain.users.AccountService
 /**
  * An [AccountService] which holds accounts in memory as long as the instance is held in memory.
  */
-class InMemoryAccountService( val uuidFactory: UUIDFactory = UUID.Companion ) : AccountService
+class InMemoryAccountService( val uuidFactory: UUIDFactory = DefaultUUIDFactory ) : AccountService
 {
     private val accounts: MutableList<Account> = mutableListOf()
 
