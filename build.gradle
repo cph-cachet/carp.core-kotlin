@@ -258,7 +258,7 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
             if (path == ".visited") return // We don't need this file.
 
             // Remove intermediate version directory: e.g. "kotlin/1.5.10/kotlin.js"
-            it.path = path.replaceFirst(/\d+\.\d+.\d+\//, "")
+            it.path = path.replaceFirst(/\d+\.\d+.\d+(-.+)?\//, "")
         }
     }
     into "./$typescriptFolder/node_modules"
