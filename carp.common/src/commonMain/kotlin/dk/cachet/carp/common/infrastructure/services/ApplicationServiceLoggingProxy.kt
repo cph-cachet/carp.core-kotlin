@@ -172,7 +172,8 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, TEvent>, T
                     var publishedEvents: List<TEvent>? = null
                     var response: Any? = null
 
-                    while ( true )
+                    var decoding = true
+                    while ( decoding )
                     {
                         when ( val index = decodeElementIndex( descriptor ) )
                         {
@@ -180,7 +181,7 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, TEvent>, T
                             1 -> precedingEvents = decodeSerializableElement( descriptor, 1, eventsSerializer )
                             2 -> publishedEvents = decodeSerializableElement( descriptor, 2, eventsSerializer )
                             3 -> response = decodeSerializableElement( descriptor, 3, request!!.getResponseSerializer() )
-                            CompositeDecoder.DECODE_DONE -> break
+                            CompositeDecoder.DECODE_DONE -> decoding = false
                             else -> error( "Unexpected index: $index" )
                         }
                     }
@@ -230,7 +231,8 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, TEvent>, T
                     var publishedEvents: List<TEvent>? = null
                     var exceptionType: String? = null
 
-                    while ( true )
+                    var decoding = true
+                    while ( decoding )
                     {
                         when ( val index = decodeElementIndex( descriptor ) )
                         {
@@ -238,7 +240,7 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, TEvent>, T
                             1 -> precedingEvents = decodeSerializableElement( descriptor, 1, eventsSerializer )
                             2 -> publishedEvents = decodeSerializableElement( descriptor, 2, eventsSerializer )
                             3 -> exceptionType = decodeSerializableElement( descriptor, 3, exceptionSerializer )
-                            CompositeDecoder.DECODE_DONE -> break
+                            CompositeDecoder.DECODE_DONE -> decoding = false
                             else -> error( "Unexpected index: $index" )
                         }
                     }
