@@ -41,7 +41,9 @@ open class ApplicationServiceLoggingProxy<
      */
     protected suspend fun <TReturn> log( request: ApplicationServiceRequest<TService, TReturn> ): TReturn
     {
-        val precedingEvents = eventBusLog.retrieveAndEmptyLog()
+        @Suppress( "UNCHECKED_CAST" )
+        fun getCurrentEvents() = eventBusLog.retrieveAndEmptyLog() as List<TEvent>
+        val precedingEvents = getCurrentEvents()
 
         @Suppress( "TooGenericExceptionCaught" )
         val response =
@@ -51,14 +53,14 @@ open class ApplicationServiceLoggingProxy<
                 val failed = LoggedRequest.Failed(
                     request,
                     precedingEvents,
-                    eventBusLog.retrieveAndEmptyLog(),
+                    getCurrentEvents(),
                     ex::class.simpleName!!
                 )
                 addLog( failed )
                 throw ex
             }
 
-        addLog( LoggedRequest.Succeeded( request, precedingEvents, eventBusLog.retrieveAndEmptyLog(), response ) )
+        addLog( LoggedRequest.Succeeded( request, precedingEvents, getCurrentEvents(), response ) )
 
         return response
     }
@@ -89,16 +91,16 @@ open class ApplicationServiceLoggingProxy<
 sealed interface LoggedRequest<TService : ApplicationService<TService, TEvent>, TEvent : IntegrationEvent<TService>>
 {
     val request: ApplicationServiceRequest<TService, *>
-    val precedingEvents: List<IntegrationEvent<*>>
-    val publishedEvents: List<IntegrationEvent<*>>
+    val precedingEvents: List<TEvent>
+    val publishedEvents: List<TEvent>
 
     /**
      * The intercepted [request] succeeded and returned [response].
      */
     data class Succeeded<TService : ApplicationService<TService, TEvent>, TEvent : IntegrationEvent<TService>>(
         override val request: ApplicationServiceRequest<TService, *>,
-        override val precedingEvents: List<IntegrationEvent<*>>,
-        override val publishedEvents: List<IntegrationEvent<*>>,
+        override val precedingEvents: List<TEvent>,
+        override val publishedEvents: List<TEvent>,
         val response: Any?
     ) : LoggedRequest<TService, TEvent>
 
@@ -107,8 +109,8 @@ sealed interface LoggedRequest<TService : ApplicationService<TService, TEvent>, 
      */
     data class Failed<TService : ApplicationService<TService, TEvent>, TEvent : IntegrationEvent<TService>>(
         override val request: ApplicationServiceRequest<TService, *>,
-        override val precedingEvents: List<IntegrationEvent<*>>,
-        override val publishedEvents: List<IntegrationEvent<*>>,
+        override val precedingEvents: List<TEvent>,
+        override val publishedEvents: List<TEvent>,
         val exceptionType: String
     ) : LoggedRequest<TService, TEvent>
 }
@@ -118,15 +120,15 @@ sealed interface LoggedRequest<TService : ApplicationService<TService, TEvent>, 
  * Serializer for [LoggedRequest]s of [TService].
  */
 @OptIn( ExperimentalSerializationApi::class, InternalSerializationApi::class )
-class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
+class LoggedRequestSerializer<TService : ApplicationService<TService, TEvent>, TEvent : IntegrationEvent<TService>>(
     /**
      * The request serializer for [TService] which can polymorphically serialize any of its requests.
      */
-    requestSerializer: KSerializer<out ApplicationServiceRequest<*, *>>, // TODO: Specify TService here, preventing casts.
+    requestSerializer: KSerializer<out ApplicationServiceRequest<TService, *>>,
     /**
      * A serializer for any of the events that may be received or are published by [TService].
      */
-    eventSerializer: KSerializer<out IntegrationEvent<*>>
+    eventSerializer: KSerializer<out TEvent>
 ) : KSerializer<LoggedRequest<*, *>>
 {
     private val eventsSerializer = ListSerializer( eventSerializer )
@@ -165,9 +167,9 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
             @Suppress( "UNCHECKED_CAST" )
             override fun deserialize( decoder: Decoder ): LoggedRequest.Succeeded<*, *>
             {
-                var request: ApplicationServiceRequest<*, *>? = null
-                var precedingEvents: List<IntegrationEvent<*>>? = null
-                var publishedEvents: List<IntegrationEvent<*>>? = null
+                var request: ApplicationServiceRequest<TService, *>? = null
+                var precedingEvents: List<TEvent>? = null
+                var publishedEvents: List<TEvent>? = null
                 var response: Any? = null
                 decoder.decodeStructure( descriptor )
                 {
@@ -178,9 +180,9 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
                 }
 
                 return LoggedRequest.Succeeded(
-                    checkNotNull( request ) as ApplicationServiceRequest<TService, *>,
-                    checkNotNull( precedingEvents ) as List<IntegrationEvent<TService>>,
-                    checkNotNull( publishedEvents ) as List<IntegrationEvent<TService>>,
+                    checkNotNull( request ),
+                    checkNotNull( precedingEvents ),
+                    checkNotNull( publishedEvents ),
                     response
                 )
             }
@@ -216,9 +218,9 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
             @Suppress( "UNCHECKED_CAST" )
             override fun deserialize( decoder: Decoder ): LoggedRequest.Failed<*, *>
             {
-                var request: ApplicationServiceRequest<*, *>? = null
-                var precedingEvents: List<IntegrationEvent<*>>? = null
-                var publishedEvents: List<IntegrationEvent<*>>? = null
+                var request: ApplicationServiceRequest<TService, *>? = null
+                var precedingEvents: List<TEvent>? = null
+                var publishedEvents: List<TEvent>? = null
                 var exceptionType: String? = null
                 decoder.decodeStructure( descriptor )
                 {
@@ -229,9 +231,9 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, *>>(
                 }
 
                 return LoggedRequest.Failed(
-                    checkNotNull( request ) as ApplicationServiceRequest<TService, *>,
-                    checkNotNull( precedingEvents ) as List<IntegrationEvent<TService>>,
-                    checkNotNull( publishedEvents ) as List<IntegrationEvent<TService>>,
+                    checkNotNull( request ),
+                    checkNotNull( precedingEvents ),
+                    checkNotNull( publishedEvents ),
                     checkNotNull( exceptionType )
                 )
             }
