@@ -7,10 +7,10 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SealedClassSerializer
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
@@ -87,7 +87,6 @@ open class ApplicationServiceLoggingProxy<
 /**
  * An intercepted [request] and response to an application service [TService].
  */
-@Serializable( LoggedRequestSerializer::class )
 sealed interface LoggedRequest<TService : ApplicationService<TService, TEvent>, TEvent : IntegrationEvent<TService>>
 {
     val request: ApplicationServiceRequest<TService, *>
@@ -165,27 +164,34 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, TEvent>, T
             }
 
             @Suppress( "UNCHECKED_CAST" )
-            override fun deserialize( decoder: Decoder ): LoggedRequest.Succeeded<*, *>
-            {
-                var request: ApplicationServiceRequest<TService, *>? = null
-                var precedingEvents: List<TEvent>? = null
-                var publishedEvents: List<TEvent>? = null
-                var response: Any? = null
+            override fun deserialize( decoder: Decoder ): LoggedRequest.Succeeded<*, *> =
                 decoder.decodeStructure( descriptor )
                 {
-                    request = decodeSerializableElement( descriptor, 0, requestSerializer )
-                    precedingEvents = decodeSerializableElement( descriptor, 1, eventsSerializer )
-                    publishedEvents = decodeSerializableElement( descriptor, 2, eventsSerializer )
-                    response = decodeSerializableElement( descriptor, 3, request!!.getResponseSerializer() )
-                }
+                    var request: ApplicationServiceRequest<TService, *>? = null
+                    var precedingEvents: List<TEvent>? = null
+                    var publishedEvents: List<TEvent>? = null
+                    var response: Any? = null
 
-                return LoggedRequest.Succeeded(
-                    checkNotNull( request ),
-                    checkNotNull( precedingEvents ),
-                    checkNotNull( publishedEvents ),
-                    response
-                )
-            }
+                    while ( true )
+                    {
+                        when ( val index = decodeElementIndex( descriptor ) )
+                        {
+                            0 -> request = decodeSerializableElement( descriptor, 0, requestSerializer )
+                            1 -> precedingEvents = decodeSerializableElement( descriptor, 1, eventsSerializer )
+                            2 -> publishedEvents = decodeSerializableElement( descriptor, 2, eventsSerializer )
+                            3 -> response = decodeSerializableElement( descriptor, 3, request!!.getResponseSerializer() )
+                            CompositeDecoder.DECODE_DONE -> break
+                            else -> error( "Unexpected index: $index" )
+                        }
+                    }
+
+                    LoggedRequest.Succeeded(
+                        checkNotNull( request ),
+                        checkNotNull( precedingEvents ),
+                        checkNotNull( publishedEvents ),
+                        response
+                    )
+                }
         }
 
     @Suppress( "MagicNumber" )
@@ -216,27 +222,34 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, TEvent>, T
             }
 
             @Suppress( "UNCHECKED_CAST" )
-            override fun deserialize( decoder: Decoder ): LoggedRequest.Failed<*, *>
-            {
-                var request: ApplicationServiceRequest<TService, *>? = null
-                var precedingEvents: List<TEvent>? = null
-                var publishedEvents: List<TEvent>? = null
-                var exceptionType: String? = null
+            override fun deserialize( decoder: Decoder ): LoggedRequest.Failed<*, *> =
                 decoder.decodeStructure( descriptor )
                 {
-                    request = decodeSerializableElement( descriptor, 0, requestSerializer )
-                    precedingEvents = decodeSerializableElement( descriptor, 1, eventsSerializer )
-                    publishedEvents = decodeSerializableElement( descriptor, 2, eventsSerializer )
-                    exceptionType = decodeSerializableElement( descriptor, 3, exceptionSerializer )
-                }
+                    var request: ApplicationServiceRequest<TService, *>? = null
+                    var precedingEvents: List<TEvent>? = null
+                    var publishedEvents: List<TEvent>? = null
+                    var exceptionType: String? = null
 
-                return LoggedRequest.Failed(
-                    checkNotNull( request ),
-                    checkNotNull( precedingEvents ),
-                    checkNotNull( publishedEvents ),
-                    checkNotNull( exceptionType )
-                )
-            }
+                    while ( true )
+                    {
+                        when ( val index = decodeElementIndex( descriptor ) )
+                        {
+                            0 -> request = decodeSerializableElement( descriptor, 0, requestSerializer )
+                            1 -> precedingEvents = decodeSerializableElement( descriptor, 1, eventsSerializer )
+                            2 -> publishedEvents = decodeSerializableElement( descriptor, 2, eventsSerializer )
+                            3 -> exceptionType = decodeSerializableElement( descriptor, 3, exceptionSerializer )
+                            CompositeDecoder.DECODE_DONE -> break
+                            else -> error( "Unexpected index: $index" )
+                        }
+                    }
+
+                    LoggedRequest.Failed(
+                        checkNotNull( request ),
+                        checkNotNull( precedingEvents ),
+                        checkNotNull( publishedEvents ),
+                        checkNotNull( exceptionType )
+                    )
+                }
         }
 
 
@@ -245,10 +258,10 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, TEvent>, T
         LoggedRequest::class,
         arrayOf( LoggedRequest.Succeeded::class, LoggedRequest.Failed::class ),
         arrayOf( succeededSerializer, failedSerializer )
-    ).also {
+    ).apply {
         // HACK: Change class discriminator so that it does not depend on JsonConfiguration.
         //   For now the secondary constructor which allows setting annotations is internal; it may become public later.
-        AccessInternals.setField( it, "_annotations", listOf( JsonClassDiscriminator("outcome" ) ) )
+        AccessInternals.setField( this, "_annotations", listOf( JsonClassDiscriminator("outcome" ) ) )
     }
 
     override val descriptor: SerialDescriptor = sealedSerializer.descriptor
