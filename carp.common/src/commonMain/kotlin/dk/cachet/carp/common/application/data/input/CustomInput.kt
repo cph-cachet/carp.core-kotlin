@@ -59,7 +59,7 @@ class CustomInputSerializer( vararg supportedDataTypes: KClass<*> ) : KSerialize
             val serializer = getRegisteredSerializer( dataType )
             val input = decodeSerializableElement( descriptor, 1, serializer )
 
-            return CustomInput( input )
+            CustomInput( input )
         }
 
     override fun serialize( encoder: Encoder, value: CustomInput ) =
