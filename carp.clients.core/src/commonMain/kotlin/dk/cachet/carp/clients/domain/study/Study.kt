@@ -115,7 +115,7 @@ class Study(
     fun validateDeviceDeployment( dataListener: DataListener )
     {
         val deployment = checkNotNull( deploymentInformation )
-        val remainingDevicesToRegister = deploymentStatus?.getRemainingDevicesToRegister() ?: emptySet()
+        val remainingDevicesToRegister = deploymentStatus?.getRemainingDevicesToRegister().orEmpty()
 
         // All devices need to be registered before deployment can be validated.
         check( remainingDevicesToRegister.isEmpty() )

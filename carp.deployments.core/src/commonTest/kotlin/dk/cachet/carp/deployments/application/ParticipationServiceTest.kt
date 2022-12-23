@@ -105,7 +105,7 @@ interface ParticipationServiceTest
         assertEquals( participantRoleNames, participantData.roles.map { it.roleName }.toSet() )
         assertTrue(
             participantData.roles.all {
-                it.data.keys.firstOrNull() == CarpInputDataTypes.SEX && it.data.values.firstOrNull() == null
+                it.data.keys.single() == CarpInputDataTypes.SEX && it.data.values.single() == null
             }
         )
     }

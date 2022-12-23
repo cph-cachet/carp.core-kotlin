@@ -49,10 +49,7 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         if ( reflect != null && verifyUnknownPolymorphicWrapper )
         {
             val implementsInterface: Boolean = reflect.extendsType<UnknownPolymorphicWrapper>( wrapperClass )
-            if ( !implementsInterface )
-            {
-                throw IllegalArgumentException( "'$wrapperClass' must implement '${UnknownPolymorphicWrapper::class}'." )
-            }
+            require( implementsInterface ) { "'$wrapperClass' must implement '${UnknownPolymorphicWrapper::class}'." }
         }
     }
 

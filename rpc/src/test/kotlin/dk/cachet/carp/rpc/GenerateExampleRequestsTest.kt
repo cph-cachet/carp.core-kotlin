@@ -21,10 +21,9 @@ class GenerateExampleRequestsTest
     fun generateExampleRequests_always_generates_same_JSON()
     {
         applicationServices.forEach { service ->
-            val firstRun =
-                exampleApplicationServiceRequests[ service ]!!.associateBy { it.method }
-            val secondRun =
-                generateExampleRequests( service ).associateBy { it.method }
+            val exampleRequests = checkNotNull( exampleApplicationServiceRequests[ service ] )
+            val firstRun = exampleRequests.associateBy { it.method }
+            val secondRun = generateExampleRequests( service ).associateBy { it.method }
 
             firstRun.forEach { (method, firstExample) ->
                 val secondExample = secondRun[ method ]

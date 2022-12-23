@@ -96,7 +96,7 @@ class ApplicationServiceInfo private constructor( val serviceKlass: ServiceClass
     val serviceName: String = serviceKlass.simpleName
     val apiVersion: ApiVersion
     val dependentServices: List<ServiceClass> = serviceKlass.getAnnotation( DependentServices::class.java )
-        ?.service?.map { it.java } ?: emptyList()
+        ?.service?.map { it.java }.orEmpty()
 
     val subsystemName: String
     val subsystemNamespace: String

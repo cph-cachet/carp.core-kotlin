@@ -20,6 +20,7 @@ sealed class StudyDeploymentStatus
     abstract val createdOn: Instant
 
     abstract val studyDeploymentId: UUID
+
     /**
      * The list of all devices part of this study deployment and their status.
      */

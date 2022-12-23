@@ -5,11 +5,15 @@ complexity:
     ignorePrivate: true
 
 formatting:
+  ArgumentListWrapping:
+    active: false
   Filename:
     active: false
   Indentation:
     active: false
   MaximumLineLength:
+    active: false
+  MultiLineIfElse:
     active: false
   NoConsecutiveBlankLines:
     active: false
@@ -24,6 +28,10 @@ formatting:
   SpacingAroundKeyword:
     active: false
   SpacingAroundParens:
+    active: false
+  SpacingBetweenDeclarationsWithAnnotations:
+    active: false
+  SpacingBetweenDeclarationsWithComments:
     active: false
 
 naming:

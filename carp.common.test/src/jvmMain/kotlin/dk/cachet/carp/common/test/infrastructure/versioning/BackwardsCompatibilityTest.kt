@@ -46,7 +46,7 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
     fun setup()
     {
         // Get available test versions.
-        val directories = testRequestsFolder.listFiles()?.filter { it.isDirectory } ?: emptyList()
+        val directories = testRequestsFolder.listFiles()?.filter { it.isDirectory }.orEmpty()
         availableTestVersions = directories.map {
             val versionMatch = assertNotNull(
                 Regex( """(\d)\.(\d)""" ).find( it.name ),
