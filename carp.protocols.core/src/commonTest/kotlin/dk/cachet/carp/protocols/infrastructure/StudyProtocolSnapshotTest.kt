@@ -54,7 +54,7 @@ class StudyProtocolSnapshotTest :
         assertEquals( 1, parsed.tasks.filterIsInstance<CustomTaskConfiguration>().count() )
         val allMeasures = parsed.tasks.flatMap{ t -> t.measures }
         assertEquals( 2, allMeasures.count() )
-        assertEquals( 1, parsed.triggers.filter { t -> t.value is CustomTriggerConfiguration }.count() )
+        assertEquals( 1, parsed.triggers.count { t -> t.value is CustomTriggerConfiguration } )
     }
 
     @ExperimentalSerializationApi

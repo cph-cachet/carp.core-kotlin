@@ -1,5 +1,5 @@
+@file:Suppress( "MatchingDeclarationName" )
 
-@file:Suppress("MatchingDeclarationName")
 package dk.cachet.carp.common.application
 
 

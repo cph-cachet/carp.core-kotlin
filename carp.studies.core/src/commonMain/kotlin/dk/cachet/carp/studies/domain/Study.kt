@@ -166,7 +166,7 @@ class Study(
      */
     fun goLive()
     {
-        check( protocolSnapshot != null ) { "A study protocol needs to be defined for a study to go live." }
+        checkNotNull( protocolSnapshot ) { "A study protocol needs to be defined for a study to go live." }
 
         if ( !isLive )
         {

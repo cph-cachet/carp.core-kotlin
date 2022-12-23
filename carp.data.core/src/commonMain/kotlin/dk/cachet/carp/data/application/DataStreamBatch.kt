@@ -21,19 +21,18 @@ interface DataStreamBatch : Sequence<DataStreamPoint<*>>
     /**
      * Get an iterator to iterate over all [DataStreamPoint]s contained in this batch.
      */
-    override fun iterator(): Iterator<DataStreamPoint<*>> =
-        sequences.asSequence().flatMap { seq -> seq.map { it } }.iterator()
+    override fun iterator(): Iterator<DataStreamPoint<*>> = sequences.flatMap { it }.iterator()
 
     /**
      * Determines whether this [DataStreamBatch] contains no [DataStreamPoint]s.
      */
-    fun isEmpty(): Boolean = firstOrNull() == null
+    fun isEmpty(): Boolean = none()
 
     /**
      * Get all [DataStreamPoint]s for [dataStream] in this batch, in order.
      */
     fun getDataStreamPoints( dataStream: DataStreamId ): Sequence<DataStreamPoint<*>> =
-        sequences.filter { it.dataStream == dataStream }.flatMap { sequence -> sequence.map { it } }
+        sequences.filter { it.dataStream == dataStream }.flatMap { it }
 }
 
 

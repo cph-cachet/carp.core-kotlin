@@ -113,7 +113,10 @@ class StudyProtocol(
             {
                 require( triggerIds.first() == 0 && triggerIds.last() == triggerIds.size - 1 )
                     { "Triggers should be given sequential IDs starting with 0." }
-                triggerIds.map { protocol.addTrigger( snapshot.triggers[ it ]!! ) }
+                triggerIds.map {
+                    val trigger = checkNotNull( snapshot.triggers[ it ] )
+                    protocol.addTrigger( trigger )
+                }
             }
 
             // Add task controls.
@@ -243,10 +246,8 @@ class StudyProtocol(
         val device: AnyDeviceConfiguration = deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
             ?: throw IllegalArgumentException( "The passed trigger does not belong to any device specified in this study protocol." )
 
-        if ( trigger.requiresPrimaryDevice && device !is AnyPrimaryDeviceConfiguration )
-        {
-            throw IllegalArgumentException( "The passed trigger cannot be initiated by the specified device since it is not a primary device." )
-        }
+        require( !trigger.requiresPrimaryDevice || device is AnyPrimaryDeviceConfiguration )
+            { "The passed trigger cannot be initiated by the specified device since it is not a primary device." }
 
         val isAdded = _triggers.add( trigger )
         if ( isAdded )
