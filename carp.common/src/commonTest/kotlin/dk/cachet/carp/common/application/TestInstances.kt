@@ -1,5 +1,3 @@
-@file:Suppress( "WildcardImport" )
-
 package dk.cachet.carp.common.application
 
 import dk.cachet.carp.common.application.data.*
