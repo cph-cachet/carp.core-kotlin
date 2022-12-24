@@ -72,10 +72,7 @@ style:
   UnusedPrivateClass:
     active: false
   WildcardImport:
-    # TODO: Consider deactivating this. The advantages of forcing individual types to be imported are limited.
-    #       Namespaces are supposed to be cohesive sets of objects, thus importing them as a group makes sense.
-    excludes: []
-    excludeImports: ['kotlin.reflect.*', 'kotlin.test.*']
+    active: false
 
 verify-implementation:
   DataClass:

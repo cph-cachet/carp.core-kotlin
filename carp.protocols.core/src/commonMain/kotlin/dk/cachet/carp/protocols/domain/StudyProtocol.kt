@@ -1,5 +1,3 @@
-@file:Suppress( "WildcardImport" )
-
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.application.UUID

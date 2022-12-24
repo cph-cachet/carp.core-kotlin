@@ -3,8 +3,7 @@
     "BooleanLiteralArgument",
     "MagicNumber",
     "MaximumLineLength",
-    "TopLevelPropertyNaming",
-    "WildcardImport"
+    "TopLevelPropertyNaming"
 )
 
 package dk.cachet.carp.rpc
