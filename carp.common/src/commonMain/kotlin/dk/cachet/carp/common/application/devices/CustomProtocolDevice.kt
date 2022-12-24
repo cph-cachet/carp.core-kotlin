@@ -27,7 +27,8 @@ data class CustomProtocolDevice( override val roleName: String, override val isO
 
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 
-    override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
+    override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder =
+        DefaultDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DefaultDeviceRegistration> = DefaultDeviceRegistration::class
     override fun isValidRegistration( registration: DefaultDeviceRegistration ) = Trilean.TRUE
 }

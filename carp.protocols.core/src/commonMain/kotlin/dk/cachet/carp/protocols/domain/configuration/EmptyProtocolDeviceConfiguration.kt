@@ -12,7 +12,9 @@ import dk.cachet.carp.common.domain.ExtractUniqueKeyMap
  * Role names of added [DeviceConfiguration]s should be unique.
  */
 @Suppress( "Immutable", "DataClass" )
-internal class EmptyProtocolDeviceConfiguration : AbstractMap<String, AnyDeviceConfiguration>(), ProtocolDeviceConfiguration
+internal class EmptyProtocolDeviceConfiguration :
+    AbstractMap<String, AnyDeviceConfiguration>(),
+    ProtocolDeviceConfiguration
 {
     private val _devices: ExtractUniqueKeyMap<String, AnyDeviceConfiguration> =
         ExtractUniqueKeyMap( { device -> device.roleName } )
@@ -42,7 +44,10 @@ internal class EmptyProtocolDeviceConfiguration : AbstractMap<String, AnyDeviceC
         return isNewDevice
     }
 
-    override fun addConnectedDevice( device: AnyDeviceConfiguration, primaryDevice: AnyPrimaryDeviceConfiguration ): Boolean
+    override fun addConnectedDevice(
+        device: AnyDeviceConfiguration,
+        primaryDevice: AnyPrimaryDeviceConfiguration
+    ): Boolean
     {
         verifySamplingConfigurations( device )
         verifyPrimaryDevice( primaryDevice )
@@ -56,7 +61,10 @@ internal class EmptyProtocolDeviceConfiguration : AbstractMap<String, AnyDeviceC
             .add( device )
     }
 
-    override fun getConnectedDevices( primaryDevice: AnyPrimaryDeviceConfiguration, includeChainedDevices: Boolean ): Iterable<AnyDeviceConfiguration>
+    override fun getConnectedDevices(
+        primaryDevice: AnyPrimaryDeviceConfiguration,
+        includeChainedDevices: Boolean
+    ): Iterable<AnyDeviceConfiguration>
     {
         verifyPrimaryDevice( primaryDevice )
 

@@ -21,7 +21,9 @@ class InMemoryDataStreamService : DataStreamService
         ExtractUniqueKeyMap( { configuration -> configuration.studyDeploymentId } )
         {
             studyDeploymentId ->
-                IllegalStateException( "Data streams for deployment with \"$studyDeploymentId\" have already been configured." )
+                IllegalStateException(
+                    "Data streams for deployment with \"$studyDeploymentId\" have already been configured."
+                )
         }
     private val stoppedStudyDeploymentIds: MutableSet<UUID> = mutableSetOf()
     private val dataStreams: MutableDataStreamBatch = MutableDataStreamBatch()

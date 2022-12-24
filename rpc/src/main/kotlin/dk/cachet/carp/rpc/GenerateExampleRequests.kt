@@ -1,4 +1,11 @@
-@file:Suppress( "WildcardImport", "MagicNumber", "BooleanLiteralArgument", "TopLevelPropertyNaming" )
+@file:Suppress(
+    "ArgumentListWrapping",
+    "BooleanLiteralArgument",
+    "MagicNumber",
+    "MaximumLineLength",
+    "TopLevelPropertyNaming",
+    "WildcardImport"
+)
 
 package dk.cachet.carp.rpc
 

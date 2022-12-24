@@ -182,7 +182,10 @@ class DeploymentServiceHost(
      * - the device with [primaryDeviceRoleName] has not yet been registered
      * @throws IllegalStateException when the deployment for the requested primary device is not yet available.
      */
-    override suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, primaryDeviceRoleName: String ): PrimaryDeviceDeployment
+    override suspend fun getDeviceDeploymentFor(
+        studyDeploymentId: UUID,
+        primaryDeviceRoleName: String
+    ): PrimaryDeviceDeployment
     {
         val deployment: StudyDeployment = repository.getStudyDeploymentOrThrowBy( studyDeploymentId )
         val device = getRegisteredPrimaryDevice( deployment, primaryDeviceRoleName )
@@ -254,15 +257,24 @@ class DeploymentServiceHost(
     private fun getRegistrableDevice( deployment: StudyDeployment, deviceRoleName: String ): RegistrableDevice
     {
         return deployment.registrableDevices.firstOrNull { it.device.roleName == deviceRoleName }
-            ?: throw IllegalArgumentException( "A device with the role name '$deviceRoleName' could not be found in the study deployment." )
+            ?: throw IllegalArgumentException(
+                "A device with the role name '$deviceRoleName' could not be found in the study deployment."
+            )
     }
 
-    private fun getRegisteredPrimaryDevice( deployment: StudyDeployment, primaryDeviceRoleName: String ): AnyPrimaryDeviceConfiguration
+    private fun getRegisteredPrimaryDevice(
+        deployment: StudyDeployment,
+        primaryDeviceRoleName: String
+    ): AnyPrimaryDeviceConfiguration
     {
-        val registeredDevice = deployment.registeredDevices.entries.firstOrNull { it.key.roleName == primaryDeviceRoleName }?.toPair()
-            ?: throw IllegalArgumentException( "The specified device role name is not part of this study deployment or is not yet registered." )
+        val registeredDevice = deployment.registeredDevices.keys.firstOrNull { it.roleName == primaryDeviceRoleName }
+            ?: throw IllegalArgumentException(
+                "The specified device role name is not part of this study deployment or is not yet registered."
+            )
 
-        return registeredDevice.first as? AnyPrimaryDeviceConfiguration
-            ?: throw IllegalArgumentException( "The specified device is not a primary device and therefore does not have a deployment configuration." )
+        return registeredDevice as? AnyPrimaryDeviceConfiguration
+            ?: throw IllegalArgumentException(
+                "The specified device is not a primary device and therefore does not have a deployment configuration."
+            )
     }
 }

@@ -101,8 +101,11 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
     {
         val protocol = studyProtocol
         val invitation = invitation
-        return if ( protocol != null && invitation != null ) RecruitmentStatus.ReadyForDeployment( protocol, invitation )
+        val status =
+            if ( protocol != null && invitation != null ) RecruitmentStatus.ReadyForDeployment( protocol, invitation )
             else RecruitmentStatus.AwaitingStudyToGoLive
+
+        return status
     }
 
     /**
@@ -117,7 +120,9 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
      *  - not all primary devices part of the study protocol have been assigned a participant
      *  - not all necessary participant roles part of the study have been assigned a participant
      */
-    fun createInvitations( group: Set<AssignedParticipantRoles> ): Pair<StudyProtocolSnapshot, List<ParticipantInvitation>>
+    fun createInvitations(
+        group: Set<AssignedParticipantRoles>
+    ): Pair<StudyProtocolSnapshot, List<ParticipantInvitation>>
     {
         val status = getStatus()
         check( status is RecruitmentStatus.ReadyForDeployment )

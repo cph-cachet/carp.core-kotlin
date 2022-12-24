@@ -31,9 +31,15 @@ data class NamespacedId(
     init
     {
         require( namespaceRegex.matches( namespace ) )
-            { "Invalid namespace representation: expected lowercase alpha-numeric (underscore included) words delimited by dots." }
+        {
+            "Invalid namespace representation: " +
+            "expected lowercase alpha-numeric (underscore included) words delimited by dots."
+        }
         require( nameRegex.matches( name ) )
-            { "Invalid name representation: expected a single lowercase alpha-numeric (underscore included) word." }
+        {
+            "Invalid name representation: " +
+            "expected a single lowercase alpha-numeric (underscore included) word."
+        }
     }
 
 
@@ -78,4 +84,5 @@ val nameRegex = """^[a-z_0-9]+?$""".toRegex()
 /**
  * A custom serializer for [NamespacedId].
  */
-object NamespacedIdSerializer : KSerializer<NamespacedId> by createCarpStringPrimitiveSerializer( { s -> NamespacedId.fromString( s ) } )
+object NamespacedIdSerializer : KSerializer<NamespacedId> by
+    createCarpStringPrimitiveSerializer( { s -> NamespacedId.fromString( s ) } )

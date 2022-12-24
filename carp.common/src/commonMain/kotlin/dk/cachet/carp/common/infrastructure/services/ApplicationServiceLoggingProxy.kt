@@ -153,12 +153,13 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, TEvent>, T
             override fun serialize( encoder: Encoder, value: LoggedRequest.Succeeded<*, *> )
             {
                 val responseSerializer = value.request.getResponseSerializer() as KSerializer<Any?>
+                val anyEventsSerializer = eventsSerializer as KSerializer<Any>
 
                 encoder.encodeStructure( descriptor )
                 {
                     encodeSerializableElement( descriptor, 0, requestSerializer as KSerializer<Any>, value.request )
-                    encodeSerializableElement( descriptor, 1, eventsSerializer as KSerializer<Any>, value.precedingEvents )
-                    encodeSerializableElement( descriptor, 2, eventsSerializer as KSerializer<Any>, value.publishedEvents )
+                    encodeSerializableElement( descriptor, 1, anyEventsSerializer, value.precedingEvents )
+                    encodeSerializableElement( descriptor, 2, anyEventsSerializer, value.publishedEvents )
                     encodeSerializableElement( descriptor, 3, responseSerializer, value.response )
                 }
             }
@@ -180,7 +181,11 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, TEvent>, T
                             0 -> request = decodeSerializableElement( descriptor, 0, requestSerializer )
                             1 -> precedingEvents = decodeSerializableElement( descriptor, 1, eventsSerializer )
                             2 -> publishedEvents = decodeSerializableElement( descriptor, 2, eventsSerializer )
-                            3 -> response = decodeSerializableElement( descriptor, 3, request!!.getResponseSerializer() )
+                            3 ->
+                            {
+                                val responseSerializer = checkNotNull( request ).getResponseSerializer()
+                                response = decodeSerializableElement( descriptor, 3, responseSerializer )
+                            }
                             CompositeDecoder.DECODE_DONE -> decoding = false
                             else -> error( "Unexpected index: $index" )
                         }
@@ -213,11 +218,13 @@ class LoggedRequestSerializer<TService : ApplicationService<TService, TEvent>, T
             @Suppress( "UNCHECKED_CAST" )
             override fun serialize( encoder: Encoder, value: LoggedRequest.Failed<*, *> )
             {
+                val anyEventsSerializer = eventsSerializer as KSerializer<Any>
+
                 encoder.encodeStructure( descriptor )
                 {
                     encodeSerializableElement( descriptor, 0, requestSerializer as KSerializer<Any>, value.request )
-                    encodeSerializableElement( descriptor, 1, eventsSerializer as KSerializer<Any>, value.precedingEvents )
-                    encodeSerializableElement( descriptor, 2, eventsSerializer as KSerializer<Any>, value.publishedEvents )
+                    encodeSerializableElement( descriptor, 1, anyEventsSerializer, value.precedingEvents )
+                    encodeSerializableElement( descriptor, 2, anyEventsSerializer, value.publishedEvents )
                     encodeSerializableElement( descriptor, 3, exceptionSerializer, value.exceptionType )
                 }
             }

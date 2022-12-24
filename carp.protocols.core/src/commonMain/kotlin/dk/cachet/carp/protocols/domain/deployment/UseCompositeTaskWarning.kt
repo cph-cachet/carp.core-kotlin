@@ -25,7 +25,8 @@ class UseCompositeTaskWarning internal constructor() : DeploymentWarning
 
     override val description: String =
         "The study protocol contains triggers which send multiple tasks to a single device. " +
-        "It is recommended to model this as one composite task instead, for clarity and to circumvent potential concurrency issues."
+        "It is recommended to model this as one composite task instead, " +
+        "for clarity and to circumvent potential concurrency issues."
 
 
     override fun isIssuePresent( protocol: StudyProtocol ): Boolean = getOverlappingTasks( protocol ).any()

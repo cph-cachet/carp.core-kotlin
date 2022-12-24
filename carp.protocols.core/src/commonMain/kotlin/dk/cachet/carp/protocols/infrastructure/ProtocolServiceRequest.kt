@@ -36,8 +36,10 @@ sealed class ProtocolServiceRequest<out TReturn> : ApplicationServiceRequest<Pro
     }
 
     @Serializable
-    data class AddVersion( val protocol: StudyProtocolSnapshot, val versionTag: String = Clock.System.now().toString() ) :
-        ProtocolServiceRequest<Unit>()
+    data class AddVersion(
+        val protocol: StudyProtocolSnapshot,
+        val versionTag: String = Clock.System.now().toString()
+    ) : ProtocolServiceRequest<Unit>()
     {
         override fun getResponseSerializer() = serializer<Unit>()
         override suspend fun invokeOn( service: ProtocolService ) = service.addVersion( protocol, versionTag )

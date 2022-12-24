@@ -131,7 +131,9 @@ class Study(
             if ( device.isConnectedDevice )
             {
                 dataListener.tryGetConnectedDataCollector( deviceType, registration )
-                    ?: throw UnsupportedOperationException( "Connecting to device of type \"$deviceType\" is not supported on this client." )
+                    ?: throw UnsupportedOperationException(
+                        "Connecting to device of type \"$deviceType\" is not supported on this client."
+                    )
             }
 
             val dataTypes = device.tasks

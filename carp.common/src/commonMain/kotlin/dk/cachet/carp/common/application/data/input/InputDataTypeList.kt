@@ -41,7 +41,8 @@ open class InputDataTypeList private constructor( val list: MutableList<InputDat
         dataToInput: (TData) -> TInput
     ): InputDataType =
         inputDataType.also{
-            require( !_inputElements.containsKey( it ) ) { "The specified input data type is already registered in this list." }
+            require( !_inputElements.containsKey( it ) )
+                { "The specified input data type is already registered in this list." }
 
             list.add( it )
             _inputElements[ it ] = inputElement

@@ -42,7 +42,8 @@ class SpacingInParentheses( config: Config = Config.empty ) : Rule( config )
             val noSpaces = accessor.text.startsWith( "get()" )
             if ( !noSpaces )
             {
-                report( CodeSmell( issue, Entity.from( accessor ), "Get accessors should not contain spaces in the parentheses." ) )
+                val message = "Get accessors should not contain spaces in the parentheses."
+                report( CodeSmell( issue, Entity.from( accessor ), message ) )
             }
         }
     }

@@ -73,7 +73,8 @@ class InMemoryClientRepository : ClientRepository
     override suspend fun updateStudy( study: Study )
     {
         val storedStudy = findStudySnapshot( study )
-        requireNotNull( storedStudy ) { "The repository does not contain an existing study matching the one to update." }
+        requireNotNull( storedStudy )
+            { "The repository does not contain an existing study matching the one to update." }
 
         studies.remove( storedStudy )
         studies.add( study.getSnapshot() )

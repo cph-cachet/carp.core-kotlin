@@ -116,5 +116,7 @@ sealed class StudyDeploymentStatus
      */
     fun getDeviceStatus( deviceRoleName: String ): DeviceDeploymentStatus =
         deviceStatusList.firstOrNull { it.device.roleName == deviceRoleName }
-            ?: throw IllegalArgumentException( "The device with the given role name was not found in this study deployment." )
+            ?: throw IllegalArgumentException(
+                "The device with the given role name was not found in this study deployment."
+            )
 }

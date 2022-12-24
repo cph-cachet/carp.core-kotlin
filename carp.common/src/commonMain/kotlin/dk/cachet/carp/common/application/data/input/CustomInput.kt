@@ -38,7 +38,8 @@ data class CustomInput( val input: Any ) : Data
 class CustomInputSerializer( vararg supportedDataTypes: KClass<*> ) : KSerializer<CustomInput>
 {
     // TODO: Can we use the fully qualified type name to register serializers here, like kotlinx.serialization does? How?
-    val dataTypeMap: Map<String, KSerializer<out Any>> = supportedDataTypes.associate { it.simpleName!! to it.serializer() }
+    val dataTypeMap: Map<String, KSerializer<out Any>> =
+        supportedDataTypes.associate { it.simpleName!! to it.serializer() }
 
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor( CUSTOM_INPUT_TYPE_NAME )
     {

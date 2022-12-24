@@ -71,7 +71,8 @@ class StudyDeploymentProxy(
             study.deploymentStatusReceived( deployedStatus )
         }
         // Handle race conditions with competing clients modifying device registrations, invalidating this deployment.
-        catch ( ignore: IllegalArgumentException ) { } // TODO: When deployment is out of date, maybe also use `IllegalStateException` for easier handling here.
+        // TODO: When deployment is out of date, maybe also use `IllegalStateException` for easier handling here.
+        catch ( ignore: IllegalArgumentException ) { }
         catch ( ignore: IllegalStateException ) { }
     }
 

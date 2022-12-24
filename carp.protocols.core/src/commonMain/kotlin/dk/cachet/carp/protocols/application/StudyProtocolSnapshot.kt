@@ -70,8 +70,8 @@ data class StudyProtocolSnapshot(
                 triggers = triggers,
                 taskControls = triggers
                     .flatMap { trigger -> protocol.getTaskControls( trigger.value ).map { trigger to it } }
-                    .map { (trigger, control) ->
-                        TaskControl( trigger.key, control.task.name, control.destinationDevice.roleName, control.control )
+                    .map { (trigger, tc) ->
+                        TaskControl( trigger.key, tc.task.name, tc.destinationDevice.roleName, tc.control )
                     }
                     .toSet(),
                 participantRoles = protocol.participantRoles.toSet(),
@@ -84,7 +84,10 @@ data class StudyProtocolSnapshot(
             )
         }
 
-        private fun getConnections( protocol: StudyProtocol, primaryDevice: AnyPrimaryDeviceConfiguration ): Iterable<DeviceConnection>
+        private fun getConnections(
+            protocol: StudyProtocol,
+            primaryDevice: AnyPrimaryDeviceConfiguration
+        ): Iterable<DeviceConnection>
         {
             val connections: MutableList<DeviceConnection> = mutableListOf()
 

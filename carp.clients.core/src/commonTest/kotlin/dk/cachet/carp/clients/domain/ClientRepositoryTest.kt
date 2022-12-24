@@ -91,7 +91,7 @@ interface ClientRepositoryTest
         // Make some changes and update.
         val primaryDevice = StubPrimaryDeviceConfiguration( deviceRoleName )
         val registration = primaryDevice.createRegistration()
-        val primaryDeviceDeployment = PrimaryDeviceDeployment( StubPrimaryDeviceConfiguration( deviceRoleName ), registration )
+        val primaryDeviceDeployment = PrimaryDeviceDeployment( primaryDevice, registration )
         study.deploymentStatusReceived(
             StudyDeploymentStatus.DeployingDevices(
                 Clock.System.now(),

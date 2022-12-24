@@ -125,5 +125,7 @@ class InMemoryStudyProtocolRepository : StudyProtocolRepository
         ?: throw IllegalArgumentException( "The specified protocol is not stored in this repository" )
 
     private fun MutableMap<ProtocolVersion, StudyProtocolSnapshot>.getLatest() =
-        this.keys.last() // Versions are stored in order added. Adding versions quickly (e.g., in tests) can result in same dates.
+        // Versions are stored in order added.
+        // Adding versions quickly (e.g., in tests) can result in same dates.
+        this.keys.last()
 }

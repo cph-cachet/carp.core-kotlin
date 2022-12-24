@@ -34,5 +34,6 @@ data class CustomTriggerConfiguration(
 /**
  * Custom serializer for a [TriggerConfiguration] which enables deserializing types that are unknown at runtime, yet extend from [TriggerConfiguration].
  */
-object TriggerConfigurationSerializer : KSerializer<TriggerConfiguration<*>>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTriggerConfiguration( className, json, serializer ) } )
+object TriggerConfigurationSerializer : KSerializer<TriggerConfiguration<*>> by createUnknownPolymorphicSerializer(
+    { className, json, serializer -> CustomTriggerConfiguration( className, json, serializer ) }
+)

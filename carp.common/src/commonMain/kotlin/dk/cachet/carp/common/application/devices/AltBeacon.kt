@@ -38,7 +38,8 @@ data class AltBeacon(
 
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 
-    override fun createDeviceRegistrationBuilder(): AltBeaconDeviceRegistrationBuilder = AltBeaconDeviceRegistrationBuilder()
+    override fun createDeviceRegistrationBuilder(): AltBeaconDeviceRegistrationBuilder =
+        AltBeaconDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<AltBeaconDeviceRegistration> = AltBeaconDeviceRegistration::class
     override fun isValidRegistration( registration: AltBeaconDeviceRegistration ): Trilean = Trilean.TRUE
 }

@@ -52,7 +52,7 @@ data class Smartphone(
          *       Each 'step' is reported as an event, so this would map to a different DataType (e.g. `Step`).
          *       Not certain this is available on iPhone.
          */
-        val STEP_COUNT = add( NoOptionsSamplingScheme( CarpDataTypes.STEP_COUNT ) ) // No configuration options available.
+        val STEP_COUNT = add( NoOptionsSamplingScheme( CarpDataTypes.STEP_COUNT ) ) // No options available.
 
         /**
          * Rate of change in velocity, excluding gravity, along perpendicular x, y, and z axes in the device's coordinate system,
@@ -114,7 +114,8 @@ data class Smartphone(
     override fun getSupportedDataTypes(): Set<DataType> = Sensors.keys
     override fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap = Sensors
 
-    override fun createDeviceRegistrationBuilder(): SmartphoneDeviceRegistrationBuilder = SmartphoneDeviceRegistrationBuilder()
+    override fun createDeviceRegistrationBuilder(): SmartphoneDeviceRegistrationBuilder =
+        SmartphoneDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<SmartphoneDeviceRegistration> = SmartphoneDeviceRegistration::class
     override fun isValidRegistration( registration: SmartphoneDeviceRegistration ) = Trilean.TRUE
 }
@@ -138,24 +139,24 @@ class SmartphoneSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilde
     /**
      * Configure sampling configuration for [CarpDataTypes.GEOLOCATION].
      */
-    fun geolocation( builder: AdaptiveGranularitySamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
+    fun geolocation( builder: AdaptiveGranularitySamplingConfigurationBuilder.() -> Unit ) =
         addConfiguration( Smartphone.Sensors.GEOLOCATION, builder )
 
     /**
      * Configure sampling configuration for [CarpDataTypes.NON_GRAVITATIONAL_ACCELERATION].
      */
-    fun nonGravitationalAcceleration( builder: IntervalSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
+    fun nonGravitationalAcceleration( builder: IntervalSamplingConfigurationBuilder.() -> Unit ) =
         addConfiguration( Smartphone.Sensors.NON_GRAVITATIONAL_ACCELERATION, builder )
 
     /**
      * Configure sampling configuration for [CarpDataTypes.ACCELERATION].
      */
-    fun acceleration( builder: IntervalSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
+    fun acceleration( builder: IntervalSamplingConfigurationBuilder.() -> Unit ) =
         addConfiguration( Smartphone.Sensors.ACCELERATION, builder )
 
     /**
      * Configure sampling configuration for [CarpDataTypes.ANGULAR_VELOCITY].
      */
-    fun angularVelocity( builder: IntervalSamplingConfigurationBuilder.() -> Unit ): SamplingConfiguration =
+    fun angularVelocity( builder: IntervalSamplingConfigurationBuilder.() -> Unit ) =
         addConfiguration( Smartphone.Sensors.ANGULAR_VELOCITY, builder )
 }

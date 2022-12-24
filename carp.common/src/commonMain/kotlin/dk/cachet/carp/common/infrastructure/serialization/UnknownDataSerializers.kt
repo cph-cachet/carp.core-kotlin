@@ -17,5 +17,6 @@ data class CustomData( override val className: String, override val jsonSource: 
 /**
  * Custom serializer for [Data] which enables deserializing types that are unknown at runtime, yet extend from [Data].
  */
-object DataSerializer : KSerializer<Data>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomData( className, json, serializer ) } )
+object DataSerializer : KSerializer<Data> by createUnknownPolymorphicSerializer(
+    { className, json, serializer -> CustomData( className, json, serializer ) }
+)

@@ -32,7 +32,8 @@ class CurlyBracesOnSeparateLine( config: Config = Config.empty ) : Rule( config 
         javaClass.simpleName,
         Severity.Style,
         "Curly braces of blocks need to be placed on separate lines (except for trailing lambda arguments), " +
-        "aligned with the start of the definition the block is associated with (e.g., class, function, object literal, or return).",
+        "aligned with the start of the definition the block is associated with " +
+        "(e.g., class, function, object literal, or return).",
         Debt.FIVE_MINS
     )
 
