@@ -25,7 +25,9 @@ object CustomSerializerWrapperSerializer : KSerializer<CustomSerializerWrapper>
         encoder.encodeSerializableValue( value.serializer, value.inner )
 
     override fun deserialize( decoder: Decoder ): CustomSerializerWrapper =
-        throw UnsupportedOperationException( "${CustomSerializerWrapper::class.simpleName} only supports serialization." )
+        throw UnsupportedOperationException(
+            "${CustomSerializerWrapper::class.simpleName} only supports serialization."
+        )
 }
 
 

@@ -54,9 +54,10 @@ interface StudyProtocolRepository
      *
      * @throws IllegalArgumentException when the requested protocol is not found.
      */
-    suspend fun getByOrThrow( id: UUID, versionTag: String? = null ): StudyProtocol =
-        getBy( id, versionTag )
-            ?: throw IllegalArgumentException( "A protocol with ID \"$id\" and the specified version tag does not exist." )
+    suspend fun getByOrThrow( id: UUID, versionTag: String? = null ): StudyProtocol = getBy( id, versionTag )
+        ?: throw IllegalArgumentException(
+            "A protocol with ID \"$id\" and the specified version tag does not exist."
+        )
 
     /**
      * Find all [StudyProtocol]'s owned by the owner with [ownerId], or an empty sequence if none are found.

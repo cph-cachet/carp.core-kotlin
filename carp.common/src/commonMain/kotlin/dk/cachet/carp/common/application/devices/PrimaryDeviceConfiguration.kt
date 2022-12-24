@@ -13,8 +13,10 @@ import kotlin.time.Duration
  */
 @Serializable
 @Polymorphic
-abstract class PrimaryDeviceConfiguration<TRegistration : DeviceRegistration, out TBuilder : DeviceRegistrationBuilder<TRegistration>> :
-    DeviceConfiguration<TRegistration, TBuilder>()
+abstract class PrimaryDeviceConfiguration<
+    TRegistration : DeviceRegistration,
+    out TBuilder : DeviceRegistrationBuilder<TRegistration>
+> : DeviceConfiguration<TRegistration, TBuilder>()
 {
     // This property is only here for (de)serialization purposes.
     // For unknown types we need to know whether to treat them as primary devices or not (in the case of 'DeviceConfiguration' collections).

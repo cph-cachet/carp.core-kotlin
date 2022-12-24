@@ -34,5 +34,6 @@ ClientManager<Smartphone, SmartphoneDeviceRegistration, SmartphoneDeviceRegistra
     dataCollectorFactory
 )
 {
-    override fun createDeviceRegistrationBuilder(): SmartphoneDeviceRegistrationBuilder = SmartphoneDeviceRegistrationBuilder()
+    override fun createDeviceRegistrationBuilder(): SmartphoneDeviceRegistrationBuilder =
+        SmartphoneDeviceRegistrationBuilder()
 }

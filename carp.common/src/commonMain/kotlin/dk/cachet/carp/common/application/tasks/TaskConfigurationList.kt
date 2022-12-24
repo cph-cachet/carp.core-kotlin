@@ -9,8 +9,9 @@ import dk.cachet.carp.common.application.devices.DeviceConfiguration
  *
  * Extend from this class as an object and assign members as follows: `val SOME_TASK = add { SomeTaskBuilder() }`.
  */
-open class TaskConfigurationList private constructor( private val list: MutableList<SupportedTaskConfiguration<*, *>> ) :
-    List<SupportedTaskConfiguration<*, *>> by list
+open class TaskConfigurationList private constructor(
+    private val list: MutableList<SupportedTaskConfiguration<*, *>>
+) : List<SupportedTaskConfiguration<*, *>> by list
 {
     constructor() : this( mutableListOf() )
 
@@ -18,22 +19,25 @@ open class TaskConfigurationList private constructor( private val list: MutableL
      * All containing measures and/or outputs start running in the background once triggered.
      * The task runs for a specified duration, or until stopped, or until all measures and/or outputs have completed.
      */
-    @Suppress("PropertyName", "VariableNaming" ) // This class should only be extended by object classes, making it a constant.
+    @Suppress("PropertyName", "VariableNaming" ) // This is only extended by object classes, making it a constant.
     val BACKGROUND = add { BackgroundTaskBuilder() }
 
 
-    protected fun <TConfiguration : TaskConfiguration<*>, TBuilder : TaskConfigurationBuilder<TConfiguration>> add(
-        builder: () -> TBuilder
-    ): SupportedTaskConfiguration<TConfiguration, TBuilder> = SupportedTaskConfiguration( builder ).also { list.add( it ) }
+    protected fun <
+        TConfiguration : TaskConfiguration<*>,
+        TBuilder : TaskConfigurationBuilder<TConfiguration>
+    > add( builder: () -> TBuilder ): SupportedTaskConfiguration<TConfiguration, TBuilder> =
+        SupportedTaskConfiguration( builder ).also { list.add( it ) }
 }
 
 
 /**
  * A [TaskConfiguration] which is listed as a supported task on a [DeviceConfiguration].
  */
-class SupportedTaskConfiguration<TConfiguration : TaskConfiguration<*>, TBuilder : TaskConfigurationBuilder<TConfiguration>>(
-    private val createBuilder: () -> TBuilder
-)
+class SupportedTaskConfiguration<
+    TConfiguration : TaskConfiguration<*>,
+    TBuilder : TaskConfigurationBuilder<TConfiguration>
+>( private val createBuilder: () -> TBuilder )
 {
     /**
      * Create a [TaskConfiguration] supported on this device with [name] which uniquely defines the task.

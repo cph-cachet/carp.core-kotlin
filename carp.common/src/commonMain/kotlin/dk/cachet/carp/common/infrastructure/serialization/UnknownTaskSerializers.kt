@@ -42,5 +42,6 @@ data class CustomTaskConfiguration(
 /**
  * Custom serializer for [TaskConfiguration] which enables deserializing types that are unknown at runtime, yet extend from [TaskConfiguration].
  */
-object TaskConfigurationSerializer : KSerializer<TaskConfiguration<*>>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTaskConfiguration( className, json, serializer ) } )
+object TaskConfigurationSerializer : KSerializer<TaskConfiguration<*>> by createUnknownPolymorphicSerializer(
+    { className, json, serializer -> CustomTaskConfiguration( className, json, serializer ) }
+)

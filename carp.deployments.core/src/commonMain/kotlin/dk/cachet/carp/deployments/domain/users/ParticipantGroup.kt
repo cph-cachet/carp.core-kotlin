@@ -160,7 +160,9 @@ class ParticipantGroup private constructor(
      */
     fun getAssignedPrimaryDevice( roleName: String ) =
         assignedPrimaryDevices.firstOrNull { it.device.roleName == roleName }
-            ?: throw IllegalArgumentException( "There is no assigned device with role name \"$roleName\" for this participant group." )
+            ?: throw IllegalArgumentException(
+                "There is no assigned device with role name \"$roleName\" for this participant group."
+            )
 
     /**
      * Update the device [registration] for the given assigned [primaryDevice].

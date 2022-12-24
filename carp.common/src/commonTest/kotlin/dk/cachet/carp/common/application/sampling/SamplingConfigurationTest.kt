@@ -13,7 +13,7 @@ class SamplingConfigurationMapBuilderTest
 {
     class TestBuilder : SamplingConfigurationMapBuilder()
     {
-        fun someSampleConfiguration( builder: NoOptionsSamplingConfigurationBuilder.() -> Unit = { } ): SamplingConfiguration =
+        fun someSampleConfiguration( builder: NoOptionsSamplingConfigurationBuilder.() -> Unit = { } ) =
             addConfiguration( StubDataTypeSamplingScheme(), builder )
     }
 

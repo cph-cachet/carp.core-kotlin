@@ -54,7 +54,8 @@ data class RecurrenceRule(
          */
         fun fromString( rrule: String ): RecurrenceRule
         {
-            require( RecurrenceRuleRegex.matches( rrule ) ) { "Invalid or unsupported RecurrenceRule string representation." }
+            require( RecurrenceRuleRegex.matches( rrule ) )
+                { "Invalid or unsupported RecurrenceRule string representation." }
 
             // Extract parameters.
             val parameters = rrule.substring( "RRULE:".length )
@@ -67,11 +68,14 @@ data class RecurrenceRule(
 
             // Verify parameter correctness.
             val supportedParameters = listOf( "FREQ", "INTERVAL", "UNTIL", "COUNT" )
-            require( parameters.keys.all { it in supportedParameters } ) { "Invalid or unsupported RRULE parameter found." }
-            require( parameters.keys.distinct().count() == parameters.keys.count() ) { "RRULE does not allow repeating the same parameter multiple times." }
+            require( parameters.keys.all { it in supportedParameters } )
+                { "Invalid or unsupported RRULE parameter found." }
+            require( parameters.keys.distinct().count() == parameters.keys.count() )
+                { "RRULE does not allow repeating the same parameter multiple times." }
 
             // Extract frequency.
-            val frequencyString = parameters[ "FREQ" ] ?: throw IllegalArgumentException( "FREQ needs to be specified." )
+            val frequencyString = parameters[ "FREQ" ]
+                ?: throw IllegalArgumentException( "FREQ needs to be specified." )
             val frequency = Frequency.valueOf( frequencyString )
 
             // Extract remaining parameters.
@@ -162,10 +166,12 @@ data class RecurrenceRule(
 /**
  * Regular expression to verify whether the structure of the string representation of a [RecurrenceRule] is valid.
  */
-val RecurrenceRuleRegex = Regex( """RRULE:FREQ=(SECONDLY|MINUTELY|HOURLY|DAILY|WEEKLY|MONTHLY|YEARLY)(;(INTERVAL|UNTIL|COUNT)=\d+)*""" )
+val RecurrenceRuleRegex =
+    Regex( """RRULE:FREQ=(SECONDLY|MINUTELY|HOURLY|DAILY|WEEKLY|MONTHLY|YEARLY)(;(INTERVAL|UNTIL|COUNT)=\d+)*""" )
 
 
 /**
  * A custom serializer for [RecurrenceRule].
  */
-object RecurrenceRuleSerializer : KSerializer<RecurrenceRule> by createCarpStringPrimitiveSerializer( { s -> RecurrenceRule.fromString( s ) } )
+object RecurrenceRuleSerializer : KSerializer<RecurrenceRule> by
+    createCarpStringPrimitiveSerializer( { s -> RecurrenceRule.fromString( s ) } )

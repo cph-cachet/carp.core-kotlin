@@ -19,4 +19,5 @@ data class EmailAddress( val address: String )
 /**
  * A custom serializer for [EmailAddress].
  */
-object EmailAddressSerializer : KSerializer<EmailAddress> by createCarpStringPrimitiveSerializer( { EmailAddress( it ) } )
+object EmailAddressSerializer : KSerializer<EmailAddress> by
+    createCarpStringPrimitiveSerializer( { EmailAddress( it ) } )

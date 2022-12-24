@@ -108,7 +108,11 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
      * - [registration] is invalid for the specified device or uses a device ID which has already been used as part of registration of a different device
      * @throws IllegalStateException when this deployment has stopped.
      */
-    suspend fun registerDevice( studyDeploymentId: UUID, deviceRoleName: String, registration: DeviceRegistration ): StudyDeploymentStatus
+    suspend fun registerDevice(
+        studyDeploymentId: UUID,
+        deviceRoleName: String,
+        registration: DeviceRegistration
+    ): StudyDeploymentStatus
 
     /**
      * Unregister the device with the specified [deviceRoleName] for the study deployment with [studyDeploymentId].
@@ -129,7 +133,10 @@ interface DeploymentService : ApplicationService<DeploymentService, DeploymentSe
      * - the device with [primaryDeviceRoleName] has not yet been registered
      * @throws IllegalStateException when the deployment for the requested primary device is not yet available.
      */
-    suspend fun getDeviceDeploymentFor( studyDeploymentId: UUID, primaryDeviceRoleName: String ): PrimaryDeviceDeployment
+    suspend fun getDeviceDeploymentFor(
+        studyDeploymentId: UUID,
+        primaryDeviceRoleName: String
+    ): PrimaryDeviceDeployment
 
     /**
      * Indicate to stakeholders in the study deployment with [studyDeploymentId]

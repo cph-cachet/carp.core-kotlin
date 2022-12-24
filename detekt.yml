@@ -6,13 +6,13 @@ complexity:
 
 formatting:
   ArgumentListWrapping:
-    active: false
+    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
   Filename:
     active: false
   Indentation:
     active: false
   MaximumLineLength:
-    active: false
+    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
   MultiLineIfElse:
     active: false
   NoConsecutiveBlankLines:

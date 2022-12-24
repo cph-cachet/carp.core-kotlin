@@ -58,4 +58,5 @@ val TimeOfDayRegex = Regex( """\d\d:\d\d:\d\d""" )
 /**
  * A custom serializer for [TimeOfDay].
  */
-object TimeOfDaySerializer : KSerializer<TimeOfDay> by createCarpStringPrimitiveSerializer( { s -> TimeOfDay.fromString( s ) } )
+object TimeOfDaySerializer : KSerializer<TimeOfDay> by
+    createCarpStringPrimitiveSerializer( { s -> TimeOfDay.fromString( s ) } )

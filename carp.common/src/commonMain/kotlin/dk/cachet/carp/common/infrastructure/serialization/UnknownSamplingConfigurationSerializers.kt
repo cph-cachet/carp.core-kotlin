@@ -20,5 +20,6 @@ data class CustomSamplingConfiguration(
 /**
  * Custom serializer for a [SamplingConfiguration] which enables deserializing types that are unknown at runtime, yet extend from [SamplingConfiguration].
  */
-object SamplingConfigurationSerializer : KSerializer<SamplingConfiguration>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomSamplingConfiguration( className, json, serializer ) } )
+object SamplingConfigurationSerializer : KSerializer<SamplingConfiguration> by createUnknownPolymorphicSerializer(
+    { className, json, serializer -> CustomSamplingConfiguration( className, json, serializer ) }
+)

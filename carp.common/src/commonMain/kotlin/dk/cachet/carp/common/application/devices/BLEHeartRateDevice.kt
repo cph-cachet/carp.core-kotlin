@@ -45,7 +45,8 @@ data class BLEHeartRateDevice(
     override fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap = Sensors
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 
-    override fun createDeviceRegistrationBuilder(): MACAddressDeviceRegistrationBuilder = MACAddressDeviceRegistrationBuilder()
+    override fun createDeviceRegistrationBuilder(): MACAddressDeviceRegistrationBuilder =
+        MACAddressDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<MACAddressDeviceRegistration> = MACAddressDeviceRegistration::class
     override fun isValidRegistration( registration: MACAddressDeviceRegistration ): Trilean = Trilean.TRUE
 }
