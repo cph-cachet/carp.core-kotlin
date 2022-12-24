@@ -4,6 +4,8 @@ import dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.time.Duration
 
 
@@ -30,3 +32,16 @@ abstract class PrimaryDeviceConfiguration<
 }
 
 typealias AnyPrimaryDeviceConfiguration = PrimaryDeviceConfiguration<*, *>
+
+
+/**
+ * Determines whether this device configuration is a primary device configuration ([AnyPrimaryDeviceConfiguration]).
+ */
+@OptIn( ExperimentalContracts::class )
+fun AnyDeviceConfiguration.isPrimary(): Boolean
+{
+    contract {
+        returns( true ) implies( this@isPrimary is AnyPrimaryDeviceConfiguration )
+    }
+    return this is AnyPrimaryDeviceConfiguration
+}
