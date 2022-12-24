@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.application
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.devices.isPrimary
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
@@ -91,12 +92,9 @@ data class StudyProtocolSnapshot(
         {
             val connections: MutableList<DeviceConnection> = mutableListOf()
 
-            protocol.getConnectedDevices( primaryDevice ).forEach {
-                connections.add( DeviceConnection( it.roleName, primaryDevice.roleName ) )
-                if ( it is AnyPrimaryDeviceConfiguration )
-                {
-                    connections.addAll( getConnections( protocol, it ) )
-                }
+            protocol.getConnectedDevices( primaryDevice ).forEach { device ->
+                connections.add( DeviceConnection( device.roleName, primaryDevice.roleName ) )
+                if ( device.isPrimary() ) connections.addAll( getConnections( protocol, device ) )
             }
 
             return connections

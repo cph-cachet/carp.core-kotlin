@@ -5,6 +5,7 @@ package dk.cachet.carp.protocols.domain
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.devices.isPrimary
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl.Control
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
@@ -259,7 +260,7 @@ class StudyProtocol(
                 "The passed trigger does not belong to any device specified in this study protocol."
             )
 
-        require( !trigger.requiresPrimaryDevice || device is AnyPrimaryDeviceConfiguration )
+        require( !trigger.requiresPrimaryDevice || device.isPrimary() )
             { "The passed trigger cannot be initiated by the specified device since it is not a primary device." }
 
         val isAdded = _triggers.add( trigger )

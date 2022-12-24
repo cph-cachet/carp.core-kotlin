@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.devices.isPrimary
 import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployments.application.users.ParticipantData
@@ -50,7 +51,7 @@ class ParticipationServiceHost(
 
             // Keep track of primary device registration changes.
             event { registrationChange: DeploymentService.Event.DeviceRegistrationChanged ->
-                if ( registrationChange.device !is AnyPrimaryDeviceConfiguration ) return@event
+                if ( !registrationChange.device.isPrimary() ) return@event
 
                 val group = participationRepository.getParticipantGroup( registrationChange.studyDeploymentId )
                 checkNotNull( group )

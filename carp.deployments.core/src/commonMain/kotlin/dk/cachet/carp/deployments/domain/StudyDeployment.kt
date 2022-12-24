@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.devices.isPrimary
 import dk.cachet.carp.common.application.tasks.getAllExpectedDataTypes
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.domain.AggregateRoot
@@ -274,14 +275,8 @@ class StudyDeployment private constructor(
             .plus( device ) // Device itself needs to be registered.
             .minus( alreadyRegistered )
         val mandatoryConnectedDevices =
-            if ( device is AnyPrimaryDeviceConfiguration )
-            {
-                protocol.getConnectedDevices( device ).filter { !it.isOptional }
-            }
-            else
-            {
-                emptyList()
-            }
+            if ( device.isPrimary() ) protocol.getConnectedDevices( device ).filter { !it.isOptional }
+            else emptyList()
         val toRegisterBeforeDeployment = toRegisterToObtainDeployment
             // Primary devices require non-optional connected devices to be registered.
             .plus( mandatoryConnectedDevices )
