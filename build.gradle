@@ -10,17 +10,17 @@ buildscript {
             // Kotlin multiplatform versions.
             kotlin:'1.8.0-RC2',
             serialization:'1.4.1',
-            coroutines:'1.6.0',
-            datetime:'0.3.2',
+            coroutines:'1.6.4',
+            datetime:'0.4.0',
 
             // JVM versions.
             jvmTarget:'1.8',
-            dokkaPlugin:'1.6.10',
+            dokkaPlugin:'1.7.20',
             reflections:'0.10.2',
 
             // JS versions.
-            nodePlugin:'3.2.1',
-            bigJs:'6.1.1',
+            nodePlugin:'3.5.0',
+            bigJs:'6.2.1',
 
             // DevOps versions.
             detektPlugin:'1.22.0',
