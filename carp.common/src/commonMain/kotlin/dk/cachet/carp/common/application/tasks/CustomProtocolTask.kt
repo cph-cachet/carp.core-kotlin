@@ -1,7 +1,7 @@
 package dk.cachet.carp.common.application.tasks
 
 import dk.cachet.carp.common.application.data.NoData
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

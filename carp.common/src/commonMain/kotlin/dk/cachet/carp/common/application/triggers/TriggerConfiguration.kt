@@ -5,9 +5,7 @@ import dk.cachet.carp.common.application.ImplementAsDataClass
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import dk.cachet.carp.common.application.devices.PrimaryDeviceConfiguration
-import kotlinx.serialization.Polymorphic
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.serialization.*
 
 
 /**

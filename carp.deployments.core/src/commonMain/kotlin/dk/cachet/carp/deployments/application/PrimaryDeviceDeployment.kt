@@ -14,7 +14,7 @@ import dk.cachet.carp.common.application.users.hasNoConflicts
 import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

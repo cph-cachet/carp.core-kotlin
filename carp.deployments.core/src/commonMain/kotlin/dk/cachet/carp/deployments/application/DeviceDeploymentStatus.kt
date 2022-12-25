@@ -1,7 +1,7 @@
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

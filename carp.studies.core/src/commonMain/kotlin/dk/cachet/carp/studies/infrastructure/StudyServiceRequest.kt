@@ -9,10 +9,7 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.studies.application.StudyDetails
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyStatus
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.serializer
+import kotlinx.serialization.*
 
 
 /**

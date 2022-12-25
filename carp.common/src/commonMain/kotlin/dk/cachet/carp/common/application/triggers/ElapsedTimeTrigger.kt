@@ -3,8 +3,7 @@ package dk.cachet.carp.common.application.triggers
 import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.serialization.*
 import kotlin.time.Duration
 
 

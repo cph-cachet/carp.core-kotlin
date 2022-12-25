@@ -2,8 +2,7 @@ package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.MACAddress
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

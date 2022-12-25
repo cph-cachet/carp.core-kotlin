@@ -8,8 +8,7 @@ import dk.cachet.carp.common.application.sampling.*
 import dk.cachet.carp.common.application.tasks.*
 import dk.cachet.carp.common.application.triggers.*
 import dk.cachet.carp.common.application.users.*
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.PolymorphicSerializer
+import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.*
 

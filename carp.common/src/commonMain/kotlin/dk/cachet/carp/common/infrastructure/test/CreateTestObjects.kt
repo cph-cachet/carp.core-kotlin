@@ -13,11 +13,7 @@ import dk.cachet.carp.common.infrastructure.serialization.COMMON_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.PolymorphicModuleBuilder
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.plus
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
+import kotlinx.serialization.modules.*
 import kotlin.reflect.KClass
 
 

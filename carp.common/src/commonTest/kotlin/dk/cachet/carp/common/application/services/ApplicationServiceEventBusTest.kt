@@ -2,8 +2,7 @@ package dk.cachet.carp.common.application.services
 
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlin.test.*
 
 

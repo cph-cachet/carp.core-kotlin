@@ -1,8 +1,7 @@
 package dk.cachet.carp.common.application.data
 
 import dk.cachet.carp.common.application.triggers.TaskControl
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

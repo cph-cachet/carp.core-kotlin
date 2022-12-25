@@ -19,8 +19,7 @@ import dk.cachet.carp.data.application.stubDeploymentId
 import dk.cachet.carp.data.application.stubSequenceDeviceRoleName
 import dk.cachet.carp.data.application.stubSyncPoint
 import dk.cachet.carp.data.application.stubTriggerIds
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlin.test.*
 
 

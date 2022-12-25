@@ -8,10 +8,7 @@ import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.infrastructure.services.LoggedRequestSerializer
 import dk.cachet.carp.common.infrastructure.versioning.ApplicationServiceApiMigrator
-import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SealedClassSerializer
-import kotlinx.serialization.serializer
+import kotlinx.serialization.*
 import java.net.URI
 import kotlin.reflect.KClass
 

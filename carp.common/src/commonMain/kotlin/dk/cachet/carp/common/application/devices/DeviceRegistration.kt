@@ -5,9 +5,7 @@ import dk.cachet.carp.common.application.ImplementAsDataClass
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlinx.serialization.Polymorphic
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

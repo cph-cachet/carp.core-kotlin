@@ -1,9 +1,7 @@
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger
-import kotlinx.serialization.Polymorphic
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.time.Duration

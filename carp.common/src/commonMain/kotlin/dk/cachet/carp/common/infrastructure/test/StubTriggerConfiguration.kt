@@ -3,8 +3,7 @@ package dk.cachet.carp.common.infrastructure.test
 import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.serialization.*
 
 
 @Serializable

@@ -2,7 +2,7 @@ package dk.cachet.carp.deployments.domain
 
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**
