@@ -7,14 +7,9 @@ import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.*
+import kotlinx.serialization.builtins.*
+import kotlinx.serialization.json.*
 import kotlin.test.*
 
 

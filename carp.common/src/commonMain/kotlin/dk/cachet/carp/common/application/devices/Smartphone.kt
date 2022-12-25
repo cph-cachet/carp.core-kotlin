@@ -5,7 +5,7 @@ import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.*
 import dk.cachet.carp.common.application.tasks.*
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.milliseconds
 

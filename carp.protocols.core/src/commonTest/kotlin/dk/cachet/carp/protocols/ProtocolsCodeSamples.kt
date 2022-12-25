@@ -14,7 +14,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.domain.within
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.encodeToString
+import kotlinx.serialization.*
 import kotlin.test.*
 
 

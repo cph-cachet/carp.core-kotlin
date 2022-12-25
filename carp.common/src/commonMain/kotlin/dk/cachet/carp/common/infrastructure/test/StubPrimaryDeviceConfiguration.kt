@@ -7,8 +7,7 @@ import dk.cachet.carp.common.application.devices.DefaultDeviceRegistrationBuilde
 import dk.cachet.carp.common.application.devices.PrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlin.reflect.KClass
 
 

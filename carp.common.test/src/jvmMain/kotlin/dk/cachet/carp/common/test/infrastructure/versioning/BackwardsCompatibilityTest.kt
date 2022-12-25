@@ -10,12 +10,9 @@ import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.common.infrastructure.versioning.ApplicationServiceApiMigrator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.serializer
+import kotlinx.serialization.*
+import kotlinx.serialization.builtins.*
+import kotlinx.serialization.json.*
 import org.apache.commons.io.FileUtils
 import java.io.File
 import kotlin.reflect.KClass

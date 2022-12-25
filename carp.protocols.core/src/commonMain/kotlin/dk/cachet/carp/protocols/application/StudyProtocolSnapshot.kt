@@ -14,7 +14,7 @@ import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.datetime.Instant
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

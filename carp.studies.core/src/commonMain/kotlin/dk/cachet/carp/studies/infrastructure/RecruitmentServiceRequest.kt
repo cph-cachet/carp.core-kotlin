@@ -9,10 +9,7 @@ import dk.cachet.carp.studies.application.RecruitmentService
 import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.serializer
+import kotlinx.serialization.*
 
 
 /**

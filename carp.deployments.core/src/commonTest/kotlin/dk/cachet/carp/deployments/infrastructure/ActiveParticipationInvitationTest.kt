@@ -8,8 +8,7 @@ import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitatio
 import dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
 import dk.cachet.carp.deployments.application.users.Participation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
+import kotlinx.serialization.*
 import kotlin.test.*
 
 

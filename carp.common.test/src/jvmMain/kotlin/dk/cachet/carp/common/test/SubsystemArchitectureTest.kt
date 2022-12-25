@@ -4,7 +4,6 @@ import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.common.test.infrastructure.SnapshotTest
-import kotlinx.serialization.builtins.serializer
 import org.reflections.Reflections
 import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KClass

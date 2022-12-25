@@ -8,7 +8,7 @@ import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
 import dk.cachet.carp.deployments.application.users.ParticipantData
 import kotlinx.datetime.Instant
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

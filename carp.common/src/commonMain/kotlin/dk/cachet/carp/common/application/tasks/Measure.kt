@@ -3,7 +3,7 @@ package dk.cachet.carp.common.application.tasks
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

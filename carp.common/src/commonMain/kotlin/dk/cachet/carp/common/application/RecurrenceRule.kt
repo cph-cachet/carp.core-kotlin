@@ -2,8 +2,7 @@ package dk.cachet.carp.common.application
 
 import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
 import dk.cachet.carp.common.infrastructure.serialization.createCarpStringPrimitiveSerializer
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.microseconds
 

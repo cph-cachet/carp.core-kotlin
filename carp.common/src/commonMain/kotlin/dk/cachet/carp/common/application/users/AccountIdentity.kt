@@ -1,8 +1,7 @@
 package dk.cachet.carp.common.application.users
 
 import dk.cachet.carp.common.application.EmailAddress
-import kotlinx.serialization.Polymorphic
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

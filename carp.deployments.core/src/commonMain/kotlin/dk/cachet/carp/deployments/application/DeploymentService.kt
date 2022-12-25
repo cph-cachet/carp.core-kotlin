@@ -9,8 +9,7 @@ import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.datetime.Instant
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

@@ -10,10 +10,8 @@ import dk.cachet.carp.common.application.devices.DeviceRegistrationBuilder
 import dk.cachet.carp.common.application.devices.PrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 import kotlin.reflect.KClass
 
 

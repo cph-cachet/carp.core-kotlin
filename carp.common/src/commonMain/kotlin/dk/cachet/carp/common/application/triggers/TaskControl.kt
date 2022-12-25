@@ -1,6 +1,6 @@
 package dk.cachet.carp.common.application.triggers
 
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

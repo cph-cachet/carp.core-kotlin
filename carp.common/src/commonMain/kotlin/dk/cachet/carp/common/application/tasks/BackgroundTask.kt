@@ -2,7 +2,7 @@ package dk.cachet.carp.common.application.tasks
 
 import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlin.time.Duration
 
 

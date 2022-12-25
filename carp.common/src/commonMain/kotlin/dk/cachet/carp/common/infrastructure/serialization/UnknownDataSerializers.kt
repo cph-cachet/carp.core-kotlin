@@ -1,8 +1,7 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.data.Data
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 
 

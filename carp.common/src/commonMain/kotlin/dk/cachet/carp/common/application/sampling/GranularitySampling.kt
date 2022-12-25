@@ -2,7 +2,7 @@ package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.devices.DeviceConfiguration
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**
