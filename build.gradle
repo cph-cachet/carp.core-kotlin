@@ -8,7 +8,7 @@ buildscript {
 
         versions = [
             // Kotlin multiplatform versions.
-            kotlin:'1.8.0-RC2',
+            kotlin:'1.8.0',
             serialization:'1.4.1',
             coroutines:'1.6.4',
             datetime:'0.4.0',
