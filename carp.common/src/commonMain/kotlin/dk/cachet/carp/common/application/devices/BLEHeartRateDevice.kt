@@ -7,7 +7,7 @@ import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.NoOptionsSamplingScheme
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskConfigurationList
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlin.reflect.KClass
 
 
@@ -45,7 +45,8 @@ data class BLEHeartRateDevice(
     override fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap = Sensors
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 
-    override fun createDeviceRegistrationBuilder(): MACAddressDeviceRegistrationBuilder = MACAddressDeviceRegistrationBuilder()
+    override fun createDeviceRegistrationBuilder(): MACAddressDeviceRegistrationBuilder =
+        MACAddressDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<MACAddressDeviceRegistration> = MACAddressDeviceRegistration::class
     override fun isValidRegistration( registration: MACAddressDeviceRegistration ): Trilean = Trilean.TRUE
 }

@@ -5,7 +5,7 @@ import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.users.ParticipantStatus
 import kotlinx.datetime.Instant
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**
@@ -20,6 +20,7 @@ sealed class StudyDeploymentStatus
     abstract val createdOn: Instant
 
     abstract val studyDeploymentId: UUID
+
     /**
      * The list of all devices part of this study deployment and their status.
      */
@@ -115,5 +116,7 @@ sealed class StudyDeploymentStatus
      */
     fun getDeviceStatus( deviceRoleName: String ): DeviceDeploymentStatus =
         deviceStatusList.firstOrNull { it.device.roleName == deviceRoleName }
-            ?: throw IllegalArgumentException( "The device with the given role name was not found in this study deployment." )
+            ?: throw IllegalArgumentException(
+                "The device with the given role name was not found in this study deployment."
+            )
 }

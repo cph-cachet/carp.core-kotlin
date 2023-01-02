@@ -1,8 +1,7 @@
 package dk.cachet.carp.common.application.services
 
 import dk.cachet.carp.common.infrastructure.serialization.createCarpStringPrimitiveSerializer
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

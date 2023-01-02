@@ -7,8 +7,7 @@ import dk.cachet.carp.common.infrastructure.versioning.Major1Minor0To1Migration
 import dk.cachet.carp.common.infrastructure.versioning.getType
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.infrastructure.StudyServiceRequest
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.*
 
 
 private val major1Minor0To1Migration =

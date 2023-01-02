@@ -21,9 +21,7 @@ import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
+import kotlinx.serialization.*
 import kotlin.test.*
 
 
@@ -54,7 +52,7 @@ class StudyProtocolSnapshotTest :
         assertEquals( 1, parsed.tasks.filterIsInstance<CustomTaskConfiguration>().count() )
         val allMeasures = parsed.tasks.flatMap{ t -> t.measures }
         assertEquals( 2, allMeasures.count() )
-        assertEquals( 1, parsed.triggers.filter { t -> t.value is CustomTriggerConfiguration }.count() )
+        assertEquals( 1, parsed.triggers.count { t -> t.value is CustomTriggerConfiguration } )
     }
 
     @ExperimentalSerializationApi

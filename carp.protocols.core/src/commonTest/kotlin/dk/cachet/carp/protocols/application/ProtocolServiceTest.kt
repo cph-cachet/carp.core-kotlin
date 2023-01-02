@@ -193,6 +193,8 @@ interface ProtocolServiceTest
         assertFailsWith<IllegalArgumentException> { service.getVersionHistoryFor( unknownId ) }
     }
 
-    private fun modifyProtocol( protocol: StudyProtocol ): StudyProtocol =
-        protocol.apply { addPrimaryDevice( StubPrimaryDeviceConfiguration() ) }
+    private fun modifyProtocol( protocol: StudyProtocol ): StudyProtocol = protocol.apply {
+        name = "A new name"
+        addPrimaryDevice( StubPrimaryDeviceConfiguration() )
+    }
 }

@@ -19,8 +19,9 @@ class UnexpectedMeasuresWarning internal constructor() : DeploymentWarning
     data class UnexpectedMeasure( val device: AnyDeviceConfiguration, val measure: Measure )
 
     override val description: String =
-        "The study protocol contains measures that are requested on a device for which the requested data type is not expected." +
-        "This is allowed, but requires the client implementation to have corresponding support to handle this unexpected data type."
+        "The study protocol contains measures that are requested on a device " +
+        "for which the requested data type isn't expected. This is allowed, but " +
+        "requires the client implementation to have corresponding support to handle this unexpected data type."
 
 
     override fun isIssuePresent( protocol: StudyProtocol ): Boolean = getUnexpectedMeasures( protocol ).any()

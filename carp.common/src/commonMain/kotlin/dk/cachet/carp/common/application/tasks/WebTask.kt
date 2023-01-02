@@ -3,7 +3,7 @@ package dk.cachet.carp.common.application.tasks
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.tasks.WebTask.UrlVariable
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

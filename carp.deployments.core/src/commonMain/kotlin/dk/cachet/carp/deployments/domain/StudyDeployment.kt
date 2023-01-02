@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceRegistration
+import dk.cachet.carp.common.application.devices.isPrimary
 import dk.cachet.carp.common.application.tasks.getAllExpectedDataTypes
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.domain.AggregateRoot
@@ -38,7 +39,10 @@ class StudyDeployment private constructor(
 {
     sealed class Event : DomainEvent
     {
-        data class DeviceRegistered( val device: AnyDeviceConfiguration, val registration: DeviceRegistration ) : Event()
+        data class DeviceRegistered(
+            val device: AnyDeviceConfiguration,
+            val registration: DeviceRegistration
+        ) : Event()
         data class DeviceUnregistered( val device: AnyDeviceConfiguration ) : Event()
         data class DeviceDeployed( val device: AnyPrimaryDeviceConfiguration ) : Event()
         data class Started( val startedOn: Instant ) : Event()
@@ -86,7 +90,9 @@ class StudyDeployment private constructor(
             // Replay device registration history.
             snapshot.deviceRegistrationHistory.forEach { (roleName, registrations) ->
                 val device = deployment.registrableDevices.map { it.device }.firstOrNull { it.roleName == roleName }
-                    ?: throw IllegalArgumentException( "Can't find registered device with role name '$roleName' in snapshot." )
+                    ?: throw IllegalArgumentException(
+                        "Can't find registered device with role name '$roleName' in snapshot."
+                    )
                 registrations.forEachIndexed { index, registration ->
                     val isNotFirstOrLast = index in 1 until registrations.size
                     if ( isNotFirstOrLast ) deployment.unregisterDevice( device )
@@ -100,14 +106,18 @@ class StudyDeployment private constructor(
             // Add deployed devices.
             snapshot.deployedDevices.forEach { roleName ->
                 val deployedDevice = deployment.protocolSnapshot.primaryDevices.firstOrNull { it.roleName == roleName }
-                    ?: throw IllegalArgumentException( "Can't find deployed device with role name '$roleName' in snapshot." )
+                    ?: throw IllegalArgumentException(
+                        "Can't find deployed device with role name '$roleName' in snapshot."
+                    )
                 deployment._deployedDevices.add( deployedDevice )
             }
 
             // Add invalidated deployed devices.
             val invalidatedDevices = snapshot.invalidatedDeployedDevices.map { invalidatedRoleName ->
                 deployment.protocolSnapshot.primaryDevices.firstOrNull { it.roleName == invalidatedRoleName }
-                    ?: throw IllegalArgumentException( "Can't find deployed device with role name '$invalidatedRoleName' in snapshot." )
+                    ?: throw IllegalArgumentException(
+                        "Can't find deployed device with role name '$invalidatedRoleName' in snapshot."
+                    )
             }
             deployment._invalidatedDeployedDevices.addAll( invalidatedDevices )
 
@@ -168,7 +178,8 @@ class StudyDeployment private constructor(
     val deviceRegistrationHistory: Map<AnyDeviceConfiguration, List<DeviceRegistration>>
         get() = _deviceRegistrationHistory
 
-    private val _deviceRegistrationHistory: MutableMap<AnyDeviceConfiguration, MutableList<DeviceRegistration>> = mutableMapOf()
+    private val _deviceRegistrationHistory: MutableMap<AnyDeviceConfiguration, MutableList<DeviceRegistration>> =
+        mutableMapOf()
 
     /**
      * The set of devices which have been deployed correctly.
@@ -237,10 +248,14 @@ class StudyDeployment private constructor(
 
         val deviceList = devices.values.toList()
         return when {
-            isStopped -> StudyDeploymentStatus.Stopped( createdOn, id, deviceList, participantList, startedOn, stoppedOn!! )
-            allRequiredDevicesDeployed -> StudyDeploymentStatus.Running( createdOn, id, deviceList, participantList, startedOn!! )
-            anyRegistration -> StudyDeploymentStatus.DeployingDevices( createdOn, id, deviceList, participantList, startedOn )
-            else -> StudyDeploymentStatus.Invited( createdOn, id, deviceList, participantList, startedOn )
+            isStopped ->
+                StudyDeploymentStatus.Stopped( createdOn, id, deviceList, participantList, startedOn, stoppedOn!! )
+            allRequiredDevicesDeployed ->
+                StudyDeploymentStatus.Running( createdOn, id, deviceList, participantList, startedOn!! )
+            anyRegistration ->
+                StudyDeploymentStatus.DeployingDevices( createdOn, id, deviceList, participantList, startedOn )
+            else ->
+                StudyDeploymentStatus.Invited( createdOn, id, deviceList, participantList, startedOn )
         }
     }
 
@@ -260,7 +275,7 @@ class StudyDeployment private constructor(
             .plus( device ) // Device itself needs to be registered.
             .minus( alreadyRegistered )
         val mandatoryConnectedDevices =
-            if ( device is AnyPrimaryDeviceConfiguration ) protocol.getConnectedDevices( device ).filter { !it.isOptional }
+            if ( device.isPrimary() ) protocol.getConnectedDevices( device ).filter { !it.isOptional }
             else emptyList()
         val toRegisterBeforeDeployment = toRegisterToObtainDeployment
             // Primary devices require non-optional connected devices to be registered.
@@ -271,10 +286,14 @@ class StudyDeployment private constructor(
         val beforeDeployment = toRegisterBeforeDeployment.map { it.roleName }.toSet()
         return when
         {
-            needsRedeployment -> DeviceDeploymentStatus.NeedsRedeployment( device, toObtainDeployment, beforeDeployment )
-            isDeployed -> DeviceDeploymentStatus.Deployed( device )
-            isRegistered -> DeviceDeploymentStatus.Registered( device, canBeDeployed, toObtainDeployment, beforeDeployment )
-            else -> DeviceDeploymentStatus.Unregistered( device, canBeDeployed, toObtainDeployment, beforeDeployment )
+            needsRedeployment ->
+                DeviceDeploymentStatus.NeedsRedeployment( device, toObtainDeployment, beforeDeployment )
+            isDeployed ->
+                DeviceDeploymentStatus.Deployed( device )
+            isRegistered ->
+                DeviceDeploymentStatus.Registered( device, canBeDeployed, toObtainDeployment, beforeDeployment )
+            else ->
+                DeviceDeploymentStatus.Unregistered( device, canBeDeployed, toObtainDeployment, beforeDeployment )
         }
     }
 
@@ -320,8 +339,13 @@ class StudyDeployment private constructor(
             val isSameId = it.value.deviceId == registration.deviceId
             val otherDevice = it.key
             val areUnknownDevices = device is UnknownPolymorphicWrapper && otherDevice is UnknownPolymorphicWrapper
-            val matchingUnknownDevices: Boolean by lazy { (device as UnknownPolymorphicWrapper).className == (otherDevice as UnknownPolymorphicWrapper).className }
-            isSameId && ( (!areUnknownDevices && otherDevice::class == device::class) || (areUnknownDevices && matchingUnknownDevices) )
+            val matchingUnknownDevices: Boolean by lazy {
+                (device as UnknownPolymorphicWrapper).className == (otherDevice as UnknownPolymorphicWrapper).className
+            }
+            isSameId && (
+                (!areUnknownDevices && otherDevice::class == device::class) ||
+                (areUnknownDevices && matchingUnknownDevices)
+            )
         }
         require( isUnique )
         {
@@ -387,13 +411,16 @@ class StudyDeployment private constructor(
     fun getDeviceDeploymentFor( device: AnyPrimaryDeviceConfiguration ): PrimaryDeviceDeployment
     {
         // Verify whether the specified device is part of the protocol of this deployment.
-        require( device in protocolSnapshot.primaryDevices ) { "The specified primary device is not part of the protocol of this deployment." }
+        require( device in protocolSnapshot.primaryDevices )
+            { "The specified primary device is not part of the protocol of this deployment." }
 
         // Verify whether the specified device is ready to be deployed.
         val canDeploy = getDeviceStatus( device ).canObtainDeviceDeployment
-        check( canDeploy ) { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
+        check( canDeploy )
+            { "The specified device is awaiting registration of itself or other devices before it can be deployed." }
 
-        val configuration: DeviceRegistration = _registeredDevices[ device ]!! // Must be non-null, otherwise canObtainDeviceDeployment would fail.
+        // Configuration must be non-null, otherwise canObtainDeviceDeployment would fail.
+        val configuration: DeviceRegistration = _registeredDevices[ device ]!!
 
         // Determine which devices this device needs to connect to and retrieve configuration for preregistered devices.
         val connectedDevices: Set<AnyDeviceConfiguration> = protocol.getConnectedDevices( device ).toSet()

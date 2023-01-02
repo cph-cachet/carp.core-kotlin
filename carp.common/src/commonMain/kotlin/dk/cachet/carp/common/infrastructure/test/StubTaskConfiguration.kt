@@ -3,8 +3,7 @@ package dk.cachet.carp.common.infrastructure.test
 import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 @Serializable

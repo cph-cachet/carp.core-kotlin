@@ -1,10 +1,9 @@
-@file:Suppress( "WildcardImport" )
-
 package dk.cachet.carp.protocols.domain
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.devices.isPrimary
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl.Control
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
@@ -29,7 +28,8 @@ import kotlinx.datetime.Instant
  * A description of how a study is to be executed, defining the type(s) of primary device(s) ([AnyPrimaryDeviceConfiguration]) responsible for aggregating data,
  * the optional devices ([AnyDeviceConfiguration]) connected to them, and the [TriggerConfiguration]'s which lead to data collection on said devices.
  */
-@Suppress( "TooManyFunctions" ) // TODO: some of the device and task configuration methods are overridden solely to add events. Can this be refactored?
+// TODO: some of the device and task configuration methods are overridden solely to add events. Can this be refactored?
+@Suppress( "TooManyFunctions" )
 class StudyProtocol(
     /**
      * The entity (e.g., person or group) that created this [StudyProtocol].
@@ -82,25 +82,26 @@ class StudyProtocol(
         @Suppress( "ComplexMethod" )
         fun fromSnapshot( snapshot: StudyProtocolSnapshot ): StudyProtocol
         {
-            val protocol = StudyProtocol(
-                snapshot.ownerId,
-                snapshot.name,
-                snapshot.description,
-                snapshot.id,
-                snapshot.createdOn
-            )
+            val protocol = with( snapshot ) { StudyProtocol( ownerId, name, description, id, createdOn ) }
             protocol.applicationData = snapshot.applicationData
 
             // Add primary devices.
             snapshot.primaryDevices.forEach { protocol.addPrimaryDevice( it ) }
 
             // Add connected devices.
-            val allDevices: List<AnyDeviceConfiguration> = snapshot.connectedDevices.plus( snapshot.primaryDevices ).toList()
+            val allDevices: List<AnyDeviceConfiguration> =
+                snapshot.connectedDevices.plus( snapshot.primaryDevices ).toList()
             snapshot.connections.forEach { c ->
-                val primary: AnyPrimaryDeviceConfiguration = allDevices.filterIsInstance<AnyPrimaryDeviceConfiguration>().firstOrNull { it.roleName == c.connectedToRoleName }
-                    ?: throw IllegalArgumentException( "Can't find primary device with role name '${c.connectedToRoleName}' in snapshot." )
+                val primary: AnyPrimaryDeviceConfiguration = allDevices
+                    .filterIsInstance<AnyPrimaryDeviceConfiguration>()
+                    .firstOrNull { it.roleName == c.connectedToRoleName }
+                        ?: throw IllegalArgumentException(
+                            "Can't find primary device with role name '${c.connectedToRoleName}' in snapshot."
+                        )
                 val connected: AnyDeviceConfiguration = allDevices.firstOrNull { it.roleName == c.roleName }
-                    ?: throw IllegalArgumentException( "Can't find connected device with role name '${c.roleName}' in snapshot." )
+                    ?: throw IllegalArgumentException(
+                        "Can't find connected device with role name '${c.roleName}' in snapshot."
+                    )
                 protocol.addConnectedDevice( connected, primary )
             }
 
@@ -113,17 +114,26 @@ class StudyProtocol(
             {
                 require( triggerIds.first() == 0 && triggerIds.last() == triggerIds.size - 1 )
                     { "Triggers should be given sequential IDs starting with 0." }
-                triggerIds.map { protocol.addTrigger( snapshot.triggers[ it ]!! ) }
+                triggerIds.map {
+                    val trigger = checkNotNull( snapshot.triggers[ it ] )
+                    protocol.addTrigger( trigger )
+                }
             }
 
             // Add task controls.
             snapshot.taskControls.forEach { control ->
                 val triggerMatch = snapshot.triggers.entries.singleOrNull { it.key == control.triggerId }
-                    ?: throw IllegalArgumentException( "Can't find trigger with id '${control.triggerId}' in snapshot." )
+                    ?: throw IllegalArgumentException(
+                        "Can't find trigger with id '${control.triggerId}' in snapshot."
+                    )
                 val task: TaskConfiguration<*> = protocol.tasks.singleOrNull { it.name == control.taskName }
-                    ?: throw IllegalArgumentException( "Can't find task with name '${control.taskName}' in snapshot." )
-                val device: AnyDeviceConfiguration = protocol.devices.singleOrNull { it.roleName == control.destinationDeviceRoleName }
-                    ?: throw IllegalArgumentException( "Can't find device with role name '${control.destinationDeviceRoleName}' in snapshot." )
+                    ?: throw IllegalArgumentException(
+                        "Can't find task with name '${control.taskName}' in snapshot."
+                    )
+                val device = protocol.devices.singleOrNull { it.roleName == control.destinationDeviceRoleName }
+                    ?: throw IllegalArgumentException(
+                        "Can't find device with role name '${control.destinationDeviceRoleName}' in snapshot."
+                    )
                 protocol.addTaskControl( triggerMatch.value, task, device, control.control )
             }
 
@@ -209,8 +219,11 @@ class StudyProtocol(
      *   - [device] contains invalid default sampling configurations
      * @return True if the [device] has been added; false if it is already connected to the specified [primaryDevice].
      */
-    override fun addConnectedDevice( device: AnyDeviceConfiguration, primaryDevice: AnyPrimaryDeviceConfiguration ): Boolean =
-        super.addConnectedDevice( device, primaryDevice )
+    override fun addConnectedDevice(
+        device: AnyDeviceConfiguration,
+        primaryDevice: AnyPrimaryDeviceConfiguration
+    ): Boolean = super
+        .addConnectedDevice( device, primaryDevice )
         .eventIf( true ) { Event.ConnectedDeviceAdded( device, primaryDevice ) }
 
     /**
@@ -240,13 +253,13 @@ class StudyProtocol(
      */
     fun addTrigger( trigger: TriggerConfiguration<*> ): TriggerWithId
     {
-        val device: AnyDeviceConfiguration = deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
-            ?: throw IllegalArgumentException( "The passed trigger does not belong to any device specified in this study protocol." )
+        val device = deviceConfiguration.devices.firstOrNull { it.roleName == trigger.sourceDeviceRoleName }
+            ?: throw IllegalArgumentException(
+                "The passed trigger does not belong to any device specified in this study protocol."
+            )
 
-        if ( trigger.requiresPrimaryDevice && device !is AnyPrimaryDeviceConfiguration )
-        {
-            throw IllegalArgumentException( "The passed trigger cannot be initiated by the specified device since it is not a primary device." )
-        }
+        require( !trigger.requiresPrimaryDevice || device.isPrimary() )
+            { "The passed trigger cannot be initiated by the specified device since it is not a primary device." }
 
         val isAdded = _triggers.add( trigger )
         if ( isAdded )
@@ -452,8 +465,10 @@ class StudyProtocol(
      */
     fun changeDeviceAssignment( device: AnyPrimaryDeviceConfiguration, assignedTo: AssignedTo ): Boolean
     {
-        require( _deviceAssignments.containsKey( device ) ) { "The device configuration is not part of this protocol." }
-        require( isValidAssignment( assignedTo ) ) { "One of the assigned participant roles is not part of this protocol." }
+        require( _deviceAssignments.containsKey( device ) )
+            { "The device configuration is not part of this protocol." }
+        require( isValidAssignment( assignedTo ) )
+            { "One of the assigned participant roles is not part of this protocol." }
 
         val isChanged = _deviceAssignments.put( device, assignedTo ) != assignedTo
         if ( isChanged ) event( Event.DeviceAssignmentChanged( device, assignedTo ) )

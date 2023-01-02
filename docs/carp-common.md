@@ -1,4 +1,4 @@
-# carp.common [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.common/carp.common/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.common) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.common/carp.common?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/common/)
+# carp.common [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.common/carp.common/badge.svg)](https://mvnrepository.com/artifact/dk.cachet.carp.common) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.common/carp.common?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/common/)
 
 Implements helper classes and base types relied upon by all subsystems.
 Primarily, this contains the built-in types used to [define study protocols](carp-protocols.md#domain-objects)
@@ -63,12 +63,19 @@ Using helper functions in `CarpInputDataTypes`, the data input by users can be c
 
 ## Device configurations
 
-| Class | Primary | Description |
-| --- | :---: | --- |
-| [Smartphone](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/Smartphone.kt) | Yes | An internet-connected phone with built-in sensors. |
-| [AltBeacon](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt) | | A beacon meeting the open AltBeacon standard. |
-| [BLEHeartRateDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/BLEHeartRateDevice.kt) | | A Bluetooth device which implements a Heart Rate service. |
-| [CustomProtocolDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/CustomProtocolDevice.kt) | Yes | A primary device which uses a single `CustomProtocolTask` to determine how to run a study on the device. |
+Implementations of [`DeviceConfiguration`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/DeviceConfiguration.kt) are used by the framework to describe the _type of device_ used to collect data, its _capabilities_,
+and to _configure_ how it participates in the study protocol.
+
+_Primary_ devices ([`PrimaryDeviceConfiguration`](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/PrimaryDeviceConfiguration.kt)),
+in addition to supporting data collection from internal sensors,
+act as a hub to aggregate, synchronize, and upload incoming data received from one or more connected devices. 
+
+| Class                                                                                                                          | Primary | Description                                                                                              |
+|--------------------------------------------------------------------------------------------------------------------------------|:-------:|----------------------------------------------------------------------------------------------------------|
+| [Smartphone](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/Smartphone.kt)                     |   Yes   | An internet-connected phone with built-in sensors.                                                       |
+| [AltBeacon](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt)                       |         | A beacon meeting the open AltBeacon standard.                                                            |
+| [BLEHeartRateDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/BLEHeartRateDevice.kt)     |         | A Bluetooth device which implements a Heart Rate service.                                                |
+| [CustomProtocolDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/CustomProtocolDevice.kt) |   Yes   | A primary device which uses a single `CustomProtocolTask` to determine how to run a study on the device. |
 
 ## Sampling schemes and configurations
 

@@ -1,9 +1,9 @@
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger
-import kotlinx.serialization.Polymorphic
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.time.Duration
 
 
@@ -13,8 +13,10 @@ import kotlin.time.Duration
  */
 @Serializable
 @Polymorphic
-abstract class PrimaryDeviceConfiguration<TRegistration : DeviceRegistration, out TBuilder : DeviceRegistrationBuilder<TRegistration>> :
-    DeviceConfiguration<TRegistration, TBuilder>()
+abstract class PrimaryDeviceConfiguration<
+    TRegistration : DeviceRegistration,
+    out TBuilder : DeviceRegistrationBuilder<TRegistration>
+> : DeviceConfiguration<TRegistration, TBuilder>()
 {
     // This property is only here for (de)serialization purposes.
     // For unknown types we need to know whether to treat them as primary devices or not (in the case of 'DeviceConfiguration' collections).
@@ -28,3 +30,16 @@ abstract class PrimaryDeviceConfiguration<TRegistration : DeviceRegistration, ou
 }
 
 typealias AnyPrimaryDeviceConfiguration = PrimaryDeviceConfiguration<*, *>
+
+
+/**
+ * Determines whether this device configuration is a primary device configuration ([AnyPrimaryDeviceConfiguration]).
+ */
+@OptIn( ExperimentalContracts::class )
+fun AnyDeviceConfiguration.isPrimary(): Boolean
+{
+    contract {
+        returns( true ) implies( this@isPrimary is AnyPrimaryDeviceConfiguration )
+    }
+    return this is AnyPrimaryDeviceConfiguration
+}

@@ -6,8 +6,7 @@ import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.application.services.publish
 import dk.cachet.carp.common.application.services.registerHandler
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlin.test.*
 
 

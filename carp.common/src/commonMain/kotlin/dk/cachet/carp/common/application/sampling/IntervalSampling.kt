@@ -3,7 +3,7 @@ package dk.cachet.carp.common.application.sampling
 import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlin.time.Duration
 
 

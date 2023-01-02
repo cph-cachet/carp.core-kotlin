@@ -60,7 +60,8 @@ sealed class StudyStatus
                     is DeviceDeploymentStatus.NotDeployed ->
                         if ( deploymentInformation == null || deviceStatus is DeviceDeploymentStatus.NeedsRedeployment )
                         {
-                            if ( deviceStatus.canObtainDeviceDeployment ) AwaitingDeviceDeployment( id, deployingDevices )
+                            val readyToDeploy = deviceStatus.canObtainDeviceDeployment
+                            if ( readyToDeploy ) AwaitingDeviceDeployment( id, deployingDevices )
                             else AwaitingOtherDeviceRegistrations( id, deployingDevices )
                         }
                         else

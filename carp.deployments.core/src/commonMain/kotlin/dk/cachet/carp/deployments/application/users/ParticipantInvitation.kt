@@ -3,7 +3,7 @@ package dk.cachet.carp.deployments.application.users
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.AssignedTo
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

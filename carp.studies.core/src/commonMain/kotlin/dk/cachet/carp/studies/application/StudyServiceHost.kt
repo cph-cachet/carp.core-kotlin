@@ -1,5 +1,6 @@
 package dk.cachet.carp.studies.application
 
+import dk.cachet.carp.common.application.DefaultUUIDFactory
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.UUIDFactory
 import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
@@ -16,7 +17,7 @@ import kotlinx.datetime.Clock
 class StudyServiceHost(
     private val repository: StudyRepository,
     private val eventBus: ApplicationServiceEventBus<StudyService, StudyService.Event>,
-    private val uuidFactory: UUIDFactory = UUID.Companion,
+    private val uuidFactory: UUIDFactory = DefaultUUIDFactory,
     private val clock: Clock = Clock.System
 ) : StudyService
 {

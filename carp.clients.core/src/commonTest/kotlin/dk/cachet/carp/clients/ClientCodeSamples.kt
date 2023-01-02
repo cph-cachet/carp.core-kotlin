@@ -124,7 +124,8 @@ class ClientCodeSamples
      * A stub [DataListener] which supports the expected data types in [createExampleProtocol].
      */
     private fun createDataCollectorFactory() = createDataCollectorFactory(
-        CarpDataTypes.GEOLOCATION, CarpDataTypes.STEP_COUNT
+        CarpDataTypes.GEOLOCATION,
+        CarpDataTypes.STEP_COUNT
     )
 
     private val accountService = InMemoryAccountService()

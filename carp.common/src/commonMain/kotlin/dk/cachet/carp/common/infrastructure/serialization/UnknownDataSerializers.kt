@@ -1,8 +1,7 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.data.Data
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 
 
@@ -17,5 +16,6 @@ data class CustomData( override val className: String, override val jsonSource: 
 /**
  * Custom serializer for [Data] which enables deserializing types that are unknown at runtime, yet extend from [Data].
  */
-object DataSerializer : KSerializer<Data>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomData( className, json, serializer ) } )
+object DataSerializer : KSerializer<Data> by createUnknownPolymorphicSerializer(
+    { className, json, serializer -> CustomData( className, json, serializer ) }
+)

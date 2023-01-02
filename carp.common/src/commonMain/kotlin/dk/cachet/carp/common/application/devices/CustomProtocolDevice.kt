@@ -6,7 +6,7 @@ import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
 import dk.cachet.carp.common.application.tasks.TaskConfigurationList
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlin.reflect.KClass
 
 
@@ -27,7 +27,8 @@ data class CustomProtocolDevice( override val roleName: String, override val isO
 
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 
-    override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder()
+    override fun createDeviceRegistrationBuilder(): DefaultDeviceRegistrationBuilder =
+        DefaultDeviceRegistrationBuilder()
     override fun getRegistrationClass(): KClass<DefaultDeviceRegistration> = DefaultDeviceRegistration::class
     override fun isValidRegistration( registration: DefaultDeviceRegistration ) = Trilean.TRUE
 }

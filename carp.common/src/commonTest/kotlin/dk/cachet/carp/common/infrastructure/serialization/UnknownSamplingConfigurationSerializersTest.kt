@@ -2,7 +2,7 @@
 
 package dk.cachet.carp.common.infrastructure.serialization
 
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlin.test.*
 

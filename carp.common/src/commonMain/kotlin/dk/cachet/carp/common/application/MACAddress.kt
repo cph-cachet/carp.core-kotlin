@@ -1,8 +1,7 @@
 package dk.cachet.carp.common.application
 
 import dk.cachet.carp.common.infrastructure.serialization.createCarpStringPrimitiveSerializer
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**
@@ -25,7 +24,10 @@ data class MACAddress(
     init
     {
         require( MACAddressRegex.matches( this.address ) )
-            { "Invalid MAC address string representation: expected six groups of two upper case hexadecimal digits, separated by hyphens (-)." }
+        {
+            "Invalid MAC address string representation: " +
+            "expected six groups of two upper case hexadecimal digits, separated by hyphens (-)."
+        }
     }
 
 
@@ -42,7 +44,11 @@ data class MACAddress(
         fun parse( address: String ): MACAddress
         {
             require( address.split( ':' ).size == GROUPS || address.split( '-' ).size == GROUPS )
-                { "Invalid MAC address string representation: expected six groups of two hexadecimal digits (upper or lower case), separated by hyphens (-) or colons (:)." }
+            {
+                "Invalid MAC address string representation: " +
+                "expected six groups of two hexadecimal digits (upper or lower case), " +
+                "separated by hyphens (-) or colons (:)."
+            }
 
             val recommendedFormatting = address.uppercase().replace( ':', '-' )
             return MACAddress( recommendedFormatting )

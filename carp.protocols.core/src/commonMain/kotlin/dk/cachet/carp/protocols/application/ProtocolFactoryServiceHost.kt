@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.application
 
+import dk.cachet.carp.common.application.DefaultUUIDFactory
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.UUIDFactory
 import dk.cachet.carp.common.application.devices.CustomProtocolDevice
@@ -14,7 +15,7 @@ import kotlinx.datetime.Clock
  * to create [StudyProtocolSnapshot]'s according to predefined templates.
 */
 class ProtocolFactoryServiceHost(
-    val uuidFactory: UUIDFactory = UUID.Companion,
+    val uuidFactory: UUIDFactory = DefaultUUIDFactory,
     val clock: Clock = Clock.System
 ) : ProtocolFactoryService
 {

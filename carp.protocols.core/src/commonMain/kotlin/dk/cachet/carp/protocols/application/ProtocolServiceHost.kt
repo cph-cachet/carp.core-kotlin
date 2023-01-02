@@ -34,9 +34,11 @@ class ProtocolServiceHost(
 
     /**
      * Add a new version for the specified study [protocol],
-     * of which a previous version with the same owner and name is already stored.
+     * of which a previous version (a protocol with the same id) is already stored.
      *
-     * @param versionTag An optional unique label used to identify this specific version of the [protocol]. The current date/time by default.
+     * @param versionTag
+     *   An optional unique label used to identify this specific version of the [protocol].
+     *   The current date/time by default.
      * @throws IllegalArgumentException when:
      *   - [protocol] is not yet stored in the repository
      *   - a different [protocol] with the same owner and name in the latest version already exists

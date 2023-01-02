@@ -1,13 +1,8 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.encoding.decodeStructure
-import kotlinx.serialization.encoding.encodeStructure
+import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
 
 
 /**
@@ -31,7 +26,7 @@ class PolymorphicEnumSerializer<T : Enum<T>>( private val enumSerializer: KSeria
         decoder.decodeStructure( descriptor )
         {
             decodeElementIndex( descriptor )
-            return decodeSerializableElement( descriptor, 0, enumSerializer )
+            decodeSerializableElement( descriptor, 0, enumSerializer )
         }
 
     override fun serialize( encoder: Encoder, value: T ) =

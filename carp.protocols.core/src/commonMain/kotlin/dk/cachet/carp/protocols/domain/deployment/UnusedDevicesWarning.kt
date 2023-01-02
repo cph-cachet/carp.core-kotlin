@@ -13,7 +13,8 @@ import dk.cachet.carp.protocols.domain.StudyProtocol
 class UnusedDevicesWarning internal constructor() : DeploymentWarning
 {
     override val description =
-        "The study protocol contains devices which are never used as the source or target of triggers, or to relay data (primary device). " +
+        "The study protocol contains devices which are never used as the source or target of triggers, " +
+        "or to relay data (primary device). " +
         "These devices thus serve no purpose as part of the specified study protocol."
 
 

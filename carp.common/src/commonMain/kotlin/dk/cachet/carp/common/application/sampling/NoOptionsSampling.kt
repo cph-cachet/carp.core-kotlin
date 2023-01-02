@@ -1,7 +1,7 @@
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.data.DataTypeMetaData
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

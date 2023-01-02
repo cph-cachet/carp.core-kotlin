@@ -10,12 +10,9 @@ import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import dk.cachet.carp.common.infrastructure.versioning.ApplicationServiceApiMigrator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.serializer
+import kotlinx.serialization.*
+import kotlinx.serialization.builtins.*
+import kotlinx.serialization.json.*
 import org.apache.commons.io.FileUtils
 import java.io.File
 import kotlin.reflect.KClass
@@ -46,7 +43,7 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
     fun setup()
     {
         // Get available test versions.
-        val directories = testRequestsFolder.listFiles()?.filter { it.isDirectory } ?: emptyList()
+        val directories = testRequestsFolder.listFiles()?.filter { it.isDirectory }.orEmpty()
         availableTestVersions = directories.map {
             val versionMatch = assertNotNull(
                 Regex( """(\d)\.(\d)""" ).find( it.name ),

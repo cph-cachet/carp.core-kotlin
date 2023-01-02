@@ -1,21 +1,9 @@
 package dk.cachet.carp.common.application.data.input
 
 import dk.cachet.carp.common.application.data.Data
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.SerialKind
-import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.descriptors.buildSerialDescriptor
-import kotlinx.serialization.descriptors.element
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.encoding.decodeStructure
-import kotlinx.serialization.encoding.encodeStructure
-import kotlinx.serialization.serializer
+import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
 import kotlin.reflect.KClass
 
 
@@ -38,7 +26,8 @@ data class CustomInput( val input: Any ) : Data
 class CustomInputSerializer( vararg supportedDataTypes: KClass<*> ) : KSerializer<CustomInput>
 {
     // TODO: Can we use the fully qualified type name to register serializers here, like kotlinx.serialization does? How?
-    val dataTypeMap: Map<String, KSerializer<out Any>> = supportedDataTypes.associate { it.simpleName!! to it.serializer() }
+    val dataTypeMap: Map<String, KSerializer<out Any>> =
+        supportedDataTypes.associate { it.simpleName!! to it.serializer() }
 
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor( CUSTOM_INPUT_TYPE_NAME )
     {
@@ -59,7 +48,7 @@ class CustomInputSerializer( vararg supportedDataTypes: KClass<*> ) : KSerialize
             val serializer = getRegisteredSerializer( dataType )
             val input = decodeSerializableElement( descriptor, 1, serializer )
 
-            return CustomInput( input )
+            CustomInput( input )
         }
 
     override fun serialize( encoder: Encoder, value: CustomInput ) =

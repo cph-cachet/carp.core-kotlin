@@ -10,10 +10,8 @@ import dk.cachet.carp.common.application.devices.DeviceRegistrationBuilder
 import dk.cachet.carp.common.application.devices.PrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 import kotlin.reflect.KClass
 
 
@@ -36,7 +34,9 @@ data class CustomDeviceConfiguration(
     // This information is not serialized. Therefore, the supported types and sampling schemes are unknown.
     override fun getSupportedDataTypes(): Set<DataType> = emptySet()
     override fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap =
-        throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, sampling schemes are unknown." )
+        throw UnsupportedOperationException(
+            "The concrete type of this device is not known. Therefore, sampling schemes are unknown."
+        )
 
     init
     {
@@ -48,7 +48,10 @@ data class CustomDeviceConfiguration(
     }
 
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
-        throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, it is unknown which registration builder is required." )
+        throw UnsupportedOperationException(
+            "The concrete type of this device is not known. " +
+            "Therefore, it is unknown which registration builder is required."
+        )
 
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
 
@@ -68,7 +71,8 @@ data class CustomPrimaryDeviceConfiguration(
     override val className: String,
     override val jsonSource: String,
     val serializer: Json
-) : PrimaryDeviceConfiguration<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(), UnknownPolymorphicWrapper
+) : PrimaryDeviceConfiguration<DeviceRegistration, DeviceRegistrationBuilder<DeviceRegistration>>(),
+    UnknownPolymorphicWrapper
 {
     override val roleName: String
     override val isOptional: Boolean
@@ -78,7 +82,9 @@ data class CustomPrimaryDeviceConfiguration(
     // This information is not serialized. Therefore, the supported types and sampling schemes are unknown.
     override fun getSupportedDataTypes(): Set<DataType> = emptySet()
     override fun getDataTypeSamplingSchemes(): DataTypeSamplingSchemeMap =
-        throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, sampling schemes are unknown." )
+        throw UnsupportedOperationException(
+            "The concrete type of this device is not known. Therefore, sampling schemes are unknown."
+        )
 
     init
     {
@@ -90,7 +96,10 @@ data class CustomPrimaryDeviceConfiguration(
     }
 
     override fun createDeviceRegistrationBuilder(): DeviceRegistrationBuilder<DeviceRegistration> =
-        throw UnsupportedOperationException( "The concrete type of this device is not known. Therefore, it is unknown which registration builder is required." )
+        throw UnsupportedOperationException(
+            "The concrete type of this device is not known. " +
+            "Therefore, it is unknown which registration builder is required."
+        )
 
     override fun getRegistrationClass(): KClass<DeviceRegistration> = DeviceRegistration::class
 
@@ -124,7 +133,11 @@ private data class BaseMembers(
 /**
  * Custom serializer for [DeviceConfiguration] which enables deserializing types that are unknown at runtime, yet extend from [DeviceConfiguration].
  */
-object DeviceConfigurationSerializer : UnknownPolymorphicSerializer<AnyDeviceConfiguration, AnyDeviceConfiguration>( DeviceConfiguration::class, DeviceConfiguration::class, false )
+object DeviceConfigurationSerializer : UnknownPolymorphicSerializer<AnyDeviceConfiguration, AnyDeviceConfiguration>(
+    DeviceConfiguration::class,
+    DeviceConfiguration::class,
+    verifyUnknownPolymorphicWrapper = false
+)
 {
     override fun createWrapper( className: String, json: String, serializer: Json ): AnyDeviceConfiguration
     {
@@ -146,7 +159,9 @@ object DeviceConfigurationSerializer : UnknownPolymorphicSerializer<AnyDeviceCon
  * Custom serializer for [PrimaryDeviceConfiguration] which enables deserializing types that are unknown at runtime, yet extend from [PrimaryDeviceConfiguration].
  */
 object PrimaryDeviceConfigurationSerializer : KSerializer<AnyPrimaryDeviceConfiguration>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomPrimaryDeviceConfiguration( className, json, serializer ) } )
+    by createUnknownPolymorphicSerializer(
+        { className, json, serializer -> CustomPrimaryDeviceConfiguration( className, json, serializer ) }
+    )
 
 
 /**
@@ -181,5 +196,6 @@ data class CustomDeviceRegistration(
 /**
  * Custom serializer for a [DeviceRegistration] which enables deserializing types that are unknown at runtime, yet extend from [DeviceRegistration].
  */
-object DeviceRegistrationSerializer : KSerializer<DeviceRegistration>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomDeviceRegistration( className, json, serializer ) } )
+object DeviceRegistrationSerializer : KSerializer<DeviceRegistration> by createUnknownPolymorphicSerializer(
+    { className, json, serializer -> CustomDeviceRegistration( className, json, serializer ) }
+)

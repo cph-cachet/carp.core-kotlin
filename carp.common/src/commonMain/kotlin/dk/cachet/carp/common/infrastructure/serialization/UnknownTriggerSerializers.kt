@@ -2,8 +2,7 @@ package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 
 
@@ -34,5 +33,6 @@ data class CustomTriggerConfiguration(
 /**
  * Custom serializer for a [TriggerConfiguration] which enables deserializing types that are unknown at runtime, yet extend from [TriggerConfiguration].
  */
-object TriggerConfigurationSerializer : KSerializer<TriggerConfiguration<*>>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomTriggerConfiguration( className, json, serializer ) } )
+object TriggerConfigurationSerializer : KSerializer<TriggerConfiguration<*>> by createUnknownPolymorphicSerializer(
+    { className, json, serializer -> CustomTriggerConfiguration( className, json, serializer ) }
+)

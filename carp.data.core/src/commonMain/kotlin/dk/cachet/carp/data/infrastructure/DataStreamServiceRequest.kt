@@ -9,10 +9,7 @@ import dk.cachet.carp.data.application.DataStreamBatchSerializer
 import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
 import dk.cachet.carp.data.application.DataStreamsConfiguration
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.serializer
+import kotlinx.serialization.*
 
 
 /**

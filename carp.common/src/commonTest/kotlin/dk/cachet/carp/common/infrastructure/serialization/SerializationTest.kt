@@ -1,5 +1,3 @@
-@file:Suppress( "WildcardImport" )
-
 package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.commonInstances

@@ -1,7 +1,7 @@
 package dk.cachet.carp.common.application
 
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlin.test.*
 
 

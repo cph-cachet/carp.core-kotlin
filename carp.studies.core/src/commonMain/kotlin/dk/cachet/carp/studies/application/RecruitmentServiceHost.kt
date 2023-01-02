@@ -1,5 +1,6 @@
 package dk.cachet.carp.studies.application
 
+import dk.cachet.carp.common.application.DefaultUUIDFactory
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.UUIDFactory
@@ -18,7 +19,7 @@ class RecruitmentServiceHost(
     private val participantRepository: ParticipantRepository,
     private val deploymentService: DeploymentService,
     private val eventBus: ApplicationServiceEventBus<RecruitmentService, RecruitmentService.Event>,
-    private val uuidFactory: UUIDFactory = UUID.Companion,
+    private val uuidFactory: UUIDFactory = DefaultUUIDFactory,
     private val clock: Clock = Clock.System
 ) : RecruitmentService
 {
@@ -107,7 +108,10 @@ class RecruitmentServiceHost(
      *  - not all necessary participant roles part of the study have been assigned a participant
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    override suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignedParticipantRoles> ): ParticipantGroupStatus
+    override suspend fun inviteNewParticipantGroup(
+        studyId: UUID,
+        group: Set<AssignedParticipantRoles>
+    ): ParticipantGroupStatus
     {
         val recruitment = getRecruitmentOrThrow( studyId )
         val (protocol, invitations) = recruitment.createInvitations( group )
@@ -182,6 +186,7 @@ class RecruitmentServiceHost(
         return recruitment
     }
 
-    private suspend fun getRecruitmentOrThrow( studyId: UUID ): Recruitment = participantRepository.getRecruitment( studyId )
-        ?: throw IllegalArgumentException( "Study with ID \"$studyId\" not found." )
+    private suspend fun getRecruitmentOrThrow( studyId: UUID ): Recruitment =
+        participantRepository.getRecruitment( studyId )
+            ?: throw IllegalArgumentException( "Study with ID \"$studyId\" not found." )
 }

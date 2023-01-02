@@ -6,7 +6,7 @@ import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.common.application.users.Username
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**

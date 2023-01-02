@@ -220,10 +220,12 @@ class StudyDeploymentProxyTest
     fun tryDeployment_succeeds_when_data_types_of_protocol_measures_are_supported() = runTest {
         // Create protocol that measures on smartphone and one connected device.
         val protocol = createSmartphoneWithConnectedDeviceStudy()
-        val primaryTask = StubTaskConfiguration( "Primary measure", listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) ) )
+        val primaryTask =
+            StubTaskConfiguration( "Primary measure", listOf( Measure.DataStream( STUB_DATA_POINT_TYPE ) ) )
         protocol.addTaskControl( smartphone.atStartOfStudy().start( primaryTask, smartphone ) )
         val connectedDataType = DataType( "custom", "type" )
-        val connectedTask = StubTaskConfiguration( "Connected measure", listOf( Measure.DataStream( connectedDataType ) ) )
+        val connectedTask =
+            StubTaskConfiguration( "Connected measure", listOf( Measure.DataStream( connectedDataType ) ) )
         protocol.addTaskControl( smartphone.atStartOfStudy().start( connectedTask, connectedDevice ) )
 
         // Create a data listener which supports the requested devices and types in the protocol

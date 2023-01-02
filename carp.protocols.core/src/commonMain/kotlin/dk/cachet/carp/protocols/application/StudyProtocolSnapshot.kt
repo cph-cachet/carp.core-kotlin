@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.application
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
+import dk.cachet.carp.common.application.devices.isPrimary
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
@@ -13,7 +14,7 @@ import dk.cachet.carp.common.domain.Snapshot
 import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.datetime.Instant
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**
@@ -70,8 +71,8 @@ data class StudyProtocolSnapshot(
                 triggers = triggers,
                 taskControls = triggers
                     .flatMap { trigger -> protocol.getTaskControls( trigger.value ).map { trigger to it } }
-                    .map { (trigger, control) ->
-                        TaskControl( trigger.key, control.task.name, control.destinationDevice.roleName, control.control )
+                    .map { (trigger, tc) ->
+                        TaskControl( trigger.key, tc.task.name, tc.destinationDevice.roleName, tc.control )
                     }
                     .toSet(),
                 participantRoles = protocol.participantRoles.toSet(),
@@ -84,16 +85,16 @@ data class StudyProtocolSnapshot(
             )
         }
 
-        private fun getConnections( protocol: StudyProtocol, primaryDevice: AnyPrimaryDeviceConfiguration ): Iterable<DeviceConnection>
+        private fun getConnections(
+            protocol: StudyProtocol,
+            primaryDevice: AnyPrimaryDeviceConfiguration
+        ): Iterable<DeviceConnection>
         {
             val connections: MutableList<DeviceConnection> = mutableListOf()
 
-            protocol.getConnectedDevices( primaryDevice ).forEach {
-                connections.add( DeviceConnection( it.roleName, primaryDevice.roleName ) )
-                if ( it is AnyPrimaryDeviceConfiguration )
-                {
-                    connections.addAll( getConnections( protocol, it ) )
-                }
+            protocol.getConnectedDevices( primaryDevice ).forEach { device ->
+                connections.add( DeviceConnection( device.roleName, primaryDevice.roleName ) )
+                if ( device.isPrimary() ) connections.addAll( getConnections( protocol, device ) )
             }
 
             return connections

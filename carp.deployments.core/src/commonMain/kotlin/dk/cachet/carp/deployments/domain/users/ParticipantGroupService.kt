@@ -15,7 +15,9 @@ class ParticipantGroupService( val accountService: AccountService )
      *
      * @throws IllegalArgumentException when the invitations do not match the requirements from the protocol.
      */
-    suspend fun createAndInviteParticipantGroup( createdDeployment: DeploymentService.Event.StudyDeploymentCreated ): ParticipantGroup
+    suspend fun createAndInviteParticipantGroup(
+        createdDeployment: DeploymentService.Event.StudyDeploymentCreated
+    ): ParticipantGroup
     {
         // Verify whether the participant group matches the requirements of the protocol.
         val studyDeploymentId = createdDeployment.studyDeploymentId

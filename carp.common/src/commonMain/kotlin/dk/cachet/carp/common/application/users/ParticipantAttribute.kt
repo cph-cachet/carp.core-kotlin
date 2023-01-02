@@ -8,7 +8,7 @@ import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.data.input.elements.AnyInputElement
 import dk.cachet.carp.common.application.data.input.elements.InputElement
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 
 /**
@@ -117,7 +117,11 @@ sealed class ParticipantAttribute
         val isCorrectDataType = when ( this )
         {
             is CustomParticipantAttribute<*> -> data is CustomInput && isValidCustomData( inputElement, data )
-            is DefaultParticipantAttribute -> registeredInputDataTypes.dataClasses[ inputDataType ]!!.isInstance( data )
+            is DefaultParticipantAttribute ->
+            {
+                val dataClass = checkNotNull( registeredInputDataTypes.dataClasses[ inputDataType ] )
+                dataClass.isInstance(data)
+            }
         }
         if ( !isCorrectDataType ) return false
 
@@ -150,8 +154,8 @@ sealed class ParticipantAttribute
         // Convert to input data.
         val converter = registeredInputDataTypes.dataToInputConverters[ inputDataType ]
             ?: throw UnsupportedOperationException( "No data converter for '$inputDataType' registered." )
-        require( registeredInputDataTypes.dataClasses[ inputDataType ]!!.isInstance( data ) )
-            { "Data is not of expected type for this attribute." }
+        val dataClass = checkNotNull( registeredInputDataTypes.dataClasses[ inputDataType ] )
+        require( dataClass.isInstance( data ) ) { "Data is not of expected type for this attribute." }
         return converter( data )
     }
 

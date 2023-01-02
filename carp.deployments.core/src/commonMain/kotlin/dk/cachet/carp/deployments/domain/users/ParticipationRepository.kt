@@ -22,7 +22,9 @@ interface ParticipationRepository
      */
     suspend fun getParticipantGroupOrThrowBy( studyDeploymentId: UUID ): ParticipantGroup =
         getParticipantGroup( studyDeploymentId )
-            ?: throw IllegalArgumentException( "A participant group for the study deployment with ID '$studyDeploymentId' does not exist." )
+            ?: throw IllegalArgumentException(
+                "A participant group for the study deployment with ID '$studyDeploymentId' does not exist."
+            )
 
     /**
      * Return all [ParticipantGroup]s matching the specified [studyDeploymentIds].
@@ -38,7 +40,8 @@ interface ParticipationRepository
     suspend fun getParticipantGroupListOrThrow( studyDeploymentIds: Set<UUID> ): List<ParticipantGroup>
     {
         val groups = getParticipantGroupList( studyDeploymentIds )
-        require( studyDeploymentIds.size == groups.size ) { "A study deployment ID has been passed for which no participant group exists." }
+        require( studyDeploymentIds.size == groups.size )
+            { "A study deployment ID has been passed for which no participant group exists." }
 
         return groups
     }

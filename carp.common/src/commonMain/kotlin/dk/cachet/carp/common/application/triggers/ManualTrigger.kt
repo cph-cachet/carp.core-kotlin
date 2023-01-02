@@ -1,8 +1,7 @@
 package dk.cachet.carp.common.application.triggers
 
 import dk.cachet.carp.common.application.data.NoData
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.serialization.*
 
 
 /**

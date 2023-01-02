@@ -113,8 +113,31 @@ class Study(
      * Get the status (serializable) of this [Study].
      */
     fun getStatus(): StudyStatus =
-        if ( isLive ) StudyStatus.Live( id, name, createdOn, protocolSnapshot?.id, canSetInvitation, canSetStudyProtocol, canDeployToParticipants )
-        else StudyStatus.Configuring( id, name, createdOn, protocolSnapshot?.id, canSetInvitation, canSetStudyProtocol, canDeployToParticipants, canGoLive )
+        if ( isLive )
+        {
+            StudyStatus.Live(
+                id,
+                name,
+                createdOn,
+                protocolSnapshot?.id,
+                canSetInvitation,
+                canSetStudyProtocol,
+                canDeployToParticipants
+            )
+        }
+        else
+        {
+            StudyStatus.Configuring(
+                id,
+                name,
+                createdOn,
+                protocolSnapshot?.id,
+                canSetInvitation,
+                canSetStudyProtocol,
+                canDeployToParticipants,
+                canGoLive
+            )
+        }
 
     /**
      * Get [StudyDetails] for this [Study].
@@ -166,7 +189,7 @@ class Study(
      */
     fun goLive()
     {
-        check( protocolSnapshot != null ) { "A study protocol needs to be defined for a study to go live." }
+        checkNotNull( protocolSnapshot ) { "A study protocol needs to be defined for a study to go live." }
 
         if ( !isLive )
         {

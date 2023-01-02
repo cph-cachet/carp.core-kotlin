@@ -5,6 +5,8 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.application.devices.DeviceType
 
+typealias DataCollectorMap = MutableMap<DeviceRegistration, AnyConnectedDeviceDataCollector>
+
 
 /**
  * Allows subscribing to [Data] (e.g., sensors, surveys) of requested [DataType]s on a primary device and connected devices
@@ -12,7 +14,7 @@ import dk.cachet.carp.common.application.devices.DeviceType
  */
 class DataListener( private val dataCollectorFactory: DeviceDataCollectorFactory )
 {
-    private val connectedDataCollectors: MutableMap<DeviceType, MutableMap<DeviceRegistration, AnyConnectedDeviceDataCollector>> = mutableMapOf()
+    private val connectedDataCollectors: MutableMap<DeviceType, DataCollectorMap> = mutableMapOf()
 
 
     /**
@@ -40,7 +42,10 @@ class DataListener( private val dataCollectorFactory: DeviceDataCollectorFactory
      *
      * @return The [ConnectedDeviceDataCollector], or null in case it could not be created.
      */
-    fun tryGetConnectedDataCollector( connectedDeviceType: DeviceType, registration: DeviceRegistration ): AnyConnectedDeviceDataCollector?
+    fun tryGetConnectedDataCollector(
+        connectedDeviceType: DeviceType,
+        registration: DeviceRegistration
+    ): AnyConnectedDeviceDataCollector?
     {
         return try
         {

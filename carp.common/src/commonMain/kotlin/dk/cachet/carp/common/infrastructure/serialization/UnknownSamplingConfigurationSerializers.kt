@@ -1,8 +1,7 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 
 
@@ -20,5 +19,6 @@ data class CustomSamplingConfiguration(
 /**
  * Custom serializer for a [SamplingConfiguration] which enables deserializing types that are unknown at runtime, yet extend from [SamplingConfiguration].
  */
-object SamplingConfigurationSerializer : KSerializer<SamplingConfiguration>
-    by createUnknownPolymorphicSerializer( { className, json, serializer -> CustomSamplingConfiguration( className, json, serializer ) } )
+object SamplingConfigurationSerializer : KSerializer<SamplingConfiguration> by createUnknownPolymorphicSerializer(
+    { className, json, serializer -> CustomSamplingConfiguration( className, json, serializer ) }
+)

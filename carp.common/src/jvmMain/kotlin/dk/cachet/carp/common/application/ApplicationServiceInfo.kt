@@ -5,12 +5,10 @@ import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.DependentServices
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
+import dk.cachet.carp.common.infrastructure.services.LoggedRequest
 import dk.cachet.carp.common.infrastructure.services.LoggedRequestSerializer
 import dk.cachet.carp.common.infrastructure.versioning.ApplicationServiceApiMigrator
-import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SealedClassSerializer
-import kotlinx.serialization.serializer
+import kotlinx.serialization.*
 import java.net.URI
 import kotlin.reflect.KClass
 
@@ -95,7 +93,7 @@ class ApplicationServiceInfo private constructor( val serviceKlass: ServiceClass
     val serviceName: String = serviceKlass.simpleName
     val apiVersion: ApiVersion
     val dependentServices: List<ServiceClass> = serviceKlass.getAnnotation( DependentServices::class.java )
-        ?.service?.map { it.java } ?: emptyList()
+        ?.service?.map { it.java }.orEmpty()
 
     val subsystemName: String
     val subsystemNamespace: String
@@ -106,7 +104,7 @@ class ApplicationServiceInfo private constructor( val serviceKlass: ServiceClass
 
     val requestObjectSerializer: KSerializer<out ApplicationServiceRequest<*, *>>
     val eventSerializer: KSerializer<IntegrationEvent<*>>
-    val loggedRequestSerializer: LoggedRequestSerializer<*>
+    val loggedRequestSerializer: KSerializer<LoggedRequest<*, *>>
     val apiMigrator: ApplicationServiceApiMigrator<*>
 
     val requestSchemaUri: URI
@@ -179,7 +177,11 @@ class ApplicationServiceInfo private constructor( val serviceKlass: ServiceClass
             allSubclassSerializers.values.toTypedArray()
         )
 
-        loggedRequestSerializer = LoggedRequestSerializer( requestObjectSerializer, eventSerializer )
+        @Suppress( "UNCHECKED_CAST" )
+        loggedRequestSerializer = LoggedRequestSerializer(
+            requestObjectSerializer as KSerializer<out ApplicationServiceRequest<Nothing, *>>,
+            eventSerializer as KSerializer<out IntegrationEvent<Nothing>>
+        )
 
         // Get application service API migrator.
         val apiMigratorName = "${serviceName}ApiMigrator"

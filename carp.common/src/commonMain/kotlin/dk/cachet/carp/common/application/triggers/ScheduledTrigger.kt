@@ -4,8 +4,7 @@ import dk.cachet.carp.common.application.RecurrenceRule
 import dk.cachet.carp.common.application.TimeOfDay
 import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.serialization.*
 
 
 /**

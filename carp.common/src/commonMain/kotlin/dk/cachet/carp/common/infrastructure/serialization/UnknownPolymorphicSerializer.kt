@@ -2,18 +2,10 @@ package dk.cachet.carp.common.infrastructure.serialization
 
 import dk.cachet.carp.common.infrastructure.reflect.AccessInternals
 import dk.cachet.carp.common.infrastructure.reflect.reflectIfAvailable
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerializationException
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonDecoder
-import kotlinx.serialization.json.JsonEncoder
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
+import kotlinx.serialization.json.*
 import kotlin.reflect.KClass
 
 
@@ -49,10 +41,7 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         if ( reflect != null && verifyUnknownPolymorphicWrapper )
         {
             val implementsInterface: Boolean = reflect.extendsType<UnknownPolymorphicWrapper>( wrapperClass )
-            if ( !implementsInterface )
-            {
-                throw IllegalArgumentException( "'$wrapperClass' must implement '${UnknownPolymorphicWrapper::class}'." )
-            }
+            require( implementsInterface ) { "'$wrapperClass' must implement '${UnknownPolymorphicWrapper::class}'." }
         }
     }
 

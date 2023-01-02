@@ -3,9 +3,7 @@ package dk.cachet.carp.common.application.data
 import dk.cachet.carp.common.application.concreteDataTypes
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.CustomInput
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.serializer
+import kotlinx.serialization.*
 import kotlin.test.*
 
 

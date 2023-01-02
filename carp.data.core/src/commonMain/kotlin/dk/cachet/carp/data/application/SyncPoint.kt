@@ -1,8 +1,8 @@
 package dk.cachet.carp.data.application
 
 import kotlinx.datetime.Instant
-import kotlinx.serialization.Required
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
+
 
 
 /**
