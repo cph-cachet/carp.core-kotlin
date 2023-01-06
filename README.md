@@ -52,8 +52,9 @@ Two key **design goals** differentiate this project from similar projects:
   - [Stub classes](#stub-classes)
 - [Usage](#usage)
   - [Example](#example)
-- [Building the project](#building-the-project)
+- [Development](#development)
   - [Gradle tasks](#gradle-tasks)
+  - [Release management](#release-management)
   - [Development checklists](#development-checklists)
 
 ## Architecture
@@ -359,7 +360,7 @@ if ( status is StudyStatus.RegisteringDevices )
 }
 ```
 
-## Building the project
+## Development
 
 In case you want to contribute, please follow our [contribution guidelines](https://github.com/cph-cachet/carp.core-kotlin/blob/develop/CONTRIBUTING.md).
 
@@ -383,6 +384,29 @@ For `carp.core-kotlin`:
   For this to work you need to configure a `publish.properties` file with a signing signature and repository user in the project root folder.
   Preface with `setSnapshotVersion` task to publish to the snapshot repository, substituting the suffix of the version specified in `ext.globalVersion` with `-SNAPSHOT`.
   See main `build.gradle` for details.
+
+### Release management
+
+[Semantic versioning](https://semver.org/) is used for releases.
+Backwards compatibility is assessed from the perspective of clients using an implementation of the framework,
+as opposed to developers using the framework to implement an infrastructure. 
+In other words, versioning is based on the exposed API (`application` namespaces), but not the domain used to implement infrastructures (`domain` namespaces).
+Breaking changes between `minor` versions can occur in domain objects, including the need to do database migrations.
+
+Module versions are configured in the main `build.gradle` in `ext.globalVersion` and `ext.clientsVersion`.
+
+Workflows:
+- Each push to `develop` triggers a snapshot release of the currently configured version.
+- Each push to `master` triggers a release to Maven using the currently configured version.
+
+Releases require a couple of manual steps:
+- Before merging into `master`, make sure new versions are set in `build.gradle`.
+  This should be done already in the last step, but you may decide to make a bigger version increment.
+- Merge into master; **don't rebase**. Rebasing causes branch commit histories to diverge which complicates later releases and messes up the visible commit history with duplicate commits.
+- Create a release tag on `master` with release notes.
+- Add `javascript-typescript-sources.zip` and `rpc-examples.zip` assets to release.
+  This should be automated in the future: [#371](https://github.com/imotions/carp.core-kotlin/issues/371) and [#416](https://github.com/imotions/carp.core-kotlin/issues/416) respectively.
+- Bump versions on `develop` so that snapshot releases target the next version.
 
 ### Development checklists
 
