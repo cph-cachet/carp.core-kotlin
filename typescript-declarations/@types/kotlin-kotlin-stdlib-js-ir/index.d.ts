@@ -5,7 +5,7 @@ declare module "kotlin-kotlin-stdlib-js-ir"
         interface Long
         {
             // toNumber
-            x4(): number
+            y4(): number
         }
         function toLong( number: number ): Long
 
