@@ -57,7 +57,7 @@ declare module "kotlin-kotlin-stdlib-js-ir"
 }
 
 // Implement base interfaces in internal types.
-kotlinStdLib.$_$.Long.prototype.toNumber = function(): number { return this.x4(); };
+kotlinStdLib.$_$.Long.prototype.toNumber = function(): number { return this.y4(); };
 kotlinStdLib.$_$.EmptyList.prototype.contains = function<T>( value: T ): boolean { return false; }
 kotlinStdLib.$_$.EmptyList.prototype.size = function<T>(): number { return 0; }
 kotlinStdLib.$_$.EmptyList.prototype.toArray = function<T>(): T[] { return []; }
