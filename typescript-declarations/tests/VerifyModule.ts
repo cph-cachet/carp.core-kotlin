@@ -84,6 +84,10 @@ export default class VerifyModule
             case AST_NODE_TYPES.TSImportEqualsDeclaration:
                 // Skip.
                 break;
+            case AST_NODE_TYPES.ExportNamedDeclaration:
+            case AST_NODE_TYPES.TSTypeAliasDeclaration:
+                // These are newly exported types and type aliases in TypeScript that aren't present in JS.
+                break;
             default:
                 throw( Error( `verifyStatement: Verifying valid declaration of '${statement.type}' is not implemented.` ) )
         }
