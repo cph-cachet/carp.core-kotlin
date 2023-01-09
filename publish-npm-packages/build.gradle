@@ -1,0 +1,13 @@
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                api project(':carp.common')
+                api project(':carp.data.core')
+                api project(':carp.deployments.core')
+                api project(':carp.protocols.core')
+                api project(':carp.studies.core')
+            }
+        }
+    }
+}

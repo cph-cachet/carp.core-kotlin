@@ -82,8 +82,8 @@ configure( subprojects - devOpsModules ) {
                 useJUnitPlatform()
             }
         }
-        js(LEGACY) {
-            binaries.executable()
+        js(IR) {
+            binaries.executable() // Export JS/TypeScript files.
             browser()
         }
 
@@ -114,6 +114,7 @@ configure( subprojects - devOpsModules ) {
                     // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
                     optIn('kotlin.RequiresOptIn')
                     optIn('kotlin.time.ExperimentalTime')
+                    optIn('kotlin.js.ExperimentalJsExport')
                     if (isTestSourceSet)
                     {
                         optIn('kotlinx.coroutines.ExperimentalCoroutinesApi')
@@ -234,31 +235,59 @@ task setupTsProject(type: NpmTask) {
     args = ['install']
 }
 task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
-    // Make sure no old imported packages are left behind.
-    def importedPackages = file("$rootDir/build/js/packages_imported")
-    if (importedPackages.exists()) importedPackages.eachFile { it.delete() }
-
-    // Compile all subprojects which compile to JS.
-    // TODO: Can the compiled sources be copied from the tasks of which we want to test the output directly?
-    //  We only need main sources of coreModules and commonModules since these are the only ones tested.
-    //  But, only adding dependencies on those triggers warnings since other outputs exist in `/build//js/packages`.
+    // Compile production sources for all subprojects that compile to JS.
     def projects = subprojects - devOpsModules
     projects.each {
         def project = it.name
-        dependsOn("$project:jsBrowserDistribution")
-        dependsOn("$project:compileTestKotlinJs")
+        dependsOn("$project:jsProductionExecutableCompileSync")
     }
 
-    // Copy compiled sources and dependencies to test project node_modules.
-    from "$rootDir/build/js/packages"
-    exclude '**/node_modules/**'
-    from(importedPackages) {
-        eachFile {
-            def path = it.path
-            if (path == ".visited") return // We don't need this file.
+    // Copy compiled JS and TypeScript sources to test project's node_modules.
+    from("$rootDir/build/js/packages/carp.core-kotlin-publish-npm-packages") {
+        include "**/*.js"
+    }
+    from("$rootDir/build/js/packages") {
+        // Use individually generated TypeScript declarations to exclude publish-npm-packages exports.
+        include "**/*.d.ts"
+        includeEmptyDirs = false
+    }
+    eachFile { file ->
+        // Compiled sources have the name of the module they represent, followed by ".js" and ".d.ts".
+        // To be recognized by node, place them as "index.js" and "index.d.ts" in "node_modules/<module-name>".
+        def fileMatch = file.name =~ /(.+)\.(js|d\.ts)/
+        def moduleName = fileMatch[0][1]
+        def extension = fileMatch[0][2]
+        file.relativePath = new RelativePath(true, moduleName, "index.$extension")
 
-            // Remove intermediate version directory: e.g. "kotlin/1.5.10/kotlin.js"
-            it.path = path.replaceFirst(/\d+\.\d+.\d+(-.+)?\//, "")
+        // Modify sources to act like modules with exported named members.
+        file.filter { line ->
+            // Compiled sources refer to other modules as adjacent .js source files.
+            // Change these to the named modules created in the previous step.
+            def namedModules = line.replaceAll(~/'\.\/(.+?)\.js'/, "'\$1'")
+
+            // Unscramble generated import/export names.
+            def fixedExport = namedModules.replaceAll(
+                ~/(\_\.\$\_\$\.).+? = (.+?);/,
+                "\$1\$2 = \$2"
+            )
+            def fixedImport = fixedExport.replaceAll(
+                ~/var (.+?) = (kotlin\_kotlin\.\$\_\$\.)(.+);/,
+                "var \$1 = \$2\$1;"
+            )
+
+            // By default, only types used across modules are exported for internal use.
+            // Therefore, add additional configured exports to ensure they are present.
+            def toExport = []
+            def forcedExportsFile = new File("$rootDir/publish-npm-packages/src/forced-exports/$moduleName")
+            if (forcedExportsFile.exists()) {
+                forcedExportsFile.eachLine { type -> toExport << type }
+            }
+            def toExportList = toExport.collect { "_.\\\$_\\\$.$it = $it\n  " }
+            def additionalExports = fixedImport.replaceAll(
+                ~/return \_;/,
+                toExportList.join() + "return _;"
+            )
+            additionalExports
         }
     }
     into "./$typescriptFolder/node_modules"
