@@ -1,5 +1,8 @@
 Long
+toLong
 EmptyList
 AbstractMutableList
 HashSet
 EmptySet
+listOf
+setOf
