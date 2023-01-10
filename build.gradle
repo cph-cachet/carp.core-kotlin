@@ -265,25 +265,14 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
             // Change these to the named modules created in the previous step.
             def namedModules = line.replaceAll(~/'\.\/(.+?)\.js'/, "'\$1'")
 
-            // Unscramble generated import/export names.
-            def fixedExport = namedModules.replaceAll(
-                ~/(\_\.\$\_\$\.).+? = (.+?);/,
-                "\$1\$2 = \$2"
-            )
-            def fixedImport = fixedExport.replaceAll(
-                ~/var (.+?) = (kotlin\_kotlin\.\$\_\$\.)(.+);/,
-                "var \$1 = \$2\$1;"
-            )
-
-            // By default, only types used across modules are exported for internal use.
-            // Therefore, add additional configured exports to ensure they are present.
+            // Add additional internal types to be exported, as configured in `forced-exports`.
             def toExport = []
             def forcedExportsFile = new File("$rootDir/publish-npm-packages/src/forced-exports/$moduleName")
             if (forcedExportsFile.exists()) {
                 forcedExportsFile.eachLine { type -> toExport << type }
             }
             def toExportList = toExport.collect { "_.\\\$_\\\$.$it = $it\n  " }
-            def additionalExports = fixedImport.replaceAll(
+            def additionalExports = namedModules.replaceAll(
                 ~/return \_;/,
                 toExportList.join() + "return _;"
             )
