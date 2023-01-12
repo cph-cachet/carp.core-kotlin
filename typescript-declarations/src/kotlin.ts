@@ -76,10 +76,10 @@ kotlinStdLib.$_$.HashSet.prototype.size = function<T>(): number { return this.f(
 export * from "kotlin-kotlin-stdlib-js-ir"
 export namespace kotlin
 {
-    export const toLong = kotlinStdLib.$_$.toLong_0
+    export const toLong: (number: number) => kotlinStdLib.kotlin.Long = kotlinStdLib.$_$.toLong_0
 }
 export namespace kotlin.collections
 {
-    export const listOf = kotlinStdLib.$_$.listOf
-    export const setOf = kotlinStdLib.$_$.setOf
+    export const listOf: <T>(array: T[]) => kotlinStdLib.kotlin.collections.List<T> = kotlinStdLib.$_$.listOf
+    export const setOf: <T>(array: T[]) => kotlinStdLib.kotlin.collections.Set<T> = kotlinStdLib.$_$.setOf
 }

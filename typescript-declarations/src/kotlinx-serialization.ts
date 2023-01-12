@@ -47,6 +47,6 @@ export namespace kotlinx.serialization
     export type Json = extend.kotlinx.serialization.Json
     export namespace Json
     {
-        export const Default = extend.$_$.Default_getInstance()
+        export const Default: Json = extend.$_$.Default_getInstance()
     }
 }

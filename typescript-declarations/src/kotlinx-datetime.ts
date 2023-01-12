@@ -12,7 +12,7 @@ declare module "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
         }
         namespace Clock
         {
-            const System: Instant
+            const System: Clock
         }
         interface Instant
         {
@@ -45,6 +45,6 @@ export namespace kotlinx.datetime
     export type Clock = kotlinxDateTime.kotlinx.datetime.Clock
     export namespace Clock
     {
-        export const System = kotlinxDateTime.$_$.System_getInstance()
+        export const System: Clock = kotlinxDateTime.$_$.System_getInstance()
     }
 }
