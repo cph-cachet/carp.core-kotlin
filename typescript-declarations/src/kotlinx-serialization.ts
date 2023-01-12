@@ -20,11 +20,8 @@ declare module "kotlinx-serialization-kotlinx-serialization-json-js-ir"
     // Augment internal types to implement desired base interfaces.
     namespace $_$
     {
-        abstract class JsonImpl implements kotlinx.serialization.Json
-        {
-            encodeToString( serializer: any, value: any ): string
-            decodeFromString( serializer: any, string: string ): any
-        }
+        interface JsonImpl extends kotlinx.serialization.Json {}
+        abstract class JsonImpl implements kotlinx.serialization.Json {}
     }
 }
 
