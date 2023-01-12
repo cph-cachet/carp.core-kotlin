@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application
 
 import dk.cachet.carp.common.infrastructure.serialization.createCarpStringPrimitiveSerializer
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -13,6 +14,7 @@ import kotlinx.serialization.*
  * @param address Six groups of two upper case hexadecimal digits, separated by hyphens (-).
  */
 @Serializable( with = MACAddressSerializer::class )
+@JsExport
 data class MACAddress(
     /**
      * The MAC address, represented according to the recommended IEEE 802 standard notation.

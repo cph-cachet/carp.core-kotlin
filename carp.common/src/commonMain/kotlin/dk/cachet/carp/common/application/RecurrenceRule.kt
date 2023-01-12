@@ -3,6 +3,7 @@ package dk.cachet.carp.common.application
 import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
 import dk.cachet.carp.common.infrastructure.serialization.createCarpStringPrimitiveSerializer
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.microseconds
 
@@ -16,6 +17,7 @@ import kotlin.time.Duration.Companion.microseconds
  * they are replaced with time spans representing elapsed time since the start of the study.
  */
 @Serializable( with = RecurrenceRuleSerializer::class )
+@JsExport
 data class RecurrenceRule(
     /**
      * Specifies the type of interval at which to repeat events, or multiples thereof.
@@ -120,6 +122,7 @@ data class RecurrenceRule(
         @Serializable
         data class Until(
             @Serializable( DurationSerializer::class )
+            @Suppress( "NON_EXPORTABLE_TYPE" )
             val elapsedTime: Duration
         ) : End()
         {

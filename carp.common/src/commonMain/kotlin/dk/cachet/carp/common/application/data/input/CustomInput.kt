@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.data.Data
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
+import kotlin.js.JsExport
 import kotlin.reflect.KClass
 
 
@@ -13,6 +14,7 @@ import kotlin.reflect.KClass
 @Serializable( CustomInputSerializer::class )
 @SerialName( CUSTOM_INPUT_TYPE_NAME )
 @Suppress( "Immutable" ) // TODO: `assumeImmutable` configuration in detekt.yml is not working.
+@JsExport
 data class CustomInput( val input: Any ) : Data
 
 

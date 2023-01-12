@@ -1,4 +1,8 @@
+@file:JsExport
+
 package dk.cachet.carp.common.application
+
+import kotlin.js.JsExport
 
 
 /**

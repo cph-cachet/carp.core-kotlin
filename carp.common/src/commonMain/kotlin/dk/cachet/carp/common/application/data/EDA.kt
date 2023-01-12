@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.application.data
 
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -9,6 +10,7 @@ import kotlinx.serialization.*
  */
 @Serializable
 @SerialName( CarpDataTypes.EDA_TYPE_NAME )
+@JsExport
 data class EDA( val microSiemens: Double, override val sensorSpecificData: Data? = null ) : SensorData
 {
     init

@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application
 
 import dk.cachet.carp.common.infrastructure.serialization.createCarpStringPrimitiveSerializer
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -11,6 +12,7 @@ import kotlinx.serialization.*
  * @param stringRepresentation The recommended RFC 4122 notation of UUID. Hexadecimal digits should be lowercase.
  */
 @Serializable( UUIDSerializer::class )
+@JsExport
 class UUID( val stringRepresentation: String )
 {
     init

@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.application.data
 
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -9,4 +10,5 @@ import kotlinx.serialization.*
  */
 @Serializable
 @SerialName( CarpDataTypes.INTERBEAT_INTERVAL_TYPE_NAME )
+@JsExport
 data class InterbeatInterval( override val sensorSpecificData: Data? = null ) : SensorData

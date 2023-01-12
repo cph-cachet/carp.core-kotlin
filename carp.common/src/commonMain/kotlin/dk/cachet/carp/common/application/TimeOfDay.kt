@@ -2,12 +2,14 @@ package dk.cachet.carp.common.application
 
 import dk.cachet.carp.common.infrastructure.serialization.createCarpStringPrimitiveSerializer
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Represents a specific time of the day according to a 24-hour clock.
  */
 @Serializable( TimeOfDaySerializer::class )
+@JsExport
 @Suppress( "MagicNumber" )
 data class TimeOfDay( val hour: Int, val minutes: Int = 0, val seconds: Int = 0 )
 {

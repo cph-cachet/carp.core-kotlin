@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.application.data
 
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -10,4 +11,5 @@ import kotlinx.serialization.*
  */
 @Serializable
 @SerialName( CarpDataTypes.SIGNAL_STRENGTH_TYPE_NAME )
+@JsExport
 data class SignalStrength( val rssi: Short, override val sensorSpecificData: Data? = null ) : SensorData

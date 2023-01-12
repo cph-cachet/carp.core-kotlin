@@ -1,11 +1,13 @@
 package dk.cachet.carp.common.application.data.input
 
 import dk.cachet.carp.common.application.data.input.elements.SelectOne
+import kotlin.js.JsExport
 
 
 /**
  * All default CARP [InputDataType]s.
  */
+@JsExport
 object CarpInputDataTypes : InputDataTypeList()
 {
     /**

@@ -2,12 +2,14 @@ package dk.cachet.carp.common.application
 
 import dk.cachet.carp.common.infrastructure.serialization.createCarpStringPrimitiveSerializer
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * A uniquely named identifier within a [namespace].
  */
 @Serializable( with = NamespacedIdSerializer::class )
+@JsExport
 data class NamespacedId(
     /**
      * Uniquely identifies the organization/person who determines how to interpret [name].

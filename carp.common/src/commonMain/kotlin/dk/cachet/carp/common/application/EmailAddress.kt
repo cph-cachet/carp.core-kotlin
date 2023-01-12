@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application
 
 import dk.cachet.carp.common.infrastructure.serialization.createCarpStringPrimitiveSerializer
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -9,6 +10,7 @@ import kotlinx.serialization.*
  * TODO: Validate so only valid email addresses can be passed.
  */
 @Serializable( EmailAddressSerializer::class )
+@JsExport
 data class EmailAddress( val address: String )
 {
     override fun toString(): String = address
