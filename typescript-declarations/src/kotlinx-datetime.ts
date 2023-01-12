@@ -23,14 +23,10 @@ declare module "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
     // Augment internal types to implement desired base interfaces.
     namespace $_$
     {
-        abstract class System implements kotlinx.datetime.Clock
-        {
-            now(): kotlinx.datetime.Instant
-        }
-        abstract class Instant_0 implements kotlinx.datetime.Instant
-        {
-            toEpochMilliseconds(): number
-        }
+        interface System extends kotlinx.datetime.Clock {}
+        abstract class System implements kotlinx.datetime.Clock {}
+        interface Instant_0 extends kotlinx.datetime.Instant {}
+        abstract class Instant_0 implements kotlinx.datetime.Instant {}
     }
 }
 

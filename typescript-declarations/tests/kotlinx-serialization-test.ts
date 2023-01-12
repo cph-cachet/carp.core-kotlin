@@ -5,7 +5,7 @@ import { kotlinx } from '../src/kotlinx-serialization'
 import Json = kotlinx.serialization.Json
 
 
-describe( "kotlinx-datetime", () => {
+describe( "kotlinx-serialization", () => {
     it( "verify module declarations", async () => {
         const instances: any[] = [
             [ "JsonImpl", Json.Default ]

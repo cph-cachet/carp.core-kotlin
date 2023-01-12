@@ -52,34 +52,17 @@ declare module "kotlin-kotlin-stdlib-js-ir"
             second: V
         }
         interface Collection<T> extends kotlin.collections.Collection<T> {}
-        interface List<T> extends kotlin.collections.List<T> {}
-        abstract class EmptyList<T> implements kotlin.collections.List<T>
-        {
-            contains( value: T ): boolean
-            size(): number
-        }
-        abstract class AbstractMutableList<T> implements kotlin.collections.List<T>
-        {
-            contains( value: T ): boolean
-            size(): number
-        }
+        abstract class EmptyList<T> implements kotlin.collections.List<T> {}
+        abstract class AbstractMutableList<T> implements kotlin.collections.List<T> {}
         interface Set<T> extends kotlin.collections.Set<T> {}
-        abstract class EmptySet<T> implements kotlin.collections.Set<T>
-        {
-            contains( value: T ): boolean
-            size(): number
-        }
-        abstract class HashSet<T> implements kotlin.collections.Set<T>
-        {
-            contains( value: T ): boolean
-            size(): number
-        }
+        abstract class EmptySet<T> implements kotlin.collections.Set<T> {}
+        abstract class HashSet<T> implements kotlin.collections.Set<T> {}
         interface Map<K, V> extends kotlin.collections.Map<K, V> {}
         abstract class HashMap<K, V> implements kotlin.collections.Map<K, V>
         {
             get( key: K ): V
-            keys: Set<K>
-            values: Collection<V>
+            keys: kotlin.collections.Set<K>
+            values: kotlin.collections.Collection<V>
         }
     }
 }
