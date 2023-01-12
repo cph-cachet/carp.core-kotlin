@@ -35,12 +35,16 @@ declare module "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
 }
 
 // Implement base interfaces in internal types.
-kotlinxDateTime.$_$.System.prototype.now = function(): kotlinxDateTime.kotlinx.datetime.Instant { return this.hm(); };
-kotlinxDateTime.$_$.Instant_0.prototype.toEpochMilliseconds = function(): number { return this.qm(); };
+kotlinxDateTime.$_$.System.prototype.now = function(): kotlinxDateTime.kotlinx.datetime.Instant { return this.g10(); };
+kotlinxDateTime.$_$.Instant_0.prototype.toEpochMilliseconds = function(): number { return this.r10(); };
 
 // Export facade.
 export * from "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
-export namespace kotlinx.datetime.Clock
+export namespace kotlinx.datetime
 {
-    export const System = kotlinxDateTime.$_$.System_getInstance()
+    export type Clock = kotlinxDateTime.kotlinx.datetime.Clock
+    export namespace Clock
+    {
+        export const System = kotlinxDateTime.$_$.System_getInstance()
+    }
 }

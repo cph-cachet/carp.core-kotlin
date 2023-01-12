@@ -3,7 +3,9 @@ import VerifyModule from './VerifyModule'
 import { expect } from 'chai'
 import { kotlin } from '../src/kotlin'
 import setOf = kotlin.collections.setOf
-import { dk } from "../src/carp-common"
+import { kotlinx } from '../src/kotlinx-serialization'
+import Json = kotlinx.serialization.Json
+import { dk } from '../src/carp-common'
 import Trilean = dk.cachet.carp.common.application.Trilean
 import toTrilean = dk.cachet.carp.common.application.toTrilean
 import EmailAddress = dk.cachet.carp.common.application.EmailAddress
@@ -16,6 +18,7 @@ import ParticipantAttribute = dk.cachet.carp.common.application.users.Participan
 import CarpInputDataTypes = dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import Text = dk.cachet.carp.common.application.data.input.elements.Text
 import CustomInput = dk.cachet.carp.common.application.data.input.CustomInput
+import JSON = dk.cachet.carp.common.infrastructure.serialization.JSON
 
 
 describe( "carp.common", () => {
@@ -77,6 +80,21 @@ describe( "carp.common", () => {
             const data = attribute.inputToData( CarpInputDataTypes, "Steven" )
             const customInput = data as CustomInput
             expect( customInput.input ).equals( "Steven" )
+        } )
+    } )
+
+    describe( "ExpectedParticipantData", () => {
+        it( "can serialize and deserialize", () => {
+            const expectedData = new ExpectedParticipantData(
+                new ParticipantAttribute.DefaultParticipantAttribute( new NamespacedId( "namespace", "type" ) ),
+                new AssignedTo.Roles( setOf( [ "Roles are added" ] ) )
+            )
+
+            const json = JSON as Json
+            const serializer = ExpectedParticipantData.Companion.serializer()
+            const serialized = json.encodeToString( serializer, expectedData )
+            const deserialized = json.decodeFromString( serializer, serialized ) as ExpectedParticipantData
+            expect( deserialized.equals( expectedData ) ).is.true
         } )
     } )
 } )
