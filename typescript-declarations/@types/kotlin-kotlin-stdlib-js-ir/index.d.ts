@@ -5,14 +5,14 @@ declare module "kotlin-kotlin-stdlib-js-ir"
         interface Long
         {
             // toNumber
-            z3(): number
+            l4(): number
         }
         function toLong_0( number: number ): Long
 
         interface Collection<T>
         {
             // contains
-            s( value: T ): boolean
+            y( value: T ): boolean
 
             // size
             f(): number

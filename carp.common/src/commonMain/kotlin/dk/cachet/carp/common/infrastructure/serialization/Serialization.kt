@@ -11,6 +11,7 @@ import dk.cachet.carp.common.application.users.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.*
+import kotlin.js.JsExport
 
 
 /**
@@ -152,6 +153,8 @@ const val CLASS_DISCRIMINATOR: String = "__type"
  * In case custom extending types are defined, this variable should be reassigned for serialization extension functions to work as expected.
  * [createDefaultJSON] can be used to this end, by including all extending types in the [SerializersModule] as parameter.
  */
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 var JSON: Json = createDefaultJSON()
 
 
