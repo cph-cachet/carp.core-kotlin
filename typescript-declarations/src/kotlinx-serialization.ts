@@ -32,12 +32,12 @@ declare module "kotlinx-serialization-kotlinx-serialization-json-js-ir"
 extend.$_$.JsonImpl.prototype.encodeToString =
     function( serializer: any, value: any ): string
     {
-        return this.w10( serializer, value );
+        return this.y10( serializer, value );
     };
 extend.$_$.JsonImpl.prototype.decodeFromString =
     function( serializer: any, string: string ): any
     {
-        return this.x10( serializer, string );
+        return this.z10( serializer, string );
     };
 
 // Export facade.

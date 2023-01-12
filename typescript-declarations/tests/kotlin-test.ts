@@ -3,23 +3,29 @@ import VerifyModule from './VerifyModule'
 import { expect } from 'chai'
 import { kotlin } from '../src/kotlin'
 import toLong = kotlin.toLong
+import pair = kotlin.pair
 import listOf = kotlin.collections.listOf
 import setOf = kotlin.collections.setOf
+import mapOf = kotlin.collections.mapOf
 
 
 describe( "kotlin", () => {
     it( "verify module declarations", async () => {
         const list = listOf( [ 42 ] )
         const set = setOf( [ 42 ] )
+        const map = mapOf( [ pair( 42, "answer" ) ] )
         const instances: any[] = [
             toLong( 42 ),
+            pair( 42, "answer" ),
             [ "Collection", list ],
             [ "List", list ],
             [ "EmptyList", listOf<number>( [] ) ],
             [ "AbstractMutableList", list ],
             [ "Set", set ],
             [ "EmptySet", setOf<number>( [] ) ],
-            [ "HashSet", set ]
+            [ "HashSet", set ],
+            [ "Map", map ],
+            [ "HashMap", map ]
         ]
 
         const moduleVerifier = new VerifyModule(
@@ -35,6 +41,14 @@ describe( "kotlin", () => {
             const answerAsNumber: Number = answer.toNumber()
 
             expect( answerAsNumber ).equals( 42 )
+        } )
+    } )
+
+    describe( "Pair", () => {
+        it( "can access first and second", () => {
+            const answer = pair( 42, "answer" )
+            expect( answer.first ).equals( 42 )
+            expect( answer.second ).equals( "answer" )
         } )
     } )
 
@@ -97,6 +111,21 @@ describe( "kotlin", () => {
             expect( emptySet.toArray() ).deep.equals( [] )
             expect( emptySet.contains( 42 ) ).is.false
             expect( emptySet.size() ).equals( 0 )
+        } )
+    } )
+
+    describe( "Map", () => {
+        it( "get succeeds", () => {
+            const answers = mapOf( [ pair( "answer", 42 ) ] )
+            expect( answers.get( "answer" ) ).equals( 42 )
+        } )
+
+        it( "mapOf keys and entries accessible", () => {
+            const answers = [ pair( "answer", 42 ) ]
+            const answersMap = mapOf( answers )
+
+            expect( answersMap.keys.toArray() ).deep.equals( [ "answer" ] )
+            expect( answersMap.values.toArray() ).deep.equals( [ 42 ] )
         } )
     } )
 } )
