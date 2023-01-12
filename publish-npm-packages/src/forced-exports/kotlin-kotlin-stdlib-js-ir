@@ -4,5 +4,9 @@ EmptyList
 AbstractMutableList
 HashSet
 EmptySet
+HashMap
+Pair
+to
 listOf
 setOf
+mapOf

@@ -5,9 +5,19 @@ declare module "kotlin-kotlin-stdlib-js-ir"
         interface Long
         {
             // toNumber
-            l4(): number
+            p4(): number
         }
         function toLong_0( number: number ): Long
+
+        function to<K, V>( first: K, second: V ): Pair<K, V>
+        interface Pair<K, V>
+        {
+            // first
+            s2_1: K
+
+            // second
+            t2_1: V
+        }
 
         interface Collection<T>
         {
@@ -29,5 +39,19 @@ declare module "kotlin-kotlin-stdlib-js-ir"
         interface EmptySet<T> extends Set<T> {}
         interface HashSet<T> extends Set<T> {}
         function setOf<T>( elements: T[] ): Set<T>
+
+        interface Map<K, V>
+        {
+            // get
+            x1( key: K ): V
+
+            // keys
+            y1(): Set<K>
+
+            // values
+            z1(): Collection<V>
+        }
+        interface HashMap<K, V> extends Map<K, V> {}
+        function mapOf<K, V>( pairs: Pair<K, V>[] ): Map<K, V>
     }
 }
