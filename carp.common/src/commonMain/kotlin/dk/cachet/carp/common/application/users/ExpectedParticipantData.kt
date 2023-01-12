@@ -2,12 +2,14 @@ package dk.cachet.carp.common.application.users
 
 import dk.cachet.carp.common.application.data.input.InputDataType
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Describes a participant [attribute] that pertains to all or specified participants in a study.
  */
 @Serializable
+@JsExport
 data class ExpectedParticipantData(
     val attribute: ParticipantAttribute,
     /**

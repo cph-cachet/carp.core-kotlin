@@ -3,12 +3,14 @@ package dk.cachet.carp.common.application.data
 import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Holds data for a [DataType].
  */
 @Polymorphic
+@JsExport
 @Immutable
 @ImplementAsDataClass
 interface Data
@@ -17,6 +19,7 @@ interface Data
 /**
  * Holds data for a [DataType] collected by a sensor which may include additional [sensorSpecificData].
  */
+@JsExport
 interface SensorData : Data
 {
     /**

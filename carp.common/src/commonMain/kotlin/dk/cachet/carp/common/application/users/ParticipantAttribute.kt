@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.common.application.users
 
 import dk.cachet.carp.common.application.UUID
@@ -9,12 +11,14 @@ import dk.cachet.carp.common.application.data.input.InputDataTypeList
 import dk.cachet.carp.common.application.data.input.elements.AnyInputElement
 import dk.cachet.carp.common.application.data.input.elements.InputElement
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Describes expected data to be input by users related to one or multiple participants in a study.
  */
 @Serializable
+@JsExport
 sealed class ParticipantAttribute
 {
     /**

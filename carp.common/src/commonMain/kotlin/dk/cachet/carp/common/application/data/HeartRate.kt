@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.application.data
 
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -8,6 +9,7 @@ import kotlinx.serialization.*
  */
 @Serializable
 @SerialName( CarpDataTypes.HEART_RATE_TYPE_NAME )
+@JsExport
 data class HeartRate( val bpm: Int, override val sensorSpecificData: Data? = null ) : SensorData
 {
     init

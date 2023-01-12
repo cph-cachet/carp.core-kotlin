@@ -10,6 +10,10 @@ declare module "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
         {
             now(): Instant
         }
+        namespace Clock
+        {
+            const System: Instant
+        }
         interface Instant
         {
             toEpochMilliseconds(): number
@@ -31,16 +35,12 @@ declare module "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
 }
 
 // Implement base interfaces in internal types.
-kotlinxDateTime.$_$.System.prototype.now = function(): kotlinx.datetime.Instant { return this.c5(); };
-kotlinxDateTime.$_$.Instant_0.prototype.toEpochMilliseconds = function(): number { return this.k5(); };
+kotlinxDateTime.$_$.System.prototype.now = function(): kotlinxDateTime.kotlinx.datetime.Instant { return this.hm(); };
+kotlinxDateTime.$_$.Instant_0.prototype.toEpochMilliseconds = function(): number { return this.qm(); };
 
 // Export facade.
-export namespace kotlinx.datetime
+export * from "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
+export namespace kotlinx.datetime.Clock
 {
-    export type Clock = kotlinxDateTime.kotlinx.datetime.Clock
-    export type Instant = kotlinxDateTime.kotlinx.datetime.Instant
-    export namespace Clock
-    {
-        export const System: kotlinx.datetime.Clock = kotlinxDateTime.$_$.System_getInstance()
-    }
+    export const System = kotlinxDateTime.$_$.System_getInstance()
 }

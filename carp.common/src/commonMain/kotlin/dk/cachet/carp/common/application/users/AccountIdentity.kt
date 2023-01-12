@@ -2,6 +2,8 @@ package dk.cachet.carp.common.application.users
 
 import dk.cachet.carp.common.application.EmailAddress
 import kotlinx.serialization.*
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 
 /**
@@ -28,8 +30,10 @@ interface AccountIdentity
  * Identifies an account by an [emailAddress] somebody has access to.
  */
 @Serializable
+@JsExport
 data class EmailAccountIdentity( val emailAddress: EmailAddress ) : AccountIdentity
 {
+    @JsName( "create" )
     constructor( emailAddress: String ) : this( EmailAddress( emailAddress ) )
 }
 
@@ -37,7 +41,9 @@ data class EmailAccountIdentity( val emailAddress: EmailAddress ) : AccountIdent
  * Identifies an account by a unique [username].
  */
 @Serializable
+@JsExport
 data class UsernameAccountIdentity( val username: Username ) : AccountIdentity
 {
+    @JsName( "create" )
     constructor( username: String ) : this( Username( username ) )
 }
