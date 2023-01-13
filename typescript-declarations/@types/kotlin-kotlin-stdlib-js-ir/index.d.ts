@@ -9,9 +9,10 @@ declare module "kotlin-kotlin-stdlib-js-ir"
         }
         function toLong_0( number: number ): Long
 
-        function to<K, V>( first: K, second: V ): Pair<K, V>
-        interface Pair<K, V>
+        class Pair<K, V>
         {
+            constructor( first: K, second: V )
+
             // first
             s2_1: K
 
