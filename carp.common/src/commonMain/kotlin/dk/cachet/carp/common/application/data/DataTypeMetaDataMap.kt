@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.application.data
 
 import dk.cachet.carp.common.application.EnumObjectMap
+import kotlin.js.JsExport
 
 
 /**
@@ -10,6 +11,7 @@ import dk.cachet.carp.common.application.EnumObjectMap
  * Extend from this class as an object and assign members as follows:
  * `val SOME_TYPE = add( "dk.cachet.carp.sometype", "Some type", DataTimeType.POINT )`.
  */
+@JsExport
 open class DataTypeMetaDataMap : EnumObjectMap<DataType, DataTypeMetaData>( { metaData -> metaData.type } )
 {
     /**

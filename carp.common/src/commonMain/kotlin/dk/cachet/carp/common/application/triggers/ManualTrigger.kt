@@ -2,12 +2,14 @@ package dk.cachet.carp.common.application.triggers
 
 import dk.cachet.carp.common.application.data.NoData
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * A trigger initiated by a user, i.e., the user decides when to start a task.
  */
 @Serializable
+@JsExport
 data class ManualTrigger(
     override val sourceDeviceRoleName: String,
     /**

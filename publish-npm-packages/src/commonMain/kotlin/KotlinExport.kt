@@ -6,8 +6,6 @@
 
 import kotlin.js.JsExport
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
 
 /**
  * Refers to types/methods in the kotlin standard library to ensure they aren't removed from compiled sources

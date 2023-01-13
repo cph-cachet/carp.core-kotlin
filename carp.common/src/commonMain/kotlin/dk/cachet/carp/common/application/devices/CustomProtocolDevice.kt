@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.CustomProtocolTask
 import dk.cachet.carp.common.application.tasks.TaskConfigurationList
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 import kotlin.reflect.KClass
 
 
@@ -14,6 +15,8 @@ import kotlin.reflect.KClass
  * A primary device which uses a single [CustomProtocolTask] to determine how to run a study on the device.
  */
 @Serializable
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 data class CustomProtocolDevice( override val roleName: String, override val isOptional: Boolean = false ) :
     PrimaryDeviceConfiguration<DefaultDeviceRegistration, DefaultDeviceRegistrationBuilder>()
 {

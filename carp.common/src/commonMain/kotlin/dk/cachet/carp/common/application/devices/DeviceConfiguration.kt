@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.Immutable
@@ -8,6 +10,7 @@ import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfigurationMapBuilder
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 import kotlin.reflect.KClass
 
 
@@ -22,6 +25,7 @@ import kotlin.reflect.KClass
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
+@JsExport
 abstract class DeviceConfiguration<
     TRegistration : DeviceRegistration,
     out TRegistrationBuilder : DeviceRegistrationBuilder<TRegistration>
@@ -120,6 +124,7 @@ typealias DeviceType = KClass<out AnyDeviceConfiguration>
  * A helper class to configure and construct immutable [DeviceConfiguration] classes.
  */
 @DeviceConfigurationBuilderDsl
+@JsExport
 abstract class DeviceConfigurationBuilder<TSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilder>
 {
     private var samplingConfigurationBuilder: TSamplingConfigurationMapBuilder.() -> Unit = { }

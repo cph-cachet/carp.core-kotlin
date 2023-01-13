@@ -31,6 +31,7 @@ data class ExpectedParticipantData(
  *
  * @throws IllegalArgumentException if [exceptionOnConflict] is set to true and the set contains a conflict.
  */
+@JsExport
 fun Set<ExpectedParticipantData>.hasNoConflicts( exceptionOnConflict: Boolean = false ): Boolean
 {
     val expectedDataByInputType = this.groupBy { it.inputDataType }

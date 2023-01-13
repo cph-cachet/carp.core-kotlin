@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application.services
 
 import dk.cachet.carp.common.infrastructure.serialization.createCarpStringPrimitiveSerializer
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -11,6 +12,7 @@ import kotlinx.serialization.*
  * E.g. a 2.0 request will work on a 2.1 hosted service, but not on 1.0 or 3.0.
  */
 @Serializable( ApiVersionSerializer::class )
+@JsExport
 data class ApiVersion( val major: Int, val minor: Int )
 {
     init

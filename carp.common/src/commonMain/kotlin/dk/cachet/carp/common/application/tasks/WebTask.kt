@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.tasks.WebTask.UrlVariable
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -60,6 +61,8 @@ data class WebTask(
 /**
  * A helper class to configure and construct immutable [WebTask] instances.
  */
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 class WebTaskBuilder : TaskConfigurationBuilder<WebTask>()
 {
     /**

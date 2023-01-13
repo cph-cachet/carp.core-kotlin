@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -10,6 +11,7 @@ import kotlinx.serialization.*
  * to uniquely identify the device.
  */
 @Serializable
+@JsExport
 data class BLESerialNumberDeviceRegistration(
     val serialNumber: String,
     @Required
@@ -28,6 +30,7 @@ data class BLESerialNumberDeviceRegistration(
 
 @Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( with = NotSerializable::class )
+@JsExport
 class BLESerialNumberDeviceRegistrationBuilder : DeviceRegistrationBuilder<BLESerialNumberDeviceRegistration>()
 {
     /**
