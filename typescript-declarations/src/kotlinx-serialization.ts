@@ -1,29 +1,31 @@
 import * as extend from "kotlinx-serialization-kotlinx-serialization-json-js-ir"
 
 
+// Facade with better method names and type conversions for internal types.
+export namespace kotlinx.serialization
+{
+    export interface Json
+    {
+        encodeToString( serializer: any, value: any ): string
+        decodeFromString( serializer: any, string: string ): any
+    }
+    export namespace Json
+    {
+        export const Default: Json = extend.$_$.Default_getInstance()
+    }
+}
+
+
+// Augment internal types to implement facade.
 declare module "kotlinx-serialization-kotlinx-serialization-json-js-ir"
 {
-    // Base interfaces with better method names for internal types.
-    namespace kotlinx.serialization
-    {
-        interface Json
-        {
-            encodeToString( serializer: any, value: any ): string
-            decodeFromString( serializer: any, string: string ): any
-        }
-        namespace Json
-        {
-            const Default: Json
-        }
-    }
-
-    // Augment internal types to implement desired base interfaces.
     namespace $_$
     {
         interface JsonImpl extends kotlinx.serialization.Json {}
         abstract class JsonImpl implements kotlinx.serialization.Json {}
     }
 }
+
 
 // Implement base interfaces in internal types.
 extend.$_$.JsonImpl.prototype.encodeToString =
@@ -37,13 +39,6 @@ extend.$_$.JsonImpl.prototype.decodeFromString =
         return this.z10( serializer, string );
     };
 
-// Export facade.
+
+// Re-export augmented types.
 export * from "kotlinx-serialization-kotlinx-serialization-json-js-ir"
-export namespace kotlinx.serialization
-{
-    export type Json = extend.kotlinx.serialization.Json
-    export namespace Json
-    {
-        export const Default: Json = extend.$_$.Default_getInstance()
-    }
-}
