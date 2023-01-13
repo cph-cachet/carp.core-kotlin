@@ -16,7 +16,6 @@ declare module "kotlin-kotlin-stdlib-js-ir"
             first: K
             second: V
         }
-        function pair<K, V>( first: K, second: V ): Pair<K, V>
     }
     namespace kotlin.collections
     {
@@ -46,7 +45,7 @@ declare module "kotlin-kotlin-stdlib-js-ir"
         {
             toNumber(): number
         }
-        abstract class Pair<K, V> implements kotlin.Pair<K, V>
+        interface Pair<K, V> extends kotlin.Pair<K, V>
         {
             first: K
             second: V
@@ -69,12 +68,6 @@ declare module "kotlin-kotlin-stdlib-js-ir"
 
 // Implement base interfaces in internal types.
 kotlinStdLib.$_$.Long.prototype.toNumber = function(): number { return this.p4(); };
-Object.defineProperty( kotlinStdLib.$_$.Pair.prototype, "first", {
-    get: function first() { return this.s2_1; }
-} );
-Object.defineProperty( kotlinStdLib.$_$.Pair.prototype, "second", {
-    get: function second() { return this.t2_1; }
-} );
 kotlinStdLib.$_$.EmptyList.prototype.contains = function<T>( value: T ): boolean { return false; }
 kotlinStdLib.$_$.EmptyList.prototype.size = function<T>(): number { return 0; }
 kotlinStdLib.$_$.EmptyList.prototype.toArray = function<T>(): T[] { return []; }
@@ -97,8 +90,17 @@ Object.defineProperty( kotlinStdLib.$_$.HashMap.prototype, "values", {
 export * from "kotlin-kotlin-stdlib-js-ir"
 export namespace kotlin
 {
+    export const Pair = class<K, V> implements kotlinStdLib.kotlin.Pair<K, V> {
+        constructor( first: K, second: V ) {
+            let kotlinPair = new kotlinStdLib.$_$.Pair( first, second );
+            kotlinPair.first = kotlinPair.s2_1;
+            kotlinPair.second = kotlinPair.t2_1;
+            return kotlinPair;
+        }
+        get first(): K { return this.first; }
+        get second(): V { return this.second; }
+    }
     export const toLong: (number: number) => kotlinStdLib.kotlin.Long = kotlinStdLib.$_$.toLong_0
-    export const pair: <K, V>(first: K, second: V) => kotlinStdLib.kotlin.Pair<K, V> = kotlinStdLib.$_$.to
 }
 export namespace kotlin.collections
 {
