@@ -4,6 +4,8 @@ import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
 import kotlinx.serialization.*
+import kotlin.js.JsExport
+import kotlin.js.JsName
 import kotlin.time.Duration
 
 
@@ -14,6 +16,7 @@ import kotlin.time.Duration
  */
 @Suppress( "DataClassPrivateConstructor" )
 @Serializable
+@JsExport
 data class ElapsedTimeTrigger private constructor(
     override val sourceDeviceRoleName: String,
     @Serializable( DurationSerializer::class )
@@ -23,6 +26,8 @@ data class ElapsedTimeTrigger private constructor(
     @Transient
     override val requiresPrimaryDevice: Boolean = true
 
+    @JsName( "create" )
+    @Suppress( "NON_EXPORTABLE_TYPE" )
     constructor( sourceDevice: AnyPrimaryDeviceConfiguration, elapsedTime: Duration ) :
         this( sourceDevice.roleName, elapsedTime )
 }

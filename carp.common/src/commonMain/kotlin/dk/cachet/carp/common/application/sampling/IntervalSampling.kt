@@ -1,15 +1,19 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 import kotlin.time.Duration
 
 
 /**
  * Sampling scheme which allows configuring a time interval in between subsequent measurements.
  */
+@JsExport
 class IntervalSamplingScheme(
     dataType: DataTypeMetaData,
     val defaultMeasureInterval: Duration,
@@ -46,6 +50,7 @@ class IntervalSamplingScheme(
  * A sampling configuration which allows configuring the time [interval] in between subsequent measurements.
  */
 @Serializable
+@JsExport
 data class IntervalSamplingConfiguration(
     @Serializable( DurationSerializer::class )
     val interval: Duration
@@ -56,6 +61,7 @@ data class IntervalSamplingConfiguration(
  * A helper class to configure and construct immutable [IntervalSamplingConfiguration] objects
  * as part of setting up a [DeviceConfiguration].
  */
+@JsExport
 class IntervalSamplingConfigurationBuilder internal constructor(
     var interval: Duration,
     val validOptions: Set<Duration>?

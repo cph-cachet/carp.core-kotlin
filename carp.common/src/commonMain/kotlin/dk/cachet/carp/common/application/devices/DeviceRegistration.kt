@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.Immutable
@@ -6,6 +8,7 @@ import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -18,6 +21,7 @@ import kotlinx.serialization.*
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
+@JsExport
 abstract class DeviceRegistration
 {
     /**
@@ -50,6 +54,7 @@ abstract class DeviceRegistration
 @Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( NotSerializable::class )
 @DeviceRegistrationBuilderDsl
+@JsExport
 abstract class DeviceRegistrationBuilder<T : DeviceRegistration>
 {
     /**

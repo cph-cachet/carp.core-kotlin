@@ -2,12 +2,14 @@ package dk.cachet.carp.common.application.tasks
 
 import dk.cachet.carp.common.application.data.NoData
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * A [TaskConfiguration] which contains a definition on how to run tasks, measures, and triggers which differs from the CARP domain model.
  */
 @Serializable
+@JsExport
 data class CustomProtocolTask(
     override val name: String,
     /**
@@ -24,5 +26,6 @@ data class CustomProtocolTask(
     /**
      * This list is empty, since measures are defined in [studyProtocol] in a different format.
      */
+    @Suppress( "NON_EXPORTABLE_TYPE" )
     override val measures: List<Measure> = emptyList()
 }

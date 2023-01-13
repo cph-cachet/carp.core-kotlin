@@ -3,6 +3,7 @@ package dk.cachet.carp.common.application.devices
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -11,6 +12,7 @@ import kotlinx.serialization.*
  * The base class can't be made concrete since this would prevent being able to serialize extending types (constructors may not contain parameters which are not properties).
  */
 @Serializable
+@JsExport
 data class DefaultDeviceRegistration(
     @Required
     override val deviceDisplayName: String? = null,
@@ -25,6 +27,7 @@ data class DefaultDeviceRegistration(
  */
 @Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( with = NotSerializable::class )
+@JsExport
 class DefaultDeviceRegistrationBuilder : DeviceRegistrationBuilder<DefaultDeviceRegistration>()
 {
     /**

@@ -1,14 +1,18 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.common.application.sampling
 
 import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 import kotlin.reflect.KClass
 
 
 /**
  * A sampling scheme which changes based on how much battery the device has left.
  */
+@JsExport
 abstract class BatteryAwareSamplingScheme<
     TConfig : SamplingConfiguration,
     TBuilder : SamplingConfigurationBuilder<TConfig>
@@ -72,6 +76,7 @@ abstract class BatteryAwareSamplingScheme<
  * A sampling configuration which changes based on how much battery the device has left.
  */
 @Serializable
+@JsExport
 data class BatteryAwareSamplingConfiguration<TConfig : SamplingConfiguration>(
     /**
      * The sampling configuration to use when there is plenty of battery left.
@@ -92,6 +97,7 @@ data class BatteryAwareSamplingConfiguration<TConfig : SamplingConfiguration>(
  * A helper class to configure and construct immutable [BatteryAwareSamplingConfiguration] classes
  * as part of setting up a [DeviceConfiguration].
  */
+@JsExport
 class BatteryAwareSamplingConfigurationBuilder<
     TConfig : SamplingConfiguration,
     TBuilder : SamplingConfigurationBuilder<TConfig>

@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.common.application.tasks
 
 import dk.cachet.carp.common.application.Immutable
@@ -6,6 +8,7 @@ import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.DataType
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -15,6 +18,7 @@ import kotlinx.serialization.*
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
+@JsExport
 interface TaskConfiguration<TData : Data>
 {
     /**
@@ -38,6 +42,7 @@ interface TaskConfiguration<TData : Data>
  * Get data types of all data which may be collected, either passively as part of task measures,
  * or as the result of user interactions, for this task.
  */
+@JsExport
 fun TaskConfiguration<*>.getAllExpectedDataTypes(): Set<DataType> =
     measures.map { measure ->
         when ( measure )
@@ -54,6 +59,7 @@ fun TaskConfiguration<*>.getAllExpectedDataTypes(): Set<DataType> =
  * A helper class to configure and construct immutable [TaskConfiguration] classes.
  */
 @TaskConfigurationBuilderDsl
+@JsExport
 abstract class TaskConfigurationBuilder<TConfiguration : TaskConfiguration<*>>
 {
     /**

@@ -1,8 +1,11 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.common.application.tasks
 
 import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.infrastructure.serialization.DurationSerializer
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 import kotlin.time.Duration
 
 
@@ -14,6 +17,7 @@ import kotlin.time.Duration
  * TODO: Outputs are not yet specified.
  */
 @Serializable
+@JsExport
 data class BackgroundTask(
     override val name: String,
     override val measures: List<Measure> = emptyList(),
@@ -30,6 +34,7 @@ data class BackgroundTask(
 /**
  * A helper class to configure and construct immutable [BackgroundTask] instances.
  */
+@JsExport
 class BackgroundTaskBuilder(
     /**
      * The optional duration over the course of which the [measures] need to be sampled.

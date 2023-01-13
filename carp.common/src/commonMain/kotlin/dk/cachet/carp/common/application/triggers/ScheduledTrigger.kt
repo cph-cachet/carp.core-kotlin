@@ -5,6 +5,8 @@ import dk.cachet.carp.common.application.TimeOfDay
 import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import kotlinx.serialization.*
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 
 /**
@@ -14,6 +16,7 @@ import kotlinx.serialization.*
  */
 @Suppress( "DataClassPrivateConstructor" )
 @Serializable
+@JsExport
 data class ScheduledTrigger private constructor(
     override val sourceDeviceRoleName: String,
     val time: TimeOfDay,
@@ -23,9 +26,10 @@ data class ScheduledTrigger private constructor(
     @Transient
     override val requiresPrimaryDevice: Boolean = true
 
+    @JsName( "create" )
     constructor(
         /**
-         * The priary device on which this trigger is evaluated.
+         * The primary device on which this trigger is evaluated.
          */
         sourceDevice: AnyPrimaryDeviceConfiguration,
         /**

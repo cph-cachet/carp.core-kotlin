@@ -1,9 +1,12 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.triggers.ElapsedTimeTrigger
 import kotlinx.serialization.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import kotlin.js.JsExport
 import kotlin.time.Duration
 
 
@@ -13,6 +16,7 @@ import kotlin.time.Duration
  */
 @Serializable
 @Polymorphic
+@JsExport
 abstract class PrimaryDeviceConfiguration<
     TRegistration : DeviceRegistration,
     out TBuilder : DeviceRegistrationBuilder<TRegistration>
@@ -36,6 +40,7 @@ typealias AnyPrimaryDeviceConfiguration = PrimaryDeviceConfiguration<*, *>
  * Determines whether this device configuration is a primary device configuration ([AnyPrimaryDeviceConfiguration]).
  */
 @OptIn( ExperimentalContracts::class )
+@JsExport
 fun AnyDeviceConfiguration.isPrimary(): Boolean
 {
     contract {

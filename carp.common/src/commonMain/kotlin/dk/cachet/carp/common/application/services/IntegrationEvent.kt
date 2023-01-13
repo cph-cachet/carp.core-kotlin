@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Required
+import kotlin.js.JsExport
 
 
 /**
@@ -14,6 +15,7 @@ import kotlinx.serialization.Required
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
+@JsExport
 interface IntegrationEvent<out TApplicationService : ApplicationService<out TApplicationService, *>>
 {
     @Required
