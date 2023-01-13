@@ -1,44 +1,55 @@
 import * as kotlinStdLib from "kotlin-kotlin-stdlib-js-ir"
 
 
+// Facade with better method names and type conversions for internal types.
+export namespace kotlin
+{
+    export interface Long
+    {
+        toNumber(): number
+    }
+    export const toLong: (number: number) => Long = kotlinStdLib.$_$.toLong_0
+    export class Pair<K, V>
+    {
+        constructor( first: K, second: V ) {
+            let kotlinPair = new kotlinStdLib.$_$.Pair( first, second );
+            kotlinPair.first = kotlinPair.s2_1;
+            kotlinPair.second = kotlinPair.t2_1;
+            return kotlinPair;
+        }
+        get first(): K { return this.first; }
+        get second(): V { return this.second; }
+    }
+}
+export namespace kotlin.collections
+{
+    export interface Collection<T>
+    {
+        contains( value: T ): boolean
+        size(): number
+        toArray(): Array<T>
+    }
+    export interface List<T> extends Collection<T> {}
+    export interface Set<T> extends Collection<T> {}
+    export interface Map<K, V>
+    {
+        get( key: K ): V
+        keys: Set<K>
+        values: Collection<V>
+    }
+    export const listOf: <T>(array: T[]) => List<T> = kotlinStdLib.$_$.listOf
+    export const setOf: <T>(array: T[]) => Set<T> = kotlinStdLib.$_$.setOf
+    export const mapOf =
+        function<K, V>( pairs: kotlin.Pair<K, V>[] ): Map<K, V>
+        {
+            return kotlinStdLib.$_$.mapOf( pairs as any )
+        }
+}
+
+
+// Augment internal types to implement facade.
 declare module "kotlin-kotlin-stdlib-js-ir"
 {
-    // Base interfaces with better method names for internal types.
-    namespace kotlin
-    {
-        interface Long
-        {
-            toNumber(): number
-        }
-        function toLong( number: number ): Long
-        interface Pair<K, V>
-        {
-            first: K
-            second: V
-        }
-    }
-    namespace kotlin.collections
-    {
-        interface Collection<T>
-        {
-            contains( value: T ): boolean
-            size(): number
-            toArray(): Array<T>
-        }
-        interface List<T> extends Collection<T> {}
-        interface Set<T> extends Collection<T> {}
-        interface Map<K, V>
-        {
-            get( key: K ): V
-            keys: Set<K>
-            values: Collection<V>
-        }
-        function listOf<T>( array: T[] ): List<T>
-        function setOf<T>( array: T[] ): Set<T>
-        function mapOf<K, V>( pairs: kotlin.Pair<K, V>[] ): Map<K, V>
-    }
-
-    // Augment internal types to implement desired base interfaces.
     namespace $_$
     {
         abstract class Long implements kotlin.Long
@@ -66,6 +77,7 @@ declare module "kotlin-kotlin-stdlib-js-ir"
     }
 }
 
+
 // Implement base interfaces in internal types.
 kotlinStdLib.$_$.Long.prototype.toNumber = function(): number { return this.p4(); };
 kotlinStdLib.$_$.EmptyList.prototype.contains = function<T>( value: T ): boolean { return false; }
@@ -86,28 +98,6 @@ Object.defineProperty( kotlinStdLib.$_$.HashMap.prototype, "values", {
     get: function values() { return this.z1(); }
 } );
 
-// Export facade.
-export * from "kotlin-kotlin-stdlib-js-ir"
-export namespace kotlin
-{
-    export const Pair = class<K, V> implements kotlinStdLib.kotlin.Pair<K, V> {
-        constructor( first: K, second: V ) {
-            let kotlinPair = new kotlinStdLib.$_$.Pair( first, second );
-            kotlinPair.first = kotlinPair.s2_1;
-            kotlinPair.second = kotlinPair.t2_1;
-            return kotlinPair;
-        }
-        get first(): K { return this.first; }
-        get second(): V { return this.second; }
-    }
-    export const toLong: (number: number) => kotlinStdLib.kotlin.Long = kotlinStdLib.$_$.toLong_0
-}
-export namespace kotlin.collections
-{
-    export const listOf: <T>(array: T[]) => kotlinStdLib.kotlin.collections.List<T> = kotlinStdLib.$_$.listOf
-    export const setOf: <T>(array: T[]) => kotlinStdLib.kotlin.collections.Set<T> = kotlinStdLib.$_$.setOf
-    export const mapOf =
-        function<K, V>( pairs: kotlinStdLib.kotlin.Pair<K, V>[] ): kotlinStdLib.kotlin.collections.Map<K, V> {
-            return kotlinStdLib.$_$.mapOf( pairs as any )
-        }
-}
+
+// Re-export augmented types.
+export * from "kotlin-kotlin-stdlib-js-ir";

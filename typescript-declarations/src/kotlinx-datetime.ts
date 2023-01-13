@@ -1,26 +1,27 @@
-import * as kotlinxDateTime from "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
+import * as extend from "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
 
 
+// Facade with better method names and type conversions for internal types.
+export namespace kotlinx.datetime
+{
+    export interface Clock
+    {
+        now(): Instant
+    }
+    export namespace Clock
+    {
+        export const System: Clock = extend.$_$.System_getInstance()
+    }
+    export interface Instant
+    {
+        toEpochMilliseconds(): number
+    }
+}
+
+
+// Augment internal types to implement facade.
 declare module "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
 {
-    // Base interfaces with better method names for internal types.
-    namespace kotlinx.datetime
-    {
-        interface Clock
-        {
-            now(): Instant
-        }
-        namespace Clock
-        {
-            const System: Clock
-        }
-        interface Instant
-        {
-            toEpochMilliseconds(): number
-        }
-    }
-
-    // Augment internal types to implement desired base interfaces.
     namespace $_$
     {
         interface System extends kotlinx.datetime.Clock {}
@@ -30,17 +31,11 @@ declare module "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
     }
 }
 
-// Implement base interfaces in internal types.
-kotlinxDateTime.$_$.System.prototype.now = function(): kotlinxDateTime.kotlinx.datetime.Instant { return this.i10(); };
-kotlinxDateTime.$_$.Instant_0.prototype.toEpochMilliseconds = function(): number { return this.t10(); };
 
-// Export facade.
+// Implement base interfaces in internal types.
+extend.$_$.System.prototype.now = function(): kotlinx.datetime.Instant { return this.i10(); };
+extend.$_$.Instant_0.prototype.toEpochMilliseconds = function(): number { return this.t10(); };
+
+
+// Re-export augmented types.
 export * from "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
-export namespace kotlinx.datetime
-{
-    export type Clock = kotlinxDateTime.kotlinx.datetime.Clock
-    export namespace Clock
-    {
-        export const System: Clock = kotlinxDateTime.$_$.System_getInstance()
-    }
-}
