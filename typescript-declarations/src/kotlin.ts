@@ -45,6 +45,21 @@ export namespace kotlin.collections
             return kotlinStdLib.$_$.mapOf( pairs as any )
         }
 }
+export namespace kotlin.time
+{
+    export interface Duration
+    {
+        get inWholeMilliseconds(): number
+        get inWholeMicroseconds(): number
+    }
+    export namespace Duration
+    {
+        export const Companion: any = kotlinStdLib.$_$.Companion_getInstance_4()
+        export const parseIsoString: (isoDuration: string) => Duration = Companion.t4
+        export const ZERO: Duration = Companion.q4_1
+        export const INFINITE: Duration = Companion.r4_1
+    }
+}
 
 
 // Augment internal types to implement facade.
@@ -55,6 +70,8 @@ declare module "kotlin-kotlin-stdlib-js-ir"
         abstract class Long implements kotlin.Long
         {
             toNumber(): number
+            inWholeMilliseconds(): number
+            inWholeMicroseconds(): number
         }
         interface Pair<K, V> extends kotlin.Pair<K, V>
         {
@@ -80,6 +97,18 @@ declare module "kotlin-kotlin-stdlib-js-ir"
 
 // Implement base interfaces in internal types.
 kotlinStdLib.$_$.Long.prototype.toNumber = function(): number { return this.p4(); };
+Object.defineProperty( kotlinStdLib.$_$.Long.prototype, "inWholeMilliseconds", {
+    get: function inWholeMilliseconds()
+    {
+        return kotlinStdLib.$_$._Duration___get_inWholeMilliseconds__impl__msfiry(this).toNumber();
+    }
+} );
+Object.defineProperty( kotlinStdLib.$_$.Long.prototype, "inWholeMicroseconds", {
+    get: function inWholeMicroseconds()
+    {
+        return kotlinStdLib.$_$._Duration___get_inWholeMicroseconds__impl__8oe8vv(this).toNumber();
+    }
+} );
 kotlinStdLib.$_$.EmptyList.prototype.contains = function<T>( value: T ): boolean { return false; }
 kotlinStdLib.$_$.EmptyList.prototype.size = function<T>(): number { return 0; }
 kotlinStdLib.$_$.EmptyList.prototype.toArray = function<T>(): T[] { return []; }

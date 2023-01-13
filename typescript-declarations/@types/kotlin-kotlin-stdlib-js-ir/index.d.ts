@@ -54,5 +54,21 @@ declare module "kotlin-kotlin-stdlib-js-ir"
         }
         interface HashMap<K, V> extends Map<K, V> {}
         function mapOf<K, V>( pairs: Pair<K, V>[] ): Map<K, V>
+
+        interface Duration extends Long {}
+        interface DurationCompanion
+        {
+            // parseIsoString
+            t4(): Duration
+
+            // ZERO
+            q4_1: Duration
+
+            // INFINITE
+            r4_1: Duration
+        }
+        function Companion_getInstance_4(): DurationCompanion
+        function _Duration___get_inWholeMilliseconds__impl__msfiry(duration: Duration): Long
+        function _Duration___get_inWholeMicroseconds__impl__8oe8vv(duration: Duration): Long
     }
 }

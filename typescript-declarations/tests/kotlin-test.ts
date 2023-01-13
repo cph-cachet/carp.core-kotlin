@@ -4,6 +4,7 @@ import { expect } from 'chai'
 import { kotlin } from '../src/kotlin'
 import toLong = kotlin.toLong
 import Pair = kotlin.Pair
+import Duration = kotlin.time.Duration
 import listOf = kotlin.collections.listOf
 import setOf = kotlin.collections.setOf
 import mapOf = kotlin.collections.mapOf
@@ -25,7 +26,9 @@ describe( "kotlin", () => {
             [ "EmptySet", setOf<number>( [] ) ],
             [ "HashSet", set ],
             [ "Map", map ],
-            [ "HashMap", map ]
+            [ "HashMap", map ],
+            [ "DurationCompanion", Duration.Companion ],
+            [ "Duration", Duration.ZERO ]
         ]
 
         const moduleVerifier = new VerifyModule(
@@ -47,7 +50,6 @@ describe( "kotlin", () => {
     describe( "Pair", () => {
         it( "can access first and second", () => {
             const answer = new Pair( 42, "answer" )
-            console.log(answer)
             expect( answer.first ).equals( 42 )
             expect( answer.second ).equals( "answer" )
         } )
@@ -127,6 +129,23 @@ describe( "kotlin", () => {
 
             expect( answersMap.keys.toArray() ).deep.equals( [ "answer" ] )
             expect( answersMap.values.toArray() ).deep.equals( [ 42 ] )
+        } )
+    } )
+
+    describe( "Duration", () => {
+        it( "parseIsoString succeeds", () => {
+            const oneSeconds = Duration.parseIsoString( "PT1S" )
+            expect( oneSeconds.inWholeMilliseconds ).equals( 1000 )
+        } )
+
+        it( "ZERO and INFINITE succeeds", () => {
+            const zero = Duration.ZERO
+            expect( zero.inWholeMilliseconds ).equals( 0 )
+            expect( zero.inWholeMicroseconds ).equals( 0 )
+
+            const infinite = Duration.INFINITE
+            expect( infinite.inWholeMilliseconds ).equals( -1 )
+            expect( infinite.inWholeMicroseconds ).equals( -1 )
         } )
     } )
 } )

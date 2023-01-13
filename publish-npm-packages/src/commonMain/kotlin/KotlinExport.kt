@@ -5,6 +5,9 @@
 )
 
 import kotlin.js.JsExport
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
 
 /**
  * Refers to types/methods in the kotlin standard library to ensure they aren't removed from compiled sources
@@ -47,4 +50,14 @@ class KotlinExport
     }
 
     val mapOf = mapOf( 42 to "answer" )
+
+    fun duration( duration: Duration )
+    {
+        val parseIsoString = Duration.parseIsoString("PT1M")
+        val companion = Duration.Companion
+        val zero = Duration.ZERO
+        val infinite = Duration.INFINITE
+        val inWholeMilliseconds = duration.inWholeMilliseconds
+        val inWholeMicroseconds = duration.inWholeMicroseconds
+    }
 }
