@@ -259,11 +259,24 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
         def extension = fileMatch[0][2]
         file.relativePath = new RelativePath(true, moduleName, "index.$extension")
 
+        // Non-exported types show up as `any/* some.unknown.Type */` in generated TypeScript sources.
+        // Types for which a facade has been manually added can be replaced with the actual type (instead of `any`).
+        def knownFacadeTypes = []
+        def knownFacadeTypesFile = new File("$rootDir/publish-npm-packages/src/known-facade-types")
+        knownFacadeTypesFile.eachLine { type -> knownFacadeTypes << type }
+
         // Modify sources to act like modules with exported named members.
         file.filter { line ->
             // Compiled sources refer to other modules as adjacent .js source files.
             // Change these to the named modules created in the previous step.
             def namedModules = line.replaceAll(~/'\.\/(.+?)\.js'/, "'\$1'")
+
+            def replacedTypes = knownFacadeTypes.inject(namedModules) { curLine, type ->
+                curLine.replaceAll(
+                    ~/any\/\* $type(<.+?>)? \*\//,
+                    "$type\$1"
+                )
+            }
 
             // Add additional internal types to be exported, as configured in `forced-exports`.
             def toExport = []
@@ -272,7 +285,7 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
                 forcedExportsFile.eachLine { type -> toExport << type }
             }
             def toExportList = toExport.collect { "_.\\\$_\\\$.$it = $it\n  " }
-            def additionalExports = namedModules.replaceAll(
+            def additionalExports = replacedTypes.replaceAll(
                 ~/return \_;/,
                 toExportList.join() + "return _;"
             )
