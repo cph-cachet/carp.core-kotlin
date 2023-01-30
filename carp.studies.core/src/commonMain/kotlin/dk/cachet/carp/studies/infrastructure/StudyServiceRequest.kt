@@ -10,6 +10,7 @@ import dk.cachet.carp.studies.application.StudyDetails
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyStatus
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**

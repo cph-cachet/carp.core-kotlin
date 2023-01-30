@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.data.DataType
@@ -15,12 +17,14 @@ import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSeriali
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Contains the entire description and configuration for how a single primary device participates in running a study.
  */
 @Serializable
+@JsExport
 data class PrimaryDeviceDeployment(
     /**
      * The configuration for the primary device this deployment is intended for.

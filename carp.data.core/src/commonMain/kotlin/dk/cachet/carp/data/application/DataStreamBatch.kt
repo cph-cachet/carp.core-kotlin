@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.data.Data
@@ -5,12 +7,14 @@ import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
+import kotlin.js.JsExport
 
 
 /**
  * A collection of non-overlapping, ordered, data stream [sequences].
  */
 @Serializable( DataStreamBatchSerializer::class )
+@JsExport
 interface DataStreamBatch : Sequence<DataStreamPoint<*>>
 {
     val sequences: Sequence<DataStreamSequence<*>>
@@ -37,6 +41,7 @@ interface DataStreamBatch : Sequence<DataStreamPoint<*>>
 /**
  * A mutable collection of non-overlapping data stream [sequences].
  */
+@JsExport
 class MutableDataStreamBatch : DataStreamBatch
 {
     private val sequenceMap: MutableMap<DataStreamId, MutableList<MutableDataStreamSequence<*>>> = mutableMapOf()

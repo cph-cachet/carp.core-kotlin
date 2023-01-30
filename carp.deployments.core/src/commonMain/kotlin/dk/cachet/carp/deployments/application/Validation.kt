@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.devices.DeviceRegistration
@@ -5,6 +7,7 @@ import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.domain.users.getAssignedDeviceRoleNames
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
+import kotlin.js.JsExport
 
 
 /**
@@ -16,6 +19,7 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
  *  - not all necessary primary devices part of the study protocol have been assigned a participant
  *  - not all necessary participant roles part of the study have been assigned a participant
  */
+@JsExport
 fun StudyProtocolSnapshot.throwIfInvalidInvitations( invitations: List<ParticipantInvitation> )
 {
     require( invitations.isNotEmpty() ) { "No participants invited." }
@@ -54,6 +58,7 @@ fun StudyProtocolSnapshot.throwIfInvalidInvitations( invitations: List<Participa
  *  - one of the role names in [connectedDevicePreregistrations] isn't defined in the study protocol
  *  - an invalid registration for one of the devices is passed
  */
+@JsExport
 fun StudyProtocolSnapshot.throwIfInvalidPreregistrations(
     connectedDevicePreregistrations: Map<String, DeviceRegistration>
 )

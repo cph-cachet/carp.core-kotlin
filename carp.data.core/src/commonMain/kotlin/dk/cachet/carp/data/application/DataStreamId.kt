@@ -3,6 +3,7 @@ package dk.cachet.carp.data.application
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.DataType
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -10,4 +11,5 @@ import kotlinx.serialization.*
  * in a deployed study protocol with [studyDeploymentId].
  */
 @Serializable
+@JsExport
 data class DataStreamId( val studyDeploymentId: UUID, val deviceRoleName: String, val dataType: DataType )

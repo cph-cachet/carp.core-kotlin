@@ -1,9 +1,12 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.deployments.application.users
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -11,6 +14,7 @@ import kotlinx.serialization.*
  * Data which is not set equals null.
  */
 @Serializable
+@JsExport
 data class ParticipantData(
     val studyDeploymentId: UUID,
     /**

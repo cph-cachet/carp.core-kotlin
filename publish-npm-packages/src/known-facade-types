@@ -8,3 +8,4 @@ kotlin.time.Duration
 kotlinx.datetime.Clock
 kotlinx.datetime.Instant
 kotlinx.serialization.Json
+dk.cachet.carp.common.application.users.AccountIdentity

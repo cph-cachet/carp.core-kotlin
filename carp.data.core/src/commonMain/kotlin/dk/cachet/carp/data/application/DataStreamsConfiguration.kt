@@ -1,14 +1,18 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.DataType
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Configures [expectedDataStreams] for a study deployment.
  */
 @Serializable
+@JsExport
 data class DataStreamsConfiguration(
     val studyDeploymentId: UUID,
     val expectedDataStreams: Set<ExpectedDataStream>

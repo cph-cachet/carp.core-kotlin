@@ -1,8 +1,11 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -10,6 +13,7 @@ import kotlinx.serialization.*
  * which was collected because the triggers identified by [triggerIds] requested data collection.
  */
 @Serializable
+@JsExport
 data class DataStreamPoint<out TData : Data>(
     /**
      * The sequence number of this [measurement] in the data stream, acting as a unique key.
