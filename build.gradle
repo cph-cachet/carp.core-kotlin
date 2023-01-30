@@ -271,11 +271,13 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
             // Change these to the named modules created in the previous step.
             def namedModules = line.replaceAll(~/'\.\/(.+?)\.js'/, "'\$1'")
 
+            // Replace `any` types with actual types for which facades are specified.
             def replacedTypes = knownFacadeTypes.inject(namedModules) { curLine, type ->
-                curLine.replaceAll(
+                def knownType = curLine.replaceAll(
                     ~/any\/\* $type(<.+?>)? \*\//,
                     "$type\$1"
                 )
+                knownType.replaceAll(~/UnknownType \*/, "any")
             }
 
             // Add additional internal types to be exported, as configured in `forced-exports`.

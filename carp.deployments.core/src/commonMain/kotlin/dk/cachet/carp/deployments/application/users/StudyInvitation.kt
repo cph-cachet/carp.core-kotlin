@@ -2,12 +2,14 @@ package dk.cachet.carp.deployments.application.users
 
 import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSerializer
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * A description of a study, shared with participants once they are invited to a study.
  */
 @Serializable
+@JsExport
 data class StudyInvitation(
     /**
      * A descriptive name for the study to be shown to participants.

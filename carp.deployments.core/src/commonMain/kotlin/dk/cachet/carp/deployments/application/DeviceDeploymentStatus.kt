@@ -1,13 +1,17 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Describes the status of a device, part of a study deployment.
  */
 @Serializable
+@JsExport
 sealed class DeviceDeploymentStatus
 {
     /**

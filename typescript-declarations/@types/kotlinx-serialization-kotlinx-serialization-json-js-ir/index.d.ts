@@ -5,10 +5,10 @@ declare module "kotlinx-serialization-kotlinx-serialization-json-js-ir"
         interface JsonImpl
         {
             // encodeToString
-            y10( serializer: any, instance: any ): string
+            p12( serializer: any, instance: any ): string
 
             // decodeFromString
-            z10( serializer: any, string: string ): string
+            q12( serializer: any, string: string ): string
         }
         function Default_getInstance(): JsonImpl
     }

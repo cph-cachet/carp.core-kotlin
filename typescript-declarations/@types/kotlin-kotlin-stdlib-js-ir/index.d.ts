@@ -5,7 +5,7 @@ declare module "kotlin-kotlin-stdlib-js-ir"
         interface Long
         {
             // toNumber
-            p4(): number
+            i5(): number
         }
         function toLong_0( number: number ): Long
 
@@ -14,16 +14,16 @@ declare module "kotlin-kotlin-stdlib-js-ir"
             constructor( first: K, second: V )
 
             // first
-            s2_1: K
+            a3_1: K
 
             // second
-            t2_1: V
+            b3_1: V
         }
 
         interface Collection<T>
         {
             // contains
-            y( value: T ): boolean
+            d1( value: T ): boolean
 
             // size
             f(): number
@@ -44,13 +44,13 @@ declare module "kotlin-kotlin-stdlib-js-ir"
         interface Map<K, V>
         {
             // get
-            x1( key: K ): V
+            e2( key: K ): V
 
             // keys
-            y1(): Set<K>
+            f2(): Set<K>
 
             // values
-            z1(): Collection<V>
+            g2(): Collection<V>
         }
         interface HashMap<K, V> extends Map<K, V> {}
         function mapOf<K, V>( pairs: Pair<K, V>[] ): Map<K, V>
@@ -59,15 +59,15 @@ declare module "kotlin-kotlin-stdlib-js-ir"
         interface DurationCompanion
         {
             // parseIsoString
-            t4(): Duration
+            j6(): Duration
 
             // ZERO
-            q4_1: Duration
+            g6_1: Duration
 
             // INFINITE
-            r4_1: Duration
+            h6_1: Duration
         }
-        function Companion_getInstance_4(): DurationCompanion
+        function Companion_getInstance_6(): DurationCompanion
         function _Duration___get_inWholeMilliseconds__impl__msfiry(duration: Duration): Long
         function _Duration___get_inWholeMicroseconds__impl__8oe8vv(duration: Duration): Long
     }

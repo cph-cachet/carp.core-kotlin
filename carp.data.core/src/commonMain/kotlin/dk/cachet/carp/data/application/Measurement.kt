@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.data.Data
@@ -7,6 +9,7 @@ import dk.cachet.carp.data.infrastructure.getDataType
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
+import kotlin.js.JsExport
 
 
 /**
@@ -17,9 +20,10 @@ import kotlinx.serialization.encoding.*
  * For example, it could be a simple clock increment since the device powered up.
  */
 @Serializable( MeasurementSerializer::class )
+@JsExport
 data class Measurement<out TData : Data>(
     val sensorStartTime: Long,
-    val sensorEndTime: Long? = null,
+    val sensorEndTime: Long?,
     val dataType: DataType,
     val data: TData
 )

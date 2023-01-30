@@ -1,14 +1,18 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.UUID
 import kotlinx.datetime.Instant
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Describes the status of a study: the number of participants, progress towards study goal, etc.
  */
 @Serializable
+@JsExport
 sealed class StudyStatus
 {
     abstract val studyId: UUID

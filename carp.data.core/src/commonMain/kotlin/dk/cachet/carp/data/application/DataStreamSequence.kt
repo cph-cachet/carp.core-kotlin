@@ -1,15 +1,20 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.data.Data
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 
 /**
  * A sequence of consecutive [measurements] for a [dataStream] starting from [firstSequenceId]
  * which all share the same [triggerIds] and [syncPoint].
  */
+@JsExport
 sealed interface DataStreamSequence<TData : Data> : Sequence<DataStreamPoint<TData>>
 {
     val dataStream: DataStreamId
@@ -87,6 +92,7 @@ sealed interface DataStreamSequence<TData : Data> : Sequence<DataStreamPoint<TDa
  * A mutable sequence of consecutive [measurements] for a [dataStream] starting from [firstSequenceId]
  * which all share the same [triggerIds] and [syncPoint].
  */
+@JsExport
 class MutableDataStreamSequence<TData : Data>(
     override val dataStream: DataStreamId,
     override val firstSequenceId: Long,
@@ -108,6 +114,7 @@ class MutableDataStreamSequence<TData : Data>(
      *
      * @throws IllegalArgumentException when any of the [measurements] is of a different data type than [dataStream].
      */
+    @JsName( "appendMeasurementsList" )
     fun appendMeasurements( measurements: List<Measurement<TData>> )
     {
         require( measurements.all { it.dataType == dataStream.dataType } )

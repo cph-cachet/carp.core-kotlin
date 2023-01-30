@@ -13,8 +13,8 @@ export namespace kotlin
     {
         constructor( first: K, second: V ) {
             let kotlinPair = new kotlinStdLib.$_$.Pair( first, second );
-            kotlinPair.first = kotlinPair.s2_1;
-            kotlinPair.second = kotlinPair.t2_1;
+            kotlinPair.first = kotlinPair.a3_1;
+            kotlinPair.second = kotlinPair.b3_1;
             return kotlinPair;
         }
         get first(): K { return this.first; }
@@ -54,10 +54,10 @@ export namespace kotlin.time
     }
     export namespace Duration
     {
-        export const Companion: any = kotlinStdLib.$_$.Companion_getInstance_4()
-        export const parseIsoString: (isoDuration: string) => Duration = Companion.t4
-        export const ZERO: Duration = Companion.q4_1
-        export const INFINITE: Duration = Companion.r4_1
+        export const Companion: any = kotlinStdLib.$_$.Companion_getInstance_6()
+        export const parseIsoString: (isoDuration: string) => Duration = Companion.j6
+        export const ZERO: Duration = Companion.g6_1
+        export const INFINITE: Duration = Companion.h6_1
     }
 }
 
@@ -96,7 +96,7 @@ declare module "kotlin-kotlin-stdlib-js-ir"
 
 
 // Implement base interfaces in internal types.
-kotlinStdLib.$_$.Long.prototype.toNumber = function(): number { return this.p4(); };
+kotlinStdLib.$_$.Long.prototype.toNumber = function(): number { return this.i5(); };
 Object.defineProperty( kotlinStdLib.$_$.Long.prototype, "inWholeMilliseconds", {
     get: function inWholeMilliseconds()
     {
@@ -112,19 +112,19 @@ Object.defineProperty( kotlinStdLib.$_$.Long.prototype, "inWholeMicroseconds", {
 kotlinStdLib.$_$.EmptyList.prototype.contains = function<T>( value: T ): boolean { return false; }
 kotlinStdLib.$_$.EmptyList.prototype.size = function<T>(): number { return 0; }
 kotlinStdLib.$_$.EmptyList.prototype.toArray = function<T>(): T[] { return []; }
-kotlinStdLib.$_$.AbstractMutableList.prototype.contains = function<T>( value: T ): boolean { return this.y( value ); }
+kotlinStdLib.$_$.AbstractMutableList.prototype.contains = function<T>( value: T ): boolean { return this.d1( value ); }
 kotlinStdLib.$_$.AbstractMutableList.prototype.size = function<T>(): number { return this.f(); }
 kotlinStdLib.$_$.EmptySet.prototype.contains = function<T>( value: T ): boolean { return false; }
 kotlinStdLib.$_$.EmptySet.prototype.size = function<T>(): number { return 0; }
 kotlinStdLib.$_$.EmptySet.prototype.toArray = function<T>(): T[] { return []; }
-kotlinStdLib.$_$.HashSet.prototype.contains = function<T>( value: T ): boolean { return this.y( value ); }
+kotlinStdLib.$_$.HashSet.prototype.contains = function<T>( value: T ): boolean { return this.d1( value ); }
 kotlinStdLib.$_$.HashSet.prototype.size = function<T>(): number { return this.f(); }
-kotlinStdLib.$_$.HashMap.prototype.get = function<K, V>( key: K ): V { return this.x1( key ); }
+kotlinStdLib.$_$.HashMap.prototype.get = function<K, V>( key: K ): V { return this.e2( key ); }
 Object.defineProperty( kotlinStdLib.$_$.HashMap.prototype, "keys", {
-    get: function keys() { return this.y1(); }
+    get: function keys() { return this.f2(); }
 } );
 Object.defineProperty( kotlinStdLib.$_$.HashMap.prototype, "values", {
-    get: function values() { return this.z1(); }
+    get: function values() { return this.g2(); }
 } );
 
 

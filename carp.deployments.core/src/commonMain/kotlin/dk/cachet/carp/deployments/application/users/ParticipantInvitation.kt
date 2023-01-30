@@ -4,12 +4,14 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.AssignedTo
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * The information which needs to be provided when inviting a participant to a deployment.
  */
 @Serializable
+@JsExport
 data class ParticipantInvitation(
     /**
      * An ID for the participant, uniquely assigned by the calling service.
@@ -22,6 +24,7 @@ data class ParticipantInvitation(
     /**
      * The identity used to authenticate and invite the participant.
      */
+    @Suppress( "NON_EXPORTABLE_TYPE" )
     val identity: AccountIdentity,
     /**
      * A description of the study which is shared with the participant.
