@@ -3,6 +3,7 @@ import VerifyModule from './VerifyModule'
 import { expect } from 'chai'
 import { kotlin } from '../src/kotlin'
 import setOf = kotlin.collections.setOf
+import Duration = kotlin.time.Duration
 import { kotlinx } from '../src/kotlinx-serialization'
 import Json = kotlinx.serialization.Json
 import { dk } from '../src/carp-common'
@@ -18,6 +19,7 @@ import ParticipantAttribute = dk.cachet.carp.common.application.users.Participan
 import CarpInputDataTypes = dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import Text = dk.cachet.carp.common.application.data.input.elements.Text
 import CustomInput = dk.cachet.carp.common.application.data.input.CustomInput
+import IntervalSamplingConfiguration = dk.cachet.carp.common.application.sampling.IntervalSamplingConfiguration
 import JSON = dk.cachet.carp.common.infrastructure.serialization.JSON
 
 
@@ -95,6 +97,13 @@ describe( "carp.common", () => {
             const serialized = json.encodeToString( serializer, expectedData )
             const deserialized = json.decodeFromString( serializer, serialized ) as ExpectedParticipantData
             expect( deserialized.equals( expectedData ) ).is.true
+        } )
+    } )
+
+    describe( "IntervalSamplingConfiguration", () => {
+        it( "can construct", () => {
+            const config = new IntervalSamplingConfiguration( Duration.parseIsoString( "PT1S" ) )
+            expect( config.interval.inWholeMilliseconds ).equals( 1000 )
         } )
     } )
 } )
