@@ -1,11 +1,13 @@
 import VerifyModule from './VerifyModule'
-
 import { expect } from 'chai'
+
 import { kotlin } from '../src/kotlin'
 import setOf = kotlin.collections.setOf
 import Duration = kotlin.time.Duration
+
 import { kotlinx } from '../src/kotlinx-serialization'
 import Json = kotlinx.serialization.Json
+
 import { dk } from '../src/carp-common'
 import Trilean = dk.cachet.carp.common.application.Trilean
 import toTrilean = dk.cachet.carp.common.application.toTrilean
