@@ -1,6 +1,7 @@
 import * as extend from "carp.core-kotlin-carp.protocols.core"
 import * as kotlinStdLib from "./kotlin"
 import * as kotlinDateTime from "./kotlinx-datetime"
+import * as kotlinSerialization from "./kotlinx-serialization"
 
 
 declare module "carp.core-kotlin-carp.protocols.core"
@@ -23,6 +24,10 @@ declare module "carp.core-kotlin-carp.protocols.core"
     namespace kotlinx.datetime
     {
         type Instant = kotlinDateTime.kotlinx.datetime.Instant
+    }
+    namespace kotlinx.serialization.json
+    {
+        type Json = kotlinSerialization.kotlinx.serialization.json.Json
     }
 }
 

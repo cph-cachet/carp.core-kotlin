@@ -2,7 +2,7 @@ import * as extend from "kotlinx-serialization-kotlinx-serialization-json-js-ir"
 
 
 // Facade with better method names and type conversions for internal types.
-export namespace kotlinx.serialization
+export namespace kotlinx.serialization.json
 {
     export interface Json
     {
@@ -21,8 +21,8 @@ declare module "kotlinx-serialization-kotlinx-serialization-json-js-ir"
 {
     namespace $_$
     {
-        interface JsonImpl extends kotlinx.serialization.Json {}
-        abstract class JsonImpl implements kotlinx.serialization.Json {}
+        interface JsonImpl extends kotlinx.serialization.json.Json {}
+        abstract class JsonImpl implements kotlinx.serialization.json.Json {}
     }
 }
 

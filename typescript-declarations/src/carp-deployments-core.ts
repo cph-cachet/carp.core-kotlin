@@ -1,6 +1,7 @@
 import * as extend from "carp.core-kotlin-carp.deployments.core"
 import * as kotlinStdLib from "./kotlin"
 import * as kotlinDateTime from "./kotlinx-datetime"
+import * as kotlinSerialization from "./kotlinx-serialization"
 import * as carpCommon from "./carp-common"
 
 
@@ -24,6 +25,10 @@ declare module "carp.core-kotlin-carp.deployments.core"
     namespace kotlinx.datetime
     {
         type Instant = kotlinDateTime.kotlinx.datetime.Instant
+    }
+    namespace kotlinx.serialization.json
+    {
+        type Json = kotlinSerialization.kotlinx.serialization.json.Json
     }
     namespace dk.cachet.carp.common.application.users
     {

@@ -2,7 +2,7 @@ import VerifyModule from './VerifyModule'
 import { expect } from 'chai'
 
 import { kotlinx } from '../src/kotlinx-serialization'
-import Json = kotlinx.serialization.Json
+import Json = kotlinx.serialization.json.Json
 
 import { dk as cdk } from '../src/carp-common'
 import JSON = cdk.cachet.carp.common.infrastructure.serialization.JSON
@@ -26,9 +26,8 @@ describe( "carp.protocols.core", () => {
 
     describe( "StudyProtocolSnapshot", () => {
         it( "can deserialize", () => {
-            const json = JSON as Json
             const serializer = StudyProtocolSnapshot.Companion.serializer()
-            const parsed = json.decodeFromString( serializer, serializedSnapshot )
+            const parsed = JSON.decodeFromString( serializer, serializedSnapshot )
             expect( parsed ).is.instanceOf( StudyProtocolSnapshot )
         } )
     } )
