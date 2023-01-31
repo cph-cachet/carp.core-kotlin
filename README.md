@@ -6,8 +6,7 @@ CARP Core is a software framework to help developers build research platforms to
 It provides modules to define, deploy, and monitor research studies, and to collect data from multiple devices at multiple locations.
 
 It is the result of a collaboration between [iMotions](https://imotions.com/) and the [Copenhagen Center for Health Technology (CACHET)](https://www.cachet.dk/).
-Both use CARP Core to implement their respective research platforms: the [iMotions Mobile Research Platform](https://imotions.com/mobile-platform-landing-page-submissions/) and the [Copenhagen Research Platform (CARP)](https://carp.cachet.dk/).
-CARP Core is now maintained fully by iMotions (since 1.0), but [still part of CARP](https://carp.cachet.dk/core/) as an ongoing collaboration.   
+Both use CARP Core to implement their respective research platforms: the [iMotions Mobile Research Platform](https://imotions.com/products/imotions-mobile/) and the [Copenhagen Research Platform (CARP)](https://carp.cachet.dk/).
 
 Following [domain-driven design](https://en.wikipedia.org/wiki/Domain-driven_design), this project contains all domain models and application services for all CARP subsystems ([depicted below](#architecture)), not having any dependencies on concrete infrastructure.
 As such, this project defines an **open standard for distributed data collection**, [available for Kotlin, the Java runtime, and JavaScript](#usage), which others can build upon to create their own infrastructure. 
@@ -405,7 +404,7 @@ Releases require a couple of manual steps:
 - Merge into master; **don't rebase**. Rebasing causes branch commit histories to diverge which complicates later releases and messes up the visible commit history with duplicate commits.
 - Create a release tag on `master` with release notes.
 - Add `javascript-typescript-sources.zip` and `rpc-examples.zip` assets to release.
-  This should be automated in the future: [#371](https://github.com/imotions/carp.core-kotlin/issues/371) and [#416](https://github.com/imotions/carp.core-kotlin/issues/416) respectively.
+  This should be automated in the future: [#371](https://github.com/cph-cachet/carp.core-kotlin/issues/371) and [#416](https://github.com/cph-cachet/carp.core-kotlin/issues/416) respectively.
 - Bump versions on `develop` so that snapshot releases target the next version.
 
 ### Development checklists
