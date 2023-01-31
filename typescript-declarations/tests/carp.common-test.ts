@@ -6,7 +6,7 @@ import setOf = kotlin.collections.setOf
 import Duration = kotlin.time.Duration
 
 import { kotlinx } from '../src/kotlinx-serialization'
-import Json = kotlinx.serialization.Json
+import Json = kotlinx.serialization.json.Json
 
 import { dk } from '../src/carp-common'
 import Trilean = dk.cachet.carp.common.application.Trilean
@@ -94,10 +94,9 @@ describe( "carp.common", () => {
                 new AssignedTo.Roles( setOf( [ "Roles are added" ] ) )
             )
 
-            const json = JSON as Json
             const serializer = ExpectedParticipantData.Companion.serializer()
-            const serialized = json.encodeToString( serializer, expectedData )
-            const deserialized = json.decodeFromString( serializer, serialized ) as ExpectedParticipantData
+            const serialized = JSON.encodeToString( serializer, expectedData )
+            const deserialized = JSON.decodeFromString( serializer, serialized ) as ExpectedParticipantData
             expect( deserialized.equals( expectedData ) ).is.true
         } )
     } )

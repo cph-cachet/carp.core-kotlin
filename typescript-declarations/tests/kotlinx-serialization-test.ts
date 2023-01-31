@@ -2,7 +2,7 @@ import VerifyModule from './VerifyModule'
 
 import { expect } from 'chai'
 import { kotlinx } from '../src/kotlinx-serialization'
-import Json = kotlinx.serialization.Json
+import Json = kotlinx.serialization.json.Json
 
 
 describe( "kotlinx-serialization", () => {
