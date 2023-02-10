@@ -11,11 +11,6 @@ import kotlinx.serialization.*
 import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.milliseconds
 
-
-//typealias SmartphoneDeviceRegistration = DefaultDeviceRegistration
-///typealias SmartphoneDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder
-
-
 /**
  * A concrete [DeviceRegistration] which holds base properties for a [Smartphone].
  */
@@ -46,7 +41,12 @@ class SmartphoneDeviceRegistrationBuilder : DeviceRegistrationBuilder<Smartphone
     var platform: String = "Unknown"
     var hardware: String = "Unknown"
 
-    override fun build(): SmartphoneDeviceRegistration = SmartphoneDeviceRegistration( deviceDisplayName, deviceId, platform, hardware )
+    override fun build(): SmartphoneDeviceRegistration = SmartphoneDeviceRegistration(
+            deviceDisplayName,
+            deviceId,
+            platform,
+            hardware
+    )
 }
 
 /**
