@@ -87,6 +87,8 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( DefaultDeviceRegistration::class )
         subclass( MACAddressDeviceRegistration::class )
 
+        subclass( SmartphoneDeviceRegistration::class )
+
         subclass( CustomDeviceRegistration::class )
         default { DeviceRegistrationSerializer }
     }

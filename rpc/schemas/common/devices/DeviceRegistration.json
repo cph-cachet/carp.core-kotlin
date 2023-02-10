@@ -17,6 +17,10 @@
     {
       "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.devices.MACAddressDeviceRegistration" } } },
       "then": { "$ref": "MACAddressDeviceRegistration.json" }
+    },
+    {
+      "if": { "properties": { "__type": { "const": "dk.cachet.carp.common.application.devices.SmartphoneDeviceRegistration" } } },
+      "then": { "$ref": "SmartphoneDeviceRegistration.json" }
     }
   ],
   "$defs": {

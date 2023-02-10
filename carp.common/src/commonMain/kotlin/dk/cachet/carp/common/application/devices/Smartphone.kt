@@ -1,18 +1,53 @@
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.Trilean
+import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.*
 import dk.cachet.carp.common.application.tasks.*
+import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.serialization.*
 import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.milliseconds
 
 
-typealias SmartphoneDeviceRegistration = DefaultDeviceRegistration
-typealias SmartphoneDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder
+//typealias SmartphoneDeviceRegistration = DefaultDeviceRegistration
+///typealias SmartphoneDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder
 
+
+/**
+ * A concrete [DeviceRegistration] which holds base properties for a [Smartphone].
+ */
+@Serializable
+data class SmartphoneDeviceRegistration(
+        @Required
+        override val deviceDisplayName: String? = null,
+        @Required
+        override val deviceId: String = UUID.randomUUID().toString(),
+        val platform: String? = null,
+        val hardware: String? = null
+) : DeviceRegistration()
+
+
+/**
+ * A default device registration builder for a [SmartphoneDeviceRegistration].
+ * By default, a unique ID (UUID) is generated.
+ */
+@Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
+@Serializable( with = NotSerializable::class )
+class SmartphoneDeviceRegistrationBuilder : DeviceRegistrationBuilder<SmartphoneDeviceRegistration>()
+{
+    /**
+     * Override the default assigned UUID which has been set as device ID.
+     * Make sure this ID is unique for the type of device you are creating a registration for.
+     */
+    var deviceId: String = UUID.randomUUID().toString()
+    var platform: String = "Unknown"
+    var hardware: String = "Unknown"
+
+    override fun build(): SmartphoneDeviceRegistration = SmartphoneDeviceRegistration( deviceDisplayName, deviceId, platform, hardware )
+}
 
 /**
  * An internet-connected phone with built-in sensors.

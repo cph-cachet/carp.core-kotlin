@@ -48,6 +48,7 @@ val commonInstances = listOf(
     BLESerialNumberDeviceRegistration( "123456789" ),
     CustomProtocolDevice( "User's phone" ),
     Smartphone( "User's phone" ),
+        SmartphoneDeviceRegistration(platform = "Android", hardware = "Samsung"),
 
     // Shared device registrations in `devices` namespace.
     DefaultDeviceRegistration(),
