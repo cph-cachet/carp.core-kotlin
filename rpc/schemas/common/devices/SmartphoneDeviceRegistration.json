@@ -4,7 +4,13 @@
   "allOf": [ { "$ref": "DeviceRegistration.json#DeviceRegistration" } ],
   "properties": {
     "platform": { "type": ["string" , "null"] },
-    "hardware": { "type": ["string" , "null"] }
+    "hardware": { "type": ["string" , "null"] },
+    "deviceName": { "type": ["string" , "null"] },
+    "deviceManufacturer": { "type": ["string" , "null"] },
+    "deviceModel": { "type": ["string" , "null"] },
+    "operatingSystem": { "type": ["string" , "null"] },
+    "sdk": { "type": ["string" , "null"] },
+    "release": { "type": ["string" , "null"] },
   },
   "unevaluatedProperties": false
 }

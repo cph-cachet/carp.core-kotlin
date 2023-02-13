@@ -35,10 +35,6 @@ class ProtocolsCodeSamples
                 geolocation { batteryNormal { granularity = Granularity.Balanced } }
             }
         }
-        phone.createRegistration {
-            platform = "Android"
-            hardware = "Samsung"
-        }
         protocol.addPrimaryDevice(phone)
 
         // Define what needs to be measured, on which device, when.
