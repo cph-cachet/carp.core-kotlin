@@ -21,7 +21,13 @@ data class SmartphoneDeviceRegistration(
         @Required
         override val deviceId: String = UUID.randomUUID().toString(),
         val platform: String? = null,
-        val hardware: String? = null
+        val hardware: String? = null,
+        val deviceName: String? = null,
+        val deviceManufacturer: String? = null,
+        val deviceModel: String? = null,
+        val operatingSystem: String? = null,
+        val sdk: String? = null,
+        val release: String? = null,
 ) : DeviceRegistration()
 
 
@@ -38,14 +44,10 @@ class SmartphoneDeviceRegistrationBuilder : DeviceRegistrationBuilder<Smartphone
      * Make sure this ID is unique for the type of device you are creating a registration for.
      */
     var deviceId: String = UUID.randomUUID().toString()
-    var platform: String = "Unknown"
-    var hardware: String = "Unknown"
 
     override fun build(): SmartphoneDeviceRegistration = SmartphoneDeviceRegistration(
             deviceDisplayName,
             deviceId,
-            platform,
-            hardware
     )
 }
 
