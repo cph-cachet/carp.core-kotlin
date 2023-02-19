@@ -14,5 +14,5 @@ class OutputDataStreamServiceTestRequests :
 {
     override fun createService(): DataStreamService =
         DataStreamServiceLoggingProxy( InMemoryDataStreamService(), SingleThreadedEventBus() )
-            .also { loggedService = it }
+            .also { serviceLogger = it }
 }

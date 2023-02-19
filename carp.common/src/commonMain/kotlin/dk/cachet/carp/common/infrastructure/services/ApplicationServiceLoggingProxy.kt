@@ -21,10 +21,10 @@ open class ApplicationServiceLoggingProxy<
     private val service: TService,
     private val eventBusLog: EventBusLog,
     private val log: (LoggedRequest<TService, TEvent>) -> Unit = { }
-)
+) : ApplicationServiceLogger<TService, TEvent>
 {
     private val _loggedRequests: MutableList<LoggedRequest<TService, TEvent>> = mutableListOf()
-    val loggedRequests: List<LoggedRequest<TService, TEvent>>
+    override val loggedRequests: List<LoggedRequest<TService, TEvent>>
         get() = _loggedRequests.toList()
 
     /**
@@ -65,13 +65,68 @@ open class ApplicationServiceLoggingProxy<
     /**
      * Determines whether the given [request] is present in [loggedRequests].
      */
-    fun wasCalled( request: ApplicationServiceRequest<TService, *> ): Boolean =
+    override fun wasCalled( request: ApplicationServiceRequest<TService, *> ): Boolean =
         _loggedRequests.map { it.request }.contains( request )
 
     /**
      * Clear the current [loggedRequests].
      */
-    fun clear() = _loggedRequests.clear()
+    override fun clear() = _loggedRequests.clear()
+}
+
+
+/**
+ * Access [loggedRequests] of an [ApplicationService].
+ */
+interface ApplicationServiceLogger<
+    TService : ApplicationService<TService, TEvent>,
+    TEvent : IntegrationEvent<TService>
+>
+{
+    val loggedRequests: List<LoggedRequest<TService, TEvent>>
+
+    /**
+     * Determines whether the given [request] is present in [loggedRequests].
+     */
+    fun wasCalled( request: ApplicationServiceRequest<TService, *> ): Boolean
+
+    /**
+     * Clear the current [loggedRequests].
+     */
+    fun clear()
+}
+
+
+/**
+ * Decorate [service] using [decoratedServiceConstructor] with an [ApplicationServiceLogger].
+ * Returns the decorated service and logger.
+ */
+inline fun <
+    reified TService : ApplicationService<TService, TEvent>,
+    TRequest : ApplicationServiceRequest<TService, *>,
+    reified TEvent : IntegrationEvent<TService>
+> createLoggedApplicationService(
+    service: TService,
+    decoratedServiceConstructor:
+        (TService, (Command<TRequest>) -> Command<TRequest>) -> TService
+): Pair<TService, ApplicationServiceLogger<TService, TEvent>>
+{
+    val eventBus = SingleThreadedEventBus()
+    val eventBusLog = EventBusLog( eventBus, EventBusLog.Subscription( TService::class, TEvent::class ) )
+    val loggedRequests: MutableList<LoggedRequest<TService, TEvent>> = mutableListOf()
+    val loggedService = decoratedServiceConstructor( service )
+        { ApplicationServiceRequestLogger( eventBusLog, loggedRequests::add, it ) }
+
+    val logger =
+        object : ApplicationServiceLogger<TService, TEvent>
+        {
+            override val loggedRequests: List<LoggedRequest<TService, TEvent>> get() = loggedRequests.toList()
+            override fun clear() = loggedRequests.clear()
+            override fun wasCalled( request: ApplicationServiceRequest<TService, *> ): Boolean =
+                loggedRequests.map { it.request }.contains( request )
+        }
+
+    return Pair( loggedService, logger )
 }
 
 

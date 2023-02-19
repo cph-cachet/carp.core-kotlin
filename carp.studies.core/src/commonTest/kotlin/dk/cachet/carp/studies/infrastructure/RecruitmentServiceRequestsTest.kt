@@ -2,7 +2,6 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.studies.application.RecruitmentService
 import dk.cachet.carp.studies.application.RecruitmentServiceHostTest
@@ -31,7 +30,7 @@ class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<Recruitmen
     }
 
 
-    override fun createServiceLoggingProxy(): ApplicationServiceLoggingProxy<RecruitmentService, RecruitmentService.Event> =
+    override fun createServiceLoggingProxy() =
         RecruitmentServiceHostTest
             .createSUT()
             .let { RecruitmentServiceLoggingProxy( it.recruitmentService, it.eventBus ) }

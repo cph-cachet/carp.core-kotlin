@@ -15,7 +15,7 @@ class OutputDeploymentServiceTestRequests :
     {
         val services = DeploymentServiceHostTest.createSUT()
         val service = DeploymentServiceLoggingProxy( services.deploymentService, services.eventBus )
-        loggedService = service
+        serviceLogger = service
 
         return DeploymentServiceTest.SUT( service, services.eventBus )
     }

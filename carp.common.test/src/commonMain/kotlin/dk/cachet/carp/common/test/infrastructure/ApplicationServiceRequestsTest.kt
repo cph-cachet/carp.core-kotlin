@@ -1,7 +1,7 @@
 package dk.cachet.carp.common.test.infrastructure
 
 import dk.cachet.carp.common.application.services.ApplicationService
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLogger
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,7 +26,7 @@ abstract class ApplicationServiceRequestsTest<
     private val requests: List<TRequest>
 )
 {
-    abstract fun createServiceLoggingProxy(): ApplicationServiceLoggingProxy<TService, *>
+    abstract fun createServiceLoggingProxy(): ApplicationServiceLogger<TService, *>
 
 
     @ExperimentalSerializationApi

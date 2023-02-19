@@ -2,7 +2,6 @@ package dk.cachet.carp.deployments.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHostTest
@@ -34,7 +33,7 @@ class DeploymentServiceRequestsTest : ApplicationServiceRequestsTest<DeploymentS
     }
 
 
-    override fun createServiceLoggingProxy(): ApplicationServiceLoggingProxy<DeploymentService, DeploymentService.Event> =
+    override fun createServiceLoggingProxy() =
         DeploymentServiceHostTest
             .createSUT()
             .let { DeploymentServiceLoggingProxy( it.deploymentService, it.eventBus ) }
