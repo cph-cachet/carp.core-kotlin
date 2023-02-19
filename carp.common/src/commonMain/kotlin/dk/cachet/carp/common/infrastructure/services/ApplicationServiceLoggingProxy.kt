@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.infrastructure.services
 
 import dk.cachet.carp.common.application.services.ApplicationService
+import dk.cachet.carp.common.application.services.EventBus
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.infrastructure.reflect.AccessInternals
 import kotlinx.serialization.*
@@ -100,6 +101,7 @@ interface ApplicationServiceLogger<
 /**
  * Decorate [service] using [decoratedServiceConstructor] with an [ApplicationServiceLogger].
  * Returns the decorated service and logger.
+ * In case additional events of integrating services need to be logged, be sure to pass a custom [eventBusLog].
  */
 inline fun <
     reified TService : ApplicationService<TService, TEvent>,
@@ -108,11 +110,13 @@ inline fun <
 > createLoggedApplicationService(
     service: TService,
     decoratedServiceConstructor:
-        (TService, (Command<TRequest>) -> Command<TRequest>) -> TService
+        (TService, (Command<TRequest>) -> Command<TRequest>) -> TService,
+    eventBusLog: EventBusLog = EventBusLog(
+        SingleThreadedEventBus(),
+        EventBusLog.Subscription( TService::class, TEvent::class )
+    )
 ): Pair<TService, ApplicationServiceLogger<TService, TEvent>>
 {
-    val eventBus = SingleThreadedEventBus()
-    val eventBusLog = EventBusLog( eventBus, EventBusLog.Subscription( TService::class, TEvent::class ) )
     val loggedRequests: MutableList<LoggedRequest<TService, TEvent>> = mutableListOf()
     val loggedService = decoratedServiceConstructor( service )
         { ApplicationServiceRequestLogger( eventBusLog, loggedRequests::add, it ) }

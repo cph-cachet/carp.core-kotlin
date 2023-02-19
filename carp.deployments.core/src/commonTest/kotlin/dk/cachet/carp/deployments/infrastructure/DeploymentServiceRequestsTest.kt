@@ -2,6 +2,10 @@ package dk.cachet.carp.deployments.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
+import dk.cachet.carp.common.application.services.EventBus
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLogger
+import dk.cachet.carp.common.infrastructure.services.EventBusLog
+import dk.cachet.carp.common.infrastructure.services.createLoggedApplicationService
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHostTest
@@ -33,8 +37,22 @@ class DeploymentServiceRequestsTest : ApplicationServiceRequestsTest<DeploymentS
     }
 
 
-    override fun createServiceLoggingProxy() =
-        DeploymentServiceHostTest
-            .createSUT()
-            .let { DeploymentServiceLoggingProxy( it.deploymentService, it.eventBus ) }
+    override fun createServiceLoggingProxy(): ApplicationServiceLogger<DeploymentService, *>
+    {
+        val (service, eventBus) = DeploymentServiceHostTest.createSUT()
+
+        val (loggedService, logger) = createLoggedApplicationService(
+            service,
+            ::DeploymentServiceDecorator,
+            EventBusLog(
+                eventBus,
+                EventBusLog.Subscription( DeploymentService::class, DeploymentService.Event::class )
+            )
+        )
+
+        // TODO: The base class relies on the proxied service also be a logger.
+        return object :
+            ApplicationServiceLogger<DeploymentService, DeploymentService.Event> by logger,
+            DeploymentService by loggedService { }
+    }
 }
