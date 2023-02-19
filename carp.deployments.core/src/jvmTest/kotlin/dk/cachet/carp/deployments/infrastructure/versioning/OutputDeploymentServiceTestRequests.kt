@@ -1,10 +1,12 @@
 package dk.cachet.carp.deployments.infrastructure.versioning
 
+import dk.cachet.carp.common.infrastructure.services.EventBusLog
+import dk.cachet.carp.common.infrastructure.services.createLoggedApplicationService
 import dk.cachet.carp.common.test.infrastructure.versioning.OutputTestRequests
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.DeploymentServiceHostTest
 import dk.cachet.carp.deployments.application.DeploymentServiceTest
-import dk.cachet.carp.deployments.infrastructure.DeploymentServiceLoggingProxy
+import dk.cachet.carp.deployments.infrastructure.DeploymentServiceDecorator
 
 
 class OutputDeploymentServiceTestRequests :
@@ -13,10 +15,19 @@ class OutputDeploymentServiceTestRequests :
 {
     override fun createSUT(): DeploymentServiceTest.SUT
     {
-        val services = DeploymentServiceHostTest.createSUT()
-        val service = DeploymentServiceLoggingProxy( services.deploymentService, services.eventBus )
-        serviceLogger = service
+        val (service, eventBus) = DeploymentServiceHostTest.createSUT()
 
-        return DeploymentServiceTest.SUT( service, services.eventBus )
+        val (loggedService, logger) = createLoggedApplicationService(
+            service,
+            ::DeploymentServiceDecorator,
+            EventBusLog(
+                eventBus,
+                EventBusLog.Subscription( DeploymentService::class, DeploymentService.Event::class )
+            )
+        )
+
+        serviceLogger = logger
+
+        return DeploymentServiceTest.SUT( loggedService, eventBus )
     }
 }
