@@ -2,7 +2,9 @@ package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLogger
 import dk.cachet.carp.common.infrastructure.services.SingleThreadedEventBus
+import dk.cachet.carp.common.infrastructure.services.createLoggedApplicationService
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
@@ -30,6 +32,16 @@ class DataStreamServiceRequestsTest : ApplicationServiceRequestsTest<DataStreamS
     }
 
 
-    override fun createServiceLoggingProxy() =
-        DataStreamServiceLoggingProxy( InMemoryDataStreamService(), SingleThreadedEventBus() )
+    override fun createServiceLoggingProxy(): ApplicationServiceLogger<DataStreamService, *>
+    {
+        val (loggedService, logger) = createLoggedApplicationService(
+            InMemoryDataStreamService(),
+            ::DataStreamServiceDecorator
+        )
+
+        // TODO: The base class relies on the proxied service also be a logger.
+        return object :
+            ApplicationServiceLogger<DataStreamService, DataStreamService.Event> by logger,
+            DataStreamService by loggedService { }
+    }
 }
