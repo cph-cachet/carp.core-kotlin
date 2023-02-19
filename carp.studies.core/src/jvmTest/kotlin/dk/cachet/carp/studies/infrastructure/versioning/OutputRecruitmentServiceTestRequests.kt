@@ -15,7 +15,7 @@ class OutputRecruitmentServiceTestRequests :
     {
         val services = RecruitmentServiceHostTest.createSUT()
         val service = RecruitmentServiceLoggingProxy( services.recruitmentService, services.eventBus )
-        loggedService = service
+        serviceLogger = service
 
         return RecruitmentServiceTest.SUT(
             service,

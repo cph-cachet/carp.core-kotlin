@@ -2,7 +2,7 @@ package dk.cachet.carp.common.test.infrastructure.versioning
 
 import dk.cachet.carp.common.application.ApplicationServiceInfo
 import dk.cachet.carp.common.application.services.ApplicationService
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLoggingProxy
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLogger
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -18,15 +18,15 @@ val TEST_REQUESTS_FOLDER = File( "build/test-requests/" )
 
 
 /**
- * Outputs all logged requests of a [loggedService] while running unit tests to the build folder.
+ * Outputs all logged requests of a [serviceLogger] while running unit tests to the build folder.
  *
  * Extend from this base class along with a test interface for which to log requests,
- * and implement `createService` by returning a logging service proxy and setting [loggedService].
+ * and implement `createService` by returning a logging service proxy and setting [serviceLogger].
  */
 open class OutputTestRequests<TService : ApplicationService<TService, *>>( applicationServiceKlass: KClass<TService> )
 {
     @Suppress( "UNCHECKED_CAST" )
-    protected var loggedService: ApplicationServiceLoggingProxy<TService, *>? = null
+    protected var serviceLogger: ApplicationServiceLogger<TService, *>? = null
     private val applicationServiceInfo = ApplicationServiceInfo.of( applicationServiceKlass.java )
 
     companion object
@@ -50,7 +50,7 @@ open class OutputTestRequests<TService : ApplicationService<TService, *>>( appli
     @AfterTest
     fun outputLoggedRequests( info: TestInfo )
     {
-        val service = checkNotNull( loggedService )
+        val service = checkNotNull( serviceLogger )
             { "`loggedService` needs to be set in `createService`." }
 
         // Serialize requests as json.

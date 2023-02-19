@@ -15,7 +15,7 @@ class OutputParticipationServiceTestRequests :
     {
         val services = ParticipationServiceHostTest.createSUT()
         val service = ParticipationServiceLoggingProxy( services.participationService, services.eventBus )
-        loggedService = service
+        serviceLogger = service
 
         return ParticipationServiceTest.SUT(
             service,

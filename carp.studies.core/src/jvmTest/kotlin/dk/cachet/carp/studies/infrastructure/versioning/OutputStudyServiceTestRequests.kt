@@ -16,6 +16,6 @@ class OutputStudyServiceTestRequests :
         val services = StudyServiceHostTest.createService()
 
         return StudyServiceLoggingProxy( services.first, services.second )
-            .also { loggedService = it }
+            .also { serviceLogger = it }
     }
 }
