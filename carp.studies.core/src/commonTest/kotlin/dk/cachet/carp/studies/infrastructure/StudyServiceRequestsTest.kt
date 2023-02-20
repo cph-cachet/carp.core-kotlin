@@ -1,6 +1,9 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLogger
+import dk.cachet.carp.common.infrastructure.services.EventBusLog
+import dk.cachet.carp.common.infrastructure.services.createLoggedApplicationService
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -35,6 +38,22 @@ class StudyServiceRequestsTest : ApplicationServiceRequestsTest<StudyService, St
     }
 
 
-    override fun createServiceLoggingProxy() =
-        StudyServiceHostTest.createService().let { StudyServiceLoggingProxy( it.first, it.second ) }
+    override fun createServiceLoggingProxy(): ApplicationServiceLogger<StudyService, *>
+    {
+        val (service, eventBus) = StudyServiceHostTest.createService()
+
+        val (loggedService, logger) = createLoggedApplicationService(
+            service,
+            ::StudyServiceDecorator,
+            EventBusLog(
+                eventBus,
+                EventBusLog.Subscription( StudyService::class, StudyService.Event::class )
+            )
+        )
+
+        // TODO: The base class relies on the proxied service also be a logger.
+        return object :
+            ApplicationServiceLogger<StudyService, StudyService.Event> by logger,
+            StudyService by loggedService { }
+    }
 }
