@@ -1,10 +1,13 @@
 package dk.cachet.carp.studies.infrastructure.versioning
 
+import dk.cachet.carp.common.infrastructure.services.EventBusLog
+import dk.cachet.carp.common.infrastructure.services.createLoggedApplicationService
 import dk.cachet.carp.common.test.infrastructure.versioning.OutputTestRequests
 import dk.cachet.carp.studies.application.RecruitmentService
 import dk.cachet.carp.studies.application.RecruitmentServiceHostTest
 import dk.cachet.carp.studies.application.RecruitmentServiceTest
-import dk.cachet.carp.studies.infrastructure.RecruitmentServiceLoggingProxy
+import dk.cachet.carp.studies.application.StudyService
+import dk.cachet.carp.studies.infrastructure.RecruitmentServiceDecorator
 
 
 class OutputRecruitmentServiceTestRequests :
@@ -13,14 +16,20 @@ class OutputRecruitmentServiceTestRequests :
 {
     override fun createSUT(): RecruitmentServiceTest.SUT
     {
-        val services = RecruitmentServiceHostTest.createSUT()
-        val service = RecruitmentServiceLoggingProxy( services.recruitmentService, services.eventBus )
-        serviceLogger = service
+        val sut = RecruitmentServiceHostTest.createSUT()
 
-        return RecruitmentServiceTest.SUT(
-            service,
-            services.studyService,
-            services.eventBus
+        val (loggedService, logger) = createLoggedApplicationService(
+            sut.recruitmentService,
+            ::RecruitmentServiceDecorator,
+            EventBusLog(
+                sut.eventBus,
+                EventBusLog.Subscription( RecruitmentService::class, RecruitmentService.Event::class ),
+                EventBusLog.Subscription( StudyService::class, StudyService.Event::class )
+            )
         )
+
+        serviceLogger = logger
+
+        return RecruitmentServiceTest.SUT( loggedService, sut.studyService, sut.eventBus )
     }
 }
