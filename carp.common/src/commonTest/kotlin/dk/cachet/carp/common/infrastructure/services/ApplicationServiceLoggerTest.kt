@@ -7,9 +7,9 @@ import kotlin.test.*
 
 
 /**
- * Tests for [ApplicationServiceLoggingProxy] relying on core infrastructure.
+ * Tests for [ApplicationServiceLogger].
  */
-class ApplicationServiceLoggingProxyTest
+class ApplicationServiceLoggerTest
 {
     @Test
     fun can_serialize_and_deserialize_LoggedRequest_Succeeded()
