@@ -1,8 +1,7 @@
 package dk.cachet.carp.common.test.infrastructure
 
 import dk.cachet.carp.common.application.services.ApplicationService
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceLogger
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
+import dk.cachet.carp.common.infrastructure.services.*
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -22,11 +21,12 @@ abstract class ApplicationServiceRequestsTest<
     TService : ApplicationService<TService, *>,
     TRequest : ApplicationServiceRequest<TService, *>
 >(
+    private val decoratedServiceConstructor: (TService, (Command<TRequest>) -> Command<TRequest>) -> TService,
     private val requestSerializer: KSerializer<TRequest>,
     private val requests: List<TRequest>
 )
 {
-    abstract fun createServiceLoggingProxy(): ApplicationServiceLogger<TService, *>
+    abstract fun createService(): TService
 
 
     @ExperimentalSerializationApi
@@ -45,14 +45,18 @@ abstract class ApplicationServiceRequestsTest<
     @Suppress( "UNCHECKED_CAST" )
     @Test
     fun invokeOn_requests_call_service() = runTest {
-        val serviceLog = createServiceLoggingProxy()
+        // Create logged service. Events can safely be ignored since they go unused.
+        val eventBusLog = EventBusLog( SingleThreadedEventBus() )
+        val logger = ApplicationServiceLogger<TService, Nothing>()
+        val loggedService = decoratedServiceConstructor( createService() )
+            { ApplicationServiceRequestLogger( eventBusLog, logger::addLog, it ) }
 
         requests.forEach { request ->
-            try { request.invokeOn( serviceLog as TService ) }
+            try { request.invokeOn( loggedService ) }
             catch ( ignore: Exception ) { } // Requests do not have to succeed to verify request arrived.
-            assertTrue( serviceLog.wasCalled( request ) )
+            assertTrue( logger.wasCalled( request ) )
 
-            serviceLog.clear()
+            logger.clear()
         }
     }
 
