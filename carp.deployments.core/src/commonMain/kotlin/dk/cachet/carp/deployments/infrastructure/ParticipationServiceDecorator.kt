@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceDecorator
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.Command
 import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
@@ -13,7 +14,11 @@ import dk.cachet.carp.deployments.application.users.ParticipantData
 class ParticipationServiceDecorator(
     service: ParticipationService,
     requestDecorator: (Command<ParticipationServiceRequest<*>>) -> Command<ParticipationServiceRequest<*>>
-) : ApplicationServiceDecorator<ParticipationService, ParticipationServiceRequest<*>>( service, requestDecorator ),
+) : ApplicationServiceDecorator<ParticipationService, ParticipationServiceRequest<*>>(
+        service,
+        ParticipationServiceInvoker,
+        requestDecorator
+    ),
     ParticipationService
 {
     override suspend fun getActiveParticipationInvitations(
@@ -37,8 +42,12 @@ class ParticipationServiceDecorator(
     ): ParticipantData = invoke(
         ParticipationServiceRequest.SetParticipantData( studyDeploymentId, data, inputByParticipantRole )
     )
+}
 
-    override suspend fun ParticipationServiceRequest<*>.invokeOnService( service: ParticipationService ): Any =
+
+object ParticipationServiceInvoker : ApplicationServiceInvoker<ParticipationService, ParticipationServiceRequest<*>>
+{
+    override suspend fun ParticipationServiceRequest<*>.invoke( service: ParticipationService ): Any =
         when ( this )
         {
             is ParticipationServiceRequest.GetActiveParticipationInvitations ->

@@ -6,6 +6,7 @@ import dk.cachet.carp.common.infrastructure.versioning.ApplicationServiceApiMigr
 import dk.cachet.carp.common.infrastructure.versioning.Major1Minor0To1Migration
 import dk.cachet.carp.common.infrastructure.versioning.getType
 import dk.cachet.carp.studies.application.StudyService
+import dk.cachet.carp.studies.infrastructure.StudyServiceInvoker
 import dk.cachet.carp.studies.infrastructure.StudyServiceRequest
 import kotlinx.serialization.json.*
 
@@ -53,6 +54,7 @@ private val major1Minor0To1Migration =
 
 val StudyServiceApiMigrator = ApplicationServiceApiMigrator(
     StudyService.API_VERSION,
+    StudyServiceInvoker,
     StudyServiceRequest.Serializer,
     StudyService.Event.serializer(),
     listOf( major1Minor0To1Migration )

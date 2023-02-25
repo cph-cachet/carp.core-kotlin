@@ -7,6 +7,7 @@ import dk.cachet.carp.common.infrastructure.versioning.ApplicationServiceApiMigr
 import dk.cachet.carp.common.infrastructure.versioning.Major1Minor0To1Migration
 import dk.cachet.carp.common.infrastructure.versioning.getType
 import dk.cachet.carp.data.application.DataStreamService
+import dk.cachet.carp.data.infrastructure.DataStreamServiceInvoker
 import dk.cachet.carp.data.infrastructure.DataStreamServiceRequest
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -45,6 +46,7 @@ private val major1Minor0To1Migration =
 
 val DataStreamServiceApiMigrator = ApplicationServiceApiMigrator(
     DataStreamService.API_VERSION,
+    DataStreamServiceInvoker,
     DataStreamServiceRequest.Serializer,
     DataStreamService.Event.serializer(),
     listOf( major1Minor0To1Migration )

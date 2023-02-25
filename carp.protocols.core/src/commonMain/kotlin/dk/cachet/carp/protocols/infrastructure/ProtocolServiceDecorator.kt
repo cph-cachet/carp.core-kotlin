@@ -3,6 +3,7 @@ package dk.cachet.carp.protocols.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceDecorator
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.Command
 import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.application.ProtocolVersion
@@ -12,7 +13,11 @@ import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 class ProtocolServiceDecorator(
     service: ProtocolService,
     requestDecorator: (Command<ProtocolServiceRequest<*>>) -> Command<ProtocolServiceRequest<*>>
-) : ApplicationServiceDecorator<ProtocolService, ProtocolServiceRequest<*>>( service, requestDecorator ),
+) : ApplicationServiceDecorator<ProtocolService, ProtocolServiceRequest<*>>(
+        service,
+        ProtocolServiceInvoker,
+        requestDecorator
+    ),
     ProtocolService
 {
     override suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String ): Unit = invoke(
@@ -42,8 +47,12 @@ class ProtocolServiceDecorator(
     override suspend fun getVersionHistoryFor( protocolId: UUID ): List<ProtocolVersion> = invoke(
         ProtocolServiceRequest.GetVersionHistoryFor( protocolId )
     )
+}
 
-    override suspend fun ProtocolServiceRequest<*>.invokeOnService( service: ProtocolService ): Any =
+
+object ProtocolServiceInvoker : ApplicationServiceInvoker<ProtocolService, ProtocolServiceRequest<*>>
+{
+    override suspend fun ProtocolServiceRequest<*>.invoke( service: ProtocolService ): Any =
         when ( this )
         {
             is ProtocolServiceRequest.Add -> service.add( protocol, versionTag )

@@ -105,7 +105,7 @@ class ApplicationServiceInfo private constructor( val serviceKlass: ServiceClass
     val requestObjectSerializer: KSerializer<out ApplicationServiceRequest<*, *>>
     val eventSerializer: KSerializer<IntegrationEvent<*>>
     val loggedRequestSerializer: KSerializer<LoggedRequest<*, *>>
-    val apiMigrator: ApplicationServiceApiMigrator<*>
+    val apiMigrator: ApplicationServiceApiMigrator<*, *>
 
     val requestSchemaUri: URI
 
@@ -190,7 +190,7 @@ class ApplicationServiceInfo private constructor( val serviceKlass: ServiceClass
             try { Class.forName( apiMigratorFullName ) }
             catch ( _: ClassNotFoundException ) { null }
         val apiMigratorLookup = apiMigratorClass?.declaredMethods
-            ?.firstOrNull { it.name == "get$apiMigratorName" }?.invoke( null ) as? ApplicationServiceApiMigrator<*>
+            ?.firstOrNull { it.name == "get$apiMigratorName" }?.invoke( null ) as? ApplicationServiceApiMigrator<*, *>
         apiMigrator = checkNotNull( apiMigratorLookup )
             {
                 "Could not find API migrator for \"${serviceKlass.name}\". " +

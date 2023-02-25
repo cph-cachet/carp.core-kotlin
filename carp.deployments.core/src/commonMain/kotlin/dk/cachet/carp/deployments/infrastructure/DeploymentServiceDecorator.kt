@@ -3,6 +3,7 @@ package dk.cachet.carp.deployments.infrastructure
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.DeviceRegistration
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceDecorator
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.Command
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
@@ -15,7 +16,11 @@ import kotlinx.datetime.Instant
 class DeploymentServiceDecorator(
     service: DeploymentService,
     requestDecorator: (Command<DeploymentServiceRequest<*>>) -> Command<DeploymentServiceRequest<*>>
-) : ApplicationServiceDecorator<DeploymentService, DeploymentServiceRequest<*>>( service, requestDecorator ),
+) : ApplicationServiceDecorator<DeploymentService, DeploymentServiceRequest<*>>(
+        service,
+        DeploymentServiceInvoker,
+        requestDecorator
+    ),
     DeploymentService
 {
     override suspend fun createStudyDeployment(
@@ -69,8 +74,12 @@ class DeploymentServiceDecorator(
 
     override suspend fun stop( studyDeploymentId: UUID ): StudyDeploymentStatus =
         invoke( DeploymentServiceRequest.Stop( studyDeploymentId ) )
+}
 
-    override suspend fun DeploymentServiceRequest<*>.invokeOnService( service: DeploymentService ): Any =
+
+object DeploymentServiceInvoker : ApplicationServiceInvoker<DeploymentService, DeploymentServiceRequest<*>>
+{
+    override suspend fun DeploymentServiceRequest<*>.invoke( service: DeploymentService ): Any =
         when ( this )
         {
             is DeploymentServiceRequest.CreateStudyDeployment ->

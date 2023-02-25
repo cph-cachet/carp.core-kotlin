@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import kotlinx.coroutines.test.runTest
@@ -53,10 +54,20 @@ class ApplicationServiceApiMigratorTest
         }
     }
 
+    object TestServiceInvoker : ApplicationServiceInvoker<TestService, TestServiceRequest<*>>
+    {
+        override suspend fun TestServiceRequest<*>.invoke( service: TestService ): Any =
+            when ( this )
+            {
+                is TestServiceRequest.GetAnswer -> service.getAnswer( question )
+            }
+    }
+
 
     private fun createTestApiMigrator( runtimeVersion: ApiVersion, migrations: List<ApiMigration> ) =
         ApplicationServiceApiMigrator(
             runtimeVersion,
+            TestServiceInvoker,
             TestServiceRequest.Serializer,
             TestService.ServiceEvent.serializer(),
             migrations
