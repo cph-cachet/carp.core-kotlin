@@ -5,6 +5,7 @@ import dk.cachet.carp.common.infrastructure.versioning.ApiResponse
 import dk.cachet.carp.common.infrastructure.versioning.ApplicationServiceApiMigrator
 import dk.cachet.carp.common.infrastructure.versioning.Major1Minor0To1Migration
 import dk.cachet.carp.deployments.application.DeploymentService
+import dk.cachet.carp.deployments.infrastructure.DeploymentServiceInvoker
 import dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest
 import kotlinx.serialization.json.JsonObject
 
@@ -30,6 +31,7 @@ private val major1Minor0To1Migration =
 
 val DeploymentServiceApiMigrator = ApplicationServiceApiMigrator(
     DeploymentService.API_VERSION,
+    DeploymentServiceInvoker,
     DeploymentServiceRequest.Serializer,
     DeploymentService.Event.serializer(),
     listOf( major1Minor0To1Migration )

@@ -3,6 +3,7 @@ package dk.cachet.carp.studies.infrastructure
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceDecorator
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.Command
 import dk.cachet.carp.studies.application.RecruitmentService
 import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
@@ -13,7 +14,11 @@ import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 class RecruitmentServiceDecorator(
     service: RecruitmentService,
     requestDecorator: (Command<RecruitmentServiceRequest<*>>) -> Command<RecruitmentServiceRequest<*>>
-) : ApplicationServiceDecorator<RecruitmentService, RecruitmentServiceRequest<*>>( service, requestDecorator ),
+) : ApplicationServiceDecorator<RecruitmentService, RecruitmentServiceRequest<*>>(
+        service,
+        RecruitmentServiceInvoker,
+        requestDecorator
+    ),
     RecruitmentService
 {
     override suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant = invoke(
@@ -42,8 +47,12 @@ class RecruitmentServiceDecorator(
     override suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ): ParticipantGroupStatus = invoke(
         RecruitmentServiceRequest.StopParticipantGroup( studyId, groupId )
     )
+}
 
-    override suspend fun RecruitmentServiceRequest<*>.invokeOnService( service: RecruitmentService ): Any? =
+
+object RecruitmentServiceInvoker : ApplicationServiceInvoker<RecruitmentService, RecruitmentServiceRequest<*>>
+{
+    override suspend fun RecruitmentServiceRequest<*>.invoke( service: RecruitmentService ): Any =
         when ( this )
         {
             is RecruitmentServiceRequest.AddParticipant -> service.addParticipant( studyId, email )

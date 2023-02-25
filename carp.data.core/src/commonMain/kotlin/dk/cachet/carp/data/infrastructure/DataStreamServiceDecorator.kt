@@ -2,6 +2,7 @@ package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceDecorator
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.Command
 import dk.cachet.carp.data.application.DataStreamBatch
 import dk.cachet.carp.data.application.DataStreamId
@@ -12,7 +13,11 @@ import dk.cachet.carp.data.application.DataStreamsConfiguration
 class DataStreamServiceDecorator(
     service: DataStreamService,
     requestDecorator: (Command<DataStreamServiceRequest<*>>) -> Command<DataStreamServiceRequest<*>>
-) : ApplicationServiceDecorator<DataStreamService, DataStreamServiceRequest<*>>( service, requestDecorator ),
+) : ApplicationServiceDecorator<DataStreamService, DataStreamServiceRequest<*>>(
+        service,
+        DataStreamServiceInvoker,
+        requestDecorator
+    ),
     DataStreamService
 {
     override suspend fun openDataStreams( configuration: DataStreamsConfiguration ): Unit = invoke(
@@ -38,8 +43,12 @@ class DataStreamServiceDecorator(
     override suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Set<UUID> = invoke(
         DataStreamServiceRequest.RemoveDataStreams( studyDeploymentIds )
     )
+}
 
-    override suspend fun DataStreamServiceRequest<*>.invokeOnService( service: DataStreamService ): Any =
+
+object DataStreamServiceInvoker : ApplicationServiceInvoker<DataStreamService, DataStreamServiceRequest<*>>
+{
+    override suspend fun DataStreamServiceRequest<*>.invoke( service: DataStreamService ): Any =
         when ( this )
         {
             is DataStreamServiceRequest.OpenDataStreams -> service.openDataStreams( configuration )

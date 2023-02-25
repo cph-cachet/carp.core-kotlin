@@ -2,6 +2,7 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceDecorator
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.Command
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
@@ -14,7 +15,7 @@ import dk.cachet.carp.studies.application.StudyStatus
 class StudyServiceDecorator(
     service: StudyService,
     requestDecorator: (Command<StudyServiceRequest<*>>) -> Command<StudyServiceRequest<*>>
-) : ApplicationServiceDecorator<StudyService, StudyServiceRequest<*>>( service, requestDecorator ),
+) : ApplicationServiceDecorator<StudyService, StudyServiceRequest<*>>( service, StudyServiceInvoker, requestDecorator ),
     StudyService
 {
     override suspend fun createStudy(
@@ -65,8 +66,12 @@ class StudyServiceDecorator(
     override suspend fun remove( studyId: UUID ): Boolean = invoke(
         StudyServiceRequest.Remove( studyId )
     )
+}
 
-    override suspend fun StudyServiceRequest<*>.invokeOnService( service: StudyService ): Any? =
+
+object StudyServiceInvoker : ApplicationServiceInvoker<StudyService, StudyServiceRequest<*>>
+{
+    override suspend fun StudyServiceRequest<*>.invoke( service: StudyService ): Any? =
         when ( this )
         {
             is StudyServiceRequest.CreateStudy -> service.createStudy( ownerId, name, description, invitation )

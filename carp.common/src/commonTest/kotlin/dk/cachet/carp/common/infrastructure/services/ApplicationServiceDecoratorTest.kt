@@ -13,14 +13,17 @@ class ApplicationServiceDecoratorTest
     class TestServiceDecorator(
         service: TestService,
         requestDecorator: (Command<TestServiceRequest>) -> Command<TestServiceRequest>
-    ) : ApplicationServiceDecorator<TestService, TestServiceRequest>( service, requestDecorator ),
+    ) : ApplicationServiceDecorator<TestService, TestServiceRequest>( service, TestServiceInvoker, requestDecorator ),
         TestService
     {
         override suspend fun operation( parameter: Int ): Int = invoke(
             ApplicationServiceRequestTest.TestServiceRequest.Operation( parameter )
         )
+    }
 
-        override suspend fun TestServiceRequest.invokeOnService( service: TestService ): Any? =
+    object TestServiceInvoker : ApplicationServiceInvoker<TestService, TestServiceRequest>
+    {
+        override suspend fun TestServiceRequest.invoke( service: TestService ): Any? =
             when ( this )
             {
                 is ApplicationServiceRequestTest.TestServiceRequest.Operation -> service.operation( parameter )

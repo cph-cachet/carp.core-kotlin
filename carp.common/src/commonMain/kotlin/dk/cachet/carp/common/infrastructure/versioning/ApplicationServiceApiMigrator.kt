@@ -3,6 +3,7 @@ package dk.cachet.carp.common.infrastructure.versioning
 import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
+import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
@@ -14,9 +15,13 @@ import kotlinx.serialization.json.jsonPrimitive
 /**
  * Supports transforming between different API versions of [ApplicationServiceRequest] and [IntegrationEvent] objects.
  */
-class ApplicationServiceApiMigrator<TService : ApplicationService<TService, *>>(
+class ApplicationServiceApiMigrator<
+    TService : ApplicationService<TService, *>,
+    TRequest : ApplicationServiceRequest<TService, *>
+>(
     val runtimeVersion: ApiVersion,
-    val requestObjectSerializer: KSerializer<out ApplicationServiceRequest<TService, *>>,
+    val requestInvoker: ApplicationServiceInvoker<TService, TRequest>,
+    val requestObjectSerializer: KSerializer<out TRequest>,
     val eventSerializer: KSerializer<out IntegrationEvent<TService>>,
     migrations: List<ApiMigration> = emptyList()
 )
@@ -47,7 +52,7 @@ class ApplicationServiceApiMigrator<TService : ApplicationService<TService, *>>(
      *  - the [request] version is more recent than the runtime version
      *  - the runtime version is a later major version than the [request] version
      */
-    fun migrateRequest( json: Json, request: JsonObject ): MigratedRequest<TService>
+    fun migrateRequest( json: Json, request: JsonObject ): MigratedRequest<TService, TRequest>
     {
         val requestVersion = getAndValidateApiVersion( request )
 
@@ -67,7 +72,7 @@ class ApplicationServiceApiMigrator<TService : ApplicationService<TService, *>>(
         }
 
         val decodedRequest = json.decodeFromJsonElement( requestObjectSerializer, updatedRequest )
-        return MigratedRequest( json, decodedRequest, ::downgradeResponse )
+        return MigratedRequest( json, decodedRequest, requestInvoker, ::downgradeResponse )
     }
 
     /**
@@ -107,9 +112,13 @@ class ApplicationServiceApiMigrator<TService : ApplicationService<TService, *>>(
 /**
  * A [request] which can be invoked using [invokeOn] which will return the response expected by the version of the caller.
  */
-class MigratedRequest<TService : ApplicationService<TService, *>>(
+class MigratedRequest<
+    TService : ApplicationService<TService, *>,
+    TRequest : ApplicationServiceRequest<TService, *>
+>(
     val json: Json,
-    val request: ApplicationServiceRequest<TService, *>,
+    val request: TRequest,
+    private val requestInvoker: ApplicationServiceInvoker<TService, TRequest>,
     private val downgradeResponse: (JsonElement?, Exception?) -> JsonElement
 )
 {
@@ -120,7 +129,7 @@ class MigratedRequest<TService : ApplicationService<TService, *>>(
     {
         @Suppress( "TooGenericExceptionCaught" )
         val response =
-            try { request.invokeOn( service ) }
+            try { requestInvoker.invokeOnService( request, service ) }
             catch ( ex: Exception ) { return downgradeResponse( null, ex ) }
 
         @Suppress( "UNCHECKED_CAST" )

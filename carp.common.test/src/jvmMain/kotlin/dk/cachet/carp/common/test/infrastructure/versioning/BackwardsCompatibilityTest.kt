@@ -118,7 +118,7 @@ abstract class BackwardsCompatibilityTest<TService : ApplicationService<TService
     private suspend fun replayLoggedRequests( fileName: String, loggedRequests: List<LoggedJsonRequest> )
     {
         val (service, eventBus) = createService()
-        val apiMigrator = serviceInfo.apiMigrator as ApplicationServiceApiMigrator<TService>
+        val apiMigrator = serviceInfo.apiMigrator as ApplicationServiceApiMigrator<TService, *>
 
         loggedRequests.forEachIndexed { index, logged ->
             val replayErrorBase = "Couldn't replay requests in: $fileName. Request #${index + 1}"

@@ -8,11 +8,12 @@ import dk.cachet.carp.common.application.services.ApplicationService
  * Extend from this class and implement the application service interface by
  * redirecting all requests to [invoke] and initializing the matching [TRequest].
  */
-abstract class ApplicationServiceDecorator<
+open class ApplicationServiceDecorator<
     TService : ApplicationService<TService, *>,
     TRequest : ApplicationServiceRequest<TService, *>
 >(
     private val service: TService,
+    private val requestInvoker: ApplicationServiceInvoker<TService, TRequest>,
     private val requestDecorator: (Command<TRequest>) -> Command<TRequest>
 ) : Command<TRequest>
 {
@@ -21,10 +22,8 @@ abstract class ApplicationServiceDecorator<
         {
             @Suppress( "UNCHECKED_CAST" )
             override suspend fun <TReturn> invoke( request: TRequest ): TReturn =
-                request.invokeOnService( service ) as TReturn
+                requestInvoker.invokeOnService( request, service ) as TReturn
         }
-
-    protected abstract suspend fun TRequest.invokeOnService( service: TService ): Any?
 
     override suspend fun <TReturn> invoke( request: TRequest ): TReturn =
         requestDecorator( invokeService ).invoke( request ) as TReturn
@@ -32,7 +31,7 @@ abstract class ApplicationServiceDecorator<
 
 
 /**
- * Supports invocation of a [TRequest] on a service.
+ * Supports invocation of a [TRequest] on a predefined service.
  */
 interface Command<TRequest>
 {
