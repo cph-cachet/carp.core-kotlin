@@ -2,6 +2,7 @@ package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.test.infrastructure.ApplicationServiceDecoratorTest
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
@@ -32,3 +33,10 @@ class DataStreamServiceRequestsTest : ApplicationServiceRequestsTest<DataStreamS
 
     override fun createService() = InMemoryDataStreamService()
 }
+
+
+class DataStreamServiceDecoratorTest :
+    ApplicationServiceDecoratorTest<DataStreamService, DataStreamService.Event, DataStreamServiceRequest<*>>(
+        DataStreamServiceRequestsTest(),
+        DataStreamServiceInvoker
+    )

@@ -21,9 +21,9 @@ abstract class ApplicationServiceRequestsTest<
     TService : ApplicationService<TService, *>,
     TRequest : ApplicationServiceRequest<TService, *>
 >(
-    private val decoratedServiceConstructor: (TService, (Command<TRequest>) -> Command<TRequest>) -> TService,
+    val decoratedServiceConstructor: (TService, (Command<TRequest>) -> Command<TRequest>) -> TService,
     private val requestSerializer: KSerializer<TRequest>,
-    private val requests: List<TRequest>
+    val requests: List<TRequest>
 )
 {
     abstract fun createService(): TService

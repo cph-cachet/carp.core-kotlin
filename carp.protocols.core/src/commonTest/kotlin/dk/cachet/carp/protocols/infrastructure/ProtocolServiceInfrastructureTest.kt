@@ -1,15 +1,13 @@
 package dk.cachet.carp.protocols.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.test.infrastructure.ApplicationServiceDecoratorTest
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.protocols.application.ProtocolService
 import dk.cachet.carp.protocols.application.ProtocolServiceHostTest
 import dk.cachet.carp.protocols.infrastructure.test.createComplexProtocol
 
 
-/**
- * Tests for [ProtocolServiceRequest]'s.
- */
 class ProtocolServiceRequestsTest : ApplicationServiceRequestsTest<ProtocolService, ProtocolServiceRequest<*>>(
     ::ProtocolServiceDecorator,
     ProtocolServiceRequest.Serializer,
@@ -31,3 +29,10 @@ class ProtocolServiceRequestsTest : ApplicationServiceRequestsTest<ProtocolServi
 
     override fun createService() = ProtocolServiceHostTest.createService()
 }
+
+
+class ProtocolServiceDecoratorTest :
+    ApplicationServiceDecoratorTest<ProtocolService, ProtocolService.Event, ProtocolServiceRequest<*>>(
+        ProtocolServiceRequestsTest(),
+        ProtocolServiceInvoker
+    )

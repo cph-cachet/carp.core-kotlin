@@ -2,14 +2,12 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.test.infrastructure.ApplicationServiceDecoratorTest
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.studies.application.RecruitmentService
 import dk.cachet.carp.studies.application.RecruitmentServiceHostTest
 
 
-/**
- * Tests for [RecruitmentServiceRequest]'s.
- */
 class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<RecruitmentService, RecruitmentServiceRequest<*>>(
     ::RecruitmentServiceDecorator,
     RecruitmentServiceRequest.Serializer,
@@ -33,3 +31,10 @@ class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<Recruitmen
 
     override fun createService() = RecruitmentServiceHostTest.createSUT().recruitmentService
 }
+
+
+class RecruitmentServiceDecoratorTest :
+    ApplicationServiceDecoratorTest<RecruitmentService, RecruitmentService.Event, RecruitmentServiceRequest<*>>(
+        RecruitmentServiceRequestsTest(),
+        RecruitmentServiceInvoker
+    )
