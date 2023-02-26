@@ -1,6 +1,7 @@
 package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.test.infrastructure.ApplicationServiceDecoratorTest
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.domain.StudyProtocol
@@ -8,9 +9,6 @@ import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceHostTest
 
 
-/**
- * Tests for [StudyServiceRequest]'s.
- */
 class StudyServiceRequestsTest : ApplicationServiceRequestsTest<StudyService, StudyServiceRequest<*>>(
     ::StudyServiceDecorator,
     StudyServiceRequest.Serializer,
@@ -38,3 +36,10 @@ class StudyServiceRequestsTest : ApplicationServiceRequestsTest<StudyService, St
 
     override fun createService() = StudyServiceHostTest.createService().first
 }
+
+
+class StudyServiceDecoratorTest :
+    ApplicationServiceDecoratorTest<StudyService, StudyService.Event, StudyServiceRequest<*>>(
+        StudyServiceRequestsTest(),
+        StudyServiceInvoker
+    )
