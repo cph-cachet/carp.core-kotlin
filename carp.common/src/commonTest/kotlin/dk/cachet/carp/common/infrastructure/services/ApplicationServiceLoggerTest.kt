@@ -14,7 +14,7 @@ class ApplicationServiceLoggerTest
     @Test
     fun can_serialize_and_deserialize_LoggedRequest_Succeeded()
     {
-        val request: LoggedRequest<*, *> = LoggedRequest.Succeeded(
+        val request: LoggedRequest<TestService> = LoggedRequest.Succeeded(
             request = TestServiceRequest.Operation( 42 ),
             // Preceding events would normally be of different application services.
             precedingEvents = listOf( TestService.Event.OperationOccurred( 0 ) ),
@@ -33,7 +33,7 @@ class ApplicationServiceLoggerTest
     @Test
     fun can_serialize_and_deserialize_LoggedRequest_Failed()
     {
-        val request: LoggedRequest<*, *> = LoggedRequest.Failed(
+        val request: LoggedRequest<TestService> = LoggedRequest.Failed(
             request = TestServiceRequest.Operation( 10 ),
             // Preceding events would normally be of different application services.
             precedingEvents = listOf( TestService.Event.OperationOccurred( 0 ) ),

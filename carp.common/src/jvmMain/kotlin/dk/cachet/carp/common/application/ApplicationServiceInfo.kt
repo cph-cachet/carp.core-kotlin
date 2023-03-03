@@ -104,7 +104,7 @@ class ApplicationServiceInfo private constructor( val serviceKlass: ServiceClass
 
     val requestObjectSerializer: KSerializer<out ApplicationServiceRequest<*, *>>
     val eventSerializer: KSerializer<IntegrationEvent<*>>
-    val loggedRequestSerializer: KSerializer<LoggedRequest<*, *>>
+    val loggedRequestSerializer: KSerializer<LoggedRequest<*>>
     val apiMigrator: ApplicationServiceApiMigrator<*, *>
 
     val requestSchemaUri: URI
