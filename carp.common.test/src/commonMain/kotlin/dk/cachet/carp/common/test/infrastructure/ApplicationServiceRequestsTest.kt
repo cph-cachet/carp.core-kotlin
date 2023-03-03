@@ -42,7 +42,6 @@ abstract class ApplicationServiceRequestsTest<
         assertEquals( allRequestObjects, testedRequestObjects )
     }
 
-    @Suppress( "UNCHECKED_CAST" )
     @Test
     fun invokeOn_requests_call_service() = runTest {
         // Create logged service. Events can safely be ignored since they go unused.

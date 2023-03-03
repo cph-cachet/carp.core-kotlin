@@ -6,7 +6,6 @@ import dk.cachet.carp.common.infrastructure.services.ApplicationServiceDecorator
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.Command
 import dk.cachet.carp.protocols.application.ProtocolService
-import dk.cachet.carp.protocols.application.ProtocolVersion
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
 
@@ -20,33 +19,28 @@ class ProtocolServiceDecorator(
     ),
     ProtocolService
 {
-    override suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String ): Unit = invoke(
-        ProtocolServiceRequest.Add( protocol, versionTag )
-    )
+    override suspend fun add( protocol: StudyProtocolSnapshot, versionTag: String ) =
+        invoke( ProtocolServiceRequest.Add( protocol, versionTag ) )
 
-    override suspend fun addVersion( protocol: StudyProtocolSnapshot, versionTag: String ): Unit = invoke(
-        ProtocolServiceRequest.AddVersion( protocol, versionTag )
-    )
+    override suspend fun addVersion( protocol: StudyProtocolSnapshot, versionTag: String ): Unit =
+        invoke( ProtocolServiceRequest.AddVersion( protocol, versionTag ) )
 
     override suspend fun updateParticipantDataConfiguration(
         protocolId: UUID,
         versionTag: String,
         expectedParticipantData: Set<ExpectedParticipantData>
-    ): StudyProtocolSnapshot = invoke(
+    ) = invoke(
         ProtocolServiceRequest.UpdateParticipantDataConfiguration( protocolId, versionTag, expectedParticipantData )
     )
 
-    override suspend fun getBy( protocolId: UUID, versionTag: String? ): StudyProtocolSnapshot = invoke(
-        ProtocolServiceRequest.GetBy( protocolId, versionTag )
-    )
+    override suspend fun getBy( protocolId: UUID, versionTag: String? ) =
+        invoke( ProtocolServiceRequest.GetBy( protocolId, versionTag ) )
 
-    override suspend fun getAllForOwner( ownerId: UUID ): List<StudyProtocolSnapshot> = invoke(
-        ProtocolServiceRequest.GetAllForOwner( ownerId )
-    )
+    override suspend fun getAllForOwner( ownerId: UUID ) =
+        invoke( ProtocolServiceRequest.GetAllForOwner( ownerId ) )
 
-    override suspend fun getVersionHistoryFor( protocolId: UUID ): List<ProtocolVersion> = invoke(
-        ProtocolServiceRequest.GetVersionHistoryFor( protocolId )
-    )
+    override suspend fun getVersionHistoryFor( protocolId: UUID ) =
+        invoke( ProtocolServiceRequest.GetVersionHistoryFor( protocolId ) )
 }
 
 

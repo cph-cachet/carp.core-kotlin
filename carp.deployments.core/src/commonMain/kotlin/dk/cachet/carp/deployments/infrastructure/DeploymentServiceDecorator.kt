@@ -6,8 +6,6 @@ import dk.cachet.carp.common.infrastructure.services.ApplicationServiceDecorator
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.Command
 import dk.cachet.carp.deployments.application.DeploymentService
-import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
-import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.datetime.Instant
@@ -28,43 +26,40 @@ class DeploymentServiceDecorator(
         protocol: StudyProtocolSnapshot,
         invitations: List<ParticipantInvitation>,
         connectedDevicePreregistrations: Map<String, DeviceRegistration>
-    ): StudyDeploymentStatus = invoke(
+    ) = invoke(
         DeploymentServiceRequest.CreateStudyDeployment( id, protocol, invitations, connectedDevicePreregistrations )
     )
 
-    override suspend fun removeStudyDeployments( studyDeploymentIds: Set<UUID> ): Set<UUID> =
+    override suspend fun removeStudyDeployments( studyDeploymentIds: Set<UUID> ) =
         invoke( DeploymentServiceRequest.RemoveStudyDeployments( studyDeploymentIds ) )
 
-    override suspend fun getStudyDeploymentStatus( studyDeploymentId: UUID ): StudyDeploymentStatus =
+    override suspend fun getStudyDeploymentStatus( studyDeploymentId: UUID ) =
         invoke( DeploymentServiceRequest.GetStudyDeploymentStatus( studyDeploymentId ) )
 
-    override suspend fun getStudyDeploymentStatusList( studyDeploymentIds: Set<UUID> ): List<StudyDeploymentStatus> =
+    override suspend fun getStudyDeploymentStatusList( studyDeploymentIds: Set<UUID> ) =
         invoke( DeploymentServiceRequest.GetStudyDeploymentStatusList( studyDeploymentIds ) )
 
     override suspend fun registerDevice(
         studyDeploymentId: UUID,
         deviceRoleName: String,
         registration: DeviceRegistration
-    ): StudyDeploymentStatus =
-        invoke( DeploymentServiceRequest.RegisterDevice( studyDeploymentId, deviceRoleName, registration ) )
+    ) = invoke( DeploymentServiceRequest.RegisterDevice( studyDeploymentId, deviceRoleName, registration ) )
 
     override suspend fun unregisterDevice(
         studyDeploymentId: UUID,
         deviceRoleName: String
-    ): StudyDeploymentStatus =
-        invoke( DeploymentServiceRequest.UnregisterDevice( studyDeploymentId, deviceRoleName ) )
+    ) = invoke( DeploymentServiceRequest.UnregisterDevice( studyDeploymentId, deviceRoleName ) )
 
     override suspend fun getDeviceDeploymentFor(
         studyDeploymentId: UUID,
         primaryDeviceRoleName: String
-    ): PrimaryDeviceDeployment =
-        invoke( DeploymentServiceRequest.GetDeviceDeploymentFor( studyDeploymentId, primaryDeviceRoleName ) )
+    ) = invoke( DeploymentServiceRequest.GetDeviceDeploymentFor( studyDeploymentId, primaryDeviceRoleName ) )
 
     override suspend fun deviceDeployed(
         studyDeploymentId: UUID,
         primaryDeviceRoleName: String,
         deviceDeploymentLastUpdatedOn: Instant
-    ): StudyDeploymentStatus = invoke(
+    ) = invoke(
         DeploymentServiceRequest.DeviceDeployed(
             studyDeploymentId,
             primaryDeviceRoleName,
@@ -72,8 +67,7 @@ class DeploymentServiceDecorator(
         )
     )
 
-    override suspend fun stop( studyDeploymentId: UUID ): StudyDeploymentStatus =
-        invoke( DeploymentServiceRequest.Stop( studyDeploymentId ) )
+    override suspend fun stop( studyDeploymentId: UUID ) = invoke( DeploymentServiceRequest.Stop( studyDeploymentId ) )
 }
 
 

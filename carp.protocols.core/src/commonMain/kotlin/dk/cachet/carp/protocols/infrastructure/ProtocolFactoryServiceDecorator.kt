@@ -5,7 +5,6 @@ import dk.cachet.carp.common.infrastructure.services.ApplicationServiceDecorator
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.Command
 import dk.cachet.carp.protocols.application.ProtocolFactoryService
-import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 
 
 class ProtocolFactoryServiceDecorator(
@@ -23,9 +22,7 @@ class ProtocolFactoryServiceDecorator(
         name: String,
         customProtocol: String,
         description: String?
-    ): StudyProtocolSnapshot = invoke(
-        ProtocolFactoryServiceRequest.CreateCustomProtocol( ownerId, name, customProtocol, description )
-    )
+    ) = invoke( ProtocolFactoryServiceRequest.CreateCustomProtocol( ownerId, name, customProtocol, description ) )
 }
 
 

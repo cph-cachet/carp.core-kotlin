@@ -18,7 +18,7 @@ class ApplicationServiceRequestLogger<
     private val decoratee: Command<TRequest>
 ) : Command<TRequest>
 {
-    override suspend fun <TReturn> invoke( request: TRequest ): TReturn
+    override suspend fun invoke( request: TRequest ): Any?
     {
         @Suppress( "UNCHECKED_CAST" )
         fun getCurrentEvents() = eventBusLog.retrieveAndEmptyLog() as List<TEvent>
@@ -26,7 +26,7 @@ class ApplicationServiceRequestLogger<
 
         @Suppress( "TooGenericExceptionCaught" )
         val response =
-            try { decoratee.invoke( request ) as TReturn }
+            try { decoratee.invoke( request ) }
             catch ( ex: Exception )
             {
                 val failed = LoggedRequest.Failed(

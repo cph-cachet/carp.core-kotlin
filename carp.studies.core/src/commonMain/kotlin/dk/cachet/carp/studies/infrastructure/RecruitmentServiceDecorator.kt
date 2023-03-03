@@ -7,8 +7,6 @@ import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.Command
 import dk.cachet.carp.studies.application.RecruitmentService
 import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
-import dk.cachet.carp.studies.application.users.Participant
-import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 
 
 class RecruitmentServiceDecorator(
@@ -21,32 +19,25 @@ class RecruitmentServiceDecorator(
     ),
     RecruitmentService
 {
-    override suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant = invoke(
-        RecruitmentServiceRequest.AddParticipant( studyId, email )
-    )
+    override suspend fun addParticipant( studyId: UUID, email: EmailAddress ) =
+        invoke( RecruitmentServiceRequest.AddParticipant( studyId, email ) )
 
-    override suspend fun getParticipant( studyId: UUID, participantId: UUID ): Participant = invoke(
-        RecruitmentServiceRequest.GetParticipant( studyId, participantId )
-    )
+    override suspend fun getParticipant( studyId: UUID, participantId: UUID ) =
+        invoke( RecruitmentServiceRequest.GetParticipant( studyId, participantId ) )
 
-    override suspend fun getParticipants( studyId: UUID ): List<Participant> = invoke(
-        RecruitmentServiceRequest.GetParticipants( studyId )
-    )
+    override suspend fun getParticipants( studyId: UUID ) =
+        invoke( RecruitmentServiceRequest.GetParticipants( studyId ) )
 
     override suspend fun inviteNewParticipantGroup(
         studyId: UUID,
         group: Set<AssignedParticipantRoles>
-    ): ParticipantGroupStatus = invoke(
-        RecruitmentServiceRequest.InviteNewParticipantGroup( studyId, group )
-    )
+    ) = invoke( RecruitmentServiceRequest.InviteNewParticipantGroup( studyId, group ) )
 
-    override suspend fun getParticipantGroupStatusList( studyId: UUID ): List<ParticipantGroupStatus> = invoke(
-        RecruitmentServiceRequest.GetParticipantGroupStatusList( studyId )
-    )
+    override suspend fun getParticipantGroupStatusList( studyId: UUID ) =
+        invoke( RecruitmentServiceRequest.GetParticipantGroupStatusList( studyId ) )
 
-    override suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ): ParticipantGroupStatus = invoke(
-        RecruitmentServiceRequest.StopParticipantGroup( studyId, groupId )
-    )
+    override suspend fun stopParticipantGroup( studyId: UUID, groupId: UUID ) =
+        invoke( RecruitmentServiceRequest.StopParticipantGroup( studyId, groupId ) )
 }
 
 

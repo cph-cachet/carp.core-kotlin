@@ -6,9 +6,7 @@ import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.Command
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
-import dk.cachet.carp.studies.application.StudyDetails
 import dk.cachet.carp.studies.application.StudyService
-import dk.cachet.carp.studies.application.StudyStatus
 
 
 @Suppress( "TooManyFunctions" )
@@ -23,49 +21,32 @@ class StudyServiceDecorator(
         name: String,
         description: String?,
         invitation: StudyInvitation?
-    ): StudyStatus = invoke(
-        StudyServiceRequest.CreateStudy( ownerId, name, description, invitation )
-    )
+    ) = invoke( StudyServiceRequest.CreateStudy( ownerId, name, description, invitation ) )
 
     override suspend fun setInternalDescription(
         studyId: UUID,
         name: String,
         description: String?
-    ): StudyStatus = invoke(
-        StudyServiceRequest.SetInternalDescription( studyId, name, description )
-    )
+    ) = invoke( StudyServiceRequest.SetInternalDescription( studyId, name, description ) )
 
-    override suspend fun getStudyDetails( studyId: UUID ): StudyDetails = invoke(
-        StudyServiceRequest.GetStudyDetails( studyId )
-    )
+    override suspend fun getStudyDetails( studyId: UUID ) = invoke( StudyServiceRequest.GetStudyDetails( studyId ) )
 
-    override suspend fun getStudyStatus( studyId: UUID ): StudyStatus = invoke(
-        StudyServiceRequest.GetStudyStatus( studyId )
-    )
+    override suspend fun getStudyStatus( studyId: UUID ) = invoke( StudyServiceRequest.GetStudyStatus( studyId ) )
 
-    override suspend fun getStudiesOverview( ownerId: UUID ): List<StudyStatus> = invoke(
-        StudyServiceRequest.GetStudiesOverview( ownerId )
-    )
+    override suspend fun getStudiesOverview( ownerId: UUID ) =
+        invoke( StudyServiceRequest.GetStudiesOverview( ownerId ) )
 
-    override suspend fun setInvitation( studyId: UUID, invitation: StudyInvitation ): StudyStatus = invoke(
-        StudyServiceRequest.SetInvitation( studyId, invitation )
-    )
+    override suspend fun setInvitation( studyId: UUID, invitation: StudyInvitation ) =
+        invoke( StudyServiceRequest.SetInvitation( studyId, invitation ) )
 
-    override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ): StudyStatus = invoke(
-        StudyServiceRequest.SetProtocol( studyId, protocol )
-    )
+    override suspend fun setProtocol( studyId: UUID, protocol: StudyProtocolSnapshot ) =
+        invoke( StudyServiceRequest.SetProtocol( studyId, protocol ) )
 
-    override suspend fun removeProtocol( studyId: UUID ): StudyStatus = invoke(
-        StudyServiceRequest.RemoveProtocol( studyId )
-    )
+    override suspend fun removeProtocol( studyId: UUID ) = invoke( StudyServiceRequest.RemoveProtocol( studyId ) )
 
-    override suspend fun goLive( studyId: UUID ): StudyStatus = invoke(
-        StudyServiceRequest.GoLive( studyId )
-    )
+    override suspend fun goLive( studyId: UUID ) = invoke( StudyServiceRequest.GoLive( studyId ) )
 
-    override suspend fun remove( studyId: UUID ): Boolean = invoke(
-        StudyServiceRequest.Remove( studyId )
-    )
+    override suspend fun remove( studyId: UUID ) = invoke( StudyServiceRequest.Remove( studyId ) )
 }
 
 
