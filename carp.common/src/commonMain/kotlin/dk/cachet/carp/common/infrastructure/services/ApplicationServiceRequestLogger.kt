@@ -1,7 +1,6 @@
 package dk.cachet.carp.common.infrastructure.services
 
 import dk.cachet.carp.common.application.services.ApplicationService
-import dk.cachet.carp.common.application.services.IntegrationEvent
 
 
 /**
@@ -9,19 +8,17 @@ import dk.cachet.carp.common.application.services.IntegrationEvent
  * as well as events preceding the request and fired as a result of the request.
  */
 class ApplicationServiceRequestLogger<
-    TService : ApplicationService<TService, TEvent>,
-    TEvent : IntegrationEvent<TService>,
+    TService : ApplicationService<TService, *>,
     TRequest : ApplicationServiceRequest<TService, *>
 >(
     private val eventBusLog: EventBusLog,
-    private val log: (LoggedRequest<TService, TEvent>) -> Unit = { },
+    private val log: (LoggedRequest<TService>) -> Unit = { },
     private val decoratee: Command<TRequest>
 ) : Command<TRequest>
 {
     override suspend fun invoke( request: TRequest ): Any?
     {
-        @Suppress( "UNCHECKED_CAST" )
-        fun getCurrentEvents() = eventBusLog.retrieveAndEmptyLog() as List<TEvent>
+        fun getCurrentEvents() = eventBusLog.retrieveAndEmptyLog()
         val precedingEvents = getCurrentEvents()
 
         @Suppress( "TooGenericExceptionCaught" )

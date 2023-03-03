@@ -277,7 +277,7 @@ fun <TService : ApplicationService<TService, *>, TResponse> example(
     response: Any? = Unit
 ) = LoggedRequest.Succeeded( request, emptyList(), emptyList(), response )
 
-private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = mapOf(
+private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = mapOf(
     // ProtocolService
     ProtocolService::add to example(
         request = ProtocolServiceRequest.Add( phoneProtocol, "Version 1" )
