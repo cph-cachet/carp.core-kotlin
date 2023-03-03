@@ -15,18 +15,17 @@ open class ApplicationServiceDecorator<
     private val service: TService,
     private val requestInvoker: ApplicationServiceInvoker<TService, TRequest>,
     private val requestDecorator: (Command<TRequest>) -> Command<TRequest>
-) : Command<TRequest>
+)
 {
     private val invokeService =
         object : Command<TRequest>
         {
-            @Suppress( "UNCHECKED_CAST" )
-            override suspend fun <TReturn> invoke( request: TRequest ): TReturn =
-                requestInvoker.invokeOnService( request, service ) as TReturn
+            override suspend fun invoke( request: TRequest ) = requestInvoker.invokeOnService( request, service )
         }
 
-    override suspend fun <TReturn> invoke( request: TRequest ): TReturn =
-        requestDecorator( invokeService ).invoke( request ) as TReturn
+    @Suppress( "UNCHECKED_CAST" ) // While less strict than TRequest, this supports type inference for TReturn.
+    suspend fun <TReturn> invoke( request: ApplicationServiceRequest<TService, TReturn> ): TReturn =
+        requestDecorator( invokeService ).invoke( request as TRequest ) as TReturn
 }
 
 
@@ -35,5 +34,5 @@ open class ApplicationServiceDecorator<
  */
 interface Command<TRequest>
 {
-    suspend fun <TReturn> invoke( request: TRequest ): TReturn
+    suspend fun invoke( request: TRequest ): Any?
 }

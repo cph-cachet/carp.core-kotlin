@@ -20,29 +20,23 @@ class DataStreamServiceDecorator(
     ),
     DataStreamService
 {
-    override suspend fun openDataStreams( configuration: DataStreamsConfiguration ): Unit = invoke(
-        DataStreamServiceRequest.OpenDataStreams( configuration )
-    )
+    override suspend fun openDataStreams( configuration: DataStreamsConfiguration ) =
+        invoke( DataStreamServiceRequest.OpenDataStreams( configuration ) )
 
-    override suspend fun appendToDataStreams( studyDeploymentId: UUID, batch: DataStreamBatch ): Unit = invoke(
-        DataStreamServiceRequest.AppendToDataStreams( studyDeploymentId, batch )
-    )
+    override suspend fun appendToDataStreams( studyDeploymentId: UUID, batch: DataStreamBatch ) =
+        invoke( DataStreamServiceRequest.AppendToDataStreams( studyDeploymentId, batch ) )
 
     override suspend fun getDataStream(
         dataStream: DataStreamId,
         fromSequenceId: Long,
         toSequenceIdInclusive: Long?
-    ): DataStreamBatch = invoke(
-        DataStreamServiceRequest.GetDataStream( dataStream, fromSequenceId, toSequenceIdInclusive )
-    )
+    ) = invoke( DataStreamServiceRequest.GetDataStream( dataStream, fromSequenceId, toSequenceIdInclusive ) )
 
-    override suspend fun closeDataStreams( studyDeploymentIds: Set<UUID> ): Unit = invoke(
-        DataStreamServiceRequest.CloseDataStreams( studyDeploymentIds )
-    )
+    override suspend fun closeDataStreams( studyDeploymentIds: Set<UUID> ) =
+        invoke( DataStreamServiceRequest.CloseDataStreams( studyDeploymentIds ) )
 
-    override suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ): Set<UUID> = invoke(
-        DataStreamServiceRequest.RemoveDataStreams( studyDeploymentIds )
-    )
+    override suspend fun removeDataStreams( studyDeploymentIds: Set<UUID> ) =
+        invoke( DataStreamServiceRequest.RemoveDataStreams( studyDeploymentIds ) )
 }
 
 

@@ -35,9 +35,8 @@ abstract class ApplicationServiceDecoratorTest<
         val ignoreServiceInvocation =
             object : Command<TRequest>
             {
-                // The returned result goes unused in tests, so this cast never fails.
-                @Suppress( "UNCHECKED_CAST" )
-                override suspend fun <TReturn> invoke( request: TRequest ): TReturn = null as TReturn
+                // The returned result goes unused in this test, so just return null.
+                override suspend fun invoke( request: TRequest ): Any? = null
             }
         val loggedService = requestsTest.decoratedServiceConstructor( service )
             { ApplicationServiceRequestLogger( eventBusLog, logger::addLog, ignoreServiceInvocation ) }

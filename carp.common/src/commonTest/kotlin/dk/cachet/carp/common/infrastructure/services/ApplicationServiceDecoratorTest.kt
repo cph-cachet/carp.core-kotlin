@@ -16,9 +16,8 @@ class ApplicationServiceDecoratorTest
     ) : ApplicationServiceDecorator<TestService, TestServiceRequest>( service, TestServiceInvoker, requestDecorator ),
         TestService
     {
-        override suspend fun operation( parameter: Int ): Int = invoke(
-            ApplicationServiceRequestTest.TestServiceRequest.Operation( parameter )
-        )
+        override suspend fun operation( parameter: Int ) =
+            invoke( ApplicationServiceRequestTest.TestServiceRequest.Operation( parameter ) )
     }
 
     object TestServiceInvoker : ApplicationServiceInvoker<TestService, TestServiceRequest>
@@ -37,7 +36,7 @@ class ApplicationServiceDecoratorTest
 
         class Decorator<TRequest>( val name: String, val decoratee: Command<TRequest> ) : Command<TRequest>
         {
-            override suspend fun <TReturn> invoke( request: TRequest ): TReturn
+            override suspend fun invoke( request: TRequest ): Any?
             {
                 invokedDecorators.add( name )
                 return decoratee.invoke( request )
