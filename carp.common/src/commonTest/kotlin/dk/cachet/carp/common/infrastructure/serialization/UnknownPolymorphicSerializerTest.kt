@@ -20,7 +20,7 @@ class UnknownPolymorphicSerializerTest
             subclass( DerivingType::class )
 
             subclass( CustomBaseType::class )
-            default { UnknownBaseTypeSerializer }
+            defaultDeserializer { UnknownBaseTypeSerializer }
         }
     }
 
