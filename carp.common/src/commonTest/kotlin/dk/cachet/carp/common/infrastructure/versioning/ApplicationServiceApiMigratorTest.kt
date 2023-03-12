@@ -50,7 +50,6 @@ class ApplicationServiceApiMigratorTest
         data class GetAnswer( val question: String ) : TestServiceRequest<Int>()
         {
             override fun getResponseSerializer() = Int.serializer()
-            override suspend fun invokeOn( service: TestService ) = service.getAnswer( question )
         }
     }
 

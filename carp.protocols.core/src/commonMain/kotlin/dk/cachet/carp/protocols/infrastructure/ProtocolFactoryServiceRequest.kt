@@ -30,7 +30,5 @@ sealed class ProtocolFactoryServiceRequest<out TReturn> : ApplicationServiceRequ
     ) : ProtocolFactoryServiceRequest<StudyProtocolSnapshot>()
     {
         override fun getResponseSerializer() = serializer<StudyProtocolSnapshot>()
-        override suspend fun invokeOn( service: ProtocolFactoryService ) =
-            service.createCustomProtocol( ownerId, name, customProtocol, description )
     }
 }

@@ -28,21 +28,18 @@ sealed class RecruitmentServiceRequest<out TReturn> : ApplicationServiceRequest<
     data class AddParticipant( val studyId: UUID, val email: EmailAddress ) : RecruitmentServiceRequest<Participant>()
     {
         override fun getResponseSerializer() = serializer<Participant>()
-        override suspend fun invokeOn( service: RecruitmentService ) = service.addParticipant( studyId, email )
     }
 
     @Serializable
     data class GetParticipant( val studyId: UUID, val participantId: UUID ) : RecruitmentServiceRequest<Participant>()
     {
         override fun getResponseSerializer() = serializer<Participant>()
-        override suspend fun invokeOn( service: RecruitmentService ) = service.getParticipant( studyId, participantId )
     }
 
     @Serializable
     data class GetParticipants( val studyId: UUID ) : RecruitmentServiceRequest<List<Participant>>()
     {
         override fun getResponseSerializer() = serializer<List<Participant>>()
-        override suspend fun invokeOn( service: RecruitmentService ) = service.getParticipants( studyId )
     }
 
     @Serializable
@@ -50,8 +47,6 @@ sealed class RecruitmentServiceRequest<out TReturn> : ApplicationServiceRequest<
         RecruitmentServiceRequest<ParticipantGroupStatus>()
     {
         override fun getResponseSerializer() = serializer<ParticipantGroupStatus>()
-        override suspend fun invokeOn( service: RecruitmentService ) =
-            service.inviteNewParticipantGroup( studyId, group )
     }
 
     @Serializable
@@ -59,7 +54,6 @@ sealed class RecruitmentServiceRequest<out TReturn> : ApplicationServiceRequest<
         RecruitmentServiceRequest<List<ParticipantGroupStatus>>()
     {
         override fun getResponseSerializer() = serializer<List<ParticipantGroupStatus>>()
-        override suspend fun invokeOn( service: RecruitmentService ) = service.getParticipantGroupStatusList( studyId )
     }
 
     @Serializable
@@ -67,6 +61,5 @@ sealed class RecruitmentServiceRequest<out TReturn> : ApplicationServiceRequest<
         RecruitmentServiceRequest<ParticipantGroupStatus>()
     {
         override fun getResponseSerializer() = serializer<ParticipantGroupStatus>()
-        override suspend fun invokeOn( service: RecruitmentService ) = service.stopParticipantGroup( studyId, groupId )
     }
 }

@@ -7,7 +7,7 @@ import kotlinx.serialization.Required
 
 
 /**
- * A request for [TService] stored in memory, which can be invoked using [invokeOn].
+ * A request for [TService] stored in memory.
  */
 interface ApplicationServiceRequest<TService : ApplicationService<TService, *>, out TReturn>
 {
@@ -15,5 +15,4 @@ interface ApplicationServiceRequest<TService : ApplicationService<TService, *>, 
     val apiVersion: ApiVersion
 
     fun getResponseSerializer(): KSerializer<out TReturn>
-    suspend fun invokeOn( service: TService ): TReturn
 }

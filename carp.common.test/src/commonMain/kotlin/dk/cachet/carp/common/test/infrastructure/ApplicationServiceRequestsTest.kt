@@ -4,7 +4,6 @@ import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.infrastructure.services.*
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.json.*
@@ -12,8 +11,7 @@ import kotlin.test.*
 
 
 /**
- * Base class to test whether application service request objects can be serialized,
- * and whether they correctly call the application service on invoke.
+ * Base class to test whether application service request objects can be serialized.
  */
 @ExperimentalCoroutinesApi
 @Suppress( "FunctionName" )
@@ -40,23 +38,6 @@ abstract class ApplicationServiceRequestsTest<
         val allRequestObjects = subclassSerializers.map { it.serialName.split( '.' ).last() }.toSet()
 
         assertEquals( allRequestObjects, testedRequestObjects )
-    }
-
-    @Test
-    fun invokeOn_requests_call_service() = runTest {
-        // Create logged service. Events can safely be ignored since they go unused.
-        val eventBusLog = EventBusLog( SingleThreadedEventBus() )
-        val logger = ApplicationServiceLogger<TService, Nothing>()
-        val loggedService = decoratedServiceConstructor( createService() )
-            { ApplicationServiceRequestLogger( eventBusLog, logger::addLog, it ) }
-
-        requests.forEach { request ->
-            try { request.invokeOn( loggedService ) }
-            catch ( ignore: Exception ) { } // Requests do not have to succeed to verify request arrived.
-            assertTrue( logger.wasCalled( request ) )
-
-            logger.clear()
-        }
     }
 
     @Test

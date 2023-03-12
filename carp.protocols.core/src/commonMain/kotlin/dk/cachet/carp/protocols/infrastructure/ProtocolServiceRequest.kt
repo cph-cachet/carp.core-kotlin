@@ -29,7 +29,6 @@ sealed class ProtocolServiceRequest<out TReturn> : ApplicationServiceRequest<Pro
         ProtocolServiceRequest<Unit>()
     {
         override fun getResponseSerializer() = serializer<Unit>()
-        override suspend fun invokeOn( service: ProtocolService ) = service.add( protocol, versionTag )
     }
 
     @Serializable
@@ -39,7 +38,6 @@ sealed class ProtocolServiceRequest<out TReturn> : ApplicationServiceRequest<Pro
     ) : ProtocolServiceRequest<Unit>()
     {
         override fun getResponseSerializer() = serializer<Unit>()
-        override suspend fun invokeOn( service: ProtocolService ) = service.addVersion( protocol, versionTag )
     }
 
     @Serializable
@@ -50,8 +48,6 @@ sealed class ProtocolServiceRequest<out TReturn> : ApplicationServiceRequest<Pro
     ) : ProtocolServiceRequest<StudyProtocolSnapshot>()
     {
         override fun getResponseSerializer() = serializer<StudyProtocolSnapshot>()
-        override suspend fun invokeOn( service: ProtocolService ) =
-            service.updateParticipantDataConfiguration( protocolId, versionTag, expectedParticipantData )
     }
 
     @Serializable
@@ -59,20 +55,17 @@ sealed class ProtocolServiceRequest<out TReturn> : ApplicationServiceRequest<Pro
         ProtocolServiceRequest<StudyProtocolSnapshot>()
     {
         override fun getResponseSerializer() = serializer<StudyProtocolSnapshot>()
-        override suspend fun invokeOn( service: ProtocolService ) = service.getBy( protocolId, versionTag )
     }
 
     @Serializable
     data class GetAllForOwner( val ownerId: UUID ) : ProtocolServiceRequest<List<StudyProtocolSnapshot>>()
     {
         override fun getResponseSerializer() = serializer<List<StudyProtocolSnapshot>>()
-        override suspend fun invokeOn( service: ProtocolService ) = service.getAllForOwner( ownerId )
     }
 
     @Serializable
     data class GetVersionHistoryFor( val protocolId: UUID ) : ProtocolServiceRequest<List<ProtocolVersion>>()
     {
         override fun getResponseSerializer() = serializer<List<ProtocolVersion>>()
-        override suspend fun invokeOn( service: ProtocolService ) = service.getVersionHistoryFor( protocolId )
     }
 }

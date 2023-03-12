@@ -29,16 +29,12 @@ sealed class ParticipationServiceRequest<out TReturn> : ApplicationServiceReques
         ParticipationServiceRequest<Set<ActiveParticipationInvitation>>()
     {
         override fun getResponseSerializer() = serializer<Set<ActiveParticipationInvitation>>()
-        override suspend fun invokeOn( service: ParticipationService ) =
-            service.getActiveParticipationInvitations( accountId )
     }
 
     @Serializable
     data class GetParticipantData( val studyDeploymentId: UUID ) : ParticipationServiceRequest<ParticipantData>()
     {
         override fun getResponseSerializer() = serializer<ParticipantData>()
-        override suspend fun invokeOn( service: ParticipationService ) =
-            service.getParticipantData( studyDeploymentId )
     }
 
     @Serializable
@@ -46,8 +42,6 @@ sealed class ParticipationServiceRequest<out TReturn> : ApplicationServiceReques
         ParticipationServiceRequest<List<ParticipantData>>()
     {
         override fun getResponseSerializer() = serializer<List<ParticipantData>>()
-        override suspend fun invokeOn( service: ParticipationService ) =
-            service.getParticipantDataList( studyDeploymentIds )
     }
 
     @Serializable
@@ -59,7 +53,5 @@ sealed class ParticipationServiceRequest<out TReturn> : ApplicationServiceReques
         ParticipationServiceRequest<ParticipantData>()
     {
         override fun getResponseSerializer() = serializer<ParticipantData>()
-        override suspend fun invokeOn( service: ParticipationService ) =
-            service.setParticipantData( studyDeploymentId, data, inputByParticipantRole )
     }
 }
