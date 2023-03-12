@@ -49,7 +49,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( Sex::class, PolymorphicEnumSerializer( Sex.serializer() ) )
 
         subclass( CustomData::class )
-        default { DataSerializer }
+        defaultDeserializer { DataSerializer }
     }
     polymorphic( InputElement::class )
     {
@@ -73,13 +73,13 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         registerPrimaryDeviceConfigurationSubclasses()
 
         subclass( CustomDeviceConfiguration::class )
-        default { DeviceConfigurationSerializer }
+        defaultDeserializer { DeviceConfigurationSerializer }
     }
     polymorphic( PrimaryDeviceConfiguration::class )
     {
         registerPrimaryDeviceConfigurationSubclasses()
 
-        default { PrimaryDeviceConfigurationSerializer }
+        defaultDeserializer { PrimaryDeviceConfigurationSerializer }
     }
     polymorphic( DeviceRegistration::class )
     {
@@ -89,7 +89,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( MACAddressDeviceRegistration::class )
 
         subclass( CustomDeviceRegistration::class )
-        default { DeviceRegistrationSerializer }
+        defaultDeserializer { DeviceRegistrationSerializer }
     }
 
 
@@ -107,7 +107,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( NoOptionsSamplingConfiguration::class, NoOptionsSamplingConfiguration.serializer() )
 
         subclass( CustomSamplingConfiguration::class )
-        default { SamplingConfigurationSerializer }
+        defaultDeserializer { SamplingConfigurationSerializer }
     }
 
 
@@ -119,7 +119,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( WebTask::class )
 
         subclass( CustomTaskConfiguration::class )
-        default { TaskConfigurationSerializer }
+        defaultDeserializer { TaskConfigurationSerializer }
     }
 
 
@@ -131,7 +131,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( ScheduledTrigger::class )
 
         subclass( CustomTriggerConfiguration::class )
-        default { TriggerConfigurationSerializer }
+        defaultDeserializer { TriggerConfigurationSerializer }
     }
 
 
