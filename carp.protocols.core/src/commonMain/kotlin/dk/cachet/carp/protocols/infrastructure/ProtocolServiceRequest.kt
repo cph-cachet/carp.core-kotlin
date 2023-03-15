@@ -10,12 +10,15 @@ import dk.cachet.carp.protocols.application.ProtocolVersion
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.datetime.Clock
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Serializable application service requests to [ProtocolService] which can be executed on demand.
  */
 @Serializable
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 sealed class ProtocolServiceRequest<out TReturn> : ApplicationServiceRequest<ProtocolService, TReturn>
 {
     @Required

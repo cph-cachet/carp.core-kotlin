@@ -5,14 +5,14 @@ declare module "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
         interface System
         {
             // now
-            b12(): Instant_0
+            d12(): Instant_0
         }
         function System_getInstance(): System
 
         interface Instant_0
         {
             // toEpochMilliseconds
-            o12(): number
+            q12(): number
         }
     }
 }

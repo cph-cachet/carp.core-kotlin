@@ -10,12 +10,15 @@ import dk.cachet.carp.studies.application.StudyDetails
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyStatus
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Serializable application service requests to [StudyService] which can be executed on demand.
  */
 @Serializable
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 sealed class StudyServiceRequest<out TReturn> : ApplicationServiceRequest<StudyService, TReturn>
 {
     @Required

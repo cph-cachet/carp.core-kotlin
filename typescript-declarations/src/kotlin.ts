@@ -54,10 +54,10 @@ export namespace kotlin.time
     }
     export namespace Duration
     {
-        export const Companion: any = kotlinStdLib.$_$.Companion_getInstance_6()
-        export const parseIsoString: (isoDuration: string) => Duration = Companion.j6
-        export const ZERO: Duration = Companion.g6_1
-        export const INFINITE: Duration = Companion.h6_1
+        export const Companion: any = kotlinStdLib.$_$.Companion_getInstance_7()
+        export const parseIsoString: (isoDuration: string) => Duration = Companion.n6
+        export const ZERO: Duration = Companion.k6_1
+        export const INFINITE: Duration = Companion.l6_1
     }
 }
 

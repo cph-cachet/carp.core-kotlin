@@ -10,12 +10,15 @@ import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
 import dk.cachet.carp.data.application.DataStreamsConfiguration
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Serializable application service requests to [DataStreamServiceRequest] which can be executed on demand.
  */
 @Serializable
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<DataStreamService, TReturn>
 {
     @Required
