@@ -10,12 +10,15 @@ import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployments.application.users.ParticipantData
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Serializable application service requests to [ParticipationService] which can be executed on demand.
  */
 @Serializable
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 sealed class ParticipationServiceRequest<out TReturn> : ApplicationServiceRequest<ParticipationService, TReturn>
 {
     @Required

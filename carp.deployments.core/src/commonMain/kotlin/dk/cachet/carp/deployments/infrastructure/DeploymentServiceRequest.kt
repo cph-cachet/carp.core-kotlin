@@ -12,12 +12,15 @@ import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.datetime.Instant
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Serializable application service requests to [DeploymentService] which can be executed on demand.
  */
 @Serializable
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<DeploymentService, TReturn>
 {
     @Required

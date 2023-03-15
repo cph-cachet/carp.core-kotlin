@@ -59,15 +59,15 @@ declare module "kotlin-kotlin-stdlib-js-ir"
         interface DurationCompanion
         {
             // parseIsoString
-            j6(): Duration
+            n6(): Duration
 
             // ZERO
-            g6_1: Duration
+            k6_1: Duration
 
             // INFINITE
-            h6_1: Duration
+            l6_1: Duration
         }
-        function Companion_getInstance_6(): DurationCompanion
+        function Companion_getInstance_7(): DurationCompanion
         function _Duration___get_inWholeMilliseconds__impl__msfiry(duration: Duration): Long
         function _Duration___get_inWholeMicroseconds__impl__8oe8vv(duration: Duration): Long
     }
