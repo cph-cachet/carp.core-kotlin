@@ -1,4 +1,5 @@
-import * as extend from "kotlinx-serialization-kotlinx-serialization-json-js-ir"
+import * as extendCore from "kotlinx-serialization-kotlinx-serialization-core-js-ir"
+import * as extendJson from "kotlinx-serialization-kotlinx-serialization-json-js-ir"
 
 
 // Facade with better method names and type conversions for internal types.
@@ -11,8 +12,14 @@ export namespace kotlinx.serialization.json
     }
     export namespace Json
     {
-        export const Default: Json = extend.$_$.Default_getInstance()
+        export const Default: Json = extendJson.$_$.Default_getInstance()
     }
+}
+export namespace kotlinx.serialization.builtins
+{
+    export const ListSerializer: (serializer: any) => any = extendCore.$_$.ListSerializer
+    export const MapSerializer: (keySerializer: any, valueSerializer: any) => any = extendCore.$_$.MapSerializer
+    export const SetSerializer: (serializer: any) => any = extendCore.$_$.SetSerializer
 }
 
 
@@ -28,12 +35,12 @@ declare module "kotlinx-serialization-kotlinx-serialization-json-js-ir"
 
 
 // Implement base interfaces in internal types.
-extend.$_$.JsonImpl.prototype.encodeToString =
+extendJson.$_$.JsonImpl.prototype.encodeToString =
     function( serializer: any, value: any ): string
     {
         return this.t12( serializer, value );
     };
-extend.$_$.JsonImpl.prototype.decodeFromString =
+extendJson.$_$.JsonImpl.prototype.decodeFromString =
     function( serializer: any, string: string ): any
     {
         return this.u12( serializer, string );
