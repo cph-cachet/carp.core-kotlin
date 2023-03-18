@@ -12,7 +12,7 @@ import kotlin.js.JsName
 @Polymorphic
 interface AccountIdentity
 {
-    companion object Factory
+    companion object
     {
         /**
          * Create an [AccountIdentity] identified by an [emailAddress] somebody has access to.
