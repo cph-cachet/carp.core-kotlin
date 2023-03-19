@@ -29,15 +29,6 @@ declare module "carp.core-kotlin-carp.common"
     {
         type Json = kotlinSerialization.kotlinx.serialization.json.Json
     }
-
-
-    // Augment internal types to implement desired base interfaces.
-    namespace dk.cachet.carp.common.application.users
-    {
-        interface AccountIdentity {}
-        interface EmailAccountIdentity extends AccountIdentity {}
-        interface UsernameAccountIdentity extends AccountIdentity {}
-    }
 }
 
 
