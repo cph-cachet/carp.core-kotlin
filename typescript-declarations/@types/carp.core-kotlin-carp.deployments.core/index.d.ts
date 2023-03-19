@@ -1,4 +1,4 @@
-import * as studies from "carp.core-kotlin-carp.deployments.core"
+import * as deployments from "carp.core-kotlin-carp.deployments.core"
 
 
 declare module "carp.core-kotlin-carp.deployments.core"

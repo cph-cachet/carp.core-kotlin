@@ -30,10 +30,6 @@ declare module "carp.core-kotlin-carp.deployments.core"
     {
         type Json = kotlinSerialization.kotlinx.serialization.json.Json
     }
-    namespace dk.cachet.carp.common.application.users
-    {
-        type AccountIdentity = carpCommon.dk.cachet.carp.common.application.users.AccountIdentity
-    }
 }
 
 
