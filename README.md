@@ -192,7 +192,7 @@ val ownerId = UUID.randomUUID()
 val protocol = StudyProtocol( ownerId, "Track patient movement" )
 
 // Define which devices are used for data collection.
-val phone = Smartphone( "Patient's phone" )
+val phone = Smartphone.create( "Patient's phone" )
 {
     // Configure device-specific options, e.g., frequency to collect data at.
     defaultSamplingConfiguration {

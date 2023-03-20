@@ -12,17 +12,19 @@ import kotlin.test.*
 class SmartphoneTest
 {
     @Test
-    fun builder_sets_sampling_configuration()
+    fun builder_sets_fields()
     {
         val expectedGranularity = Granularity.Balanced
 
-        val phone = Smartphone( "Test" )
+        val phone = Smartphone.create( "Test" )
         {
+            isOptional = true
             defaultSamplingConfiguration {
                 geolocation { allBatteryLevels { granularity = expectedGranularity } }
             }
         }
 
+        assertTrue( phone.isOptional )
         val type = Smartphone.Sensors.GEOLOCATION.dataType.type
         val configuration = phone.defaultSamplingConfiguration[ type ] as? BatteryAwareSamplingConfiguration<*>
         assertNotNull( configuration )
