@@ -11,6 +11,12 @@ declare module "carp.core-kotlin-carp.protocols.core"
     {
         type Long = kotlinStdLib.kotlin.Long
     }
+    namespace kotlin.reflect
+    {
+        // When used as a type parameter for a type exported through `forced-exports`, normally compiled as `any`,
+        // `KClass` can't be resolved. But, no facade is implemented for `KClass` as it isn't needed yet by TS clients.
+        type KClass<T> = any
+    }
     namespace kotlin.time
     {
         type Duration = kotlinStdLib.kotlin.time.Duration
