@@ -1,10 +1,10 @@
-import * as extend from "carp.core-kotlin-carp.protocols.core"
+import * as extend from "carp-protocols-core-generated"
 import * as kotlinStdLib from "./kotlin"
 import * as kotlinDateTime from "./kotlinx-datetime"
 import * as kotlinSerialization from "./kotlinx-serialization"
 
 
-declare module "carp.core-kotlin-carp.protocols.core"
+declare module "carp-protocols-core-generated"
 {
     // Declare missing types for which no imports were generated.
     namespace kotlin
@@ -39,4 +39,4 @@ declare module "carp.core-kotlin-carp.protocols.core"
 
 
 // Export facade.
-export * from "carp.core-kotlin-carp.protocols.core"
+export * from "carp-protocols-core-generated"

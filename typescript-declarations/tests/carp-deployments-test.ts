@@ -1,12 +1,12 @@
 import VerifyModule from './VerifyModule'
 
 
-describe( "carp.deployments.core", () => {
+describe( "carp-deployments-core", () => {
     it( "verify module declarations", async () => {
         const instances: any[] = []
 
         const moduleVerifier = new VerifyModule(
-            'carp.core-kotlin-carp.deployments.core',
+            'carp-deployments-core-generated',
             instances
         )
         await moduleVerifier.verify()

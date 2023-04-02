@@ -11,20 +11,20 @@ import Clock = kcd.datetime.Clock
 import { kotlinx as scd } from '../src/kotlinx-serialization'
 import ListSerializer = scd.serialization.builtins.ListSerializer
 
-import { dk as cdk } from 'carp.core-kotlin-carp.common'
+import { dk as cdk } from 'carp-common-generated'
 import UUID = cdk.cachet.carp.common.application.UUID
 import Username = cdk.cachet.carp.common.application.users.Username
 import AssignedTo = cdk.cachet.carp.common.application.users.AssignedTo
 import UsernameAccountIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
 import JSON = cdk.cachet.carp.common.infrastructure.serialization.JSON
 
-import { dk as ddk } from 'carp.core-kotlin-carp.deployments.core'
+import { dk as ddk } from 'carp-deployments-core-generated'
 import DeviceDeploymentStatus = ddk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import StudyDeploymentStatus = ddk.cachet.carp.deployments.application.StudyDeploymentStatus
 import ParticipantStatus = ddk.cachet.carp.deployments.application.users.ParticipantStatus
 import StudyInvitation = ddk.cachet.carp.deployments.application.users.StudyInvitation
 
-import { dk } from 'carp.core-kotlin-carp.studies.core'
+import { dk } from 'carp-studies-core-generated'
 import StudyStatus = dk.cachet.carp.studies.application.StudyStatus
 import AssignedParticipantRoles = dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import Participant = dk.cachet.carp.studies.application.users.Participant
@@ -35,12 +35,12 @@ import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceR
 import RecruitmentServiceRequest = dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest
 
 
-describe( "carp.studies.core", () => {
+describe( "carp-studies-core", () => {
     it( "verify module declarations", async () => {
         const instances: any[] = []
 
         const moduleVerifier = new VerifyModule(
-            'carp.core-kotlin-carp.studies.core',
+            'carp-studies-core-generated',
             instances
         )
         await moduleVerifier.verify()

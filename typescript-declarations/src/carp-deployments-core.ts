@@ -1,11 +1,11 @@
-import * as extend from "carp.core-kotlin-carp.deployments.core"
+import * as extend from "carp-deployments-core-generated"
 import * as kotlinStdLib from "./kotlin"
 import * as kotlinDateTime from "./kotlinx-datetime"
 import * as kotlinSerialization from "./kotlinx-serialization"
 import * as carpCommon from "./carp-common"
 
 
-declare module "carp.core-kotlin-carp.deployments.core"
+declare module "carp-deployments-core-generated"
 {
     // Declare missing types for which no imports were generated.
     namespace kotlin
@@ -40,4 +40,4 @@ declare module "carp.core-kotlin-carp.deployments.core"
 
 
 // Export facade.
-export * from "carp.core-kotlin-carp.deployments.core"
+export * from "carp-deployments-core-generated"
