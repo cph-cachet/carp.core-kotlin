@@ -25,12 +25,12 @@ import IntervalSamplingConfiguration = dk.cachet.carp.common.application.samplin
 import JSON = dk.cachet.carp.common.infrastructure.serialization.JSON
 
 
-describe( "carp.common", () => {
+describe( "carp-common", () => {
     it( "verify module declarations", async () => {
         const instances: any[] = []
 
         const moduleVerifier = new VerifyModule(
-            'carp.core-kotlin-carp.common',
+            'carp-common-generated',
             instances
         )
         await moduleVerifier.verify()
