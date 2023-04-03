@@ -11,3 +11,11 @@ kotlin {
         }
     }
 }
+
+
+// This project is not intended to be published, but the root project is.
+// This skips this project when publishing the root: https://stackoverflow.com/a/59096967/590790
+apply {
+    plugin("maven-publish")
+}
+project.tasks.publish.enabled = false
