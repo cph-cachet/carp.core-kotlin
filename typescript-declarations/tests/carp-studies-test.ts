@@ -11,28 +11,30 @@ import Clock = kcd.datetime.Clock
 import { kotlinx as scd } from '../src/kotlinx-serialization'
 import ListSerializer = scd.serialization.builtins.ListSerializer
 
-import { dk as cdk } from 'carp-common-generated'
-import UUID = cdk.cachet.carp.common.application.UUID
-import Username = cdk.cachet.carp.common.application.users.Username
-import AssignedTo = cdk.cachet.carp.common.application.users.AssignedTo
-import UsernameAccountIdentity = cdk.cachet.carp.common.application.users.UsernameAccountIdentity
-import JSON = cdk.cachet.carp.common.infrastructure.serialization.JSON
+import { dk } from '../src/carp-studies-core'
 
-import { dk as ddk } from 'carp-deployments-core-generated'
-import DeviceDeploymentStatus = ddk.cachet.carp.deployments.application.DeviceDeploymentStatus
-import StudyDeploymentStatus = ddk.cachet.carp.deployments.application.StudyDeploymentStatus
-import ParticipantStatus = ddk.cachet.carp.deployments.application.users.ParticipantStatus
-import StudyInvitation = ddk.cachet.carp.deployments.application.users.StudyInvitation
+import common = dk.cachet.carp.common
+import UUID = common.application.UUID
+import Username = common.application.users.Username
+import AssignedTo = common.application.users.AssignedTo
+import UsernameAccountIdentity = common.application.users.UsernameAccountIdentity
+import JSON = common.infrastructure.serialization.JSON
 
-import { dk } from 'carp-studies-core-generated'
-import StudyStatus = dk.cachet.carp.studies.application.StudyStatus
-import AssignedParticipantRoles = dk.cachet.carp.studies.application.users.AssignedParticipantRoles
-import Participant = dk.cachet.carp.studies.application.users.Participant
-import ParticipantGroupStatus = dk.cachet.carp.studies.application.users.ParticipantGroupStatus
-import participantIds = dk.cachet.carp.studies.application.users.participantIds
-import participantRoles = dk.cachet.carp.studies.application.users.participantRoles
-import StudyServiceRequest = dk.cachet.carp.studies.infrastructure.StudyServiceRequest
-import RecruitmentServiceRequest = dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest
+import deployments = dk.cachet.carp.deployments
+import DeviceDeploymentStatus = deployments.application.DeviceDeploymentStatus
+import StudyDeploymentStatus = deployments.application.StudyDeploymentStatus
+import ParticipantStatus = deployments.application.users.ParticipantStatus
+import StudyInvitation = deployments.application.users.StudyInvitation
+
+import studies = dk.cachet.carp.studies
+import StudyStatus = studies.application.StudyStatus
+import AssignedParticipantRoles = studies.application.users.AssignedParticipantRoles
+import Participant = studies.application.users.Participant
+import ParticipantGroupStatus = studies.application.users.ParticipantGroupStatus
+import participantIds = studies.application.users.participantIds
+import participantRoles = studies.application.users.participantRoles
+import StudyServiceRequest = studies.infrastructure.StudyServiceRequest
+import RecruitmentServiceRequest = studies.infrastructure.RecruitmentServiceRequest
 
 
 describe( "carp-studies-core", () => {
@@ -125,8 +127,7 @@ describe( "carp-studies-core", () => {
             const now = Clock.System.now()
             const deploymentStatus = new StudyDeploymentStatus.Running( now, deploymentId, listOf<DeviceDeploymentStatus>( [] ), listOf<ParticipantStatus>( [] ), now )
             const participants = setOf( [ new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ) ] )
-            const castDeploymentStatus = deploymentStatus as any // HACK: Type safety needs to be turned off due to loading from different packages.
-            const group = new ParticipantGroupStatus.Invited( deploymentId, participants, now, castDeploymentStatus )
+            const group = new ParticipantGroupStatus.Invited( deploymentId, participants, now, deploymentStatus )
 
             const serializer = ParticipantGroupStatus.Companion.serializer()
             const serialized = JSON.encodeToString( serializer, group )

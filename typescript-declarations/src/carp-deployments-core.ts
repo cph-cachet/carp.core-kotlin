@@ -39,5 +39,9 @@ declare module "carp-deployments-core-generated"
 }
 
 
+// Set namespace objects of dependent imported modules, so that they aren't "undefined" at runtime.
+extend.dk.cachet.carp.common = carpCommon.dk.cachet.carp.common as any;
+
+
 // Export facade.
 export * from "carp-deployments-core-generated"
