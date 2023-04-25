@@ -2,6 +2,7 @@ import * as extend from "carp-protocols-core-generated"
 import * as kotlinStdLib from "./kotlin"
 import * as kotlinDateTime from "./kotlinx-datetime"
 import * as kotlinSerialization from "./kotlinx-serialization"
+import * as carpCommon from "./carp-common"
 
 
 declare module "carp-protocols-core-generated"
@@ -36,6 +37,10 @@ declare module "carp-protocols-core-generated"
         type Json = kotlinSerialization.kotlinx.serialization.json.Json
     }
 }
+
+
+// Set namespace objects of dependent imported modules, so that they aren't "undefined" at runtime.
+extend.dk.cachet.carp.common = carpCommon.dk.cachet.carp.common as any;
 
 
 // Export facade.
