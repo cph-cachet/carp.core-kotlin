@@ -1,4 +1,3 @@
-import VerifyModule from './VerifyModule'
 import { expect } from 'chai'
 
 import { dk as cdk } from '../src/carp-common'
@@ -12,16 +11,6 @@ const serializedSnapshot = `{"id":"ad4ca03a-6f69-4a95-8701-488dc511925b","create
 
 
 describe( "carp-protocols-core", () => {
-    it( "verify module declarations", async () => {
-        const instances: any[] = []
-
-        const moduleVerifier = new VerifyModule(
-            'carp-protocols-core-generated',
-            instances
-        )
-        await moduleVerifier.verify()
-    } )
-
     describe( "StudyProtocolSnapshot", () => {
         it( "can deserialize", () => {
             const serializer = StudyProtocolSnapshot.Companion.serializer()

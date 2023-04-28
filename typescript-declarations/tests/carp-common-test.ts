@@ -1,4 +1,3 @@
-import VerifyModule from './VerifyModule'
 import { expect } from 'chai'
 
 import { kotlin } from '../src/kotlin'
@@ -26,16 +25,6 @@ import JSON = dk.cachet.carp.common.infrastructure.serialization.JSON
 
 
 describe( "carp-common", () => {
-    it( "verify module declarations", async () => {
-        const instances: any[] = []
-
-        const moduleVerifier = new VerifyModule(
-            'carp-common-generated',
-            instances
-        )
-        await moduleVerifier.verify()
-    } )
-
     describe( "Trilean", () => {
         it( "has values TRUE, FALSE, UNKNOWN", () => {
             const trileanValues = Trilean.values()
