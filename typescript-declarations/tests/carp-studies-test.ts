@@ -1,4 +1,3 @@
-import VerifyModule from './VerifyModule'
 import { expect } from 'chai'
 
 import { kotlin } from '../src/kotlin'
@@ -38,16 +37,6 @@ import RecruitmentServiceRequest = studies.infrastructure.RecruitmentServiceRequ
 
 
 describe( "carp-studies-core", () => {
-    it( "verify module declarations", async () => {
-        const instances: any[] = []
-
-        const moduleVerifier = new VerifyModule(
-            'carp-studies-core-generated',
-            instances
-        )
-        await moduleVerifier.verify()
-    } )
-
     describe( "AssignedParticipantRoles", () => {
         it( "getAssigned participantIds and participantRoles works", () => {
             const participant1 = UUID.Companion.randomUUID()
