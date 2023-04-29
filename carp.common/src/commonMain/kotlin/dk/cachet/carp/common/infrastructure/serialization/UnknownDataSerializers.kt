@@ -10,8 +10,11 @@ import kotlinx.serialization.json.Json
  */
 @Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( DataSerializer::class )
-data class CustomData( override val className: String, override val jsonSource: String, val serializer: Json ) :
-    Data, UnknownPolymorphicWrapper
+data class CustomData internal constructor(
+    override val className: String,
+    override val jsonSource: String,
+    val serializer: Json
+) : Data, UnknownPolymorphicWrapper
 
 /**
  * Custom serializer for [Data] which enables deserializing types that are unknown at runtime, yet extend from [Data].

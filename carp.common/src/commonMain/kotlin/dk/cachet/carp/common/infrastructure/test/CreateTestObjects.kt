@@ -10,8 +10,11 @@ import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskConfiguration
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.COMMON_SERIAL_MODULE
+import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceConfiguration
+import dk.cachet.carp.common.infrastructure.serialization.CustomPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.*
 import kotlin.reflect.KClass
@@ -71,6 +74,19 @@ fun String.makeUnknown(
     this.makeUnknown( data, Data::class, "data", data.data, unknownTypeName )
 
 /**
+ * Mimic an unknown [DeviceConfiguration] by wrapping this device configuration in the
+ * [CustomDeviceConfiguration] wrapper which gets applied if it were deserialized as an unknown type.
+ */
+fun AnyDeviceConfiguration.makeUnknown(
+    json: Json,
+    unknownTypeName: String = "com.unknown.UnknownDeviceConfiguration"
+): CustomDeviceConfiguration = CustomDeviceConfiguration(
+    unknownTypeName,
+    json.encodeToString( PolymorphicSerializer( DeviceConfiguration::class ), this ),
+    json
+)
+
+/**
  * Replace the type name of [deviceConfiguration] in this JSON string with [unknownTypeName].
  */
 fun String.makeUnknown(
@@ -78,6 +94,19 @@ fun String.makeUnknown(
     unknownTypeName: String = "com.unknown.UnknownDeviceConfiguration"
 ): String =
     this.makeUnknown( deviceConfiguration, DeviceConfiguration::class, "roleName", deviceConfiguration.roleName, unknownTypeName )
+
+/**
+ * Mimic an unknown [PrimaryDeviceConfiguration] by wrapping this device configuration in the
+ * [CustomPrimaryDeviceConfiguration] wrapper which gets applied if it were deserialized as an unknown type.
+ */
+fun AnyPrimaryDeviceConfiguration.makeUnknown(
+    json: Json,
+    unknownTypeName: String = "com.unknown.UnknownPrimaryDeviceConfiguration"
+): CustomPrimaryDeviceConfiguration = CustomPrimaryDeviceConfiguration(
+    unknownTypeName,
+    json.encodeToString( PolymorphicSerializer( PrimaryDeviceConfiguration::class ), this ),
+    json
+)
 
 /**
  * Replace the type name of [primaryDeviceConfiguration] in this JSON string with [unknownTypeName].

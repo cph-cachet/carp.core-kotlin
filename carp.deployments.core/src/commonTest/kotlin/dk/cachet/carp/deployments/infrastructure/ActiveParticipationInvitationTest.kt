@@ -1,9 +1,9 @@
 package dk.cachet.carp.deployments.infrastructure
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.infrastructure.serialization.CustomPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
+import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
 import dk.cachet.carp.deployments.application.users.Participation
@@ -38,9 +38,7 @@ class ActiveParticipationInvitationTest
     fun serializing_unknown_primary_device_removes_the_wrapper()
     {
         val json = createTestJSON()
-        val primaryDevice = StubPrimaryDeviceConfiguration()
-        val primaryDeviceJson = json.encodeToString( primaryDevice )
-        val unknownPrimaryDevice = CustomPrimaryDeviceConfiguration( "unknown.device", primaryDeviceJson, json )
+        val unknownPrimaryDevice = StubPrimaryDeviceConfiguration().makeUnknown( json, "unknown.device" )
         val invitation = ActiveParticipationInvitation(
             Participation( UUID.randomUUID() ),
             StudyInvitation( "Some study" ),

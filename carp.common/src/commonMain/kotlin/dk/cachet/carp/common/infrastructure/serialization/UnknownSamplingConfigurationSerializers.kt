@@ -10,7 +10,7 @@ import kotlinx.serialization.json.Json
  */
 @Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( SamplingConfigurationSerializer::class )
-data class CustomSamplingConfiguration(
+data class CustomSamplingConfiguration internal constructor(
     override val className: String,
     override val jsonSource: String,
     val serializer: Json
