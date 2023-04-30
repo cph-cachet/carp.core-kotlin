@@ -1,16 +1,16 @@
 import { expect } from 'chai'
 
-import { kotlin } from '../src/kotlin'
+import { kotlin } from '@cachet/carp-kotlin'
 import setOf = kotlin.collections.setOf
 import listOf = kotlin.collections.listOf
 
-import { kotlinx as kcd } from '../src/kotlinx-datetime'
+import { kotlinx as kcd } from '@cachet/carp-kotlinx-datetime'
 import Clock = kcd.datetime.Clock
 
-import { kotlinx as scd } from '../src/kotlinx-serialization'
+import { kotlinx as scd } from '@cachet/carp-kotlinx-serialization'
 import ListSerializer = scd.serialization.builtins.ListSerializer
 
-import { dk } from '../src/carp-studies-core'
+import { dk } from '@cachet/carp-studies-core'
 
 import common = dk.cachet.carp.common
 import UUID = common.application.UUID

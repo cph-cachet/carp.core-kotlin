@@ -1,4 +1,4 @@
-declare module "kotlin-kotlin-stdlib-js-ir"
+declare module "@cachet/kotlin-kotlin-stdlib-js-ir"
 {
     namespace $_$
     {

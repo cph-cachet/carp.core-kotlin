@@ -1,4 +1,4 @@
-declare module "kotlinx-serialization-kotlinx-serialization-core-js-ir"
+declare module "@cachet/kotlinx-serialization-kotlinx-serialization-core-js-ir"
 {
     namespace $_$
     {

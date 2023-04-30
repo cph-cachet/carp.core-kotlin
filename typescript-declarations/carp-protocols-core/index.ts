@@ -1,10 +1,11 @@
-import * as extend from "carp-common-generated"
-import * as kotlinStdLib from "./kotlin"
-import * as kotlinDateTime from "./kotlinx-datetime"
-import * as kotlinSerialization from "./kotlinx-serialization"
+import * as extend from "@cachet/carp-protocols-core-generated"
+import * as kotlinStdLib from "@cachet/carp-kotlin"
+import * as kotlinDateTime from "@cachet/carp-kotlinx-datetime"
+import * as kotlinSerialization from "@cachet/carp-kotlinx-serialization"
+import * as carpCommon from "@cachet/carp-common"
 
 
-declare module "carp-common-generated"
+declare module "@cachet/carp-protocols-core-generated"
 {
     // Declare missing types for which no imports were generated.
     namespace kotlin
@@ -38,5 +39,9 @@ declare module "carp-common-generated"
 }
 
 
+// Set namespace objects of dependent imported modules, so that they aren't "undefined" at runtime.
+extend.dk.cachet.carp.common = carpCommon.dk.cachet.carp.common as any;
+
+
 // Export facade.
-export * from "carp-common-generated"
+export * from "@cachet/carp-protocols-core-generated"

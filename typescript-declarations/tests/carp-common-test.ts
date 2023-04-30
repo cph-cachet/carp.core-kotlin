@@ -1,13 +1,13 @@
 import { expect } from 'chai'
 
-import { kotlin } from '../src/kotlin'
+import { kotlin } from '@cachet/carp-kotlin'
 import setOf = kotlin.collections.setOf
 import Duration = kotlin.time.Duration
 
-import { kotlinx } from '../src/kotlinx-serialization'
+import { kotlinx } from '@cachet/carp-kotlinx-serialization'
 import Json = kotlinx.serialization.json.Json
 
-import { dk } from '../src/carp-common'
+import { dk } from '@cachet/carp-common'
 import Trilean = dk.cachet.carp.common.application.Trilean
 import toTrilean = dk.cachet.carp.common.application.toTrilean
 import EmailAddress = dk.cachet.carp.common.application.EmailAddress

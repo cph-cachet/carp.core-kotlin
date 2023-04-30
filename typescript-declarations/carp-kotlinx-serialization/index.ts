@@ -1,5 +1,5 @@
-import * as extendCore from "kotlinx-serialization-kotlinx-serialization-core-js-ir"
-import * as extendJson from "kotlinx-serialization-kotlinx-serialization-json-js-ir"
+import * as extendCore from "@cachet/kotlinx-serialization-kotlinx-serialization-core-js-ir"
+import * as extendJson from "@cachet/kotlinx-serialization-kotlinx-serialization-json-js-ir"
 
 
 // Facade with better method names and type conversions for internal types.
@@ -24,7 +24,7 @@ export namespace kotlinx.serialization.builtins
 
 
 // Augment internal types to implement facade.
-declare module "kotlinx-serialization-kotlinx-serialization-json-js-ir"
+declare module "@cachet/kotlinx-serialization-kotlinx-serialization-json-js-ir"
 {
     namespace $_$
     {
@@ -48,4 +48,4 @@ extendJson.$_$.JsonImpl.prototype.decodeFromString =
 
 
 // Re-export augmented types.
-export * from "kotlinx-serialization-kotlinx-serialization-json-js-ir"
+export * from "@cachet/kotlinx-serialization-kotlinx-serialization-json-js-ir"

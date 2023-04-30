@@ -254,7 +254,7 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
     }
     eachFile { file ->
         // Compiled sources have the name of the module they represent, followed by ".js" and ".d.ts".
-        // To be recognized by node, place them as "index.js" and "index.d.ts" in "node_modules/<module-name>".
+        // To be recognized by node, place them as "index.js" and "index.d.ts" in "node_modules/@cachet/<module-name>".
         def fileMatch = file.name =~ /(.+)\.(js|d\.ts)/
         def moduleName = fileMatch[0][1]
         def extension = fileMatch[0][2]
@@ -270,7 +270,7 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
         file.filter { line ->
             // Compiled sources refer to other modules as adjacent .js source files.
             // Change these to the named modules created in the previous step.
-            def namedModules = line.replaceAll(~/'\.\/(.+?)\.js'/, "'\$1'")
+            def namedModules = line.replaceAll(~/'\.\/(.+?)\.js'/, "'@cachet/\$1'")
 
             // Replace `any` types with actual types for which facades are specified.
             def replacedTypes = knownFacadeTypes.inject(namedModules) { curLine, type ->
@@ -295,7 +295,7 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
             additionalExports
         }
     }
-    into "./$typescriptFolder/node_modules"
+    into "./$typescriptFolder/node_modules/@cachet/"
 }
 task compileTs(type: NpmTask, dependsOn: copyTestJsSources) {
     workingDir = file(typescriptFolder)

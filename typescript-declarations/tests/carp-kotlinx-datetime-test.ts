@@ -1,7 +1,7 @@
 import VerifyModule from './VerifyModule'
 
 import { expect } from 'chai'
-import { kotlinx } from '../src/kotlinx-datetime'
+import { kotlinx } from '@cachet/carp-kotlinx-datetime'
 import Clock = kotlinx.datetime.Clock
 
 
@@ -13,7 +13,8 @@ describe( "kotlinx-datetime", () => {
         ]
 
         const moduleVerifier = new VerifyModule(
-            'Kotlin-DateTime-library-kotlinx-datetime-js-ir',
+            '@cachet/Kotlin-DateTime-library-kotlinx-datetime-js-ir',
+            './carp-kotlinx-datetime/Kotlin-DateTime-library-kotlinx-datetime-js-ir.d.ts',
             instances
         )
         await moduleVerifier.verify()
