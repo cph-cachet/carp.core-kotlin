@@ -1,9 +1,9 @@
 import { expect } from 'chai'
 
-import { dk as cdk } from '../src/carp-common'
+import { dk as cdk } from '@cachet/carp-common'
 import JSON = cdk.cachet.carp.common.infrastructure.serialization.JSON
 
-import { dk } from '../src/carp-protocols-core'
+import { dk } from '@cachet/carp-protocols-core'
 import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import ProtocolServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest
 

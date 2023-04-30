@@ -1,4 +1,4 @@
-declare module "Kotlin-DateTime-library-kotlinx-datetime-js-ir"
+declare module "@cachet/Kotlin-DateTime-library-kotlinx-datetime-js-ir"
 {
     namespace $_$
     {

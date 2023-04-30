@@ -1,7 +1,7 @@
 import VerifyModule from './VerifyModule'
 
 import { expect } from 'chai'
-import { kotlinx } from '../src/kotlinx-serialization'
+import { kotlinx } from '@cachet/carp-kotlinx-serialization'
 import Json = kotlinx.serialization.json.Json
 
 
@@ -12,7 +12,8 @@ describe( "kotlinx-serialization", () => {
         ]
 
         const moduleVerifier = new VerifyModule(
-            'kotlinx-serialization-kotlinx-serialization-json-js-ir',
+            '@cachet/kotlinx-serialization-kotlinx-serialization-json-js-ir',
+            './carp-kotlinx-serialization/kotlinx-serialization-kotlinx-serialization-json-js-ir.d.ts',
             instances
         )
         await moduleVerifier.verify()

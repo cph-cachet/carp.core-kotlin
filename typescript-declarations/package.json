@@ -2,6 +2,16 @@
   "scripts": {
     "tsc": "tsc"
   },
+  "workspaces": [
+    "carp-kotlin",
+    "carp-kotlinx-datetime",
+    "carp-kotlinx-serialization",
+    "carp-common",
+    "carp-data-core",
+    "carp-deployments-core",
+    "carp-protocols-core",
+    "carp-studies-core"
+  ],
   "dependencies": {
     "@js-joda/core": "5.2.0",
     "big.js": "6.1.1"

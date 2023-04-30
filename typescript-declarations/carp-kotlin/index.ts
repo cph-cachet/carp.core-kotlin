@@ -1,4 +1,4 @@
-import * as kotlinStdLib from "kotlin-kotlin-stdlib-js-ir"
+import * as kotlinStdLib from "@cachet/kotlin-kotlin-stdlib-js-ir"
 
 
 // Facade with better method names and type conversions for internal types.
@@ -63,7 +63,7 @@ export namespace kotlin.time
 
 
 // Augment internal types to implement facade.
-declare module "kotlin-kotlin-stdlib-js-ir"
+declare module "@cachet/kotlin-kotlin-stdlib-js-ir"
 {
     namespace $_$
     {
@@ -129,4 +129,4 @@ Object.defineProperty( kotlinStdLib.$_$.HashMap.prototype, "values", {
 
 
 // Re-export augmented types.
-export * from "kotlin-kotlin-stdlib-js-ir";
+export * from "@cachet/kotlin-kotlin-stdlib-js-ir";
