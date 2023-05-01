@@ -4,8 +4,10 @@ import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
 import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
+import dk.cachet.carp.common.infrastructure.test.makeUnknown
 import dk.cachet.carp.data.application.Measurement
 import dk.cachet.carp.data.application.MeasurementSerializer
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 
@@ -37,5 +39,20 @@ class MeasurementTest
         val parsed: Measurement<Data> = json.decodeFromString( MeasurementSerializer, serialized )
 
         assertEquals( measurement, parsed )
+    }
+
+    @Test
+    fun can_serialize_and_deserialize_Measurement_with_unknown_data()
+    {
+        // Construct JSON of measurement with an unknown data type.
+        val stubData = StubDataPoint( "Some data" )
+        val measurement: Measurement<Data> = measurement( stubData, 0 )
+        val encoded = json.encodeToString( measurement )
+        val measurementWithUnknownData = encoded.makeUnknown( stubData )
+
+        // Deserializing the measurement with unknown data type and serializing it should result in the original JSON.
+        val parsed: Measurement<Data> = json.decodeFromString( MeasurementSerializer, measurementWithUnknownData )
+        val serialized = json.encodeToString( MeasurementSerializer, parsed )
+        assertEquals( measurementWithUnknownData, serialized )
     }
 }

@@ -6,24 +6,14 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.data.input.InputDataType
-import dk.cachet.carp.common.application.devices.AltBeaconDeviceRegistration
-import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
-import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
-import dk.cachet.carp.common.application.devices.DefaultDeviceRegistration
+import dk.cachet.carp.common.application.devices.*
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.UsernameAccountIdentity
-import dk.cachet.carp.common.infrastructure.serialization.CustomDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.serialization.CustomPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
-import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
+import dk.cachet.carp.common.infrastructure.test.*
 import dk.cachet.carp.data.application.DataStreamsConfiguration
 import dk.cachet.carp.deployments.application.DeviceDeploymentStatus
 import dk.cachet.carp.deployments.application.PrimaryDeviceDeployment
@@ -48,7 +38,7 @@ class StudyDeploymentTest
 {
     companion object
     {
-        private val JSON: Json = createDefaultJSON()
+        private val JSON: Json = createTestJSON()
     }
 
 
@@ -220,19 +210,15 @@ class StudyDeploymentTest
     fun can_registerDevice_for_unknown_types()
     {
         val protocol = createEmptyProtocol()
-        val primary = StubPrimaryDeviceConfiguration( "Unknown primary" )
-        val connected = StubDeviceConfiguration( "Unknown connected" )
+        val primaryUnknown = StubPrimaryDeviceConfiguration( "Unknown primary" ).makeUnknown( JSON )
+        val connectedUnknown = StubDeviceConfiguration( "Unknown connected" ).makeUnknown( JSON )
 
-        // Mimic that the types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
-        val primaryCustom = CustomPrimaryDeviceConfiguration( "Irrelevant", JSON.encodeToString( StubPrimaryDeviceConfiguration.serializer(), primary ), JSON )
-        val connectedCustom = CustomDeviceConfiguration( "Irrelevant", JSON.encodeToString( StubDeviceConfiguration.serializer(), connected ), JSON )
-
-        protocol.addPrimaryDevice( primaryCustom )
-        protocol.addConnectedDevice( connectedCustom, primaryCustom )
+        protocol.addPrimaryDevice( primaryUnknown )
+        protocol.addConnectedDevice( connectedUnknown, primaryUnknown )
 
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
-        deployment.registerDevice( primaryCustom, DefaultDeviceRegistration() )
-        deployment.registerDevice( connectedCustom, DefaultDeviceRegistration() )
+        deployment.registerDevice( primaryUnknown, DefaultDeviceRegistration() )
+        deployment.registerDevice( connectedUnknown, DefaultDeviceRegistration() )
     }
 
     @Test
@@ -259,22 +245,20 @@ class StudyDeploymentTest
     {
         val protocol = createEmptyProtocol()
         val primary = StubPrimaryDeviceConfiguration()
-        val device1 = StubPrimaryDeviceConfiguration( "Unknown device 1" )
-        val device2 = StubDeviceConfiguration( "Unknown device 2" )
-
-        // Mimic that the types are unknown at runtime. When this occurs, they are wrapped in 'Custom...'.
-        val device1Custom = CustomDeviceConfiguration( "One class", JSON.encodeToString( StubPrimaryDeviceConfiguration.serializer(), device1 ), JSON )
-        val device2Custom = CustomDeviceConfiguration( "Not the same class", JSON.encodeToString( StubDeviceConfiguration.serializer(), device2 ), JSON )
+        val device1Unknown = StubPrimaryDeviceConfiguration( "Unknown device 1" )
+            .makeUnknown( JSON, "One class" )
+        val device2Unknown = StubDeviceConfiguration( "Unknown device 2" )
+            .makeUnknown( JSON, "Not the same class" )
 
         protocol.addPrimaryDevice( primary )
-        protocol.addConnectedDevice( device1Custom, primary )
-        protocol.addConnectedDevice( device2Custom, primary )
+        protocol.addConnectedDevice( device1Unknown, primary )
+        protocol.addConnectedDevice( device2Unknown, primary )
         val deployment: StudyDeployment = studyDeploymentFor( protocol )
 
         // Even though these two devices are registered using the same ID, this should succeed since they are of different types.
         val registration = DefaultDeviceRegistration()
-        deployment.registerDevice( device1Custom, registration )
-        deployment.registerDevice( device2Custom, registration )
+        deployment.registerDevice( device1Unknown, registration )
+        deployment.registerDevice( device2Unknown, registration )
     }
 
     @Test
