@@ -31,7 +31,9 @@ buildscript {
 
         commonModule = subprojects.find { it.name == 'carp.common' }
         coreModules = subprojects.findAll { it.name.endsWith( '.core' ) }
-        devOpsModules = subprojects.findAll { it.name == 'carp.detekt' || it.name == 'rpc' }
+        publishNpmModule = subprojects.find { it.name == 'publish-npm-packages' }
+        devOpsModules =
+            subprojects.findAll {it.name == 'carp.detekt' || it.name == 'rpc' } + publishNpmModule
     }
 
     dependencies {
@@ -236,8 +238,8 @@ task setupTsProject(type: NpmTask) {
     args = ['install']
 }
 task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
-    // Compile production sources for all subprojects that compile to JS.
-    def projects = subprojects - devOpsModules
+    // Compile production sources for CARP, and the JS publication project (`publishNpmModule`).
+    def projects = coreModules + commonModule + publishNpmModule
     projects.each {
         def project = it.name
         dependsOn("$project:jsProductionExecutableCompileSync")

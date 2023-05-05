@@ -1,4 +1,14 @@
+apply {
+    plugin("kotlin-multiplatform")
+}
+
 kotlin {
+    js(IR) {
+        moduleName = project.name.replaceAll("\\.", "-") + "-generated"
+        binaries.executable() // Export JS/TypeScript files.
+        browser()
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -9,13 +19,12 @@ kotlin {
                 api project(':carp.studies.core')
             }
         }
+
+        all {
+            languageSettings {
+                // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
+                optIn('kotlin.js.ExperimentalJsExport')
+            }
+        }
     }
 }
-
-
-// This project is not intended to be published, but the root project is.
-// This skips this project when publishing the root: https://stackoverflow.com/a/59096967/590790
-apply {
-    plugin("maven-publish")
-}
-project.tasks.publish.enabled = false
