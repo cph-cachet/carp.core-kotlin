@@ -113,12 +113,12 @@ kotlinStdLib.$_$.EmptyList.prototype.contains = function<T>( value: T ): boolean
 kotlinStdLib.$_$.EmptyList.prototype.size = function<T>(): number { return 0; }
 kotlinStdLib.$_$.EmptyList.prototype.toArray = function<T>(): T[] { return []; }
 kotlinStdLib.$_$.AbstractMutableList.prototype.contains = function<T>( value: T ): boolean { return this.d1( value ); }
-kotlinStdLib.$_$.AbstractMutableList.prototype.size = function<T>(): number { return this.f(); }
+kotlinStdLib.$_$.AbstractMutableList.prototype.size = function<T>(): number { return this.i(); }
 kotlinStdLib.$_$.EmptySet.prototype.contains = function<T>( value: T ): boolean { return false; }
 kotlinStdLib.$_$.EmptySet.prototype.size = function<T>(): number { return 0; }
 kotlinStdLib.$_$.EmptySet.prototype.toArray = function<T>(): T[] { return []; }
 kotlinStdLib.$_$.HashSet.prototype.contains = function<T>( value: T ): boolean { return this.d1( value ); }
-kotlinStdLib.$_$.HashSet.prototype.size = function<T>(): number { return this.f(); }
+kotlinStdLib.$_$.HashSet.prototype.size = function<T>(): number { return this.i(); }
 kotlinStdLib.$_$.HashMap.prototype.get = function<K, V>( key: K ): V { return this.e2( key ); }
 Object.defineProperty( kotlinStdLib.$_$.HashMap.prototype, "keys", {
     get: function keys() { return this.f2(); }
