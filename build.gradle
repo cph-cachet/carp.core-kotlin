@@ -8,24 +8,24 @@ buildscript {
 
         versions = [
             // Kotlin multiplatform versions.
-            kotlin:'1.8.10',
+            kotlin:'1.8.21',
             serialization:'1.5.0',
-            coroutines:'1.7.0-Beta',
+            coroutines:'1.7.0',
             datetime:'0.4.0',
 
             // JVM versions.
             jvmTarget:'1.8',
-            dokkaPlugin:'1.7.20',
+            dokkaPlugin:'1.8.10',
             reflections:'0.10.2',
 
             // JS versions.
-            nodePlugin:'3.5.0',
+            nodePlugin:'4.0.0',
             bigJs:'6.2.1',
 
             // DevOps versions.
             detektPlugin:'1.22.0',
             detektVerifyImplementation:'1.2.5',
-            nexusPublishPlugin:'1.1.0',
+            nexusPublishPlugin:'1.3.0',
             apacheCommons:'2.11.0'
         ]
 
@@ -88,6 +88,7 @@ configure( subprojects - devOpsModules ) {
             moduleName = project.name.replaceAll("\\.", "-") + "-generated"
             binaries.executable() // Export JS/TypeScript files.
             browser()
+            generateTypeScriptDefinitions()
         }
 
         sourceSets {

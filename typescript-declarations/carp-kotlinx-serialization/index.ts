@@ -38,12 +38,12 @@ declare module "@cachet/kotlinx-serialization-kotlinx-serialization-json-js-ir"
 extendJson.$_$.JsonImpl.prototype.encodeToString =
     function( serializer: any, value: any ): string
     {
-        return this.v12( serializer, value );
+        return this.t12( serializer, value );
     };
 extendJson.$_$.JsonImpl.prototype.decodeFromString =
     function( serializer: any, string: string ): any
     {
-        return this.w12( serializer, string );
+        return this.u12( serializer, string );
     };
 
 

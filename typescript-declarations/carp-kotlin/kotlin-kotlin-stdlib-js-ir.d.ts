@@ -26,7 +26,7 @@ declare module "@cachet/kotlin-kotlin-stdlib-js-ir"
             d1( value: T ): boolean
 
             // size
-            f(): number
+            i(): number
 
             toArray(): Array<T>
         }
