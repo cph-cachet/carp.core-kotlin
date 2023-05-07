@@ -305,7 +305,7 @@ task compileTs(type: NpmTask, dependsOn: copyTestJsSources) {
     args = ['run', 'tsc']
 }
 task verifyTsDeclarations(type: NodeTask, dependsOn: compileTs) {
-    script = file("${typescriptFolder}/node_modules/mocha/bin/mocha")
+    script = file("${typescriptFolder}/node_modules/mocha/bin/mocha.js")
     execOverrides {
         it.workingDir = typescriptFolder
     }
