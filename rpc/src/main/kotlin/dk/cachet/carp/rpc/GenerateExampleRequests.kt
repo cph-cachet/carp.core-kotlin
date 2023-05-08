@@ -99,7 +99,7 @@ private fun <T : DeviceRegistration> T.setRegistrationCreatedOn( createdOn: Inst
 private val ownerId = UUID( "491f03fc-964b-4783-86a6-a528bbfe4e94" )
 private val protocolId = UUID( "25fe92a5-0d52-4e37-8d05-31f347d72d3d" )
 private val protocolCreatedOn = Instant.fromEpochSeconds( 1642503419 )
-private val phone = Smartphone( "Participant's phone", false ) {
+private val phone = Smartphone.create( "Participant's phone" ) {
     defaultSamplingConfiguration {
         geolocation { batteryNormal { granularity = Granularity.Detailed } }
     }
@@ -277,7 +277,7 @@ fun <TService : ApplicationService<TService, *>, TResponse> example(
     response: Any? = Unit
 ) = LoggedRequest.Succeeded( request, emptyList(), emptyList(), response )
 
-private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*, *>> = mapOf(
+private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = mapOf(
     // ProtocolService
     ProtocolService::add to example(
         request = ProtocolServiceRequest.Add( phoneProtocol, "Version 1" )

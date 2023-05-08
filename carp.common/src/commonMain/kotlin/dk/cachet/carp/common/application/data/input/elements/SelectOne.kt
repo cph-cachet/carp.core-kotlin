@@ -1,6 +1,9 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.common.application.data.input.elements
 
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 import kotlin.reflect.KClass
 
 
@@ -8,6 +11,7 @@ import kotlin.reflect.KClass
  * User needs to select one out of multiple [options].
  */
 @Serializable
+@JsExport
 data class SelectOne( override val prompt: String, val options: Set<String> ) : InputElement<String>
 {
     init

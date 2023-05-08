@@ -10,12 +10,15 @@ import dk.cachet.carp.protocols.application.ProtocolVersion
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.datetime.Clock
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Serializable application service requests to [ProtocolService] which can be executed on demand.
  */
 @Serializable
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 sealed class ProtocolServiceRequest<out TReturn> : ApplicationServiceRequest<ProtocolService, TReturn>
 {
     @Required
@@ -29,7 +32,6 @@ sealed class ProtocolServiceRequest<out TReturn> : ApplicationServiceRequest<Pro
         ProtocolServiceRequest<Unit>()
     {
         override fun getResponseSerializer() = serializer<Unit>()
-        override suspend fun invokeOn( service: ProtocolService ) = service.add( protocol, versionTag )
     }
 
     @Serializable
@@ -39,7 +41,6 @@ sealed class ProtocolServiceRequest<out TReturn> : ApplicationServiceRequest<Pro
     ) : ProtocolServiceRequest<Unit>()
     {
         override fun getResponseSerializer() = serializer<Unit>()
-        override suspend fun invokeOn( service: ProtocolService ) = service.addVersion( protocol, versionTag )
     }
 
     @Serializable
@@ -50,8 +51,6 @@ sealed class ProtocolServiceRequest<out TReturn> : ApplicationServiceRequest<Pro
     ) : ProtocolServiceRequest<StudyProtocolSnapshot>()
     {
         override fun getResponseSerializer() = serializer<StudyProtocolSnapshot>()
-        override suspend fun invokeOn( service: ProtocolService ) =
-            service.updateParticipantDataConfiguration( protocolId, versionTag, expectedParticipantData )
     }
 
     @Serializable
@@ -59,20 +58,17 @@ sealed class ProtocolServiceRequest<out TReturn> : ApplicationServiceRequest<Pro
         ProtocolServiceRequest<StudyProtocolSnapshot>()
     {
         override fun getResponseSerializer() = serializer<StudyProtocolSnapshot>()
-        override suspend fun invokeOn( service: ProtocolService ) = service.getBy( protocolId, versionTag )
     }
 
     @Serializable
     data class GetAllForOwner( val ownerId: UUID ) : ProtocolServiceRequest<List<StudyProtocolSnapshot>>()
     {
         override fun getResponseSerializer() = serializer<List<StudyProtocolSnapshot>>()
-        override suspend fun invokeOn( service: ProtocolService ) = service.getAllForOwner( ownerId )
     }
 
     @Serializable
     data class GetVersionHistoryFor( val protocolId: UUID ) : ProtocolServiceRequest<List<ProtocolVersion>>()
     {
         override fun getResponseSerializer() = serializer<List<ProtocolVersion>>()
-        override suspend fun invokeOn( service: ProtocolService ) = service.getVersionHistoryFor( protocolId )
     }
 }

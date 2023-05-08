@@ -6,7 +6,6 @@ import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.DataTimeType
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.data.DataTypeMetaData
-import dk.cachet.carp.common.application.data.DataTypeMetaDataMap
 import dk.cachet.carp.common.application.toTrilean
 import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamSequence

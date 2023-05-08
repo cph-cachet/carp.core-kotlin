@@ -2,12 +2,14 @@ package dk.cachet.carp.common.application.users
 
 import dk.cachet.carp.common.application.data.input.InputDataType
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Describes a participant [attribute] that pertains to all or specified participants in a study.
  */
 @Serializable
+@JsExport
 data class ExpectedParticipantData(
     val attribute: ParticipantAttribute,
     /**
@@ -29,6 +31,7 @@ data class ExpectedParticipantData(
  *
  * @throws IllegalArgumentException if [exceptionOnConflict] is set to true and the set contains a conflict.
  */
+@JsExport
 fun Set<ExpectedParticipantData>.hasNoConflicts( exceptionOnConflict: Boolean = false ): Boolean
 {
     val expectedDataByInputType = this.groupBy { it.inputDataType }

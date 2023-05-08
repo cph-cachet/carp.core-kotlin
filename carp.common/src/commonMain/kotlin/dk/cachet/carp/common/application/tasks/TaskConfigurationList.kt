@@ -1,6 +1,8 @@
 package dk.cachet.carp.common.application.tasks
 
 import dk.cachet.carp.common.application.devices.DeviceConfiguration
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 
 /**
@@ -9,10 +11,12 @@ import dk.cachet.carp.common.application.devices.DeviceConfiguration
  *
  * Extend from this class as an object and assign members as follows: `val SOME_TASK = add { SomeTaskBuilder() }`.
  */
+@JsExport
 open class TaskConfigurationList private constructor(
     private val list: MutableList<SupportedTaskConfiguration<*, *>>
 ) : List<SupportedTaskConfiguration<*, *>> by list
 {
+    @JsName( "create" )
     constructor() : this( mutableListOf() )
 
     /**
@@ -34,6 +38,7 @@ open class TaskConfigurationList private constructor(
 /**
  * A [TaskConfiguration] which is listed as a supported task on a [DeviceConfiguration].
  */
+@JsExport
 class SupportedTaskConfiguration<
     TConfiguration : TaskConfiguration<*>,
     TBuilder : TaskConfigurationBuilder<TConfiguration>

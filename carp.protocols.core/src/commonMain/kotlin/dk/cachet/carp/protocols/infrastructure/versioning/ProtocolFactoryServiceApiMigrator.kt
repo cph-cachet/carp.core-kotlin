@@ -6,6 +6,7 @@ import dk.cachet.carp.common.infrastructure.versioning.ApplicationServiceApiMigr
 import dk.cachet.carp.common.infrastructure.versioning.Major1Minor0To1Migration
 import dk.cachet.carp.common.infrastructure.versioning.getType
 import dk.cachet.carp.protocols.application.ProtocolFactoryService
+import dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceInvoker
 import dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceRequest
 import kotlinx.serialization.json.*
 
@@ -36,6 +37,7 @@ private val major1Minor0To1Migration =
 
 val ProtocolFactoryServiceApiMigrator = ApplicationServiceApiMigrator(
     ProtocolFactoryService.API_VERSION,
+    ProtocolFactoryServiceInvoker,
     ProtocolFactoryServiceRequest.Serializer,
     ProtocolFactoryService.Event.serializer(),
     listOf( major1Minor0To1Migration )

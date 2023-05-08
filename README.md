@@ -6,8 +6,7 @@ CARP Core is a software framework to help developers build research platforms to
 It provides modules to define, deploy, and monitor research studies, and to collect data from multiple devices at multiple locations.
 
 It is the result of a collaboration between [iMotions](https://imotions.com/) and the [Copenhagen Center for Health Technology (CACHET)](https://www.cachet.dk/).
-Both use CARP Core to implement their respective research platforms: the [iMotions Mobile Research Platform](https://imotions.com/mobile-platform-landing-page-submissions/) and the [Copenhagen Research Platform (CARP)](https://carp.cachet.dk/).
-CARP Core is now maintained fully by iMotions (since 1.0), but [still part of CARP](https://carp.cachet.dk/core/) as an ongoing collaboration.   
+Both use CARP Core to implement their respective research platforms: the [iMotions Mobile Research Platform](https://imotions.com/products/imotions-mobile/) and the [Copenhagen Research Platform (CARP)](https://carp.cachet.dk/).
 
 Following [domain-driven design](https://en.wikipedia.org/wiki/Domain-driven_design), this project contains all domain models and application services for all CARP subsystems ([depicted below](#architecture)), not having any dependencies on concrete infrastructure.
 As such, this project defines an **open standard for distributed data collection**, [available for Kotlin, the Java runtime, and JavaScript](#usage), which others can build upon to create their own infrastructure. 
@@ -52,8 +51,9 @@ Two key **design goals** differentiate this project from similar projects:
   - [Stub classes](#stub-classes)
 - [Usage](#usage)
   - [Example](#example)
-- [Building the project](#building-the-project)
+- [Development](#development)
   - [Gradle tasks](#gradle-tasks)
+  - [Release management](#release-management)
   - [Development checklists](#development-checklists)
 
 ## Architecture
@@ -192,7 +192,7 @@ val ownerId = UUID.randomUUID()
 val protocol = StudyProtocol( ownerId, "Track patient movement" )
 
 // Define which devices are used for data collection.
-val phone = Smartphone( "Patient's phone" )
+val phone = Smartphone.create( "Patient's phone" )
 {
     // Configure device-specific options, e.g., frequency to collect data at.
     defaultSamplingConfiguration {
@@ -359,7 +359,7 @@ if ( status is StudyStatus.RegisteringDevices )
 }
 ```
 
-## Building the project
+## Development
 
 In case you want to contribute, please follow our [contribution guidelines](https://github.com/cph-cachet/carp.core-kotlin/blob/develop/CONTRIBUTING.md).
 
@@ -383,6 +383,29 @@ For `carp.core-kotlin`:
   For this to work you need to configure a `publish.properties` file with a signing signature and repository user in the project root folder.
   Preface with `setSnapshotVersion` task to publish to the snapshot repository, substituting the suffix of the version specified in `ext.globalVersion` with `-SNAPSHOT`.
   See main `build.gradle` for details.
+
+### Release management
+
+[Semantic versioning](https://semver.org/) is used for releases.
+Backwards compatibility is assessed from the perspective of clients using an implementation of the framework,
+as opposed to developers using the framework to implement an infrastructure. 
+In other words, versioning is based on the exposed API (`application` namespaces), but not the domain used to implement infrastructures (`domain` namespaces).
+Breaking changes between `minor` versions can occur in domain objects, including the need to do database migrations.
+
+Module versions are configured in the main `build.gradle` in `ext.globalVersion` and `ext.clientsVersion`.
+
+Workflows:
+- Each push to `develop` triggers a snapshot release of the currently configured version.
+- Each push to `master` triggers a release to Maven using the currently configured version.
+
+Releases require a couple of manual steps:
+- Before merging into `master`, make sure new versions are set in `build.gradle`.
+  This should be done already in the last step, but you may decide to make a bigger version increment.
+- Merge into master; **don't rebase**. Rebasing causes branch commit histories to diverge which complicates later releases and messes up the visible commit history with duplicate commits.
+- Create a release tag on `master` with release notes.
+- Add `javascript-typescript-sources.zip` and `rpc-examples.zip` assets to release.
+  This should be automated in the future: [#371](https://github.com/cph-cachet/carp.core-kotlin/issues/371) and [#416](https://github.com/cph-cachet/carp.core-kotlin/issues/416) respectively.
+- Bump versions on `develop` so that snapshot releases target the next version.
 
 ### Development checklists
 

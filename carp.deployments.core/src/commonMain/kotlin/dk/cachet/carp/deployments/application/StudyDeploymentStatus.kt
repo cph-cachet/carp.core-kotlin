@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.deployments.application
 
 import dk.cachet.carp.common.application.UUID
@@ -6,12 +8,15 @@ import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.users.ParticipantStatus
 import kotlinx.datetime.Instant
 import kotlinx.serialization.*
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 
 /**
  * Describes the status of a study deployment: registered devices, last received data, whether consent has been given, etc.
  */
 @Serializable
+@JsExport
 sealed class StudyDeploymentStatus
 {
     /**
@@ -114,6 +119,7 @@ sealed class StudyDeploymentStatus
     /**
      * Get the status of a device with the given [deviceRoleName] in this study deployment.
      */
+    @JsName( "getDeviceStatusByRoleName" )
     fun getDeviceStatus( deviceRoleName: String ): DeviceDeploymentStatus =
         deviceStatusList.firstOrNull { it.device.roleName == deviceRoleName }
             ?: throw IllegalArgumentException(

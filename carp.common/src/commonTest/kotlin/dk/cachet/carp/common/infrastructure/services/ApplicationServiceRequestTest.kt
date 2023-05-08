@@ -4,7 +4,6 @@ import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
 import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
-import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlin.test.*
@@ -43,7 +42,6 @@ class ApplicationServiceRequestTest
         data class Operation( val parameter: Int ) : TestServiceRequest<Int>()
         {
             override fun getResponseSerializer() = serializer<Int>()
-            override suspend fun invokeOn( service: TestService ): Int = service.operation( parameter )
         }
     }
 
@@ -66,37 +64,5 @@ class ApplicationServiceRequestTest
         val parsed: TestServiceRequest<*> = Json.decodeFromString( TestServiceRequest.Serializer, serialized )
 
         assertEquals( request, parsed )
-    }
-
-    @Test
-    fun invokeOn_requests_calls_service() = runTest {
-        var requestResponse: Int? = null
-        val service =
-            object : TestService
-            {
-                override suspend fun operation( parameter: Int ): Int = parameter.also { requestResponse = it }
-            }
-
-        val request = TestServiceRequest.Operation( 42 )
-        request.invokeOn( service )
-
-        assertEquals( 42, requestResponse )
-    }
-
-    @Test
-    fun invokeOn_deserialized_request_succeeds() = runTest {
-        var requestResponse: Int? = null
-        val service =
-            object : TestService
-            {
-                override suspend fun operation( parameter: Int ): Int = parameter.also { requestResponse = it }
-            }
-
-        val serializedRequest =
-            Json.encodeToString( TestServiceRequest.Serializer, TestServiceRequest.Operation( 42 ) )
-        val request = Json.decodeFromString( TestServiceRequest.Serializer, serializedRequest )
-        request.invokeOn( service )
-
-        assertEquals( 42, requestResponse )
     }
 }

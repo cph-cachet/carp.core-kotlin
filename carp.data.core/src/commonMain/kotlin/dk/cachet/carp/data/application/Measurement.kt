@@ -1,12 +1,16 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.data.application
 
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.DataTimeType
 import dk.cachet.carp.common.application.data.DataType
+import dk.cachet.carp.common.infrastructure.serialization.CustomData
 import dk.cachet.carp.data.infrastructure.getDataType
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
+import kotlin.js.JsExport
 
 
 /**
@@ -17,9 +21,10 @@ import kotlinx.serialization.encoding.*
  * For example, it could be a simple clock increment since the device powered up.
  */
 @Serializable( MeasurementSerializer::class )
+@JsExport
 data class Measurement<out TData : Data>(
     val sensorStartTime: Long,
-    val sensorEndTime: Long? = null,
+    val sensorEndTime: Long?,
     val dataType: DataType,
     val data: TData
 )
@@ -74,7 +79,14 @@ object MeasurementSerializer : KSerializer<Measurement<Data>>
     override fun deserialize( decoder: Decoder ): Measurement<Data>
     {
         val surrogate = decoder.decodeSerializableValue( Surrogate.serializer() )
-        val dataType = getDataType( surrogate.data::class )
-        return Measurement( surrogate.sensorStartTime, surrogate.sensorEndTime, dataType, surrogate.data )
+        val data = surrogate.data
+
+        // Data type can only be derived from serializers of types known at runtime,
+        // but for unknown types, it can be extracted from the wrapper class (`CustomData`).
+        val dataType =
+            if ( data is CustomData ) DataType.fromString( data.className )
+            else getDataType( data::class )
+
+        return Measurement( surrogate.sensorStartTime, surrogate.sensorEndTime, dataType, data )
     }
 }

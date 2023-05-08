@@ -3,10 +3,13 @@
  */
 package dk.cachet.carp.common.application.data
 
+import kotlin.js.JsExport
+
 
 /**
  * All CARP data types.
  */
+@JsExport
 object CarpDataTypes : DataTypeMetaDataMap()
 {
     /**

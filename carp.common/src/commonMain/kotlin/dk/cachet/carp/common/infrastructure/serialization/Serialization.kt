@@ -11,6 +11,7 @@ import dk.cachet.carp.common.application.users.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.*
+import kotlin.js.JsExport
 
 
 /**
@@ -48,7 +49,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( Sex::class, PolymorphicEnumSerializer( Sex.serializer() ) )
 
         subclass( CustomData::class )
-        default { DataSerializer }
+        defaultDeserializer { DataSerializer }
     }
     polymorphic( InputElement::class )
     {
@@ -72,13 +73,13 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         registerPrimaryDeviceConfigurationSubclasses()
 
         subclass( CustomDeviceConfiguration::class )
-        default { DeviceConfigurationSerializer }
+        defaultDeserializer { DeviceConfigurationSerializer }
     }
     polymorphic( PrimaryDeviceConfiguration::class )
     {
         registerPrimaryDeviceConfigurationSubclasses()
 
-        default { PrimaryDeviceConfigurationSerializer }
+        defaultDeserializer { PrimaryDeviceConfigurationSerializer }
     }
     polymorphic( DeviceRegistration::class )
     {
@@ -88,7 +89,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( MACAddressDeviceRegistration::class )
 
         subclass( CustomDeviceRegistration::class )
-        default { DeviceRegistrationSerializer }
+        defaultDeserializer { DeviceRegistrationSerializer }
     }
 
 
@@ -106,7 +107,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( NoOptionsSamplingConfiguration::class, NoOptionsSamplingConfiguration.serializer() )
 
         subclass( CustomSamplingConfiguration::class )
-        default { SamplingConfigurationSerializer }
+        defaultDeserializer { SamplingConfigurationSerializer }
     }
 
 
@@ -118,7 +119,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( WebTask::class )
 
         subclass( CustomTaskConfiguration::class )
-        default { TaskConfigurationSerializer }
+        defaultDeserializer { TaskConfigurationSerializer }
     }
 
 
@@ -130,7 +131,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( ScheduledTrigger::class )
 
         subclass( CustomTriggerConfiguration::class )
-        default { TriggerConfigurationSerializer }
+        defaultDeserializer { TriggerConfigurationSerializer }
     }
 
 
@@ -152,6 +153,8 @@ const val CLASS_DISCRIMINATOR: String = "__type"
  * In case custom extending types are defined, this variable should be reassigned for serialization extension functions to work as expected.
  * [createDefaultJSON] can be used to this end, by including all extending types in the [SerializersModule] as parameter.
  */
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 var JSON: Json = createDefaultJSON()
 
 

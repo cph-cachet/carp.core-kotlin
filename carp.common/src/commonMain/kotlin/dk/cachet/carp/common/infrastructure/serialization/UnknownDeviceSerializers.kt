@@ -20,7 +20,7 @@ import kotlin.reflect.KClass
  */
 @Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( DeviceConfigurationSerializer::class )
-data class CustomDeviceConfiguration(
+data class CustomDeviceConfiguration internal constructor(
     override val className: String,
     override val jsonSource: String,
     val serializer: Json
@@ -67,7 +67,7 @@ data class CustomDeviceConfiguration(
  */
 @Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( PrimaryDeviceConfigurationSerializer::class )
-data class CustomPrimaryDeviceConfiguration(
+data class CustomPrimaryDeviceConfiguration internal constructor(
     override val className: String,
     override val jsonSource: String,
     val serializer: Json
@@ -169,7 +169,7 @@ object PrimaryDeviceConfigurationSerializer : KSerializer<AnyPrimaryDeviceConfig
  */
 @Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( DeviceRegistrationSerializer::class )
-data class CustomDeviceRegistration(
+data class CustomDeviceRegistration internal constructor(
     override val className: String,
     override val jsonSource: String,
     val serializer: Json

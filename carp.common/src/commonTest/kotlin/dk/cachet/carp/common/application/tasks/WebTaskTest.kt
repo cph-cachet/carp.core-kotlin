@@ -27,7 +27,7 @@ class WebTaskTest
             "participantId=${WebTask.UrlVariable.PARTICIPANT_ID.pattern}" +
             "&deploymentId=${WebTask.UrlVariable.DEPLOYMENT_ID.pattern}" +
             "&triggerId=${WebTask.UrlVariable.TRIGGER_ID.pattern}"
-        val task = WebTask( "Survey", emptyList(), "Demographics survey", url )
+        val task = WebTask( "Survey", url, "Demographics survey" )
 
         val participantId = UUID.randomUUID()
         val deploymentId = UUID.randomUUID()

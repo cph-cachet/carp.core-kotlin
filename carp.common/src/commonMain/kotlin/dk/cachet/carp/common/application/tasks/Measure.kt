@@ -4,12 +4,14 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Defines data that needs to be measured/collected passively as part of a task defined by [TaskConfiguration].
  */
 @Serializable
+@JsExport
 sealed class Measure
 {
     /**

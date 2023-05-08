@@ -12,7 +12,7 @@ import kotlinx.serialization.json.Json
  */
 @Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( TaskConfigurationSerializer::class )
-data class CustomTaskConfiguration(
+data class CustomTaskConfiguration internal constructor(
     override val className: String,
     override val jsonSource: String,
     val serializer: Json

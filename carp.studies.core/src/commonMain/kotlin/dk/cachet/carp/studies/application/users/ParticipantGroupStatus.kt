@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.studies.application.users
 
 import dk.cachet.carp.common.application.UUID
@@ -6,6 +8,7 @@ import dk.cachet.carp.deployments.domain.StudyDeployment
 import dk.cachet.carp.deployments.domain.users.ParticipantGroup
 import kotlinx.datetime.Instant
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -14,6 +17,7 @@ import kotlinx.serialization.*
  * until the deployment is [Stopped].
  */
 @Serializable
+@JsExport
 sealed class ParticipantGroupStatus
 {
     /**

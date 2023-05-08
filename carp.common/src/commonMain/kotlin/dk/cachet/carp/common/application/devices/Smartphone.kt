@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.Trilean
@@ -6,6 +8,7 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.*
 import dk.cachet.carp.common.application.tasks.*
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -18,14 +21,22 @@ typealias SmartphoneDeviceRegistrationBuilder = DefaultDeviceRegistrationBuilder
  * An internet-connected phone with built-in sensors.
  */
 @Serializable
+@JsExport
 data class Smartphone(
     override val roleName: String,
     override val isOptional: Boolean = false,
     override val defaultSamplingConfiguration: Map<DataType, SamplingConfiguration> = emptyMap()
 ) : PrimaryDeviceConfiguration<SmartphoneDeviceRegistration, SmartphoneDeviceRegistrationBuilder>()
 {
-    constructor( roleName: String, isOptional: Boolean = false, builder: SmartphoneBuilder.() -> Unit ) :
-        this( roleName, isOptional, SmartphoneBuilder().apply( builder ).buildSamplingConfiguration() )
+    companion object
+    {
+        fun create( roleName: String, builder: SmartphoneBuilder.() -> Unit ): Smartphone
+        {
+            val smartphoneBuilder = SmartphoneBuilder().apply( builder )
+            val configuration = smartphoneBuilder.buildSamplingConfiguration()
+            return Smartphone( roleName, smartphoneBuilder.isOptional, configuration )
+        }
+    }
 
     /**
      * All the sensors commonly available on smartphones.
@@ -122,8 +133,11 @@ data class Smartphone(
 /**
  * A helper class to configure and construct immutable [Smartphone] classes.
  */
+@JsExport
 class SmartphoneBuilder : DeviceConfigurationBuilder<SmartphoneSamplingConfigurationMapBuilder>()
 {
+    var isOptional: Boolean = false
+
     override fun createSamplingConfigurationMapBuilder(): SmartphoneSamplingConfigurationMapBuilder =
         SmartphoneSamplingConfigurationMapBuilder()
 }
@@ -132,6 +146,7 @@ class SmartphoneBuilder : DeviceConfigurationBuilder<SmartphoneSamplingConfigura
 /**
  * A helper class to construct sampling configurations for a [Smartphone].
  */
+@JsExport
 class SmartphoneSamplingConfigurationMapBuilder : SamplingConfigurationMapBuilder()
 {
     /**

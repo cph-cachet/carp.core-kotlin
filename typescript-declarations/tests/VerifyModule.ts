@@ -19,11 +19,13 @@ import * as fs from 'fs'
 export default class VerifyModule
 {
     private moduleName: string
+    private declarationFile: string
     private instances: Map<string, any>
 
-    constructor( moduleName: string, instances: Array<any> )
+    constructor( moduleName: string, declarationFile: string, instances: Array<any> )
     {
         this.moduleName = moduleName
+        this.declarationFile = declarationFile
         this.instances = new Map( instances.map( i => {
             if ( i instanceof Array ) return [ i[0], i[1] ] // Type name specified manually.
             else return [ i.constructor.name, i ] // Type name inferred from constructor.
@@ -32,8 +34,7 @@ export default class VerifyModule
 
     async verify(): Promise<void>
     {
-        const declarationFile = `./@types/${this.moduleName}/index.d.ts`
-        const source = fs.readFileSync( declarationFile ).toString()
+        const source = fs.readFileSync( this.declarationFile ).toString()
         const ast = parse( source )
     
         const scope = await Promise.resolve( import( this.moduleName ) )
@@ -83,6 +84,10 @@ export default class VerifyModule
             case AST_NODE_TYPES.ImportDeclaration:
             case AST_NODE_TYPES.TSImportEqualsDeclaration:
                 // Skip.
+                break;
+            case AST_NODE_TYPES.ExportNamedDeclaration:
+            case AST_NODE_TYPES.TSTypeAliasDeclaration:
+                // These are newly exported types and type aliases in TypeScript that aren't present in JS.
                 break;
             default:
                 throw( Error( `verifyStatement: Verifying valid declaration of '${statement.type}' is not implemented.` ) )

@@ -4,18 +4,20 @@ import dk.cachet.carp.common.test.infrastructure.versioning.OutputTestRequests
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyServiceHostTest
 import dk.cachet.carp.studies.application.StudyServiceTest
-import dk.cachet.carp.studies.infrastructure.StudyServiceLoggingProxy
+import dk.cachet.carp.studies.infrastructure.StudyServiceDecorator
+import dk.cachet.carp.studies.infrastructure.StudyServiceRequest
 
 
 class OutputStudyServiceTestRequests :
-    OutputTestRequests<StudyService>( StudyService::class ),
+    OutputTestRequests<StudyService, StudyService.Event, StudyServiceRequest<*>>(
+        StudyService::class,
+        ::StudyServiceDecorator
+    ),
     StudyServiceTest
 {
     override fun createService(): StudyService
     {
-        val services = StudyServiceHostTest.createService()
-
-        return StudyServiceLoggingProxy( services.first, services.second )
-            .also { loggedService = it }
+        val (service, eventBus) = StudyServiceHostTest.createService()
+        return createLoggedApplicationService( service, eventBus )
     }
 }

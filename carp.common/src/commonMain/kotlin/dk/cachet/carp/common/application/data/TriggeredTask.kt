@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application.data
 
 import dk.cachet.carp.common.application.triggers.TaskControl
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -11,6 +12,7 @@ import kotlinx.serialization.*
  */
 @Serializable
 @SerialName( CarpDataTypes.TRIGGERED_TASK_TYPE_NAME )
+@JsExport
 data class TriggeredTask(
     val triggerId: Int,
     val taskName: String,

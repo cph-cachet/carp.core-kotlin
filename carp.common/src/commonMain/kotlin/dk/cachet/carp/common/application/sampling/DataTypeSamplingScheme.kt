@@ -4,11 +4,14 @@ import dk.cachet.carp.common.application.EnumObjectMap
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.data.DataTypeMetaData
 import dk.cachet.carp.common.application.tasks.Measure
+import kotlin.js.JsExport
 
 
 /**
  * Specifies the sampling scheme for a [DataType], including possible options, defaults, and constraints.
  */
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 abstract class DataTypeSamplingScheme<TConfigBuilder : SamplingConfigurationBuilder<*>>(
     /**
      * Information about the data type this sampling scheme relates to.
@@ -55,5 +58,6 @@ abstract class DataTypeSamplingScheme<TConfigBuilder : SamplingConfigurationBuil
  *
  * Extend from this class as an object and assign members as follows: `val SCHEME = add( Scheme( options ) )`.
  */
+@JsExport
 open class DataTypeSamplingSchemeMap :
     EnumObjectMap<DataType, DataTypeSamplingScheme<*>>( { scheme -> scheme.dataType.type } )

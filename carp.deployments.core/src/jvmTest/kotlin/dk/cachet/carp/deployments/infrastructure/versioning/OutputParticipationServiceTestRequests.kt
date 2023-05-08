@@ -1,27 +1,23 @@
 package dk.cachet.carp.deployments.infrastructure.versioning
 
 import dk.cachet.carp.common.test.infrastructure.versioning.OutputTestRequests
-import dk.cachet.carp.deployments.application.ParticipationService
-import dk.cachet.carp.deployments.application.ParticipationServiceHostTest
-import dk.cachet.carp.deployments.application.ParticipationServiceTest
-import dk.cachet.carp.deployments.infrastructure.ParticipationServiceLoggingProxy
+import dk.cachet.carp.deployments.application.*
+import dk.cachet.carp.deployments.infrastructure.ParticipationServiceDecorator
+import dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest
 
 
 class OutputParticipationServiceTestRequests :
-    OutputTestRequests<ParticipationService>( ParticipationService::class ),
+    OutputTestRequests<ParticipationService, ParticipationService.Event, ParticipationServiceRequest<*>>(
+        ParticipationService::class,
+        ::ParticipationServiceDecorator
+    ),
     ParticipationServiceTest
 {
     override fun createSUT(): ParticipationServiceTest.SUT
     {
-        val services = ParticipationServiceHostTest.createSUT()
-        val service = ParticipationServiceLoggingProxy( services.participationService, services.eventBus )
-        loggedService = service
+        val sut = ParticipationServiceHostTest.createSUT()
+        val loggedService = createLoggedApplicationService( sut.participationService, sut.eventBus )
 
-        return ParticipationServiceTest.SUT(
-            service,
-            services.deploymentService,
-            services.accountService,
-            services.eventBus
-        )
+        return ParticipationServiceTest.SUT( loggedService, sut.deploymentService, sut.accountService, sut.eventBus )
     }
 }

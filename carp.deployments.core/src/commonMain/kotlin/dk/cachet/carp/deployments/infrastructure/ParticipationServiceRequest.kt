@@ -10,12 +10,15 @@ import dk.cachet.carp.deployments.application.ParticipationService
 import dk.cachet.carp.deployments.application.users.ActiveParticipationInvitation
 import dk.cachet.carp.deployments.application.users.ParticipantData
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Serializable application service requests to [ParticipationService] which can be executed on demand.
  */
 @Serializable
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 sealed class ParticipationServiceRequest<out TReturn> : ApplicationServiceRequest<ParticipationService, TReturn>
 {
     @Required
@@ -29,16 +32,12 @@ sealed class ParticipationServiceRequest<out TReturn> : ApplicationServiceReques
         ParticipationServiceRequest<Set<ActiveParticipationInvitation>>()
     {
         override fun getResponseSerializer() = serializer<Set<ActiveParticipationInvitation>>()
-        override suspend fun invokeOn( service: ParticipationService ) =
-            service.getActiveParticipationInvitations( accountId )
     }
 
     @Serializable
     data class GetParticipantData( val studyDeploymentId: UUID ) : ParticipationServiceRequest<ParticipantData>()
     {
         override fun getResponseSerializer() = serializer<ParticipantData>()
-        override suspend fun invokeOn( service: ParticipationService ) =
-            service.getParticipantData( studyDeploymentId )
     }
 
     @Serializable
@@ -46,8 +45,6 @@ sealed class ParticipationServiceRequest<out TReturn> : ApplicationServiceReques
         ParticipationServiceRequest<List<ParticipantData>>()
     {
         override fun getResponseSerializer() = serializer<List<ParticipantData>>()
-        override suspend fun invokeOn( service: ParticipationService ) =
-            service.getParticipantDataList( studyDeploymentIds )
     }
 
     @Serializable
@@ -59,7 +56,5 @@ sealed class ParticipationServiceRequest<out TReturn> : ApplicationServiceReques
         ParticipationServiceRequest<ParticipantData>()
     {
         override fun getResponseSerializer() = serializer<ParticipantData>()
-        override suspend fun invokeOn( service: ParticipationService ) =
-            service.setParticipantData( studyDeploymentId, data, inputByParticipantRole )
     }
 }

@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import dk.cachet.carp.common.application.devices.PrimaryDeviceConfiguration
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -16,6 +17,7 @@ import kotlinx.serialization.*
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
+@JsExport
 abstract class TriggerConfiguration<TData : Data>
 {
     /**

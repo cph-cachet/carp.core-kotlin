@@ -3,6 +3,8 @@ package dk.cachet.carp.common.application.data.input
 import dk.cachet.carp.common.application.data.Data
 import dk.cachet.carp.common.application.data.input.elements.AnyInputElement
 import dk.cachet.carp.common.application.data.input.elements.InputElement
+import kotlin.js.JsExport
+import kotlin.js.JsName
 import kotlin.reflect.KClass
 
 
@@ -12,8 +14,11 @@ import kotlin.reflect.KClass
  *
  * Extend from this class as an object and assign members as follows: `val MEMBER = add( type, dataConverter, inputElement )`.
  */
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 open class InputDataTypeList private constructor( val list: MutableList<InputDataType> ) : List<InputDataType> by list
 {
+    @JsName( "create" )
     constructor() : this( mutableListOf() )
 
     private val _inputElements: MutableMap<InputDataType, AnyInputElement> = mutableMapOf()

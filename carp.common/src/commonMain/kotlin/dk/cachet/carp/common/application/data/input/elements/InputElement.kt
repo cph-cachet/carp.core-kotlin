@@ -1,11 +1,13 @@
 package dk.cachet.carp.common.application.data.input.elements
 
+import kotlin.js.JsExport
 import kotlin.reflect.KClass
 
 
 /**
  * Describes data and its constraints which may be input by a user.
  */
+@JsExport
 interface InputElement<TData : Any>
 {
     /**
@@ -21,6 +23,7 @@ interface InputElement<TData : Any>
     /**
      * Return the class information of the expected input data ([TData]).
      */
+    @Suppress( "NON_EXPORTABLE_TYPE" )
     fun getDataClass(): KClass<TData>
 }
 

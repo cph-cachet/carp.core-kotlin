@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.application.data
 
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -8,4 +9,5 @@ import kotlinx.serialization.*
  */
 @Serializable
 @SerialName( CarpDataTypes.ECG_TYPE_NAME )
+@JsExport
 data class ECG( val milliVolt: Double, override val sensorSpecificData: Data? = null ) : SensorData

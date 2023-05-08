@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.common.application.devices
 
 import dk.cachet.carp.common.application.Trilean
@@ -10,6 +12,7 @@ import dk.cachet.carp.common.application.sampling.SamplingConfiguration
 import dk.cachet.carp.common.application.tasks.TaskConfigurationList
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 import kotlin.reflect.KClass
 
 
@@ -17,6 +20,7 @@ import kotlin.reflect.KClass
  * A beacon meeting the open AltBeacon standard.
  */
 @Serializable
+@JsExport
 data class AltBeacon(
     override val roleName: String,
     override val isOptional: Boolean = false,
@@ -50,6 +54,7 @@ data class AltBeacon(
  * The beacon ID is 20 bytes, made up out of the recommended subdivision [organizationId], [majorId], and [minorId].
  */
 @Serializable
+@JsExport
 data class AltBeaconDeviceRegistration(
     /**
      * The beacon device manufacturer's company identifier code as maintained by the Bluetooth SIG assigned numbers database.
@@ -92,6 +97,7 @@ data class AltBeaconDeviceRegistration(
 
 @Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( NotSerializable::class )
+@JsExport
 class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDeviceRegistration>()
 {
     /**

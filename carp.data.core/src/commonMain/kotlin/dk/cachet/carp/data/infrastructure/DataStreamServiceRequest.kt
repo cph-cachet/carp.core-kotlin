@@ -10,12 +10,15 @@ import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
 import dk.cachet.carp.data.application.DataStreamsConfiguration
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Serializable application service requests to [DataStreamServiceRequest] which can be executed on demand.
  */
 @Serializable
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<DataStreamService, TReturn>
 {
     @Required
@@ -28,7 +31,6 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
     data class OpenDataStreams( val configuration: DataStreamsConfiguration ) : DataStreamServiceRequest<Unit>()
     {
         override fun getResponseSerializer() = serializer<Unit>()
-        override suspend fun invokeOn( service: DataStreamService ) = service.openDataStreams( configuration )
     }
 
     @Serializable
@@ -39,8 +41,6 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
     ) : DataStreamServiceRequest<Unit>()
     {
         override fun getResponseSerializer() = serializer<Unit>()
-        override suspend fun invokeOn( service: DataStreamService ) =
-            service.appendToDataStreams( studyDeploymentId, batch )
     }
 
     @Serializable
@@ -51,8 +51,6 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
     ) : DataStreamServiceRequest<DataStreamBatch>()
     {
         override fun getResponseSerializer() = DataStreamBatchSerializer
-        override suspend fun invokeOn( service: DataStreamService ) =
-            service.getDataStream( dataStream, fromSequenceId, toSequenceIdInclusive )
     }
 
     @Serializable
@@ -60,7 +58,6 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
         DataStreamServiceRequest<Unit>()
     {
         override fun getResponseSerializer() = serializer<Unit>()
-        override suspend fun invokeOn( service: DataStreamService ) = service.closeDataStreams( studyDeploymentIds )
     }
 
     @Serializable
@@ -68,6 +65,5 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
         DataStreamServiceRequest<Set<UUID>>()
     {
         override fun getResponseSerializer() = serializer<Set<UUID>>()
-        override suspend fun invokeOn( service: DataStreamService ) = service.removeDataStreams( studyDeploymentIds )
     }
 }

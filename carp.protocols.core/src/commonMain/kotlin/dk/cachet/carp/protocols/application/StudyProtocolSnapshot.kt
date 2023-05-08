@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
@@ -15,12 +17,14 @@ import dk.cachet.carp.common.infrastructure.serialization.ApplicationDataSeriali
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import kotlinx.datetime.Instant
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * A serializable snapshot of a [StudyProtocol] at the moment in time when it was created.
  */
 @Serializable
+@JsExport
 data class StudyProtocolSnapshot(
     override val id: UUID,
     override val createdOn: Instant,

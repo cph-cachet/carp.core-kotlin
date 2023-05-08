@@ -1,0 +1,30 @@
+apply {
+    plugin("kotlin-multiplatform")
+}
+
+kotlin {
+    js(IR) {
+        moduleName = project.name.replaceAll("\\.", "-") + "-generated"
+        binaries.executable() // Export JS/TypeScript files.
+        browser()
+    }
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                api project(':carp.common')
+                api project(':carp.data.core')
+                api project(':carp.deployments.core')
+                api project(':carp.protocols.core')
+                api project(':carp.studies.core')
+            }
+        }
+
+        all {
+            languageSettings {
+                // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
+                optIn('kotlin.js.ExperimentalJsExport')
+            }
+        }
+    }
+}

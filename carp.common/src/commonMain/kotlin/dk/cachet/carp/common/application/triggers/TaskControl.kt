@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.application.triggers
 
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -8,6 +9,7 @@ import kotlinx.serialization.*
  * the task with [taskName] on [destinationDeviceRoleName] should be started or stopped.
  */
 @Serializable
+@JsExport
 data class TaskControl(
     val triggerId: Int,
     val taskName: String,

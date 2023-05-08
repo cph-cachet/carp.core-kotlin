@@ -11,7 +11,7 @@ import kotlinx.serialization.json.Json
  */
 @Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
 @Serializable( TriggerConfigurationSerializer::class )
-data class CustomTriggerConfiguration(
+data class CustomTriggerConfiguration internal constructor(
     override val className: String,
     override val jsonSource: String,
     val serializer: Json

@@ -2,6 +2,7 @@ package dk.cachet.carp.common.application.data.input
 
 import dk.cachet.carp.common.application.data.Data
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
@@ -9,6 +10,7 @@ import kotlinx.serialization.*
  */
 @Serializable
 @SerialName( CarpInputDataTypes.SEX_TYPE_NAME )
+@JsExport
 enum class Sex : Data
 {
     Male,

@@ -1,8 +1,10 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.data.application
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.*
-
+import kotlin.js.JsExport
 
 
 /**
@@ -13,6 +15,7 @@ import kotlinx.serialization.*
  * syncedTime = [relativeClockSpeed] * (sensorTime - [sensorTimestampAtSyncPoint]) + [synchronizedOn]
  */
 @Serializable
+@JsExport
 data class SyncPoint(
     /**
      * The UTC time as measured on the primary device when it determined the synchronization point.

@@ -20,7 +20,7 @@ class UnknownPolymorphicSerializerTest
             subclass( DerivingType::class )
 
             subclass( CustomBaseType::class )
-            default { UnknownBaseTypeSerializer }
+            defaultDeserializer { UnknownBaseTypeSerializer }
         }
     }
 
@@ -39,8 +39,11 @@ class UnknownPolymorphicSerializerTest
 
     @Suppress( "SERIALIZER_TYPE_INCOMPATIBLE" )
     @Serializable( UnknownBaseTypeSerializer::class )
-    data class CustomBaseType( override val className: String, override val jsonSource: String, val serializer: Json ) :
-        BaseType(), UnknownPolymorphicWrapper
+    data class CustomBaseType internal constructor(
+        override val className: String,
+        override val jsonSource: String,
+        val serializer: Json
+    ) : BaseType(), UnknownPolymorphicWrapper
     {
         @Serializable
         private class BaseMembers( override val toOverrideProperty: String ) : BaseType()

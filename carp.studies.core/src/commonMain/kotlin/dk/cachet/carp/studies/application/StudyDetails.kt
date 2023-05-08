@@ -1,3 +1,5 @@
+@file:Suppress( "NON_EXPORTABLE_TYPE" )
+
 package dk.cachet.carp.studies.application
 
 import dk.cachet.carp.common.application.UUID
@@ -5,12 +7,14 @@ import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.datetime.Instant
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Contains detailed information about a study, such as the configured study protocol.
  */
 @Serializable
+@JsExport
 data class StudyDetails(
     val studyId: UUID,
     /**

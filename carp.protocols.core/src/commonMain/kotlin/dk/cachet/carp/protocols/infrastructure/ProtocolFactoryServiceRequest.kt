@@ -7,12 +7,15 @@ import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.protocols.application.ProtocolFactoryService
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Serializable application service requests to [ProtocolFactoryService] which can be executed on demand.
  */
 @Serializable
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 sealed class ProtocolFactoryServiceRequest<out TReturn> : ApplicationServiceRequest<ProtocolFactoryService, TReturn>
 {
     @Required
@@ -30,7 +33,5 @@ sealed class ProtocolFactoryServiceRequest<out TReturn> : ApplicationServiceRequ
     ) : ProtocolFactoryServiceRequest<StudyProtocolSnapshot>()
     {
         override fun getResponseSerializer() = serializer<StudyProtocolSnapshot>()
-        override suspend fun invokeOn( service: ProtocolFactoryService ) =
-            service.createCustomProtocol( ownerId, name, customProtocol, description )
     }
 }

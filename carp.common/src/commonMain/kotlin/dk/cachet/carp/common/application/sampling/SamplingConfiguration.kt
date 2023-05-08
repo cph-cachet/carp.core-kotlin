@@ -7,6 +7,7 @@ import dk.cachet.carp.common.application.devices.DeviceConfiguration
 import dk.cachet.carp.common.application.devices.DeviceConfigurationBuilder
 import dk.cachet.carp.common.application.devices.DeviceConfigurationBuilderDsl
 import kotlinx.serialization.Polymorphic
+import kotlin.js.JsExport
 
 
 /**
@@ -15,6 +16,7 @@ import kotlinx.serialization.Polymorphic
 @Polymorphic
 @Immutable
 @ImplementAsDataClass
+@JsExport
 interface SamplingConfiguration
 
 

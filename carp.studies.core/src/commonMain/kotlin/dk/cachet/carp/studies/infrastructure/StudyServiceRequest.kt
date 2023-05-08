@@ -10,12 +10,15 @@ import dk.cachet.carp.studies.application.StudyDetails
 import dk.cachet.carp.studies.application.StudyService
 import dk.cachet.carp.studies.application.StudyStatus
 import kotlinx.serialization.*
+import kotlin.js.JsExport
 
 
 /**
  * Serializable application service requests to [StudyService] which can be executed on demand.
  */
 @Serializable
+@JsExport
+@Suppress( "NON_EXPORTABLE_TYPE" )
 sealed class StudyServiceRequest<out TReturn> : ApplicationServiceRequest<StudyService, TReturn>
 {
     @Required
@@ -33,8 +36,6 @@ sealed class StudyServiceRequest<out TReturn> : ApplicationServiceRequest<StudyS
     ) : StudyServiceRequest<StudyStatus>()
     {
         override fun getResponseSerializer() = serializer<StudyStatus>()
-        override suspend fun invokeOn( service: StudyService ) =
-            service.createStudy( ownerId, name, description, invitation )
     }
 
     @Serializable
@@ -42,36 +43,30 @@ sealed class StudyServiceRequest<out TReturn> : ApplicationServiceRequest<StudyS
         StudyServiceRequest<StudyStatus>()
     {
         override fun getResponseSerializer() = serializer<StudyStatus>()
-        override suspend fun invokeOn( service: StudyService ) =
-            service.setInternalDescription( studyId, name, description )
     }
 
     @Serializable
     data class GetStudyDetails( val studyId: UUID ) : StudyServiceRequest<StudyDetails>()
     {
         override fun getResponseSerializer() = serializer<StudyDetails>()
-        override suspend fun invokeOn( service: StudyService ) = service.getStudyDetails( studyId )
     }
 
     @Serializable
     data class GetStudyStatus( val studyId: UUID ) : StudyServiceRequest<StudyStatus>()
     {
         override fun getResponseSerializer() = serializer<StudyStatus>()
-        override suspend fun invokeOn( service: StudyService ) = service.getStudyStatus( studyId )
     }
 
     @Serializable
     data class GetStudiesOverview( val ownerId: UUID ) : StudyServiceRequest<List<StudyStatus>>()
     {
         override fun getResponseSerializer() = serializer<List<StudyStatus>>()
-        override suspend fun invokeOn( service: StudyService ) = service.getStudiesOverview( ownerId )
     }
 
     @Serializable
     data class SetInvitation( val studyId: UUID, val invitation: StudyInvitation ) : StudyServiceRequest<StudyStatus>()
     {
         override fun getResponseSerializer() = serializer<StudyStatus>()
-        override suspend fun invokeOn( service: StudyService ) = service.setInvitation( studyId, invitation )
     }
 
     @Serializable
@@ -79,27 +74,23 @@ sealed class StudyServiceRequest<out TReturn> : ApplicationServiceRequest<StudyS
         StudyServiceRequest<StudyStatus>()
     {
         override fun getResponseSerializer() = serializer<StudyStatus>()
-        override suspend fun invokeOn( service: StudyService ) = service.setProtocol( studyId, protocol )
     }
 
     @Serializable
     data class RemoveProtocol( val studyId: UUID ) : StudyServiceRequest<StudyStatus>()
     {
         override fun getResponseSerializer() = serializer<StudyStatus>()
-        override suspend fun invokeOn( service: StudyService ) = service.removeProtocol( studyId )
     }
 
     @Serializable
     data class GoLive( val studyId: UUID ) : StudyServiceRequest<StudyStatus>()
     {
         override fun getResponseSerializer() = serializer<StudyStatus>()
-        override suspend fun invokeOn( service: StudyService ) = service.goLive( studyId )
     }
 
     @Serializable
     data class Remove( val studyId: UUID ) : StudyServiceRequest<Boolean>()
     {
         override fun getResponseSerializer() = serializer<Boolean>()
-        override suspend fun invokeOn( service: StudyService ) = service.remove( studyId )
     }
 }

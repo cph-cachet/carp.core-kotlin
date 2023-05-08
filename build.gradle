@@ -3,35 +3,37 @@ buildscript {
     ext {
         // Version used for submodule artifacts.
         // Snapshot publishing changes (or adds) the suffix after '-' with 'SNAPSHOT' prior to publishing.
-        globalVersion = '1.1.1'
-        clientsVersion = '1.1.1-alpha.1' // The clients subsystem is still expected to change drastically.
+        globalVersion = '1.1.2'
+        clientsVersion = '1.1.2-alpha.1' // The clients subsystem is still expected to change drastically.
 
         versions = [
             // Kotlin multiplatform versions.
-            kotlin:'1.8.0',
-            serialization:'1.4.1',
-            coroutines:'1.6.4',
+            kotlin:'1.8.21',
+            serialization:'1.5.0',
+            coroutines:'1.7.0',
             datetime:'0.4.0',
 
             // JVM versions.
             jvmTarget:'1.8',
-            dokkaPlugin:'1.7.20',
+            dokkaPlugin:'1.8.10',
             reflections:'0.10.2',
 
             // JS versions.
-            nodePlugin:'3.5.0',
+            nodePlugin:'4.0.0',
             bigJs:'6.2.1',
 
             // DevOps versions.
             detektPlugin:'1.22.0',
             detektVerifyImplementation:'1.2.5',
-            nexusPublishPlugin:'1.1.0',
+            nexusPublishPlugin:'1.3.0',
             apacheCommons:'2.11.0'
         ]
 
         commonModule = subprojects.find { it.name == 'carp.common' }
         coreModules = subprojects.findAll { it.name.endsWith( '.core' ) }
-        devOpsModules = subprojects.findAll { it.name == 'carp.detekt' || it.name == 'rpc' }
+        publishNpmModule = subprojects.find { it.name == 'publish-npm-packages' }
+        devOpsModules =
+            subprojects.findAll {it.name == 'carp.detekt' || it.name == 'rpc' } + publishNpmModule
     }
 
     dependencies {
@@ -82,9 +84,11 @@ configure( subprojects - devOpsModules ) {
                 useJUnitPlatform()
             }
         }
-        js(LEGACY) {
-            binaries.executable()
+        js(IR) {
+            moduleName = project.name.replaceAll("\\.", "-") + "-generated"
+            binaries.executable() // Export JS/TypeScript files.
             browser()
+            generateTypeScriptDefinitions()
         }
 
         sourceSets {
@@ -114,6 +118,7 @@ configure( subprojects - devOpsModules ) {
                     // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
                     optIn('kotlin.RequiresOptIn')
                     optIn('kotlin.time.ExperimentalTime')
+                    optIn('kotlin.js.ExperimentalJsExport')
                     if (isTestSourceSet)
                     {
                         optIn('kotlinx.coroutines.ExperimentalCoroutinesApi')
@@ -234,41 +239,73 @@ task setupTsProject(type: NpmTask) {
     args = ['install']
 }
 task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
-    // Make sure no old imported packages are left behind.
-    def importedPackages = file("$rootDir/build/js/packages_imported")
-    if (importedPackages.exists()) importedPackages.eachFile { it.delete() }
-
-    // Compile all subprojects which compile to JS.
-    // TODO: Can the compiled sources be copied from the tasks of which we want to test the output directly?
-    //  We only need main sources of coreModules and commonModules since these are the only ones tested.
-    //  But, only adding dependencies on those triggers warnings since other outputs exist in `/build//js/packages`.
-    def projects = subprojects - devOpsModules
+    // Compile production sources for CARP, and the JS publication project (`publishNpmModule`).
+    def projects = coreModules + commonModule + publishNpmModule
     projects.each {
         def project = it.name
-        dependsOn("$project:jsBrowserDistribution")
-        dependsOn("$project:compileTestKotlinJs")
+        dependsOn("$project:jsProductionExecutableCompileSync")
     }
 
-    // Copy compiled sources and dependencies to test project node_modules.
-    from "$rootDir/build/js/packages"
-    exclude '**/node_modules/**'
-    from(importedPackages) {
-        eachFile {
-            def path = it.path
-            if (path == ".visited") return // We don't need this file.
+    // Copy compiled JS and TypeScript sources to test project's node_modules.
+    from("$rootDir/build/js/packages/publish-npm-packages-generated") {
+        include "**/*.js"
+    }
+    from("$rootDir/build/js/packages") {
+        // Use individually generated TypeScript declarations to exclude publish-npm-packages exports.
+        include "**/*.d.ts"
+        includeEmptyDirs = false
+    }
+    eachFile { file ->
+        // Compiled sources have the name of the module they represent, followed by ".js" and ".d.ts".
+        // To be recognized by node, place them as "index.js" and "index.d.ts" in "node_modules/@cachet/<module-name>".
+        def fileMatch = file.name =~ /(.+)\.(js|d\.ts)/
+        def moduleName = fileMatch[0][1]
+        def extension = fileMatch[0][2]
+        file.relativePath = new RelativePath(true, moduleName, "index.$extension")
 
-            // Remove intermediate version directory: e.g. "kotlin/1.5.10/kotlin.js"
-            it.path = path.replaceFirst(/\d+\.\d+.\d+(-.+)?\//, "")
+        // Non-exported types show up as `any/* some.unknown.Type */` in generated TypeScript sources.
+        // Types for which a facade has been manually added can be replaced with the actual type (instead of `any`).
+        def knownFacadeTypes = []
+        def knownFacadeTypesFile = new File("$rootDir/publish-npm-packages/src/known-facade-types")
+        knownFacadeTypesFile.eachLine { type -> knownFacadeTypes << type }
+
+        // Modify sources to act like modules with exported named members.
+        file.filter { line ->
+            // Compiled sources refer to other modules as adjacent .js source files.
+            // Change these to the named modules created in the previous step.
+            def namedModules = line.replaceAll(~/'\.\/(.+?)\.js'/, "'@cachet/\$1'")
+
+            // Replace `any` types with actual types for which facades are specified.
+            def replacedTypes = knownFacadeTypes.inject(namedModules) { curLine, type ->
+                def knownType = curLine.replaceAll(
+                    ~/any\/\* $type(<.+?>)? \*\//,
+                    "$type\$1"
+                )
+                knownType.replaceAll(~/UnknownType \*/, "any")
+            }
+
+            // Add additional internal types to be exported, as configured in `forced-exports`.
+            def toExport = []
+            def forcedExportsFile = new File("$rootDir/publish-npm-packages/src/forced-exports/$moduleName")
+            if (forcedExportsFile.exists()) {
+                forcedExportsFile.eachLine { type -> toExport << type }
+            }
+            def toExportList = toExport.collect { "_.\\\$_\\\$.$it = $it\n  " }
+            def additionalExports = replacedTypes.replaceAll(
+                ~/return \_;/,
+                toExportList.join() + "return _;"
+            )
+            additionalExports
         }
     }
-    into "./$typescriptFolder/node_modules"
+    into "./$typescriptFolder/node_modules/@cachet/"
 }
 task compileTs(type: NpmTask, dependsOn: copyTestJsSources) {
     workingDir = file(typescriptFolder)
     args = ['run', 'tsc']
 }
 task verifyTsDeclarations(type: NodeTask, dependsOn: compileTs) {
-    script = file("${typescriptFolder}/node_modules/mocha/bin/mocha")
+    script = file("${typescriptFolder}/node_modules/mocha/bin/mocha.js")
     execOverrides {
         it.workingDir = typescriptFolder
     }

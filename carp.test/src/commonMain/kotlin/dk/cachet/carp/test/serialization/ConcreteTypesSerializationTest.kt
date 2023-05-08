@@ -88,6 +88,7 @@ fun getPolymorphicSerializers( serialModule: SerializersModule ): Map<KClass<*>,
                 serializers[ actualClass ] = actualSerializer
             }
 
+            @Suppress( "REDUNDANT_PROJECTION", "KotlinRedundantDiagnosticSuppress" ) // Exact override needed.
             override fun <Base : Any> polymorphicDefaultDeserializer(
                 baseClass: KClass<Base>,
                 defaultDeserializerProvider: (className: String?) -> DeserializationStrategy<out Base>?
@@ -99,14 +100,6 @@ fun getPolymorphicSerializers( serialModule: SerializersModule ): Map<KClass<*>,
             override fun <Base : Any> polymorphicDefaultSerializer(
                 baseClass: KClass<Base>,
                 defaultSerializerProvider: (value: Base) -> SerializationStrategy<Base>?
-            )
-            {
-                // The default serializer is not returned by this method.
-            }
-
-            override fun <Base : Any> polymorphicDefault(
-                baseClass: KClass<Base>,
-                defaultDeserializerProvider: (className: String?) -> DeserializationStrategy<out Base>?
             )
             {
                 // The default serializer is not returned by this method.

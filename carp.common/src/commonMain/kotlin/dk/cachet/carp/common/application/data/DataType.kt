@@ -1,6 +1,7 @@
 package dk.cachet.carp.common.application.data
 
 import dk.cachet.carp.common.application.NamespacedId
+import kotlin.js.JsExport
 
 
 /**
@@ -14,6 +15,7 @@ typealias DataType = NamespacedId
 /**
  * Contains meta data about [type].
  */
+@JsExport
 data class DataTypeMetaData(
     /**
      * Unique fully qualified name for the data type this meta data relates to.
@@ -33,6 +35,7 @@ data class DataTypeMetaData(
 /**
  * Describes how [Data] for a [DataType] should be stored temporally.
  */
+@JsExport
 enum class DataTimeType
 {
     /**
