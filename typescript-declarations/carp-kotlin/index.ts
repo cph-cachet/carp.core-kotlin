@@ -4,6 +4,7 @@ import * as kotlinStdLib from "@cachet/kotlin-kotlin-stdlib-js-ir"
 // Facade with better method names and type conversions for internal types.
 export namespace kotlin
 {
+    export type Nullable<T> = T | null | undefined
     export interface Long
     {
         toNumber(): number
