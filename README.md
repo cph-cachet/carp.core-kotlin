@@ -60,7 +60,7 @@ Two key **design goals** differentiate this project from similar projects:
 
 ![Subsystem decomposition](https://i.imgur.com/hEsTHNk.png)
 
-- [**Protocols**](docs/carp-protocols.md): Implements open standards which can describe a study protocol—how a study should be run. Essentially, this subsystem has no _technical_ dependencies on any particular sensor technology or application as it merely describes why, when, and what data should be collected.
+- [**Protocols**](docs/carp-protocols.md): Supports management of study protocols—how a study should be run. Essentially, this subsystem has no _technical_ dependencies on any particular sensor technology or application as the containing study protocols merely describe why, when, and what data should be collected.
 
   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.protocols/carp.protocols.core/badge.svg)](https://mvnrepository.com/artifact/dk.cachet.carp.protocols) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.protocols/carp.protocols.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/protocols/)
 
@@ -68,15 +68,15 @@ Two key **design goals** differentiate this project from similar projects:
 
   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.studies/carp.studies.core/badge.svg)](https://mvnrepository.com/artifact/dk.cachet.carp.studies) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.studies/carp.studies.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/studies/)
 
-- [**Deployments**](docs/carp-deployments.md): Maps the information specified in a study protocol to runtime configurations used by the 'clients' subystem to run the protocol on concrete devices (e.g., a smartphone) and allow researchers to monitor their state. To start collecting data, participants need to be invited, devices need to be registered, and consent needs to be given to collect the requested data.
+- [**Deployments**](docs/carp-deployments.md): Maps the information specified in a study protocol to runtime configurations used by 'client' subsystems to run the protocol on concrete devices (e.g., a smartphone) and allow researchers to monitor their state. To start collecting data, participants need to be invited, devices need to be registered, and consent needs to be given to collect the requested data.
 
   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.deployments/carp.deployments.core/badge.svg)](https://mvnrepository.com/artifact/dk.cachet.carp.deployments) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.deployments/carp.deployments.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/deployments/)
 
-- [**Clients**](docs/carp-clients.md): The runtime which performs the actual data collection on a device (e.g., desktop computer or smartphone). This subsystem contains reusable components which understand the runtime configuration derived from a study protocol by the ‘deployment’ subsystem. Integrations with sensors are loaded through a 'device data collector' plug-in system to decouple sensing—not part of core—from sensing logic.
+- [**Clients**](docs/carp-clients.md): The runtime which performs the actual data collection on a device (e.g., desktop computer or smartphone). This subsystem contains reusable components which understand the runtime configuration derived from a study protocol by the 'deployment' subsystem. Integrations with sensors are loaded through a 'device data collector' plug-in system to decouple sensing—not part of core—from sensing logic.
 
    [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.clients/carp.clients.core/badge.svg?color=orange)](https://mvnrepository.com/artifact/dk.cachet.carp.clients) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.clients/carp.clients.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/clients/)
 
-- [**Data**](docs/carp-data.md): Contains all pseudonymized data. In combination with the original study protocol, the full provenance of the data (when/why it was collected) is known.
+- [**Data**](docs/carp-data.md): Contains all pseudonymized data. In combination with the original study protocol, the full provenance of the data (when/why it was collected) is known. In combination with data from the 'studies' subsystem, the data can be linked back to individual participants.
   
   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.cachet.carp.data/carp.data.core/badge.svg)](https://mvnrepository.com/artifact/dk.cachet.carp.data) [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/dk.cachet.carp.data/carp.data.core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/content/repositories/snapshots/dk/cachet/carp/data/)
 
