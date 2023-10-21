@@ -176,10 +176,12 @@ private fun <T : Any> String.makeUnknown(
     //       This is complex, and furthermore not 100% foolproof in rare cases (e.g., if the string is used not as a type name).
     //       Probably this should be rewritten with a JSON parser.
     val escapedQualifiedName = qualifiedName.replace( ".", "\\." )
-    val objectRegex = Regex( "(\\{\"__type\":\")($escapedQualifiedName)(\",(?!.*?$escapedQualifiedName.*?\"$key\":\"$value\").*?\"$key\":\"$value\".*?\\})" )
+    val objectRegex =
+        Regex( "(\\{\"__type\":\")($escapedQualifiedName)(\",(?!.*?$escapedQualifiedName.*?\"$key\":\"$value\").*?\"$key\":\"$value\".*?\\})" )
 
     // Replace type name with an unknown type name to mimic it is not available at runtime.
     val match = objectRegex.find( this )
-    require( match != null && match.groups.count() == 4 ) { "Could not find the specified object in the serialized string." }
+    require( match != null && match.groups.count() == 4 )
+        { "Could not find the specified object in the serialized string." }
     return this.replace( objectRegex, "$1$unknownTypeName$3" )
 }

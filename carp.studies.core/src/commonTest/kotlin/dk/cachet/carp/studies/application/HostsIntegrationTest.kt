@@ -114,7 +114,8 @@ class HostsIntegrationTest
         var studyRemovedEvent: StudyService.Event.StudyRemoved? = null
         eventBus.registerHandler( StudyService::class, StudyService.Event.StudyRemoved::class, this ) { studyRemovedEvent = it }
         var deploymentRemovedEvent: DeploymentService.Event.StudyDeploymentRemoved? = null
-        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentRemoved::class, this ) { deploymentRemovedEvent = it }
+        eventBus.registerHandler( DeploymentService::class, DeploymentService.Event.StudyDeploymentRemoved::class, this )
+            { deploymentRemovedEvent = it }
         eventBus.activateHandlers( this )
         studyService.remove( studyId )
 

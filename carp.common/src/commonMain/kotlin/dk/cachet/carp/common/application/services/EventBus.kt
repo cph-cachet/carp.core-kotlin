@@ -43,7 +43,8 @@ abstract class EventBus
      */
     fun <
         TService : ApplicationService<TService, TEvent>,
-        TEvent : IntegrationEvent<TService>> registerHandler(
+        TEvent : IntegrationEvent<TService>
+    > registerHandler(
         eventSource: KClass<TService>,
         eventType: KClass<TEvent>,
         subscriber: Any,

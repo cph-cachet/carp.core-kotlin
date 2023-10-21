@@ -20,7 +20,8 @@ interface StudyRepositoryTest
         val study = Study( UUID.randomUUID(), "Test" )
         repo.add( study )
 
-        val studyWithSameId = Study( UUID.randomUUID(), "Study 2", "Description", StudyInvitation( "Some study" ), study.id )
+        val studyWithSameId =
+            Study( UUID.randomUUID(), "Study 2", "Description", StudyInvitation( "Some study" ), study.id )
         assertFailsWith<IllegalArgumentException>
         {
             repo.add( studyWithSameId )
