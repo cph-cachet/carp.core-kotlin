@@ -12,6 +12,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serialization}"
                 api project(':carp.common')
                 api project(':carp.data.core')
                 api project(':carp.deployments.core')
