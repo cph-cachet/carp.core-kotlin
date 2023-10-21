@@ -3,6 +3,9 @@ import { expect } from 'chai'
 import { dk as cdk } from '@cachet/carp-common'
 import JSON = cdk.cachet.carp.common.infrastructure.serialization.JSON
 
+import { kotlinx } from '@cachet/carp-kotlinx-serialization'
+import getSerializer = kotlinx.serialization.getSerializer
+
 import { dk } from '@cachet/carp-protocols-core'
 import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import ProtocolServiceRequest = dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest
@@ -13,7 +16,7 @@ const serializedSnapshot = `{"id":"ad4ca03a-6f69-4a95-8701-488dc511925b","create
 describe( "carp-protocols-core", () => {
     describe( "StudyProtocolSnapshot", () => {
         it( "can deserialize", () => {
-            const serializer = StudyProtocolSnapshot.Companion.serializer()
+            const serializer = getSerializer( StudyProtocolSnapshot )
             const parsed = JSON.decodeFromString( serializer, serializedSnapshot )
             expect( parsed ).is.instanceOf( StudyProtocolSnapshot )
         } )
@@ -21,7 +24,7 @@ describe( "carp-protocols-core", () => {
 
     describe( "ProtocolServiceRequest", () => {
         it( "add request has default version tag", () => {
-            const serializer = StudyProtocolSnapshot.Companion.serializer()
+            const serializer = getSerializer( StudyProtocolSnapshot )
             const snapshot = JSON.decodeFromString( serializer, serializedSnapshot )
 
             const addProtocol = new ProtocolServiceRequest.Add( snapshot )

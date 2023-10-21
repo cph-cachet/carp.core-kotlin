@@ -5,7 +5,7 @@ declare module "@cachet/kotlin-kotlin-stdlib-js-ir"
         interface Long
         {
             // toNumber
-            i5(): number
+            c1(): number
         }
         function toLong_0( number: number ): Long
 
@@ -14,16 +14,16 @@ declare module "@cachet/kotlin-kotlin-stdlib-js-ir"
             constructor( first: K, second: V )
 
             // first
-            a3_1: K
+            b3_1: K
 
             // second
-            b3_1: V
+            c3_1: V
         }
 
         interface Collection<T>
         {
             // contains
-            d1( value: T ): boolean
+            e1( value: T ): boolean
 
             // size
             i(): number
@@ -44,13 +44,13 @@ declare module "@cachet/kotlin-kotlin-stdlib-js-ir"
         interface Map<K, V>
         {
             // get
-            e2( key: K ): V
+            f2( key: K ): V
 
             // keys
-            f2(): Set<K>
+            g2(): Set<K>
 
             // values
-            g2(): Collection<V>
+            h2(): Collection<V>
         }
         interface HashMap<K, V> extends Map<K, V> {}
         function mapOf<K, V>( pairs: Pair<K, V>[] ): Map<K, V>
