@@ -19,7 +19,7 @@ buildscript {
             reflections:'0.10.2',
 
             // JS versions.
-            nodePlugin:'4.0.0',
+            nodePlugin:'7.0.1',
             bigJs:'6.2.1',
 
             // DevOps versions.
