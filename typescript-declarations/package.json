@@ -13,18 +13,18 @@
     "carp-studies-core"
   ],
   "dependencies": {
-    "@js-joda/core": "5.5.3"
+    "@js-joda/core": "5.6.1"
   },
   "devDependencies": {
-    "@types/node": "20.1.0",
-    "chai": "4.3.7",
-    "@types/chai": "4.3.5",
+    "@types/node": "20.8.7",
+    "chai": "4.3.10",
+    "@types/chai": "4.3.9",
     "mocha": "10.2.0",
-    "@types/mocha": "10.0.1",
-    "@typescript-eslint/typescript-estree": "5.59.2",
-    "jsdom": "22.0.0",
+    "@types/mocha": "10.0.3",
+    "@typescript-eslint/typescript-estree": "5.62.0",
+    "jsdom": "22.1.0",
     "jsdom-global": "3.0.2",
     "ts-node": "10.9.1",
-    "typescript": "5.0.4"
+    "typescript": "5.2.2"
   }
 }
