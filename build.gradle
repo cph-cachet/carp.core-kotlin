@@ -91,6 +91,26 @@ configure( subprojects - devOpsModules ) {
             generateTypeScriptDefinitions()
         }
 
+        targets.configureEach {
+            compilations.configureEach {
+                def isTestSourceSet = it.name == 'test'
+
+                compilerOptions.configure((Action) {
+                    // Treat compilation warning as errors for all compilation targets.
+                    it.allWarningsAsErrors = true
+
+                    // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
+                    it.optIn.add('kotlin.RequiresOptIn')
+                    it.optIn.add('kotlin.time.ExperimentalTime')
+                    it.optIn.add('kotlin.js.ExperimentalJsExport')
+                    if (isTestSourceSet)
+                    {
+                        it.optIn.add('kotlinx.coroutines.ExperimentalCoroutinesApi')
+                    }
+                } )
+            }
+        }
+
         sourceSets {
             commonMain {
                 dependencies {
@@ -110,27 +130,7 @@ configure( subprojects - devOpsModules ) {
                     implementation "org.reflections:reflections:${versions.reflections}"
                 }
             }
-
-            all {
-                def isTestSourceSet = it.name.endsWith('Test')
-
-                languageSettings {
-                    // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
-                    optIn('kotlin.RequiresOptIn')
-                    optIn('kotlin.time.ExperimentalTime')
-                    optIn('kotlin.js.ExperimentalJsExport')
-                    if (isTestSourceSet)
-                    {
-                        optIn('kotlinx.coroutines.ExperimentalCoroutinesApi')
-                    }
-                }
-            }
         }
-    }
-
-    // Treat compilation warning as errors for all compilation targets.
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-        kotlinOptions { allWarningsAsErrors = true }
     }
 
     // Publish configuration.
