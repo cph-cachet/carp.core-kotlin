@@ -8,8 +8,8 @@ buildscript {
 
         versions = [
             // Kotlin multiplatform versions.
-            kotlin:'1.9.10',
-            serialization:'1.6.0',
+            kotlin:'1.9.21',
+            serialization:'1.6.1',
             coroutines:'1.7.3',
             datetime:'0.4.1',
 
@@ -107,6 +107,7 @@ configure( subprojects - devOpsModules ) {
                     {
                         it.optIn.add('kotlinx.coroutines.ExperimentalCoroutinesApi')
                     }
+                    it.freeCompilerArgs.add('-Xexpect-actual-classes') // https://youtrack.jetbrains.com/issue/KT-61573
                 } )
             }
         }
