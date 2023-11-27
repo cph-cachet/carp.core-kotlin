@@ -32,8 +32,8 @@ describe( "kotlin", () => {
         ]
 
         const moduleVerifier = new VerifyModule(
-            '@cachet/kotlin-kotlin-stdlib-js-ir',
-            './carp-kotlin/kotlin-kotlin-stdlib-js-ir.d.ts',
+            '@cachet/kotlin-kotlin-stdlib',
+            './carp-kotlin/kotlin-kotlin-stdlib.d.ts',
             instances
         )
         await moduleVerifier.verify()

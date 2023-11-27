@@ -5,7 +5,7 @@ import * as extendJson from "@cachet/kotlinx-serialization-kotlinx-serialization
 // Facade with better method names and type conversions for internal types.
 export namespace kotlinx.serialization
 {
-    export function getSerializer( type: any ) { return type.Companion.o14() }
+    export function getSerializer( type: any ) { return type.Companion.c16() }
 }
 export namespace kotlinx.serialization.json
 {
@@ -42,12 +42,12 @@ declare module "@cachet/kotlinx-serialization-kotlinx-serialization-json"
 extendJson.$_$.JsonImpl.prototype.encodeToString =
     function( serializer: any, value: any ): string
     {
-        return this.h12( serializer, value );
+        return this.t13( serializer, value );
     };
 extendJson.$_$.JsonImpl.prototype.decodeFromString =
     function( serializer: any, string: string ): any
     {
-        return this.i12( serializer, string );
+        return this.u13( serializer, string );
     };
 
 
