@@ -1,7 +1,10 @@
 package dk.cachet.carp.protocols.application
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.InputDataType
+import dk.cachet.carp.common.application.data.input.elements.SelectOne
+import dk.cachet.carp.common.application.data.input.elements.Text
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
@@ -31,6 +34,28 @@ interface ProtocolServiceTest
 
         service.add( snapshot, "Initial" )
         val retrieved = service.getBy( protocol.id, "Initial" )
+        assertEquals( snapshot, retrieved )
+    }
+
+    @Test
+    fun add_protocol_with_expected_participant_data_succeeds() = runTest {
+        val service = createService()
+        val protocol = createEmptyProtocol()
+
+        val sex = ParticipantAttribute.DefaultParticipantAttribute( CarpInputDataTypes.SEX )
+        protocol.addExpectedParticipantData( ExpectedParticipantData( sex ) )
+
+        val ssn = Text("Social Security Number" )
+        val customText = ParticipantAttribute.CustomParticipantAttribute( ssn )
+        protocol.addExpectedParticipantData( ExpectedParticipantData( customText ) )
+
+        val os = SelectOne( "Favorite OS", setOf( "Windows", "Linux", "Mac" ) )
+        val customSelectOne = ParticipantAttribute.CustomParticipantAttribute( os )
+        protocol.addExpectedParticipantData( ExpectedParticipantData( customSelectOne ) )
+
+        val snapshot = protocol.getSnapshot()
+        service.add( snapshot )
+        val retrieved = service.getBy( protocol.id )
         assertEquals( snapshot, retrieved )
     }
 
