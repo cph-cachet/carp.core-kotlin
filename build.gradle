@@ -302,7 +302,7 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
 }
 task compileTs(type: NpmTask, dependsOn: copyTestJsSources) {
     workingDir = file(typescriptFolder)
-    args = ['run', 'tsc']
+    args = ['run', 'build']
 }
 task verifyTsDeclarations(type: NodeTask, dependsOn: compileTs) {
     script = file("${typescriptFolder}/node_modules/mocha/bin/mocha.js")
