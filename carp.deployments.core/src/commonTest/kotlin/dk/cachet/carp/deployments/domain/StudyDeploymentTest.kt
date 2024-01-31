@@ -403,7 +403,8 @@ class StudyDeploymentTest
     fun fromSnapshot_succeeds_with_rich_registration_history()
     {
         val deployment: StudyDeployment = createActiveDeployment( "Primary" )
-        val primary: AnyPrimaryDeviceConfiguration = deployment.protocol.devices.first { it.roleName == "Primary" } as AnyPrimaryDeviceConfiguration
+        val primary: AnyPrimaryDeviceConfiguration =
+            deployment.protocol.devices.first { it.roleName == "Primary" } as AnyPrimaryDeviceConfiguration
 
         // Create registration history with two registrations for primary.
         val registration1 = primary.createRegistration()

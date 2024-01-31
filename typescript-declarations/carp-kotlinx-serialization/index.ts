@@ -1,8 +1,12 @@
-import * as extendCore from "@cachet/kotlinx-serialization-kotlinx-serialization-core-js-ir"
-import * as extendJson from "@cachet/kotlinx-serialization-kotlinx-serialization-json-js-ir"
+import * as extendCore from "@cachet/kotlinx-serialization-kotlinx-serialization-core"
+import * as extendJson from "@cachet/kotlinx-serialization-kotlinx-serialization-json"
 
 
 // Facade with better method names and type conversions for internal types.
+export namespace kotlinx.serialization
+{
+    export function getSerializer( type: any ) { return type.Companion.c16() }
+}
 export namespace kotlinx.serialization.json
 {
     export interface Json
@@ -24,7 +28,7 @@ export namespace kotlinx.serialization.builtins
 
 
 // Augment internal types to implement facade.
-declare module "@cachet/kotlinx-serialization-kotlinx-serialization-json-js-ir"
+declare module "@cachet/kotlinx-serialization-kotlinx-serialization-json"
 {
     namespace $_$
     {
@@ -38,14 +42,14 @@ declare module "@cachet/kotlinx-serialization-kotlinx-serialization-json-js-ir"
 extendJson.$_$.JsonImpl.prototype.encodeToString =
     function( serializer: any, value: any ): string
     {
-        return this.t12( serializer, value );
+        return this.t13( serializer, value );
     };
 extendJson.$_$.JsonImpl.prototype.decodeFromString =
     function( serializer: any, string: string ): any
     {
-        return this.u12( serializer, string );
+        return this.u13( serializer, string );
     };
 
 
 // Re-export augmented types.
-export * from "@cachet/kotlinx-serialization-kotlinx-serialization-json-js-ir"
+export * from "@cachet/kotlinx-serialization-kotlinx-serialization-json"

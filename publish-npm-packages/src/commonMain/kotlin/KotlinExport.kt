@@ -47,7 +47,7 @@ class KotlinExport
         val second = pair.second
     }
 
-    val mapOf = mapOf( 42 to "answer" )
+    val mapOf = mapOf( 42 to "answer", 13 to "unlucky" )
 
     fun duration( duration: Duration )
     {

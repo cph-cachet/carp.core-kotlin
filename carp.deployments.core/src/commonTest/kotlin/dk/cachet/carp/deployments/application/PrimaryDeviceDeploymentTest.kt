@@ -77,7 +77,8 @@ class PrimaryDeviceDeploymentTest
     {
         val unexpectedType = DataType( "something", "unexpected" )
         val unexpectedTypeConfiguration = NoOptionsSamplingConfiguration
-        val primary = StubPrimaryDeviceConfiguration( "Primary", false, mapOf( unexpectedType to unexpectedTypeConfiguration ) )
+        val primary =
+            StubPrimaryDeviceConfiguration( "Primary", false, mapOf( unexpectedType to unexpectedTypeConfiguration ) )
         val registration = primary.createRegistration()
         val deployment = PrimaryDeviceDeployment( primary, registration )
 

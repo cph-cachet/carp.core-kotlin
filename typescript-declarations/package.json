@@ -15,7 +15,7 @@
     "carp-studies-core"
   ],
   "dependencies": {
-    "@js-joda/core": "5.5.3"
+    "@js-joda/core": "5.6.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
@@ -32,6 +32,6 @@
     "jsdom-global": "3.0.2",
     "mocha": "10.2.0",
     "ts-node": "10.9.1",
-    "typescript": "5.0.4"
+    "typescript": "5.2.2"
   }
 }

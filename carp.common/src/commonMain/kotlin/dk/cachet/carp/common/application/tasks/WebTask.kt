@@ -47,7 +47,7 @@ data class WebTask(
         /**
          * Identifies the condition, defined by the study protocol, which caused the [WebTask] to be triggered.
          */
-        TRIGGER_ID( markup( "trigger id" ) );
+        TRIGGER_ID( markup( "trigger id" ) )
     }
 
 

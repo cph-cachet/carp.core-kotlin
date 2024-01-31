@@ -4,11 +4,12 @@ import { kotlin } from '@cachet/carp-kotlin'
 import setOf = kotlin.collections.setOf
 import listOf = kotlin.collections.listOf
 
-import { kotlinx as kcd } from '@cachet/carp-kotlinx-datetime'
-import Clock = kcd.datetime.Clock
+import { kotlinx as kxd } from '@cachet/carp-kotlinx-datetime'
+import Clock = kxd.datetime.Clock
 
-import { kotlinx as scd } from '@cachet/carp-kotlinx-serialization'
-import ListSerializer = scd.serialization.builtins.ListSerializer
+import { kotlinx as kxs } from '@cachet/carp-kotlinx-serialization'
+import getSerializer = kxs.serialization.getSerializer
+import ListSerializer = kxs.serialization.builtins.ListSerializer
 
 import { dk } from '@cachet/carp-studies-core'
 
@@ -81,7 +82,7 @@ describe( "carp-studies-core", () => {
             const status = new StudyStatus.Configuring( UUID.Companion.randomUUID(), "Test", Clock.System.now(), null, true, true, false, true )
             const statusList = listOf( [ status ] )
 
-            const serializer = ListSerializer( StudyStatus.Companion.serializer() )
+            const serializer = ListSerializer( getSerializer( StudyStatus ) )
             expect( serializer ).is.not.undefined
             const serialized = JSON.encodeToString( serializer, statusList )
             expect( serialized ).is.not.not.undefined
@@ -106,7 +107,7 @@ describe( "carp-studies-core", () => {
         it( "can serialize Participant", () => {
             const participant = new Participant( new UsernameAccountIdentity( new Username( "Test" ) ), UUID.Companion.randomUUID() )
 
-            const serializer = Participant.Companion.serializer()
+            const serializer = getSerializer( Participant )
             const serialized = JSON.encodeToString( serializer, participant )
             expect( serialized ).is.not.undefined
         } )
@@ -118,7 +119,7 @@ describe( "carp-studies-core", () => {
             const participants = setOf( [ new Participant( new UsernameAccountIdentity( new Username( "Test" ) ) ) ] )
             const group = new ParticipantGroupStatus.Invited( deploymentId, participants, now, deploymentStatus )
 
-            const serializer = ParticipantGroupStatus.Companion.serializer()
+            const serializer = getSerializer( ParticipantGroupStatus )
             const serialized = JSON.encodeToString( serializer, group )
             expect( serialized ).is.not.undefined
         } )

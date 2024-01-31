@@ -34,7 +34,10 @@ class JsonSchemasTest
                 val requestJson = mapper.readTree( r.requestObject.json )
                 val requestErrors = requestSchema.validate( requestJson )
                 check( requestErrors.isEmpty() )
-                    { "JSON schema \"${requestSchema.currentUri}\" doesn't match generated JSON example of \"${r.requestObject.klass}\": $requestErrors" }
+                {
+                    "JSON schema \"${requestSchema.currentUri}\" " +
+                    "doesn't match generated JSON example of \"${r.requestObject.klass}\": $requestErrors"
+                }
 
                 // Validate response.
                 val requestObjectName = r.requestObject.klass.simpleName

@@ -1,9 +1,10 @@
-import * as kotlinStdLib from "@cachet/kotlin-kotlin-stdlib-js-ir"
+import * as kotlinStdLib from "@cachet/kotlin-kotlin-stdlib"
 
 
 // Facade with better method names and type conversions for internal types.
 export namespace kotlin
 {
+    export type Nullable<T> = T | null | undefined
     export interface Long
     {
         toNumber(): number
@@ -13,8 +14,8 @@ export namespace kotlin
     {
         constructor( first: K, second: V ) {
             let kotlinPair = new kotlinStdLib.$_$.Pair( first, second );
-            kotlinPair.first = kotlinPair.a3_1;
-            kotlinPair.second = kotlinPair.b3_1;
+            kotlinPair.first = kotlinPair.md_1;
+            kotlinPair.second = kotlinPair.nd_1;
             return kotlinPair;
         }
         get first(): K { return this.first; }
@@ -37,12 +38,12 @@ export namespace kotlin.collections
         keys: Set<K>
         values: Collection<V>
     }
-    export const listOf: <T>(array: T[]) => List<T> = kotlinStdLib.$_$.listOf
-    export const setOf: <T>(array: T[]) => Set<T> = kotlinStdLib.$_$.setOf
+    export const listOf: <T>(array: T[]) => List<T> = kotlinStdLib.$_$.listOf_0
+    export const setOf: <T>(array: T[]) => Set<T> = kotlinStdLib.$_$.setOf_0
     export const mapOf =
         function<K, V>( pairs: kotlin.Pair<K, V>[] ): Map<K, V>
         {
-            return kotlinStdLib.$_$.mapOf( pairs as any )
+            return kotlinStdLib.$_$.mapOf_0( pairs as any )
         }
 }
 export namespace kotlin.time
@@ -54,16 +55,16 @@ export namespace kotlin.time
     }
     export namespace Duration
     {
-        export const Companion: any = kotlinStdLib.$_$.Companion_getInstance_7()
-        export const parseIsoString: (isoDuration: string) => Duration = Companion.n6
-        export const ZERO: Duration = Companion.k6_1
-        export const INFINITE: Duration = Companion.l6_1
+        export const Companion: any = kotlinStdLib.$_$.Companion_getInstance_13()
+        export const parseIsoString: (isoDuration: string) => Duration = Companion.zf
+        export const ZERO: Duration = Companion.wf_1
+        export const INFINITE: Duration = Companion.xf_1
     }
 }
 
 
 // Augment internal types to implement facade.
-declare module "@cachet/kotlin-kotlin-stdlib-js-ir"
+declare module "@cachet/kotlin-kotlin-stdlib"
 {
     namespace $_$
     {
@@ -96,7 +97,7 @@ declare module "@cachet/kotlin-kotlin-stdlib-js-ir"
 
 
 // Implement base interfaces in internal types.
-kotlinStdLib.$_$.Long.prototype.toNumber = function(): number { return this.i5(); };
+kotlinStdLib.$_$.Long.prototype.toNumber = function(): number { return this.da(); };
 Object.defineProperty( kotlinStdLib.$_$.Long.prototype, "inWholeMilliseconds", {
     get: function inWholeMilliseconds()
     {
@@ -112,21 +113,21 @@ Object.defineProperty( kotlinStdLib.$_$.Long.prototype, "inWholeMicroseconds", {
 kotlinStdLib.$_$.EmptyList.prototype.contains = function<T>( value: T ): boolean { return false; }
 kotlinStdLib.$_$.EmptyList.prototype.size = function<T>(): number { return 0; }
 kotlinStdLib.$_$.EmptyList.prototype.toArray = function<T>(): T[] { return []; }
-kotlinStdLib.$_$.AbstractMutableList.prototype.contains = function<T>( value: T ): boolean { return this.d1( value ); }
-kotlinStdLib.$_$.AbstractMutableList.prototype.size = function<T>(): number { return this.i(); }
+kotlinStdLib.$_$.AbstractMutableList.prototype.contains = function<T>( value: T ): boolean { return this.p( value ); }
+kotlinStdLib.$_$.AbstractMutableList.prototype.size = function<T>(): number { return this.n(); }
 kotlinStdLib.$_$.EmptySet.prototype.contains = function<T>( value: T ): boolean { return false; }
 kotlinStdLib.$_$.EmptySet.prototype.size = function<T>(): number { return 0; }
 kotlinStdLib.$_$.EmptySet.prototype.toArray = function<T>(): T[] { return []; }
-kotlinStdLib.$_$.HashSet.prototype.contains = function<T>( value: T ): boolean { return this.d1( value ); }
-kotlinStdLib.$_$.HashSet.prototype.size = function<T>(): number { return this.i(); }
-kotlinStdLib.$_$.HashMap.prototype.get = function<K, V>( key: K ): V { return this.e2( key ); }
+kotlinStdLib.$_$.HashSet.prototype.contains = function<T>( value: T ): boolean { return this.p( value ); }
+kotlinStdLib.$_$.HashSet.prototype.size = function<T>(): number { return this.n(); }
+kotlinStdLib.$_$.HashMap.prototype.get = function<K, V>( key: K ): V { return this.x2( key ); }
 Object.defineProperty( kotlinStdLib.$_$.HashMap.prototype, "keys", {
-    get: function keys() { return this.f2(); }
+    get: function keys() { return this.l2(); }
 } );
 Object.defineProperty( kotlinStdLib.$_$.HashMap.prototype, "values", {
-    get: function values() { return this.g2(); }
+    get: function values() { return this.m2(); }
 } );
 
 
 // Re-export augmented types.
-export * from "@cachet/kotlin-kotlin-stdlib-js-ir";
+export * from "@cachet/kotlin-kotlin-stdlib";

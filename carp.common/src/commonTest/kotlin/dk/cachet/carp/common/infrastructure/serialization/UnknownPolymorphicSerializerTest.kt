@@ -106,7 +106,11 @@ class UnknownPolymorphicSerializerTest
         val knownType = DerivingType( "Test" )
         val serialized = json.encodeToString<BaseType>( knownType )
         val unknownSerialized = serialized.replace( DerivingType::class.simpleName!!, "UnknownType" )
-        val unknown = CustomBaseType( "dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicSerializerTest.UnknownType", unknownSerialized, json )
+        val unknown = CustomBaseType(
+            "dk.cachet.carp.common.infrastructure.serialization.UnknownPolymorphicSerializerTest.UnknownType",
+            unknownSerialized,
+            json
+        )
 
         val unpacked = json.encodeToString<BaseType>( unknown )
         assertEquals( unknownSerialized, unpacked )

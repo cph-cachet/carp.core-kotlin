@@ -1,4 +1,6 @@
 complexity:
+  LongMethod:
+    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
   LongParameterList:
     excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
   TooManyFunctions:
@@ -8,6 +10,8 @@ formatting:
   ArgumentListWrapping:
     excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
   Filename:
+    active: false
+  FunctionStartOfBodySpacing:
     active: false
   Indentation:
     active: false

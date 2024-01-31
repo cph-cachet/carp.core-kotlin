@@ -82,9 +82,11 @@ class SingleThreadedEventBusTest
         val bus = SingleThreadedEventBus()
 
         var receivedBySubscriber1 = false
-        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { receivedBySubscriber1 = true }
+        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this )
+            { receivedBySubscriber1 = true }
         var receivedBySubscriber2 = false
-        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this ) { receivedBySubscriber2 = true }
+        bus.registerHandler( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent::class, this )
+            { receivedBySubscriber2 = true }
         bus.activateHandlers( this )
 
         bus.publish( TestService::class, BaseIntegrationEvent.SomeIntegrationEvent( "Test" ) )
