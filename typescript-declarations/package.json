@@ -16,12 +16,12 @@
     "@js-joda/core": "5.6.1"
   },
   "devDependencies": {
-    "@types/node": "20.8.7",
+    "@types/node": "20.11.17",
     "chai": "4.3.10",
-    "@types/chai": "4.3.9",
+    "@types/chai": "4.3.11",
     "mocha": "10.3.0",
-    "@types/mocha": "10.0.3",
-    "@typescript-eslint/typescript-estree": "5.62.0",
-    "typescript": "5.2.2"
+    "@types/mocha": "10.0.6",
+    "@typescript-eslint/typescript-estree": "7.0.1",
+    "typescript": "5.3.3"
   }
 }
