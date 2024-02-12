@@ -7,11 +7,12 @@ import {
 import ClassBody = TSESTree.ClassBody
 import ClassElement = TSESTree.ClassElement
 import Identifier = TSESTree.Identifier
-import Literal = TSESTree.Literal
+import StringLiteral = TSESTree.StringLiteral
 import ProgramStatement = TSESTree.ProgramStatement
 import TSModuleBlock = TSESTree.TSModuleBlock
 import TSModuleDeclaration = TSESTree.TSModuleDeclaration
 import TSInterfaceBody = TSESTree.TSInterfaceBody
+import TSQualifiedName = TSESTree.TSQualifiedName
 import TypeElement = TSESTree.TypeElement
 import * as fs from 'fs'
 
@@ -37,7 +38,8 @@ export default class VerifyModule
         const source = fs.readFileSync( this.declarationFile ).toString()
         const ast = parse( source )
     
-        const scope = await Promise.resolve( import( this.moduleName ) )
+        const module = await Promise.resolve( import( this.moduleName ) )
+        const scope = module.default
         for ( const statement of ast.body )
         {
             this.verifyStatement( statement, scope )
@@ -174,7 +176,7 @@ export default class VerifyModule
         }
     }
     
-    verifyIdentifier( id: Identifier | Literal | null, scope: any ): any
+    verifyIdentifier( id: Identifier | StringLiteral | TSQualifiedName | null, scope: any ): any
     {
         if ( id?.type != AST_NODE_TYPES.Identifier ) return scope
     
