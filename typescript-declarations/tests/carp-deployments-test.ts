@@ -1,18 +1,19 @@
 import { expect } from 'chai'
 
-import { kotlin } from '@cachet/carp-kotlin'
+import kotlin from '@cachet/carp-kotlin'
 import Nullable = kotlin.Nullable
 import mapOf = kotlin.collections.mapOf
 import Map = kotlin.collections.Map
 import Pair = kotlin.Pair
 
-import { dk } from '@cachet/carp-deployments-core'
+import carp from '@cachet/carp-deployments-core'
+import dk = carp.dk
 
 import common = dk.cachet.carp.common
-import NamespacedId = dk.cachet.carp.common.application.NamespacedId
-import Data = dk.cachet.carp.common.application.data.Data
-import CarpInputDataTypes = dk.cachet.carp.common.application.data.input.CarpInputDataTypes
-import Sex = dk.cachet.carp.common.application.data.input.Sex
+import NamespacedId = common.application.NamespacedId
+import Data = common.application.data.Data
+import CarpInputDataTypes = common.application.data.input.CarpInputDataTypes
+import Sex = common.application.data.input.Sex
 import UUID = common.application.UUID
 
 import deployments = dk.cachet.carp.deployments

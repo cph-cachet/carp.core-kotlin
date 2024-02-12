@@ -1,8 +1,8 @@
-import * as extend from "@cachet/carp-protocols-core-generated"
-import * as kotlinStdLib from "@cachet/carp-kotlin"
-import * as kotlinDateTime from "@cachet/carp-kotlinx-datetime"
-import * as kotlinSerialization from "@cachet/carp-kotlinx-serialization"
-import * as carpCommon from "@cachet/carp-common"
+import extend from "@cachet/carp-protocols-core-generated"
+import kotlinStdLib from "@cachet/carp-kotlin"
+import kotlinDateTime from "@cachet/carp-kotlinx-datetime"
+import kotlinSerialization from "@cachet/carp-kotlinx-serialization"
+import carpCommon from "@cachet/carp-common"
 
 
 declare module "@cachet/carp-protocols-core-generated"
@@ -10,7 +10,7 @@ declare module "@cachet/carp-protocols-core-generated"
     // Declare missing types for which no imports were generated.
     namespace kotlin
     {
-        type Long = kotlinStdLib.kotlin.Long
+        type Long = kotlinStdLib.Long
     }
     namespace kotlin.reflect
     {
@@ -20,21 +20,21 @@ declare module "@cachet/carp-protocols-core-generated"
     }
     namespace kotlin.time
     {
-        type Duration = kotlinStdLib.kotlin.time.Duration
+        type Duration = kotlinStdLib.time.Duration
     }
     namespace kotlin.collections
     {
-        type List<T> = kotlinStdLib.kotlin.collections.List<T>
-        type Set<T> = kotlinStdLib.kotlin.collections.Set<T>
-        type Map<K, V> = kotlinStdLib.kotlin.collections.Map<K, V>
+        type List<T> = kotlinStdLib.collections.List<T>
+        type Set<T> = kotlinStdLib.collections.Set<T>
+        type Map<K, V> = kotlinStdLib.collections.Map<K, V>
     }
     namespace kotlinx.datetime
     {
-        type Instant = kotlinDateTime.kotlinx.datetime.Instant
+        type Instant = kotlinDateTime.datetime.Instant
     }
     namespace kotlinx.serialization.json
     {
-        type Json = kotlinSerialization.kotlinx.serialization.json.Json
+        type Json = kotlinSerialization.serialization.json.Json
     }
 }
 
@@ -43,5 +43,5 @@ declare module "@cachet/carp-protocols-core-generated"
 extend.dk.cachet.carp.common = carpCommon.dk.cachet.carp.common as any;
 
 
-// Export facade.
-export * from "@cachet/carp-protocols-core-generated"
+// Re-export augmented types.
+export { default } from "@cachet/carp-protocols-core-generated"

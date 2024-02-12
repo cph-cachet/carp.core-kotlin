@@ -1,7 +1,7 @@
-import * as extend from "@cachet/carp-common-generated"
-import * as kotlinStdLib from "@cachet/carp-kotlin"
-import * as kotlinDateTime from "@cachet/carp-kotlinx-datetime"
-import * as kotlinSerialization from "@cachet/carp-kotlinx-serialization"
+import extend from "@cachet/carp-common-generated"
+import kotlinStdLib from "@cachet/carp-kotlin"
+import kotlinDateTime from "@cachet/carp-kotlinx-datetime"
+import kotlinSerialization from "@cachet/carp-kotlinx-serialization"
 
 
 declare module "@cachet/carp-common-generated"
@@ -9,7 +9,7 @@ declare module "@cachet/carp-common-generated"
     // Declare missing types for which no imports were generated.
     namespace kotlin
     {
-        type Long = kotlinStdLib.kotlin.Long
+        type Long = kotlinStdLib.Long
     }
     namespace kotlin.reflect
     {
@@ -19,24 +19,24 @@ declare module "@cachet/carp-common-generated"
     }
     namespace kotlin.time
     {
-        type Duration = kotlinStdLib.kotlin.time.Duration
+        type Duration = kotlinStdLib.time.Duration
     }
     namespace kotlin.collections
     {
-        type List<T> = kotlinStdLib.kotlin.collections.List<T>
-        type Set<T> = kotlinStdLib.kotlin.collections.Set<T>
-        type Map<K, V> = kotlinStdLib.kotlin.collections.Map<K, V>
+        type List<T> = kotlinStdLib.collections.List<T>
+        type Set<T> = kotlinStdLib.collections.Set<T>
+        type Map<K, V> = kotlinStdLib.collections.Map<K, V>
     }
     namespace kotlinx.datetime
     {
-        type Instant = kotlinDateTime.kotlinx.datetime.Instant
+        type Instant = kotlinDateTime.datetime.Instant
     }
     namespace kotlinx.serialization.json
     {
-        type Json = kotlinSerialization.kotlinx.serialization.json.Json
+        type Json = kotlinSerialization.serialization.json.Json
     }
 }
 
 
-// Export facade.
-export * from "@cachet/carp-common-generated"
+// Re-export augmented types.
+export { default } from "@cachet/carp-common-generated"

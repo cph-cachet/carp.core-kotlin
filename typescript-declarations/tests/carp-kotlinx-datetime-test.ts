@@ -1,7 +1,7 @@
-import VerifyModule from './VerifyModule'
+import VerifyModule from './VerifyModule.js'
 
 import { expect } from 'chai'
-import { kotlinx } from '@cachet/carp-kotlinx-datetime'
+import kotlinx from '@cachet/carp-kotlinx-datetime'
 import Clock = kotlinx.datetime.Clock
 
 

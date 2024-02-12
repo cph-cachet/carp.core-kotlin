@@ -1,4 +1,4 @@
-import * as kotlinStdLib from "@cachet/kotlin-kotlin-stdlib"
+import extend from "@cachet/kotlin-kotlin-stdlib"
 
 
 // Facade with better method names and type conversions for internal types.
@@ -9,11 +9,11 @@ export namespace kotlin
     {
         toNumber(): number
     }
-    export const toLong: (number: number) => Long = kotlinStdLib.$_$.toLong_0
+    export const toLong: (number: number) => Long = extend.$_$.toLong_0
     export class Pair<K, V>
     {
         constructor( first: K, second: V ) {
-            let kotlinPair = new kotlinStdLib.$_$.Pair( first, second );
+            let kotlinPair = new extend.$_$.Pair( first, second );
             kotlinPair.first = kotlinPair.md_1;
             kotlinPair.second = kotlinPair.nd_1;
             return kotlinPair;
@@ -38,12 +38,12 @@ export namespace kotlin.collections
         keys: Set<K>
         values: Collection<V>
     }
-    export const listOf: <T>(array: T[]) => List<T> = kotlinStdLib.$_$.listOf_0
-    export const setOf: <T>(array: T[]) => Set<T> = kotlinStdLib.$_$.setOf_0
+    export const listOf: <T>(array: T[]) => List<T> = extend.$_$.listOf_0
+    export const setOf: <T>(array: T[]) => Set<T> = extend.$_$.setOf_0
     export const mapOf =
         function<K, V>( pairs: kotlin.Pair<K, V>[] ): Map<K, V>
         {
-            return kotlinStdLib.$_$.mapOf_0( pairs as any )
+            return extend.$_$.mapOf_0( pairs as any )
         }
 }
 export namespace kotlin.time
@@ -55,7 +55,7 @@ export namespace kotlin.time
     }
     export namespace Duration
     {
-        export const Companion: any = kotlinStdLib.$_$.Companion_getInstance_13()
+        export const Companion: any = extend.$_$.Companion_getInstance_13()
         export const parseIsoString: (isoDuration: string) => Duration = Companion.zf
         export const ZERO: Duration = Companion.wf_1
         export const INFINITE: Duration = Companion.xf_1
@@ -97,37 +97,37 @@ declare module "@cachet/kotlin-kotlin-stdlib"
 
 
 // Implement base interfaces in internal types.
-kotlinStdLib.$_$.Long.prototype.toNumber = function(): number { return this.da(); };
-Object.defineProperty( kotlinStdLib.$_$.Long.prototype, "inWholeMilliseconds", {
+extend.$_$.Long.prototype.toNumber = function(): number { return this.da(); };
+Object.defineProperty( extend.$_$.Long.prototype, "inWholeMilliseconds", {
     get: function inWholeMilliseconds()
     {
-        return kotlinStdLib.$_$._Duration___get_inWholeMilliseconds__impl__msfiry(this).toNumber();
+        return extend.$_$._Duration___get_inWholeMilliseconds__impl__msfiry(this).toNumber();
     }
 } );
-Object.defineProperty( kotlinStdLib.$_$.Long.prototype, "inWholeMicroseconds", {
+Object.defineProperty( extend.$_$.Long.prototype, "inWholeMicroseconds", {
     get: function inWholeMicroseconds()
     {
-        return kotlinStdLib.$_$._Duration___get_inWholeMicroseconds__impl__8oe8vv(this).toNumber();
+        return extend.$_$._Duration___get_inWholeMicroseconds__impl__8oe8vv(this).toNumber();
     }
 } );
-kotlinStdLib.$_$.EmptyList.prototype.contains = function<T>( value: T ): boolean { return false; }
-kotlinStdLib.$_$.EmptyList.prototype.size = function<T>(): number { return 0; }
-kotlinStdLib.$_$.EmptyList.prototype.toArray = function<T>(): T[] { return []; }
-kotlinStdLib.$_$.AbstractMutableList.prototype.contains = function<T>( value: T ): boolean { return this.p( value ); }
-kotlinStdLib.$_$.AbstractMutableList.prototype.size = function<T>(): number { return this.n(); }
-kotlinStdLib.$_$.EmptySet.prototype.contains = function<T>( value: T ): boolean { return false; }
-kotlinStdLib.$_$.EmptySet.prototype.size = function<T>(): number { return 0; }
-kotlinStdLib.$_$.EmptySet.prototype.toArray = function<T>(): T[] { return []; }
-kotlinStdLib.$_$.HashSet.prototype.contains = function<T>( value: T ): boolean { return this.p( value ); }
-kotlinStdLib.$_$.HashSet.prototype.size = function<T>(): number { return this.n(); }
-kotlinStdLib.$_$.HashMap.prototype.get = function<K, V>( key: K ): V { return this.x2( key ); }
-Object.defineProperty( kotlinStdLib.$_$.HashMap.prototype, "keys", {
+extend.$_$.EmptyList.prototype.contains = function<T>( value: T ): boolean { return false; }
+extend.$_$.EmptyList.prototype.size = function<T>(): number { return 0; }
+extend.$_$.EmptyList.prototype.toArray = function<T>(): T[] { return []; }
+extend.$_$.AbstractMutableList.prototype.contains = function<T>( value: T ): boolean { return this.p( value ); }
+extend.$_$.AbstractMutableList.prototype.size = function<T>(): number { return this.n(); }
+extend.$_$.EmptySet.prototype.contains = function<T>( value: T ): boolean { return false; }
+extend.$_$.EmptySet.prototype.size = function<T>(): number { return 0; }
+extend.$_$.EmptySet.prototype.toArray = function<T>(): T[] { return []; }
+extend.$_$.HashSet.prototype.contains = function<T>( value: T ): boolean { return this.p( value ); }
+extend.$_$.HashSet.prototype.size = function<T>(): number { return this.n(); }
+extend.$_$.HashMap.prototype.get = function<K, V>( key: K ): V { return this.x2( key ); }
+Object.defineProperty( extend.$_$.HashMap.prototype, "keys", {
     get: function keys() { return this.l2(); }
 } );
-Object.defineProperty( kotlinStdLib.$_$.HashMap.prototype, "values", {
+Object.defineProperty( extend.$_$.HashMap.prototype, "values", {
     get: function values() { return this.m2(); }
 } );
 
 
-// Re-export augmented types.
-export * from "@cachet/kotlin-kotlin-stdlib";
+// Export facade.
+export default kotlin
