@@ -310,11 +310,6 @@ task verifyTsDeclarations(type: NodeTask, dependsOn: compileTs) {
     execOverrides {
         it.workingDir = typescriptFolder
     }
-    args = [
-        '--require', 'ts-node/register',
-        '--require', 'jsdom-global/register',
-        './tests/**/*.ts'
-    ]
 }
 
 // Add `carp.test` helpers.
