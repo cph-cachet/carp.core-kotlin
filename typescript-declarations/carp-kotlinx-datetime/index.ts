@@ -1,4 +1,4 @@
-import * as extend from "@cachet/Kotlin-DateTime-library-kotlinx-datetime-js-ir"
+import extend from "@cachet/Kotlin-DateTime-library-kotlinx-datetime-js-ir"
 
 
 // Facade with better method names and type conversions for internal types.
@@ -37,5 +37,5 @@ extend.$_$.System.prototype.now = function(): kotlinx.datetime.Instant { return 
 extend.$_$.Instant_0.prototype.toEpochMilliseconds = function(): number { return this.y1e(); };
 
 
-// Re-export augmented types.
-export * from "@cachet/Kotlin-DateTime-library-kotlinx-datetime-js-ir"
+// Export facade.
+export default kotlinx

@@ -2,7 +2,7 @@ import * as extend from "@cachet/carp-data-core-generated"
 import * as kotlinStdLib from "@cachet/carp-kotlin"
 import * as kotlinDateTime from "@cachet/carp-kotlinx-datetime"
 import * as kotlinSerialization from "@cachet/carp-kotlinx-serialization"
-import * as carpCommon from "@cachet/carp-common"
+import carpCommon from "@cachet/carp-common"
 
 
 declare module "@cachet/carp-data-core-generated"

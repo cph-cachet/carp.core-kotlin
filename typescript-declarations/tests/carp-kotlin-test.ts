@@ -1,7 +1,7 @@
-import VerifyModule from './VerifyModule'
+import VerifyModule from './VerifyModule.js'
 
 import { expect } from 'chai'
-import { kotlin } from '@cachet/carp-kotlin'
+import kotlin from '@cachet/carp-kotlin'
 import toLong = kotlin.toLong
 import Pair = kotlin.Pair
 import Duration = kotlin.time.Duration

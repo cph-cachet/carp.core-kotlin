@@ -1,5 +1,5 @@
-import * as extendCore from "@cachet/kotlinx-serialization-kotlinx-serialization-core"
-import * as extendJson from "@cachet/kotlinx-serialization-kotlinx-serialization-json"
+import extendCore from "@cachet/kotlinx-serialization-kotlinx-serialization-core"
+import extendJson from "@cachet/kotlinx-serialization-kotlinx-serialization-json"
 
 
 // Facade with better method names and type conversions for internal types.
@@ -51,5 +51,5 @@ extendJson.$_$.JsonImpl.prototype.decodeFromString =
     };
 
 
-// Re-export augmented types.
-export * from "@cachet/kotlinx-serialization-kotlinx-serialization-json"
+// Export facade.
+export default kotlinx
