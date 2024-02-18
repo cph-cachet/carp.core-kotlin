@@ -4,6 +4,7 @@ import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
 import dk.cachet.carp.common.application.UUID
 import kotlinx.datetime.Instant
+import kotlin.js.JsExport
 
 
 /**
@@ -11,6 +12,7 @@ import kotlinx.datetime.Instant
  */
 @Immutable
 @ImplementAsDataClass
+@JsExport
 interface Snapshot<TAggregateRoot>
 {
     val id: UUID
@@ -18,6 +20,7 @@ interface Snapshot<TAggregateRoot>
     /**
      * The date when the object represented by this snapshot was created.
      */
+    @Suppress( "NON_EXPORTABLE_TYPE" )
     val createdOn: Instant
 
     /**

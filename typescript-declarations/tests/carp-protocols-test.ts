@@ -2,9 +2,13 @@ import { expect } from 'chai'
 
 import { dk as cdk } from '@cachet/carp-common'
 import JSON = cdk.cachet.carp.common.infrastructure.serialization.JSON
+import UUID = cdk.cachet.carp.common.application.UUID
 
 import { kotlinx } from '@cachet/carp-kotlinx-serialization'
 import getSerializer = kotlinx.serialization.getSerializer
+
+import { kotlinx as datetime } from '@cachet/carp-kotlinx-datetime'
+import Clock = datetime.datetime.Clock
 
 import { dk } from '@cachet/carp-protocols-core'
 import StudyProtocolSnapshot = dk.cachet.carp.protocols.application.StudyProtocolSnapshot
@@ -19,6 +23,17 @@ describe( "carp-protocols-core", () => {
             const serializer = getSerializer( StudyProtocolSnapshot )
             const parsed = JSON.decodeFromString( serializer, serializedSnapshot )
             expect( parsed ).is.instanceOf( StudyProtocolSnapshot )
+        } )
+
+        it( "can access snapshot properties", () => {
+            const id = UUID.Companion.randomUUID()
+            const now = Clock.System.now()
+            const version = 42
+            const snapshot = new StudyProtocolSnapshot( id, now, version, UUID.Companion.randomUUID(), "Stub" )
+
+            expect( snapshot.id ).equals( id )
+            expect( snapshot.createdOn ).equals( now )
+            expect( snapshot.version ).equals( version )
         } )
     } )
 
