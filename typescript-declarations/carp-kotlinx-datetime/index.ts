@@ -1,3 +1,4 @@
+/// <reference path="Kotlin-DateTime-library-kotlinx-datetime-js-ir.d.ts" />
 import extend from "@cachet/Kotlin-DateTime-library-kotlinx-datetime-js-ir"
 
 
