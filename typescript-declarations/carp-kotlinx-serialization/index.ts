@@ -1,3 +1,5 @@
+/// <reference path="kotlinx-serialization-kotlinx-serialization-core.d.ts" />
+/// <reference path="kotlinx-serialization-kotlinx-serialization-json.d.ts" />
 import extendCore from "@cachet/kotlinx-serialization-kotlinx-serialization-core"
 import extendJson from "@cachet/kotlinx-serialization-kotlinx-serialization-json"
 

@@ -1,3 +1,4 @@
+/// <reference path="kotlin-kotlin-stdlib.d.ts" />
 import extend from "@cachet/kotlin-kotlin-stdlib"
 
 
