@@ -70,13 +70,13 @@ _Primary_ devices ([`PrimaryDeviceConfiguration`](../carp.common/src/commonMain/
 in addition to supporting data collection from internal sensors,
 act as a hub to aggregate, synchronize, and upload incoming data received from one or more connected devices. 
 
-| Class                                                                                                                          | Primary | Description                                                                                              |
-|--------------------------------------------------------------------------------------------------------------------------------|:-------:|----------------------------------------------------------------------------------------------------------|
-| [Smartphone](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/Smartphone.kt)                     |   Yes   | An internet-connected phone with built-in sensors.                                                       |
-| [AltBeacon](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt)                       |         | A beacon meeting the open AltBeacon standard.                                                            |
-| [BLEHeartRateDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/BLEHeartRateDevice.kt)     |         | A Bluetooth device which implements a Heart Rate service.                                                |
-| [CustomProtocolDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/CustomProtocolDevice.kt) |   Yes   | A primary device which uses a single `CustomProtocolTask` to determine how to run a study on the device. |
-
+| Class                                                                                                                          | Primary | Description                                                                                               |
+|--------------------------------------------------------------------------------------------------------------------------------|:-------:|-----------------------------------------------------------------------------------------------------------|
+| [Smartphone](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/Smartphone.kt)                     |   Yes   | An internet-connected phone with built-in sensors.                                                        |
+| [AltBeacon](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/AltBeacon.kt)                       |         | A beacon meeting the open AltBeacon standard.                                                             |
+| [BLEHeartRateDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/BLEHeartRateDevice.kt)     |         | A Bluetooth device which implements a Heart Rate service.                                                 |
+| [CustomProtocolDevice](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/CustomProtocolDevice.kt) |   Yes   | A primary device which uses a single `CustomProtocolTask` to determine how to run a study on the device.  |
+| [WebServer](../carp.common/src/commonMain/kotlin/dk/cachet/carp/common/application/devices/WebServer.kt)                       |   Yes   | A primary device that has an associated URL where the study is hosted.                                    |
 ## Sampling schemes and configurations
 
 Supports specifying the sampling scheme for a [`DataType`](#data-types), including possible options, defaults, and constraints.

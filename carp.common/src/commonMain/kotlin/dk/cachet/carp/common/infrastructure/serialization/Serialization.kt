@@ -63,6 +63,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     {
         subclass( CustomProtocolDevice::class )
         subclass( Smartphone::class )
+        subclass( WebServer::class )
 
         subclass( CustomPrimaryDeviceConfiguration::class )
     }

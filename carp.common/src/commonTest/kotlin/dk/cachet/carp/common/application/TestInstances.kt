@@ -48,6 +48,7 @@ val commonInstances = listOf(
     BLESerialNumberDeviceRegistration( "123456789" ),
     CustomProtocolDevice( "User's phone" ),
     Smartphone( "User's phone" ),
+    WebServer( "https://example.com", "Example server" ),
 
     // Shared device registrations in `devices` namespace.
     DefaultDeviceRegistration(),
