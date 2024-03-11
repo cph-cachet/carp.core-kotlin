@@ -48,6 +48,11 @@ val commonInstances = listOf(
     BLESerialNumberDeviceRegistration( "123456789" ),
     CustomProtocolDevice( "User's phone" ),
     Smartphone( "User's phone" ),
+    Website( "Study website" ),
+    WebsiteDeviceRegistration(
+        "https://www.examplestudy.com?studyId=42",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+    ),
 
     // Shared device registrations in `devices` namespace.
     DefaultDeviceRegistration(),

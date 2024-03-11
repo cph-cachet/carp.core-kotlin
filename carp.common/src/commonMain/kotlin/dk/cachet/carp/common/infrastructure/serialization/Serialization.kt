@@ -63,6 +63,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     {
         subclass( CustomProtocolDevice::class )
         subclass( Smartphone::class )
+        subclass( Website::class )
 
         subclass( CustomPrimaryDeviceConfiguration::class )
     }
@@ -87,6 +88,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( BLESerialNumberDeviceRegistration::class )
         subclass( DefaultDeviceRegistration::class )
         subclass( MACAddressDeviceRegistration::class )
+        subclass( WebsiteDeviceRegistration::class )
 
         subclass( CustomDeviceRegistration::class )
         defaultDeserializer { DeviceRegistrationSerializer }
