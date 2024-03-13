@@ -1,0 +1,23 @@
+[
+    {
+        "outcome": "Failed",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.InviteNewParticipantGroup",
+            "apiVersion": "1.1",
+            "studyId": "1bd9db94-50a4-409e-a189-ef3bd2ec4bee",
+            "group": [
+                {
+                    "participantId": "5a932495-9afe-4f0c-acf2-27920c13be4d",
+                    "assignedRoles": {
+                        "__type": "dk.cachet.carp.common.application.users.AssignedTo.All"
+                    }
+                }
+            ]
+        },
+        "precedingEvents": [
+        ],
+        "publishedEvents": [
+        ],
+        "exceptionType": "IllegalArgumentException"
+    }
+]

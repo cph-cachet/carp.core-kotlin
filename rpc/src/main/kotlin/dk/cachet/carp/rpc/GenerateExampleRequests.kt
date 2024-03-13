@@ -37,6 +37,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlin.reflect.KFunction
+import kotlin.reflect.KSuspendFunction3
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.kotlinFunction
@@ -356,9 +357,17 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
     ),
 
     // RecruitmentService
-    RecruitmentService::addParticipant to example(
-        request = RecruitmentServiceRequest.AddParticipant( studyId, participantAccount.emailAddress ),
+    run<KSuspendFunction3<RecruitmentService, UUID, EmailAddress, Participant>> {
+        RecruitmentService::addParticipant
+    } to example(
+        request = RecruitmentServiceRequest.AddParticipantByEmailAddress( studyId, participantAccount.emailAddress ),
         response = Participant( participantAccount, participantId )
+    ),
+    run<KSuspendFunction3<RecruitmentService, UUID, Username, Participant>> {
+        RecruitmentService::addParticipant
+    } to example(
+        request = RecruitmentServiceRequest.AddParticipantByUsername( studyId, Username( "John Doe" ) ),
+        response = Participant( UsernameAccountIdentity( "John Doe" ), UUID( "d7436912-ac9f-4f9b-a29e-376af8a0fbb4" ) )
     ),
     RecruitmentService::getParticipant to example(
         request = RecruitmentServiceRequest.GetParticipant( studyId, participantId ),

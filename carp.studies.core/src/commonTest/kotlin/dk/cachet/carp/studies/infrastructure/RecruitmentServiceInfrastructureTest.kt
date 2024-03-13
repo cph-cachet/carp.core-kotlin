@@ -2,6 +2,7 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.Username
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceDecoratorTest
 import dk.cachet.carp.common.test.infrastructure.ApplicationServiceRequestsTest
 import dk.cachet.carp.studies.application.RecruitmentService
@@ -19,7 +20,8 @@ class RecruitmentServiceRequestsTest : ApplicationServiceRequestsTest<Recruitmen
         private val studyId = UUID.randomUUID()
 
         val REQUESTS: List<RecruitmentServiceRequest<*>> = listOf(
-            RecruitmentServiceRequest.AddParticipant( studyId, EmailAddress( "test@test.com" ) ),
+            RecruitmentServiceRequest.AddParticipantByEmailAddress( studyId, EmailAddress( "test@test.com" ) ),
+            RecruitmentServiceRequest.AddParticipantByUsername( studyId, Username( "test" ) ),
             RecruitmentServiceRequest.GetParticipant( studyId, UUID.randomUUID() ),
             RecruitmentServiceRequest.GetParticipants( studyId ),
             RecruitmentServiceRequest.InviteNewParticipantGroup( studyId, setOf() ),
