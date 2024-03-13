@@ -3,6 +3,7 @@ package dk.cachet.carp.studies.infrastructure
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.ApiVersion
+import dk.cachet.carp.common.application.users.Username
 import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
 import dk.cachet.carp.studies.application.RecruitmentService
@@ -11,6 +12,8 @@ import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import kotlinx.serialization.*
 import kotlin.js.JsExport
+import kotlin.reflect.KCallable
+import kotlin.reflect.KSuspendFunction3
 
 
 /**
@@ -28,9 +31,25 @@ sealed class RecruitmentServiceRequest<out TReturn> : ApplicationServiceRequest<
 
 
     @Serializable
-    data class AddParticipant( val studyId: UUID, val email: EmailAddress ) : RecruitmentServiceRequest<Participant>()
+    data class AddParticipantByEmailAddress( val studyId: UUID, val email: EmailAddress ) :
+        RecruitmentServiceRequest<Participant>()
     {
         override fun getResponseSerializer() = serializer<Participant>()
+        override fun matchesServiceRequest( request: KCallable<*> ): Boolean =
+            request == run<KSuspendFunction3<RecruitmentService, UUID, EmailAddress, Participant>> {
+                RecruitmentService::addParticipant
+            }
+    }
+
+    @Serializable
+    data class AddParticipantByUsername( val studyId: UUID, val username: Username ) :
+        RecruitmentServiceRequest<Participant>()
+    {
+        override fun getResponseSerializer() = serializer<Participant>()
+        override fun matchesServiceRequest( request: KCallable<*> ): Boolean =
+            request == run<KSuspendFunction3<RecruitmentService, UUID, Username, Participant>> {
+                RecruitmentService::addParticipant
+            }
     }
 
     @Serializable

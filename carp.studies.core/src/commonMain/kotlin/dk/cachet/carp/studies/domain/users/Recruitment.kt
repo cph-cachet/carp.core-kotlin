@@ -2,7 +2,9 @@ package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.AccountIdentity
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
+import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.common.domain.AggregateRoot
 import dk.cachet.carp.common.domain.DomainEvent
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
@@ -59,13 +61,12 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
         get() = _participants.toSet()
 
     /**
-     * Add a [Participant] identified by the specified [email] address.
-     * In case the [email] was already added before, the same [Participant] is returned.
+     * Add a [Participant] by the specified [identity].
+     * In case a participant with [identity] was already added before, the same [Participant] is returned.
      */
-    fun addParticipant( email: EmailAddress, id: UUID = UUID.randomUUID() ): Participant
+    fun addParticipant( identity: AccountIdentity, id: UUID = UUID.randomUUID() ): Participant
     {
         // Verify whether participant was already added.
-        val identity = EmailAccountIdentity( email )
         var participant = _participants.firstOrNull { it.accountIdentity == identity }
 
         // Add new participant in case it was not added before.
@@ -78,6 +79,21 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
 
         return participant
     }
+
+    /**
+     * Add a [Participant] by the specified [email].
+     * In case a participant with the same [email] was already added before, the same [Participant] is returned.
+     */
+    fun addParticipant( email: EmailAddress, id: UUID = UUID.randomUUID() ): Participant =
+        addParticipant( EmailAccountIdentity( email ), id )
+
+    /**
+     * Add a [Participant] by the specified [username].
+     * In case a participant with the same [username] was already added before, the same [Participant] is returned.
+     */
+    fun addParticipant( username: String, id: UUID = UUID.randomUUID() ): Participant =
+        addParticipant( UsernameAccountIdentity( username ), id )
+
 
     private var studyProtocol: StudyProtocolSnapshot? = null
     private var invitation: StudyInvitation? = null

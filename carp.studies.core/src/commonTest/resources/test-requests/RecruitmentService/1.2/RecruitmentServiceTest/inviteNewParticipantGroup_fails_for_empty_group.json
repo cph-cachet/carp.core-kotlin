@@ -1,0 +1,80 @@
+[
+    {
+        "outcome": "Failed",
+        "request": {
+            "__type": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.InviteNewParticipantGroup",
+            "apiVersion": "1.1",
+            "studyId": "00000000-0000-0000-0000-000000000001",
+            "group": [
+            ]
+        },
+        "precedingEvents": [
+            {
+                "__type": "dk.cachet.carp.studies.application.StudyService.Event.StudyCreated",
+                "aggregateId": "00000000-0000-0000-0000-000000000001",
+                "apiVersion": "1.1",
+                "study": {
+                    "studyId": "00000000-0000-0000-0000-000000000001",
+                    "ownerId": "5ce9bd2d-a207-482b-a695-ae78a7c24e21",
+                    "name": "Test",
+                    "createdOn": "1970-01-01T00:00:00Z",
+                    "description": null,
+                    "invitation": {
+                        "name": "Test"
+                    },
+                    "protocolSnapshot": null
+                }
+            },
+            {
+                "__type": "dk.cachet.carp.studies.application.StudyService.Event.StudyGoneLive",
+                "aggregateId": "00000000-0000-0000-0000-000000000001",
+                "apiVersion": "1.1",
+                "study": {
+                    "studyId": "00000000-0000-0000-0000-000000000001",
+                    "ownerId": "5ce9bd2d-a207-482b-a695-ae78a7c24e21",
+                    "name": "Test",
+                    "createdOn": "1970-01-01T00:00:00Z",
+                    "description": null,
+                    "invitation": {
+                        "name": "Test"
+                    },
+                    "protocolSnapshot": {
+                        "id": "6232f29f-c12a-4346-be33-619c7fb9b24f",
+                        "createdOn": "2024-03-13T13:55:29.590385Z",
+                        "version": 0,
+                        "ownerId": "251d463b-3cb0-447a-b949-e530fdff6021",
+                        "name": "Test protocol",
+                        "primaryDevices": [
+                            {
+                                "__type": "dk.cachet.carp.common.application.devices.Smartphone",
+                                "isPrimaryDevice": true,
+                                "roleName": "User's phone"
+                            }
+                        ],
+                        "participantRoles": [
+                            {
+                                "role": "Test role",
+                                "isOptional": false
+                            },
+                            {
+                                "role": "Test role 2",
+                                "isOptional": false
+                            }
+                        ],
+                        "expectedParticipantData": [
+                            {
+                                "attribute": {
+                                    "__type": "dk.cachet.carp.common.application.users.ParticipantAttribute.DefaultParticipantAttribute",
+                                    "inputDataType": "dk.cachet.carp.input.sex"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "publishedEvents": [
+        ],
+        "exceptionType": "IllegalArgumentException"
+    }
+]

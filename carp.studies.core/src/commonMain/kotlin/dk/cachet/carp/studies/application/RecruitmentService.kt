@@ -6,6 +6,7 @@ import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.DependentServices
 import dk.cachet.carp.common.application.services.IntegrationEvent
+import dk.cachet.carp.common.application.users.Username
 import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
@@ -19,7 +20,7 @@ import kotlinx.serialization.*
 @DependentServices( StudyService::class )
 interface RecruitmentService : ApplicationService<RecruitmentService, RecruitmentService.Event>
 {
-    companion object { val API_VERSION = ApiVersion( 1, 0 ) }
+    companion object { val API_VERSION = ApiVersion( 1, 2 ) }
 
     @Serializable
     sealed class Event : IntegrationEvent<RecruitmentService>
@@ -36,6 +37,14 @@ interface RecruitmentService : ApplicationService<RecruitmentService, Recruitmen
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
     suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant
+
+    /**
+     * Add a [Participant] to the study with the specified [studyId], identified by the specified [username].
+     * In case the [username] was already added before, the same [Participant] is returned.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    suspend fun addParticipant( studyId: UUID, username: Username ): Participant
 
     /**
      * Returns a participant of a study with the specified [studyId], identified by [participantId].
