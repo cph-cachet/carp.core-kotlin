@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.infrastructure.versioning
 
+import dk.cachet.carp.common.infrastructure.serialization.CLASS_DISCRIMINATOR
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -35,6 +36,14 @@ class ApiJsonObjectMigrationBuilder(
     fun ifType( classDiscriminator: String, migration: ApiJsonObjectMigrationBuilder.() -> Unit )
     {
         if ( json.getType() == classDiscriminator ) apply( migration )
+    }
+
+    /**
+     * Change the type of this object to [newClassDiscriminator].
+     */
+    fun changeType( newClassDiscriminator: String )
+    {
+        json[ CLASS_DISCRIMINATOR ] = JsonPrimitive( newClassDiscriminator )
     }
 
     /**
