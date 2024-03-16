@@ -13,8 +13,8 @@ describe( "kotlinx-datetime", () => {
         ]
 
         const moduleVerifier = new VerifyModule(
-            '@cachet/Kotlin-DateTime-library-kotlinx-datetime-js-ir',
-            './carp-kotlinx-datetime/Kotlin-DateTime-library-kotlinx-datetime-js-ir.d.ts',
+            '@cachet/Kotlin-DateTime-library-kotlinx-datetime',
+            './carp-kotlinx-datetime/Kotlin-DateTime-library-kotlinx-datetime.d.ts',
             instances
         )
         await moduleVerifier.verify()
