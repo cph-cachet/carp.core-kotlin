@@ -54,6 +54,20 @@ class ApiJsonObjectMigrationBuilderTest
     }
 
     @Test
+    fun changeType_succeeds()
+    {
+        val toMigrate: ToMigrate = Migrate( 42, 42, MigrateInner( 42 ) )
+        val toMigrateJson: JsonObject = json.encodeToJsonElement( toMigrateSerializer, toMigrate ).jsonObject
+
+        val newTypeName = "Migrated"
+        val migrated = migrate( toMigrateJson ) {
+            changeType( newTypeName )
+        }
+
+        assertEquals( newTypeName, migrated[ "__type" ]?.jsonPrimitive?.content )
+    }
+
+    @Test
     fun updateObject_succeeds()
     {
         val toMigrate = Migrate( 42, 42, MigrateInner( 42 ) )
