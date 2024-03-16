@@ -38,6 +38,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaField
+import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.kotlinFunction
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -48,26 +49,18 @@ import kotlin.time.Duration.Companion.seconds
  */
 fun generateExampleRequests( serviceInfo: ApplicationServiceInfo ): List<ExampleRequest>
 {
-    val requestObjectSuperType = serviceInfo.requestObjectClass
-    val requests = serviceInfo.serviceKlass.methods
-    val requestObjects = requestObjectSuperType.classes
+    val requestMethods = serviceInfo.serviceKlass.methods
+    val exampleRequests = exampleRequests.filter { it.key.javaMethod?.declaringClass == serviceInfo.serviceKlass }
 
     val json = Json( createDefaultJSON() ) { prettyPrint = true }
 
-    return requests.map { request ->
-        val requestName = serviceInfo.serviceName + "." + request.name
-        val requestObjectName = request.name.replaceFirstChar { it.uppercase() }
-        val requestObject = requestObjects.singleOrNull { it.simpleName == requestObjectName }
-        checkNotNull( requestObject )
-            {
-                "Could not find request object for $requestName. " +
-                "Searched for: ${requestObjectSuperType.name}.$requestObjectName"
-            }
-
+    return requestMethods.map { request ->
         // Retrieve example and verify whether it is valid.
-        val example = checkNotNull( exampleRequests[ request.kotlinFunction ] )
+        val requestName = serviceInfo.serviceName + "." + request.name
+        val kotlinRequest = checkNotNull( request.kotlinFunction )
+        val example = checkNotNull( exampleRequests[ kotlinRequest ] )
             { "No example request and response instances provided for $requestName." }
-        check( requestObject.isInstance( example.request ) )
+        check( example.request.matchesServiceRequest( kotlinRequest ) )
             { "Incorrect request instance provided for $requestName." }
         check( request.returnType.isInstance( example.response ) )
             { "Incorrect response instance provided for $requestName." }
@@ -79,7 +72,7 @@ fun generateExampleRequests( serviceInfo: ApplicationServiceInfo ): List<Example
 
         ExampleRequest(
             request,
-            ExampleRequest.JsonExample( requestObject, requestObjectJson ),
+            ExampleRequest.JsonExample( example.request::class.java, requestObjectJson ),
             ExampleRequest.JsonExample( request.returnType, responseJson )
         )
     }
@@ -272,7 +265,7 @@ private val phoneDataStreamBatch = MutableDataStreamBatch().apply {
 }
 
 
-fun <TService : ApplicationService<TService, *>, TResponse> example(
+private fun <TService : ApplicationService<TService, *>, TResponse> example(
     request: ApplicationServiceRequest<TService, TResponse>,
     response: Any? = Unit
 ) = LoggedRequest.Succeeded( request, emptyList(), emptyList(), response )

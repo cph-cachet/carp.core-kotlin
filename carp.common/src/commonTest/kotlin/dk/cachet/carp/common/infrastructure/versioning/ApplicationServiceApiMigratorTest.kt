@@ -39,7 +39,7 @@ class ApplicationServiceApiMigratorTest
     }
 
     @Serializable
-    sealed class TestServiceRequest<out TReturn> : ApplicationServiceRequest<TestService, TReturn>
+    sealed class TestServiceRequest<out TReturn> : ApplicationServiceRequest<TestService, TReturn>()
     {
         @Required
         override val apiVersion: ApiVersion = TestService.API_VERSION
