@@ -19,7 +19,7 @@ import kotlin.js.JsExport
 @Serializable
 @JsExport
 @Suppress( "NON_EXPORTABLE_TYPE" )
-sealed class ParticipationServiceRequest<out TReturn> : ApplicationServiceRequest<ParticipationService, TReturn>
+sealed class ParticipationServiceRequest<out TReturn> : ApplicationServiceRequest<ParticipationService, TReturn>()
 {
     @Required
     override val apiVersion: ApiVersion = ParticipationService.API_VERSION

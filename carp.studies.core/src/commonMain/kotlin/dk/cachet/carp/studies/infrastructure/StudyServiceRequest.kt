@@ -19,7 +19,7 @@ import kotlin.js.JsExport
 @Serializable
 @JsExport
 @Suppress( "NON_EXPORTABLE_TYPE" )
-sealed class StudyServiceRequest<out TReturn> : ApplicationServiceRequest<StudyService, TReturn>
+sealed class StudyServiceRequest<out TReturn> : ApplicationServiceRequest<StudyService, TReturn>()
 {
     @Required
     override val apiVersion: ApiVersion = StudyService.API_VERSION

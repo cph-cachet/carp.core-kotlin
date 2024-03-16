@@ -21,7 +21,7 @@ import kotlin.js.JsExport
 @Serializable
 @JsExport
 @Suppress( "NON_EXPORTABLE_TYPE" )
-sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<DeploymentService, TReturn>
+sealed class DeploymentServiceRequest<out TReturn> : ApplicationServiceRequest<DeploymentService, TReturn>()
 {
     @Required
     override val apiVersion: ApiVersion = DeploymentService.API_VERSION
