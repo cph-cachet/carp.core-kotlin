@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "allOf": [ { "$ref": "PrimaryDeviceConfiguration.json#PrimaryDeviceConfiguration" } ],
+  "properties": {
+    "__type": { "const": "dk.cachet.carp.common.application.devices.Website" }
+  },
+  "unevaluatedProperties": false,
+  "$defs": {
+    "DeviceRegistration": {
+      "$anchor": "DeviceRegistration",
+      "$ref": "WebsiteDeviceRegistration.json"
+    }
+  }
+}
