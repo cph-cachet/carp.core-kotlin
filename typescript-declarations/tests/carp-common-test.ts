@@ -1,13 +1,14 @@
 import { expect } from 'chai'
 
-import { kotlin } from '@cachet/carp-kotlin'
+import kotlin from '@cachet/carp-kotlin'
 import setOf = kotlin.collections.setOf
 import Duration = kotlin.time.Duration
 
-import { kotlinx } from '@cachet/carp-kotlinx-serialization'
-import Json = kotlinx.serialization.json.Json
+import kotlinx from '@cachet/carp-kotlinx-serialization'
+import getSerializer = kotlinx.serialization.getSerializer
 
-import { dk } from '@cachet/carp-common'
+import carp from '@cachet/carp-common'
+import dk = carp.dk
 import Trilean = dk.cachet.carp.common.application.Trilean
 import toTrilean = dk.cachet.carp.common.application.toTrilean
 import EmailAddress = dk.cachet.carp.common.application.EmailAddress
@@ -83,7 +84,7 @@ describe( "carp-common", () => {
                 new AssignedTo.Roles( setOf( [ "Roles are added" ] ) )
             )
 
-            const serializer = ExpectedParticipantData.Companion.serializer()
+            const serializer = getSerializer( ExpectedParticipantData )
             const serialized = JSON.encodeToString( serializer, expectedData )
             const deserialized = JSON.decodeFromString( serializer, serialized ) as ExpectedParticipantData
             expect( deserialized.equals( expectedData ) ).is.true

@@ -1,7 +1,7 @@
-import VerifyModule from './VerifyModule'
+import VerifyModule from './VerifyModule.js'
 
 import { expect } from 'chai'
-import { kotlin } from '@cachet/carp-kotlin'
+import kotlin from '@cachet/carp-kotlin'
 import toLong = kotlin.toLong
 import Pair = kotlin.Pair
 import Duration = kotlin.time.Duration
@@ -32,8 +32,8 @@ describe( "kotlin", () => {
         ]
 
         const moduleVerifier = new VerifyModule(
-            '@cachet/kotlin-kotlin-stdlib-js-ir',
-            './carp-kotlin/kotlin-kotlin-stdlib-js-ir.d.ts',
+            '@cachet/kotlin-kotlin-stdlib',
+            './carp-kotlin/kotlin-kotlin-stdlib.d.ts',
             instances
         )
         await moduleVerifier.verify()

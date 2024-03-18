@@ -1,4 +1,5 @@
-import * as extend from "@cachet/Kotlin-DateTime-library-kotlinx-datetime-js-ir"
+/// <reference path="Kotlin-DateTime-library-kotlinx-datetime.d.ts" />
+import extend from "@cachet/Kotlin-DateTime-library-kotlinx-datetime"
 
 
 // Facade with better method names and type conversions for internal types.
@@ -20,7 +21,7 @@ export namespace kotlinx.datetime
 
 
 // Augment internal types to implement facade.
-declare module "@cachet/Kotlin-DateTime-library-kotlinx-datetime-js-ir"
+declare module "@cachet/Kotlin-DateTime-library-kotlinx-datetime"
 {
     namespace $_$
     {
@@ -33,9 +34,9 @@ declare module "@cachet/Kotlin-DateTime-library-kotlinx-datetime-js-ir"
 
 
 // Implement base interfaces in internal types.
-extend.$_$.System.prototype.now = function(): kotlinx.datetime.Instant { return this.b12(); };
-extend.$_$.Instant_0.prototype.toEpochMilliseconds = function(): number { return this.o12(); };
+extend.$_$.System.prototype.now = function(): kotlinx.datetime.Instant { return this.q13(); };
+extend.$_$.Instant_0.prototype.toEpochMilliseconds = function(): number { return this.d14(); };
 
 
-// Re-export augmented types.
-export * from "@cachet/Kotlin-DateTime-library-kotlinx-datetime-js-ir"
+// Export facade.
+export default kotlinx

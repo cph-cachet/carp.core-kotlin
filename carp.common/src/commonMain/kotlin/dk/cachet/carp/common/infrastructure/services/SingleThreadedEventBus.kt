@@ -25,7 +25,8 @@ class SingleThreadedEventBus : EventBus()
      */
     override suspend fun <
         TApplicationService : ApplicationService<TApplicationService, TEvent>,
-        TEvent : IntegrationEvent<TApplicationService>> publish(
+        TEvent : IntegrationEvent<TApplicationService>
+    > publish(
         publishingService: KClass<TApplicationService>,
         event: TEvent
     )

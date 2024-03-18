@@ -5,6 +5,10 @@ import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.UUIDFactory
 import dk.cachet.carp.common.application.services.ApplicationServiceEventBus
+import dk.cachet.carp.common.application.users.AccountIdentity
+import dk.cachet.carp.common.application.users.EmailAccountIdentity
+import dk.cachet.carp.common.application.users.Username
+import dk.cachet.carp.common.application.users.UsernameAccountIdentity
 import dk.cachet.carp.deployments.application.DeploymentService
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
@@ -61,11 +65,23 @@ class RecruitmentServiceHost(
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist.
      */
-    override suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant
+    override suspend fun addParticipant( studyId: UUID, email: EmailAddress ): Participant =
+        addParticipant( studyId, EmailAccountIdentity( email ) )
+
+    /**
+     * Add a [Participant] to the study with the specified [studyId], identified by the specified [username].
+     * In case the [username] was already added before, the same [Participant] is returned.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] does not exist.
+     */
+    override suspend fun addParticipant( studyId: UUID, username: Username ): Participant =
+        addParticipant( studyId, UsernameAccountIdentity( username ) )
+
+    private suspend fun addParticipant( studyId: UUID, accountIdentity: AccountIdentity ): Participant
     {
         val recruitment = getRecruitmentOrThrow( studyId )
 
-        val participant = recruitment.addParticipant( email, uuidFactory.randomUUID() )
+        val participant = recruitment.addParticipant( accountIdentity, uuidFactory.randomUUID() )
         participantRepository.updateRecruitment( recruitment )
 
         return participant

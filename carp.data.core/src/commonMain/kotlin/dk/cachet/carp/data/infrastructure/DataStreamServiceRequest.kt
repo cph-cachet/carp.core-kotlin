@@ -19,7 +19,7 @@ import kotlin.js.JsExport
 @Serializable
 @JsExport
 @Suppress( "NON_EXPORTABLE_TYPE" )
-sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<DataStreamService, TReturn>
+sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<DataStreamService, TReturn>()
 {
     @Required
     override val apiVersion: ApiVersion = DataStreamService.API_VERSION

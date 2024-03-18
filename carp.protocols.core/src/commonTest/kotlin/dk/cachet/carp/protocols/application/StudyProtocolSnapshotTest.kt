@@ -82,8 +82,14 @@ class StudyProtocolSnapshotTest
     @Test
     fun order_of_tasks_devices_and_expected_participant_data_in_snapshot_does_not_matter_for_equality_or_hashcode()
     {
-        val primaryDevices = listOf<AnyPrimaryDeviceConfiguration>( StubPrimaryDeviceConfiguration( "M1" ), StubPrimaryDeviceConfiguration( "M2" ) )
-        val connectedDevices = listOf<AnyDeviceConfiguration>( StubDeviceConfiguration( "C1" ), StubDeviceConfiguration( "C2" ) )
+        val primaryDevices = listOf<AnyPrimaryDeviceConfiguration>(
+            StubPrimaryDeviceConfiguration( "M1" ),
+            StubPrimaryDeviceConfiguration( "M2" )
+        )
+        val connectedDevices = listOf<AnyDeviceConfiguration>(
+            StubDeviceConfiguration( "C1" ),
+            StubDeviceConfiguration( "C2" )
+        )
         val connections = listOf(
             StudyProtocolSnapshot.DeviceConnection( "C1", "M1" ),
             StudyProtocolSnapshot.DeviceConnection( "C2", "M2" )

@@ -16,7 +16,7 @@ import kotlin.js.JsExport
 @Serializable
 @JsExport
 @Suppress( "NON_EXPORTABLE_TYPE" )
-sealed class ProtocolFactoryServiceRequest<out TReturn> : ApplicationServiceRequest<ProtocolFactoryService, TReturn>
+sealed class ProtocolFactoryServiceRequest<out TReturn> : ApplicationServiceRequest<ProtocolFactoryService, TReturn>()
 {
     @Required
     override val apiVersion: ApiVersion = ProtocolFactoryService.API_VERSION

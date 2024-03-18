@@ -2,11 +2,13 @@ package dk.cachet.carp.studies.infrastructure
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.Username
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceDecorator
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.Command
 import dk.cachet.carp.studies.application.RecruitmentService
 import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
+import dk.cachet.carp.studies.application.users.Participant
 
 
 class RecruitmentServiceDecorator(
@@ -20,7 +22,10 @@ class RecruitmentServiceDecorator(
     RecruitmentService
 {
     override suspend fun addParticipant( studyId: UUID, email: EmailAddress ) =
-        invoke( RecruitmentServiceRequest.AddParticipant( studyId, email ) )
+        invoke( RecruitmentServiceRequest.AddParticipantByEmailAddress( studyId, email ) )
+
+    override suspend fun addParticipant( studyId: UUID, username: Username ): Participant =
+        invoke( RecruitmentServiceRequest.AddParticipantByUsername( studyId, username ) )
 
     override suspend fun getParticipant( studyId: UUID, participantId: UUID ) =
         invoke( RecruitmentServiceRequest.GetParticipant( studyId, participantId ) )
@@ -46,7 +51,8 @@ object RecruitmentServiceInvoker : ApplicationServiceInvoker<RecruitmentService,
     override suspend fun RecruitmentServiceRequest<*>.invoke( service: RecruitmentService ): Any =
         when ( this )
         {
-            is RecruitmentServiceRequest.AddParticipant -> service.addParticipant( studyId, email )
+            is RecruitmentServiceRequest.AddParticipantByEmailAddress -> service.addParticipant( studyId, email )
+            is RecruitmentServiceRequest.AddParticipantByUsername -> service.addParticipant( studyId, username )
             is RecruitmentServiceRequest.GetParticipant -> service.getParticipant( studyId, participantId )
             is RecruitmentServiceRequest.GetParticipants -> service.getParticipants( studyId )
             is RecruitmentServiceRequest.InviteNewParticipantGroup ->

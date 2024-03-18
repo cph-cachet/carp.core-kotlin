@@ -9,6 +9,7 @@ import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.ParticipantRole
+import dk.cachet.carp.common.application.users.Username
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
@@ -41,20 +42,21 @@ interface RecruitmentServiceTest
 
 
     @Test
-    fun adding_and_retrieving_participant_succeeds() = runTest {
+    fun adding_and_retrieving_participants_succeeds() = runTest {
         val (recruitmentService, studyService) = createSUT()
         val study = studyService.createStudy( UUID.randomUUID(), "Test" )
         val studyId = study.studyId
 
-        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val emailParticipant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val usernameParticipant = recruitmentService.addParticipant( studyId, Username( "test" ) )
 
-        // Get single participant.
-        val studyParticipant = recruitmentService.getParticipant( studyId, participant.id )
-        assertEquals( participant, studyParticipant )
+        // Get participants by ID.
+        assertEquals( emailParticipant, recruitmentService.getParticipant( studyId, emailParticipant.id ) )
+        assertEquals( usernameParticipant, recruitmentService.getParticipant( studyId, usernameParticipant.id ) )
 
         // Get all participants.
         val studyParticipants = recruitmentService.getParticipants( studyId )
-        assertEquals( participant, studyParticipants.single() )
+        assertEquals( setOf( emailParticipant, usernameParticipant ), studyParticipants.toSet() )
     }
 
     @Test

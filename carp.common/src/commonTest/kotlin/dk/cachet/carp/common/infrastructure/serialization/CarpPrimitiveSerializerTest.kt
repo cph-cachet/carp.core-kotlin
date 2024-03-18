@@ -14,7 +14,8 @@ class CarpPrimitiveSerializerTest
     {
         override fun toString(): String = string
     }
-    object PrimitiveStringSerializer : KSerializer<PrimitiveString> by createCarpStringPrimitiveSerializer( { PrimitiveString( it ) } )
+    object PrimitiveStringSerializer : KSerializer<PrimitiveString> by
+        createCarpStringPrimitiveSerializer( { PrimitiveString( it ) } )
 
     @Test
     fun createCarpStringPrimitiveSerializer_serializes_as_string()
@@ -39,7 +40,8 @@ class CarpPrimitiveSerializerTest
 
     @Serializable( PrimitiveLongSerializer::class )
     class PrimitiveLong( val long: Long )
-    object PrimitiveLongSerializer : KSerializer<PrimitiveLong> by createCarpLongPrimitiveSerializer( { PrimitiveLong( it ) }, { it.long } )
+    object PrimitiveLongSerializer : KSerializer<PrimitiveLong> by
+        createCarpLongPrimitiveSerializer( { PrimitiveLong( it ) }, { it.long } )
 
     @Test
     fun createCarpLongPrimitiveSerializer_serializes_as_long()

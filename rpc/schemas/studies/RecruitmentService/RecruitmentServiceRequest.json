@@ -1,7 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "oneOf": [
-    { "$ref": "#/$defs/AddParticipant" },
+    { "$ref": "#/$defs/AddParticipantByEmailAddress" },
+    { "$ref": "#/$defs/AddParticipantByUsername" },
     { "$ref": "#/$defs/GetParticipant" },
     { "$ref": "#/$defs/GetParticipants" },
     { "$ref": "#/$defs/InviteNewParticipantGroup" },
@@ -9,12 +10,12 @@
     { "$ref": "#/$defs/StopParticipantGroup" }
   ],
   "$defs": {
-    "ApiVersion": { "const": "1.0" },
-    "AddParticipant": {
-      "$anchor": "AddParticipant",
+    "ApiVersion": { "const": "1.2" },
+    "AddParticipantByEmailAddress": {
+      "$anchor": "AddParticipantByEmailAddress",
       "type": "object",
   	  "properties": {
-        "__type": { "const": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.AddParticipant" },
+        "__type": { "const": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.AddParticipantByEmailAddress" },
         "apiVersion": { "$ref": "#/$defs/ApiVersion" },
         "studyId": { "type": "string", "format": "uuid" },
         "email": { "type": "string", "format": "email" }
@@ -22,7 +23,23 @@
       "required": [ "__type", "apiVersion", "studyId", "email" ],
       "additionalProperties": false,
       "Response": {
-        "$anchor": "AddParticipant-Response",
+        "$anchor": "AddParticipantByEmailAddress-Response",
+        "$ref": "../users/Participant.json"
+      }
+    },
+    "AddParticipantByUsername": {
+      "$anchor": "AddParticipantByUsername",
+      "type": "object",
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.AddParticipantByUsername" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyId": { "type": "string", "format": "uuid" },
+        "username": { "type": "string" }
+      },
+      "required": [ "__type", "apiVersion", "studyId", "username" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "AddParticipantByUsername-Response",
         "$ref": "../users/Participant.json"
       }
     },

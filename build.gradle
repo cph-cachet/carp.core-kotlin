@@ -3,35 +3,37 @@ buildscript {
     ext {
         // Version used for submodule artifacts.
         // Snapshot publishing changes (or adds) the suffix after '-' with 'SNAPSHOT' prior to publishing.
-        globalVersion = '1.1.2'
-        clientsVersion = '1.1.2-alpha.1' // The clients subsystem is still expected to change drastically.
+        globalVersion = '1.2.0'
+        clientsVersion = '1.2.0-alpha.1' // The clients subsystem is still expected to change drastically.
 
         versions = [
             // Kotlin multiplatform versions.
-            kotlin:'1.8.21',
-            serialization:'1.5.0',
-            coroutines:'1.7.0',
-            datetime:'0.4.0',
+            kotlin:'1.9.23',
+            serialization:'1.6.3',
+            coroutines:'1.8.0',
+            datetime:'0.5.0',
 
             // JVM versions.
             jvmTarget:'1.8',
-            dokkaPlugin:'1.8.10',
+            dokkaPlugin:'1.9.20',
             reflections:'0.10.2',
 
             // JS versions.
-            nodePlugin:'4.0.0',
+            nodePlugin:'7.0.2',
             bigJs:'6.2.1',
 
             // DevOps versions.
-            detektPlugin:'1.22.0',
+            detektPlugin:'1.23.5',
             detektVerifyImplementation:'1.2.5',
             nexusPublishPlugin:'1.3.0',
-            apacheCommons:'2.11.0'
+            apacheCommons:'2.15.1'
         ]
 
         commonModule = subprojects.find { it.name == 'carp.common' }
         coreModules = subprojects.findAll { it.name.endsWith( '.core' ) }
+        testModules = subprojects.findAll { it.name == 'carp.common.test' || it.name == 'carp.test' }
         publishNpmModule = subprojects.find { it.name == 'publish-npm-packages' }
+        allModules = coreModules + testModules + commonModule + publishNpmModule
         devOpsModules =
             subprojects.findAll {it.name == 'carp.detekt' || it.name == 'rpc' } + publishNpmModule
     }
@@ -91,6 +93,27 @@ configure( subprojects - devOpsModules ) {
             generateTypeScriptDefinitions()
         }
 
+        targets.configureEach {
+            compilations.configureEach {
+                def isTestSourceSet = it.name == 'test'
+
+                compilerOptions.configure((Action) {
+                    // Treat compilation warning as errors for all compilation targets.
+                    it.allWarningsAsErrors = true
+
+                    // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
+                    it.optIn.add('kotlin.RequiresOptIn')
+                    it.optIn.add('kotlin.time.ExperimentalTime')
+                    it.optIn.add('kotlin.js.ExperimentalJsExport')
+                    if (isTestSourceSet)
+                    {
+                        it.optIn.add('kotlinx.coroutines.ExperimentalCoroutinesApi')
+                    }
+                    it.freeCompilerArgs.add('-Xexpect-actual-classes') // https://youtrack.jetbrains.com/issue/KT-61573
+                } )
+            }
+        }
+
         sourceSets {
             commonMain {
                 dependencies {
@@ -110,27 +133,7 @@ configure( subprojects - devOpsModules ) {
                     implementation "org.reflections:reflections:${versions.reflections}"
                 }
             }
-
-            all {
-                def isTestSourceSet = it.name.endsWith('Test')
-
-                languageSettings {
-                    // We do not mind being early adopters of Jetbrains APIs likely to change in the future.
-                    optIn('kotlin.RequiresOptIn')
-                    optIn('kotlin.time.ExperimentalTime')
-                    optIn('kotlin.js.ExperimentalJsExport')
-                    if (isTestSourceSet)
-                    {
-                        optIn('kotlinx.coroutines.ExperimentalCoroutinesApi')
-                    }
-                }
-            }
         }
-    }
-
-    // Treat compilation warning as errors for all compilation targets.
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-        kotlinOptions { allWarningsAsErrors = true }
     }
 
     // Publish configuration.
@@ -233,6 +236,7 @@ task setSnapshotVersion {
 
 // TypeScript ambient declaration verification.
 def typescriptFolder = 'typescript-declarations'
+def npmScope = "@cachet"
 apply plugin: 'com.github.node-gradle.node'
 task setupTsProject(type: NpmTask) {
     workingDir = file(typescriptFolder)
@@ -240,8 +244,7 @@ task setupTsProject(type: NpmTask) {
 }
 task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
     // Compile production sources for CARP, and the JS publication project (`publishNpmModule`).
-    def projects = coreModules + commonModule + publishNpmModule
-    projects.each {
+    allModules.each {
         def project = it.name
         dependsOn("$project:jsProductionExecutableCompileSync")
     }
@@ -257,7 +260,7 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
     }
     eachFile { file ->
         // Compiled sources have the name of the module they represent, followed by ".js" and ".d.ts".
-        // To be recognized by node, place them as "index.js" and "index.d.ts" in "node_modules/@cachet/<module-name>".
+        // To be recognized by node, place them as "index.js" and "index.d.ts" in "node_modules/<scope>/<module-name>".
         def fileMatch = file.name =~ /(.+)\.(js|d\.ts)/
         def moduleName = fileMatch[0][1]
         def extension = fileMatch[0][2]
@@ -272,8 +275,8 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
         // Modify sources to act like modules with exported named members.
         file.filter { line ->
             // Compiled sources refer to other modules as adjacent .js source files.
-            // Change these to the named modules created in the previous step.
-            def namedModules = line.replaceAll(~/'\.\/(.+?)\.js'/, "'@cachet/\$1'")
+            // Change these to the scoped modules created in the previous step.
+            def namedModules = line.replaceAll(~/'\.\/(.+?)\.js'/, "'$npmScope/\$1'")
 
             // Replace `any` types with actual types for which facades are specified.
             def replacedTypes = knownFacadeTypes.inject(namedModules) { curLine, type ->
@@ -298,9 +301,33 @@ task copyTestJsSources(type: Copy, dependsOn: setupTsProject) {
             additionalExports
         }
     }
-    into "./$typescriptFolder/node_modules/@cachet/"
+    into "./$typescriptFolder/node_modules/$npmScope/"
 }
-task compileTs(type: NpmTask, dependsOn: copyTestJsSources) {
+task packageTestJsSources(type: Copy, dependsOn: copyTestJsSources) {
+    allModules.each {
+        def project = it.name
+        dependsOn("$project:jsPackageJson")
+        dependsOn("$project:jsTestPackageJson")
+    }
+
+    from("$rootDir/build/js/packages") {
+        include "**/package.json"
+        includeEmptyDirs = false
+    }
+    eachFile { file ->
+        def moduleName = file.getFile().getParentFile().name
+        file.filter { line ->
+            // Add scope to module name.
+            def changedName = line.replaceAll(~/("name": ).*/, "\$1 \"$npmScope/$moduleName\",")
+
+            // Point main source to 'index.js'.
+            changedName.replaceAll(~/("main": ).*/, "\$1 \"index.js\",")
+        }
+
+    }
+    into "./$typescriptFolder/node_modules/$npmScope/"
+}
+task compileTs(type: NpmTask, dependsOn: packageTestJsSources) {
     workingDir = file(typescriptFolder)
     args = ['run', 'tsc']
 }
@@ -309,11 +336,6 @@ task verifyTsDeclarations(type: NodeTask, dependsOn: compileTs) {
     execOverrides {
         it.workingDir = typescriptFolder
     }
-    args = [
-        '--require', 'ts-node/register',
-        '--require', 'jsdom-global/register',
-        './tests/**/*.ts'
-    ]
 }
 
 // Add `carp.test` helpers.

@@ -70,7 +70,9 @@ class UseCompositeTaskWarningTest
 
         val warning = UseCompositeTaskWarning()
         val overlapping = warning.getOverlappingTasks( protocol )
-        val expectedOverlapping = setOf( UseCompositeTaskWarning.OverlappingTasks( trigger, device, listOf( task1, task2 ) ) )
+        val expectedOverlapping = setOf(
+            UseCompositeTaskWarning.OverlappingTasks( trigger, device, listOf( task1, task2 ) )
+        )
         assertEquals( expectedOverlapping.count(), overlapping.intersect( expectedOverlapping ).count() )
     }
 }

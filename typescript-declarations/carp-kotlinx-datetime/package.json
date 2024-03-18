@@ -1,4 +1,6 @@
 {
   "name": "@cachet/carp-kotlinx-datetime",
+  "type": "module",
+  "main": "index.js",
   "version":  "1.1.2"
 }

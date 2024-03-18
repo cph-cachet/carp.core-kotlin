@@ -52,7 +52,8 @@ class EventSubscriptionBuilder(
      */
     inline fun <
         reified TService : ApplicationService<TService, TEvent>,
-        reified TEvent : IntegrationEvent<TService>> event(
+        reified TEvent : IntegrationEvent<TService>
+    > event(
         noinline handler: suspend (TEvent) -> Unit
     ) = eventBus.registerHandler( TService::class, TEvent::class, subscriber, handler )
 }

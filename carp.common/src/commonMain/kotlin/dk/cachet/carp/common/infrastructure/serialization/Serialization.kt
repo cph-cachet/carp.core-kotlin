@@ -31,10 +31,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( HeartRate::class )
         subclass( InterbeatInterval::class )
         subclass( NonGravitationalAcceleration::class )
-        // HACK: explicit serializer needs to be registered for object declarations due to limitation of the JS legacy backend.
-        // https://github.com/Kotlin/kotlinx.serialization/issues/1138#issuecomment-707989920
-        // This can likely be removed once we upgrade to the new IR backend.
-        subclass( NoData::class, NoData.serializer() )
+        subclass( NoData::class )
         subclass( PPG::class )
         subclass( SignalStrength::class )
         subclass( SensorSkinContact::class )
@@ -63,6 +60,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
     {
         subclass( CustomProtocolDevice::class )
         subclass( Smartphone::class )
+        subclass( Website::class )
 
         subclass( CustomPrimaryDeviceConfiguration::class )
     }
@@ -87,6 +85,7 @@ val COMMON_SERIAL_MODULE = SerializersModule {
         subclass( BLESerialNumberDeviceRegistration::class )
         subclass( DefaultDeviceRegistration::class )
         subclass( MACAddressDeviceRegistration::class )
+        subclass( WebsiteDeviceRegistration::class )
 
         subclass( CustomDeviceRegistration::class )
         defaultDeserializer { DeviceRegistrationSerializer }

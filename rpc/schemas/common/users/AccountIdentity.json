@@ -22,7 +22,7 @@
         "__type": { "const": "dk.cachet.carp.common.application.users.UsernameAccountIdentity" },
         "username": { "type": "string" }
       },
-      "required": [ "__type" ],
+      "required": [ "__type", "username" ],
       "additionalProperties": false
     }
   }
