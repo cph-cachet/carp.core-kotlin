@@ -27,7 +27,7 @@ describe( "carp-protocols-core", () => {
             expect( parsed ).is.instanceOf( StudyProtocolSnapshot )
         } )
 
-        it.skip( "can deserialize and serialize unknown types", () => {
+        it( "can deserialize and serialize unknown types", () => {
             const snapshotWithUnknownTypes = serializedSnapshot.replace(
                 "dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration",
                 "com.unknown.CustomTaskConfiguration"
