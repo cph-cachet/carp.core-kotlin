@@ -1,6 +1,5 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
-import dk.cachet.carp.common.infrastructure.reflect.AccessInternals
 import dk.cachet.carp.common.infrastructure.reflect.reflectIfAvailable
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
@@ -58,18 +57,30 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         {
             throw unsupportedException
         }
-        getClassDiscriminator( encoder.json ) // Throws error in case array polymorphism is used.
+        val classDiscriminator = getClassDiscriminator( encoder.json ) // Throws error in case of array polymorphism.
 
         // Get the unknown JSON object.
         check( value is UnknownPolymorphicWrapper )
         val unknown = Json.parseToJsonElement( value.jsonSource ) as JsonObject
+        val unknownTypeFields = unknown.filter { it.key != classDiscriminator }
 
-        // HACK: Modify kotlinx.serialization internals to ensure the encoder is not in polymorphic mode.
-        //  Otherwise, `encoder.encodeJsonElement` encodes type information, but this is already represented in the wrapped unknown object.
-        AccessInternals.setField( encoder, "polymorphicDiscriminator", null )
+        // Create a serial descriptor which contains all elements of the unknown JSON object, except type discriminator.
+        // If the encoder is in polymorphic writing mode, a class discriminator field will automatically be added using
+        // the serial name of the descriptor.
+        val unknownType = checkNotNull( unknown[ classDiscriminator ]?.jsonPrimitive?.content )
+        val jsonSerializer = JsonElement.serializer()
+        val overrideDescriptor = buildClassSerialDescriptor( unknownType )
+        {
+            unknownTypeFields.keys.forEach { element( it, jsonSerializer.descriptor ) }
+        }
 
-        // Output the originally wrapped JSON.
-        encoder.encodeJsonElement( unknown )
+        // Write the JSON object.
+        encoder.encodeStructure( overrideDescriptor )
+        {
+            var id = 0
+            for ( field in unknownTypeFields.values )
+                encodeSerializableElement( overrideDescriptor, id++, JsonElement.serializer(), field )
+        }
     }
 
     override fun deserialize( decoder: Decoder ): P
@@ -85,7 +96,8 @@ abstract class UnknownPolymorphicSerializer<P : Any, W : P>(
         // Get raw JSON for the unknown type.
         val jsonElement = decoder.decodeJsonElement()
         val jsonSource = jsonElement.toString()
-        val className = jsonElement.jsonObject[ classDiscriminator ]!!.jsonPrimitive.content
+        val className = requireNotNull( jsonElement.jsonObject[ classDiscriminator ]?.jsonPrimitive?.content )
+            { "Can't deserialize type which was serialized non-polymorphically." }
 
         return createWrapper( className, jsonSource, decoder.json )
     }
