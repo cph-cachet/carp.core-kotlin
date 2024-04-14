@@ -49,10 +49,13 @@ abstract class ConcreteTypesSerializationTest(
         for ( toSerialize in instancesToSerialize )
         {
             // Get serializer.
+            // Polymorphic serializer is used to ensure type information is always embedded,
+            // which some deserializers may depend upon.
             val type = toSerialize::class
+            val registration = polymorphicSerializers[ type ]
+            assertNotNull( registration, "No serializer registered for type '$type'" )
             @Suppress( "UNCHECKED_CAST" )
-            val serializer = polymorphicSerializers[ type ] as? KSerializer<Any>
-            assertNotNull( serializer, "No serializer registered for type '$type'" )
+            val serializer = PolymorphicSerializer( registration.baseKlass ) as KSerializer<Any>
 
             // Verify whether serializing and deserializing the instance results in the same object.
             val serialized = json.encodeToString( serializer, toSerialize )
@@ -67,12 +70,12 @@ abstract class ConcreteTypesSerializationTest(
  * Get a map which holds the [KSerializer] for each [KClass] registered for polymorphic serialization in [serialModule].
  */
 @ExperimentalSerializationApi
-fun getPolymorphicSerializers( serialModule: SerializersModule ): Map<KClass<*>, KSerializer<*>>
+fun getPolymorphicSerializers( serialModule: SerializersModule ): Map<KClass<*>, PolymorphicRegistration>
 {
     val collector =
         object : SerializersModuleCollector
         {
-            val serializers: MutableMap<KClass<*>, KSerializer<*>> = mutableMapOf()
+            val serializers: MutableMap<KClass<*>, PolymorphicRegistration> = mutableMapOf()
 
             override fun <T : Any> contextual(
                 kClass: KClass<T>,
@@ -85,7 +88,7 @@ fun getPolymorphicSerializers( serialModule: SerializersModule ): Map<KClass<*>,
                 actualSerializer: KSerializer<Sub>
             )
             {
-                serializers[ actualClass ] = actualSerializer
+                serializers[ actualClass ] = PolymorphicRegistration( baseClass, actualSerializer )
             }
 
             @Suppress( "REDUNDANT_PROJECTION", "KotlinRedundantDiagnosticSuppress" ) // Exact override needed.
@@ -109,3 +112,6 @@ fun getPolymorphicSerializers( serialModule: SerializersModule ): Map<KClass<*>,
     serialModule.dumpTo( collector )
     return collector.serializers
 }
+
+
+data class PolymorphicRegistration( val baseKlass: KClass<*>, val serializer: KSerializer<*> )
