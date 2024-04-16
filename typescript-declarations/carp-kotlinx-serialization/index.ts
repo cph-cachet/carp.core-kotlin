@@ -7,7 +7,7 @@ import extendJson from "@cachet/kotlinx-serialization-kotlinx-serialization-json
 // Facade with better method names and type conversions for internal types.
 export namespace kotlinx.serialization
 {
-    export function getSerializer( type: any ) { return type.Companion.t16() }
+    export function getSerializer( type: any ) { return type.Companion.m16() }
 }
 export namespace kotlinx.serialization.json
 {
