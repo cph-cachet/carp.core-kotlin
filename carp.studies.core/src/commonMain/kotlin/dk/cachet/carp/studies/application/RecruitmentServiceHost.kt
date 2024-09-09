@@ -160,6 +160,21 @@ class RecruitmentServiceHost(
         return recruitment.getParticipantGroupStatus( deploymentStatus )
     }
 
+    override suspend fun updateParticipantGroup(
+        studyId: UUID,
+        groupId: UUID,
+        group: Set<AssignedParticipantRoles>
+    ): ParticipantGroupStatus
+    {
+        val recruitment = getRecruitmentWithGroupOrThrow( studyId, groupId )
+        val toDeployParticipantIds = group.map { it.participantId }.toSet()
+
+        val participantGroup = recruitment.updateParticipantGroup(groupId, toDeployParticipantIds)
+        participantRepository.updateRecruitment( recruitment )
+
+        return recruitment.getParticipantGroupStatus(participantGroup.id )
+    }
+
     /**
      * Get the status of all deployed participant groups in the study with the specified [studyId].
      *

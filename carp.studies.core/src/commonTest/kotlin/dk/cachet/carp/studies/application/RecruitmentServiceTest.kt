@@ -198,6 +198,21 @@ interface RecruitmentServiceTest
         assertNotEquals( groupStatus, groupStatus2 )
     }
 
+// TODO( "Tests for updateParticipantGroup should be implemented when create/invite participantGroup are available" )
+
+    @Test
+    fun updateParticipantGroup_fails_for_already_deployed_group() = runTest {
+        val (recruitmentService, studyService) = createSUT()
+        val (studyId, _) = createLiveStudy( studyService )
+        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
+        val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
+        assertFailsWith<IllegalStateException>
+        {
+            recruitmentService.updateParticipantGroup( studyId, groupStatus.id, setOf( assignParticipant ) )
+        }
+    }
+
     @Test
     fun getParticipantGroupStatusList_returns_multiple_deployments() = runTest {
         val (recruitmentService, studyService) = createSUT()

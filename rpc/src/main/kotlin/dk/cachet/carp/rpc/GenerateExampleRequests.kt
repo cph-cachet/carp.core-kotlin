@@ -387,6 +387,10 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
         ),
         response = ParticipantGroupStatus.Invited( deploymentId, participants, participantGroupInvitedOn, invitedDeploymentStatus )
     ),
+    RecruitmentService::updateParticipantGroup to example(
+        request = RecruitmentServiceRequest.UpdateParticipantGroup( studyId, deploymentId, setOf( AssignedParticipantRoles( participantId, participantAssignedRoles ) ) ),
+        response = ParticipantGroupStatus.Staged( deploymentId, participants )
+    ),
     RecruitmentService::getParticipantGroupStatusList to example(
         request = RecruitmentServiceRequest.GetParticipantGroupStatusList( studyId ),
         response = listOf( ParticipantGroupStatus.Running( deploymentId, participants, participantGroupInvitedOn, runningDeploymentStatus, runningDeploymentStatus.startedOn ) )

@@ -18,6 +18,7 @@ class RecruitmentTest
 {
     private val studyId = UUID.randomUUID()
     private val participantEmail = EmailAddress( "test@test.com" )
+    private val newParticipantEmail = EmailAddress( "new@test.com" )
 
 
     @Test
@@ -125,6 +126,43 @@ class RecruitmentTest
         assertFailsWith<IllegalStateException> { recruitment.addParticipantGroup( participantIds ) }
         val participationEvents = recruitment.consumeEvents().filterIsInstance<Recruitment.Event.ParticipantGroupAdded>()
         assertEquals( 0, participationEvents.count() )
+    }
+
+    @Test
+    fun updateParticipantGroup_succeeds()
+    {
+        val recruitment = Recruitment( studyId )
+        val participant = recruitment.addParticipant( participantEmail )
+        val newParticipant = recruitment.addParticipant( newParticipantEmail )
+        val protocol = createEmptyProtocol()
+        recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation( "Some study" ) )
+
+        assertTrue( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
+
+        val participantIds = setOf( participant.id )
+        val newParticipantIds = setOf( newParticipant.id )
+        val group = recruitment.addParticipantGroup( participantIds )
+        recruitment.updateParticipantGroup( group.id, newParticipantIds )
+        assertEquals( Recruitment.Event.ParticipantGroupUpdated( newParticipantIds ), recruitment.consumeEvents().last() )
+        assertEquals(
+            newParticipant.id,
+            recruitment.participantGroups[ group.id ]?.participantIds?.singleOrNull()
+        )
+    }
+
+    @Test
+    fun updateParticipantGroup_fail_when_participant_group_does_not_exist()
+    {
+        val recruitment = Recruitment( studyId )
+        val participant = recruitment.addParticipant( newParticipantEmail )
+        val protocol = createEmptyProtocol()
+        recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation( "Some study" ) )
+
+        assertTrue( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
+
+        val participants = setOf( participant.id )
+        val unknownGroupId = UUID.randomUUID()
+        assertFailsWith<IllegalArgumentException> { recruitment.updateParticipantGroup( unknownGroupId, participants ) }
     }
 
     @Test

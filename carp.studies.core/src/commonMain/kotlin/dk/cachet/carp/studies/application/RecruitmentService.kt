@@ -77,6 +77,19 @@ interface RecruitmentService : ApplicationService<RecruitmentService, Recruitmen
     suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignedParticipantRoles> ): ParticipantGroupStatus
 
     /**
+     * Update the participant [group] with the specified [groupId] in the study with the given [studyId].
+     * This can be used to add or remove participants from the group.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] or participant group with [groupId] does not exist.
+     * @throws IllegalStateException when the study is not yet ready for deployment.
+     */
+    suspend fun updateParticipantGroup(
+        studyId: UUID,
+        groupId: UUID,
+        group: Set<AssignedParticipantRoles>
+    ): ParticipantGroupStatus
+
+    /**
      * Get the status of all deployed participant groups in the study with the specified [studyId].
      *
      * @throws IllegalArgumentException when a study with [studyId] does not exist.

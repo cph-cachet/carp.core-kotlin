@@ -42,6 +42,22 @@ data class StagedParticipantGroup(
     }
 
     /**
+     * Update participants in this group to [participantIds].
+     * This is only allowed when the group hasn't been deployed yet.
+     * Participants not in [participantIds] are removed from the group.
+     *
+     * @throws IllegalStateException when this participant group is already deployed.
+     */
+    fun updateParticipants( participantIds: Set<UUID> )
+    {
+        check( !isDeployed ) { "Can't update participants after a participant group has been deployed." }
+
+        _participantIds.retainAll( participantIds )
+        _participantIds.addAll( participantIds )
+    }
+
+
+    /**
      * Specify that a deployment for this participant group has been created.
      *
      * @throws IllegalStateException when no participants to deploy are specified.

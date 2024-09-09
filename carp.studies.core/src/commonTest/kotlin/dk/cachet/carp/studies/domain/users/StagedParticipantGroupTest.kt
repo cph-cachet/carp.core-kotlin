@@ -35,6 +35,31 @@ class StagedParticipantGroupTest
     }
 
     @Test
+    fun updateParticipants_succeeds()
+    {
+        val group = StagedParticipantGroup()
+        val participantId = UUID.randomUUID()
+        group.addParticipants( setOf( participantId ) )
+
+        val newParticipantId = UUID.randomUUID()
+        group.updateParticipants( setOf( newParticipantId ) )
+
+        assertEquals( newParticipantId, group.participantIds.singleOrNull() )
+    }
+
+    @Test
+    fun updateParticipants_fails_when_already_deployed()
+    {
+        val group = StagedParticipantGroup()
+        val participantId = UUID.randomUUID()
+        group.addParticipants( setOf( participantId ) )
+        group.markAsDeployed()
+
+        val newParticipantId = UUID.randomUUID()
+        assertFailsWith<IllegalStateException> { group.updateParticipants( setOf( newParticipantId ) ) }
+    }
+
+    @Test
     fun markAsDeployed_succeeds()
     {
         val group = StagedParticipantGroup()

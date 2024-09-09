@@ -30,6 +30,7 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
     {
         data class ParticipantAdded( val participant: Participant ) : Event()
         data class ParticipantGroupAdded( val participantIds: Set<UUID> ) : Event()
+        data class ParticipantGroupUpdated( val participantGroup: Set<UUID> ) : Event()
     }
 
 
@@ -192,6 +193,40 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
         event( Event.ParticipantGroupAdded( participantIds ) )
 
         return group
+    }
+
+    /**
+     * Update the participant group identified by [participantGroupId] with the specified [participantIds].
+     *
+     * @throws IllegalArgumentException when the participant group identified by [participantGroupId] is not part of this recruitment.
+     * @throws IllegalStateException when the study is not yet ready for deployment.
+     */
+    fun updateParticipantGroup( participantGroupId: UUID, participantIds: Set<UUID> ): StagedParticipantGroup
+    {
+        require( participants.map { it.id }.containsAll( participantIds ) )
+            { "One of the participants for which to update the participant group isn't part of this recruitment." }
+
+        val group: StagedParticipantGroup = requireNotNull( _participantGroups[ participantGroupId ] )
+            { "A participant group with ID \"$participantGroupId\" is not part of this recruitment." }
+
+        group.updateParticipants( participantIds )
+        event( Event.ParticipantGroupUpdated( participantIds ) )
+
+        return group
+    }
+
+    /**
+     * Get the [ParticipantGroupStatus] of the staged participant group identified by [participantGroupId].
+     *
+     * @throws IllegalArgumentException when the participant group identified by [participantGroupId] is not part of this recruitment.
+     */
+    fun getParticipantGroupStatus( participantGroupId: UUID ): ParticipantGroupStatus
+    {
+        val group: StagedParticipantGroup = requireNotNull( _participantGroups[ participantGroupId ] )
+            { "A participant group with ID \"$participantGroupId\" is not part of this recruitment." }
+
+        val participants = group.participantIds.map { id -> _participants.first { it.id == id } }
+        return ParticipantGroupStatus.Staged( group.id, participants.toSet() )
     }
 
     /**
