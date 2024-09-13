@@ -5,6 +5,9 @@
     { "$ref": "#/$defs/AddParticipantByUsername" },
     { "$ref": "#/$defs/GetParticipant" },
     { "$ref": "#/$defs/GetParticipants" },
+    { "$ref": "#/$defs/CreateParticipantGroup" },
+    { "$ref": "#/$defs/UpdateParticipantGroup" },
+    { "$ref": "#/$defs/InviteParticipantGroup" },
     { "$ref": "#/$defs/InviteNewParticipantGroup" },
     { "$ref": "#/$defs/GetParticipantGroupStatusList" },
     { "$ref": "#/$defs/StopParticipantGroup" }
@@ -73,6 +76,61 @@
         "$anchor": "GetParticipants-Response",
         "type": "array",
         "items": { "$ref": "../users/Participant.json" }
+      }
+    },
+    "CreateParticipantGroup": {
+      "$anchor": "CreateParticipantGroup",
+      "type": "object",
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.CreateParticipantGroup" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyId": { "type": "string", "format": "uuid" },
+        "group": {
+          "type": "array",
+          "items": { "$ref": "../users/AssignedParticipantRoles.json" }
+        }
+      },
+      "required": [ "__type", "apiVersion", "studyId", "group" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "CreateParticipantGroup-Response",
+        "$ref": "../users/ParticipantGroupStatus.json"
+      }
+    },
+    "UpdateParticipantGroup": {
+      "$anchor": "UpdateParticipantGroup",
+      "type": "object",
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.UpdateParticipantGroup" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyId": { "type": "string", "format": "uuid" },
+        "groupId": { "type": "string", "format": "uuid" },
+        "newGroup": {
+          "type": "array",
+          "items": { "$ref": "../users/AssignedParticipantRoles.json" }
+        }
+      },
+      "required": [ "__type", "apiVersion", "studyId", "groupId", "newGroup" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "UpdateParticipantGroup-Response",
+        "$ref": "../users/ParticipantGroupStatus.json"
+      }
+    },
+    "InviteParticipantGroup": {
+      "$anchor": "InviteParticipantGroup",
+      "type": "object",
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest.InviteParticipantGroup" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyId": { "type": "string", "format": "uuid" },
+        "groupId": { "type": "string", "format": "uuid" }
+      },
+      "required": [ "__type", "apiVersion", "studyId", "groupId" ],
+      "additionalProperties": false,
+      "Response": {
+        "$anchor": "InviteParticipantGroup-Response",
+        "$ref": "../users/ParticipantGroupStatus.json"
       }
     },
     "InviteNewParticipantGroup": {

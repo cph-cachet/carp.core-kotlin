@@ -13,6 +13,7 @@ import dk.cachet.carp.common.application.users.Username
 import dk.cachet.carp.protocols.application.StudyProtocolSnapshot
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
+import dk.cachet.carp.studies.application.users.Participant
 import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
 import kotlinx.coroutines.test.runTest
 import kotlin.test.*
@@ -198,19 +199,194 @@ interface RecruitmentServiceTest
         assertNotEquals( groupStatus, groupStatus2 )
     }
 
-// TODO( "Tests for updateParticipantGroup should be implemented when create/invite participantGroup are available" )
+    @Test
+    fun createParticipantGroup_succeeds() = runTest {
+        val (recruitmentService, studyService) = createSUT()
+        val (studyId, _) = createLiveStudy( studyService )
+        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
+        val groupStatus = recruitmentService.createParticipantGroup( studyId, setOf( assignParticipant ) )
+        assertEquals( participant, groupStatus.participants.single() )
+        val participantGroups = recruitmentService.getParticipantGroupStatusList( studyId )
+        val participantInGroup = participantGroups.single().participants.single()
+        assertEquals( participant, participantInGroup )
+    }
+
+    @Test
+    fun createParticipantGroup_fails_for_unknown_studyId() = runTest {
+        val (recruitmentService, _) = createSUT()
+        val assignParticipant = AssignedParticipantRoles( UUID.randomUUID(), AssignedTo.All )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            recruitmentService.createParticipantGroup( unknownId, setOf( assignParticipant ) )
+        }
+    }
+
+    @Test
+    fun createParticipantGroup_fails_for_unknown_participants() = runTest {
+        val (recruitmentService, studyService) = createSUT()
+        val (studyId, _) = createLiveStudy( studyService )
+
+        val assignParticipant = AssignedParticipantRoles( unknownId, AssignedTo.All )
+        assertFailsWith<IllegalArgumentException>
+        {
+            recruitmentService.createParticipantGroup( studyId, setOf( assignParticipant ) )
+        }
+    }
+
+    @Test
+    fun updateParticipantGroup_succeeds_remove_old_and_add_new() = runTest {
+        val (recruitmentService, studyService) = createSUT()
+        val (studyId, _) = createLiveStudy( studyService )
+        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val newParticipant = recruitmentService.addParticipant( studyId, EmailAddress( "test2@test.com" ) )
+
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
+        val newAssignedParticipant = AssignedParticipantRoles( newParticipant.id, AssignedTo.All )
+        val stagedParticipantGroup = recruitmentService.createParticipantGroup( studyId, setOf( assignParticipant ) )
+        val updatedGroupStatus = recruitmentService.updateParticipantGroup( studyId, stagedParticipantGroup.id, setOf( newAssignedParticipant ) )
+        assertEquals( newParticipant, updatedGroupStatus.participants.single() )
+        val participantGroups = recruitmentService.getParticipantGroupStatusList( studyId )
+        val participantInGroup = participantGroups.single().participants.single()
+        assertEquals( newParticipant, participantInGroup )
+    }
+
+    @Test
+    fun updateParticipantGroup_succeeds_keep_old_and_add_new() = runTest {
+        val (recruitmentService, studyService) = createSUT()
+        val (studyId, _) = createLiveStudy( studyService )
+        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val newParticipant = recruitmentService.addParticipant( studyId, EmailAddress( "test2@test.com" ) )
+
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
+        val newAssignedParticipant = AssignedParticipantRoles( newParticipant.id, AssignedTo.All )
+        val stagedParticipantGroup = recruitmentService.createParticipantGroup( studyId, setOf( assignParticipant ) )
+        val updatedGroupStatus = recruitmentService.updateParticipantGroup( studyId, stagedParticipantGroup.id, setOf( assignParticipant, newAssignedParticipant ) )
+        assertEquals<Set<Participant>>( setOf( participant, newParticipant ), updatedGroupStatus.participants )
+        val participantGroups = recruitmentService.getParticipantGroupStatusList( studyId )
+        val participantInGroup = participantGroups.single().participants
+        assertEquals( 2, participantInGroup.size )
+    }
+
+    @Test
+    fun updateParticipantGroup_succeeds_overlapping_participants() = runTest {
+        val (recruitmentService, studyService) = createSUT()
+        val (studyId, _) = createLiveStudy( studyService )
+        val oldParticipants = setOf( "test0@test.com", "test1@test.com" )
+            .map { recruitmentService.addParticipant( studyId, EmailAddress( it ) ) }.toSet()
+        val oldAssignedParticipants = oldParticipants
+            .map { AssignedParticipantRoles( it.id, AssignedTo.All ) }.toSet()
+        val newParticipants = setOf( "test2@test.com", "test3@test.com" )
+            .map { recruitmentService.addParticipant( studyId, EmailAddress( it ) ) }.toSet()
+        val newAssignedParticipants = newParticipants
+            .map { AssignedParticipantRoles( it.id, AssignedTo.All ) }.toSet()
+
+        val stagedParticipantGroup = recruitmentService.createParticipantGroup( studyId, oldAssignedParticipants)
+        val updatedGroupStatus = recruitmentService.updateParticipantGroup( studyId, stagedParticipantGroup.id, newAssignedParticipants )
+        assertEquals( newParticipants, updatedGroupStatus.participants )
+        val participantGroups = recruitmentService.getParticipantGroupStatusList( studyId )
+        val participantInGroup = participantGroups.single().participants
+        assertEquals( 2, participantInGroup.size )
+    }
 
     @Test
     fun updateParticipantGroup_fails_for_already_deployed_group() = runTest {
         val (recruitmentService, studyService) = createSUT()
         val (studyId, _) = createLiveStudy( studyService )
         val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+
         val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
-        val groupStatus = recruitmentService.inviteNewParticipantGroup( studyId, setOf( assignParticipant ) )
+        val groupStatus = recruitmentService.createParticipantGroup( studyId, setOf( assignParticipant ) )
+        val deployedGroup = recruitmentService.inviteParticipantGroup( studyId, groupStatus.id )
         assertFailsWith<IllegalStateException>
         {
-            recruitmentService.updateParticipantGroup( studyId, groupStatus.id, setOf( assignParticipant ) )
+            recruitmentService.updateParticipantGroup( studyId, deployedGroup.id, setOf( assignParticipant ) )
         }
+    }
+
+    @Test
+    fun updateParticipantGroup_fails_for_unknown_studyId() = runTest {
+        val (recruitmentService, studyService) = createSUT()
+        val (studyId, _) = createLiveStudy( studyService )
+
+        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            recruitmentService.updateParticipantGroup( unknownId, unknownId, setOf( assignParticipant ) )
+        }
+    }
+
+    @Test
+    fun updateParticipantGroup_fails_for_unknown_participantGroupId() = runTest {
+        val (recruitmentService, studyService) = createSUT()
+        val (studyId, _) = createLiveStudy( studyService )
+        val assignParticipant = AssignedParticipantRoles( UUID.randomUUID(), AssignedTo.All )
+
+        assertFailsWith<IllegalArgumentException>
+        {
+            recruitmentService.updateParticipantGroup( studyId, unknownId, setOf( assignParticipant ) )
+        }
+    }
+
+    @Test
+    fun updateParticipantGroup_fails_for_unknown_participants() = runTest {
+        val (recruitmentService, studyService) = createSUT()
+        val (studyId, _) = createLiveStudy( studyService )
+
+        val assignParticipant = AssignedParticipantRoles( unknownId, AssignedTo.All )
+        assertFailsWith<IllegalArgumentException>
+        {
+            recruitmentService.createParticipantGroup( studyId, setOf( assignParticipant ) )
+        }
+    }
+
+    @Test
+    fun inviteParticipantGroup_fails_for_unknown_participant_roles() = runTest {
+        val (recruitmentService, studyService) = createSUT()
+        val (studyId, _) = createLiveStudy( studyService )
+        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.Roles( setOf( "Unknown role" ) ) )
+
+        val stagedParticipantGroup = recruitmentService.createParticipantGroup( studyId, setOf( assignParticipant ) )
+        assertFailsWith<IllegalArgumentException>
+        {
+            recruitmentService.inviteParticipantGroup( studyId, stagedParticipantGroup.id )
+        }
+    }
+
+    @Test
+    fun inviteParticipantGroup_fails_when_not_all_participant_roles_assigned() = runTest {
+        val (recruitmentService, studyService) = createSUT()
+        val (studyId, protocol) = createLiveStudy( studyService )
+        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+
+        val role = protocol.participantRoles.first().role
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.Roles( setOf( role ) ) )
+        val stagedParticipantGroup = recruitmentService.createParticipantGroup( studyId, setOf( assignParticipant ) )
+        assertFailsWith<IllegalArgumentException>
+        {
+            recruitmentService.inviteParticipantGroup( studyId, stagedParticipantGroup.id )
+        }
+    }
+
+    @Test
+    fun inviteParticipantGroup_multiple_times_returns_same_group() = runTest {
+        val (recruitmentService, studyService) = createSUT()
+        val (studyId, _) = createLiveStudy( studyService )
+        val participant = recruitmentService.addParticipant( studyId, EmailAddress( "test@test.com" ) )
+        val assignParticipant = AssignedParticipantRoles( participant.id, AssignedTo.All )
+        val stagedParticipantGroup = recruitmentService.createParticipantGroup( studyId, setOf( assignParticipant ) )
+        val groupStatus = recruitmentService.inviteParticipantGroup( studyId, stagedParticipantGroup.id )
+
+        // Deploy the same group a second time.
+        val groupStatus2 = recruitmentService.inviteParticipantGroup( studyId, stagedParticipantGroup.id )
+        assertEquals( groupStatus, groupStatus2 )
     }
 
     @Test

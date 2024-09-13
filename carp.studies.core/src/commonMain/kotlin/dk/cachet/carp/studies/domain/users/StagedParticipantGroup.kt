@@ -1,6 +1,8 @@
 package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
+import dk.cachet.carp.studies.application.users.participantIds
 import kotlinx.serialization.*
 
 
@@ -16,10 +18,12 @@ data class StagedParticipantGroup(
     val id: UUID = UUID.randomUUID()
 )
 {
-    private val _participantIds: MutableSet<UUID> = mutableSetOf()
+    private val _participantIds: MutableSet<AssignedParticipantRoles> = mutableSetOf()
     val participantIds: Set<UUID>
-        get() = _participantIds
+        get() = _participantIds.participantIds()
 
+    val roleAssignments: Set<AssignedParticipantRoles>
+        get() = _participantIds
     /**
      * Determines whether this participant group has been deployed.
      */
@@ -29,31 +33,31 @@ data class StagedParticipantGroup(
 
 
     /**
-     * Add participants with [participantIds] to this group.
+     * Add participants and their role assignments with [roleAssignments] to this group.
      * This is only allowed when the group hasn't been deployed yet.
      *
      * @throws IllegalStateException when this participant group is already deployed.
      */
-    fun addParticipants( participantIds: Set<UUID> )
+    fun addParticipants( roleAssignments: Set<AssignedParticipantRoles> )
     {
         check( !isDeployed ) { "Can't add participant after a participant group has been deployed." }
 
-        _participantIds.addAll( participantIds )
+        _participantIds.addAll( roleAssignments )
     }
 
     /**
-     * Update participants in this group to [participantIds].
+     * Update participants in this group to [roleAssignments].
      * This is only allowed when the group hasn't been deployed yet.
-     * Participants not in [participantIds] are removed from the group.
+     * Participants not in [roleAssignments] are removed from the group.
      *
      * @throws IllegalStateException when this participant group is already deployed.
      */
-    fun updateParticipants( participantIds: Set<UUID> )
+    fun updateParticipants( roleAssignments: Set<AssignedParticipantRoles> )
     {
         check( !isDeployed ) { "Can't update participants after a participant group has been deployed." }
 
-        _participantIds.retainAll( participantIds )
-        _participantIds.addAll( participantIds )
+        _participantIds.retainAll( roleAssignments )
+        _participantIds.addAll( roleAssignments )
     }
 
 

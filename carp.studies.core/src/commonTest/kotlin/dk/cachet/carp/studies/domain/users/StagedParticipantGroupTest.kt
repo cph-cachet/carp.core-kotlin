@@ -1,9 +1,8 @@
 package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.deployments.application.StudyDeploymentStatus
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import dk.cachet.carp.common.application.users.AssignedTo
+import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import kotlin.test.*
 
 
@@ -17,7 +16,8 @@ class StagedParticipantGroupTest
     {
         val group = StagedParticipantGroup()
         val participantId = UUID.randomUUID()
-        group.addParticipants( setOf( participantId ) )
+        val roleAssignment = AssignedParticipantRoles( participantId, AssignedTo.All )
+        group.addParticipants( setOf( roleAssignment ) )
 
         assertEquals( participantId, group.participantIds.singleOrNull() )
     }
@@ -27,11 +27,13 @@ class StagedParticipantGroupTest
     {
         val group = StagedParticipantGroup()
         val participantId = UUID.randomUUID()
-        group.addParticipants( setOf( participantId ) )
+        val roleAssignment = AssignedParticipantRoles( participantId, AssignedTo.All )
+        group.addParticipants( setOf( roleAssignment ) )
         group.markAsDeployed()
 
         val newParticipantId = UUID.randomUUID()
-        assertFailsWith<IllegalStateException> { group.addParticipants( setOf( newParticipantId ) ) }
+        val newRoleAssignment = AssignedParticipantRoles( newParticipantId, AssignedTo.All )
+        assertFailsWith<IllegalStateException> { group.addParticipants( setOf( newRoleAssignment ) ) }
     }
 
     @Test
@@ -39,10 +41,12 @@ class StagedParticipantGroupTest
     {
         val group = StagedParticipantGroup()
         val participantId = UUID.randomUUID()
-        group.addParticipants( setOf( participantId ) )
+        val roleAssignment = AssignedParticipantRoles( participantId, AssignedTo.All )
+        group.addParticipants( setOf( roleAssignment ) )
 
         val newParticipantId = UUID.randomUUID()
-        group.updateParticipants( setOf( newParticipantId ) )
+        val newRoleAssignment = AssignedParticipantRoles( newParticipantId, AssignedTo.All )
+        group.updateParticipants( setOf( newRoleAssignment ) )
 
         assertEquals( newParticipantId, group.participantIds.singleOrNull() )
     }
@@ -52,11 +56,13 @@ class StagedParticipantGroupTest
     {
         val group = StagedParticipantGroup()
         val participantId = UUID.randomUUID()
-        group.addParticipants( setOf( participantId ) )
+        val roleAssingment = AssignedParticipantRoles( participantId, AssignedTo.All )
+        group.addParticipants( setOf( roleAssingment ) )
         group.markAsDeployed()
 
         val newParticipantId = UUID.randomUUID()
-        assertFailsWith<IllegalStateException> { group.updateParticipants( setOf( newParticipantId ) ) }
+        val newRoleAssignment = AssignedParticipantRoles( newParticipantId, AssignedTo.All )
+        assertFailsWith<IllegalStateException> { group.updateParticipants( setOf( newRoleAssignment ) ) }
     }
 
     @Test
@@ -64,7 +70,8 @@ class StagedParticipantGroupTest
     {
         val group = StagedParticipantGroup()
         val participantId = UUID.randomUUID()
-        group.addParticipants( setOf( participantId ) )
+        val roleAssignment = AssignedParticipantRoles( participantId, AssignedTo.All )
+        group.addParticipants( setOf( roleAssignment ) )
         assertFalse( group.isDeployed )
 
         group.markAsDeployed()

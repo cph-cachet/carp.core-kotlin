@@ -29,8 +29,8 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
     sealed class Event : DomainEvent
     {
         data class ParticipantAdded( val participant: Participant ) : Event()
-        data class ParticipantGroupAdded( val participantIds: Set<UUID> ) : Event()
-        data class ParticipantGroupUpdated( val participantGroup: Set<UUID> ) : Event()
+        data class ParticipantGroupAdded( val participantIds: Set<AssignedParticipantRoles> ) : Event()
+        data class ParticipantGroupUpdated( val participantGroup: Set<AssignedParticipantRoles> ) : Event()
     }
 
 
@@ -175,42 +175,49 @@ class Recruitment( val studyId: UUID, id: UUID = UUID.randomUUID(), createdOn: I
     private val _participantGroups: MutableMap<UUID, StagedParticipantGroup> = mutableMapOf()
 
     /**
-     * Create and add the participants identified by [participantIds] as a participant group.
+     * Create and add the participants and role assignments identified by [roleAssignments] as a participant group.
      *
      * @throws IllegalArgumentException when one or more of the participants aren't in this recruitment.
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    fun addParticipantGroup( participantIds: Set<UUID>, id: UUID = UUID.randomUUID() ): StagedParticipantGroup
+    fun addParticipantGroup(
+        roleAssignments: Set<AssignedParticipantRoles>,
+        id: UUID = UUID.randomUUID()
+    ): StagedParticipantGroup
     {
-        require( participants.map { it.id }.containsAll( participantIds ) )
+        require( participants.map { it.id }.containsAll( roleAssignments.participantIds() ) )
             { "One of the participants for which to create a participant group isn't part of this recruitment." }
         check( getStatus() is RecruitmentStatus.ReadyForDeployment ) { "The study is not yet ready for deployment." }
 
         val group = StagedParticipantGroup( id )
-        group.addParticipants( participantIds )
+        group.addParticipants( roleAssignments )
 
         _participantGroups[ group.id ] = group
-        event( Event.ParticipantGroupAdded( participantIds ) )
+        event( Event.ParticipantGroupAdded( roleAssignments ) )
 
         return group
     }
 
     /**
-     * Update the participant group identified by [participantGroupId] with the specified [participantIds].
+     * Update the participant group identified by [participantGroupId] with the specified [roleAssignments].
      *
-     * @throws IllegalArgumentException when the participant group identified by [participantGroupId] is not part of this recruitment.
+     * @throws IllegalArgumentException when the participant group identified by [participantGroupId] is not part of
+     * this recruitment.
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
-    fun updateParticipantGroup( participantGroupId: UUID, participantIds: Set<UUID> ): StagedParticipantGroup
+    fun updateParticipantGroup(
+        participantGroupId: UUID,
+        roleAssignments: Set<AssignedParticipantRoles>
+    ): StagedParticipantGroup
     {
-        require( participants.map { it.id }.containsAll( participantIds ) )
+        require( participants.map { it.id }.containsAll( roleAssignments.participantIds() ) )
             { "One of the participants for which to update the participant group isn't part of this recruitment." }
 
         val group: StagedParticipantGroup = requireNotNull( _participantGroups[ participantGroupId ] )
             { "A participant group with ID \"$participantGroupId\" is not part of this recruitment." }
 
-        group.updateParticipants( participantIds )
-        event( Event.ParticipantGroupUpdated( participantIds ) )
+        group.updateParticipants( roleAssignments )
+        event( Event.ParticipantGroupUpdated( roleAssignments ) )
 
         return group
     }

@@ -2,11 +2,13 @@ package dk.cachet.carp.studies.domain.users
 
 import dk.cachet.carp.common.application.EmailAddress
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.users.AssignedTo
 import dk.cachet.carp.common.application.users.EmailAccountIdentity
 import dk.cachet.carp.deployments.application.StudyDeploymentStatus
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
+import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
 import kotlinx.datetime.Clock
 import kotlin.test.*
 
@@ -26,10 +28,11 @@ class RecruitmentTest
     {
         val recruitment = Recruitment( studyId )
         val participant = recruitment.addParticipant( participantEmail )
+        val roleAssignment = AssignedParticipantRoles( participant.id, AssignedTo.All )
         val protocol = createEmptyProtocol()
         val invitation = StudyInvitation( "Test", "A study" )
         recruitment.lockInStudy( protocol.getSnapshot(), invitation )
-        recruitment.addParticipantGroup( setOf( participant.id ) )
+        recruitment.addParticipantGroup( setOf( roleAssignment) )
 
         val snapshot = recruitment.getSnapshot()
         val fromSnapshot = Recruitment.fromSnapshot( snapshot )
@@ -100,14 +103,15 @@ class RecruitmentTest
     {
         val recruitment = Recruitment( studyId )
         val participant = recruitment.addParticipant( participantEmail )
+        val roleAssignment = AssignedParticipantRoles( participant.id, AssignedTo.All )
         val protocol = createEmptyProtocol()
         recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation( "Some study" ) )
 
         assertTrue( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
 
-        val participantIds = setOf( participant.id )
-        val group = recruitment.addParticipantGroup( participantIds )
-        assertEquals( Recruitment.Event.ParticipantGroupAdded( participantIds ), recruitment.consumeEvents().last() )
+        val roleAssignments = setOf( roleAssignment )
+        val group = recruitment.addParticipantGroup( roleAssignments )
+        assertEquals( Recruitment.Event.ParticipantGroupAdded( roleAssignments ), recruitment.consumeEvents().last() )
         assertEquals(
             participant.id,
             recruitment.participantGroups[ group.id ]?.participantIds?.singleOrNull()
@@ -119,11 +123,13 @@ class RecruitmentTest
     {
         val recruitment = Recruitment( studyId )
         val participant = recruitment.addParticipant( participantEmail )
+        val roleAssignment = AssignedParticipantRoles( participant.id, AssignedTo.All )
+
 
         assertFalse( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
 
-        val participantIds = setOf( participant.id )
-        assertFailsWith<IllegalStateException> { recruitment.addParticipantGroup( participantIds ) }
+        val roleAssignments = setOf( roleAssignment )
+        assertFailsWith<IllegalStateException> { recruitment.addParticipantGroup( roleAssignments ) }
         val participationEvents = recruitment.consumeEvents().filterIsInstance<Recruitment.Event.ParticipantGroupAdded>()
         assertEquals( 0, participationEvents.count() )
     }
@@ -133,17 +139,19 @@ class RecruitmentTest
     {
         val recruitment = Recruitment( studyId )
         val participant = recruitment.addParticipant( participantEmail )
+        val roleAssignment = AssignedParticipantRoles( participant.id, AssignedTo.All )
         val newParticipant = recruitment.addParticipant( newParticipantEmail )
+        val newRoleAssignment = AssignedParticipantRoles( newParticipant.id, AssignedTo.All )
         val protocol = createEmptyProtocol()
         recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation( "Some study" ) )
 
         assertTrue( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
 
-        val participantIds = setOf( participant.id )
-        val newParticipantIds = setOf( newParticipant.id )
-        val group = recruitment.addParticipantGroup( participantIds )
-        recruitment.updateParticipantGroup( group.id, newParticipantIds )
-        assertEquals( Recruitment.Event.ParticipantGroupUpdated( newParticipantIds ), recruitment.consumeEvents().last() )
+        val roleAssignments = setOf( roleAssignment )
+        val newRoleAssignments = setOf( newRoleAssignment )
+        val group = recruitment.addParticipantGroup( roleAssignments )
+        recruitment.updateParticipantGroup( group.id, newRoleAssignments )
+        assertEquals( Recruitment.Event.ParticipantGroupUpdated( newRoleAssignments ), recruitment.consumeEvents().last() )
         assertEquals(
             newParticipant.id,
             recruitment.participantGroups[ group.id ]?.participantIds?.singleOrNull()
@@ -155,14 +163,15 @@ class RecruitmentTest
     {
         val recruitment = Recruitment( studyId )
         val participant = recruitment.addParticipant( newParticipantEmail )
+        val roleAssignment = AssignedParticipantRoles( participant.id, AssignedTo.All )
         val protocol = createEmptyProtocol()
         recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation( "Some study" ) )
 
         assertTrue( recruitment.getStatus() is RecruitmentStatus.ReadyForDeployment )
 
-        val participants = setOf( participant.id )
+        val roleAssignments = setOf( roleAssignment )
         val unknownGroupId = UUID.randomUUID()
-        assertFailsWith<IllegalArgumentException> { recruitment.updateParticipantGroup( unknownGroupId, participants ) }
+        assertFailsWith<IllegalArgumentException> { recruitment.updateParticipantGroup( unknownGroupId, roleAssignments ) }
     }
 
     @Test
@@ -170,9 +179,10 @@ class RecruitmentTest
     {
         val recruitment = Recruitment( studyId )
         val participant = recruitment.addParticipant( participantEmail )
+        val roleAssignment = AssignedParticipantRoles( participant.id, AssignedTo.All )
         val protocol = createEmptyProtocol()
         recruitment.lockInStudy( protocol.getSnapshot(), StudyInvitation( "Some study" ) )
-        val group = recruitment.addParticipantGroup( setOf( participant.id ) )
+        val group = recruitment.addParticipantGroup( setOf( roleAssignment ) )
 
         val stubDeploymentStatus =
             StudyDeploymentStatus.DeployingDevices( Clock.System.now(), group.id, emptyList(), emptyList(), null )

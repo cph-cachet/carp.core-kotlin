@@ -77,17 +77,44 @@ interface RecruitmentService : ApplicationService<RecruitmentService, Recruitmen
     suspend fun inviteNewParticipantGroup( studyId: UUID, group: Set<AssignedParticipantRoles> ): ParticipantGroupStatus
 
     /**
-     * Update the participant [group] with the specified [groupId] in the study with the given [studyId].
+     * Create a new participant [group] of previously added participants for the study with the given [studyId].
+     * This is used to create a group of participants which can be deployed at a later time.
+     *
+     * In case a group with the same participants has already been deployed and is still running (not stopped),
+     * the latest status for this group is simply returned.
+     *
+     * @throws IllegalArgumentException when:
+     *  - a study with [studyId] does not exist
+     *  - [group] is empty
+     *  - any of the participant roles specified in [group] does not exist
+     * @throws IllegalStateException when the study is not yet ready for deployment.
+     */
+    suspend fun createParticipantGroup( studyId: UUID, group: Set<AssignedParticipantRoles> ): ParticipantGroupStatus
+
+    /**
+     * Update the participant [newGroup] with the specified [groupId] in the study with the given [studyId].
      * This can be used to add or remove participants from the group.
      *
      * @throws IllegalArgumentException when a study with [studyId] or participant group with [groupId] does not exist.
+     * [newGroup] is empty
+     * - any of the participant roles specified in [newGroup] does not exist
      * @throws IllegalStateException when the study is not yet ready for deployment.
      */
     suspend fun updateParticipantGroup(
         studyId: UUID,
         groupId: UUID,
-        group: Set<AssignedParticipantRoles>
+        newGroup: Set<AssignedParticipantRoles>
     ): ParticipantGroupStatus
+
+    /**
+     * Invite the participant group with the specified [groupId] (equivalent to the studyDeploymentId)
+     * in the study with the given [studyId] to start participating in the study.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] or participant group with [groupId] does not exist.
+     *  - any of the participant roles specified in this participant group does not exist
+     *  - not all necessary participant roles part of the study have been assigned a participant
+     */
+    suspend fun inviteParticipantGroup(studyId: UUID, groupId: UUID ): ParticipantGroupStatus
 
     /**
      * Get the status of all deployed participant groups in the study with the specified [studyId].

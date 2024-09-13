@@ -72,10 +72,24 @@ sealed class RecruitmentServiceRequest<out TReturn> : ApplicationServiceRequest<
     }
 
     @Serializable
+    data class GetParticipantGroupStatusList( val studyId: UUID ) :
+        RecruitmentServiceRequest<List<ParticipantGroupStatus>>()
+    {
+        override fun getResponseSerializer() = serializer<List<ParticipantGroupStatus>>()
+    }
+
+    @Serializable
+    data class CreateParticipantGroup( val studyId: UUID, val group: Set<AssignedParticipantRoles> ) :
+        RecruitmentServiceRequest<ParticipantGroupStatus>()
+    {
+        override fun getResponseSerializer() = serializer<ParticipantGroupStatus>()
+    }
+
+    @Serializable
     data class UpdateParticipantGroup(
         val studyId: UUID,
         val groupId: UUID,
-        val group: Set<AssignedParticipantRoles>
+        val newGroup: Set<AssignedParticipantRoles>
     ) :
         RecruitmentServiceRequest<ParticipantGroupStatus>()
     {
@@ -83,10 +97,10 @@ sealed class RecruitmentServiceRequest<out TReturn> : ApplicationServiceRequest<
     }
 
     @Serializable
-    data class GetParticipantGroupStatusList( val studyId: UUID ) :
-        RecruitmentServiceRequest<List<ParticipantGroupStatus>>()
+    data class InviteParticipantGroup( val studyId: UUID, val groupId: UUID ) :
+        RecruitmentServiceRequest<ParticipantGroupStatus>()
     {
-        override fun getResponseSerializer() = serializer<List<ParticipantGroupStatus>>()
+        override fun getResponseSerializer() = serializer<ParticipantGroupStatus>()
     }
 
     @Serializable

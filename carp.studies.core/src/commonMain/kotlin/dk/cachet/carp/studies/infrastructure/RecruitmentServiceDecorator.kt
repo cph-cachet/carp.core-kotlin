@@ -38,11 +38,19 @@ class RecruitmentServiceDecorator(
         group: Set<AssignedParticipantRoles>
     ) = invoke( RecruitmentServiceRequest.InviteNewParticipantGroup( studyId, group ) )
 
+    override suspend fun createParticipantGroup(
+        studyId: UUID,
+        group: Set<AssignedParticipantRoles>
+    ) = invoke( RecruitmentServiceRequest.CreateParticipantGroup( studyId, group ) )
+
     override suspend fun updateParticipantGroup(
         studyId: UUID,
         groupId: UUID,
-        group: Set<AssignedParticipantRoles>
-    ) = invoke( RecruitmentServiceRequest.UpdateParticipantGroup( studyId, groupId, group ) )
+        newGroup: Set<AssignedParticipantRoles>
+    ) = invoke( RecruitmentServiceRequest.UpdateParticipantGroup( studyId, groupId, newGroup ) )
+
+    override suspend fun inviteParticipantGroup(studyId: UUID, groupId: UUID ) =
+        invoke( RecruitmentServiceRequest.InviteParticipantGroup( studyId, groupId ) )
 
     override suspend fun getParticipantGroupStatusList( studyId: UUID ) =
         invoke( RecruitmentServiceRequest.GetParticipantGroupStatusList( studyId ) )
@@ -63,8 +71,12 @@ object RecruitmentServiceInvoker : ApplicationServiceInvoker<RecruitmentService,
             is RecruitmentServiceRequest.GetParticipants -> service.getParticipants( studyId )
             is RecruitmentServiceRequest.InviteNewParticipantGroup ->
                 service.inviteNewParticipantGroup( studyId, group )
+            is RecruitmentServiceRequest.CreateParticipantGroup ->
+                service.createParticipantGroup( studyId, group )
             is RecruitmentServiceRequest.UpdateParticipantGroup ->
-                service.updateParticipantGroup( studyId, groupId, group )
+                service.updateParticipantGroup( studyId, groupId, newGroup )
+            is RecruitmentServiceRequest.InviteParticipantGroup ->
+                service.inviteParticipantGroup( studyId, groupId )
             is RecruitmentServiceRequest.GetParticipantGroupStatusList ->
                 service.getParticipantGroupStatusList( studyId )
             is RecruitmentServiceRequest.StopParticipantGroup -> service.stopParticipantGroup( studyId, groupId )

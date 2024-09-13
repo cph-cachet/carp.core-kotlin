@@ -147,7 +147,7 @@ class RecruitmentServiceHost(
         }
 
         // Create participant group and mark as deployed.
-        val participantGroup = recruitment.addParticipantGroup( toDeployParticipantIds, uuidFactory.randomUUID() )
+        val participantGroup = recruitment.addParticipantGroup( group, uuidFactory.randomUUID() )
         participantGroup.markAsDeployed()
         participantRepository.updateRecruitment( recruitment )
 
@@ -160,19 +160,87 @@ class RecruitmentServiceHost(
         return recruitment.getParticipantGroupStatus( deploymentStatus )
     }
 
-    override suspend fun updateParticipantGroup(
+    /**
+     * Create a new participant [group] of previously added participants for the study with the given [studyId].
+     * This is used to create a group of participants which can be deployed at a later time.
+     *
+     * @throws IllegalArgumentException when:
+     *  - a study with [studyId] does not exist
+     *  - [group] is empty
+     *  - any of the participant roles specified in [group] does not exist
+     * @throws IllegalStateException when the study is not yet ready for deployment.
+     */
+    override suspend fun createParticipantGroup(
         studyId: UUID,
-        groupId: UUID,
         group: Set<AssignedParticipantRoles>
     ): ParticipantGroupStatus
     {
-        val recruitment = getRecruitmentWithGroupOrThrow( studyId, groupId )
-        val toDeployParticipantIds = group.map { it.participantId }.toSet()
+        val recruitment = getRecruitmentOrThrow( studyId )
 
-        val participantGroup = recruitment.updateParticipantGroup(groupId, toDeployParticipantIds)
+        // Create participant.
+        val participantGroup = recruitment.addParticipantGroup( group, uuidFactory.randomUUID() )
+        participantRepository.updateRecruitment( recruitment )
+
+        return recruitment.getParticipantGroupStatus( participantGroup.id )
+    }
+
+    override suspend fun updateParticipantGroup(
+        studyId: UUID,
+        groupId: UUID,
+        newGroup: Set<AssignedParticipantRoles>
+    ): ParticipantGroupStatus
+    {
+        val recruitment = getRecruitmentWithGroupOrThrow( studyId, groupId )
+
+        val participantGroup = recruitment.updateParticipantGroup(groupId, newGroup)
         participantRepository.updateRecruitment( recruitment )
 
         return recruitment.getParticipantGroupStatus(participantGroup.id )
+    }
+
+    /**
+     * Invite the participant group with the specified [groupId] (equivalent to the studyDeploymentId)
+     * in the study with the given [studyId] to start participating in the study.
+     *
+     * In case a group with the same participants has already been deployed and is still running (not stopped),
+     * the latest status for this group is simply returned.
+     *
+     * @throws IllegalArgumentException when a study with [studyId] or participant group with [groupId] does not exist.
+     *  - any of the participant roles specified in roleAssignments does not exist
+     *  - not all necessary participant roles part of the study have been assigned a participant
+     */
+    override suspend fun inviteParticipantGroup(studyId: UUID, groupId: UUID ): ParticipantGroupStatus
+    {
+        val recruitment = getRecruitmentWithGroupOrThrow( studyId, groupId )
+        val group = recruitment.participantGroups[ groupId ]
+        val (protocol, invitations) = recruitment.createInvitations( group!!.roleAssignments )
+
+        // In case the same participants have been invited before,
+        // and that deployment is still running, return the existing group.
+        // TODO: The same participants might be invited for different role names, which we currently cannot differentiate between.
+        val toDeployParticipantIds = group.participantIds
+        val deployedStatus = recruitment.participantGroups.entries
+            .firstOrNull { (_, group) ->
+                group.isDeployed &&
+                group.participantIds == toDeployParticipantIds
+            }
+            ?.let { deploymentService.getStudyDeploymentStatus( it.key ) }
+        if ( deployedStatus != null && deployedStatus !is StudyDeploymentStatus.Stopped )
+        {
+            return recruitment.getParticipantGroupStatus( deployedStatus )
+        }
+
+        // Mark participant group as deployed.
+
+        group.markAsDeployed()
+        participantRepository.updateRecruitment( recruitment )
+
+        // Create study deployment, which sends out invitations.
+        // TODO: If the repository gets updated but `createStudyDeployment` fails, state will be inconsistent.
+        //  This should use eventual consistency: https://github.com/imotions/carp.core-kotlin/issues/295
+        val deploymentStatus = deploymentService.createStudyDeployment( group.id, protocol, invitations )
+
+        return recruitment.getParticipantGroupStatus( deploymentStatus )
     }
 
     /**
@@ -185,12 +253,19 @@ class RecruitmentServiceHost(
         val recruitment: Recruitment = getRecruitmentOrThrow( studyId )
 
         // Get study deployment status list.
-        val studyDeploymentIds = recruitment.participantGroups.keys
+        val stagedParticipantGroupIds = recruitment.participantGroups.filter { !it.value.isDeployed }.keys
+        val deployedStudyDeploymentIds = recruitment.participantGroups.filter { it.value.isDeployed }.keys
         val studyDeploymentStatusList: List<StudyDeploymentStatus> =
-            if ( studyDeploymentIds.isEmpty() ) emptyList()
-            else deploymentService.getStudyDeploymentStatusList( studyDeploymentIds )
+            if ( deployedStudyDeploymentIds.isEmpty() ) emptyList()
+            else deploymentService.getStudyDeploymentStatusList( deployedStudyDeploymentIds )
 
-        return studyDeploymentStatusList.map { recruitment.getParticipantGroupStatus( it ) }
+        // Add staged participant groups to the list.
+        val stagedStatusList: MutableList<ParticipantGroupStatus> =
+            stagedParticipantGroupIds.map { recruitment.getParticipantGroupStatus( it ) }.toMutableList()
+
+        stagedStatusList += studyDeploymentStatusList.map { recruitment.getParticipantGroupStatus( it ) }
+
+        return stagedStatusList
     }
 
     /**
