@@ -77,6 +77,42 @@ interface ParticipationServiceTest
     }
 
     @Test
+    fun getActiveParticipationInvitations_with_multiple_participation_succeeds() = runTest {
+        val (participationService, deploymentService, accountService) = createSUT()
+        val protocol = createSinglePrimaryDeviceProtocol()
+        val identities = listOf(
+            AccountIdentity.fromEmailAddress("father@test.com"),
+            AccountIdentity.fromEmailAddress("mother@test.com")
+        )
+        val invitation = StudyInvitation("Test study", "description", "Custom data")
+        val participantInvitations = identities.map { identity ->
+            ParticipantInvitation(
+                participantId = UUID.randomUUID(),
+                AssignedTo.All,
+                identity,
+                invitation
+            )
+        }
+        deploymentService.createStudyDeployment(
+            UUID.randomUUID(),
+            protocol.getSnapshot(),
+            participantInvitations
+        )
+        val firstAccount = accountService.findAccount(identities.first())
+        assertNotNull(firstAccount)
+
+        // Should only return the invitation for the first participant.
+        val retrievedInvitation = participationService
+            .getActiveParticipationInvitations(firstAccount.id)
+            .singleOrNull()
+
+        assertNotNull(retrievedInvitation)
+        assertEquals(participantInvitations.first().participantId, retrievedInvitation.participation.participantId)
+        assertEquals(invitation, retrievedInvitation.invitation)
+        assertNotEquals(participantInvitations.last().participantId, retrievedInvitation.participation.participantId)
+    }
+
+    @Test
     fun getParticipantData_initially_returns_null_for_all_expected_data() = runTest {
         val (participationService, deploymentService, _) = createSUT()
 
