@@ -2,6 +2,7 @@
 
 package dk.cachet.carp.common.application.devices
 
+import dk.cachet.carp.common.application.ApplicationData
 import dk.cachet.carp.common.application.Immutable
 import dk.cachet.carp.common.application.ImplementAsDataClass
 import dk.cachet.carp.common.infrastructure.serialization.NotSerializable
@@ -42,6 +43,12 @@ abstract class DeviceRegistration
 
     @Required
     val registrationCreatedOn: Instant = Clock.System.now()
+
+    /**
+     * Additional device specifications which may be relevant to the researcher when interpreting collected data.
+     * E.g., brand/model name, operating system version, or any other relevant information.
+     */
+    abstract val additionalSpecifications: ApplicationData?
 }
 
 
@@ -64,6 +71,12 @@ abstract class DeviceRegistrationBuilder<T : DeviceRegistration>
      * In case this is not set, the builder may derive a default name based on the other registration properties.
      */
     var deviceDisplayName: String? = null
+
+    /**
+     * Additional device specifications which may be relevant to the researcher when interpreting collected data.
+     * E.g., brand/model name, operating system version, or any other relevant information.
+     */
+    var additionalSpecifications: ApplicationData? = null
 
     /**
      * Build the immutable [DeviceRegistration] using the current configuration of this [DeviceRegistrationBuilder].
