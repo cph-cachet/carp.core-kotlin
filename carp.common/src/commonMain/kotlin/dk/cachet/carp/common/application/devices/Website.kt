@@ -2,6 +2,7 @@
 
 package dk.cachet.carp.common.application.devices
 
+import dk.cachet.carp.common.application.ApplicationData
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.sampling.DataTypeSamplingSchemeMap
@@ -51,7 +52,8 @@ data class WebsiteDeviceRegistration(
      */
     val userAgent: String,
     @Required
-    override val deviceDisplayName: String? = userAgent
+    override val deviceDisplayName: String? = userAgent,
+    override val additionalSpecifications: ApplicationData? = null
 ) : DeviceRegistration()
 {
     @Required
@@ -74,5 +76,6 @@ class WebsiteDeviceRegistrationBuilder : DeviceRegistrationBuilder<WebsiteDevice
      */
     var userAgent: String = ""
 
-    override fun build(): WebsiteDeviceRegistration = WebsiteDeviceRegistration( url, userAgent, deviceDisplayName )
+    override fun build(): WebsiteDeviceRegistration =
+        WebsiteDeviceRegistration( url, userAgent, deviceDisplayName, additionalSpecifications )
 }

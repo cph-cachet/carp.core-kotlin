@@ -187,6 +187,7 @@ private val bikeBeaconPreregistration = bikeBeacon.createRegistration {
     organizationId = UUID( "4e990957-0838-414c-bf25-2d391e2990b5" )
     majorId = 42
     minorId = 42
+    additionalSpecifications = ApplicationData( """{"Model": "AnyBeacon B42"}""" )
 }.setRegistrationCreatedOn( deploymentCreatedOn )
 private val phoneRegistration = phone.createRegistration {
     deviceId = UUID( "fc7b41b0-e9e2-4b5d-8c3d-5119b556a3f0" ).toString()

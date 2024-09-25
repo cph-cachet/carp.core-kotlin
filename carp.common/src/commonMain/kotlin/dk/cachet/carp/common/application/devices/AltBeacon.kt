@@ -2,6 +2,7 @@
 
 package dk.cachet.carp.common.application.devices
 
+import dk.cachet.carp.common.application.ApplicationData
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.CarpDataTypes
@@ -78,7 +79,8 @@ data class AltBeaconDeviceRegistration(
      */
     val referenceRssi: Short,
     @Required
-    override val deviceDisplayName: String? = null // TODO: We could map known manufacturerId's to display names.
+    override val deviceDisplayName: String? = null, // TODO: We could map known manufacturerId's to display names.
+    override val additionalSpecifications: ApplicationData? = null
 ) : DeviceRegistration()
 {
     companion object
@@ -134,6 +136,7 @@ class AltBeaconDeviceRegistrationBuilder : DeviceRegistrationBuilder<AltBeaconDe
         majorId,
         minorId,
         referenceRssi,
-        deviceDisplayName
+        deviceDisplayName,
+        additionalSpecifications
     )
 }

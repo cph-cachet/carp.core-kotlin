@@ -1,5 +1,6 @@
 package dk.cachet.carp.common.infrastructure.serialization
 
+import dk.cachet.carp.common.application.ApplicationData
 import dk.cachet.carp.common.application.Trilean
 import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
@@ -178,11 +179,13 @@ data class CustomDeviceRegistration internal constructor(
     @Serializable
     private data class BaseMembers(
         override val deviceId: String,
-        override val deviceDisplayName: String?
+        override val deviceDisplayName: String?,
+        override val additionalSpecifications: ApplicationData? = null
     ) : DeviceRegistration()
 
     override val deviceId: String
     override val deviceDisplayName: String?
+    override val additionalSpecifications: ApplicationData?
 
     init
     {
@@ -190,6 +193,7 @@ data class CustomDeviceRegistration internal constructor(
         val baseMembers = json.decodeFromString( BaseMembers.serializer(), jsonSource )
         deviceId = baseMembers.deviceId
         deviceDisplayName = baseMembers.deviceDisplayName
+        additionalSpecifications = baseMembers.additionalSpecifications
     }
 }
 

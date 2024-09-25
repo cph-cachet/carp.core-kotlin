@@ -31,7 +31,8 @@
         "__type": true,
         "deviceId": { "type": "string" },
         "deviceDisplayName": { "type": [ "string", "null" ] },
-        "registrationCreatedOn": { "type": "string", "format": "date-time" }
+        "registrationCreatedOn": { "type": "string", "format": "date-time" },
+        "additionalSpecifications": { "$ref":  "../../common/ApplicationData.json" }
       },
       "required": [ "__type", "deviceId", "deviceDisplayName", "registrationCreatedOn" ]
     }
