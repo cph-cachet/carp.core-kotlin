@@ -57,6 +57,8 @@ potential-bugs:
 style:
   EqualsNullCall:
     active: false
+  DestructuringDeclarationWithTooManyEntries:
+    excludes: ['**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/test/**']
   ForbiddenComment:
     active: false
   LoopWithTooManyJumpStatements:

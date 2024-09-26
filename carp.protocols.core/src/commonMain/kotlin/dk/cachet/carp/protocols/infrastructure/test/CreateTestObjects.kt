@@ -64,6 +64,39 @@ data class SinglePrimaryWithConnectedTestProtocol(
 )
 
 /**
+ * Creates a study protocol with two primary devices, each assigned to a different participant role.
+ */
+fun createTwoDevicesAndRolesProtocol(): TwoDevicesAndRolesTestProtocol
+{
+    val protocol = createEmptyProtocol()
+    val device1 = StubPrimaryDeviceConfiguration( "Device 1" )
+    val device2 = StubPrimaryDeviceConfiguration( "Device 2" )
+    val role1 = ParticipantRole( "Role 1", isOptional = false )
+    val role2 = ParticipantRole( "Role 2", isOptional = false )
+    val role1Assignment = AssignedTo.Roles( setOf( role1.role ) )
+    val role2Assignment = AssignedTo.Roles( setOf( role2.role ) )
+
+    with ( protocol ) {
+        addPrimaryDevice( device1 )
+        addPrimaryDevice( device2 )
+        addParticipantRole( role1 )
+        addParticipantRole( role2 )
+        changeDeviceAssignment( device1, role1Assignment )
+        changeDeviceAssignment( device2, role2Assignment )
+    }
+
+    return TwoDevicesAndRolesTestProtocol( protocol, device1, device2, role1.role, role2.role )
+}
+
+data class TwoDevicesAndRolesTestProtocol(
+    val protocol: StudyProtocol,
+    val device1: AnyPrimaryDeviceConfiguration,
+    val device2: AnyPrimaryDeviceConfiguration,
+    val role1Name: String,
+    val role2Name: String
+)
+
+/**
  * Creates a study protocol with a couple of devices and tasks added.
  */
 fun createComplexProtocol(): StudyProtocol
