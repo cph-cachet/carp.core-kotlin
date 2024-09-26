@@ -11,11 +11,13 @@ import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.infrastructure.test.StubDataPoint
+import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
 import dk.cachet.carp.deployments.application.users.AssignedPrimaryDevice
 import dk.cachet.carp.deployments.application.users.ParticipantInvitation
 import dk.cachet.carp.deployments.application.users.StudyInvitation
 import dk.cachet.carp.deployments.domain.createParticipantInvitation
 import dk.cachet.carp.deployments.domain.users.AccountService
+import dk.cachet.carp.protocols.infrastructure.test.createEmptyProtocol
 import dk.cachet.carp.protocols.infrastructure.test.createSinglePrimaryDeviceProtocol
 import kotlinx.coroutines.test.runTest
 import kotlin.test.*
@@ -79,37 +81,50 @@ interface ParticipationServiceTest
     @Test
     fun getActiveParticipationInvitations_with_multiple_participation_succeeds() = runTest {
         val (participationService, deploymentService, accountService) = createSUT()
-        val protocol = createSinglePrimaryDeviceProtocol()
-        val identities = listOf(
-            AccountIdentity.fromEmailAddress("father@test.com"),
-            AccountIdentity.fromEmailAddress("mother@test.com")
-        )
+        val protocol = createEmptyProtocol()
+        val role1 = ParticipantRole( "Role 1", false )
+        val role2 = ParticipantRole( "Role 2", false )
+        val device1 = StubPrimaryDeviceConfiguration( "Device 1" )
+        val device2 = StubPrimaryDeviceConfiguration( "Device 2" )
+        with ( protocol) {
+            addParticipantRole( role1 )
+            addParticipantRole( role2 )
+            addPrimaryDevice( device1 )
+            addPrimaryDevice( device2 )
+        }
+        val identity1 = AccountIdentity.fromEmailAddress("role1@test.com")
+        val identity2 = AccountIdentity.fromEmailAddress("role2@test.com")
         val invitation = StudyInvitation("Test study", "description", "Custom data")
-        val participantInvitations = identities.map { identity ->
+        val participantInvitation1 =
             ParticipantInvitation(
                 participantId = UUID.randomUUID(),
-                AssignedTo.All,
-                identity,
+                AssignedTo.Roles( setOf(role1.role) ),
+                identity1,
                 invitation
             )
-        }
+        val participantInvitation2 =
+            ParticipantInvitation(
+                participantId = UUID.randomUUID(),
+                AssignedTo.Roles( setOf(role2.role) ),
+                identity2,
+                invitation
+            )
         deploymentService.createStudyDeployment(
             UUID.randomUUID(),
             protocol.getSnapshot(),
-            participantInvitations
+            listOf(participantInvitation1, participantInvitation2)
         )
-        val firstAccount = accountService.findAccount(identities.first())
-        assertNotNull(firstAccount)
-
+        val account1 = accountService.findAccount(identity1)
+        assertNotNull(account1)
         // Should only return the invitation for the first participant.
         val retrievedInvitation = participationService
-            .getActiveParticipationInvitations(firstAccount.id)
+            .getActiveParticipationInvitations(account1.id)
             .singleOrNull()
 
         assertNotNull(retrievedInvitation)
-        assertEquals(participantInvitations.first().participantId, retrievedInvitation.participation.participantId)
+        assertEquals(participantInvitation1.participantId, retrievedInvitation.participation.participantId)
         assertEquals(invitation, retrievedInvitation.invitation)
-        assertNotEquals(participantInvitations.last().participantId, retrievedInvitation.participation.participantId)
+        assertNotEquals(participantInvitation2.participantId, retrievedInvitation.participation.participantId)
     }
 
     @Test

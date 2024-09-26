@@ -5,7 +5,6 @@ import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
-import dk.cachet.carp.common.application.devices.PrimaryDeviceConfiguration
 import dk.cachet.carp.common.application.tasks.Measure
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.users.AssignedTo
@@ -14,12 +13,7 @@ import dk.cachet.carp.common.application.users.ParticipantAttribute
 import dk.cachet.carp.common.application.users.ParticipantRole
 import dk.cachet.carp.common.infrastructure.serialization.JSON
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
-import dk.cachet.carp.common.infrastructure.test.STUBS_SERIAL_MODULE
-import dk.cachet.carp.common.infrastructure.test.STUB_DATA_POINT_TYPE
-import dk.cachet.carp.common.infrastructure.test.StubDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubPrimaryDeviceConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTaskConfiguration
-import dk.cachet.carp.common.infrastructure.test.StubTriggerConfiguration
+import dk.cachet.carp.common.infrastructure.test.*
 import dk.cachet.carp.protocols.domain.StudyProtocol
 
 
@@ -64,7 +58,7 @@ fun createSinglePrimaryWithConnectedDeviceProtocol(
 }
 
 data class SinglePrimaryWithConnectedTestProtocol(
-    val protocoL: StudyProtocol,
+    val protocol: StudyProtocol,
     val primary: AnyPrimaryDeviceConfiguration,
     val connected: AnyDeviceConfiguration
 )
