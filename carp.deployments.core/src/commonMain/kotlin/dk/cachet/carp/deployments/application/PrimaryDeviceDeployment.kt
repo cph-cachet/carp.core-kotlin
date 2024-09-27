@@ -14,7 +14,6 @@ import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.triggers.TriggerConfiguration
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
 import dk.cachet.carp.common.application.users.hasNoConflicts
-import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.*
 import kotlin.js.JsExport
@@ -97,14 +96,7 @@ data class PrimaryDeviceDeployment(
      * The time when this device deployment was last updated.
      * This corresponds to the most recent device registration as part of this device deployment.
      */
-    val lastUpdatedOn: Instant =
-        // TODO: Remove this workaround once JS serialization bug is fixed:
-        //  https://github.com/Kotlin/kotlinx.serialization/issues/716
-        @Suppress( "SENSELESS_COMPARISON" )
-        if ( connectedDeviceRegistrations == null || registration == null ) Clock.System.now()
-        else connectedDeviceRegistrations.values.plus( registration )
-            .maxOf { it.registrationCreatedOn }
-
+    val lastUpdatedOn: Instant = (connectedDeviceRegistrations.values + registration).maxOf { it.registrationCreatedOn }
 
     /**
      * Get info on the primary device and each of the devices this device needs to connect to relevant at study runtime.
