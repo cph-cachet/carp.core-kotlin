@@ -125,7 +125,7 @@ private val phoneProtocol = StudyProtocol(
     addConnectedDevice( bikeBeacon, phone )
     addTaskControl( startOfStudyTrigger.start( measurePhoneMovement, phone ) )
     addTaskControl( startOfStudyTrigger.start( measureBikeProximity, bikeBeacon ) )
-    applicationData = "{\"uiTheme\": \"black\"}"
+    applicationData = ApplicationData( "{\"uiTheme\": \"black\"}" )
 }.getSnapshot()
 private val startOfStudyTriggerId = phoneProtocol.triggers.entries.first { it.value == startOfStudyTrigger }.key
 private val expectedParticipantData = setOf(
@@ -163,7 +163,7 @@ private val participantAccountId = UUID( "ca60cb7f-de18-44b6-baf9-3c8e6a73005a" 
 private val studyInvitation = StudyInvitation(
     studyName,
     "Participate in this study, which keeps track of how much you walk and bike!",
-    "{\"trialGroup\", \"A\"}"
+    ApplicationData( "{\"trialGroup\", \"A\"}" )
 )
 private val participantAssignedRoles = AssignedTo.Roles( setOf( participantRole.role ) )
 private val participantInvitation = ParticipantInvitation(
