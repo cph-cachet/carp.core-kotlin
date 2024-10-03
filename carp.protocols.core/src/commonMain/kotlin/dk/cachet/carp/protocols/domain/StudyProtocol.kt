@@ -1,5 +1,6 @@
 package dk.cachet.carp.protocols.domain
 
+import dk.cachet.carp.common.application.ApplicationData
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.devices.AnyDeviceConfiguration
 import dk.cachet.carp.common.application.devices.AnyPrimaryDeviceConfiguration
@@ -482,7 +483,7 @@ class StudyProtocol(
      * This can be used by infrastructures or concrete applications which require exchanging additional data
      * between the protocols and clients subsystems, outside of scope or not yet supported by CARP core.
      */
-    var applicationData: String? = null
+    var applicationData: ApplicationData? = null
 
 
     /**

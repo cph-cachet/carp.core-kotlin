@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployments.application
 
+import dk.cachet.carp.common.application.ApplicationData
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
 import dk.cachet.carp.common.application.data.input.Sex
@@ -57,7 +58,7 @@ interface ParticipationServiceTest
         val (participationService, deploymentService, accountService) = createSUT()
         val protocol = createSinglePrimaryDeviceProtocol()
         val identity = AccountIdentity.fromEmailAddress( "test@test.com" )
-        val invitation = StudyInvitation( "Test study", "description", "Custom data" )
+        val invitation = StudyInvitation( "Test study", "description", ApplicationData( "Custom data" ) )
         val participantInvitation = ParticipantInvitation(
             participantId = UUID.randomUUID(),
             AssignedTo.All,

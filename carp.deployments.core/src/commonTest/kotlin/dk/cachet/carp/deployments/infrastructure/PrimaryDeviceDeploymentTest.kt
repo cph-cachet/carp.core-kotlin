@@ -1,5 +1,6 @@
 package dk.cachet.carp.deployments.infrastructure
 
+import dk.cachet.carp.common.application.ApplicationData
 import dk.cachet.carp.common.application.data.input.InputDataType
 import dk.cachet.carp.common.application.triggers.TaskControl
 import dk.cachet.carp.common.application.users.ExpectedParticipantData
@@ -46,7 +47,7 @@ class PrimaryDeviceDeploymentTest
             mapOf( 0 to trigger ),
             setOf( TaskControl( 0, task.name, connected.roleName, TaskControl.Control.Start ) ),
             setOf( expectedData ),
-            "some data"
+            ApplicationData( "some data" )
         )
 
         val json = JSON.encodeToString( deployment )

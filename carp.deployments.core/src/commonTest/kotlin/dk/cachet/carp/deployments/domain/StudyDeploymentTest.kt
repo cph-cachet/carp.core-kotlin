@@ -2,6 +2,7 @@
 
 package dk.cachet.carp.deployments.domain
 
+import dk.cachet.carp.common.application.ApplicationData
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.data.CarpDataTypes
 import dk.cachet.carp.common.application.data.DataType
@@ -577,7 +578,7 @@ class StudyDeploymentTest
     fun getDeviceDeploymentFor_succeeds()
     {
         val (protocol, primary, connected) = createSinglePrimaryWithConnectedDeviceProtocol()
-        protocol.applicationData = "some data"
+        protocol.applicationData = ApplicationData( "some data" )
         val primaryTask = StubTaskConfiguration( "Primary task" )
         val connectedTask = StubTaskConfiguration( "Connected task" )
         protocol.addTaskControl( primary.atStartOfStudy().start( primaryTask, primary ) )

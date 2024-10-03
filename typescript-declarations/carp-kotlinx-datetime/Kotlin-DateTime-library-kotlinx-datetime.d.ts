@@ -5,14 +5,14 @@ declare module "@cachet/Kotlin-DateTime-library-kotlinx-datetime"
         interface System
         {
             // now
-            q13(): Instant_0
+            p13(): Instant_0
         }
         function System_getInstance(): System
 
         interface Instant_0
         {
             // toEpochMilliseconds
-            d14(): number
+            c14(): number
         }
     }
 }
