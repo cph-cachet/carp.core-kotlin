@@ -15,7 +15,6 @@ import kotlin.js.JsExport
 @JsExport
 data class BLESerialNumberDeviceRegistration(
     val serialNumber: String,
-    @Required
     override val deviceDisplayName: String? = null,
     override val additionalSpecifications: ApplicationData? = null
 ) : DeviceRegistration()

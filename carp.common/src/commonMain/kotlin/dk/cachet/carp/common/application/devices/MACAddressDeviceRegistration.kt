@@ -14,7 +14,6 @@ import kotlin.js.JsExport
 @JsExport
 data class MACAddressDeviceRegistration(
     val macAddress: MACAddress,
-    @Required
     override val deviceDisplayName: String? = null,
     override val additionalSpecifications: ApplicationData? = null
 ) : DeviceRegistration()
