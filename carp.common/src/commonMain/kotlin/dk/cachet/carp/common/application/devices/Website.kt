@@ -51,7 +51,6 @@ data class WebsiteDeviceRegistration(
      * The HTTP User-Agent header of the user agent which made the HTTP request to [url].
      */
     val userAgent: String,
-    @Required
     override val deviceDisplayName: String? = userAgent,
     override val additionalSpecifications: ApplicationData? = null
 ) : DeviceRegistration()

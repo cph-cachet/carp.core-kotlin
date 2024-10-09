@@ -179,7 +179,7 @@ data class CustomDeviceRegistration internal constructor(
     @Serializable
     private data class BaseMembers(
         override val deviceId: String,
-        override val deviceDisplayName: String?,
+        override val deviceDisplayName: String? = null,
         override val additionalSpecifications: ApplicationData? = null
     ) : DeviceRegistration()
 
