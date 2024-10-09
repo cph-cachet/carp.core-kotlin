@@ -18,7 +18,7 @@ import kotlinx.serialization.*
  */
 interface DeploymentService : ApplicationService<DeploymentService, DeploymentService.Event>
 {
-    companion object { val API_VERSION = ApiVersion( 1, 1 ) }
+    companion object { val API_VERSION = ApiVersion( 1, 3 ) }
 
     @Serializable
     sealed class Event( override val aggregateId: String? ) : IntegrationEvent<DeploymentService>
