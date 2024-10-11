@@ -78,7 +78,6 @@ data class AltBeaconDeviceRegistration(
      * This value is constrained from -127 to 0.
      */
     val referenceRssi: Short,
-    @Required
     override val deviceDisplayName: String? = null, // TODO: We could map known manufacturerId's to display names.
     override val additionalSpecifications: ApplicationData? = null
 ) : DeviceRegistration()

@@ -34,7 +34,7 @@
         "registrationCreatedOn": { "type": "string", "format": "date-time" },
         "additionalSpecifications": { "$ref":  "../../common/ApplicationData.json" }
       },
-      "required": [ "__type", "deviceId", "deviceDisplayName", "registrationCreatedOn" ]
+      "required": [ "__type", "deviceId", "registrationCreatedOn" ]
     }
   }
 }

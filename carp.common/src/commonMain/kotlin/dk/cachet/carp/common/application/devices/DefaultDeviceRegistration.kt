@@ -15,7 +15,6 @@ import kotlin.js.JsExport
 @Serializable
 @JsExport
 data class DefaultDeviceRegistration(
-    @Required
     override val deviceDisplayName: String? = null,
     override val additionalSpecifications: ApplicationData? = null,
     @Required

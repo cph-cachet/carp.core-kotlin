@@ -38,7 +38,6 @@ abstract class DeviceRegistration
      * An optional concise textual representation for display purposes describing the key specifications of the device.
      * E.g., device manufacturer, name, and operating system version.
      */
-    @Required
     abstract val deviceDisplayName: String?
 
     @Required
