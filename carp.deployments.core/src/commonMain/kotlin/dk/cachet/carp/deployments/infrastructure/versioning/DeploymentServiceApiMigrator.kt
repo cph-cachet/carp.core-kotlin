@@ -26,7 +26,6 @@ private val major1Minor0To1Migration =
         }
     }
 
-
 private val major1Minor1To3Migration =
     @Suppress( "MagicNumber" )
     object : ApiMigration( 1, 3 )
@@ -48,6 +47,35 @@ private val major1Minor1To3Migration =
                     }
                     ApiResponse( responseObject, response.ex )
                 }
+                "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.CreateStudyDeployment",
+                "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetStudyDeploymentStatus",
+                "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.UnregisterDevice",
+                "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.DeployDevice",
+                "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.Stop",
+                "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.RegisterDevice" ->
+                {
+                    val responseObject = response.response?.jsonObject?.migrate {
+                        updateArray( "deviceStatusList" ) {
+                            objects {
+                                removeDeviceRegistration()
+                            }
+                        }
+                    }
+                    ApiResponse( responseObject, response.ex )
+                }
+                "dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest.GetStudyDeploymentStatusList" ->
+                {
+                    val responseObject = (response.response as? JsonArray)?.migrate {
+                        objects {
+                            updateArray( "deviceStatusList" ) {
+                                objects {
+                                    removeDeviceRegistration()
+                                }
+                            }
+                        }
+                    }
+                    ApiResponse( responseObject, response.ex )
+                }
                 else -> response
             }
 
@@ -60,9 +88,14 @@ private val major1Minor1To3Migration =
                 json.getOrPut( "deviceDisplayName" ) { JsonNull }
             }
 
+        /**
+         * The `deviceRegistration` field was added to the `DeviceStatus` object.
+         */
+        private fun ApiJsonObjectMigrationBuilder.removeDeviceRegistration() =
+            json.remove( "deviceRegistration" )
+
         override fun migrateEvent( event: JsonObject ) = event
     }
-
 
 val DeploymentServiceApiMigrator = ApplicationServiceApiMigrator(
     DeploymentService.API_VERSION,
