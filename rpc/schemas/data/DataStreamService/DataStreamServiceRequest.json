@@ -82,6 +82,29 @@
         "$ref": "../DataStreamBatch.json"
       }
     },
+    "GetBatchForStudyDeployments": {
+      "$anchor": "GetBatchForStudyDeployments",
+      "type": "object",
+      "properties": {
+        "__type": { "const": "dk.cachet.carp.data.infrastructure.DataStreamServiceRequest.GetBatchForStudyDeployments" },
+        "apiVersion": { "$ref": "#/$defs/ApiVersion" },
+        "studyDeploymentIds": {
+          "type": "array",
+          "items": { "type": "string", "format": "uuid" }
+        },
+        "dataTypes": {
+          "type": ["array", "null"],
+          "items": {"$ref": "../common/NamespacedId.json" }
+        },
+        "from": { "type": "string", "format": "date-time" },
+        "to": { "type": "string", "format": "date-time" }
+      },
+      "required": [ "__type", "apiVersion", "studyDeploymentIds" ],
+      "Response": {
+        "$anchor": "GetBatchForStudyDeployments-Response",
+        "$ref": "../DataStreamBatch.json"
+      }
+    },
     "GetDataStreamsStatus": {
       "$anchor": "GetDataStreamsStatus",
       "type": "object",

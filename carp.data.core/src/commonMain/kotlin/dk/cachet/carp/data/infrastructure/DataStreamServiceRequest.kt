@@ -57,6 +57,18 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
     }
 
     @Serializable
+    data class GetBatchForStudyDeployments(
+        val studyDeploymentIds: Set<UUID>,
+        val deviceRoleNames: Set<String>? = null,
+        val dataTypes: Set<DataType>? = null,
+        val from: Instant? = null,
+        val to: Instant? = null
+    ) : DataStreamServiceRequest<DataStreamBatch>()
+    {
+        override fun getResponseSerializer() = DataStreamBatchSerializer
+    }
+
+    @Serializable
     data class GetDataStreamsStatus( val studyDeploymentId: UUID ) :
         DataStreamServiceRequest<List<DataStreamStatus>>()
     {
