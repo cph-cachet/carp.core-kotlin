@@ -1,6 +1,7 @@
 package dk.cachet.carp.data.infrastructure
 
 import dk.cachet.carp.common.application.UUID
+import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceDecorator
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceInvoker
 import dk.cachet.carp.common.infrastructure.services.Command
@@ -9,6 +10,7 @@ import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
 import dk.cachet.carp.data.application.DataStreamStatus
 import dk.cachet.carp.data.application.DataStreamsConfiguration
+import kotlinx.datetime.Instant
 
 
 class DataStreamServiceDecorator(
@@ -33,6 +35,22 @@ class DataStreamServiceDecorator(
         toSequenceIdInclusive: Long?
     ) = invoke( DataStreamServiceRequest.GetDataStream( dataStream, fromSequenceId, toSequenceIdInclusive ) )
 
+    override suspend fun getBatchForStudyDeployments(
+        studyDeploymentIds: Set<UUID>,
+        deviceRoleNames: Set<String>?,
+        dataTypes: Set<DataType>?,
+        from: Instant?,
+        to: Instant?
+    ) = invoke(
+        DataStreamServiceRequest.GetBatchForStudyDeployments(
+        studyDeploymentIds,
+        deviceRoleNames,
+        dataTypes,
+        from,
+        to
+    )
+    )
+
     override suspend fun getDataStreamsStatus( studyDeploymentId: UUID ): List<DataStreamStatus> =
         invoke( DataStreamServiceRequest.GetDataStreamsStatus( studyDeploymentId ) )
 
@@ -56,5 +74,12 @@ object DataStreamServiceInvoker : ApplicationServiceInvoker<DataStreamService, D
             is DataStreamServiceRequest.GetDataStreamsStatus -> service.getDataStreamsStatus( studyDeploymentId )
             is DataStreamServiceRequest.CloseDataStreams -> service.closeDataStreams( studyDeploymentIds )
             is DataStreamServiceRequest.RemoveDataStreams -> service.removeDataStreams( studyDeploymentIds )
+            is DataStreamServiceRequest.GetBatchForStudyDeployments -> service.getBatchForStudyDeployments(
+                studyDeploymentIds,
+                deviceRoleNames,
+                dataTypes,
+                from,
+                to
+            )
         }
 }

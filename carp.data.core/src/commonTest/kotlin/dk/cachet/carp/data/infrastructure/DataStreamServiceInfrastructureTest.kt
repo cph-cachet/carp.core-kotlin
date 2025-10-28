@@ -27,7 +27,13 @@ class DataStreamServiceRequestsTest : ApplicationServiceRequestsTest<DataStreamS
             ),
             DataStreamServiceRequest.GetDataStreamsStatus( UUID.randomUUID() ),
             DataStreamServiceRequest.CloseDataStreams( setOf( UUID.randomUUID() ) ),
-            DataStreamServiceRequest.RemoveDataStreams( setOf( UUID.randomUUID() ) )
+            DataStreamServiceRequest.RemoveDataStreams( setOf( UUID.randomUUID() ) ),
+            DataStreamServiceRequest.GetBatchForStudyDeployments(
+                studyDeploymentIds = setOf( UUID.randomUUID() ),
+                dataTypes = null,
+                from = null,
+                to = null
+            )
         )
     }
 

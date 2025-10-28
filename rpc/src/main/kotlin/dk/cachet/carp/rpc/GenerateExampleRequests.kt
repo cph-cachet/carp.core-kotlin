@@ -403,6 +403,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
             deploymentId,
             setOf( AssignedParticipantRoles( participantId, participantAssignedRoles ) ),
             studyId,
+            setOf( AssignedParticipantRoles( participantId, participantAssignedRoles ) )
             ParticipantGroupRepresentation( deploymentName )
         ),
         response = ParticipantGroupStatus.Staged(
@@ -418,6 +419,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
             group = updatedRoleAssignment,
             representation = ParticipantGroupRepresentation( updatedDeploymentName )
         ),
+        response = ParticipantGroupStatus.Invited( deploymentId, participants, setOf( AssignedParticipantRoles( participantId, participantAssignedRoles ) ), participantGroupInvitedOn, invitedDeploymentStatus )
         response = ParticipantGroupStatus.Staged(
             deploymentId,
             updatedParticipants,
@@ -438,6 +440,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
     ),
     RecruitmentService::getParticipantGroupStatusList to example(
         request = RecruitmentServiceRequest.GetParticipantGroupStatusList( studyId ),
+        response = listOf( ParticipantGroupStatus.Running( deploymentId, participants, setOf( AssignedParticipantRoles( participantId, participantAssignedRoles ) ), participantGroupInvitedOn, runningDeploymentStatus, runningDeploymentStatus.startedOn ) )
         response = listOf(
             ParticipantGroupStatus.Running(
                 deploymentId,
@@ -452,6 +455,7 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
     ),
     RecruitmentService::stopParticipantGroup to example(
         request = RecruitmentServiceRequest.StopParticipantGroup( studyId, deploymentId ),
+        response = ParticipantGroupStatus.Stopped( deploymentId, participants, setOf( AssignedParticipantRoles( participantId, participantAssignedRoles ) ), participantGroupInvitedOn, stoppedDeploymentStatus, stoppedDeploymentStatus.startedOn, stoppedDeploymentStatus.stoppedOn )
         response = ParticipantGroupStatus.Stopped(
             deploymentId,
             participants,
@@ -555,6 +559,16 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
         request = DataStreamServiceRequest.GetDataStreamsStatus( deploymentId ),
         response = dataStreamSequenceIds
     ),
+    DataStreamService::getBatchForStudyDeployments to example(
+        request = DataStreamServiceRequest.GetBatchForStudyDeployments(
+            studyDeploymentIds = deploymentIds,
+            dataTypes = null,
+            from = deploymentCreatedOn,
+            to = deploymentCreatedOn + 1.days
+        ),
+        response = phoneDataStreamBatch
+    ),
+
     DataStreamService::closeDataStreams to example(
         request = DataStreamServiceRequest.CloseDataStreams( deploymentIds )
     ),
