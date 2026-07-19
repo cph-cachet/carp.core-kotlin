@@ -290,7 +290,7 @@ class RecruitmentServiceHost(
     {
         val (recruitment, participantGroup) = getRecruitmentWithGroupOrThrow( groupId )
 
-        require( recruitment.id == studyId ) {
+        require( recruitment.studyId == studyId ) {
             "Participant group with ID \"$groupId\" does not belong to study with ID \"$studyId\"."
         }
 
