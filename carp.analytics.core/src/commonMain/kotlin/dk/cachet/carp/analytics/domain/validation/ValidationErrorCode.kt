@@ -22,6 +22,9 @@ enum class ValidationErrorCode( val value: String )
     // Metadata warnings
     MISSING_METADATA("missing-metadata"),
 
+    // Provenance warnings
+    EXTERNAL_DATA_UNATTRIBUTED("external-data-unattributed"),
+
     // Resource warnings
     UNUSED_ENVIRONMENT("unused-environment"),
     WORKFLOW_TOO_LONG("workflow-too-long"),
