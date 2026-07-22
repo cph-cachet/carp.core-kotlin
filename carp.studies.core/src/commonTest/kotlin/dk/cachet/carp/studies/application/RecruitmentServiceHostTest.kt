@@ -22,13 +22,14 @@ class RecruitmentServiceHostTest : RecruitmentServiceTest
         fun createSUT(): RecruitmentServiceTest.SUT
         {
             val eventBus = SingleThreadedEventBus()
+            val uuidFactory = TestUUIDFactory()
 
             // Create dependent study service.
             val studyRepo = InMemoryStudyRepository()
             val studyService = StudyServiceHost(
                 studyRepo,
                 eventBus.createApplicationServiceAdapter( StudyService::class ),
-                TestUUIDFactory(),
+                uuidFactory,
                 TestClock
             )
 
@@ -44,7 +45,7 @@ class RecruitmentServiceHostTest : RecruitmentServiceTest
                 InMemoryParticipantRepository(),
                 deploymentService,
                 eventBus.createApplicationServiceAdapter( RecruitmentService::class ),
-                TestUUIDFactory(),
+                uuidFactory,
                 TestClock
             )
 
