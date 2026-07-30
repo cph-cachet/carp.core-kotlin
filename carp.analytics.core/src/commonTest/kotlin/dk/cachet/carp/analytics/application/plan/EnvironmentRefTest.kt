@@ -84,7 +84,7 @@ class EnvironmentRefTest
             dependencies = emptyList()
         )
 
-        assertEquals(listOf("conda-forge", "defaults"), ref.channels)
+        assertEquals(listOf("conda-forge"), ref.channels)
     }
 
     @Test

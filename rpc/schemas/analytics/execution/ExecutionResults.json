@@ -87,7 +87,7 @@
     "StepRunResult": {
       "type": "object",
       "properties": {
-        "stepId": { "type": "string", "format": "uuid" },
+        "stepMetadata": { "type": "object", "additionalProperties": true },
         "status": { "$ref": "./ExecutionStatus.json" },
         "startedAt": {
           "type": ["string", "null"],
@@ -114,20 +114,21 @@
           ]
         }
       },
-      "required": ["stepId", "status", "startedAt", "finishedAt", "failure"],
-      "additionalProperties": false
+      "required": ["stepMetadata", "status", "startedAt", "finishedAt"],
+      "additionalProperties": true
     },
     "ExecutionReport": {
       "$anchor": "ExecutionReport",
       "type": "object",
       "properties": {
         "runId": { "type": "string", "format": "uuid" },
+        "planId": { "type": "string", "format": "uuid" },
         "status": { "$ref": "./ExecutionStatus.json" },
-        "startTime": {
+        "startedAt": {
           "type": ["string", "null"],
           "format": "date-time"
         },
-        "finishTime": {
+        "finishedAt": {
           "type": ["string", "null"],
           "format": "date-time"
         },
@@ -136,8 +137,8 @@
           "items": { "$ref": "#/$defs/StepRunResult" }
         }
       },
-      "required": ["runId", "status", "startTime", "finishTime", "stepResults"],
-      "additionalProperties": false
+      "required": ["runId", "planId", "startedAt", "finishedAt", "status", "stepResults"],
+      "additionalProperties": true
     }
   }
 }

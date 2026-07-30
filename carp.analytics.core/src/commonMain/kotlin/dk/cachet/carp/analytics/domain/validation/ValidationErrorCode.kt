@@ -8,6 +8,7 @@ enum class ValidationErrorCode( val value: String )
     WORKFLOW_UNKNOWN_ENV_KIND("workflow-unknown-env-kind"),
     WORKFLOW_DEP_REFERENCE_MISSING("workflow-dep-reference-missing"),
     WORKFLOW_DEP_CYCLE_DETECTED("workflow-dep-cycle-detected"),
+    WORKFLOW_UNRESOLVED_STEP_REFERENCE("workflow-unresolved-step-reference"),
 
     // Step-level errors
     STEP_INPUT_PORT_DUPLICATE_ID("step-input-port-duplicate-id"),

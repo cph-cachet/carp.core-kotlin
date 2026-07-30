@@ -5,7 +5,6 @@
     "MaximumLineLength",
     "TopLevelPropertyNaming"
 )
-@file:OptIn(ExperimentalTime::class)
 
 package dk.cachet.carp.rpc
 
@@ -17,6 +16,7 @@ import dk.cachet.carp.analytics.application.execution.ExecutionReport
 import dk.cachet.carp.analytics.application.execution.ExecutionStatus
 import dk.cachet.carp.analytics.application.execution.ExecutorState
 import dk.cachet.carp.analytics.application.execution.StepRunResult
+import dk.cachet.carp.analytics.domain.workflow.StepMetadata
 import dk.cachet.carp.analytics.domain.trigger.ManualTrigger
 import dk.cachet.carp.analytics.domain.trigger.TriggerActivation
 import dk.cachet.carp.analytics.domain.workflow.Version
@@ -87,7 +87,6 @@ import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
 
 
 /**
@@ -335,20 +334,20 @@ private val exampleExecutionState = ExecutorState(
 )
 private val exampleExecutionResult = ExecutionReport(
     runId = exampleExecutionId,
+    planId = UUID.randomUUID(),
+    startedAt = Instant.fromEpochMilliseconds(1642505045000),
+    finishedAt = Instant.fromEpochMilliseconds(1642505145000),
     status = ExecutionStatus.SUCCEEDED,
     stepResults = listOf(
         StepRunResult(
-            stepId = UUID.randomUUID(),
+            stepMetadata = StepMetadata(id = UUID.randomUUID(), name = "example-step"),
             status = ExecutionStatus.SUCCEEDED,
             startedAt = Instant.fromEpochMilliseconds(1642505045000),
             finishedAt = Instant.fromEpochMilliseconds(1642505145000),
             failure = null,
             outputs = emptyList()
         )
-
-    ),
-    startTime = null,
-    finishTime = null
+    )
 )
 
 // Example for trigger service request.
