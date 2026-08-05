@@ -47,8 +47,6 @@ kotlin {
                 implementation "org.jetbrains.kotlinx:kotlinx-datetime:${versions.datetime}"
                 implementation "com.charleskorn.kaml:kaml:0.55.0"
                 implementation "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlin}"
-                implementation 'com.ucasoft.kcron:kcron-common:0.23.0'
-
             }
         }
 
@@ -60,8 +58,6 @@ kotlin {
                 implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serialization}"
                 implementation "org.jetbrains.kotlinx:kotlinx-datetime:${versions.datetime}"
                 implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.coroutines}"
-                implementation 'com.ucasoft.kcron:kcron-common:0.23.0'
-
             }
         }
 
@@ -111,7 +107,7 @@ task jacocoTestReport(type: JacocoReport) {
         csv.required = false
     }
 
-    classDirectories.setFrom fileTree("${buildDir}/classes/kotlin/jvm/main") {
+    classDirectories.setFrom fileTree( layout.buildDirectory.dir( "classes/kotlin/jvm/main" ) ) {
         exclude "**/generated/**"
     }
 
@@ -120,7 +116,7 @@ task jacocoTestReport(type: JacocoReport) {
         "src/jvmMain/kotlin/dk/cachet/carp/analytics/"
     )
 
-    executionData.setFrom files("${buildDir}/jacoco/jvmTest.exec")
+    executionData.setFrom files( layout.buildDirectory.file( "jacoco/jvmTest.exec" ) )
 }
 
 
