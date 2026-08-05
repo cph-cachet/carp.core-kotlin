@@ -15,7 +15,7 @@ import dk.cachet.carp.data.application.Measurement
 import dk.cachet.carp.data.application.MutableDataStreamBatch
 import dk.cachet.carp.data.application.MutableDataStreamSequence
 import dk.cachet.carp.data.application.applyToTimestamp
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 
 /**

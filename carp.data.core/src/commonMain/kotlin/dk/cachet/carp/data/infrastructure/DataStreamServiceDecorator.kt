@@ -10,7 +10,7 @@ import dk.cachet.carp.data.application.DataStreamId
 import dk.cachet.carp.data.application.DataStreamService
 import dk.cachet.carp.data.application.DataStreamStatus
 import dk.cachet.carp.data.application.DataStreamsConfiguration
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 
 class DataStreamServiceDecorator(

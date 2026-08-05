@@ -8,13 +8,13 @@ import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
-import kotlinx.datetime.Instant
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.serializer
 import kotlin.js.JsExport
+import kotlin.time.Instant
 
 
 @Serializable

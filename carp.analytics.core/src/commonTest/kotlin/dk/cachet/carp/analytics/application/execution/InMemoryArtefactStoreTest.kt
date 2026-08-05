@@ -1,8 +1,8 @@
 package dk.cachet.carp.analytics.application.execution
 
-import kotlinx.datetime.Clock
 import kotlin.test.Test
 import kotlin.test.assertNotNull
+import kotlin.time.Clock
 
 /**
  * Extends the abstract [ArtefactStoreTest] to run the shared contract tests.

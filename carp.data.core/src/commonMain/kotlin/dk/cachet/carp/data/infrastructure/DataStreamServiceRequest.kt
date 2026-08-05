@@ -5,15 +5,13 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.infrastructure.serialization.ignoreTypeParameters
 import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
-import dk.cachet.carp.data.application.DataStreamBatch
-import dk.cachet.carp.data.application.DataStreamBatchSerializer
-import dk.cachet.carp.data.application.DataStreamId
-import dk.cachet.carp.data.application.DataStreamService
-import dk.cachet.carp.data.application.DataStreamStatus
-import dk.cachet.carp.data.application.DataStreamsConfiguration
-import kotlinx.datetime.Instant
-import kotlinx.serialization.*
+import dk.cachet.carp.data.application.*
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Required
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
 import kotlin.js.JsExport
+import kotlin.time.Instant
 
 
 /**
@@ -73,18 +71,6 @@ sealed class DataStreamServiceRequest<out TReturn> : ApplicationServiceRequest<D
         DataStreamServiceRequest<List<DataStreamStatus>>()
     {
         override fun getResponseSerializer() = serializer<List<DataStreamStatus>>()
-    }
-
-    @Serializable
-    data class GetBatchForStudyDeployments(
-        val studyDeploymentIds: Set<UUID>,
-        val deviceRoleNames: Set<String>? = null,
-        val dataTypes: Set<DataType>? = null,
-        val from: Instant? = null,
-        val to: Instant? = null
-    ) : DataStreamServiceRequest<DataStreamBatch>()
-    {
-        override fun getResponseSerializer() = DataStreamBatchSerializer
     }
 
     @Serializable

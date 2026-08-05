@@ -1,8 +1,8 @@
 package dk.cachet.carp.analytics.infrastructure.execution
 
 import dk.cachet.carp.analytics.application.plan.EnvironmentRef
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 /**
  * Tracks which environments exist and their metadata.

@@ -5,8 +5,8 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.data.NoData
 import dk.cachet.carp.data.application.*
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Instant
 import kotlin.test.*
+import kotlin.time.Instant
 
 
 /**

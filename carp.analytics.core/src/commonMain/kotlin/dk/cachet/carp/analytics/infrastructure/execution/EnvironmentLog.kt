@@ -1,8 +1,8 @@
 package dk.cachet.carp.analytics.infrastructure.execution
 
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 /**
  * Log entry for environment operations.

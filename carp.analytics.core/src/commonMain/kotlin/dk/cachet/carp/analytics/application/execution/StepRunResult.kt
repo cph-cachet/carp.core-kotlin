@@ -1,8 +1,8 @@
 package dk.cachet.carp.analytics.application.execution
 
 import dk.cachet.carp.analytics.domain.workflow.StepMetadata
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 /**
  * The result of executing a single planned step.

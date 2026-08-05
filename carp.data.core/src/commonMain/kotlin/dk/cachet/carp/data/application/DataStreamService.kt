@@ -6,9 +6,9 @@ import dk.cachet.carp.common.application.data.DataType
 import dk.cachet.carp.common.application.services.ApiVersion
 import dk.cachet.carp.common.application.services.ApplicationService
 import dk.cachet.carp.common.application.services.IntegrationEvent
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 
 /**

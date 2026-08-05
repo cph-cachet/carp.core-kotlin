@@ -7,12 +7,12 @@ import dk.cachet.carp.analytics.application.plan.ResolvedBindings
 import dk.cachet.carp.analytics.application.runtime.CommandResult
 import dk.cachet.carp.analytics.domain.workflow.StepMetadata
 import dk.cachet.carp.common.application.UUID
-import kotlinx.datetime.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 class StepLogRecorderTest
 {

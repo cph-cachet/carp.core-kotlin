@@ -1,7 +1,7 @@
 package dk.cachet.carp.analytics.application.execution
 
 import dk.cachet.carp.common.application.UUID
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 /**
  * In-memory implementation of ArtefactStore.

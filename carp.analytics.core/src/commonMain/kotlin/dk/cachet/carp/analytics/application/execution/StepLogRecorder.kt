@@ -4,7 +4,7 @@ import dk.cachet.carp.analytics.application.execution.workspace.ExecutionWorkspa
 import dk.cachet.carp.analytics.application.plan.PlannedStep
 import dk.cachet.carp.analytics.application.runtime.CommandResult
 import dk.cachet.carp.analytics.domain.workflow.StepMetadata
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 
 /**

@@ -3,11 +3,11 @@ package dk.cachet.carp.analytics.application.execution
 import dk.cachet.carp.analytics.domain.workflow.StepMetadata
 import dk.cachet.carp.common.application.UUID
 import dk.cachet.carp.common.infrastructure.test.createTestJSON
-import kotlinx.datetime.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 
 /**

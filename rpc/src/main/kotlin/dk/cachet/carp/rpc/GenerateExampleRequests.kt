@@ -9,75 +9,41 @@
 package dk.cachet.carp.rpc
 
 import dk.cachet.carp.analytics.application.ExecutionService
-import dk.cachet.carp.analytics.application.ScheduleManagementService
-import dk.cachet.carp.analytics.application.TriggerService
 import dk.cachet.carp.analytics.application.WorkflowService
 import dk.cachet.carp.analytics.application.execution.ExecutionReport
 import dk.cachet.carp.analytics.application.execution.ExecutionStatus
 import dk.cachet.carp.analytics.application.execution.ExecutorState
 import dk.cachet.carp.analytics.application.execution.StepRunResult
 import dk.cachet.carp.analytics.domain.workflow.StepMetadata
-import dk.cachet.carp.analytics.domain.trigger.ManualTrigger
-import dk.cachet.carp.analytics.domain.trigger.TriggerActivation
 import dk.cachet.carp.analytics.domain.workflow.Version
 import dk.cachet.carp.analytics.domain.workflow.Workflow
 import dk.cachet.carp.analytics.domain.workflow.WorkflowMetadata
 import dk.cachet.carp.analytics.infrastructure.ExecutionServiceRequest
-import dk.cachet.carp.analytics.infrastructure.ScheduleManagementServiceRequest
-import dk.cachet.carp.analytics.infrastructure.TriggerServiceRequest
 import dk.cachet.carp.analytics.infrastructure.WorkflowServiceRequest
-import dk.cachet.carp.common.application.ApplicationData
-import dk.cachet.carp.common.application.ApplicationServiceInfo
-import dk.cachet.carp.common.application.EmailAddress
-import dk.cachet.carp.common.application.UUID
-import dk.cachet.carp.common.application.data.Geolocation
-import dk.cachet.carp.common.application.data.SignalStrength
-import dk.cachet.carp.common.application.data.StepCount
-import dk.cachet.carp.common.application.data.input.CarpInputDataTypes
-import dk.cachet.carp.common.application.data.input.Sex
-import dk.cachet.carp.common.application.devices.AltBeacon
-import dk.cachet.carp.common.application.devices.DeviceRegistration
-import dk.cachet.carp.common.application.devices.Smartphone
-import dk.cachet.carp.common.application.sampling.Granularity
+import dk.cachet.carp.common.application.*
+import dk.cachet.carp.common.application.data.*
+import dk.cachet.carp.common.application.data.input.*
+import dk.cachet.carp.common.application.devices.*
+import dk.cachet.carp.common.application.sampling.*
 import dk.cachet.carp.common.application.services.ApplicationService
-import dk.cachet.carp.common.application.tasks.BackgroundTask
-import dk.cachet.carp.common.application.tasks.CustomProtocolTask
-import dk.cachet.carp.common.application.triggers.TaskControl
+import dk.cachet.carp.common.application.tasks.*
+import dk.cachet.carp.common.application.triggers.*
 import dk.cachet.carp.common.application.users.*
 import dk.cachet.carp.common.infrastructure.serialization.createDefaultJSON
-import dk.cachet.carp.common.infrastructure.services.ApplicationServiceRequest
-import dk.cachet.carp.common.infrastructure.services.LoggedRequest
-import dk.cachet.carp.data.application.DataStreamService
-import dk.cachet.carp.data.application.DataStreamsConfiguration
-import dk.cachet.carp.data.application.MutableDataStreamBatch
-import dk.cachet.carp.data.application.MutableDataStreamSequence
-import dk.cachet.carp.data.infrastructure.DataStreamServiceRequest
-import dk.cachet.carp.data.infrastructure.dataStreamId
-import dk.cachet.carp.data.infrastructure.measurement
+import dk.cachet.carp.common.infrastructure.services.*
+import dk.cachet.carp.data.application.*
+import dk.cachet.carp.data.infrastructure.*
 import dk.cachet.carp.deployments.application.*
 import dk.cachet.carp.deployments.application.users.*
-import dk.cachet.carp.deployments.infrastructure.DeploymentServiceRequest
-import dk.cachet.carp.deployments.infrastructure.ParticipationServiceRequest
-import dk.cachet.carp.protocols.application.ProtocolFactoryService
-import dk.cachet.carp.protocols.application.ProtocolFactoryServiceHost
-import dk.cachet.carp.protocols.application.ProtocolService
-import dk.cachet.carp.protocols.application.ProtocolVersion
+import dk.cachet.carp.deployments.infrastructure.*
+import dk.cachet.carp.protocols.application.*
 import dk.cachet.carp.protocols.domain.StudyProtocol
 import dk.cachet.carp.protocols.domain.start
-import dk.cachet.carp.protocols.infrastructure.ProtocolFactoryServiceRequest
-import dk.cachet.carp.protocols.infrastructure.ProtocolServiceRequest
-import dk.cachet.carp.studies.application.RecruitmentService
-import dk.cachet.carp.studies.application.StudyDetails
-import dk.cachet.carp.studies.application.StudyService
-import dk.cachet.carp.studies.application.StudyStatus
-import dk.cachet.carp.studies.application.users.AssignedParticipantRoles
-import dk.cachet.carp.studies.application.users.Participant
-import dk.cachet.carp.studies.application.users.ParticipantGroupStatus
-import dk.cachet.carp.studies.infrastructure.RecruitmentServiceRequest
-import dk.cachet.carp.studies.infrastructure.StudyServiceRequest
+import dk.cachet.carp.protocols.infrastructure.*
+import dk.cachet.carp.studies.application.*
+import dk.cachet.carp.studies.application.users.*
+import dk.cachet.carp.studies.infrastructure.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlin.reflect.KFunction
@@ -87,6 +53,7 @@ import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 
 /**
@@ -310,55 +277,43 @@ private val dataStreamSequenceIds = listOf(
     DataStreamStatus( phoneStepsDataStream, stepsDataSequence.range.last, true )
 )
 
-// Example for workflow service.
-private val exampleWorkflowId = UUID("00000000-0000-0000-0000-000000000123")
+// Examples for WorkflowService.
+private val exampleWorkflowId = UUID( "00000000-0000-0000-0000-000000000123" )
 private val exampleWorkflowMetadata = WorkflowMetadata(
     id = exampleWorkflowId,
     name = "Sleep Quality Analysis",
-    version = Version(1, 0)
+    version = Version( 1, 0 )
 )
+private val exampleWorkflow = Workflow( exampleWorkflowMetadata )
 
-private val exampleWorkflow = Workflow(
-    exampleWorkflowMetadata
-)
-
-// Example for execution service.
-private val exampleExecutionId = UUID("00000000-0000-0000-0000-000000000456")
+// Examples for ExecutionService.
+private val exampleExecutionId = UUID( "00000000-0000-0000-0000-000000000456" )
 private val exampleExecutionState = ExecutorState(
     executionId = exampleExecutionId,
     workflowId = exampleWorkflowId,
     status = ExecutionStatus.RUNNING,
-    startedAt = Instant.fromEpochMilliseconds(1642505045000),
+    startedAt = Instant.fromEpochMilliseconds( 1642505045000 ),
     completedAt = null,
     studyId = studyId
 )
 private val exampleExecutionResult = ExecutionReport(
     runId = exampleExecutionId,
     planId = UUID.randomUUID(),
-    startedAt = Instant.fromEpochMilliseconds(1642505045000),
-    finishedAt = Instant.fromEpochMilliseconds(1642505145000),
+    startedAt = Instant.fromEpochMilliseconds( 1642505045000 ),
+    finishedAt = Instant.fromEpochMilliseconds( 1642505145000 ),
     status = ExecutionStatus.SUCCEEDED,
     stepResults = listOf(
         StepRunResult(
-            stepMetadata = StepMetadata(id = UUID.randomUUID(), name = "example-step"),
+            stepMetadata = StepMetadata( id = UUID.randomUUID(), name = "example-step" ),
             status = ExecutionStatus.SUCCEEDED,
-            startedAt = Instant.fromEpochMilliseconds(1642505045000),
-            finishedAt = Instant.fromEpochMilliseconds(1642505145000),
+            startedAt = Instant.fromEpochMilliseconds( 1642505045000 ),
+            finishedAt = Instant.fromEpochMilliseconds( 1642505145000 ),
             failure = null,
             outputs = emptyList()
         )
     )
 )
 
-// Example for trigger service request.
-private val exampleTriggerId = UUID("00000000-0000-0000-0000-000000123456")
-private val exampleTrigger = ManualTrigger(
-    id = exampleTriggerId,
-    studyId = studyId,
-    workflowId = exampleWorkflowId,
-    name = "Manual Trigger",
-    createdAt = Clock.System.now()
-)
 
 private fun <TService : ApplicationService<TService, *>, TResponse> example(
     request: ApplicationServiceRequest<TService, TResponse>,
@@ -497,7 +452,6 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
             deploymentId,
             setOf( AssignedParticipantRoles( participantId, participantAssignedRoles ) ),
             studyId,
-            setOf( AssignedParticipantRoles( participantId, participantAssignedRoles ) )
             ParticipantGroupRepresentation( deploymentName )
         ),
         response = ParticipantGroupStatus.Staged(
@@ -513,7 +467,6 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
             group = updatedRoleAssignment,
             representation = ParticipantGroupRepresentation( updatedDeploymentName )
         ),
-        response = ParticipantGroupStatus.Invited( deploymentId, participants, setOf( AssignedParticipantRoles( participantId, participantAssignedRoles ) ), participantGroupInvitedOn, invitedDeploymentStatus )
         response = ParticipantGroupStatus.Staged(
             deploymentId,
             updatedParticipants,
@@ -534,7 +487,6 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
     ),
     RecruitmentService::getParticipantGroupStatusList to example(
         request = RecruitmentServiceRequest.GetParticipantGroupStatusList( studyId ),
-        response = listOf( ParticipantGroupStatus.Running( deploymentId, participants, setOf( AssignedParticipantRoles( participantId, participantAssignedRoles ) ), participantGroupInvitedOn, runningDeploymentStatus, runningDeploymentStatus.startedOn ) )
         response = listOf(
             ParticipantGroupStatus.Running(
                 deploymentId,
@@ -549,7 +501,6 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
     ),
     RecruitmentService::stopParticipantGroup to example(
         request = RecruitmentServiceRequest.StopParticipantGroup( studyId, deploymentId ),
-        response = ParticipantGroupStatus.Stopped( deploymentId, participants, setOf( AssignedParticipantRoles( participantId, participantAssignedRoles ) ), participantGroupInvitedOn, stoppedDeploymentStatus, stoppedDeploymentStatus.startedOn, stoppedDeploymentStatus.stoppedOn )
         response = ParticipantGroupStatus.Stopped(
             deploymentId,
             participants,
@@ -662,7 +613,6 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
         ),
         response = phoneDataStreamBatch
     ),
-
     DataStreamService::closeDataStreams to example(
         request = DataStreamServiceRequest.CloseDataStreams( deploymentIds )
     ),
@@ -676,22 +626,18 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
         request = WorkflowServiceRequest.CreateWorkflow( studyId, exampleWorkflow ),
         response = true
     ),
-
     WorkflowService::updateWorkflow to example(
         request = WorkflowServiceRequest.UpdateWorkflow( studyId, exampleWorkflowMetadata, exampleWorkflow ),
         response = true
     ),
-
     WorkflowService::getWorkflow to example(
         request = WorkflowServiceRequest.GetWorkflow( studyId, exampleWorkflowId ),
         response = exampleWorkflow
     ),
-
     WorkflowService::deleteWorkflow to example(
         request = WorkflowServiceRequest.DeleteWorkflow( studyId, exampleWorkflowId ),
         response = true
     ),
-
     WorkflowService::listWorkflows to example(
         request = WorkflowServiceRequest.ListWorkflows( studyId ),
         response = listOf( exampleWorkflowMetadata )
@@ -702,102 +648,24 @@ private val exampleRequests: Map<KFunction<*>, LoggedRequest.Succeeded<*>> = map
         request = ExecutionServiceRequest.ExecuteWorkflow( studyId, exampleWorkflowId ),
         response = exampleExecutionState
     ),
-
     ExecutionService::executeWorkflowFromDefinition to example(
         request = ExecutionServiceRequest.ExecuteWorkflowFromDefinition( studyId, exampleWorkflow ),
         response = exampleExecutionState
     ),
-
     ExecutionService::getExecutionState to example(
         request = ExecutionServiceRequest.GetExecutionState( exampleExecutionId ),
         response = exampleExecutionState
     ),
-
-    ExecutionService::findExecutions to example(
-        request = ExecutionServiceRequest.FindExecutions( studyId, exampleWorkflowId ),
-        response = listOf( exampleExecutionState )
-    ),
-
-    ExecutionService::getLatestExecutionStatus to example(
-        request = ExecutionServiceRequest.GetLatestExecutionStatus( studyId, exampleWorkflowId ),
-        response = exampleExecutionState
-    ),
-
     ExecutionService::getExecutionResult to example(
         request = ExecutionServiceRequest.GetExecutionResult( exampleExecutionId ),
         response = exampleExecutionResult
     ),
-
-    // TriggerService
-    TriggerService::createTrigger to example(
-        request = TriggerServiceRequest.CreateTrigger(exampleTrigger),
-        response = exampleTrigger
+    ExecutionService::findExecutions to example(
+        request = ExecutionServiceRequest.FindExecutions( studyId, exampleWorkflowId ),
+        response = listOf( exampleExecutionState )
     ),
-
-    TriggerService::updateTrigger to example(
-        request = TriggerServiceRequest.UpdateTrigger(exampleTrigger.copy(name = "Manual Trigger (Updated)")),
-        response = exampleTrigger.copy(name = "Manual Trigger (Updated)")
-    ),
-
-    TriggerService::deleteTrigger to example(
-        request = TriggerServiceRequest.DeleteTrigger(exampleTriggerId),
-        response = true
-    ),
-
-    TriggerService::getTrigger to example(
-        request = TriggerServiceRequest.GetTrigger(exampleTriggerId),
-        response = exampleTrigger
-    ),
-
-    TriggerService::listTriggers to example(
-        request = TriggerServiceRequest.ListTriggers(studyId),
-        response = listOf(exampleTrigger)
-    ),
-
-    TriggerService::startTrigger to example(
-        request = TriggerServiceRequest.StartTrigger(exampleTriggerId),
-        response = true
-    ),
-
-    TriggerService::endTrigger to example(
-        request = TriggerServiceRequest.EndTrigger(exampleTriggerId),
-        response = true
-    ),
-
-    TriggerService::getActivationsForTrigger to example(
-        request = TriggerServiceRequest.GetActivationsForTrigger(exampleTriggerId),
-        response = listOf(
-            TriggerActivation(
-                UUID.randomUUID(),
-                exampleTriggerId,
-                studyId,
-                Clock.System.now(),
-                UUID.randomUUID()
-            )
-        )
-    ),
-
-    TriggerService::listByWorkflow to example(
-        request = TriggerServiceRequest.ListByWorkflow(studyId, exampleWorkflowId),
-        response = listOf(exampleTrigger)
-    ),
-
-    TriggerService::recordActivation to example(
-        request = TriggerServiceRequest.RecordActivation(
-            TriggerActivation(
-                UUID.randomUUID(),
-                exampleTriggerId,
-                studyId,
-                Clock.System.now(),
-                UUID.randomUUID()
-            )
-        ),
-        response = true
-    ),
-
-
-    ScheduleManagementService::evaluateDueTriggers to example(
-        request = ScheduleManagementServiceRequest.EvaluateDueTriggers(),
-        response = true
+    ExecutionService::getLatestExecutionStatus to example(
+        request = ExecutionServiceRequest.GetLatestExecutionStatus( studyId, exampleWorkflowId ),
+        response = exampleExecutionState
     )
 )
