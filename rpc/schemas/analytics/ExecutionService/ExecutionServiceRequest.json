@@ -23,7 +23,7 @@
       "additionalProperties": false,
       "Response": {
         "$anchor": "ExecuteWorkflow-Response",
-        "$ref": "../execution/ExecutionState.json"
+        "$ref": "../execution/ExecutorState.json"
       }
     },
 
@@ -40,7 +40,7 @@
       "additionalProperties": false,
       "Response": {
         "$anchor": "ExecuteWorkflowFromDefinition-Response",
-        "$ref": "../execution/ExecutionState.json"
+        "$ref": "../execution/ExecutorState.json"
       }
     },
     "GetExecutionState": {
@@ -55,7 +55,7 @@
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetExecutionState-Response",
-        "$ref": "../execution/ExecutionState.json"
+        "$ref": "../execution/ExecutorState.json"
       }
     },
     "GetExecutionResult": {
@@ -70,7 +70,7 @@
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetExecutionResult-Response",
-        "$ref": "../execution/ExecutionResults.json"
+        "$ref": "../execution/ExecutionReport.json"
       }
     },
     "FindExecutions": {
@@ -88,7 +88,7 @@
         "$anchor": "FindExecutions-Response",
         "type": "array",
         "items": {
-          "$ref": "../execution/ExecutionState.json"
+          "$ref": "../execution/ExecutorState.json"
         }
       }
     },
@@ -106,7 +106,7 @@
       "additionalProperties": false,
       "Response": {
         "$anchor": "GetLatestExecutionStatus-Response",
-        "$ref": "../execution/ExecutionState.json"
+        "$ref": "../execution/ExecutorState.json"
       }
     }
 

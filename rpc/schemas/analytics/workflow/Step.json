@@ -1,5 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "Step.json",
   "title": "Step",
   "type": "object",
   "properties": {
@@ -9,33 +10,57 @@
     "metadata": {
       "$ref": "./StepMetadata.json"
     },
-    "inputData": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "../data/InputDataReference.json"
-      }
+    "inputs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/InputDataSpec" }
     },
-    "outputData": {
-      "anyOf": [
-        {
-          "$ref": "../data/OutputDataReference.json"
-        },
-        {
-          "type": "null"
-        }
-      ]
+    "outputs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/OutputDataSpec" }
     },
     "task": {
       "$ref": "../tasks/TaskDefinition.json"
+    },
+    "environmentId": {
+      "type": "string",
+      "format": "uuid"
     }
   },
   "required": [
     "__type",
     "metadata",
-    "task"
+    "task",
+    "environmentId"
   ],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "InputDataSpec": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "name": { "type": "string" },
+        "description": { "type": ["string", "null"] },
+        "schema": { "type": ["object", "null"], "additionalProperties": true },
+        "location": { "type": "object", "additionalProperties": true },
+        "stepRef": { "type": ["string", "null"] },
+        "required": { "type": "boolean" },
+        "constraints": { "type": ["object", "null"], "additionalProperties": true }
+      },
+      "required": [ "id", "name", "location" ],
+      "additionalProperties": false
+    },
+    "OutputDataSpec": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "name": { "type": "string" },
+        "description": { "type": ["string", "null"] },
+        "schema": { "type": ["object", "null"], "additionalProperties": true },
+        "location": { "type": "object", "additionalProperties": true },
+        "format": { "type": ["object", "null"], "additionalProperties": true }
+      },
+      "required": [ "id", "name", "location" ],
+      "additionalProperties": false
+    }
+  }
 }
