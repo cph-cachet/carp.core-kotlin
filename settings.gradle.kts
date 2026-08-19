@@ -6,7 +6,6 @@ dependencyResolutionManagement {
     }
 }
 
-include( "carp.analytics.core" )
 include( "carp.common" )
 include( "carp.common.test" )
 include( "carp.test" )
@@ -15,6 +14,7 @@ include( "carp.protocols.core" )
 include( "carp.data.core" )
 include( "carp.studies.core" )
 include( "carp.deployments.core" )
+include( "carp.analytics.core" )
 include( "carp.clients.core" )
 include( "rpc" )
 include( "publish-npm-packages" )
