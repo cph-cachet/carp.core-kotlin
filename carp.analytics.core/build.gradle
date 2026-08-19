@@ -1,0 +1,13 @@
+group = 'dk.cachet.carp.analytics'
+
+publishing {
+    publications {
+        all {
+            pom {
+                name = 'Analytics Domain Model and Application Services'
+                description =
+                    'A domain model and application services to define, plan, and execute analytics workflows over data collected in CARP studies.'
+            }
+        }
+    }
+}
