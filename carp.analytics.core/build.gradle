@@ -1,7 +1,5 @@
 group = 'dk.cachet.carp.analytics'
 
-version = clientsVersion
-
 publishing {
     publications {
         all {
