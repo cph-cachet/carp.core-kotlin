@@ -17,11 +17,16 @@ import dk.cachet.carp.analytics.domain.tasks.PythonTaskDefinition
 import dk.cachet.carp.analytics.domain.tasks.RTaskDefinition
 import dk.cachet.carp.analytics.domain.tasks.Script
 import dk.cachet.carp.analytics.domain.tasks.TaskDefinition
+import dk.cachet.carp.common.infrastructure.serialization.CLASS_DISCRIMINATOR
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
+/**
+ * Polymorphic serializers for the workflow definition: tasks, entry points and argument tokens.
+
+ */
 object CoreAnalyticsSerializer
 {
     val module: SerializersModule = SerializersModule {
@@ -51,7 +56,7 @@ object CoreAnalyticsSerializer
 
     val json: Json = Json {
         serializersModule = module
-        classDiscriminator = "type"
+        classDiscriminator = CLASS_DISCRIMINATOR
         encodeDefaults = true
         ignoreUnknownKeys = true
     }

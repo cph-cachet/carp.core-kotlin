@@ -49,7 +49,7 @@ class PythonTaskDefinitionTest
     fun `Script SerialName is correct`()
     {
         val encoded = CoreAnalyticsSerializer.json.encodeToString(Script("run.py") as PythonEntryPoint)
-        assertTrue(encoded.contains("\"type\":\"Script\""), "Expected 'Script' discriminator, got: $encoded")
+        assertTrue(encoded.contains("\"__type\":\"Script\""), "Expected 'Script' discriminator, got: $encoded")
     }
 
     // PythonEntryPoint — Module
@@ -82,7 +82,7 @@ class PythonTaskDefinitionTest
     fun `Module SerialName is correct`()
     {
         val encoded = CoreAnalyticsSerializer.json.encodeToString(Module("pkg.main") as PythonEntryPoint)
-        assertTrue(encoded.contains("\"type\":\"Module\""), "Expected 'Module' discriminator, got: $encoded")
+        assertTrue(encoded.contains("\"__type\":\"Module\""), "Expected 'Module' discriminator, got: $encoded")
     }
 
     // PythonTaskDefinition — construction
@@ -285,7 +285,7 @@ class PythonTaskDefinitionTest
 
         val encoded = CoreAnalyticsSerializer.json.encodeToString<TaskDefinition>(task)
         assertTrue(
-            encoded.contains("\"type\":\"PythonTaskDefinition\""),
+            encoded.contains("\"__type\":\"PythonTaskDefinition\""),
             "Expected 'PythonTaskDefinition' discriminator, got: $encoded"
         )
     }
@@ -303,12 +303,10 @@ class PythonTaskDefinitionTest
             entryPoint = Script("run.py")
         )
 
-        // Verify only declarative fields exist (compile-time assertion via property access)
         assertNotNull(task.id)
         assertNotNull(task.name)
         assertNotNull(task.entryPoint)
         assertNotNull(task.args)
-        // task.executable would be a compile error — intentional omission
     }
 }
 

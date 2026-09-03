@@ -2,9 +2,6 @@ package dk.cachet.carp.analytics.domain.data
 
 import kotlinx.serialization.Serializable
 
-// FILE FORMAT ENUM
-
-
 /**
  * File format enumeration.
  *
@@ -38,6 +35,14 @@ enum class FileFormat(
     // Binary Columnar Formats
     PARQUET( "application/octet-stream", "parquet", true ),
     AVRO( "application/octet-stream", "avro", true ),
+
+    // Image Formats
+    PNG( "image/png", "png", true ),
+    JPEG( "image/jpeg", "jpg", true ),
+    SVG( "image/svg+xml", "svg", false ),
+
+    // Document Formats
+    PDF( "application/pdf", "pdf", true ),
 
     // Generic Binary
     BINARY( "application/octet-stream", "bin", true ),

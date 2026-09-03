@@ -49,7 +49,7 @@ class RTaskDefinitionTest
     fun `RScript SerialName is correct`()
     {
         val encoded = CoreAnalyticsSerializer.json.encodeToString(RScript("run.R") as REntryPoint)
-        assertTrue(encoded.contains("\"type\":\"RScript\""), "Expected 'RScript' discriminator, got: $encoded")
+        assertTrue(encoded.contains("\"__type\":\"RScript\""), "Expected 'RScript' discriminator, got: $encoded")
     }
 
     // RTaskDefinition — construction
@@ -256,7 +256,7 @@ class RTaskDefinitionTest
 
         val encoded = CoreAnalyticsSerializer.json.encodeToString<TaskDefinition>(task)
         assertTrue(
-            encoded.contains("\"type\":\"RTaskDefinition\""),
+            encoded.contains("\"__type\":\"RTaskDefinition\""),
             "Expected 'RTaskDefinition' discriminator, got: $encoded"
         )
     }

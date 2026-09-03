@@ -10,6 +10,13 @@ import kotlin.test.assertTrue
  */
 class DspDataTypesTest
 {
+    private val branches = listOf(
+        DspDataTypes.ANALYTIC_NAMESPACE,
+        DspDataTypes.MEDIA_NAMESPACE,
+        DspDataTypes.CONTROL_NAMESPACE
+    )
+
+
     @Test
     fun all_types_are_enumerable()
     {
@@ -29,22 +36,32 @@ class DspDataTypesTest
     @Test
     fun branch_namespaces_are_nested_in_the_dsp_namespace()
     {
-        val branches = listOf(
-            DspDataTypes.ANALYTIC_NAMESPACE,
-            DspDataTypes.MEDIA_NAMESPACE,
-            DspDataTypes.CONTROL_NAMESPACE
-        )
         assertTrue( branches.all { it.startsWith( "${DspDataTypes.DSP_NAMESPACE}." ) } )
+    }
+
+    @Test
+    fun typesIn_returns_every_type_for_the_dsp_namespace()
+    {
+        assertEquals(DspDataTypes.typesIn( DspDataTypes.DSP_NAMESPACE ), DspDataTypes.values.toList())
     }
 
     @Test
     fun typesIn_only_returns_types_below_the_namespace()
     {
-        assertEquals(DspDataTypes.typesIn( DspDataTypes.DSP_NAMESPACE ), DspDataTypes.values.toList())
+        branches.forEach { branch ->
+            val types = DspDataTypes.typesIn( branch )
+            assertTrue( types.isNotEmpty(), "\"$branch\" has no types." )
+            assertTrue( types.all { it.type.toString().startsWith( "$branch." ) } )
+        }
+    }
 
-        // The generic artefact has no branch, and no branch leaves exist yet.
-        assertEquals(DspDataTypes.typesIn( DspDataTypes.ANALYTIC_NAMESPACE ), emptyList())
-        assertEquals(DspDataTypes.typesIn( DspDataTypes.MEDIA_NAMESPACE ), emptyList())
-        assertEquals(DspDataTypes.typesIn( DspDataTypes.CONTROL_NAMESPACE ), emptyList())
+    @Test
+    fun branches_do_not_overlap_and_only_the_generic_has_none()
+    {
+        val inBranches = branches.flatMap { DspDataTypes.typesIn( it ) }
+        assertEquals( inBranches.size, inBranches.toSet().size, "A type appears in more than one branch." )
+
+        val withoutBranch = DspDataTypes.values.toList() - inBranches.toSet()
+        assertEquals( listOf( DspDataTypes.GENERIC_ARTIFACT ), withoutBranch )
     }
 }

@@ -10,7 +10,7 @@ import kotlin.test.assertTrue
 /**
  * Comprehensive test suite for ArgToken implementations.
  *
- * Tests all ArgToken types for validation, serialization, and behavior.
+ * Tests all ArgToken types for validation, serialization, and behaviour.
  */
 class ArgTokenTest
 {
@@ -109,10 +109,10 @@ class ArgTokenTest
         val outputJson = CoreAnalyticsSerializer.json.encodeToString<ArgToken>(output)
         val paramJson = CoreAnalyticsSerializer.json.encodeToString<ArgToken>(param)
 
-        assertTrue(literalJson.contains("\"type\":\"Literal\""))
-        assertTrue(inputJson.contains("\"type\":\"InputRef\""))
-        assertTrue(outputJson.contains("\"type\":\"OutputRef\""))
-        assertTrue(paramJson.contains("\"type\":\"ParamRef\""))
+        assertTrue(literalJson.contains("\"__type\":\"Literal\""))
+        assertTrue(inputJson.contains("\"__type\":\"InputRef\""))
+        assertTrue(outputJson.contains("\"__type\":\"OutputRef\""))
+        assertTrue(paramJson.contains("\"__type\":\"ParamRef\""))
     }
 
     @Test
@@ -173,7 +173,7 @@ class ArgTokenTest
     fun `sealed interface prevents external implementations`()
     {
         // This is a compile-time test - we can't create new implementations
-        // outside the defined variants, but we can test the sealed behavior
+        // outside the defined variants, but we can test the sealed behaviour
         val tokens: List<ArgToken> = listOf(
             Literal("test"),
             InputRef(UUID.randomUUID()),

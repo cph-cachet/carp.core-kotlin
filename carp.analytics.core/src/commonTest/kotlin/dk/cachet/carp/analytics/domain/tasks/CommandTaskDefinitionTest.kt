@@ -7,7 +7,7 @@ import kotlin.test.*
 /**
  * Comprehensive test suite for CommandTaskDefinition.
  *
- * Tests cover validation, builder methods, serialization, and behavior.
+ * Tests cover validation, builder methods, serialization, and behaviour.
  */
 class CommandTaskDefinitionTest
 {
@@ -199,6 +199,6 @@ class CommandTaskDefinitionTest
         )
 
         val encoded = CoreAnalyticsSerializer.json.encodeToString<TaskDefinition>(task)
-        assertTrue(encoded.contains("\"type\":\"CommandTaskDefinition\""))
+        assertTrue(encoded.contains("\"__type\":\"CommandTaskDefinition\""))
     }
 }
